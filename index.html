@@ -533,19 +533,19 @@ function getTodosClientes() {
 //  API CALLS
 // ============================================================
 async function apiCall(params) {
-  if (!API_URL) throw new Error('API não configurada');
-  // Monta URL com parâmetros via GET (evita CORS do Apps Script)
+  if (!API_URL) throw new Error('API nao configurada');
   const qs = Object.entries(params)
     .map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(
       typeof v === 'object' ? JSON.stringify(v) : String(v)
     )).join('&');
   const url = API_URL + '?' + qs + '&t=' + Date.now();
-  const resp = await fetch(url, { redirect: 'follow' });
+  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+  const resp = await fetch(proxyUrl);
   if (!resp.ok) throw new Error('Erro HTTP ' + resp.status);
-  const text = await resp.text();
+  const wrapper = await resp.json();
   let data;
-  try { data = JSON.parse(text); }
-  catch(e) { throw new Error('Resposta inválida da API: ' + text.slice(0,100)); }
+  try { data = JSON.parse(wrapper.contents); }
+  catch(e) { throw new Error('Resposta invalida: ' + String(wrapper.contents).slice(0,100)); }
   if (data.erro) throw new Error(data.erro);
   return data;
 }
@@ -1170,11 +1170,31 @@ function importarBackupAPI(input) {
   reader.onload = async e => {
     try {
       const dados = JSON.parse(e.target.result);
-      const registros = dados.registros || dados; // suporta v2 e v3
-      if (!Array.isArray(registros)) { document.getElementById('backupStatus').innerHTML='<span style="color:#ef4444">❌ Arquivo inválido.</span>'; return; }
+      let registros = [];
+      if (dados.registros && Array.isArray(dados.registros)) {
+        // Formato novo v3: { registros: [...] }
+        registros = dados.registros;
+      } else if (dados.meses && typeof dados.meses === 'object') {
+        // Formato antigo v2: { meses: { "JAN/2026": [...], ... } }
+        Object.entries(dados.meses).forEach(([mes, lista]) => {
+          (lista||[]).forEach(r => registros.push({...r, mes}));
+        });
+      } else if (Array.isArray(dados)) {
+        registros = dados;
+      } else {
+        document.getElementById('backupStatus').innerHTML='<span style="color:#ef4444">❌ Arquivo inválido.</span>'; return;
+      }
+      if (!registros.length) { document.getElementById('backupStatus').innerHTML='<span style="color:#ef4444">❌ Nenhum registro encontrado.</span>'; return; }
       if (!confirm(`Restaurar ${registros.length} registros? Os dados atuais serão substituídos.`)) return;
       loading(true, 'Restaurando backup...');
-      await apiCall({ action:'restaurar', registros });
+      // Envia em lotes de 20 para não estourar o limite do GET
+      const LOTE = 20;
+      for (let i = 0; i < registros.length; i += LOTE) {
+        const lote = registros.slice(i, i + LOTE);
+        const action = i === 0 ? 'restaurar' : 'restaurarAdicionar';
+        document.getElementById('loadingTxt').textContent = `Restaurando... ${Math.min(i+LOTE, registros.length)}/${registros.length}`;
+        await apiCall({ action, registros: lote });
+      }
       await carregarTodos();
       renderMesSelect(); renderDashboard();
       document.getElementById('backupStatus').innerHTML='<span style="color:#16a34a">✅ Backup restaurado com sucesso!</span>';
