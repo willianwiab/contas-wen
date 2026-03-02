@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -533,13 +534,18 @@ function getTodosClientes() {
 // ============================================================
 async function apiCall(params) {
   if (!API_URL) throw new Error('API não configurada');
-  const url = API_URL + '?t=' + Date.now();
-  const resp = await fetch(url, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(params)
-  });
-  const data = await resp.json();
+  // Monta URL com parâmetros via GET (evita CORS do Apps Script)
+  const qs = Object.entries(params)
+    .map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(
+      typeof v === 'object' ? JSON.stringify(v) : String(v)
+    )).join('&');
+  const url = API_URL + '?' + qs + '&t=' + Date.now();
+  const resp = await fetch(url, { redirect: 'follow' });
+  if (!resp.ok) throw new Error('Erro HTTP ' + resp.status);
+  const text = await resp.text();
+  let data;
+  try { data = JSON.parse(text); }
+  catch(e) { throw new Error('Resposta inválida da API: ' + text.slice(0,100)); }
   if (data.erro) throw new Error(data.erro);
   return data;
 }
