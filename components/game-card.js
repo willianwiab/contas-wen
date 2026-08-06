@@ -31,7 +31,7 @@ function criarCartaoJogo(jogo) {
           <span>🎯 Dificuldade: <b>${esc(jogo.dificuldade)}</b></span>
           <span>🗺️ Fases: <b>${jogo.fases ? esc(String(jogo.fases)) : '—'}</b></span>
           <span>🏆 Recorde: <b>${esc(jogo.recorde || '—')}</b></span>
-          <span>⭐ Pontuação: <b>${esc(jogo.pontuacao || '—')}</b></span>
+          <span class="full">⭐ Pontuação: <b>${esc(jogo.pontuacao || '—')}</b></span>
         </div>
         <div class="card-actions">
           <a class="btn btn-primary btn-sm" href="${linkJogar}" ${jogo.url ? 'target="_blank" rel="noopener"' : ''}>▶ Jogar</a>
