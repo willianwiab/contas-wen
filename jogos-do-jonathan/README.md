@@ -39,3 +39,14 @@ de fã aos canais que o Jojo gosta, sem nenhuma ligação oficial com eles.
 ---
 
 Feito pelo Jojo, com ajuda do Claude e do Gemini. 🤖✨
+
+## Publicando na Vercel
+
+O jeito seguro de por os jogos no ar sem publicar o sistema de trabalho:
+na hora de importar o repositorio na Vercel, definir em
+**Settings -> Build and Deployment -> Root Directory** o valor:
+
+    jogos-do-jonathan
+
+Com isso a Vercel so enxerga esta pasta. O `index.html` da raiz do
+repositorio (painel de Contas a Receber) nao vai pro ar de jeito nenhum.

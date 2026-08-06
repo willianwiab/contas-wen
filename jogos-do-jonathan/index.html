@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jogos do Jonathan</title>
+<meta name="description" content="A fliperama do Jojo — jogos feitos por ele com ajuda das IAs.">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh; padding: 40px 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1a1a3e 0%, #2d1b5e 50%, #0f3460 100%);
+    position: relative; overflow-x: hidden; color: #fff;
+  }
+  .estrela { position: absolute; background: #fff; border-radius: 50%; animation: piscar 2s ease-in-out infinite; }
+  @keyframes piscar { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+
+  .topo { text-align: center; z-index: 10; margin-bottom: 36px; }
+  .fliperama { font-size: 3.6rem; display: inline-block; animation: pular 2.5s ease-in-out infinite; }
+  @keyframes pular { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-12px) rotate(4deg); } }
+  h1 {
+    font-size: clamp(2rem, 8vw, 3.2rem); font-weight: 900; margin-top: 6px; letter-spacing: 2px;
+    background: linear-gradient(90deg, #ff6b9d, #ffd43b, #69db7c, #4dabf7, #da77f2, #ff6b9d);
+    background-size: 300% 100%; -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; animation: arcoiris 4s linear infinite;
+  }
+  @keyframes arcoiris { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+  .sub { color: #b0c4ff; font-size: 1.05rem; margin-top: 6px; font-weight: 600; }
+
+  .prateleira {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px; width: 100%; max-width: 760px; z-index: 10;
+  }
+  .jogo-card {
+    display: block; text-decoration: none; color: inherit;
+    background: rgba(15, 52, 96, 0.55); border: 3px solid #4dabf7; border-radius: 20px;
+    padding: 22px; backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px rgba(77, 171, 247, 0.25);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+  .jogo-card:hover, .jogo-card:focus-visible {
+    transform: translateY(-6px) scale(1.03); border-color: #ffd43b;
+    box-shadow: 0 10px 28px rgba(255, 212, 59, 0.45); outline: none;
+  }
+  .jogo-icone { font-size: 3rem; }
+  .jogo-nome { font-size: 1.45rem; font-weight: 900; margin-top: 8px; color: #ffd43b; }
+  .jogo-desc { font-size: 0.95rem; color: #d5dcff; margin-top: 8px; line-height: 1.5; }
+  .jogar-agora {
+    display: inline-block; margin-top: 14px; padding: 9px 22px; border-radius: 22px;
+    font-weight: bold; background: linear-gradient(45deg, #ff6b9d, #4dabf7);
+  }
+
+  .rodape { margin-top: 36px; text-align: center; color: #8fa3d9; font-size: 0.85rem; z-index: 10; line-height: 1.7; max-width: 620px; }
+</style>
+</head>
+<body>
+
+  <div class="topo">
+    <div class="fliperama">🕹️</div>
+    <h1>Jogos do Jonathan</h1>
+    <div class="sub">✨ a fliperama do Jojo ✨</div>
+  </div>
+
+  <!-- Pra colocar um jogo novo aqui, e so copiar um bloco <a class="jogo-card"> -->
+  <!-- e trocar o href pela pasta do jogo novo. -->
+  <div class="prateleira">
+    <a class="jogo-card" href="mistura-de-ia/index.html">
+      <div class="jogo-icone">🤖</div>
+      <div class="jogo-nome">Mistura de IA</div>
+      <div class="jogo-desc">
+        Pegue os itens da IA antes que caiam no chão! Faça combo, desvie das
+        bombas 💣 e torça pra aparecer o lendário de 1000 pontos. 🤑
+      </div>
+      <span class="jogar-agora">Jogar ▶</span>
+    </a>
+  </div>
+
+  <div class="rodape">
+    Feito pelo Jojo, com ajuda do Claude e do Gemini. 🤖✨<br>
+    Os rostinhos dos youtubers são desenhos criados no código, não são fotos de
+    pessoas reais. É uma homenagem de fã, sem ligação oficial com os canais.
+  </div>
+
+  <script>
+    for (let i = 0; i < 45; i++) {
+      const e = document.createElement('div');
+      e.className = 'estrela';
+      const tam = Math.random() * 3 + 1;
+      e.style.width = tam + 'px'; e.style.height = tam + 'px';
+      e.style.left = Math.random() * 100 + '%';
+      e.style.top = Math.random() * 100 + '%';
+      e.style.animationDelay = Math.random() * 2 + 's';
+      document.body.appendChild(e);
+    }
+  </script>
+</body>
+</html>
