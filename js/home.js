@@ -4,6 +4,10 @@
    estatísticas do portfólio e linha do tempo.
    ============================================================ */
 
+/* Com poucos jogos, "populares" e "recentes" mostrariam exatamente os mesmos
+   cartões duas vezes. Abaixo desse limite, a home vira uma vitrine única. */
+const MINIMO_PARA_SEPARAR_SECOES = 4;
+
 (async function iniciarHome() {
   let dados;
   try {
@@ -25,12 +29,26 @@
 
   /* ----- Mais populares (top 3 por popularidade) ----- */
   function renderizarPopulares(lista) {
-    const top = [...lista].sort((a, b) => (b.popularidade || 0) - (a.popularidade || 0)).slice(0, 3);
+    const poucos = lista.length < MINIMO_PARA_SEPARAR_SECOES;
+    const top = poucos
+      ? lista
+      : [...lista].sort((a, b) => (b.popularidade || 0) - (a.popularidade || 0)).slice(0, 3);
+
+    if (poucos) {
+      document.getElementById('icone-populares').textContent = '🎮';
+      document.getElementById('titulo-populares').textContent = 'Os jogos';
+      document.getElementById('sub-populares').textContent =
+        'Tudo o que já saiu do forno até agora.';
+    }
     document.getElementById('grid-populares').innerHTML = top.map(criarCartaoJogo).join('');
   }
 
   /* ----- Recentes (top 3 por ano) ----- */
   function renderizarRecentes(lista) {
+    if (lista.length < MINIMO_PARA_SEPARAR_SECOES) {
+      document.getElementById('secao-recentes').hidden = true;
+      return;
+    }
     const recentes = [...lista].sort((a, b) => (b.ano || 0) - (a.ano || 0)).slice(0, 3);
     document.getElementById('grid-recentes').innerHTML = recentes.map(criarCartaoJogo).join('');
   }

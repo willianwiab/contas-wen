@@ -11,7 +11,7 @@
  */
 function criarCartaoJogo(jogo) {
   const paginaJogo = `${ROOT}pages/jogo.html?id=${encodeURIComponent(jogo.slug)}`;
-  const linkJogar = jogo.url && jogo.url.trim() !== '' ? jogo.url : paginaJogo;
+  const jogar = linkParaJogar(jogo.url);
 
   return `
     <article class="game-card reveal">
@@ -34,7 +34,8 @@ function criarCartaoJogo(jogo) {
           <span class="full">⭐ Pontuação: <b>${esc(jogo.pontuacao || '—')}</b></span>
         </div>
         <div class="card-actions">
-          <a class="btn btn-primary btn-sm" href="${linkJogar}" ${jogo.url ? 'target="_blank" rel="noopener"' : ''}>▶ Jogar</a>
+          <a class="btn btn-primary btn-sm" href="${jogar ? jogar.href : paginaJogo}"
+             ${jogar && jogar.externo ? 'target="_blank" rel="noopener"' : ''}>▶ Jogar</a>
           <a class="btn btn-ghost btn-sm" href="${paginaJogo}">Detalhes</a>
         </div>
       </div>

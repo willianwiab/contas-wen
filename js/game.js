@@ -87,7 +87,7 @@
   }
 
   function secaoBanner(j) {
-    const linkJogar = j.url && j.url.trim() !== '' ? j.url : null;
+    const jogar = linkParaJogar(j.url);
     return `
       <section class="game-banner">
         <img class="banner-img" src="${imagemOuPlaceholder(j.banner || j.imagem, 'banner')}" alt="Banner do jogo ${esc(j.nome)}" />
@@ -102,8 +102,9 @@
             </div>
           </div>
           ${
-            linkJogar
-              ? `<a class="btn btn-primary" href="${linkJogar}" target="_blank" rel="noopener">▶ Jogar agora</a>`
+            jogar
+              ? `<a class="btn btn-primary" href="${jogar.href}"
+                    ${jogar.externo ? 'target="_blank" rel="noopener"' : ''}>▶ Jogar agora</a>`
               : `<span class="btn btn-ghost" style="cursor:default;">🔗 Link em breve</span>`
           }
         </div>

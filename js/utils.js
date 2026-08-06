@@ -28,6 +28,20 @@ function imagemOuPlaceholder(caminho, tipo = 'game') {
   return `${ROOT}assets/images/placeholder-${tipo}.svg`;
 }
 
+/**
+ * Resolve o link do botão "Jogar".
+ * O campo "url" do games.json aceita as duas formas:
+ *   - link externo   → "https://..." (usado como está, abre em nova aba)
+ *   - jogo no site   → "jogos/meu-jogo/index.html" (caminho a partir da raiz)
+ * Como as páginas ficam em pastas diferentes, o caminho interno precisa do ROOT
+ * na frente; sem isso o link quebraria dentro de /pages.
+ */
+function linkParaJogar(url) {
+  if (!url || url.trim() === '') return null;
+  const ehExterno = /^(https?:)?\/\//i.test(url);
+  return { href: ehExterno ? url : ROOT + url, externo: ehExterno };
+}
+
 /** Lê um parâmetro da query string (ex.: ?id=meu-jogo). */
 function parametroURL(nome) {
   return new URLSearchParams(window.location.search).get(nome);

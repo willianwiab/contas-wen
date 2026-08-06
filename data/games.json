@@ -1,137 +1,61 @@
 {
-  "aviso": "Os jogos abaixo são EXEMPLOS para mostrar como o site funciona. Substitua pelos seus jogos reais! Veja o README para o passo a passo.",
+  "_comoUsar": "Cada objeto do array 'jogos' vira um cartão no site e ganha a própria página. Para adicionar um jogo novo, copie um objeto inteiro, cole aqui e troque os valores. Veja o README para o que cada campo significa.",
 
   "estatisticas": {
-    "horasDeDesenvolvimento": 120
+    "horasDeDesenvolvimento": 0
   },
 
   "jogos": [
     {
-      "slug": "corrida-neon",
-      "nome": "Corrida Neon (exemplo)",
-      "descricao": "Um jogo de corrida arcade futurista onde você desvia de obstáculos em uma pista de luzes neon que fica cada vez mais rápida.",
-      "comoFunciona": "O carro acelera sozinho e o jogador controla apenas a direção. A cada 30 segundos a velocidade aumenta e novos obstáculos aparecem.",
-      "objetivo": "Sobreviver o máximo de tempo possível e bater o recorde de distância.",
-      "mecanicas": ["Velocidade progressiva", "Desvio de obstáculos", "Turbo temporário", "Coleta de moedas"],
+      "slug": "mistura-de-ia",
+      "nome": "Mistura de IA",
+      "descricao": "O poder da inteligência artificial cai do céu e você tem 30 segundos para pegar tudo: estrelas, robôs, cérebros e até um convidado lendário que vale 1000 pontos. Só cuidado com as bombas!",
+      "comoFunciona": "Os itens caem em posições aleatórias e você clica (ou toca, no celular) para pegar cada um antes que chegue ao chão. Acertos seguidos formam combo, que multiplica os pontos em até 5 vezes. A cada segundo o jogo acelera e os itens passam a cair com mais frequência.",
+      "objetivo": "Fazer o maior número de pontos possível em 30 segundos, mantendo o combo aceso e desviando das bombas.",
+      "mecanicas": [
+        "Combo que multiplica os pontos em até 5x",
+        "Bombas que tiram 20 pontos e zeram o combo",
+        "Arco-íris valendo 50 pontos",
+        "Youtubers convidados, de 35 a 45 pontos",
+        "Convidado lendário: 1 chance em 128, vale 1000 pontos",
+        "Dificuldade que aumenta sozinha durante a partida",
+        "Efeitos sonoros gerados pelo próprio navegador",
+        "Proteção contra trapaça pelo console"
+      ],
       "categoria": "Arcade",
       "plataforma": "Navegador (PC e celular)",
-      "ano": 2024,
+      "ano": 2026,
       "status": "Finalizado",
       "dificuldade": "Média",
-      "fases": 1,
-      "recorde": "12.480 m",
-      "pontuacao": "1 ponto por metro + 50 por moeda",
-      "popularidade": 95,
-      "imagem": "",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "Cada item vale de 5 a 50 pontos, multiplicados pelo combo (até 5x). A bomba tira 20 e o convidado lendário vale 1000.",
+      "popularidade": 100,
+      "imagem": "assets/images/mistura-de-ia.svg",
       "banner": "",
       "trailer": "",
-      "url": "",
-      "galeria": ["", "", ""],
-      "historia": "No ano de 2199, as corridas ilegais de hovercars dominam as ruas de Neo Cidade. Você é um piloto novato tentando fazer história na pista mais perigosa do mundo.",
-      "comoJogar": "Use as setas (ou deslize o dedo no celular) para mudar de faixa. Colete moedas para pontos extras e o raio para ativar o turbo. Bater em um obstáculo encerra a corrida.",
+      "url": "jogos/mistura-de-ia/index.html",
+      "galeria": [],
+      "historia": "Numa noite estrelada, o poder da inteligência artificial começou a cair do céu em forma de estrelas, robôs, cérebros e raios. Quem for rápido o bastante consegue recolher tudo antes que chegue ao chão — mas no meio da chuva de poder também vêm bombas. E, de vez em quando, um convidado lendário aparece.",
+      "comoJogar": "Aperte Começar e vá clicando em cada item que cair. Acertos seguidos aumentam o combo e multiplicam seus pontos; se um item bom cair no chão, o combo zera. Nunca clique nas bombas. Fique de olho nos youtubers, que valem bastante, e reze para o lendário aparecer.",
       "controles": [
-        { "tecla": "←  →", "acao": "Mudar de faixa" },
-        { "tecla": "Espaço", "acao": "Ativar turbo (quando disponível)" },
-        { "tecla": "P", "acao": "Pausar o jogo" }
+        { "tecla": "Clique", "acao": "Pegar o item que está caindo" },
+        { "tecla": "Toque", "acao": "Mesma coisa, no celular ou tablet" },
+        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
       ],
       "curiosidades": [
-        "Este é um jogo de exemplo — troque estas curiosidades pelas do seu jogo!",
-        "A ideia dele surgiu para demonstrar todos os campos do games.json."
+        "O jogo foi feito a seis mãos: o Jojo teve as ideias e dirigiu tudo, o Gemini programou o motor do jogo e o Claude fez o visual, os rostinhos, a bomba e o arco-íris.",
+        "A proteção contra trapaça foi ideia do Jojo: quem tentar mudar a pontuação pelo console do navegador recebe a mensagem 'Tentando dar um jeitinho, é? 😜'.",
+        "O convidado lendário tem 1 chance em 128 de aparecer e cai de propósito mais devagar que os outros — seria injusto perder algo tão raro.",
+        "Os rostinhos que caem são desenhos em SVG criados dentro do próprio código, não são fotos de ninguém.",
+        "Os canais que aparecem no jogo são os favoritos do Jojo."
       ],
-      "creditos": "Criado por JoJo. Substitua este texto pelos créditos reais.",
-      "atualizacoes": "Nenhuma atualização planejada — projeto finalizado.",
+      "creditos": "Ideias e direção: Jojo.\nMotor do jogo: Gemini.\nVisual, rostos e efeitos: Claude.",
+      "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2024", "mudancas": "Lançamento do jogo." }
+        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão publicada, com combo, bombas, arco-íris, youtubers convidados e o convidado lendário." }
       ],
-      "ranking": [
-        { "jogador": "JoJo", "pontos": "12.480" },
-        { "jogador": "Player 2", "pontos": "9.310" },
-        { "jogador": "Player 3", "pontos": "7.005" }
-      ]
-    },
-    {
-      "slug": "aventura-floresta-pixel",
-      "nome": "Aventura na Floresta Pixel (exemplo)",
-      "descricao": "Um jogo de plataforma em pixel art onde um pequeno explorador atravessa uma floresta mágica cheia de segredos e criaturas.",
-      "comoFunciona": "Jogo de plataforma clássico: pule entre plataformas, evite inimigos e encontre a chave escondida em cada fase para abrir a porta final.",
-      "objetivo": "Completar todas as fases encontrando as chaves e coletando o máximo de cristais.",
-      "mecanicas": ["Pulo duplo", "Chaves e portas", "Cristais colecionáveis", "Checkpoints"],
-      "categoria": "Plataforma",
-      "plataforma": "Navegador (PC)",
-      "ano": 2025,
-      "status": "Em desenvolvimento",
-      "dificuldade": "Difícil",
-      "fases": 8,
-      "recorde": "Fase 6",
-      "pontuacao": "100 pontos por cristal + bônus de tempo",
-      "popularidade": 80,
-      "imagem": "",
-      "banner": "",
-      "trailer": "",
-      "url": "",
-      "galeria": ["", ""],
-      "historia": "Uma floresta encantada perdeu sua luz quando os cristais mágicos foram roubados. Um pequeno explorador corajoso parte em uma jornada para recuperá-los antes que a escuridão tome conta de tudo.",
-      "comoJogar": "Corra e pule pelas plataformas. Cristais dão pontos, e a chave dourada de cada fase abre a porta para a próxima. Cuidado com os espinhos!",
-      "controles": [
-        { "tecla": "A  D", "acao": "Mover para os lados" },
-        { "tecla": "W", "acao": "Pular (aperte 2x para pulo duplo)" },
-        { "tecla": "Esc", "acao": "Menu de pausa" }
-      ],
-      "curiosidades": [
-        "Jogo de exemplo — aqui você pode contar bastidores do desenvolvimento.",
-        "Ideal para listar easter eggs e segredos do seu jogo."
-      ],
-      "creditos": "Criado por JoJo. Substitua este texto pelos créditos reais.",
-      "atualizacoes": "Novas fases e um chefão final estão sendo desenvolvidos.",
-      "changelog": [
-        { "versao": "0.3", "data": "2025", "mudancas": "Adicionadas as fases 5 a 8 e o pulo duplo." },
-        { "versao": "0.2", "data": "2025", "mudancas": "Sistema de chaves e portas." },
-        { "versao": "0.1", "data": "2025", "mudancas": "Primeira versão jogável com 4 fases." }
-      ],
-      "ranking": [
-        { "jogador": "JoJo", "pontos": "4.200" }
-      ]
-    },
-    {
-      "slug": "quiz-galactico",
-      "nome": "Quiz Galáctico (exemplo)",
-      "descricao": "Um quiz espacial onde cada resposta certa leva sua nave para mais perto de um novo planeta. Errou? Perdeu combustível!",
-      "comoFunciona": "Perguntas de múltipla escolha aparecem na tela. Acertos movem a nave; erros gastam combustível. O jogo termina quando o combustível acaba.",
-      "objetivo": "Visitar todos os planetas respondendo o maior número de perguntas corretamente.",
-      "mecanicas": ["Múltipla escolha", "Sistema de combustível", "Planetas desbloqueáveis", "Perguntas aleatórias"],
-      "categoria": "Puzzle",
-      "plataforma": "Navegador (PC e celular)",
-      "ano": 2023,
-      "status": "Atualizações futuras",
-      "dificuldade": "Fácil",
-      "fases": 5,
-      "recorde": "42 acertos seguidos",
-      "pontuacao": "10 pontos por acerto, sequência multiplica por 2",
-      "popularidade": 60,
-      "imagem": "",
-      "banner": "",
-      "trailer": "",
-      "url": "",
-      "galeria": [""],
-      "historia": "A nave Curiosidade-1 viaja pela galáxia movida a conhecimento. Cada resposta certa é combustível para explorar novos mundos.",
-      "comoJogar": "Leia a pergunta com calma e toque na resposta que achar correta. Sequências de acertos multiplicam seus pontos!",
-      "controles": [
-        { "tecla": "Mouse", "acao": "Clicar na resposta" },
-        { "tecla": "1-4", "acao": "Escolher a alternativa pelo teclado" }
-      ],
-      "curiosidades": [
-        "Jogo de exemplo — as perguntas podem vir de um arquivo JSON também!"
-      ],
-      "creditos": "Criado por JoJo. Substitua este texto pelos créditos reais.",
-      "atualizacoes": "Planejado: novo pacote de perguntas sobre games e modo contra o tempo.",
-      "changelog": [
-        { "versao": "1.1", "data": "2024", "mudancas": "Corrigidas perguntas repetidas." },
-        { "versao": "1.0", "data": "2023", "mudancas": "Lançamento com 5 planetas." }
-      ],
-      "ranking": [
-        { "jogador": "JoJo", "pontos": "840" },
-        { "jogador": "Player 2", "pontos": "620" }
-      ]
+      "ranking": []
     }
   ]
 }
