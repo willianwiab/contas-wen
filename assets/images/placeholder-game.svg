@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1a2240"/>
+      <stop offset="1" stop-color="#131a2e"/>
+    </linearGradient>
+    <linearGradient id="a" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#g)"/>
+  <g opacity="0.15" stroke="#8b5cf6" stroke-width="1">
+    <path d="M0 60 H640 M0 120 H640 M0 180 H640 M0 240 H640 M0 300 H640"/>
+    <path d="M80 0 V360 M160 0 V360 M240 0 V360 M320 0 V360 M400 0 V360 M480 0 V360 M560 0 V360"/>
+  </g>
+  <g transform="translate(320 150)">
+    <rect x="-70" y="-38" width="140" height="76" rx="34" fill="none" stroke="url(#a)" stroke-width="6"/>
+    <path d="M-38 -8 v16 M-46 0 h16" stroke="#22d3ee" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="30" cy="-8" r="6" fill="#ec4899"/>
+    <circle cx="46" cy="8" r="6" fill="#facc15"/>
+  </g>
+  <text x="320" y="256" text-anchor="middle" font-family="monospace" font-size="22" fill="#94a3b8">IMAGEM EM BREVE</text>
+  <text x="320" y="286" text-anchor="middle" font-family="monospace" font-size="14" fill="#64748b">jogos do jojo</text>
+</svg>

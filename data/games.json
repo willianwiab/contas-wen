@@ -1,0 +1,137 @@
+{
+  "aviso": "Os jogos abaixo são EXEMPLOS para mostrar como o site funciona. Substitua pelos seus jogos reais! Veja o README para o passo a passo.",
+
+  "estatisticas": {
+    "horasDeDesenvolvimento": 120
+  },
+
+  "jogos": [
+    {
+      "slug": "corrida-neon",
+      "nome": "Corrida Neon (exemplo)",
+      "descricao": "Um jogo de corrida arcade futurista onde você desvia de obstáculos em uma pista de luzes neon que fica cada vez mais rápida.",
+      "comoFunciona": "O carro acelera sozinho e o jogador controla apenas a direção. A cada 30 segundos a velocidade aumenta e novos obstáculos aparecem.",
+      "objetivo": "Sobreviver o máximo de tempo possível e bater o recorde de distância.",
+      "mecanicas": ["Velocidade progressiva", "Desvio de obstáculos", "Turbo temporário", "Coleta de moedas"],
+      "categoria": "Arcade",
+      "plataforma": "Navegador (PC e celular)",
+      "ano": 2024,
+      "status": "Finalizado",
+      "dificuldade": "Média",
+      "fases": 1,
+      "recorde": "12.480 m",
+      "pontuacao": "1 ponto por metro + 50 por moeda",
+      "popularidade": 95,
+      "imagem": "",
+      "banner": "",
+      "trailer": "",
+      "url": "",
+      "galeria": ["", "", ""],
+      "historia": "No ano de 2199, as corridas ilegais de hovercars dominam as ruas de Neo Cidade. Você é um piloto novato tentando fazer história na pista mais perigosa do mundo.",
+      "comoJogar": "Use as setas (ou deslize o dedo no celular) para mudar de faixa. Colete moedas para pontos extras e o raio para ativar o turbo. Bater em um obstáculo encerra a corrida.",
+      "controles": [
+        { "tecla": "←  →", "acao": "Mudar de faixa" },
+        { "tecla": "Espaço", "acao": "Ativar turbo (quando disponível)" },
+        { "tecla": "P", "acao": "Pausar o jogo" }
+      ],
+      "curiosidades": [
+        "Este é um jogo de exemplo — troque estas curiosidades pelas do seu jogo!",
+        "A ideia dele surgiu para demonstrar todos os campos do games.json."
+      ],
+      "creditos": "Criado por JoJo. Substitua este texto pelos créditos reais.",
+      "atualizacoes": "Nenhuma atualização planejada — projeto finalizado.",
+      "changelog": [
+        { "versao": "1.0", "data": "2024", "mudancas": "Lançamento do jogo." }
+      ],
+      "ranking": [
+        { "jogador": "JoJo", "pontos": "12.480" },
+        { "jogador": "Player 2", "pontos": "9.310" },
+        { "jogador": "Player 3", "pontos": "7.005" }
+      ]
+    },
+    {
+      "slug": "aventura-floresta-pixel",
+      "nome": "Aventura na Floresta Pixel (exemplo)",
+      "descricao": "Um jogo de plataforma em pixel art onde um pequeno explorador atravessa uma floresta mágica cheia de segredos e criaturas.",
+      "comoFunciona": "Jogo de plataforma clássico: pule entre plataformas, evite inimigos e encontre a chave escondida em cada fase para abrir a porta final.",
+      "objetivo": "Completar todas as fases encontrando as chaves e coletando o máximo de cristais.",
+      "mecanicas": ["Pulo duplo", "Chaves e portas", "Cristais colecionáveis", "Checkpoints"],
+      "categoria": "Plataforma",
+      "plataforma": "Navegador (PC)",
+      "ano": 2025,
+      "status": "Em desenvolvimento",
+      "dificuldade": "Difícil",
+      "fases": 8,
+      "recorde": "Fase 6",
+      "pontuacao": "100 pontos por cristal + bônus de tempo",
+      "popularidade": 80,
+      "imagem": "",
+      "banner": "",
+      "trailer": "",
+      "url": "",
+      "galeria": ["", ""],
+      "historia": "Uma floresta encantada perdeu sua luz quando os cristais mágicos foram roubados. Um pequeno explorador corajoso parte em uma jornada para recuperá-los antes que a escuridão tome conta de tudo.",
+      "comoJogar": "Corra e pule pelas plataformas. Cristais dão pontos, e a chave dourada de cada fase abre a porta para a próxima. Cuidado com os espinhos!",
+      "controles": [
+        { "tecla": "A  D", "acao": "Mover para os lados" },
+        { "tecla": "W", "acao": "Pular (aperte 2x para pulo duplo)" },
+        { "tecla": "Esc", "acao": "Menu de pausa" }
+      ],
+      "curiosidades": [
+        "Jogo de exemplo — aqui você pode contar bastidores do desenvolvimento.",
+        "Ideal para listar easter eggs e segredos do seu jogo."
+      ],
+      "creditos": "Criado por JoJo. Substitua este texto pelos créditos reais.",
+      "atualizacoes": "Novas fases e um chefão final estão sendo desenvolvidos.",
+      "changelog": [
+        { "versao": "0.3", "data": "2025", "mudancas": "Adicionadas as fases 5 a 8 e o pulo duplo." },
+        { "versao": "0.2", "data": "2025", "mudancas": "Sistema de chaves e portas." },
+        { "versao": "0.1", "data": "2025", "mudancas": "Primeira versão jogável com 4 fases." }
+      ],
+      "ranking": [
+        { "jogador": "JoJo", "pontos": "4.200" }
+      ]
+    },
+    {
+      "slug": "quiz-galactico",
+      "nome": "Quiz Galáctico (exemplo)",
+      "descricao": "Um quiz espacial onde cada resposta certa leva sua nave para mais perto de um novo planeta. Errou? Perdeu combustível!",
+      "comoFunciona": "Perguntas de múltipla escolha aparecem na tela. Acertos movem a nave; erros gastam combustível. O jogo termina quando o combustível acaba.",
+      "objetivo": "Visitar todos os planetas respondendo o maior número de perguntas corretamente.",
+      "mecanicas": ["Múltipla escolha", "Sistema de combustível", "Planetas desbloqueáveis", "Perguntas aleatórias"],
+      "categoria": "Puzzle",
+      "plataforma": "Navegador (PC e celular)",
+      "ano": 2023,
+      "status": "Atualizações futuras",
+      "dificuldade": "Fácil",
+      "fases": 5,
+      "recorde": "42 acertos seguidos",
+      "pontuacao": "10 pontos por acerto, sequência multiplica por 2",
+      "popularidade": 60,
+      "imagem": "",
+      "banner": "",
+      "trailer": "",
+      "url": "",
+      "galeria": [""],
+      "historia": "A nave Curiosidade-1 viaja pela galáxia movida a conhecimento. Cada resposta certa é combustível para explorar novos mundos.",
+      "comoJogar": "Leia a pergunta com calma e toque na resposta que achar correta. Sequências de acertos multiplicam seus pontos!",
+      "controles": [
+        { "tecla": "Mouse", "acao": "Clicar na resposta" },
+        { "tecla": "1-4", "acao": "Escolher a alternativa pelo teclado" }
+      ],
+      "curiosidades": [
+        "Jogo de exemplo — as perguntas podem vir de um arquivo JSON também!"
+      ],
+      "creditos": "Criado por JoJo. Substitua este texto pelos créditos reais.",
+      "atualizacoes": "Planejado: novo pacote de perguntas sobre games e modo contra o tempo.",
+      "changelog": [
+        { "versao": "1.1", "data": "2024", "mudancas": "Corrigidas perguntas repetidas." },
+        { "versao": "1.0", "data": "2023", "mudancas": "Lançamento com 5 planetas." }
+      ],
+      "ranking": [
+        { "jogador": "JoJo", "pontos": "840" },
+        { "jogador": "Player 2", "pontos": "620" }
+      ]
+    }
+  ]
+}
