@@ -1,22 +1,22 @@
 {
-  "aviso": "Responda a entrevista interativa na página 'Sobre Mim' do site. No final, ela gera este arquivo preenchido para você baixar e substituir aqui. Enquanto 'preenchido' for false, o site mostra a entrevista.",
+  "_comoUsar": "Este arquivo guarda a biografia que aparece na página 'Sobre Mim'. Enquanto 'preenchido' for false, o site mostra a entrevista interativa. As respostas originais ficam em 'respostas', para poder regerar a biografia quando quiser.",
 
-  "preenchido": false,
+  "preenchido": true,
 
   "respostas": {
-    "nome": "",
-    "idade": "",
-    "desdeQuandoGostaDeJogos": "",
-    "primeiroJogo": "",
-    "comoComecouAProgramar": "",
-    "sonhos": "",
-    "jogosFavoritos": "",
-    "quemInspira": "",
-    "oQueDesejaCriar": "",
-    "maiorConquista": "",
-    "outrasAtividades": "",
-    "comoQuerSerLembrado": ""
+    "nome": "Jonathan",
+    "idade": "10",
+    "desdeQuandoGostaDeJogos": "5 meses ou mais",
+    "primeiroJogo": "Vegeta",
+    "comoComecouAProgramar": "peguei o computador do meu pai e aprendi a programar",
+    "sonhos": "viajar",
+    "jogosFavoritos": "Palworld",
+    "quemInspira": "meu pai",
+    "oQueDesejaCriar": "mais jogos bons",
+    "maiorConquista": "criar o Click Master",
+    "outrasAtividades": "jogar",
+    "comoQuerSerLembrado": "pelos meus jogos"
   },
 
-  "biografia": ""
+  "biografia": "Olá! Eu sou o Jonathan, tenho 10 anos — e criar jogos é a minha forma favorita de dar vida à imaginação. 🎮\n\nGosto de jogos há 5 meses ou mais, e tudo começou com o Vegeta, o primeiro jogo que marcou minha vida.\n\nMinha jornada na programação começou assim: peguei o computador do meu pai e aprendi a programar.\n\nEntre meus jogos favoritos está o Palworld. E minha maior inspiração é o meu pai.\n\nMinha maior conquista até agora? Ter criado o Click Master. 🏆\n\nNo futuro quero criar mais jogos bons — e meu sonho é viajar.\n\nQuando não estou criando jogos, estou jogando.\n\nE se um dia perguntarem quem foi o JoJo, quero que lembrem de mim pelos meus jogos. ✨"
 }
