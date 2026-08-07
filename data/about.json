@@ -1,0 +1,22 @@
+{
+  "aviso": "Responda a entrevista interativa na página 'Sobre Mim' do site. No final, ela gera este arquivo preenchido para você baixar e substituir aqui. Enquanto 'preenchido' for false, o site mostra a entrevista.",
+
+  "preenchido": false,
+
+  "respostas": {
+    "nome": "",
+    "idade": "",
+    "desdeQuandoGostaDeJogos": "",
+    "primeiroJogo": "",
+    "comoComecouAProgramar": "",
+    "sonhos": "",
+    "jogosFavoritos": "",
+    "quemInspira": "",
+    "oQueDesejaCriar": "",
+    "maiorConquista": "",
+    "outrasAtividades": "",
+    "comoQuerSerLembrado": ""
+  },
+
+  "biografia": ""
+}

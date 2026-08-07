@@ -1,0 +1,61 @@
+{
+  "_comoUsar": "Cada objeto do array 'jogos' vira um cartão no site e ganha a própria página. Para adicionar um jogo novo, copie um objeto inteiro, cole aqui e troque os valores. Veja o README para o que cada campo significa.",
+
+  "estatisticas": {
+    "horasDeDesenvolvimento": 0
+  },
+
+  "jogos": [
+    {
+      "slug": "mistura-de-ia",
+      "nome": "Mistura de IA",
+      "descricao": "O poder da inteligência artificial cai do céu e você tem 30 segundos para pegar tudo: estrelas, robôs, cérebros e até um convidado lendário que vale 1000 pontos. Só cuidado com as bombas!",
+      "comoFunciona": "Os itens caem em posições aleatórias e você clica (ou toca, no celular) para pegar cada um antes que chegue ao chão. Acertos seguidos formam combo, que multiplica os pontos em até 5 vezes. A cada segundo o jogo acelera e os itens passam a cair com mais frequência.",
+      "objetivo": "Fazer o maior número de pontos possível em 30 segundos, mantendo o combo aceso e desviando das bombas.",
+      "mecanicas": [
+        "Combo que multiplica os pontos em até 5x",
+        "Bombas que tiram 20 pontos e zeram o combo",
+        "Arco-íris valendo 50 pontos",
+        "Youtubers convidados, de 35 a 45 pontos",
+        "Convidado lendário: 1 chance em 128, vale 1000 pontos",
+        "Dificuldade que aumenta sozinha durante a partida",
+        "Efeitos sonoros gerados pelo próprio navegador",
+        "Proteção contra trapaça pelo console"
+      ],
+      "categoria": "Arcade",
+      "plataforma": "Navegador (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Média",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "Cada item vale de 5 a 50 pontos, multiplicados pelo combo (até 5x). A bomba tira 20 e o convidado lendário vale 1000.",
+      "popularidade": 100,
+      "imagem": "assets/images/mistura-de-ia.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "jogos/mistura-de-ia/index.html",
+      "galeria": [],
+      "historia": "Numa noite estrelada, o poder da inteligência artificial começou a cair do céu em forma de estrelas, robôs, cérebros e raios. Quem for rápido o bastante consegue recolher tudo antes que chegue ao chão — mas no meio da chuva de poder também vêm bombas. E, de vez em quando, um convidado lendário aparece.",
+      "comoJogar": "Aperte Começar e vá clicando em cada item que cair. Acertos seguidos aumentam o combo e multiplicam seus pontos; se um item bom cair no chão, o combo zera. Nunca clique nas bombas. Fique de olho nos youtubers, que valem bastante, e reze para o lendário aparecer.",
+      "controles": [
+        { "tecla": "Clique", "acao": "Pegar o item que está caindo" },
+        { "tecla": "Toque", "acao": "Mesma coisa, no celular ou tablet" },
+        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+      ],
+      "curiosidades": [
+        "O jogo foi feito a seis mãos: o Jojo teve as ideias e dirigiu tudo, o Gemini programou o motor do jogo e o Claude fez o visual, os rostinhos, a bomba e o arco-íris.",
+        "A proteção contra trapaça foi ideia do Jojo: quem tentar mudar a pontuação pelo console do navegador recebe a mensagem 'Tentando dar um jeitinho, é? 😜'.",
+        "O convidado lendário tem 1 chance em 128 de aparecer e cai de propósito mais devagar que os outros — seria injusto perder algo tão raro.",
+        "Os rostinhos que caem são desenhos em SVG criados dentro do próprio código, não são fotos de ninguém.",
+        "Os canais que aparecem no jogo são os favoritos do Jojo."
+      ],
+      "creditos": "Ideias e direção: Jojo.\nMotor do jogo: Gemini.\nVisual, rostos e efeitos: Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão publicada, com combo, bombas, arco-íris, youtubers convidados e o convidado lendário." }
+      ],
+      "ranking": []
+    }
+  ]
+}

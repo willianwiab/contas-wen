@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-root="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jogos do JoJo — Portfólio de Jogos</title>
+  <meta name="description" content="Portfólio de jogos criados pelo JoJo: arcade, plataforma, puzzle e muito mais. Aperte start e divirta-se!" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="home">
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <header id="site-header" class="site-header"></header>
+
+  <main>
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+      <span class="hero-badge">🕹️ Portfólio de um criador de jogos</span>
+      <h1 class="hero-logo grad-text">Jogos do JoJo</h1>
+      <p class="hero-slogan">
+        Onde cada linha de código vira <span class="destaque">diversão</span> —
+        aperte <span class="destaque">START</span> e explore os mundos que eu criei!
+      </p>
+      <div class="hero-actions">
+        <a href="pages/jogos.html" class="btn btn-primary">🎮 Ver Jogos</a>
+        <a href="pages/sobre.html" class="btn btn-ghost">🕹️ Sobre Mim</a>
+      </div>
+      <a class="hero-scroll" href="#destaques" aria-label="Rolar para os destaques">▼</a>
+    </section>
+
+    <!-- ===== JOGOS EM DESTAQUE ===== -->
+    <section id="destaques" class="section">
+      <div class="container">
+        <h2 class="section-title reveal"><span id="icone-populares">🔥</span>
+          <span id="titulo-populares" class="grad-text">Mais populares</span></h2>
+        <p id="sub-populares" class="section-sub reveal">Os jogos favoritos de quem já jogou por aqui.</p>
+        <div id="grid-populares" class="games-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===== JOGOS RECENTES (escondida enquanto houver poucos jogos) ===== -->
+    <section id="secao-recentes" class="section">
+      <div class="container">
+        <h2 class="section-title reveal">🆕 <span class="grad-text">Lançamentos recentes</span></h2>
+        <p class="section-sub reveal">As criações mais novas saindo do forno.</p>
+        <div id="grid-recentes" class="games-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===== ESTATÍSTICAS ===== -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title reveal">📊 <span class="grad-text">Estatísticas do portfólio</span></h2>
+        <p class="section-sub reveal">Números da minha jornada como criador de jogos.</p>
+        <div id="stats-grid" class="stats-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===== LINHA DO TEMPO ===== -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title reveal">🗓️ <span class="grad-text">Linha do tempo</span></h2>
+        <p class="section-sub reveal">A história dos meus projetos, ano a ano.</p>
+        <div id="timeline" class="timeline"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <!-- Scripts: utilitários → componentes → comportamentos -->
+  <script src="js/utils.js"></script>
+  <script src="components/header.js"></script>
+  <script src="components/footer.js"></script>
+  <script src="components/game-card.js"></script>
+  <script src="js/background.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>
