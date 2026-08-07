@@ -245,6 +245,77 @@ body::before {
   color: var(--text-dim);
   font-size: 1.4rem;
   animation: flutuar 2s ease-in-out infinite;
+  z-index: 3;
+}
+
+/* ---------- Hero com a foto do JoJo ----------
+   O texto vive num painel à direita; a foto ocupa o fundo inteiro.
+   A cortina escura escurece só o lado do texto, deixando o Jojo limpo. */
+.hero-foto {
+  position: relative;
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  min-height: min(92vh, 700px);
+}
+
+.hero-foto .hero-img,
+.hero-foto .hero-img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-foto .hero-img img {
+  object-fit: cover;
+  /* Enquadramento pensado para o rosto do Jojo caber inteiro em telas largas,
+     onde o corte vertical é mais agressivo */
+  object-position: 30% 20%;
+  animation: aproximar 1.4s ease both;
+}
+
+/* Cortina: escura à direita (onde fica o texto), transparente à esquerda (o Jojo) */
+.hero-foto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to left,
+      rgba(10, 14, 26, 0.97) 0%,
+      rgba(10, 14, 26, 0.92) 30%,
+      rgba(10, 14, 26, 0.55) 52%,
+      rgba(10, 14, 26, 0.08) 70%,
+      transparent 100%),
+    linear-gradient(to top, rgba(10, 14, 26, 0.85), transparent 34%);
+}
+
+.hero-conteudo {
+  position: relative;
+  z-index: 2;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 60px 20px 90px;
+  min-height: min(92vh, 700px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+}
+
+/* O painel de texto ocupa a metade direita, longe do Jojo */
+.hero-conteudo > * { max-width: 520px; margin-left: auto; }
+
+.hero-foto .hero-logo { font-size: clamp(2.1rem, 5.4vw, 3.6rem); margin-bottom: 12px; }
+.hero-foto .hero-slogan { font-size: clamp(1rem, 1.6vw, 1.18rem); margin-bottom: 28px; }
+.hero-foto .hero-actions { justify-content: flex-start; }
+.hero-foto .hero-badge { margin-bottom: 16px; }
+
+@keyframes aproximar {
+  from { transform: scale(1.06); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
 }
 
 /* ---------- Seções ---------- */
@@ -793,6 +864,29 @@ body::before {
 
   .section { padding: 52px 0; }
   .msg { max-width: 92%; }
+
+  /* No celular o Jojo fica em cima e o texto embaixo, sem sobreposição */
+  .hero-foto { min-height: auto; }
+  .hero-foto .hero-img img { object-position: 50% 6%; }
+
+  .hero-foto::after {
+    background: linear-gradient(to top,
+      rgba(10, 14, 26, 0.99) 0%,
+      rgba(10, 14, 26, 0.97) 42%,
+      rgba(10, 14, 26, 0.55) 62%,
+      transparent 88%);
+  }
+
+  .hero-conteudo {
+    min-height: min(94vh, 720px);
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px 76px;
+  }
+
+  .hero-conteudo > * { margin-left: auto; margin-right: auto; }
+  .hero-foto .hero-actions { justify-content: center; }
 }
 
 /* Respeita usuários que preferem menos movimento */

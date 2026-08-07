@@ -17,18 +17,32 @@
   <header id="site-header" class="site-header"></header>
 
   <main>
-    <!-- ===== HERO ===== -->
-    <section class="hero">
-      <span class="hero-badge">🕹️ Portfólio de um criador de jogos</span>
-      <h1 class="hero-logo grad-text">Jogos do JoJo</h1>
-      <p class="hero-slogan">
-        Onde cada linha de código vira <span class="destaque">diversão</span> —
-        aperte <span class="destaque">START</span> e explore os mundos que eu criei!
-      </p>
-      <div class="hero-actions">
-        <a href="pages/jogos.html" class="btn btn-primary">🎮 Ver Jogos</a>
-        <a href="pages/sobre.html" class="btn btn-ghost">🕹️ Sobre Mim</a>
+    <!-- ===== HERO =====
+         A arte do JoJo é o fundo. O texto e os botões ficam num painel à direita,
+         sobre os painéis de código — o Jojo, que aparece à esquerda, nunca é coberto.
+         No celular o painel desce para o rodapé da imagem, pelo mesmo motivo. -->
+    <section class="hero hero-foto">
+      <picture class="hero-img">
+        <source media="(max-width: 720px)" srcset="assets/images/hero-jojo-mobile.jpg" />
+        <img src="assets/images/hero-jojo.jpg"
+             alt="Jonathan, o JoJo, sorrindo com um controle nas mãos e telas de código ao redor" />
+      </picture>
+
+      <div class="hero-conteudo">
+        <span class="hero-badge">🤖 Criador de Jogos IA</span>
+        <h1 class="hero-logo grad-text">Jogos do JoJo</h1>
+        <p class="hero-slogan">
+          Transformando ideias em <span class="destaque">jogos incríveis</span>
+          com o poder da Inteligência Artificial.
+        </p>
+        <div class="hero-actions">
+          <a href="pages/jogos.html" class="btn btn-primary">🎮 Jogar Agora</a>
+          <a href="https://github.com/jojocriamuitosjogosbons999" target="_blank" rel="noopener"
+             class="btn btn-ghost">&lt;/&gt; Ver Códigos</a>
+          <a href="pages/sobre.html" class="btn btn-ghost">🕹️ Sobre Mim</a>
+        </div>
       </div>
+
       <a class="hero-scroll" href="#destaques" aria-label="Rolar para os destaques">▼</a>
     </section>
 
