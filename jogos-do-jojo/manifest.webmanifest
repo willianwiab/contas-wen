@@ -1,0 +1,46 @@
+{
+  "name": "Jogos do JoJo",
+  "short_name": "Jogos do JoJo",
+  "description": "Todos os jogos criados pelo JoJo em um só lugar.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0e1a",
+  "theme_color": "#0a0e1a",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "assets/icons/app/jojo-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/app/jojo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/app/jojo-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Todos os jogos",
+      "short_name": "Jogos",
+      "url": "./pages/jogos.html"
+    },
+    {
+      "name": "Sobre o JoJo",
+      "short_name": "Sobre",
+      "url": "./pages/sobre.html"
+    }
+  ]
+}
