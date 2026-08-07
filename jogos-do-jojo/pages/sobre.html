@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-root="../">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sobre Mim — Jogos do JoJo</title>
+  <meta name="description" content="Conheça o JoJo, o criador por trás dos jogos." />
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-page="sobre">
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <header id="site-header" class="site-header"></header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <h1 class="section-title">🕹️ <span class="grad-text">Sobre Mim</span></h1>
+        <p class="section-sub" id="sobre-sub">
+          Ainda estou escrevendo minha história... responda a entrevista abaixo e ela vira uma biografia automaticamente!
+        </p>
+
+        <!-- A entrevista (chat) OU a biografia pronta são montadas aqui pelo js/about.js -->
+        <div id="conteudo-sobre"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <script src="../js/utils.js"></script>
+  <script src="../components/header.js"></script>
+  <script src="../components/footer.js"></script>
+  <script src="../js/background.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/about.js"></script>
+</body>
+</html>

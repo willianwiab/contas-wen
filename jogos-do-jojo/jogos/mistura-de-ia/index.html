@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mistura de IA — um jogo do Jojo</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/icons/favicon.svg" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1a1a3e 0%, #2d1b5e 50%, #0f3460 100%);
+    overflow: hidden; position: relative; user-select: none;
+    transition: background 0.3s;
+  }
+  .estrela { position: absolute; background: #fff; border-radius: 50%; animation: piscar 2s ease-in-out infinite; }
+  @keyframes piscar { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+  .logo-container { text-align: center; z-index: 10; animation: flutuar 3s ease-in-out infinite; }
+  @keyframes flutuar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+  .robo { font-size: 4rem; animation: girar 4s ease-in-out infinite; display: inline-block; }
+  @keyframes girar { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+  .titulo {
+    font-size: 3.2rem; font-weight: 900; margin-top: 5px;
+    background: linear-gradient(90deg, #ff6b9d, #ffd43b, #69db7c, #4dabf7, #da77f2, #ff6b9d);
+    background-size: 300% 100%; -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; animation: arcoiris 4s linear infinite; letter-spacing: 2px;
+  }
+  @keyframes arcoiris { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+  .subtitulo { color: #b0c4ff; font-size: 1.1rem; margin-top: 5px; font-weight: 600; letter-spacing: 1px; }
+  .brilho { display: inline-block; animation: brilhar 1.5s ease-in-out infinite; }
+  @keyframes brilhar { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.3); } }
+
+  #areaDoJogo {
+    margin-top: 20px; width: 90%; max-width: 600px; height: 320px;
+    border: 3px solid #4dabf7; border-radius: 20px; background: rgba(15, 52, 96, 0.5);
+    backdrop-filter: blur(5px); box-shadow: 0 0 20px rgba(77, 171, 247, 0.3);
+    position: relative; overflow: hidden; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; z-index: 10;
+    transition: background-color 0.2s;
+  }
+  .placar {
+    position: absolute; top: 10px; left: 15px; right: 15px; display: flex;
+    justify-content: space-between; align-items: center; font-size: 1rem; font-weight: bold;
+    color: #fff; text-shadow: 0 0 5px #000; z-index: 5;
+  }
+  .combo-badge {
+    color: #ffd43b; font-size: 1.1rem; font-weight: 900;
+    text-shadow: 0 0 8px rgba(255, 212, 59, 0.8);
+    display: none; animation: popCombo 0.3s ease-out;
+  }
+  @keyframes popCombo { 0% { transform: scale(0.5); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+  .btn-som {
+    background: rgba(255, 255, 255, 0.2); border: none; color: #fff;
+    border-radius: 50%; width: 28px; height: 28px; cursor: pointer;
+    font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .btn-som:hover { background: rgba(255, 255, 255, 0.4); }
+
+  .tela-overlay { display: flex; flex-direction: column; align-items: center; gap: 12px; color: #fff; text-align: center; z-index: 6; }
+  .btn-jogar {
+    background: linear-gradient(45deg, #ff6b9d, #4dabf7); border: none; color: white;
+    padding: 12px 30px; font-size: 1.2rem; font-weight: bold; border-radius: 25px;
+    cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-jogar:hover { transform: scale(1.08); box-shadow: 0 8px 20px rgba(77, 171, 247, 0.6); }
+
+  .item-ia { position: absolute; font-size: 2.2rem; cursor: pointer; animation: cair linear forwards; user-select: none; }
+  @keyframes cair { 0% { top: -40px; } 100% { top: 330px; } }
+
+  /* Rostos de youtuber caem um pouco maiores e com brilho pra chamar atencao */
+  .item-rosto {
+    width: 54px; height: 54px; border-radius: 50%;
+    background-size: cover; background-position: center;
+    border: 3px solid #ffd43b; box-shadow: 0 0 12px rgba(255, 212, 59, 0.9);
+  }
+
+  /* O LENDARIO! Maior, com anel pulsando pra todo mundo ver que ele chegou */
+  .item-lendario {
+    width: 72px; height: 72px;
+    border-color: #fff; box-shadow: 0 0 25px rgba(255, 255, 255, 0.95);
+  }
+  .item-lendario::after {
+    content: ''; position: absolute; inset: -9px; border-radius: 50%;
+    border: 3px solid #ffd43b; animation: pulsoLendario 0.6s ease-in-out infinite alternate;
+  }
+  @keyframes pulsoLendario {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.25); opacity: 0.25; }
+  }
+
+  .piscar-lendario { animation: flashLendario 0.9s ease-out; }
+  @keyframes flashLendario {
+    0% { background-color: rgba(255, 212, 59, 0.9); }
+    50% { background-color: rgba(105, 219, 124, 0.6); }
+    100% { background-color: rgba(15, 52, 96, 0.5); }
+  }
+
+  .pop-texto {
+    position: absolute; color: #ffd43b; font-weight: bold; font-size: 1.2rem;
+    pointer-events: none; animation: subirEsumir 0.6s forwards; z-index: 4;
+  }
+  @keyframes subirEsumir { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-25px) scale(1.4); } }
+
+  .particula {
+    position: absolute; width: 8px; height: 8px; border-radius: 50%;
+    pointer-events: none; animation: espirrar 0.5s ease-out forwards; z-index: 4;
+  }
+  @keyframes espirrar {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); }
+  }
+
+  .piscar-arcoiris { animation: flashArcoiris 0.5s ease-out; }
+  @keyframes flashArcoiris {
+    0% { background-color: rgba(255, 255, 255, 0.8); }
+    100% { background-color: rgba(15, 52, 96, 0.5); }
+  }
+
+  .piscar-bomba { animation: flashBomba 0.4s ease-out; }
+  @keyframes flashBomba {
+    0% { background-color: rgba(255, 71, 87, 0.6); }
+    100% { background-color: rgba(15, 52, 96, 0.5); }
+  }
+
+  .aviso-fa {
+    z-index: 10; max-width: 600px; margin: 18px auto 0; padding: 0 16px;
+    text-align: center; color: #8fa3d9; font-size: 0.8rem; line-height: 1.6;
+  }
+  .btn-jogar:focus-visible, .btn-som:focus-visible {
+    outline: 3px solid #ffd43b; outline-offset: 3px;
+  }
+  /* Voltar para o portfolio sem precisar do botao do navegador */
+  .voltar {
+    position: fixed; top: 14px; left: 16px; z-index: 20;
+    color: #b0c4ff; text-decoration: none; font-size: 0.9rem; font-weight: 600;
+    background: rgba(15, 52, 96, 0.6); border: 1px solid rgba(77, 171, 247, 0.5);
+    padding: 7px 14px; border-radius: 999px; transition: background 0.2s;
+  }
+  .voltar:hover { background: rgba(77, 171, 247, 0.3); }
+  /* Reduzir movimento: desliga so o enfeite. Os itens PRECISAM cair —
+     e isso que e o jogo — entao a animacao de queda fica de pe. */
+  @media (prefers-reduced-motion: reduce) {
+    .estrela, .logo-container, .robo, .titulo, .brilho { animation: none; }
+    .titulo { -webkit-text-fill-color: #ffd43b; color: #ffd43b; }
+  }
+</style>
+</head>
+<body>
+
+  <a class="voltar" href="../../pages/jogo.html?id=mistura-de-ia">← Voltar ao portfólio</a>
+
+  <!-- ===== LOGO: feito pelo CLAUDE ===== -->
+  <div class="logo-container">
+    <div class="robo">🤖</div>
+    <div class="titulo">Mistura de IA</div>
+    <div class="subtitulo"><span class="brilho">✨</span> um jogo do Jojo <span class="brilho">✨</span></div>
+  </div>
+
+  <!-- ===== JOGO: feito pelo GEMINI ===== -->
+  <div id="areaDoJogo">
+    <div class="placar">
+      <span>Pontos: <span id="pontosTxt">0</span></span>
+      <span id="comboTxt" class="combo-badge">Combo x1!</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span>Tempo: <span id="tempoTxt">30</span>s</span>
+        <button class="btn-som" id="btnSom" onclick="alternarSom()" title="Ativar/Desativar som">🔊</button>
+      </div>
+    </div>
+    <div id="telaInicio" class="tela-overlay">
+      <h2>🚀 Pegue o Poder da IA!</h2>
+      <p>Clique nos itens antes que eles caiam na terra!<br>Cuidado com as bombas 💣 e aproveite os combos 🔥!<br>Os youtubers valem muito, e o LENDÁRIO vale 1000! 🤑</p>
+      <p style="font-size: 0.9rem; color: #ffd43b;">🏆 Recorde Atual: <span id="recordeInicialTxt">0</span> pts</p>
+      <button class="btn-jogar" onclick="iniciarJogo()">Começar!</button>
+    </div>
+  </div>
+
+  <script>
+    // ===== ESTRELAS DO FUNDO: feito pelo CLAUDE =====
+    for (let i = 0; i < 40; i++) {
+      const e = document.createElement('div');
+      e.className = 'estrela';
+      const tam = Math.random() * 3 + 1;
+      e.style.width = tam + 'px'; e.style.height = tam + 'px';
+      e.style.left = Math.random() * 100 + '%'; e.style.top = Math.random() * 100 + '%';
+      e.style.animationDelay = Math.random() * 2 + 's';
+      document.body.appendChild(e);
+    }
+
+    // ===== DAQUI PRA BAIXO: JOGO feito pelo GEMINI =====
+    // (com as ideias do Claude: bomba e arco-iris, e o anti-trapaca do Jojo)
+
+    // Variáveis Globais de Estado
+    let _pontosInternos = 0;
+    let recorde = Number(localStorage.getItem('misturaDeIA.recorde')) || 0;
+    let combo = 0;
+    let tempo = 30;
+    let loopJogo = null, loopTempo = null;
+    let velocidadeQueda = 2.5; // Fica mais rápido com o tempo
+    let intervaloSpawn = 600; // Fica mais frequente com o tempo
+    let audioCtx = null;
+    let somAtivo = true;
+
+    const area = document.getElementById('areaDoJogo');
+    const pontosTxt = document.getElementById('pontosTxt');
+    const tempoTxt = document.getElementById('tempoTxt');
+    const comboTxt = document.getElementById('comboTxt');
+    const telaInicio = document.getElementById('telaInicio');
+    const recordeInicialTxt = document.getElementById('recordeInicialTxt');
+    const btnSom = document.getElementById('btnSom');
+
+    // Mostra o recorde salvo assim que a página abre
+    recordeInicialTxt.textContent = recorde;
+
+    function alternarSom() {
+      somAtivo = !somAtivo;
+      btnSom.textContent = somAtivo ? '🔊' : '🔇';
+    }
+
+    // Inicializador de Áudio (Web Audio API)
+    function tocarSom(frequencia, tipo = 'sine', duracao = 0.15) {
+      if (!somAtivo) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = tipo;
+        osc.frequency.setValueAtTime(frequencia, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duracao);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duracao);
+      } catch(e) {}
+    }
+
+    // Anti-Cheat no Console (Ideia do Jojo!)
+    Object.defineProperty(window, 'pontos', {
+      get() { return _pontosInternos; },
+      set(val) {
+        console.log("%cTentando dar um jeitinho, é? 😜", "color: #ff6b9d; font-size: 16px; font-weight: bold;");
+      }
+    });
+
+    // ===== ROSTOS DE YOUTUBER: feito pelo CLAUDE =====
+    // Sao personagens desenhados aqui mesmo (cartoon), nao sao fotos de pessoas de verdade.
+    // Pra usar uma imagem sua no lugar do desenho, e so por o campo "img" na lista
+    // YOUTUBERS logo abaixo, assim:  { nome: 'Fulano', pontos: 40, img: 'fotos/fulano.png' }
+    // (so use imagens que voce tem permissao pra usar!)
+    function desenharRosto({ pele, cabelo, bone, oculos, corrente, fone }) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="48" fill="#1a1a3e"/>
+        ${cabelo ? `<circle cx="50" cy="54" r="30" fill="${cabelo}"/>` : ''}
+        <circle cx="50" cy="56" r="27" fill="${pele}"/>
+        ${cabelo ? `<path d="M25 54a25 25 0 0 1 50 0q-4-15-25-15t-25 15z" fill="${cabelo}"/>` : ''}
+        ${bone ? `<path d="M20 46a30 30 0 0 1 60 0v4H20z" fill="${bone}"/>
+                  <rect x="78" y="44" width="16" height="8" rx="4" fill="${bone}"/>` : ''}
+        ${fone ? `<path d="M22 54v-6a28 28 0 0 1 56 0v6" stroke="#4dabf7" stroke-width="7" fill="none" stroke-linecap="round"/>
+                  <rect x="14" y="52" width="12" height="18" rx="6" fill="#4dabf7"/>
+                  <rect x="74" y="52" width="12" height="18" rx="6" fill="#4dabf7"/>` : ''}
+        ${oculos
+          ? `<rect x="27" y="50" width="46" height="13" rx="6" fill="#111"/>
+             <rect x="30" y="52" width="8" height="4" rx="2" fill="#fff" opacity="0.6"/>`
+          : `<circle cx="40" cy="56" r="4" fill="#111"/><circle cx="60" cy="56" r="4" fill="#111"/>
+             <circle cx="41.5" cy="54.5" r="1.5" fill="#fff"/><circle cx="61.5" cy="54.5" r="1.5" fill="#fff"/>`}
+        <path d="M40 70q10 9 20 0" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        ${corrente ? `<path d="M32 80q18 14 36 0" stroke="#ffd43b" stroke-width="5" fill="none" stroke-linecap="round"/>
+                      <circle cx="50" cy="89" r="6" fill="#ffd43b"/>` : ''}
+      </svg>`;
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+
+    // Elenco dos canais favoritos do Jojo. Cada um ganhou um bonequinho proprio
+    // (desenho generico feito no codigo — nao e retrato nem foto de ninguem de verdade).
+    const YOUTUBERS = [
+      { nome: 'Games EduUu',     pontos: 40, look: { pele: '#c68642', bone: '#ff6b9d', oculos: true, corrente: true } },
+      { nome: 'João Caetano',    pontos: 35, look: { pele: '#f1c27d', cabelo: '#3b2a1a', fone: true } },
+      { nome: 'GahMarin',        pontos: 35, look: { pele: '#e8b48c', cabelo: '#da77f2' } },
+      { nome: 'Lulu Plays',      pontos: 35, look: { pele: '#8d5524', cabelo: '#4dabf7', fone: true } },
+      { nome: 'Nicole Maffi',    pontos: 35, look: { pele: '#f1c27d', cabelo: '#ffd43b' } },
+      { nome: 'Gameplayrj',      pontos: 40, look: { pele: '#c68642', bone: '#69db7c', oculos: true } },
+      { nome: 'MoonKase',        pontos: 40, look: { pele: '#e8b48c', cabelo: '#b0c4ff', oculos: true, fone: true } },
+      { nome: 'Skorpion Gamer',  pontos: 40, look: { pele: '#8d5524', bone: '#ff4757', corrente: true } },
+      { nome: 'AuthenticGames', pontos: 45, look: { pele: '#f1c27d', cabelo: '#3b2a1a', oculos: true, corrente: true } },
+      { nome: 'TazerCraft',      pontos: 45, look: { pele: '#c68642', bone: '#4dabf7', fone: true } }
+    ];
+    // Se voce nao poe um "img" proprio, o bonequinho e desenhado a partir do "look".
+    YOUTUBERS.forEach(y => { if (!y.img) y.img = desenharRosto(y.look); y.tipo = 'youtuber'; });
+
+    function sortearYoutuber() {
+      return YOUTUBERS[Math.floor(Math.random() * YOUTUBERS.length)];
+    }
+
+    // O LENDARIO: quase nunca aparece, mas vale 1000 pontos! (pedido do Jojo)
+    const LENDARIO = {
+      nome: 'MrBeast', pontos: 1000, tipo: 'lendario',
+      img: desenharRosto({ pele: '#f1c27d', cabelo: '#5a3b1e', corrente: true })
+    };
+
+    const itensIA = [
+      { emoji: '⭐', pontos: 10, peso: 20 },
+      { emoji: '🤖', pontos: 15, peso: 15 },
+      { emoji: '💻', pontos: 10, peso: 15 },
+      { emoji: '⚡', pontos: 20, peso: 10 },
+      { emoji: '🧠', pontos: 25, peso: 8 },
+      { emoji: '👾', pontos: 5, peso: 15 },
+      { emoji: '⚽', pontos: 18, peso: 10, tipo: 'futebol' },
+      { emoji: '💧', pontos: 12, peso: 10, tipo: 'agua' },
+      { emoji: '😴', pontos: 30, peso: 5, tipo: 'sonolento' },
+      { emoji: '💣', pontos: -20, peso: 15, tipo: 'bomba' }, // Ideia do Claude!
+      { emoji: '🌈', pontos: 50, peso: 5, tipo: 'arcoiris' }, // Ideia do Claude!
+      // Vaga dos youtubers: quando cai, sorteia um dos canais favoritos do Jojo!
+      { pontos: 40, peso: 12, tipo: 'youtuber' },
+      // Peso 1 no meio de 128: da mais ou menos 1 chance em 128 por item que cai.
+      { pontos: 1000, peso: 1, tipo: 'lendario' }
+    ];
+
+    function sortearItem() {
+      const pesoTotal = itensIA.reduce((acc, item) => acc + item.peso, 0);
+      let rand = Math.random() * pesoTotal;
+      for (let item of itensIA) {
+        if (rand < item.peso) {
+          if (item.tipo === 'youtuber') return sortearYoutuber();
+          if (item.tipo === 'lendario') return LENDARIO;
+          return item;
+        }
+        rand -= item.peso;
+      }
+      return itensIA[0];
+    }
+
+    function iniciarJogo() {
+      _pontosInternos = 0;
+      combo = 0;
+      tempo = 30;
+      velocidadeQueda = 2.5;
+      intervaloSpawn = 600;
+
+      pontosTxt.textContent = _pontosInternos;
+      tempoTxt.textContent = tempo;
+      comboTxt.style.display = 'none';
+      telaInicio.style.display = 'none';
+
+      document.querySelectorAll('.item-ia').forEach(el => el.remove());
+
+      agendarProximoSpawn();
+
+      // Loop de tempo e aumento progressivo de dificuldade
+      loopTempo = setInterval(() => {
+        tempo--;
+        tempoTxt.textContent = tempo;
+
+        // Dificuldade aumentando!
+        if (velocidadeQueda > 1.0) velocidadeQueda -= 0.04;
+        if (intervaloSpawn > 300) intervaloSpawn -= 10;
+
+        if (tempo <= 0) fimDeJogo();
+      }, 1000);
+    }
+
+    function agendarProximoSpawn() {
+      if (tempo <= 0) return;
+      criarItem();
+      loopJogo = setTimeout(agendarProximoSpawn, intervaloSpawn);
+    }
+
+    function criarItem() {
+      const itemData = sortearItem();
+      const el = document.createElement('div');
+      el.className = 'item-ia';
+      if (itemData.img) {
+        el.classList.add('item-rosto');
+        if (itemData.tipo === 'lendario') el.classList.add('item-lendario');
+        el.style.backgroundImage = `url("${itemData.img}")`;
+        el.title = itemData.nome;
+      } else {
+        el.textContent = itemData.emoji;
+      }
+      const posX = Math.random() * (area.clientWidth - 50);
+      el.style.left = posX + 'px';
+
+      let duracao = velocidadeQueda + (Math.random() * 0.5);
+      if (itemData.tipo === 'sonolento') duracao = 4.0;
+      // O lendario cai devagar: e raro demais pra passar batido!
+      if (itemData.tipo === 'lendario') duracao = 4.5;
+      el.style.animationDuration = duracao + 's';
+
+      let clicado = false;
+
+      el.addEventListener('pointerdown', () => {
+        if (clicado) return;
+        clicado = true;
+
+        if (itemData.tipo === 'bomba') {
+          // Clique na Bomba
+          _pontosInternos = Math.max(0, _pontosInternos + itemData.pontos);
+          combo = 0;
+          atualizarComboView();
+          tocarSom(150, 'sawtooth', 0.3); // Som grave de erro
+          area.classList.add('piscar-bomba');
+          setTimeout(() => area.classList.remove('piscar-bomba'), 400);
+          criarParticulas(posX, el.offsetTop, '#ff4757');
+          mostrarEfeito(posX, el.offsetTop, '💣 -20!', '#ff4757');
+        } else {
+          // Clique em item bom
+          combo++;
+          const multiplicador = Math.min(combo, 5);
+          const ganho = itemData.pontos * multiplicador;
+          _pontosInternos += ganho;
+
+          atualizarComboView();
+          tocarSom(400 + (combo * 80), 'sine', 0.12); // Som agudo feliz que sobe com combo
+
+          if (itemData.tipo === 'agua') {
+            criarParticulas(posX, el.offsetTop, '#00d2ff');
+            mostrarEfeito(posX, el.offsetTop, `💦 +${ganho}`, '#00d2ff');
+          } else if (itemData.tipo === 'arcoiris') {
+            area.classList.add('piscar-arcoiris');
+            setTimeout(() => area.classList.remove('piscar-arcoiris'), 500);
+            criarParticulas(posX, el.offsetTop, '#ffd43b', 12);
+            mostrarEfeito(posX, el.offsetTop, `🌈 +${ganho}!`, '#da77f2');
+          } else if (itemData.tipo === 'lendario') {
+            // JACKPOT! Tela toda brilha, chuva de particulas e fanfarra
+            area.classList.add('piscar-lendario');
+            setTimeout(() => area.classList.remove('piscar-lendario'), 900);
+            criarParticulas(posX, el.offsetTop, '#ffd43b', 30);
+            [523, 659, 784, 1047].forEach((nota, i) =>
+              setTimeout(() => tocarSom(nota, 'triangle', 0.3), i * 110));
+            mostrarEfeito(posX, el.offsetTop, `🤑 ${itemData.nome} +${ganho}!!!`, '#69db7c');
+          } else if (itemData.tipo === 'youtuber') {
+            // Pegou um youtuber: brilho dourado e som extra de sucesso
+            criarParticulas(posX, el.offsetTop, '#ffd43b', 14);
+            tocarSom(880, 'triangle', 0.25);
+            mostrarEfeito(posX, el.offsetTop, `${itemData.nome}! +${ganho}`, '#ffd43b');
+          } else if (itemData.tipo === 'sonolento') {
+            mostrarEfeito(posX, el.offsetTop, `Zzz... +${ganho}`, '#ffd43b');
+          } else {
+            mostrarEfeito(posX, el.offsetTop, `+${ganho}`, '#ffd43b');
+          }
+        }
+
+        pontosTxt.textContent = _pontosInternos;
+        el.remove();
+      });
+
+      // Se o item cair no chão sem ser clicado (e não for bomba) -> Reseta Combo!
+      el.addEventListener('animationend', () => {
+        if (!clicado && itemData.tipo !== 'bomba') {
+          if (combo > 0) {
+            combo = 0;
+            atualizarComboView();
+            tocarSom(200, 'square', 0.15); // Som de combo perdido
+          }
+        }
+        el.remove();
+      });
+
+      area.appendChild(el);
+    }
+
+    function atualizarComboView() {
+      if (combo > 1) {
+        comboTxt.textContent = `Combo x${combo}!🔥`;
+        comboTxt.style.display = 'inline';
+      } else {
+        comboTxt.style.display = 'none';
+      }
+    }
+
+    function criarParticulas(x, y, cor, qtd = 8) {
+      for (let i = 0; i < qtd; i++) {
+        const p = document.createElement('div');
+        p.className = 'particula';
+        p.style.backgroundColor = cor;
+        p.style.left = x + 'px'; p.style.top = y + 'px';
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * 40 + 20;
+        p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+        p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+        area.appendChild(p);
+        setTimeout(() => p.remove(), 500);
+      }
+    }
+
+    function mostrarEfeito(x, y, texto, cor = '#ffd43b') {
+      const pop = document.createElement('div');
+      pop.className = 'pop-texto'; pop.textContent = texto;
+      pop.style.color = cor;
+      pop.style.left = x + 'px'; pop.style.top = y + 'px';
+      area.appendChild(pop); setTimeout(() => pop.remove(), 600);
+    }
+
+    function fimDeJogo() {
+      clearTimeout(loopJogo); clearInterval(loopTempo);
+      document.querySelectorAll('.item-ia').forEach(el => el.remove());
+
+      let mensagemRecorde = '';
+      if (_pontosInternos > recorde) {
+        recorde = _pontosInternos;
+        // Agora o recorde fica salvo no navegador e sobrevive ao F5
+        try { localStorage.setItem('misturaDeIA.recorde', String(recorde)); } catch (e) {}
+        mensagemRecorde = '<p style="color:#69db7c; font-size:1.2rem; font-weight:bold;">🎉 NOVO RECORDE!</p>';
+        tocarSom(600, 'sine', 0.4);
+      } else {
+        tocarSom(300, 'sine', 0.3);
+      }
+
+      telaInicio.innerHTML = `
+        <h2>🏆 Fim de Jogo!</h2>
+        ${mensagemRecorde}
+        <p>Você fez <strong>${_pontosInternos}</strong> pontos!</p>
+        <p style="font-size:0.9rem; color:#b0c4ff;">Maior Pontuação: <strong>${recorde}</strong> pts</p>
+        <button class="btn-jogar" onclick="iniciarJogo()">Jogar De Novo!</button>
+      `;
+      telaInicio.style.display = 'flex';
+    }
+  </script>
+
+  <div class="aviso-fa">
+    Jogo feito por fã. Os rostinhos são desenhos criados no próprio código —
+    não são fotos de pessoas reais, e o jogo não tem ligação oficial com os canais.
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-root="../">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todos os Jogos — Jogos do JoJo</title>
+  <meta name="description" content="Todos os jogos criados pelo JoJo em um só lugar. Pesquise, filtre e jogue!" />
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-page="jogos">
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <header id="site-header" class="site-header"></header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <h1 class="section-title">🎮 <span class="grad-text">Todos os Jogos</span></h1>
+        <p class="section-sub">Pesquise, filtre por categoria e encontre seu próximo desafio.</p>
+
+        <!-- Barra de ferramentas: busca, filtros e ordenação -->
+        <div class="toolbar">
+          <input id="busca" type="search" placeholder="🔍 Pesquisar jogo..." aria-label="Pesquisar jogo" />
+          <select id="filtro-categoria" aria-label="Filtrar por categoria">
+            <option value="">Todas as categorias</option>
+          </select>
+          <select id="filtro-status" aria-label="Filtrar por status">
+            <option value="">Todos os status</option>
+            <option>Finalizado</option>
+            <option>Em desenvolvimento</option>
+            <option>Atualizações futuras</option>
+          </select>
+          <select id="ordenacao" aria-label="Ordenar jogos">
+            <option value="populares">🔥 Mais populares</option>
+            <option value="recentes">🆕 Mais recentes</option>
+            <option value="antigos">📜 Mais antigos</option>
+            <option value="nome">🔤 Nome (A-Z)</option>
+          </select>
+          <span id="contador" class="toolbar-count"></span>
+        </div>
+
+        <div id="grid-jogos" class="games-grid"></div>
+
+        <!-- Mensagem quando a busca não encontra nada -->
+        <div id="vazio" class="empty-state" hidden>
+          <span class="emoji">👾</span>
+          <p><strong>Game over na busca!</strong><br />Nenhum jogo encontrado com esses filtros.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <script src="../js/utils.js"></script>
+  <script src="../components/header.js"></script>
+  <script src="../components/footer.js"></script>
+  <script src="../components/game-card.js"></script>
+  <script src="../js/background.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/games.js"></script>
+</body>
+</html>
