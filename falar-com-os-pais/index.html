@@ -8,6 +8,12 @@
 <meta name="theme-color" content="#7c3aed">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="icon" href="icone-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fala Família">
+<meta name="mobile-web-app-capable" content="yes">
 <style>
 /* ===================== CORES ===================== */
 :root{
@@ -151,7 +157,10 @@ html[data-tema="escuro"] .contato-hora.online-txt{color:#4ade80}
 .reagir-bar button:hover{transform:scale(1.25)}
 
 /* ===================== COMPOSITOR ===================== */
-.autor-bar{display:flex;align-items:center;gap:7px;padding:9px 14px 3px;flex-wrap:wrap}
+.autor-bar{display:flex;align-items:center;gap:7px;padding:9px 14px 3px;overflow-x:auto;scrollbar-width:none}
+.autor-bar::-webkit-scrollbar{display:none}
+.autor-bar .pilula{flex-shrink:0}
+.autor-bar .rot{flex-shrink:0}
 .autor-bar .rot{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--texto2)}
 .pilula{
   display:flex;align-items:center;gap:6px;background:var(--painel);border:2px solid var(--borda);
@@ -222,6 +231,118 @@ html[data-tema="escuro"] .contato-hora.online-txt{color:#4ade80}
   .conversa-topo .avatar{width:40px;height:40px;font-size:1.2rem}
   .msg{max-width:82%}
 }
+
+/* ===================== ÁUDIO ===================== */
+.audio-msg{display:flex;align-items:center;gap:9px;min-width:190px}
+.bt-play{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:.95rem;flex-shrink:0}
+.msg.eles .bt-play{background:var(--painel3)}
+.bt-play:hover{transform:scale(1.06)}
+.onda{display:flex;align-items:center;gap:2px;height:30px;flex:1}
+.onda span{flex:1;min-width:2px;border-radius:2px;background:currentColor;opacity:.45}
+.onda.tocando span{animation:dancar .7s ease-in-out infinite alternate}
+.onda.tocando span:nth-child(2n){animation-delay:.15s}
+.onda.tocando span:nth-child(3n){animation-delay:.3s}
+@keyframes dancar{to{transform:scaleY(.35);opacity:.9}}
+.dur{font-size:.72rem;font-weight:700;opacity:.8;flex-shrink:0}
+.bt-efeito{font-size:.9rem;opacity:.75;flex-shrink:0}
+.bt-efeito:hover{opacity:1;transform:scale(1.15)}
+.menu-efeito{align-self:center;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;background:var(--painel);
+  border-radius:16px;padding:7px 10px;box-shadow:var(--sombra2);margin:2px 0 10px;animation:surge .2s}
+.menu-efeito button{font-size:.83rem;font-weight:700;padding:6px 11px;border-radius:12px;background:var(--painel2)}
+.menu-efeito button:hover{background:var(--painel3)}
+.gravando{display:none;align-items:center;gap:10px;padding:0 18px 12px;font-size:.85rem;color:#dc2626;font-weight:700}
+.gravando.on{display:flex;animation:surge .2s}
+.gravando .pulso{width:12px;height:12px;border-radius:50%;background:#dc2626;animation:pisca 1s infinite}
+@keyframes pisca{50%{opacity:.25}}
+.gravando .g-dica{color:var(--texto2);font-weight:600;font-size:.76rem}
+.gravando.longe{color:#b91c1c}
+.gravando.longe .pulso{background:#94a3b8;animation:none}
+.enviar.mic{background:linear-gradient(135deg,var(--rosa),var(--roxo))}
+.enviar.rec{background:linear-gradient(135deg,#ef4444,#b91c1c);transform:scale(1.12)}
+
+/* ===================== TELA CHEIA (walkie / ligação) ===================== */
+.tela-cheia{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;background:var(--fundo);animation:surge .22s}
+.w-topo{display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;
+  background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff}
+.w-topo b{font-size:1.05rem}
+.w-sub{font-size:.78rem;opacity:.9}
+.w-meio,.lig-meio{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px 18px;overflow-y:auto}
+.w-luz{width:16px;height:16px;border-radius:50%;background:#cbd5e1}
+.w-luz.on{background:#ef4444;box-shadow:0 0 0 8px rgba(239,68,68,.2);animation:pisca .9s infinite}
+.w-status{font-size:1.05rem;font-weight:800;text-align:center;min-height:26px}
+.w-botao{width:190px;height:190px;border-radius:50%;background:linear-gradient(160deg,var(--roxo),var(--azul));
+  color:#fff;font-size:3.4rem;display:grid;place-items:center;box-shadow:var(--sombra2);user-select:none;touch-action:none}
+.w-botao span{display:block;font-size:.95rem;font-weight:900;letter-spacing:.1em}
+.w-botao.falando{background:linear-gradient(160deg,#ef4444,#b91c1c);transform:scale(1.06)}
+.w-dica{font-size:.84rem;color:var(--texto2);text-align:center;max-width:300px;line-height:1.5}
+
+/* ===================== LIGAÇÃO ===================== */
+.lig-avatar{width:110px;height:110px;border-radius:36px;display:grid;place-items:center;font-size:3.2rem;color:#fff;box-shadow:var(--sombra2)}
+.lig-status{font-size:1.05rem;font-weight:800;text-align:center}
+.lig-tempo{font-size:2.2rem;font-weight:900;letter-spacing:.04em;color:var(--roxo)}
+.lig-txt{font-size:.88rem;color:var(--texto2);line-height:1.55;text-align:center;max-width:420px;margin:6px auto}
+.lig-txt.aviso-lig{background:var(--painel);border-radius:16px;padding:14px 16px;box-shadow:var(--sombra);font-size:.83rem}
+.lig-codigo{width:min(430px,100%);height:82px;background:var(--painel);border:2px solid var(--borda);border-radius:14px;
+  padding:10px 12px;font-family:ui-monospace,monospace;font-size:.7rem;outline:none;resize:none;margin:4px auto;display:block}
+.lig-codigo:focus{border-color:var(--roxo)}
+.lig-botoes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.lig-botoes.col{flex-direction:column;align-items:center}
+.lig-bt{background:var(--painel);border:2px solid var(--borda);border-radius:16px;padding:12px 20px;font-weight:700;font-size:.92rem;box-shadow:var(--sombra)}
+.lig-bt:hover{transform:translateY(-2px)}
+.lig-bt.grande{width:min(300px,100%);font-size:1rem;padding:16px 20px}
+.lig-bt.ok{background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff;border-color:transparent}
+.lig-bt.desligar{background:#fee2e2;color:#b91c1c;border-color:transparent}
+html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
+.lig-bt.mudo.on{background:#fef3c7;color:#92400e}
+
+/* ===================== LEMBRETES ===================== */
+.lembrete{display:flex;align-items:center;gap:10px;background:var(--painel2);border-radius:12px;padding:9px 12px;margin-bottom:7px;font-size:.88rem}
+.lembrete b{color:var(--roxo);font-weight:800;flex-shrink:0}
+.lembrete span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lembrete button{color:var(--texto2);font-size:.85rem;padding:2px 6px;border-radius:8px}
+.lembrete button:hover{background:var(--painel3)}
+.sem-lembrete{font-size:.83rem;color:var(--texto2);line-height:1.5}
+.form-lembrete{display:flex;gap:7px;margin-top:9px}
+.form-lembrete input[type="time"]{width:104px;flex-shrink:0}
+.form-lembrete input{background:var(--painel2);border:2px solid transparent;border-radius:12px;padding:10px 12px;outline:none;font-size:.9rem;min-width:0;flex:1}
+.form-lembrete input:focus{border-color:var(--roxo)}
+.form-lembrete button{background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff;border-radius:12px;padding:0 16px;font-weight:800}
+.bloco-titulo{font-size:.74rem;font-weight:800;color:var(--texto2);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 9px}
+
+/* ===================== FOTOS ===================== */
+.msg.tipo-foto{padding:5px 5px 4px}
+.foto-msg{border-radius:15px;overflow:hidden;min-width:200px;max-width:260px;display:grid;place-items:center;background:var(--painel2);cursor:zoom-in}
+.foto-msg img{display:block;width:100%;height:auto;border-radius:15px}
+.foto-carregando{font-size:1.8rem;opacity:.5;padding:40px 0}
+.tela-cheia.foto-grande{background:rgba(8,4,20,.95);align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+.tela-cheia.foto-grande img{max-width:100%;max-height:88vh;border-radius:14px;box-shadow:var(--sombra2)}
+.fg-fechar{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:16px;color:#fff;font-size:1.5rem;width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.16)}
+
+/* ===================== ENQUETES ===================== */
+.msg.tipo-enquete{max-width:min(86%,420px)}
+.enquete{min-width:230px}
+.enq-pergunta{font-weight:800;font-size:.97rem;margin-bottom:9px;line-height:1.35}
+.enq-op-bt{position:relative;display:flex;align-items:center;gap:8px;width:100%;text-align:left;
+  background:rgba(255,255,255,.18);border-radius:12px;padding:9px 11px;margin-bottom:6px;overflow:hidden;font-size:.9rem;font-weight:600}
+.msg.eles .enq-op-bt{background:var(--painel2)}
+.enq-op-bt.meu{outline:2px solid currentColor;outline-offset:-2px}
+.enq-barra{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,.22);transition:width .35s}
+.msg.eles .enq-barra{background:var(--painel3)}
+.enq-txt{position:relative;flex:1;min-width:0}
+.enq-quem{position:relative;font-size:.78rem;font-weight:800;opacity:.85;white-space:nowrap}
+.enq-total{font-size:.74rem;opacity:.75;margin-top:2px;font-weight:600}
+
+/* ===================== MENUS ===================== */
+.menu-topo{display:none;position:absolute;right:12px;top:calc(58px + env(safe-area-inset-top,0px));z-index:20;
+  background:var(--painel);border-radius:16px;padding:6px;box-shadow:var(--sombra2);min-width:212px;animation:surge .18s}
+.menu-topo.aberto{display:block}
+.menu-topo button{display:block;width:100%;text-align:left;padding:11px 13px;border-radius:11px;font-size:.9rem;font-weight:600;color:var(--texto)}
+.menu-topo button:hover{background:var(--painel2)}
+.conversa-topo{position:relative}
+.mais-menu{display:flex;flex-direction:column;gap:4px;background:var(--painel);border-radius:16px;padding:7px;
+  box-shadow:var(--sombra2);margin:0 14px 6px;animation:surge .18s}
+.mais-menu button{text-align:left;padding:11px 13px;border-radius:11px;font-size:.92rem;font-weight:600}
+.mais-menu button:hover{background:var(--painel2)}
 </style>
 </head>
 <body>
@@ -268,6 +389,19 @@ html[data-tema="escuro"] .contato-hora.online-txt{color:#4ade80}
       <div><b>🌙 Tema escuro</b><small>Bom pra usar de noite</small></div>
       <button class="switch" id="cfgTema" aria-label="Ligar ou desligar o tema escuro"></button>
     </div>
+    <div class="opcao">
+      <div><b>🔔 Avisos no celular</b><small>Aparece quando chega recadinho novo</small></div>
+      <button class="switch" id="cfgAvisos" aria-label="Ligar ou desligar os avisos"></button>
+    </div>
+
+    <div class="bloco-titulo">⏰ Lembretes</div>
+    <div id="listaLembretes"></div>
+    <div class="form-lembrete">
+      <input type="time" id="lembreteHora" value="21:00">
+      <input type="text" id="lembreteTxt" placeholder="Ex.: dar boa noite" maxlength="60">
+      <button id="addLembrete">+</button>
+    </div>
+
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
       <button class="btn principal" id="cfgSalvar">Salvar</button>
@@ -277,500 +411,11 @@ html[data-tema="escuro"] .contato-hora.online-txt{color:#4ade80}
 
 <div class="aviso-flutua" id="toast"></div>
 
-<script>
-/* =========================================================
-   Fala, Família! — o chat da família, 100% offline.
-   Tudo fica no localStorage do próprio aparelho: nenhum
-   recadinho sai daqui, não tem servidor nem envio pra fora.
-   ========================================================= */
-
-const CHAVE = 'fala-familia:v2';
-
-const PESSOAS = {
-  eu : { nome:'Eu',              curto:'Eu',     emoji:'🧒', cor:'#7c3aed' },
-  pai: { nome:'Papai Wilian',    curto:'Papai',  emoji:'👨', cor:'#0ea5e9' },
-  mae: { nome:'Mamãe Grabiela',  curto:'Mamãe',  emoji:'👩', cor:'#ec4899' }
-};
-
-const CONVERSAS = [
-  { id:'pai',     nome:'Papai Wilian',   emoji:'👨', cor:'#0ea5e9', quem:['eu','pai'],       sobre:'toca aqui pra deixar um recado' },
-  { id:'mae',     nome:'Mamãe Grabiela', emoji:'👩', cor:'#ec4899', quem:['eu','mae'],       sobre:'toca aqui pra deixar um recado' },
-  { id:'familia', nome:'Família 💜',      emoji:'🏠', cor:'#7c3aed', quem:['eu','pai','mae'], sobre:'a conversa dos três juntos' }
-];
-
-const RAPIDAS = [
-  'Cheguei bem! 🏠','Tô com saudade 🥺','Pode me buscar? 🚗','Já almocei 🍽️',
-  'Posso jogar um pouquinho? 🎮','Terminei a lição ✏️','Bom dia! ☀️',
-  'Boa noite, durmam bem 🌙','Me liga quando puder 📞','Te amo! ❤️','Obrigado! 🙏'
-];
-
-const EMOJIS = ['😀','😄','😁','😂','🥹','🥰','😍','🤩','😎','🤗','🤔','🤫','😴','🤒','😭','😡','🥳','👻','🤖','👍','👎','👏','🙏','💪','🫶','❤️','💜','💛','💚','💙','✨','⭐','🔥','💯','🎉','🎈','🎁','🎮','⚽','🏀','🚲','🐶','🐱','🦖','🍕','🍔','🍟','🍫','🍦','🎂','🍎','☀️','🌙','🌈','⛈️','🚗','🏠','🏫','📞','✏️','📚','⏰','✅'];
-
-const REACOES = ['❤️','👍','😂','🎉','🥺','🔥'];
-
-/* ---------- estado ---------- */
-let dados  = carregar();
-let atual  = null;   // conversa aberta
-let autor  = 'eu';   // quem está escrevendo agora
-let animar = -1;     // índice da mensagem que acabou de chegar
-let buscaMsg = '';   // filtro dentro da conversa
-
-function padrao(){
-  return { nome:'', tema:'claro', som:true, msgs:{pai:[],mae:[],familia:[]}, visto:{pai:0,mae:0,familia:0}, presenca:{eu:0,pai:0,mae:0} };
-}
-function carregar(){
-  try{
-    const bruto = localStorage.getItem(CHAVE);
-    let d = bruto ? Object.assign(padrao(), JSON.parse(bruto)) : padrao();
-    d.msgs  = Object.assign({pai:[],mae:[],familia:[]}, d.msgs);
-    d.visto = Object.assign({pai:0,mae:0,familia:0}, d.visto);
-    d.presenca = Object.assign({eu:0,pai:0,mae:0}, d.presenca);
-    if(!bruto) d = migrarV1(d);
-    return d;
-  }catch(e){ return padrao(); }
-}
-/* Se existir conversa da versão antiga, aproveita as mensagens. */
-function migrarV1(d){
-  try{
-    const velho = localStorage.getItem('fala-familia:v1');
-    if(!velho) return d;
-    const v = JSON.parse(velho);
-    d.nome = v.nome || '';
-    d.tema = v.tema || 'claro';
-    ['pai','mae','familia'].forEach(k => {
-      d.msgs[k] = (v.msgs?.[k] || []).map(m => ({ t:m.texto, de:m.de === 'eu' ? 'eu' : m.de, ts:m.ts }));
-    });
-    d.migrou = true;
-  }catch(e){}
-  return d;
-}
-function salvar(){
-  try{ localStorage.setItem(CHAVE, JSON.stringify(dados)); }
-  catch(e){ toast('Não deu pra guardar 😕'); }
-}
-
-/* ---------- ajudantes ---------- */
-const $ = s => document.querySelector(s);
-const conversaPor = id => CONVERSAS.find(c => c.id === id);
-const escapar = t => t.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const hora = ts => new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-const soEmoji = t => { const p = [...t.trim()]; return p.length > 0 && p.length <= 5 && /^(?:\p{Extended_Pictographic}|‍|️|\p{Emoji_Modifier}|\s)+$/u.test(t); };
-
-function diaTexto(ts){
-  const d = new Date(ts), hoje = new Date();
-  const so = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
-  const dif = (so(hoje) - so(d)) / 86400000;
-  if(dif === 0) return 'HOJE';
-  if(dif === 1) return 'ONTEM';
-  if(dif < 7)   return d.toLocaleDateString('pt-BR',{weekday:'long'}).toUpperCase();
-  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
-}
-function naoLidas(id){
-  return (dados.msgs[id] || []).filter(m => m.de !== 'eu' && m.ts > (dados.visto[id] || 0)).length;
-}
-/* ---------- quem está por aqui agora ---------- */
-const TEMPO_ONLINE = 5 * 60 * 1000;   // 5 minutinhos
-
-/* O último sinal de uma pessoa: quando ela escolheu o botão dela ou mandou recado. */
-function ultimoSinal(p){
-  let t = dados.presenca[p] || 0;
-  Object.values(dados.msgs).forEach(lista =>
-    lista.forEach(m => { if(m.de === p && m.ts > t) t = m.ts; }));
-  return t;
-}
-function estaOnline(p){
-  if(p === 'eu') return true;                       // tu está aqui, ora essa 😄
-  return Date.now() - ultimoSinal(p) < TEMPO_ONLINE;
-}
-function marcarPresenca(p){ dados.presenca[p] = Date.now(); salvar(); }
-
-function vistoTexto(p){
-  const t = ultimoSinal(p);
-  if(!t) return 'ainda não apareceu por aqui';
-  const d = new Date(t), dia = diaTexto(t);
-  if(dia === 'HOJE')  return `visto hoje às ${hora(t)}`;
-  if(dia === 'ONTEM') return `visto ontem às ${hora(t)}`;
-  return `visto em ${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} às ${hora(t)}`;
-}
-function statusTexto(c){
-  if(c.id === 'familia'){
-    const on = ['pai','mae'].filter(estaOnline).map(p => PESSOAS[p].curto);
-    if(on.length === 2) return 'papai e mamãe estão por aqui 🟢';
-    if(on.length === 1) return `${on[0]} está por aqui 🟢`;
-    return 'ninguém por aqui agora — deixa o recado 💜';
-  }
-  return estaOnline(c.id) ? 'por aqui agora 🟢' : vistoTexto(c.id);
-}
-function atualizarStatusTopo(){
-  const el = document.querySelector('.conversa-topo .status');
-  if(el && atual) el.textContent = statusTexto(conversaPor(atual));
-  const pt = document.querySelector('.conversa-topo .ponto');
-  if(pt && atual){
-    const c = conversaPor(atual);
-    const on = c.id === 'familia' ? ['pai','mae'].some(estaOnline) : estaOnline(c.id);
-    pt.classList.toggle('on', on);
-  }
-}
-
-/* ---------- internet do aparelho ---------- */
-function verInternet(){
-  const box = $('#net'), txt = $('#netTxt');
-  if(!box) return;
-  if(navigator.onLine){
-    box.classList.remove('off');
-    txt.textContent = 'Com internet';
-  }else{
-    box.classList.add('off');
-    txt.textContent = 'Sem internet — funciona igual 😉';
-  }
-}
-
-function toast(txt){
-  const t = $('#toast'); t.textContent = txt; t.classList.add('on');
-  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2200);
-}
-
-/* ---------- somzinho (sem arquivo, feito na hora) ---------- */
-let audio;
-function blim(subindo){
-  if(!dados.som) return;
-  try{
-    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
-    const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
-    o.type = 'sine';
-    o.frequency.setValueAtTime(subindo ? 620 : 480, t);
-    o.frequency.exponentialRampToValueAtTime(subindo ? 940 : 340, t + .12);
-    g.gain.setValueAtTime(.0001, t);
-    g.gain.exponentialRampToValueAtTime(.14, t + .02);
-    g.gain.exponentialRampToValueAtTime(.0001, t + .22);
-    o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + .24);
-  }catch(e){}
-}
-
-/* ---------- lista de conversas ---------- */
-function desenharContatos(){
-  const filtro = $('#busca').value.trim().toLowerCase();
-  $('#contatos').innerHTML = CONVERSAS
-    .filter(c => !filtro || c.nome.toLowerCase().includes(filtro))
-    .map(c => {
-      const msgs = dados.msgs[c.id] || [];
-      const ultima = msgs[msgs.length - 1];
-      const nova = naoLidas(c.id);
-      const autorTxt = ultima ? (ultima.de === 'eu' ? 'Tu: ' : PESSOAS[ultima.de].curto + ': ') : '';
-      const previa = ultima ? escapar(autorTxt + ultima.t).slice(0,64) : c.sobre;
-      const on = c.id === 'familia' ? ['pai','mae'].some(estaOnline) : estaOnline(c.id);
-      return `
-        <button class="contato ${atual === c.id ? 'ativo' : ''}" data-id="${c.id}">
-          <div class="avatar" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${c.emoji}
-            <span class="ponto ${on ? 'on' : ''}" title="${on ? 'por aqui agora' : 'não está por aqui'}"></span></div>
-          <div class="contato-txt">
-            <div class="contato-nome"><span>${c.nome}</span>
-              <span class="contato-hora ${on ? 'online-txt' : ''}">${on ? 'online' : (ultima ? hora(ultima.ts) : '')}</span></div>
-            <div class="contato-previa"><span style="flex:1;overflow:hidden;text-overflow:ellipsis">${previa}</span>
-              ${nova ? `<span class="badge">${nova}</span>` : ''}</div>
-          </div>
-        </button>`;
-    }).join('') || `<div style="padding:20px;text-align:center;color:var(--texto2);font-size:.88rem">Nada com esse nome 🤷</div>`;
-
-  document.querySelectorAll('.contato').forEach(b => b.addEventListener('click', () => abrir(b.dataset.id)));
-}
-
-/* ---------- abrir / fechar ---------- */
-function abrir(id){
-  atual = id; autor = 'eu'; buscaMsg = ''; animar = -1;
-  dados.visto[id] = Date.now(); salvar();
-  $('#app').classList.remove('no-chat');
-  desenharContatos(); desenharConversa();
-}
-function fechar(){
-  atual = null;
-  $('#app').classList.add('no-chat');
-  desenharContatos(); telaVazia();
-}
-function telaVazia(){
-  $('#conversa').innerHTML = `
-    <div class="vazio"><div>
-      <div class="balao-deco">💬</div>
-      <h2>Escolhe com quem falar</h2>
-      <p>Deixa um recadinho pro <b>papai</b>, pra <b>mamãe</b> ou pros dois na conversa da <b>Família</b>.
-      Eles respondem aqui mesmo, neste aparelho. 💜</p>
-    </div></div>`;
-}
-
-/* ---------- conversa ---------- */
-function desenharConversa(){
-  const c = conversaPor(atual);
-  $('#conversa').innerHTML = `
-    <div class="conversa-topo" style="background:linear-gradient(135deg,${c.cor},${c.cor}cc)">
-      <button class="voltar" id="btnVoltar" title="Voltar">←</button>
-      <div class="avatar">${c.emoji}<span class="ponto"></span></div>
-      <div class="txt-topo">
-        <div class="nome">${c.nome}</div>
-        <div class="status">${statusTexto(c)}</div>
-      </div>
-      <div class="icones">
-        <button class="icone" id="btnBuscaMsg" title="Procurar na conversa">🔍</button>
-        <button class="icone" id="btnCopiar" title="Copiar a conversa">📋</button>
-        <button class="icone" id="btnLimpar" title="Apagar a conversa">🗑️</button>
-      </div>
-    </div>
-    <div class="barra-busca" id="barraBusca">
-      <input id="inputBuscaMsg" placeholder="Procurar palavra na conversa..." autocomplete="off">
-      <span id="contaBusca"></span>
-    </div>
-    <div class="mensagens" id="mensagens"></div>
-    <div class="autor-bar" id="autorBar"><span class="rot">Falando como</span></div>
-    <div class="rapidas" id="rapidas"></div>
-    <div class="paleta" id="paleta"></div>
-    <div class="barra">
-      <div class="campo">
-        <button class="emoji-btn" id="btnEmoji" title="Emojis">😀</button>
-        <textarea id="entrada" rows="1" placeholder="Escreve teu recadinho..."></textarea>
-      </div>
-      <button class="enviar" id="btnEnviar" title="Enviar">➤</button>
-    </div>`;
-
-  $('#autorBar').insertAdjacentHTML('beforeend', c.quem.map(p =>
-    `<button class="pilula ${p === autor ? 'on' : ''}" data-p="${p}"
-      style="${p === autor ? `background:linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)` : ''}">
-      ${PESSOAS[p].emoji} ${PESSOAS[p].curto}</button>`).join(''));
-  $('#rapidas').innerHTML = RAPIDAS.map(t => `<button class="rapida">${t}</button>`).join('');
-  $('#paleta').innerHTML  = EMOJIS.map(e => `<button data-e="${e}">${e}</button>`).join('');
-
-  desenharMensagens();
-
-  const entrada = $('#entrada');
-  $('#btnVoltar').addEventListener('click', fechar);
-  $('#btnLimpar').addEventListener('click', limparConversa);
-  $('#btnCopiar').addEventListener('click', copiarConversa);
-  $('#btnEnviar').addEventListener('click', () => enviar(entrada.value));
-  $('#btnEmoji').addEventListener('click', () => $('#paleta').classList.toggle('aberta'));
-  $('#btnBuscaMsg').addEventListener('click', () => {
-    const b = $('#barraBusca'); b.classList.toggle('aberta');
-    if(b.classList.contains('aberta')) $('#inputBuscaMsg').focus();
-    else { buscaMsg = ''; $('#inputBuscaMsg').value = ''; desenharMensagens(); }
-  });
-  $('#inputBuscaMsg').addEventListener('input', e => { buscaMsg = e.target.value.trim(); desenharMensagens(); });
-
-  document.querySelectorAll('.pilula').forEach(b => b.addEventListener('click', () => trocarAutor(b.dataset.p)));
-  document.querySelectorAll('.rapida').forEach(b =>
-    b.addEventListener('click', () => { entrada.value = b.textContent.trim(); entrada.focus(); crescer(entrada); }));
-  document.querySelectorAll('#paleta button').forEach(b =>
-    b.addEventListener('click', () => { entrada.value += b.dataset.e; entrada.focus(); crescer(entrada); }));
-
-  entrada.addEventListener('input', () => crescer(entrada));
-  entrada.addEventListener('keydown', ev => {
-    if(ev.key === 'Enter' && !ev.shiftKey){ ev.preventDefault(); enviar(entrada.value); }
-  });
-  atualizarPlaceholder();
-  if(window.innerWidth > 860) entrada.focus();
-}
-
-function trocarAutor(p){
-  autor = p;
-  marcarPresenca(p);
-  desenharContatos(); atualizarStatusTopo();
-  document.querySelectorAll('.pilula').forEach(b => {
-    const on = b.dataset.p === p;
-    b.classList.toggle('on', on);
-    b.style.background = on ? `linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)` : '';
-  });
-  atualizarPlaceholder();
-  $('#entrada').focus();
-}
-function atualizarPlaceholder(){
-  const pra = dados.nome ? `pro ${dados.nome}` : 'pra família';
-  $('#entrada').placeholder = autor === 'eu'
-    ? 'Escreve teu recadinho...'
-    : `Respondendo como ${PESSOAS[autor].curto} ${pra}...`;
-  $('#entrada').parentElement.style.borderColor = autor === 'eu' ? '' : PESSOAS[autor].cor;
-}
-function crescer(el){ el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight,120) + 'px'; }
-
-/* ---------- mensagens ---------- */
-function desenharMensagens(){
-  const caixa = $('#mensagens');
-  const todas = dados.msgs[atual] || [];
-  const filtro = buscaMsg.toLowerCase();
-  const msgs = filtro ? todas.filter(m => m.t.toLowerCase().includes(filtro)) : todas;
-
-  if($('#contaBusca')) $('#contaBusca').textContent = filtro ? `${msgs.length} achado(s)` : '';
-
-  if(!msgs.length){
-    caixa.innerHTML = `<div class="dia">${filtro ? 'Nada encontrado 🔍' : 'Nenhum recadinho ainda — começa aí! 😊'}</div>`;
-    return;
-  }
-
-  let ultimoDia = '', ultimoDe = '';
-  caixa.innerHTML = msgs.map((m, i) => {
-    const real = todas.indexOf(m);
-    const d = diaTexto(m.ts);
-    let sep = '';
-    if(d !== ultimoDia){ ultimoDia = d; ultimoDe = ''; sep = `<div class="dia">${d}</div>`; }
-
-    const p = PESSOAS[m.de] || PESSOAS.eu;
-    const eu = m.de === 'eu';
-    const repetido = m.de === ultimoDe; ultimoDe = m.de;
-    const grande = soEmoji(m.t);
-    const texto = filtro ? realce(m.t, buscaMsg) : escapar(m.t);
-    const nome = (!eu && atual === 'familia' && !repetido)
-      ? `<div class="quem" style="color:${p.cor}">${p.nome}</div>` : '';
-
-    return `${sep}
-      <div class="linha-msg ${eu ? 'eu' : 'eles'} ${m.r ? 'tem-reacao' : ''} ${real === animar ? 'nova' : ''}" data-i="${real}">
-        <div class="mini-av ${repetido ? 'oculto' : ''}" style="background:linear-gradient(135deg,${p.cor},${p.cor}bb)">${p.emoji}</div>
-        <div class="msg ${eu ? 'eu' : 'eles'} ${grande ? 'emojao' : ''}">
-          ${nome}<span class="txt">${texto}</span>
-          <div class="rodape">${hora(m.ts)}</div>
-          ${m.r ? `<span class="reacao">${m.r}</span>` : ''}
-        </div>
-        <div class="ferramentas">
-          <button data-acao="reagir" data-i="${real}" title="Reagir">☺</button>
-          <button data-acao="apagar" data-i="${real}" title="Apagar">✕</button>
-        </div>
-      </div>`;
-  }).join('') + `<div class="reagir-bar" id="reagirBar">${REACOES.map(e => `<button data-e="${e}">${e}</button>`).join('')}</div>`;
-
-  caixa.querySelectorAll('[data-acao="apagar"]').forEach(b =>
-    b.addEventListener('click', () => apagarMensagem(+b.dataset.i)));
-  caixa.querySelectorAll('[data-acao="reagir"]').forEach(b =>
-    b.addEventListener('click', () => abrirReacoes(+b.dataset.i)));
-  caixa.querySelectorAll('.msg').forEach(el =>
-    el.addEventListener('dblclick', () => reagir(+el.parentElement.dataset.i, '❤️')));
-  caixa.querySelectorAll('#reagirBar button').forEach(b =>
-    b.addEventListener('click', () => reagir(reagindo, b.dataset.e)));
-
-  animar = -1;
-  if(!filtro) caixa.scrollTop = caixa.scrollHeight;
-}
-
-function realce(txt, termo){
-  const t = escapar(txt), alvo = escapar(termo);
-  if(!alvo) return t;
-  const re = new RegExp('(' + alvo.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi');
-  return t.replace(re, '<mark>$1</mark>');
-}
-
-let reagindo = -1;
-function abrirReacoes(i){
-  reagindo = i;
-  const bar = $('#reagirBar');
-  bar.classList.add('aberta');
-  bar.scrollIntoView({block:'nearest'});
-}
-function reagir(i, emoji){
-  const m = dados.msgs[atual][i];
-  if(!m) return;
-  m.r = (m.r === emoji) ? null : emoji;
-  salvar(); desenharMensagens();
-}
-
-/* ---------- ações ---------- */
-function enviar(texto){
-  texto = (texto || '').trim();
-  if(!texto) return;
-  dados.msgs[atual].push({ t:texto, de:autor, ts:Date.now() });
-  dados.visto[atual] = Date.now();
-  dados.presenca[autor] = Date.now();
-  animar = dados.msgs[atual].length - 1;
-  salvar(); blim(autor === 'eu');
-
-  const entrada = $('#entrada');
-  entrada.value = ''; crescer(entrada);
-  $('#paleta').classList.remove('aberta');
-  buscaMsg = ''; const ib = $('#inputBuscaMsg'); if(ib) ib.value = '';
-  desenharMensagens(); desenharContatos(); atualizarStatusTopo();
-  entrada.focus();
-}
-
-function apagarMensagem(i){
-  if(!confirm('Apagar este recadinho?')) return;
-  dados.msgs[atual].splice(i,1);
-  salvar(); desenharMensagens(); desenharContatos();
-  toast('Recadinho apagado 🗑️');
-}
-
-function limparConversa(){
-  if(!confirm('Apagar TODOS os recadinhos desta conversa?\nNão dá pra desfazer!')) return;
-  dados.msgs[atual] = [];
-  salvar(); desenharMensagens(); desenharContatos();
-  toast('Conversa limpa ✨');
-}
-
-function copiarConversa(){
-  const msgs = dados.msgs[atual] || [];
-  if(!msgs.length){ toast('Não tem nada pra copiar 🤷'); return; }
-  const txt = msgs.map(m => `[${new Date(m.ts).toLocaleString('pt-BR')}] ${PESSOAS[m.de].curto}: ${m.t}`).join('\n');
-  navigator.clipboard?.writeText(txt)
-    .then(() => toast('Conversa copiada! 📋'))
-    .catch(() => toast('Teu navegador não deixou copiar 😕'));
-}
-
-/* ---------- ajustes ---------- */
-function abrirConfig(){
-  $('#cfgNome').value = dados.nome;
-  $('#cfgSom').classList.toggle('on', !!dados.som);
-  $('#cfgTema').classList.toggle('on', dados.tema === 'escuro');
-  $('#modalConfig').classList.add('aberto');
-}
-function fecharConfig(){ $('#modalConfig').classList.remove('aberto'); }
-function salvarConfig(){
-  dados.nome = $('#cfgNome').value.trim();
-  dados.som  = $('#cfgSom').classList.contains('on');
-  dados.tema = $('#cfgTema').classList.contains('on') ? 'escuro' : 'claro';
-  salvar(); aplicarTema(); saudacao(); fecharConfig();
-  if(atual) atualizarPlaceholder();
-  toast('Salvo! ✅');
-}
-function saudacao(){
-  const h = new Date().getHours();
-  const parte = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
-  $('#ola').textContent = dados.nome ? `${parte}, ${dados.nome}! 👋` : `${parte}! 👋`;
-}
-function aplicarTema(){
-  document.documentElement.dataset.tema = dados.tema;
-  $('#btnTema').textContent = dados.tema === 'escuro' ? '☀️' : '🌙';
-  document.querySelector('meta[name="theme-color"]')
-    .setAttribute('content', dados.tema === 'escuro' ? '#171331' : '#7c3aed');
-}
-
-/* ---------- eventos gerais ---------- */
-$('#btnConfig').addEventListener('click', abrirConfig);
-$('#cfgFechar').addEventListener('click', fecharConfig);
-$('#cfgSalvar').addEventListener('click', salvarConfig);
-$('#cfgSom').addEventListener('click',  e => e.currentTarget.classList.toggle('on'));
-$('#cfgTema').addEventListener('click', e => e.currentTarget.classList.toggle('on'));
-$('#modalConfig').addEventListener('click', e => { if(e.target.id === 'modalConfig') fecharConfig(); });
-$('#busca').addEventListener('input', desenharContatos);
-$('#btnTema').addEventListener('click', () => {
-  dados.tema = dados.tema === 'escuro' ? 'claro' : 'escuro';
-  salvar(); aplicarTema();
-});
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape'){ fecharConfig(); const b = $('#reagirBar'); if(b) b.classList.remove('aberta'); }
-});
-document.addEventListener('click', e => {
-  const b = $('#reagirBar');
-  if(b && b.classList.contains('aberta') && !e.target.closest('#reagirBar') && !e.target.closest('[data-acao="reagir"]'))
-    b.classList.remove('aberta');
-});
-
-window.addEventListener('online',  verInternet);
-window.addEventListener('offline', verInternet);
-/* De meio em meio minuto confere quem ainda está por aqui. */
-setInterval(() => { desenharContatos(); atualizarStatusTopo(); }, 30000);
-
-/* ---------- começo ---------- */
-if(!localStorage.getItem(CHAVE) && !localStorage.getItem('fala-familia:v1')
-   && window.matchMedia('(prefers-color-scheme: dark)').matches) dados.tema = 'escuro';
-if(dados.migrou){ delete dados.migrou; salvar(); }   // guarda o que veio da versão antiga
-aplicarTema(); saudacao(); verInternet(); desenharContatos(); telaVazia();
-if(window.innerWidth > 860) abrir('familia');
-
-/* Deixa o site funcionar sem internet e dá pra instalar na tela do celular. */
-if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
-}
-</script>
+<script src="audio.js"></script>
+<script src="extras.js"></script>
+<script src="ligacao.js"></script>
+<script src="avisos.js"></script>
+<script src="app.js"></script>
 </body>
+
 </html>
