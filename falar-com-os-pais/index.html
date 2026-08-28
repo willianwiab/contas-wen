@@ -73,6 +73,18 @@ button{cursor:pointer;border:none;background:none}
   width:50px;height:50px;border-radius:17px;display:grid;place-items:center;font-size:1.55rem;
   flex-shrink:0;color:#fff;box-shadow:var(--sombra);position:relative;
 }
+/* bolinha de quem está por aqui agora */
+.ponto{position:absolute;right:-4px;bottom:-4px;width:17px;height:17px;border-radius:50%;
+  background:#94a3b8;border:3.5px solid var(--painel)}
+.ponto.on{background:#16a34a;animation:pulsa 2.4s ease-out infinite}
+@keyframes pulsa{0%{box-shadow:0 0 0 0 rgba(22,163,74,.45)}70%,100%{box-shadow:0 0 0 6px rgba(22,163,74,0)}}
+.conversa-topo .ponto{border-color:rgba(255,255,255,.55)}
+.contato-hora.online-txt{color:#16a34a;font-weight:800}
+html[data-tema="escuro"] .contato-hora.online-txt{color:#4ade80}
+.net{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.2);border-radius:20px;
+  padding:5px 12px;font-size:.73rem;font-weight:700;margin-top:9px;position:relative;z-index:1}
+.net .bolinha{width:9px;height:9px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.3)}
+.net.off .bolinha{background:#e5e7eb;box-shadow:0 0 0 3px rgba(229,231,235,.25)}
 .contato-txt{flex:1;min-width:0}
 .contato-nome{font-weight:700;font-size:1rem;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
 .contato-hora{font-size:.7rem;color:var(--texto2);font-weight:600;flex-shrink:0}
@@ -205,6 +217,9 @@ button{cursor:pointer;border:none;background:none}
   .app.no-chat .conversa{display:none}
   .voltar{display:block}
   .ferramentas{opacity:.45}
+  .conversa-topo{gap:9px;padding-left:10px;padding-right:10px}
+  .conversa-topo .icone{width:34px;height:34px}
+  .conversa-topo .avatar{width:40px;height:40px;font-size:1.2rem}
   .msg{max-width:82%}
 }
 </style>
@@ -219,6 +234,7 @@ button{cursor:pointer;border:none;background:none}
         <div>
           <h1>💜 Fala, Família!</h1>
           <p id="ola">Oi! 👋</p>
+          <div class="net" id="net"><span class="bolinha"></span><span id="netTxt">Vendo a internet...</span></div>
         </div>
         <div class="icones">
           <button class="icone" id="btnTema" title="Trocar o tema">🌙</button>
@@ -300,7 +316,7 @@ let animar = -1;     // índice da mensagem que acabou de chegar
 let buscaMsg = '';   // filtro dentro da conversa
 
 function padrao(){
-  return { nome:'', tema:'claro', som:true, msgs:{pai:[],mae:[],familia:[]}, visto:{pai:0,mae:0,familia:0} };
+  return { nome:'', tema:'claro', som:true, msgs:{pai:[],mae:[],familia:[]}, visto:{pai:0,mae:0,familia:0}, presenca:{eu:0,pai:0,mae:0} };
 }
 function carregar(){
   try{
@@ -308,6 +324,7 @@ function carregar(){
     let d = bruto ? Object.assign(padrao(), JSON.parse(bruto)) : padrao();
     d.msgs  = Object.assign({pai:[],mae:[],familia:[]}, d.msgs);
     d.visto = Object.assign({pai:0,mae:0,familia:0}, d.visto);
+    d.presenca = Object.assign({eu:0,pai:0,mae:0}, d.presenca);
     if(!bruto) d = migrarV1(d);
     return d;
   }catch(e){ return padrao(); }
@@ -351,6 +368,63 @@ function diaTexto(ts){
 function naoLidas(id){
   return (dados.msgs[id] || []).filter(m => m.de !== 'eu' && m.ts > (dados.visto[id] || 0)).length;
 }
+/* ---------- quem está por aqui agora ---------- */
+const TEMPO_ONLINE = 5 * 60 * 1000;   // 5 minutinhos
+
+/* O último sinal de uma pessoa: quando ela escolheu o botão dela ou mandou recado. */
+function ultimoSinal(p){
+  let t = dados.presenca[p] || 0;
+  Object.values(dados.msgs).forEach(lista =>
+    lista.forEach(m => { if(m.de === p && m.ts > t) t = m.ts; }));
+  return t;
+}
+function estaOnline(p){
+  if(p === 'eu') return true;                       // tu está aqui, ora essa 😄
+  return Date.now() - ultimoSinal(p) < TEMPO_ONLINE;
+}
+function marcarPresenca(p){ dados.presenca[p] = Date.now(); salvar(); }
+
+function vistoTexto(p){
+  const t = ultimoSinal(p);
+  if(!t) return 'ainda não apareceu por aqui';
+  const d = new Date(t), dia = diaTexto(t);
+  if(dia === 'HOJE')  return `visto hoje às ${hora(t)}`;
+  if(dia === 'ONTEM') return `visto ontem às ${hora(t)}`;
+  return `visto em ${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} às ${hora(t)}`;
+}
+function statusTexto(c){
+  if(c.id === 'familia'){
+    const on = ['pai','mae'].filter(estaOnline).map(p => PESSOAS[p].curto);
+    if(on.length === 2) return 'papai e mamãe estão por aqui 🟢';
+    if(on.length === 1) return `${on[0]} está por aqui 🟢`;
+    return 'ninguém por aqui agora — deixa o recado 💜';
+  }
+  return estaOnline(c.id) ? 'por aqui agora 🟢' : vistoTexto(c.id);
+}
+function atualizarStatusTopo(){
+  const el = document.querySelector('.conversa-topo .status');
+  if(el && atual) el.textContent = statusTexto(conversaPor(atual));
+  const pt = document.querySelector('.conversa-topo .ponto');
+  if(pt && atual){
+    const c = conversaPor(atual);
+    const on = c.id === 'familia' ? ['pai','mae'].some(estaOnline) : estaOnline(c.id);
+    pt.classList.toggle('on', on);
+  }
+}
+
+/* ---------- internet do aparelho ---------- */
+function verInternet(){
+  const box = $('#net'), txt = $('#netTxt');
+  if(!box) return;
+  if(navigator.onLine){
+    box.classList.remove('off');
+    txt.textContent = 'Com internet';
+  }else{
+    box.classList.add('off');
+    txt.textContent = 'Sem internet — funciona igual 😉';
+  }
+}
+
 function toast(txt){
   const t = $('#toast'); t.textContent = txt; t.classList.add('on');
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2200);
@@ -384,12 +458,14 @@ function desenharContatos(){
       const nova = naoLidas(c.id);
       const autorTxt = ultima ? (ultima.de === 'eu' ? 'Tu: ' : PESSOAS[ultima.de].curto + ': ') : '';
       const previa = ultima ? escapar(autorTxt + ultima.t).slice(0,64) : c.sobre;
+      const on = c.id === 'familia' ? ['pai','mae'].some(estaOnline) : estaOnline(c.id);
       return `
         <button class="contato ${atual === c.id ? 'ativo' : ''}" data-id="${c.id}">
-          <div class="avatar" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${c.emoji}</div>
+          <div class="avatar" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${c.emoji}
+            <span class="ponto ${on ? 'on' : ''}" title="${on ? 'por aqui agora' : 'não está por aqui'}"></span></div>
           <div class="contato-txt">
             <div class="contato-nome"><span>${c.nome}</span>
-              <span class="contato-hora">${ultima ? hora(ultima.ts) : ''}</span></div>
+              <span class="contato-hora ${on ? 'online-txt' : ''}">${on ? 'online' : (ultima ? hora(ultima.ts) : '')}</span></div>
             <div class="contato-previa"><span style="flex:1;overflow:hidden;text-overflow:ellipsis">${previa}</span>
               ${nova ? `<span class="badge">${nova}</span>` : ''}</div>
           </div>
@@ -427,10 +503,10 @@ function desenharConversa(){
   $('#conversa').innerHTML = `
     <div class="conversa-topo" style="background:linear-gradient(135deg,${c.cor},${c.cor}cc)">
       <button class="voltar" id="btnVoltar" title="Voltar">←</button>
-      <div class="avatar">${c.emoji}</div>
+      <div class="avatar">${c.emoji}<span class="ponto"></span></div>
       <div class="txt-topo">
         <div class="nome">${c.nome}</div>
-        <div class="status">${(dados.msgs[c.id] || []).length} recadinho(s) guardado(s)</div>
+        <div class="status">${statusTexto(c)}</div>
       </div>
       <div class="icones">
         <button class="icone" id="btnBuscaMsg" title="Procurar na conversa">🔍</button>
@@ -492,6 +568,8 @@ function desenharConversa(){
 
 function trocarAutor(p){
   autor = p;
+  marcarPresenca(p);
+  desenharContatos(); atualizarStatusTopo();
   document.querySelectorAll('.pilula').forEach(b => {
     const on = b.dataset.p === p;
     b.classList.toggle('on', on);
@@ -501,10 +579,10 @@ function trocarAutor(p){
   $('#entrada').focus();
 }
 function atualizarPlaceholder(){
-  const nome = dados.nome || 'a família';
+  const pra = dados.nome ? `pro ${dados.nome}` : 'pra família';
   $('#entrada').placeholder = autor === 'eu'
     ? 'Escreve teu recadinho...'
-    : `Respondendo como ${PESSOAS[autor].curto} pro(a) ${nome}...`;
+    : `Respondendo como ${PESSOAS[autor].curto} ${pra}...`;
   $('#entrada').parentElement.style.borderColor = autor === 'eu' ? '' : PESSOAS[autor].cor;
 }
 function crescer(el){ el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight,120) + 'px'; }
@@ -593,6 +671,7 @@ function enviar(texto){
   if(!texto) return;
   dados.msgs[atual].push({ t:texto, de:autor, ts:Date.now() });
   dados.visto[atual] = Date.now();
+  dados.presenca[autor] = Date.now();
   animar = dados.msgs[atual].length - 1;
   salvar(); blim(autor === 'eu');
 
@@ -600,8 +679,7 @@ function enviar(texto){
   entrada.value = ''; crescer(entrada);
   $('#paleta').classList.remove('aberta');
   buscaMsg = ''; const ib = $('#inputBuscaMsg'); if(ib) ib.value = '';
-  desenharMensagens(); desenharContatos();
-  $('.conversa-topo .status').textContent = `${dados.msgs[atual].length} recadinho(s) guardado(s)`;
+  desenharMensagens(); desenharContatos(); atualizarStatusTopo();
   entrada.focus();
 }
 
@@ -677,11 +755,16 @@ document.addEventListener('click', e => {
     b.classList.remove('aberta');
 });
 
+window.addEventListener('online',  verInternet);
+window.addEventListener('offline', verInternet);
+/* De meio em meio minuto confere quem ainda está por aqui. */
+setInterval(() => { desenharContatos(); atualizarStatusTopo(); }, 30000);
+
 /* ---------- começo ---------- */
 if(!localStorage.getItem(CHAVE) && !localStorage.getItem('fala-familia:v1')
    && window.matchMedia('(prefers-color-scheme: dark)').matches) dados.tema = 'escuro';
 if(dados.migrou){ delete dados.migrou; salvar(); }   // guarda o que veio da versão antiga
-aplicarTema(); saudacao(); desenharContatos(); telaVazia();
+aplicarTema(); saudacao(); verInternet(); desenharContatos(); telaVazia();
 if(window.innerWidth > 860) abrir('familia');
 
 /* Deixa o site funcionar sem internet e dá pra instalar na tela do celular. */
