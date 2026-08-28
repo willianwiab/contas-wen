@@ -3,141 +3,209 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Fala, Família! — conversar com o Wilian e a Grabiela</title>
-<meta name="description" content="Um chat estilo mensageiro para falar com o papai Wilian e a mamãe Grabiela: escreve aqui, guarda a conversa e manda no WhatsApp de verdade.">
-<meta name="theme-color" content="#075e54">
+<title>Fala, Família! 💜</title>
+<meta name="description" content="O chat da família: recadinhos entre o Jojo, o papai Wilian e a mamãe Grabiela, guardados no próprio aparelho.">
+<meta name="theme-color" content="#7c3aed">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
 <style>
+/* ===================== CORES ===================== */
 :root{
-  --verde:#075e54; --verde2:#128c7e; --verde3:#25d366;
-  --fundo:#eae6df; --painel:#ffffff; --painel2:#f6f6f6;
-  --texto:#111b21; --texto2:#667781; --borda:#e5e7eb;
-  --bolha-eu:#d9fdd3; --bolha-eles:#ffffff;
-  --sombra:0 1px 3px rgba(11,20,26,.13);
+  --roxo:#7c3aed; --roxo-esc:#5b21b6; --azul:#2563eb; --rosa:#ec4899; --ceu:#0ea5e9;
+  --fundo:#f4f2fb; --painel:#ffffff; --painel2:#f1eefb; --painel3:#ede9fe;
+  --texto:#1e1b33; --texto2:#6b6885; --borda:#e6e1f5;
+  --eles:#ffffff; --eles-txt:#1e1b33;
+  --sombra:0 2px 8px rgba(60,40,120,.08); --sombra2:0 8px 30px rgba(60,40,120,.14);
+  --papel1:rgba(124,58,237,.05); --papel2:rgba(236,72,153,.05);
 }
 html[data-tema="escuro"]{
-  --verde:#1f2c34; --verde2:#202c33; --verde3:#25d366;
-  --fundo:#0b141a; --painel:#111b21; --painel2:#202c33;
-  --texto:#e9edef; --texto2:#8696a0; --borda:#222d34;
-  --bolha-eu:#005c4b; --bolha-eles:#202c33;
-  --sombra:0 1px 3px rgba(0,0,0,.4);
+  --roxo:#8b5cf6; --roxo-esc:#6d28d9; --azul:#3b82f6; --rosa:#f472b6; --ceu:#38bdf8;
+  --fundo:#0e0b1d; --painel:#171331; --painel2:#1f1a3d; --painel3:#251f4a;
+  --texto:#ece9fb; --texto2:#a09cc4; --borda:#2b2551;
+  --eles:#241f45; --eles-txt:#ece9fb;
+  --sombra:0 2px 8px rgba(0,0,0,.35); --sombra2:0 10px 34px rgba(0,0,0,.5);
+  --papel1:rgba(139,92,246,.09); --papel2:rgba(244,114,182,.07);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif;
+  font-family:system-ui,'Segoe UI',-apple-system,'Trebuchet MS',sans-serif;
   background:var(--fundo);color:var(--texto);height:100dvh;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
 }
 button,input,textarea{font-family:inherit;font-size:inherit;color:inherit}
 button{cursor:pointer;border:none;background:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--borda);border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
 
-/* ---------- ESTRUTURA ---------- */
-.app{display:grid;grid-template-columns:minmax(300px,360px) 1fr;height:100dvh;background:var(--painel)}
+/* ===================== ESTRUTURA ===================== */
+.app{display:grid;grid-template-columns:minmax(310px,370px) 1fr;height:100dvh;background:var(--painel)}
 
-/* ---------- LISTA DE CONVERSAS ---------- */
+/* ===================== LISTA ===================== */
 .lista{display:flex;flex-direction:column;background:var(--painel);border-right:1px solid var(--borda);min-height:0}
-.lista-topo{background:var(--verde);color:#fff;padding:16px 16px calc(16px + env(safe-area-inset-top,0px));padding-top:calc(16px + env(safe-area-inset-top,0px))}
-html[data-tema="escuro"] .lista-topo{color:var(--texto)}
-.lista-topo .linha{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.lista-topo h1{font-size:1.15rem;font-weight:700;letter-spacing:.3px}
-.lista-topo p{font-size:.78rem;opacity:.85;margin-top:2px}
+.lista-topo{
+  background:linear-gradient(135deg,var(--roxo) 0%,var(--azul) 100%);color:#fff;
+  padding:calc(18px + env(safe-area-inset-top,0px)) 18px 22px;position:relative;overflow:hidden;
+}
+.lista-topo::after{content:"";position:absolute;right:-40px;top:-50px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.12)}
+.lista-topo .linha{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:relative;z-index:1}
+.lista-topo h1{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+.lista-topo p{font-size:.82rem;opacity:.9;margin-top:3px;font-weight:500}
 .icones{display:flex;gap:4px}
-.icone{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:1.05rem;transition:background .15s}
-.icone:hover{background:rgba(255,255,255,.15)}
-html[data-tema="escuro"] .icone:hover{background:rgba(255,255,255,.08)}
-.busca-wrap{padding:8px 12px;background:var(--painel)}
-.busca{width:100%;background:var(--painel2);border:1px solid var(--borda);border-radius:20px;padding:9px 16px;outline:none;font-size:.9rem}
-.busca:focus{border-color:var(--verde3)}
-.contatos{flex:1;overflow-y:auto;min-height:0}
-.contato{display:flex;gap:12px;align-items:center;padding:12px 14px;width:100%;text-align:left;border-bottom:1px solid var(--borda);transition:background .15s}
-.contato:hover{background:var(--painel2)}
-.contato.ativo{background:var(--painel2)}
-.avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;flex-shrink:0;color:#fff}
-.contato-txt{flex:1;min-width:0}
-.contato-nome{font-weight:600;font-size:.98rem;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.contato-hora{font-size:.7rem;color:var(--texto2);font-weight:400;flex-shrink:0}
-.contato-previa{font-size:.83rem;color:var(--texto2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
-.rodape-lista{padding:10px 14px;font-size:.72rem;color:var(--texto2);border-top:1px solid var(--borda);text-align:center}
+.icone{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:1.05rem;transition:background .15s,transform .15s}
+.icone:hover{background:rgba(255,255,255,.18)}
+.icone:active{transform:scale(.9)}
+.conversa-topo .icone:hover,.lista-topo .icone:hover{background:rgba(255,255,255,.18)}
 
-/* ---------- CONVERSA ---------- */
-.conversa{display:flex;flex-direction:column;min-width:0;min-height:0;
-  background-color:var(--fundo);
-  background-image:radial-gradient(circle at 20% 30%,rgba(0,0,0,.025) 1.5px,transparent 1.6px),radial-gradient(circle at 70% 80%,rgba(0,0,0,.025) 1.5px,transparent 1.6px);
-  background-size:42px 42px}
-html[data-tema="escuro"] .conversa{background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.03) 1.5px,transparent 1.6px),radial-gradient(circle at 70% 80%,rgba(255,255,255,.03) 1.5px,transparent 1.6px)}
-.conversa-topo{display:flex;align-items:center;gap:12px;background:var(--verde2);color:#fff;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
-html[data-tema="escuro"] .conversa-topo{color:var(--texto)}
-.voltar{font-size:1.3rem;display:none}
-.conversa-topo .avatar{width:40px;height:40px;font-size:1.25rem}
-.conversa-topo .nome{font-weight:600;font-size:1rem}
-.conversa-topo .status{font-size:.75rem;opacity:.85}
+.busca-wrap{padding:12px 14px 6px}
+.busca{width:100%;background:var(--painel2);border:2px solid transparent;border-radius:14px;padding:11px 16px;outline:none;font-size:.9rem;transition:border-color .15s}
+.busca:focus{border-color:var(--roxo)}
+.titulo-secao{padding:10px 18px 6px;font-size:.7rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--texto2)}
+.contatos{flex:1;overflow-y:auto;min-height:0;padding:0 10px 10px}
+.contato{
+  display:flex;gap:13px;align-items:center;padding:12px;width:100%;text-align:left;
+  border-radius:16px;transition:background .15s,transform .12s;margin-bottom:3px;
+}
+.contato:hover{background:var(--painel2)}
+.contato:active{transform:scale(.985)}
+.contato.ativo{background:var(--painel3)}
+.avatar{
+  width:50px;height:50px;border-radius:17px;display:grid;place-items:center;font-size:1.55rem;
+  flex-shrink:0;color:#fff;box-shadow:var(--sombra);position:relative;
+}
+.contato-txt{flex:1;min-width:0}
+.contato-nome{font-weight:700;font-size:1rem;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.contato-hora{font-size:.7rem;color:var(--texto2);font-weight:600;flex-shrink:0}
+.contato-previa{font-size:.84rem;color:var(--texto2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;display:flex;align-items:center;gap:6px}
+.badge{background:var(--roxo);color:#fff;font-size:.68rem;font-weight:800;min-width:20px;height:20px;padding:0 6px;border-radius:10px;display:grid;place-items:center;flex-shrink:0}
+.rodape-lista{padding:12px 14px;font-size:.72rem;color:var(--texto2);border-top:1px solid var(--borda);text-align:center;line-height:1.5}
+
+/* ===================== CONVERSA ===================== */
+.conversa{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--fundo);
+  background-image:radial-gradient(circle at 15% 22%,var(--papel1) 2px,transparent 2.5px),radial-gradient(circle at 65% 72%,var(--papel2) 2px,transparent 2.5px);
+  background-size:56px 56px}
+.conversa-topo{display:flex;align-items:center;gap:13px;color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px));box-shadow:var(--sombra)}
+.voltar{font-size:1.35rem;display:none;width:34px;flex-shrink:0}
+.conversa-topo .avatar{width:44px;height:44px;font-size:1.35rem;border-radius:15px;background:rgba(255,255,255,.2)!important;box-shadow:none}
+.conversa-topo .txt-topo{min-width:0;flex:1}
+.conversa-topo .nome{font-weight:800;font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conversa-topo .status{font-size:.76rem;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .conversa-topo .icones{margin-left:auto}
 
-.vazio{flex:1;display:grid;place-items:center;text-align:center;padding:30px;color:var(--texto2)}
-.vazio .big{font-size:3.5rem;margin-bottom:12px}
-.vazio h2{font-size:1.2rem;color:var(--texto);margin-bottom:8px}
-.vazio p{font-size:.9rem;max-width:340px;line-height:1.5}
+.barra-busca{display:none;padding:10px 14px;background:var(--painel);border-bottom:1px solid var(--borda);gap:8px;align-items:center}
+.barra-busca.aberta{display:flex}
+.barra-busca input{flex:1;background:var(--painel2);border:2px solid transparent;border-radius:12px;padding:9px 14px;outline:none;font-size:.9rem}
+.barra-busca input:focus{border-color:var(--roxo)}
+.barra-busca span{font-size:.78rem;color:var(--texto2);white-space:nowrap}
 
-.mensagens{flex:1;overflow-y:auto;padding:16px 14px 8px;display:flex;flex-direction:column;gap:6px;min-height:0}
-.dia{align-self:center;background:var(--painel2);color:var(--texto2);font-size:.72rem;padding:5px 12px;border-radius:8px;box-shadow:var(--sombra);margin:8px 0}
-.msg{max-width:min(78%,520px);padding:7px 10px 6px;border-radius:10px;box-shadow:var(--sombra);position:relative;word-wrap:break-word;line-height:1.4;font-size:.94rem}
+.vazio{flex:1;display:grid;place-items:center;text-align:center;padding:30px}
+.vazio .balao-deco{font-size:4.4rem;animation:flutua 3s ease-in-out infinite;display:inline-block}
+@keyframes flutua{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+.vazio h2{font-size:1.35rem;margin:14px 0 8px;font-weight:800}
+.vazio p{font-size:.94rem;max-width:360px;line-height:1.6;color:var(--texto2)}
+
+.mensagens{flex:1;overflow-y:auto;padding:18px 16px 6px;display:flex;flex-direction:column;gap:3px;min-height:0}
+.dia{align-self:center;background:var(--painel);color:var(--texto2);font-size:.7rem;font-weight:800;letter-spacing:.06em;padding:6px 14px;border-radius:20px;box-shadow:var(--sombra);margin:12px 0 8px}
+.linha-msg{display:flex;gap:8px;align-items:flex-end;margin-bottom:5px}
+.linha-msg.tem-reacao{margin-bottom:16px}
+.linha-msg.eu{flex-direction:row-reverse}
+.mini-av{width:28px;height:28px;border-radius:10px;display:grid;place-items:center;font-size:.9rem;color:#fff;flex-shrink:0;margin-bottom:2px}
+.mini-av.oculto{visibility:hidden}
+.msg{
+  max-width:min(74%,480px);padding:9px 13px 7px;border-radius:20px;box-shadow:var(--sombra);
+  position:relative;word-wrap:break-word;line-height:1.45;font-size:.95rem;
+}
+.linha-msg.nova .msg{animation:surge .28s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes surge{from{opacity:0;transform:translateY(10px) scale(.94)}}
+.msg.eu{background:linear-gradient(135deg,var(--roxo),var(--roxo-esc));color:#fff;border-bottom-right-radius:6px}
+.msg.eles{background:var(--eles);color:var(--eles-txt);border-bottom-left-radius:6px}
 .msg .txt{display:block;white-space:pre-wrap;overflow-wrap:anywhere}
-.msg.eu{align-self:flex-end;background:var(--bolha-eu);border-top-right-radius:2px}
-.msg.eles{align-self:flex-start;background:var(--bolha-eles);border-top-left-radius:2px}
-html[data-tema="escuro"] .msg.eu{color:#e9edef}
-.msg .rodape{display:flex;align-items:center;gap:4px;justify-content:flex-end;margin-top:2px;font-size:.68rem;color:var(--texto2)}
-.msg .quem{font-size:.72rem;font-weight:700;margin-bottom:2px}
-.tique{color:var(--texto2)}
-.tique.lido{color:#53bdeb}
-.msg .apagar{position:absolute;top:2px;right:4px;opacity:0;font-size:.7rem;color:var(--texto2);transition:opacity .15s}
-.msg:hover .apagar{opacity:.7}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.chip-zap{background:var(--verde3);color:#0b141a;font-size:.72rem;font-weight:700;padding:5px 10px;border-radius:20px;display:inline-flex;gap:5px;align-items:center}
-.chip-zap:hover{filter:brightness(1.07)}
+.msg.emojao{background:none!important;box-shadow:none;padding:2px 6px;color:var(--texto)!important}
+.msg.emojao .txt{font-size:3rem;line-height:1.15}
+.msg .quem{font-size:.74rem;font-weight:800;margin-bottom:3px}
+.msg .rodape{display:flex;align-items:center;gap:6px;justify-content:flex-end;margin-top:3px;font-size:.68rem;opacity:.75;font-weight:600}
+.msg.emojao .rodape{justify-content:flex-start;opacity:.6}
+.msg mark{background:#fde047;color:#1e1b33;border-radius:4px;padding:0 2px}
 
-/* ---------- BARRA DE ENVIO ---------- */
-.rapidas{display:flex;gap:7px;overflow-x:auto;padding:8px 12px 2px;scrollbar-width:none}
+.reacao{position:absolute;bottom:-13px;right:8px;z-index:2;border:2px solid var(--fundo);background:var(--painel);border-radius:12px;padding:1px 6px;font-size:.82rem;box-shadow:var(--sombra);animation:surge .25s}
+.linha-msg.eles .reacao{right:auto;left:10px}
+.ferramentas{display:flex;gap:2px;opacity:0;transition:opacity .15s;align-self:flex-end;margin-bottom:6px}
+.linha-msg:hover .ferramentas,.linha-msg.aberta .ferramentas{opacity:1}
+.ferramentas button{width:26px;height:26px;border-radius:9px;font-size:.82rem;color:var(--texto2);display:grid;place-items:center}
+.ferramentas button:hover{background:var(--painel2)}
+.reagir-bar{display:none;gap:3px;background:var(--painel);border-radius:16px;padding:5px 8px;box-shadow:var(--sombra2);align-self:center;margin:2px 0 8px}
+.reagir-bar.aberta{display:flex;animation:surge .2s}
+.reagir-bar button{font-size:1.25rem;padding:2px 5px;border-radius:10px;transition:transform .12s}
+.reagir-bar button:hover{transform:scale(1.25)}
+
+/* ===================== COMPOSITOR ===================== */
+.autor-bar{display:flex;align-items:center;gap:7px;padding:9px 14px 3px;flex-wrap:wrap}
+.autor-bar .rot{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--texto2)}
+.pilula{
+  display:flex;align-items:center;gap:6px;background:var(--painel);border:2px solid var(--borda);
+  border-radius:20px;padding:5px 13px;font-size:.83rem;font-weight:700;transition:all .15s;box-shadow:var(--sombra);
+}
+.pilula:hover{transform:translateY(-1px)}
+.pilula.on{color:#fff;border-color:transparent}
+.rapidas{display:flex;gap:8px;overflow-x:auto;padding:9px 14px 3px;scrollbar-width:none}
 .rapidas::-webkit-scrollbar{display:none}
-.rapida{background:var(--painel);border:1px solid var(--borda);border-radius:20px;padding:6px 13px;font-size:.82rem;white-space:nowrap;box-shadow:var(--sombra)}
-.rapida:hover{background:var(--painel2)}
-.barra{display:flex;align-items:flex-end;gap:8px;padding:8px 12px calc(10px + env(safe-area-inset-bottom,0px))}
-.campo{flex:1;display:flex;align-items:flex-end;gap:6px;background:var(--painel);border-radius:22px;padding:6px 8px 6px 12px;box-shadow:var(--sombra)}
-.campo textarea{flex:1;border:none;outline:none;background:none;resize:none;max-height:110px;padding:6px 0;font-size:.95rem;line-height:1.35}
-.emoji-btn{font-size:1.15rem;padding:4px}
-.enviar{width:46px;height:46px;border-radius:50%;background:var(--verde3);color:#fff;font-size:1.2rem;display:grid;place-items:center;flex-shrink:0;box-shadow:var(--sombra)}
-.enviar:hover{filter:brightness(1.07)}
-.paleta{display:none;gap:6px;flex-wrap:wrap;padding:8px 14px;background:var(--painel);border-top:1px solid var(--borda)}
-.paleta.aberta{display:flex}
-.paleta button{font-size:1.35rem;padding:3px 5px;border-radius:8px}
-.paleta button:hover{background:var(--painel2)}
+.rapida{background:var(--painel);border:1.5px solid var(--borda);border-radius:20px;padding:7px 15px;font-size:.84rem;white-space:nowrap;box-shadow:var(--sombra);transition:transform .12s,border-color .15s}
+.rapida:hover{transform:translateY(-2px);border-color:var(--roxo)}
+.paleta{display:none;gap:4px;flex-wrap:wrap;padding:10px 16px;background:var(--painel);border-top:1px solid var(--borda);max-height:190px;overflow-y:auto}
+.paleta.aberta{display:flex;animation:surge .18s}
+.paleta button{font-size:1.4rem;padding:4px 6px;border-radius:10px;transition:transform .12s}
+.paleta button:hover{transform:scale(1.25);background:var(--painel2)}
+.barra{display:flex;align-items:flex-end;gap:9px;padding:9px 14px calc(12px + env(safe-area-inset-bottom,0px))}
+.campo{flex:1;display:flex;align-items:flex-end;gap:6px;background:var(--painel);border:2px solid var(--borda);border-radius:24px;padding:5px 8px 5px 12px;box-shadow:var(--sombra);transition:border-color .15s}
+.campo:focus-within{border-color:var(--roxo)}
+.campo textarea{flex:1;border:none;outline:none;background:none;resize:none;max-height:120px;padding:8px 0;font-size:.96rem;line-height:1.4}
+.emoji-btn{font-size:1.2rem;padding:5px;border-radius:10px}
+.emoji-btn:hover{background:var(--painel2)}
+.enviar{width:50px;height:50px;border-radius:18px;background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff;font-size:1.25rem;display:grid;place-items:center;flex-shrink:0;box-shadow:var(--sombra2);transition:transform .12s}
+.enviar:hover{transform:translateY(-2px) scale(1.04)}
+.enviar:active{transform:scale(.92)}
 
-/* ---------- AVISO / MODAL ---------- */
-.aviso{background:#fef9c3;color:#8a6100;border:1px solid #fbbf24;border-radius:10px;padding:10px 14px;margin:10px 14px 0;font-size:.83rem;line-height:1.45}
-.aviso button{text-decoration:underline;font-weight:700;color:#8a6100}
-.fundo-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;padding:16px;z-index:50}
-.fundo-modal.aberto{display:grid}
-.modal{background:var(--painel);border-radius:16px;padding:22px;width:min(430px,100%);max-height:88dvh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.3)}
-.modal h2{font-size:1.1rem;margin-bottom:4px}
-.modal .sub{font-size:.83rem;color:var(--texto2);margin-bottom:18px;line-height:1.45}
-.campo-form{margin-bottom:14px}
-.campo-form label{display:block;font-size:.78rem;font-weight:700;color:var(--texto2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
-.campo-form input{width:100%;background:var(--painel2);border:1px solid var(--borda);border-radius:9px;padding:10px 12px;outline:none;font-size:.92rem}
-.campo-form input:focus{border-color:var(--verde3)}
-.campo-form small{display:block;font-size:.74rem;color:var(--texto2);margin-top:4px}
-.acoes{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
-.btn{padding:10px 18px;border-radius:9px;font-size:.9rem;font-weight:600}
-.btn.principal{background:var(--verde2);color:#fff}
-.btn.principal:hover{filter:brightness(1.1)}
+/* ===================== MODAL ===================== */
+.fundo-modal{position:fixed;inset:0;background:rgba(20,10,45,.6);backdrop-filter:blur(3px);display:none;place-items:center;padding:16px;z-index:60}
+.fundo-modal.aberto{display:grid;animation:surge .2s}
+.modal{background:var(--painel);border-radius:24px;padding:26px;width:min(440px,100%);max-height:88dvh;overflow-y:auto;box-shadow:var(--sombra2)}
+.modal h2{font-size:1.25rem;margin-bottom:6px;font-weight:800}
+.modal .sub{font-size:.88rem;color:var(--texto2);margin-bottom:20px;line-height:1.55}
+.campo-form{margin-bottom:16px}
+.campo-form label{display:block;font-size:.74rem;font-weight:800;color:var(--texto2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.campo-form input{width:100%;background:var(--painel2);border:2px solid transparent;border-radius:14px;padding:12px 14px;outline:none;font-size:.94rem}
+.campo-form input:focus{border-color:var(--roxo)}
+.campo-form small{display:block;font-size:.76rem;color:var(--texto2);margin-top:6px;line-height:1.45}
+.opcao{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--painel2);border-radius:14px;padding:13px 16px;margin-bottom:10px}
+.opcao b{font-size:.92rem}
+.opcao small{display:block;font-size:.76rem;color:var(--texto2);margin-top:2px}
+.switch{width:52px;height:30px;border-radius:15px;background:var(--borda);position:relative;flex-shrink:0;transition:background .2s}
+.switch.on{background:var(--roxo)}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.switch.on::after{transform:translateX(22px)}
+.acoes{display:flex;gap:9px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+.btn{padding:12px 20px;border-radius:14px;font-size:.92rem;font-weight:700;transition:transform .12s}
+.btn:active{transform:scale(.96)}
+.btn.principal{background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff;box-shadow:var(--sombra2)}
 .btn.neutro{background:var(--painel2);color:var(--texto)}
-.btn.perigo{background:#fee2e2;color:#b91c1c}
-html[data-tema="escuro"] .btn.perigo{background:#4c1d1d;color:#fca5a5}
 
-/* ---------- CELULAR: uma tela de cada vez (fica no fim pra não ser sobrescrito) ---------- */
-@media (max-width:820px){
+.aviso-flutua{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--texto);color:var(--painel);
+  padding:12px 22px;border-radius:16px;font-size:.88rem;font-weight:700;box-shadow:var(--sombra2);z-index:80;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
+}
+.aviso-flutua.on{opacity:1;transform:translateX(-50%) translateY(-6px)}
+
+/* ===================== CELULAR (fica no fim de propósito) ===================== */
+@media (max-width:860px){
   .app{grid-template-columns:1fr}
   .app .lista{display:none}
   .app .conversa{display:flex}
   .app.no-chat .lista{display:flex}
   .app.no-chat .conversa{display:none}
   .voltar{display:block}
+  .ferramentas{opacity:.45}
+  .msg{max-width:82%}
 }
 </style>
 </head>
@@ -145,114 +213,131 @@ html[data-tema="escuro"] .btn.perigo{background:#4c1d1d;color:#fca5a5}
 
 <div class="app no-chat" id="app">
 
-  <!-- LISTA DE CONVERSAS -->
   <aside class="lista">
     <div class="lista-topo">
       <div class="linha">
         <div>
-          <h1>💬 Fala, Família!</h1>
+          <h1>💜 Fala, Família!</h1>
           <p id="ola">Oi! 👋</p>
         </div>
         <div class="icones">
           <button class="icone" id="btnTema" title="Trocar o tema">🌙</button>
-          <button class="icone" id="btnConfig" title="Configurar">⚙️</button>
+          <button class="icone" id="btnConfig" title="Ajustes">⚙️</button>
         </div>
       </div>
     </div>
-    <div class="busca-wrap">
-      <input class="busca" id="busca" placeholder="🔍 Procurar conversa" autocomplete="off">
-    </div>
+    <div class="busca-wrap"><input class="busca" id="busca" placeholder="🔍 Procurar conversa" autocomplete="off"></div>
+    <div class="titulo-secao">Conversas</div>
     <div class="contatos" id="contatos"></div>
-    <div class="rodape-lista">As conversas ficam guardadas só neste aparelho 🔒</div>
+    <div class="rodape-lista">🔒 Os recadinhos ficam guardados só neste aparelho.<br>Nada é enviado pra internet.</div>
   </aside>
 
-  <!-- CONVERSA ABERTA -->
-  <main class="conversa" id="conversa">
-    <div class="vazio" id="telaVazia">
-      <div>
-        <div class="big">💬</div>
-        <h2>Escolhe com quem falar</h2>
-        <p>Clica no <b>Papai Wilian</b>, na <b>Mamãe Grabiela</b> ou na conversa da família pra começar a escrever.</p>
-      </div>
-    </div>
-  </main>
+  <main class="conversa" id="conversa"></main>
 </div>
 
-<!-- MODAL DE CONFIGURAÇÃO -->
 <div class="fundo-modal" id="modalConfig">
   <div class="modal">
-    <h2>⚙️ Configurar</h2>
-    <p class="sub">Coloca aqui o teu nome e os números do celular do papai e da mamãe. Assim o botão <b>“Abrir no WhatsApp”</b> já leva a mensagem prontinha pra eles.</p>
+    <h2>⚙️ Ajustes</h2>
+    <p class="sub">Coisinhas pra deixar do teu jeito.</p>
     <div class="campo-form">
-      <label>Teu nome</label>
-      <input id="cfgNome" placeholder="Ex.: Jonathan" maxlength="24">
+      <label>Como tu quer ser chamado</label>
+      <input id="cfgNome" placeholder="Ex.: Jojo" maxlength="24">
+      <small>Aparece no “bom dia” lá em cima. Pode deixar vazio se quiser.</small>
     </div>
-    <div class="campo-form">
-      <label>Celular do papai Wilian</label>
-      <input id="cfgPai" placeholder="Ex.: 51 99999-0000" inputmode="tel">
-      <small>Só o DDD + número. O 55 do Brasil já entra sozinho.</small>
+    <div class="opcao">
+      <div><b>🔊 Som</b><small>Um “blim” quando manda ou recebe recado</small></div>
+      <button class="switch" id="cfgSom" aria-label="Ligar ou desligar o som"></button>
     </div>
-    <div class="campo-form">
-      <label>Celular da mamãe Grabiela</label>
-      <input id="cfgMae" placeholder="Ex.: 51 98888-0000" inputmode="tel">
+    <div class="opcao">
+      <div><b>🌙 Tema escuro</b><small>Bom pra usar de noite</small></div>
+      <button class="switch" id="cfgTema" aria-label="Ligar ou desligar o tema escuro"></button>
     </div>
     <div class="acoes">
-      <button class="btn neutro" id="cfgFechar">Cancelar</button>
+      <button class="btn neutro" id="cfgFechar">Fechar</button>
       <button class="btn principal" id="cfgSalvar">Salvar</button>
     </div>
   </div>
 </div>
 
+<div class="aviso-flutua" id="toast"></div>
+
 <script>
 /* =========================================================
-   Fala, Família! — chat estilo mensageiro, 100% estático.
-   Nada vai pra internet: tudo mora no localStorage do aparelho.
-   O envio "de verdade" acontece por um link wa.me com o texto pronto.
+   Fala, Família! — o chat da família, 100% offline.
+   Tudo fica no localStorage do próprio aparelho: nenhum
+   recadinho sai daqui, não tem servidor nem envio pra fora.
    ========================================================= */
 
-const CHAVE = 'fala-familia:v1';
+const CHAVE = 'fala-familia:v2';
 
-const CONTATOS = [
-  { id:'pai',     nome:'Papai Wilian',    emoji:'👨', cor:'#0ea5e9', para:['pai'],       sobre:'clica pra falar com o papai' },
-  { id:'mae',     nome:'Mamãe Grabiela',  emoji:'👩', cor:'#ec4899', para:['mae'],       sobre:'clica pra falar com a mamãe' },
-  { id:'familia', nome:'Família ❤️',      emoji:'👨‍👩‍👦', cor:'#16a34a', para:['pai','mae'], sobre:'manda a mesma mensagem pros dois' }
+const PESSOAS = {
+  eu : { nome:'Eu',              curto:'Eu',     emoji:'🧒', cor:'#7c3aed' },
+  pai: { nome:'Papai Wilian',    curto:'Papai',  emoji:'👨', cor:'#0ea5e9' },
+  mae: { nome:'Mamãe Grabiela',  curto:'Mamãe',  emoji:'👩', cor:'#ec4899' }
+};
+
+const CONVERSAS = [
+  { id:'pai',     nome:'Papai Wilian',   emoji:'👨', cor:'#0ea5e9', quem:['eu','pai'],       sobre:'toca aqui pra deixar um recado' },
+  { id:'mae',     nome:'Mamãe Grabiela', emoji:'👩', cor:'#ec4899', quem:['eu','mae'],       sobre:'toca aqui pra deixar um recado' },
+  { id:'familia', nome:'Família 💜',      emoji:'🏠', cor:'#7c3aed', quem:['eu','pai','mae'], sobre:'a conversa dos três juntos' }
 ];
 
 const RAPIDAS = [
-  'Cheguei bem! 🏠','Tô com saudade ❤️','Pode me buscar? 🚗','Já almocei 🍽️',
-  'Posso jogar um pouquinho? 🎮','Tô indo dormir, boa noite! 🌙','Bom dia! ☀️',
-  'Me liga quando puder 📞','Te amo! 🥰','Terminei a lição ✏️'
+  'Cheguei bem! 🏠','Tô com saudade 🥺','Pode me buscar? 🚗','Já almocei 🍽️',
+  'Posso jogar um pouquinho? 🎮','Terminei a lição ✏️','Bom dia! ☀️',
+  'Boa noite, durmam bem 🌙','Me liga quando puder 📞','Te amo! ❤️','Obrigado! 🙏'
 ];
 
-const EMOJIS = ['😀','😂','🥰','😍','😎','🤗','🤔','😴','😭','😡','👍','👎','👏','🙏','❤️','💛','💚','💙','🎮','⚽','🍕','🍫','🎂','🐶','🐱','☀️','🌙','⭐','🚗','🏠','📞','✏️','🎉','🔥','💯','✅'];
+const EMOJIS = ['😀','😄','😁','😂','🥹','🥰','😍','🤩','😎','🤗','🤔','🤫','😴','🤒','😭','😡','🥳','👻','🤖','👍','👎','👏','🙏','💪','🫶','❤️','💜','💛','💚','💙','✨','⭐','🔥','💯','🎉','🎈','🎁','🎮','⚽','🏀','🚲','🐶','🐱','🦖','🍕','🍔','🍟','🍫','🍦','🎂','🍎','☀️','🌙','🌈','⛈️','🚗','🏠','🏫','📞','✏️','📚','⏰','✅'];
+
+const REACOES = ['❤️','👍','😂','🎉','🥺','🔥'];
 
 /* ---------- estado ---------- */
-let dados = carregar();
-let atual = null;
+let dados  = carregar();
+let atual  = null;   // conversa aberta
+let autor  = 'eu';   // quem está escrevendo agora
+let animar = -1;     // índice da mensagem que acabou de chegar
+let buscaMsg = '';   // filtro dentro da conversa
 
 function padrao(){
-  return { nome:'', tel:{pai:'',mae:''}, tema:'claro', msgs:{pai:[],mae:[],familia:[]} };
+  return { nome:'', tema:'claro', som:true, msgs:{pai:[],mae:[],familia:[]}, visto:{pai:0,mae:0,familia:0} };
 }
 function carregar(){
   try{
     const bruto = localStorage.getItem(CHAVE);
-    if(!bruto) return padrao();
-    const d = Object.assign(padrao(), JSON.parse(bruto));
-    d.tel  = Object.assign({pai:'',mae:''}, d.tel);
-    d.msgs = Object.assign({pai:[],mae:[],familia:[]}, d.msgs);
+    let d = bruto ? Object.assign(padrao(), JSON.parse(bruto)) : padrao();
+    d.msgs  = Object.assign({pai:[],mae:[],familia:[]}, d.msgs);
+    d.visto = Object.assign({pai:0,mae:0,familia:0}, d.visto);
+    if(!bruto) d = migrarV1(d);
     return d;
   }catch(e){ return padrao(); }
 }
+/* Se existir conversa da versão antiga, aproveita as mensagens. */
+function migrarV1(d){
+  try{
+    const velho = localStorage.getItem('fala-familia:v1');
+    if(!velho) return d;
+    const v = JSON.parse(velho);
+    d.nome = v.nome || '';
+    d.tema = v.tema || 'claro';
+    ['pai','mae','familia'].forEach(k => {
+      d.msgs[k] = (v.msgs?.[k] || []).map(m => ({ t:m.texto, de:m.de === 'eu' ? 'eu' : m.de, ts:m.ts }));
+    });
+    d.migrou = true;
+  }catch(e){}
+  return d;
+}
 function salvar(){
   try{ localStorage.setItem(CHAVE, JSON.stringify(dados)); }
-  catch(e){ console.warn('Não deu pra guardar a conversa:', e); }
+  catch(e){ toast('Não deu pra guardar 😕'); }
 }
 
 /* ---------- ajudantes ---------- */
 const $ = s => document.querySelector(s);
-const contatoPor = id => CONTATOS.find(c => c.id === id);
+const conversaPor = id => CONVERSAS.find(c => c.id === id);
 const escapar = t => t.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hora = ts => new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+const soEmoji = t => { const p = [...t.trim()]; return p.length > 0 && p.length <= 5 && /^(?:\p{Extended_Pictographic}|‍|️|\p{Emoji_Modifier}|\s)+$/u.test(t); };
 
 function diaTexto(ts){
   const d = new Date(ts), hoje = new Date();
@@ -260,267 +345,349 @@ function diaTexto(ts){
   const dif = (so(hoje) - so(d)) / 86400000;
   if(dif === 0) return 'HOJE';
   if(dif === 1) return 'ONTEM';
+  if(dif < 7)   return d.toLocaleDateString('pt-BR',{weekday:'long'}).toUpperCase();
   return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
 }
-function soDigitos(t){ return (t||'').replace(/\D/g,''); }
-function temTelefone(id){ return soDigitos(dados.tel[id]).length >= 10; }
+function naoLidas(id){
+  return (dados.msgs[id] || []).filter(m => m.de !== 'eu' && m.ts > (dados.visto[id] || 0)).length;
+}
+function toast(txt){
+  const t = $('#toast'); t.textContent = txt; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2200);
+}
 
-function linkZap(quem, texto){
-  const num = soDigitos(dados.tel[quem]);
-  const completo = num.startsWith('55') ? num : '55' + num;
-  const assinatura = dados.nome ? `${dados.nome}: ` : '';
-  return `https://wa.me/${completo}?text=${encodeURIComponent(assinatura + texto)}`;
+/* ---------- somzinho (sem arquivo, feito na hora) ---------- */
+let audio;
+function blim(subindo){
+  if(!dados.som) return;
+  try{
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
+    o.type = 'sine';
+    o.frequency.setValueAtTime(subindo ? 620 : 480, t);
+    o.frequency.exponentialRampToValueAtTime(subindo ? 940 : 340, t + .12);
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(.14, t + .02);
+    g.gain.exponentialRampToValueAtTime(.0001, t + .22);
+    o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + .24);
+  }catch(e){}
 }
 
 /* ---------- lista de conversas ---------- */
 function desenharContatos(){
   const filtro = $('#busca').value.trim().toLowerCase();
-  $('#contatos').innerHTML = CONTATOS
+  $('#contatos').innerHTML = CONVERSAS
     .filter(c => !filtro || c.nome.toLowerCase().includes(filtro))
     .map(c => {
       const msgs = dados.msgs[c.id] || [];
       const ultima = msgs[msgs.length - 1];
-      const previa = ultima
-        ? (ultima.de === 'eu' ? '✓ ' : '') + escapar(ultima.texto).slice(0,60)
-        : c.sobre;
+      const nova = naoLidas(c.id);
+      const autorTxt = ultima ? (ultima.de === 'eu' ? 'Tu: ' : PESSOAS[ultima.de].curto + ': ') : '';
+      const previa = ultima ? escapar(autorTxt + ultima.t).slice(0,64) : c.sobre;
       return `
-        <button class="contato ${atual===c.id?'ativo':''}" data-id="${c.id}">
-          <div class="avatar" style="background:${c.cor}">${c.emoji}</div>
+        <button class="contato ${atual === c.id ? 'ativo' : ''}" data-id="${c.id}">
+          <div class="avatar" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${c.emoji}</div>
           <div class="contato-txt">
             <div class="contato-nome"><span>${c.nome}</span>
               <span class="contato-hora">${ultima ? hora(ultima.ts) : ''}</span></div>
-            <div class="contato-previa">${previa}</div>
+            <div class="contato-previa"><span style="flex:1;overflow:hidden;text-overflow:ellipsis">${previa}</span>
+              ${nova ? `<span class="badge">${nova}</span>` : ''}</div>
           </div>
         </button>`;
-    }).join('');
+    }).join('') || `<div style="padding:20px;text-align:center;color:var(--texto2);font-size:.88rem">Nada com esse nome 🤷</div>`;
 
-  document.querySelectorAll('.contato').forEach(b =>
-    b.addEventListener('click', () => abrir(b.dataset.id)));
+  document.querySelectorAll('.contato').forEach(b => b.addEventListener('click', () => abrir(b.dataset.id)));
 }
 
-/* ---------- conversa ---------- */
+/* ---------- abrir / fechar ---------- */
 function abrir(id){
-  atual = id;
+  atual = id; autor = 'eu'; buscaMsg = ''; animar = -1;
+  dados.visto[id] = Date.now(); salvar();
   $('#app').classList.remove('no-chat');
-  desenharContatos();
-  desenharConversa();
+  desenharContatos(); desenharConversa();
 }
 function fechar(){
   atual = null;
   $('#app').classList.add('no-chat');
-  desenharContatos();
+  desenharContatos(); telaVazia();
+}
+function telaVazia(){
   $('#conversa').innerHTML = `
-    <div class="vazio">
-      <div><div class="big">💬</div>
-        <h2>Escolhe com quem falar</h2>
-        <p>Clica no <b>Papai Wilian</b>, na <b>Mamãe Grabiela</b> ou na conversa da família pra começar a escrever.</p>
-      </div>
-    </div>`;
+    <div class="vazio"><div>
+      <div class="balao-deco">💬</div>
+      <h2>Escolhe com quem falar</h2>
+      <p>Deixa um recadinho pro <b>papai</b>, pra <b>mamãe</b> ou pros dois na conversa da <b>Família</b>.
+      Eles respondem aqui mesmo, neste aparelho. 💜</p>
+    </div></div>`;
 }
 
+/* ---------- conversa ---------- */
 function desenharConversa(){
-  const c = contatoPor(atual);
-  const faltaTel = c.para.some(p => !temTelefone(p));
-
+  const c = conversaPor(atual);
   $('#conversa').innerHTML = `
-    <div class="conversa-topo">
-      <button class="voltar" id="btnVoltar">←</button>
-      <div class="avatar" style="background:${c.cor}">${c.emoji}</div>
-      <div>
+    <div class="conversa-topo" style="background:linear-gradient(135deg,${c.cor},${c.cor}cc)">
+      <button class="voltar" id="btnVoltar" title="Voltar">←</button>
+      <div class="avatar">${c.emoji}</div>
+      <div class="txt-topo">
         <div class="nome">${c.nome}</div>
-        <div class="status">${c.id==='familia' ? 'papai e mamãe juntos' : 'guardado só aqui no aparelho'}</div>
+        <div class="status">${(dados.msgs[c.id] || []).length} recadinho(s) guardado(s)</div>
       </div>
       <div class="icones">
-        <button class="icone" id="btnLimpar" title="Apagar esta conversa">🗑️</button>
+        <button class="icone" id="btnBuscaMsg" title="Procurar na conversa">🔍</button>
+        <button class="icone" id="btnCopiar" title="Copiar a conversa">📋</button>
+        <button class="icone" id="btnLimpar" title="Apagar a conversa">🗑️</button>
       </div>
     </div>
-    ${faltaTel ? `<div class="aviso">📱 Ainda falta o número ${c.id==='familia'?'do papai ou da mamãe':'dele(a)'}.
-      <button id="avisoConfig">Configurar agora</button> pra poder mandar no WhatsApp de verdade.
-      (Pode escrever mesmo assim — a mensagem fica guardada aqui.)</div>` : ''}
+    <div class="barra-busca" id="barraBusca">
+      <input id="inputBuscaMsg" placeholder="Procurar palavra na conversa..." autocomplete="off">
+      <span id="contaBusca"></span>
+    </div>
     <div class="mensagens" id="mensagens"></div>
+    <div class="autor-bar" id="autorBar"><span class="rot">Falando como</span></div>
     <div class="rapidas" id="rapidas"></div>
     <div class="paleta" id="paleta"></div>
     <div class="barra">
       <div class="campo">
         <button class="emoji-btn" id="btnEmoji" title="Emojis">😀</button>
-        <textarea id="entrada" rows="1" placeholder="Escreve tua mensagem..."></textarea>
-        <button class="emoji-btn" id="btnAnotar" title="Anotar o que eles responderam">📝</button>
+        <textarea id="entrada" rows="1" placeholder="Escreve teu recadinho..."></textarea>
       </div>
       <button class="enviar" id="btnEnviar" title="Enviar">➤</button>
     </div>`;
 
+  $('#autorBar').insertAdjacentHTML('beforeend', c.quem.map(p =>
+    `<button class="pilula ${p === autor ? 'on' : ''}" data-p="${p}"
+      style="${p === autor ? `background:linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)` : ''}">
+      ${PESSOAS[p].emoji} ${PESSOAS[p].curto}</button>`).join(''));
   $('#rapidas').innerHTML = RAPIDAS.map(t => `<button class="rapida">${t}</button>`).join('');
   $('#paleta').innerHTML  = EMOJIS.map(e => `<button data-e="${e}">${e}</button>`).join('');
 
   desenharMensagens();
 
-  /* eventos da conversa */
   const entrada = $('#entrada');
   $('#btnVoltar').addEventListener('click', fechar);
   $('#btnLimpar').addEventListener('click', limparConversa);
+  $('#btnCopiar').addEventListener('click', copiarConversa);
   $('#btnEnviar').addEventListener('click', () => enviar(entrada.value));
   $('#btnEmoji').addEventListener('click', () => $('#paleta').classList.toggle('aberta'));
-  $('#btnAnotar').addEventListener('click', () => anotarResposta(entrada.value));
-  const av = $('#avisoConfig'); if(av) av.addEventListener('click', abrirConfig);
+  $('#btnBuscaMsg').addEventListener('click', () => {
+    const b = $('#barraBusca'); b.classList.toggle('aberta');
+    if(b.classList.contains('aberta')) $('#inputBuscaMsg').focus();
+    else { buscaMsg = ''; $('#inputBuscaMsg').value = ''; desenharMensagens(); }
+  });
+  $('#inputBuscaMsg').addEventListener('input', e => { buscaMsg = e.target.value.trim(); desenharMensagens(); });
 
+  document.querySelectorAll('.pilula').forEach(b => b.addEventListener('click', () => trocarAutor(b.dataset.p)));
   document.querySelectorAll('.rapida').forEach(b =>
-    b.addEventListener('click', () => { entrada.value = b.textContent; entrada.focus(); crescer(entrada); }));
+    b.addEventListener('click', () => { entrada.value = b.textContent.trim(); entrada.focus(); crescer(entrada); }));
   document.querySelectorAll('#paleta button').forEach(b =>
-    b.addEventListener('click', () => { entrada.value += b.dataset.e; entrada.focus(); }));
+    b.addEventListener('click', () => { entrada.value += b.dataset.e; entrada.focus(); crescer(entrada); }));
 
   entrada.addEventListener('input', () => crescer(entrada));
   entrada.addEventListener('keydown', ev => {
     if(ev.key === 'Enter' && !ev.shiftKey){ ev.preventDefault(); enviar(entrada.value); }
   });
-  entrada.focus();
+  atualizarPlaceholder();
+  if(window.innerWidth > 860) entrada.focus();
 }
 
-function crescer(el){ el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight,110) + 'px'; }
+function trocarAutor(p){
+  autor = p;
+  document.querySelectorAll('.pilula').forEach(b => {
+    const on = b.dataset.p === p;
+    b.classList.toggle('on', on);
+    b.style.background = on ? `linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)` : '';
+  });
+  atualizarPlaceholder();
+  $('#entrada').focus();
+}
+function atualizarPlaceholder(){
+  const nome = dados.nome || 'a família';
+  $('#entrada').placeholder = autor === 'eu'
+    ? 'Escreve teu recadinho...'
+    : `Respondendo como ${PESSOAS[autor].curto} pro(a) ${nome}...`;
+  $('#entrada').parentElement.style.borderColor = autor === 'eu' ? '' : PESSOAS[autor].cor;
+}
+function crescer(el){ el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight,120) + 'px'; }
 
+/* ---------- mensagens ---------- */
 function desenharMensagens(){
   const caixa = $('#mensagens');
-  const msgs = dados.msgs[atual] || [];
+  const todas = dados.msgs[atual] || [];
+  const filtro = buscaMsg.toLowerCase();
+  const msgs = filtro ? todas.filter(m => m.t.toLowerCase().includes(filtro)) : todas;
+
+  if($('#contaBusca')) $('#contaBusca').textContent = filtro ? `${msgs.length} achado(s)` : '';
+
   if(!msgs.length){
-    caixa.innerHTML = `<div class="dia">Nenhuma mensagem ainda — começa aí! 😊</div>`;
+    caixa.innerHTML = `<div class="dia">${filtro ? 'Nada encontrado 🔍' : 'Nenhum recadinho ainda — começa aí! 😊'}</div>`;
     return;
   }
-  let ultimoDia = '';
+
+  let ultimoDia = '', ultimoDe = '';
   caixa.innerHTML = msgs.map((m, i) => {
+    const real = todas.indexOf(m);
     const d = diaTexto(m.ts);
-    const sep = d !== ultimoDia ? (ultimoDia = d, `<div class="dia">${d}</div>`) : '';
-    const tique = m.de === 'eu'
-      ? `<span class="tique ${m.enviado?'lido':''}">${m.enviado?'✓✓':'✓'}</span>` : '';
-    const quem = (atual === 'familia' && m.de !== 'eu')
-      ? `<div class="quem" style="color:${contatoPor(m.de==='pai'?'pai':'mae').cor}">${contatoPor(m.de==='pai'?'pai':'mae').nome}</div>` : '';
-    const chips = m.de === 'eu' ? chipsZap(m, i) : '';
+    let sep = '';
+    if(d !== ultimoDia){ ultimoDia = d; ultimoDe = ''; sep = `<div class="dia">${d}</div>`; }
+
+    const p = PESSOAS[m.de] || PESSOAS.eu;
+    const eu = m.de === 'eu';
+    const repetido = m.de === ultimoDe; ultimoDe = m.de;
+    const grande = soEmoji(m.t);
+    const texto = filtro ? realce(m.t, buscaMsg) : escapar(m.t);
+    const nome = (!eu && atual === 'familia' && !repetido)
+      ? `<div class="quem" style="color:${p.cor}">${p.nome}</div>` : '';
+
     return `${sep}
-      <div class="msg ${m.de === 'eu' ? 'eu' : 'eles'}">
-${quem}<span class="txt">${escapar(m.texto)}</span>${chips}<div class="rodape">${hora(m.ts)} ${tique}</div>
-        <button class="apagar" data-i="${i}" title="Apagar mensagem">✕</button>
+      <div class="linha-msg ${eu ? 'eu' : 'eles'} ${m.r ? 'tem-reacao' : ''} ${real === animar ? 'nova' : ''}" data-i="${real}">
+        <div class="mini-av ${repetido ? 'oculto' : ''}" style="background:linear-gradient(135deg,${p.cor},${p.cor}bb)">${p.emoji}</div>
+        <div class="msg ${eu ? 'eu' : 'eles'} ${grande ? 'emojao' : ''}">
+          ${nome}<span class="txt">${texto}</span>
+          <div class="rodape">${hora(m.ts)}</div>
+          ${m.r ? `<span class="reacao">${m.r}</span>` : ''}
+        </div>
+        <div class="ferramentas">
+          <button data-acao="reagir" data-i="${real}" title="Reagir">☺</button>
+          <button data-acao="apagar" data-i="${real}" title="Apagar">✕</button>
+        </div>
       </div>`;
-  }).join('');
+  }).join('') + `<div class="reagir-bar" id="reagirBar">${REACOES.map(e => `<button data-e="${e}">${e}</button>`).join('')}</div>`;
 
-  caixa.querySelectorAll('.apagar').forEach(b =>
+  caixa.querySelectorAll('[data-acao="apagar"]').forEach(b =>
     b.addEventListener('click', () => apagarMensagem(+b.dataset.i)));
-  caixa.querySelectorAll('.chip-zap').forEach(b =>
-    b.addEventListener('click', () => mandarNoZap(+b.dataset.i, b.dataset.quem)));
+  caixa.querySelectorAll('[data-acao="reagir"]').forEach(b =>
+    b.addEventListener('click', () => abrirReacoes(+b.dataset.i)));
+  caixa.querySelectorAll('.msg').forEach(el =>
+    el.addEventListener('dblclick', () => reagir(+el.parentElement.dataset.i, '❤️')));
+  caixa.querySelectorAll('#reagirBar button').forEach(b =>
+    b.addEventListener('click', () => reagir(reagindo, b.dataset.e)));
 
-  caixa.scrollTop = caixa.scrollHeight;
+  animar = -1;
+  if(!filtro) caixa.scrollTop = caixa.scrollHeight;
 }
 
-function chipsZap(m, i){
-  const alvos = contatoPor(atual).para.filter(p => temTelefone(p));
-  if(!alvos.length) return '';
-  return `<div class="chips">` + alvos.map(p =>
-    `<button class="chip-zap" data-i="${i}" data-quem="${p}">↗ ${p === 'pai' ? '👨 Papai' : '👩 Mamãe'}</button>`
-  ).join('') + `</div>`;
+function realce(txt, termo){
+  const t = escapar(txt), alvo = escapar(termo);
+  if(!alvo) return t;
+  const re = new RegExp('(' + alvo.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi');
+  return t.replace(re, '<mark>$1</mark>');
+}
+
+let reagindo = -1;
+function abrirReacoes(i){
+  reagindo = i;
+  const bar = $('#reagirBar');
+  bar.classList.add('aberta');
+  bar.scrollIntoView({block:'nearest'});
+}
+function reagir(i, emoji){
+  const m = dados.msgs[atual][i];
+  if(!m) return;
+  m.r = (m.r === emoji) ? null : emoji;
+  salvar(); desenharMensagens();
 }
 
 /* ---------- ações ---------- */
 function enviar(texto){
   texto = (texto || '').trim();
   if(!texto) return;
-  dados.msgs[atual].push({ texto, de:'eu', ts:Date.now(), enviado:false });
-  salvar();
+  dados.msgs[atual].push({ t:texto, de:autor, ts:Date.now() });
+  dados.visto[atual] = Date.now();
+  animar = dados.msgs[atual].length - 1;
+  salvar(); blim(autor === 'eu');
+
   const entrada = $('#entrada');
   entrada.value = ''; crescer(entrada);
   $('#paleta').classList.remove('aberta');
-  desenharMensagens();
-  desenharContatos();
-
-  // Conversa individual com número salvo: já abre o WhatsApp com o texto pronto.
-  const alvos = contatoPor(atual).para;
-  if(alvos.length === 1 && temTelefone(alvos[0])){
-    mandarNoZap(dados.msgs[atual].length - 1, alvos[0]);
-  }
+  buscaMsg = ''; const ib = $('#inputBuscaMsg'); if(ib) ib.value = '';
+  desenharMensagens(); desenharContatos();
+  $('.conversa-topo .status').textContent = `${dados.msgs[atual].length} recadinho(s) guardado(s)`;
   entrada.focus();
 }
 
-function mandarNoZap(i, quem){
-  const m = dados.msgs[atual][i];
-  if(!m) return;
-  window.open(linkZap(quem, m.texto), '_blank', 'noopener');
-  m.enviado = true;
-  salvar();
-  desenharMensagens();
-}
-
-function anotarResposta(rascunho){
-  const texto = (rascunho || '').trim() ||
-    (prompt('O que eles te responderam? (fica guardado aqui na conversa)') || '').trim();
-  if(!texto) return;
-  let de = contatoPor(atual).para[0];
-  if(atual === 'familia'){
-    de = confirm('Foi o papai que respondeu?\n\nOK = papai 👨   |   Cancelar = mamãe 👩') ? 'pai' : 'mae';
-  }
-  dados.msgs[atual].push({ texto, de, ts:Date.now() });
-  salvar();
-  const entrada = $('#entrada');
-  entrada.value = ''; crescer(entrada);
-  desenharMensagens();
-  desenharContatos();
-}
-
 function apagarMensagem(i){
-  if(!confirm('Apagar esta mensagem?')) return;
+  if(!confirm('Apagar este recadinho?')) return;
   dados.msgs[atual].splice(i,1);
   salvar(); desenharMensagens(); desenharContatos();
+  toast('Recadinho apagado 🗑️');
 }
 
 function limparConversa(){
-  if(!confirm('Apagar TODAS as mensagens desta conversa? Não dá pra desfazer.')) return;
+  if(!confirm('Apagar TODOS os recadinhos desta conversa?\nNão dá pra desfazer!')) return;
   dados.msgs[atual] = [];
   salvar(); desenharMensagens(); desenharContatos();
+  toast('Conversa limpa ✨');
 }
 
-/* ---------- configuração ---------- */
+function copiarConversa(){
+  const msgs = dados.msgs[atual] || [];
+  if(!msgs.length){ toast('Não tem nada pra copiar 🤷'); return; }
+  const txt = msgs.map(m => `[${new Date(m.ts).toLocaleString('pt-BR')}] ${PESSOAS[m.de].curto}: ${m.t}`).join('\n');
+  navigator.clipboard?.writeText(txt)
+    .then(() => toast('Conversa copiada! 📋'))
+    .catch(() => toast('Teu navegador não deixou copiar 😕'));
+}
+
+/* ---------- ajustes ---------- */
 function abrirConfig(){
   $('#cfgNome').value = dados.nome;
-  $('#cfgPai').value  = dados.tel.pai;
-  $('#cfgMae').value  = dados.tel.mae;
+  $('#cfgSom').classList.toggle('on', !!dados.som);
+  $('#cfgTema').classList.toggle('on', dados.tema === 'escuro');
   $('#modalConfig').classList.add('aberto');
-  $('#cfgNome').focus();
 }
 function fecharConfig(){ $('#modalConfig').classList.remove('aberto'); }
 function salvarConfig(){
   dados.nome = $('#cfgNome').value.trim();
-  dados.tel.pai = $('#cfgPai').value.trim();
-  dados.tel.mae = $('#cfgMae').value.trim();
-  salvar(); fecharConfig(); saudacao();
-  desenharContatos();
-  if(atual) desenharConversa();
+  dados.som  = $('#cfgSom').classList.contains('on');
+  dados.tema = $('#cfgTema').classList.contains('on') ? 'escuro' : 'claro';
+  salvar(); aplicarTema(); saudacao(); fecharConfig();
+  if(atual) atualizarPlaceholder();
+  toast('Salvo! ✅');
 }
-
 function saudacao(){
   const h = new Date().getHours();
   const parte = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
   $('#ola').textContent = dados.nome ? `${parte}, ${dados.nome}! 👋` : `${parte}! 👋`;
 }
-
 function aplicarTema(){
   document.documentElement.dataset.tema = dados.tema;
   $('#btnTema').textContent = dados.tema === 'escuro' ? '☀️' : '🌙';
   document.querySelector('meta[name="theme-color"]')
-    .setAttribute('content', dados.tema === 'escuro' ? '#1f2c34' : '#075e54');
+    .setAttribute('content', dados.tema === 'escuro' ? '#171331' : '#7c3aed');
 }
 
 /* ---------- eventos gerais ---------- */
 $('#btnConfig').addEventListener('click', abrirConfig);
 $('#cfgFechar').addEventListener('click', fecharConfig);
 $('#cfgSalvar').addEventListener('click', salvarConfig);
+$('#cfgSom').addEventListener('click',  e => e.currentTarget.classList.toggle('on'));
+$('#cfgTema').addEventListener('click', e => e.currentTarget.classList.toggle('on'));
 $('#modalConfig').addEventListener('click', e => { if(e.target.id === 'modalConfig') fecharConfig(); });
 $('#busca').addEventListener('input', desenharContatos);
 $('#btnTema').addEventListener('click', () => {
   dados.tema = dados.tema === 'escuro' ? 'claro' : 'escuro';
   salvar(); aplicarTema();
 });
-document.addEventListener('keydown', e => { if(e.key === 'Escape') fecharConfig(); });
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ fecharConfig(); const b = $('#reagirBar'); if(b) b.classList.remove('aberta'); }
+});
+document.addEventListener('click', e => {
+  const b = $('#reagirBar');
+  if(b && b.classList.contains('aberta') && !e.target.closest('#reagirBar') && !e.target.closest('[data-acao="reagir"]'))
+    b.classList.remove('aberta');
+});
 
 /* ---------- começo ---------- */
-aplicarTema();
-saudacao();
-desenharContatos();
-if(!dados.nome && !dados.tel.pai && !dados.tel.mae) abrirConfig();
+if(!localStorage.getItem(CHAVE) && !localStorage.getItem('fala-familia:v1')
+   && window.matchMedia('(prefers-color-scheme: dark)').matches) dados.tema = 'escuro';
+if(dados.migrou){ delete dados.migrou; salvar(); }   // guarda o que veio da versão antiga
+aplicarTema(); saudacao(); desenharContatos(); telaVazia();
+if(window.innerWidth > 860) abrir('familia');
+
+/* Deixa o site funcionar sem internet e dá pra instalar na tela do celular. */
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
 </script>
 </body>
 </html>
