@@ -25,6 +25,8 @@ responder depois — igualzinho a um mural de recados da família.
 
 | Recurso | Como |
 |---|---|
+| 🟢 Quem está por aqui | Bolinha **verde** na pessoa que mexeu no chat nos últimos 5 minutos, **cinza** quando não; no topo da conversa aparece “por aqui agora” ou “visto hoje às 14:22” |
+| 📶 Internet | Etiqueta no topo da lista: **Com internet** ou **Sem internet — funciona igual** |
 | Três conversas | Papai Wilian, Mamãe Grabiela e **Família 💜** (os três juntos) |
 | Trocar quem fala | Barra **Falando como** embaixo da conversa |
 | Escrever | Enter envia, Shift+Enter pula linha |
@@ -38,6 +40,19 @@ responder depois — igualzinho a um mural de recados da família.
 | Som | Um “blim” ao mandar recado (dá pra desligar nos ⚙️ Ajustes) |
 | Tema | Claro ou escuro, no botão 🌙 / ☀️ (começa igual ao tema do aparelho) |
 | Offline | Depois de abrir uma vez, funciona sem internet |
+
+## Sobre a bolinha verde 🟢
+
+O site não manda nada pela internet, então ele **não tem como saber** se o papai ou a
+mamãe estão com o celular na mão em outro lugar — e não inventa isso. O que a bolinha
+mostra é a verdade do que dá pra saber:
+
+- **Verde** = a pessoa escolheu o botão dela (ou mandou recado) **neste aparelho** nos
+  últimos **5 minutos**.
+- **Cinza** = faz mais tempo. Aí aparece o *visto por último* com a hora certinha.
+
+A etiqueta **Com internet / Sem internet** é o aparelho mesmo, avisando se está
+conectado — e serve pra lembrar que o chat funciona do mesmo jeito sem rede.
 
 ## Ajustes ⚙️
 
