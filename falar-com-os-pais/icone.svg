@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Fala, Família!">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#g)"/>
+  <path d="M136 128h240a44 44 0 0 1 44 44v148a44 44 0 0 1-44 44H246l-74 58a10 10 0 0 1-16-8v-50h-20a44 44 0 0 1-44-44V172a44 44 0 0 1 44-44z" fill="#fff"/>
+  <path d="M256 306c-38-30-62-49-62-76a34 34 0 0 1 62-19 34 34 0 0 1 62 19c0 27-24 46-62 76z" fill="#ec4899"/>
+</svg>
