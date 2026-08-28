@@ -1,0 +1,596 @@
+/* =========================================================
+   Fala, Família! — o chat da família, 100% offline.
+   Tudo fica no localStorage do próprio aparelho: nenhum
+   recadinho sai daqui, não tem servidor nem envio pra fora.
+   ========================================================= */
+
+const CHAVE = 'fala-familia:v2';
+
+const PESSOAS = {
+  eu : { nome:'Eu',              curto:'Eu',     emoji:'🧒', cor:'#7c3aed' },
+  pai: { nome:'Papai Wilian',    curto:'Papai',  emoji:'👨', cor:'#0ea5e9' },
+  mae: { nome:'Mamãe Grabiela',  curto:'Mamãe',  emoji:'👩', cor:'#ec4899' }
+};
+
+const CONVERSAS = [
+  { id:'pai',     nome:'Papai Wilian',   emoji:'👨', cor:'#0ea5e9', quem:['eu','pai'],       sobre:'toca aqui pra deixar um recado' },
+  { id:'mae',     nome:'Mamãe Grabiela', emoji:'👩', cor:'#ec4899', quem:['eu','mae'],       sobre:'toca aqui pra deixar um recado' },
+  { id:'familia', nome:'Família 💜',      emoji:'🏠', cor:'#7c3aed', quem:['eu','pai','mae'], sobre:'a conversa dos três juntos' }
+];
+
+const RAPIDAS = [
+  'Cheguei bem! 🏠','Tô com saudade 🥺','Pode me buscar? 🚗','Já almocei 🍽️',
+  'Posso jogar um pouquinho? 🎮','Terminei a lição ✏️','Bom dia! ☀️',
+  'Boa noite, durmam bem 🌙','Me liga quando puder 📞','Te amo! ❤️','Obrigado! 🙏'
+];
+
+const EMOJIS = ['😀','😄','😁','😂','🥹','🥰','😍','🤩','😎','🤗','🤔','🤫','😴','🤒','😭','😡','🥳','👻','🤖','👍','👎','👏','🙏','💪','🫶','❤️','💜','💛','💚','💙','✨','⭐','🔥','💯','🎉','🎈','🎁','🎮','⚽','🏀','🚲','🐶','🐱','🦖','🍕','🍔','🍟','🍫','🍦','🎂','🍎','☀️','🌙','🌈','⛈️','🚗','🏠','🏫','📞','✏️','📚','⏰','✅'];
+
+const REACOES = ['❤️','👍','😂','🎉','🥺','🔥'];
+
+/* ---------- estado ---------- */
+let dados  = carregar();
+let atual  = null;   // conversa aberta
+let autor  = 'eu';   // quem está escrevendo agora
+let animar = -1;     // índice da mensagem que acabou de chegar
+let buscaMsg = '';   // filtro dentro da conversa
+
+function padrao(){
+  return { nome:'', tema:'claro', som:true, msgs:{pai:[],mae:[],familia:[]}, visto:{pai:0,mae:0,familia:0}, presenca:{eu:0,pai:0,mae:0}, avisos:false, lembretes:[] };
+}
+function carregar(){
+  try{
+    const bruto = localStorage.getItem(CHAVE);
+    let d = bruto ? Object.assign(padrao(), JSON.parse(bruto)) : padrao();
+    d.msgs  = Object.assign({pai:[],mae:[],familia:[]}, d.msgs);
+    d.visto = Object.assign({pai:0,mae:0,familia:0}, d.visto);
+    d.presenca = Object.assign({eu:0,pai:0,mae:0}, d.presenca);
+    if(!Array.isArray(d.lembretes)) d.lembretes = [];
+    if(!bruto) d = migrarV1(d);
+    return d;
+  }catch(e){ return padrao(); }
+}
+/* Se existir conversa da versão antiga, aproveita as mensagens. */
+function migrarV1(d){
+  try{
+    const velho = localStorage.getItem('fala-familia:v1');
+    if(!velho) return d;
+    const v = JSON.parse(velho);
+    d.nome = v.nome || '';
+    d.tema = v.tema || 'claro';
+    ['pai','mae','familia'].forEach(k => {
+      d.msgs[k] = (v.msgs?.[k] || []).map(m => ({ t:m.texto, de:m.de === 'eu' ? 'eu' : m.de, ts:m.ts }));
+    });
+    d.migrou = true;
+  }catch(e){}
+  return d;
+}
+function salvar(){
+  try{ localStorage.setItem(CHAVE, JSON.stringify(dados)); }
+  catch(e){ toast('Não deu pra guardar 😕'); }
+}
+
+/* ---------- ajudantes ---------- */
+const $ = s => document.querySelector(s);
+const conversaPor = id => CONVERSAS.find(c => c.id === id);
+const escapar = t => t.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hora = ts => new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+/* Mensagem de voz não tem texto: mostra um resuminho no lugar. */
+const textoDe = m =>
+  m.tipo === 'audio'   ? `🎤 recadinho de voz (${(m.dur||0).toFixed(1)}s)` :
+  m.tipo === 'foto'    ? '📷 foto' :
+  m.tipo === 'enquete' ? `📊 ${m.q}` : (m.t || '');
+const soEmoji = t => { const p = [...t.trim()]; return p.length > 0 && p.length <= 5 && /^(?:\p{Extended_Pictographic}|‍|️|\p{Emoji_Modifier}|\s)+$/u.test(t); };
+
+function diaTexto(ts){
+  const d = new Date(ts), hoje = new Date();
+  const so = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const dif = (so(hoje) - so(d)) / 86400000;
+  if(dif === 0) return 'HOJE';
+  if(dif === 1) return 'ONTEM';
+  if(dif < 7)   return d.toLocaleDateString('pt-BR',{weekday:'long'}).toUpperCase();
+  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function naoLidas(id){
+  return (dados.msgs[id] || []).filter(m => m.de !== 'eu' && m.ts > (dados.visto[id] || 0)).length;
+}
+/* ---------- quem está por aqui agora ---------- */
+const TEMPO_ONLINE = 5 * 60 * 1000;   // 5 minutinhos
+
+/* O último sinal de uma pessoa: quando ela escolheu o botão dela ou mandou recado. */
+function ultimoSinal(p){
+  let t = dados.presenca[p] || 0;
+  Object.values(dados.msgs).forEach(lista =>
+    lista.forEach(m => { if(m.de === p && m.ts > t) t = m.ts; }));
+  return t;
+}
+function estaOnline(p){
+  if(p === 'eu') return true;                       // tu está aqui, ora essa 😄
+  return Date.now() - ultimoSinal(p) < TEMPO_ONLINE;
+}
+function marcarPresenca(p){ dados.presenca[p] = Date.now(); salvar(); }
+
+function vistoTexto(p){
+  const t = ultimoSinal(p);
+  if(!t) return 'ainda não apareceu por aqui';
+  const d = new Date(t), dia = diaTexto(t);
+  if(dia === 'HOJE')  return `visto hoje às ${hora(t)}`;
+  if(dia === 'ONTEM') return `visto ontem às ${hora(t)}`;
+  return `visto em ${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} às ${hora(t)}`;
+}
+function statusTexto(c){
+  if(c.id === 'familia'){
+    const on = ['pai','mae'].filter(estaOnline).map(p => PESSOAS[p].curto);
+    if(on.length === 2) return 'papai e mamãe estão por aqui 🟢';
+    if(on.length === 1) return `${on[0]} está por aqui 🟢`;
+    return 'ninguém por aqui agora — deixa o recado 💜';
+  }
+  return estaOnline(c.id) ? 'por aqui agora 🟢' : vistoTexto(c.id);
+}
+function atualizarStatusTopo(){
+  const el = document.querySelector('.conversa-topo .status');
+  if(el && atual) el.textContent = statusTexto(conversaPor(atual));
+  const pt = document.querySelector('.conversa-topo .ponto');
+  if(pt && atual){
+    const c = conversaPor(atual);
+    const on = c.id === 'familia' ? ['pai','mae'].some(estaOnline) : estaOnline(c.id);
+    pt.classList.toggle('on', on);
+  }
+}
+
+/* ---------- internet do aparelho ---------- */
+function verInternet(){
+  const box = $('#net'), txt = $('#netTxt');
+  if(!box) return;
+  if(navigator.onLine){
+    box.classList.remove('off');
+    txt.textContent = 'Com internet';
+  }else{
+    box.classList.add('off');
+    txt.textContent = 'Sem internet — funciona igual 😉';
+  }
+}
+
+function toast(txt){
+  const t = $('#toast'); t.textContent = txt; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2200);
+}
+
+/* ---------- somzinho (sem arquivo, feito na hora) ---------- */
+let audio;
+function blim(subindo){
+  if(!dados.som) return;
+  try{
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
+    o.type = 'sine';
+    o.frequency.setValueAtTime(subindo ? 620 : 480, t);
+    o.frequency.exponentialRampToValueAtTime(subindo ? 940 : 340, t + .12);
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(.14, t + .02);
+    g.gain.exponentialRampToValueAtTime(.0001, t + .22);
+    o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + .24);
+  }catch(e){}
+}
+
+/* ---------- lista de conversas ---------- */
+function desenharContatos(){
+  const filtro = $('#busca').value.trim().toLowerCase();
+  $('#contatos').innerHTML = CONVERSAS
+    .filter(c => !filtro || c.nome.toLowerCase().includes(filtro))
+    .map(c => {
+      const msgs = dados.msgs[c.id] || [];
+      const ultima = msgs[msgs.length - 1];
+      const nova = naoLidas(c.id);
+      const autorTxt = ultima ? (ultima.de === 'eu' ? 'Tu: ' : PESSOAS[ultima.de].curto + ': ') : '';
+      const previa = ultima ? escapar(autorTxt + textoDe(ultima)).slice(0,64) : c.sobre;
+      const on = c.id === 'familia' ? ['pai','mae'].some(estaOnline) : estaOnline(c.id);
+      return `
+        <button class="contato ${atual === c.id ? 'ativo' : ''}" data-id="${c.id}">
+          <div class="avatar" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${c.emoji}
+            <span class="ponto ${on ? 'on' : ''}" title="${on ? 'por aqui agora' : 'não está por aqui'}"></span></div>
+          <div class="contato-txt">
+            <div class="contato-nome"><span>${c.nome}</span>
+              <span class="contato-hora ${on ? 'online-txt' : ''}">${on ? 'online' : (ultima ? hora(ultima.ts) : '')}</span></div>
+            <div class="contato-previa"><span style="flex:1;overflow:hidden;text-overflow:ellipsis">${previa}</span>
+              ${nova ? `<span class="badge">${nova}</span>` : ''}</div>
+          </div>
+        </button>`;
+    }).join('') || `<div style="padding:20px;text-align:center;color:var(--texto2);font-size:.88rem">Nada com esse nome 🤷</div>`;
+
+  document.querySelectorAll('.contato').forEach(b => b.addEventListener('click', () => abrir(b.dataset.id)));
+}
+
+/* ---------- abrir / fechar ---------- */
+function abrir(id){
+  atual = id; autor = 'eu'; buscaMsg = ''; animar = -1;
+  dados.visto[id] = Date.now(); salvar();
+  atualizarBolinhaDoIcone();
+  $('#app').classList.remove('no-chat');
+  desenharContatos(); desenharConversa();
+}
+function fechar(){
+  atual = null;
+  $('#app').classList.add('no-chat');
+  desenharContatos(); telaVazia();
+}
+function telaVazia(){
+  $('#conversa').innerHTML = `
+    <div class="vazio"><div>
+      <div class="balao-deco">💬</div>
+      <h2>Escolhe com quem falar</h2>
+      <p>Deixa um recadinho pro <b>papai</b>, pra <b>mamãe</b> ou pros dois na conversa da <b>Família</b>.
+      Eles respondem aqui mesmo, neste aparelho. 💜</p>
+    </div></div>`;
+}
+
+/* ---------- conversa ---------- */
+function desenharConversa(){
+  const c = conversaPor(atual);
+  $('#conversa').innerHTML = `
+    <div class="conversa-topo" style="background:linear-gradient(135deg,${c.cor},${c.cor}cc)">
+      <button class="voltar" id="btnVoltar" title="Voltar">←</button>
+      <div class="avatar">${c.emoji}<span class="ponto"></span></div>
+      <div class="txt-topo">
+        <div class="nome">${c.nome}</div>
+        <div class="status">${statusTexto(c)}</div>
+      </div>
+      <div class="icones">
+        <button class="icone" id="btnWalkie" title="Walkie-talkie">📻</button>
+        ${c.id !== 'familia' ? '<button class="icone" id="btnLigar" title="Ligação de voz">📞</button>' : ''}
+        <button class="icone" id="btnMenu" title="Mais coisas">⋯</button>
+        <div class="menu-topo" id="menuTopo">
+          <button id="btnBuscaMsg">🔍 Procurar na conversa</button>
+          <button id="btnCopiar">📋 Copiar a conversa</button>
+          <button id="btnLimpar">🗑️ Apagar a conversa</button>
+        </div>
+      </div>
+    </div>
+    <div class="barra-busca" id="barraBusca">
+      <input id="inputBuscaMsg" placeholder="Procurar palavra na conversa..." autocomplete="off">
+      <span id="contaBusca"></span>
+    </div>
+    <div class="mensagens" id="mensagens"></div>
+    <div class="autor-bar" id="autorBar"><span class="rot">Falando como</span></div>
+    <div class="rapidas" id="rapidas"></div>
+    <div class="paleta" id="paleta"></div>
+    <div class="barra">
+      <div class="campo">
+        <button class="emoji-btn" id="btnMais" title="Foto, enquete e mais">➕</button>
+        <button class="emoji-btn" id="btnEmoji" title="Emojis">😀</button>
+        <textarea id="entrada" rows="1" placeholder="Escreve teu recadinho..."></textarea>
+      </div>
+      <button class="enviar mic" id="btnEnviar" title="Segura pra gravar">🎤</button>
+    </div>
+    <div class="gravando" id="gravBar">
+      <span class="pulso"></span><b id="gravTempo">0,0s</b>
+      <span class="g-dica">solta pra mandar • arrasta pra fora pra cancelar</span>
+    </div>`;
+
+  $('#autorBar').insertAdjacentHTML('beforeend', c.quem.map(p =>
+    `<button class="pilula ${p === autor ? 'on' : ''}" data-p="${p}"
+      style="${p === autor ? `background:linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)` : ''}">
+      ${PESSOAS[p].emoji} ${PESSOAS[p].curto}</button>`).join(''));
+  $('#rapidas').innerHTML = RAPIDAS.map(t => `<button class="rapida">${t}</button>`).join('');
+  $('#paleta').innerHTML  = EMOJIS.map(e => `<button data-e="${e}">${e}</button>`).join('');
+
+  desenharMensagens();
+
+  const entrada = $('#entrada');
+  $('#btnVoltar').addEventListener('click', fechar);
+  $('#btnLimpar').addEventListener('click', limparConversa);
+  $('#btnCopiar').addEventListener('click', copiarConversa);
+  $('#btnWalkie').addEventListener('click', abrirWalkie);
+  $('#btnMenu').addEventListener('click', ev => {
+    ev.stopPropagation();
+    $('#menuTopo').classList.toggle('aberto');
+  });
+  $('#menuTopo').addEventListener('click', () => $('#menuTopo').classList.remove('aberto'));
+  if($('#btnLigar')) $('#btnLigar').addEventListener('click', abrirLigacao);
+  ligarBotaoDeEnviar(entrada);
+  $('#btnEmoji').addEventListener('click', () => $('#paleta').classList.toggle('aberta'));
+  $('#btnMais').addEventListener('click', ev => { ev.stopPropagation(); abrirMaisMenu(); });
+  $('#btnBuscaMsg').addEventListener('click', () => {
+    const b = $('#barraBusca'); b.classList.toggle('aberta');
+    if(b.classList.contains('aberta')) $('#inputBuscaMsg').focus();
+    else { buscaMsg = ''; $('#inputBuscaMsg').value = ''; desenharMensagens(); }
+  });
+  $('#inputBuscaMsg').addEventListener('input', e => { buscaMsg = e.target.value.trim(); desenharMensagens(); });
+
+  document.querySelectorAll('.pilula').forEach(b => b.addEventListener('click', () => trocarAutor(b.dataset.p)));
+  document.querySelectorAll('.rapida').forEach(b =>
+    b.addEventListener('click', () => { entrada.value = b.textContent.trim(); entrada.focus(); crescer(entrada); }));
+  document.querySelectorAll('#paleta button').forEach(b =>
+    b.addEventListener('click', () => { entrada.value += b.dataset.e; entrada.focus(); crescer(entrada); }));
+
+  entrada.addEventListener('input', () => { crescer(entrada); modoBotao(); });
+  entrada.addEventListener('keydown', ev => {
+    if(ev.key === 'Enter' && !ev.shiftKey){ ev.preventDefault(); enviar(entrada.value); }
+  });
+  atualizarPlaceholder();
+  if(window.innerWidth > 860) entrada.focus();
+}
+
+function trocarAutor(p){
+  autor = p;
+  marcarPresenca(p);
+  desenharContatos(); atualizarStatusTopo();
+  document.querySelectorAll('.pilula').forEach(b => {
+    const on = b.dataset.p === p;
+    b.classList.toggle('on', on);
+    b.style.background = on ? `linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)` : '';
+  });
+  atualizarPlaceholder();
+  $('#entrada').focus();
+}
+function atualizarPlaceholder(){
+  const pra = dados.nome ? `pro ${dados.nome}` : 'pra família';
+  $('#entrada').placeholder = autor === 'eu'
+    ? 'Escreve teu recadinho...'
+    : `Respondendo como ${PESSOAS[autor].curto} ${pra}...`;
+  $('#entrada').parentElement.style.borderColor = autor === 'eu' ? '' : PESSOAS[autor].cor;
+}
+/* O botão vira microfone quando não tem nada escrito. */
+function modoBotao(){
+  const bt = $('#btnEnviar'); if(!bt) return;
+  const temTexto = $('#entrada').value.trim().length > 0;
+  bt.textContent = temTexto ? '➤' : '🎤';
+  bt.classList.toggle('mic', !temTexto);
+  bt.title = temTexto ? 'Enviar' : 'Segura pra gravar';
+}
+
+function ligarBotaoDeEnviar(entrada){
+  const bt = $('#btnEnviar'), bar = $('#gravBar'), tempo = $('#gravTempo');
+  let relogio = null, longe = false, inicio = null;
+
+  const paraRelogio = () => {
+    clearInterval(relogio);
+    bar.classList.remove('on','longe'); bt.classList.remove('rec');
+  };
+
+  bt.addEventListener('pointerdown', async ev => {
+    if(!bt.classList.contains('mic')) return;          // tem texto: é botão de enviar
+    ev.preventDefault();
+    try{ bt.setPointerCapture(ev.pointerId); }catch(e){}   // o dedo não "escapa" do botão
+    inicio = { x:ev.clientX, y:ev.clientY }; longe = false;
+    const ok = await comecarGravacao((blob, seg) => { paraRelogio(); mandarAudio(blob, seg); });
+    if(!ok) return;
+    bar.classList.add('on'); bt.classList.add('rec');
+    relogio = setInterval(() => {
+      tempo.textContent = segundosGravados().toFixed(1).replace('.', ',') + 's';
+      if(segundosGravados() > 120){ paraRelogio(); pararGravacao(false); }   // 2 minutos é o limite
+    }, 100);
+  });
+
+  /* arrastar pra longe do botão = cancelar */
+  bt.addEventListener('pointermove', ev => {
+    if(!gravando() || !inicio) return;
+    longe = Math.hypot(ev.clientX - inicio.x, ev.clientY - inicio.y) > 90;
+    bar.classList.toggle('longe', longe);
+    tempo.textContent = longe ? 'solta pra cancelar 🗑️'
+                              : segundosGravados().toFixed(1).replace('.', ',') + 's';
+  });
+
+  const solta = cancelar => ev => {
+    if(!gravando()) return;
+    ev.preventDefault();
+    paraRelogio();
+    const cancelou = cancelar || longe;
+    if(cancelou) toast('Gravação cancelada 🗑️');
+    pararGravacao(cancelou);
+  };
+  bt.addEventListener('pointerup', solta(false));
+  bt.addEventListener('pointercancel', solta(true));
+  bt.addEventListener('click', () => { if(!bt.classList.contains('mic')) enviar(entrada.value); });
+  modoBotao();
+}
+
+function crescer(el){ el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight,120) + 'px'; }
+
+/* ---------- mensagens ---------- */
+function desenharMensagens(){
+  const caixa = $('#mensagens');
+  const todas = dados.msgs[atual] || [];
+  const filtro = buscaMsg.toLowerCase();
+  const msgs = filtro ? todas.filter(m => textoDe(m).toLowerCase().includes(filtro)) : todas;
+
+  if($('#contaBusca')) $('#contaBusca').textContent = filtro ? `${msgs.length} achado(s)` : '';
+
+  if(!msgs.length){
+    caixa.innerHTML = `<div class="dia">${filtro ? 'Nada encontrado 🔍' : 'Nenhum recadinho ainda — começa aí! 😊'}</div>`;
+    return;
+  }
+
+  let ultimoDia = '', ultimoDe = '';
+  caixa.innerHTML = msgs.map((m, i) => {
+    const real = todas.indexOf(m);
+    const d = diaTexto(m.ts);
+    let sep = '';
+    if(d !== ultimoDia){ ultimoDia = d; ultimoDe = ''; sep = `<div class="dia">${d}</div>`; }
+
+    const p = PESSOAS[m.de] || PESSOAS.eu;
+    const eu = m.de === 'eu';
+    const repetido = m.de === ultimoDe; ultimoDe = m.de;
+    const especial = m.tipo && m.tipo !== 'texto';
+    const grande = !especial && soEmoji(m.t);
+    const corpo = especial
+      ? conteudoEspecial(m, real)
+      : `<span class="txt">${filtro ? realce(m.t, buscaMsg) : escapar(m.t)}</span>`;
+    const nome = (!eu && atual === 'familia' && !repetido)
+      ? `<div class="quem" style="color:${p.cor}">${p.nome}</div>` : '';
+
+    return `${sep}
+      <div class="linha-msg ${eu ? 'eu' : 'eles'} ${m.r ? 'tem-reacao' : ''} ${real === animar ? 'nova' : ''}" data-i="${real}">
+        <div class="mini-av ${repetido ? 'oculto' : ''}" style="background:linear-gradient(135deg,${p.cor},${p.cor}bb)">${p.emoji}</div>
+        <div class="msg ${eu ? 'eu' : 'eles'} ${grande ? 'emojao' : ''} ${m.tipo ? 'tipo-' + m.tipo : ''}">
+          ${nome}${corpo}
+          <div class="rodape">${hora(m.ts)}</div>
+          ${m.r ? `<span class="reacao">${m.r}</span>` : ''}
+        </div>
+        <div class="ferramentas">
+          <button data-acao="reagir" data-i="${real}" title="Reagir">☺</button>
+          <button data-acao="apagar" data-i="${real}" title="Apagar">✕</button>
+        </div>
+      </div>`;
+  }).join('') + `<div class="reagir-bar" id="reagirBar">${REACOES.map(e => `<button data-e="${e}">${e}</button>`).join('')}</div>`;
+
+  caixa.querySelectorAll('[data-acao="apagar"]').forEach(b =>
+    b.addEventListener('click', () => apagarMensagem(+b.dataset.i)));
+  caixa.querySelectorAll('[data-acao="reagir"]').forEach(b =>
+    b.addEventListener('click', () => abrirReacoes(+b.dataset.i)));
+  caixa.querySelectorAll('.msg').forEach(el =>
+    el.addEventListener('dblclick', () => reagir(+el.parentElement.dataset.i, '❤️')));
+  caixa.querySelectorAll('[data-play]').forEach(b =>
+    b.addEventListener('click', () => tocarAudio(+b.dataset.play)));
+  caixa.querySelectorAll('[data-efeito]').forEach(b =>
+    b.addEventListener('click', () => abrirEfeitos(+b.dataset.efeito)));
+  caixa.querySelectorAll('#reagirBar button').forEach(b =>
+    b.addEventListener('click', () => reagir(reagindo, b.dataset.e)));
+
+  ligarExtras();
+  animar = -1;
+  if(!filtro) caixa.scrollTop = caixa.scrollHeight;
+}
+
+function realce(txt, termo){
+  const t = escapar(txt), alvo = escapar(termo);
+  if(!alvo) return t;
+  const re = new RegExp('(' + alvo.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi');
+  return t.replace(re, '<mark>$1</mark>');
+}
+
+let reagindo = -1;
+function abrirReacoes(i){
+  reagindo = i;
+  const bar = $('#reagirBar');
+  bar.classList.add('aberta');
+  bar.scrollIntoView({block:'nearest'});
+}
+function reagir(i, emoji){
+  const m = dados.msgs[atual][i];
+  if(!m) return;
+  m.r = (m.r === emoji) ? null : emoji;
+  salvar(); desenharMensagens();
+}
+
+/* ---------- ações ---------- */
+function enviar(texto){
+  texto = (texto || '').trim();
+  if(!texto) return;
+  dados.msgs[atual].push({ t:texto, de:autor, ts:Date.now() });
+  dados.visto[atual] = Date.now();
+  dados.presenca[autor] = Date.now();
+  animar = dados.msgs[atual].length - 1;
+  salvar(); blim(autor === 'eu');
+
+  const entrada = $('#entrada');
+  entrada.value = ''; crescer(entrada);
+  $('#paleta').classList.remove('aberta');
+  buscaMsg = ''; const ib = $('#inputBuscaMsg'); if(ib) ib.value = '';
+  desenharMensagens(); desenharContatos(); atualizarStatusTopo(); atualizarBolinhaDoIcone();
+  modoBotao(); entrada.focus();
+}
+
+function apagarMensagem(i){
+  if(!confirm('Apagar este recadinho?')) return;
+  const m = dados.msgs[atual][i];
+  if(m && (m.tipo === 'audio' || m.tipo === 'foto') && m.id) apagarAudio(m.id);
+  dados.msgs[atual].splice(i,1);
+  salvar(); desenharMensagens(); desenharContatos();
+  toast('Recadinho apagado 🗑️');
+}
+
+function limparConversa(){
+  if(!confirm('Apagar TODOS os recadinhos desta conversa?\nNão dá pra desfazer!')) return;
+  dados.msgs[atual].forEach(m => { if((m.tipo === 'audio' || m.tipo === 'foto') && m.id) apagarAudio(m.id); });
+  dados.msgs[atual] = [];
+  salvar(); desenharMensagens(); desenharContatos();
+  toast('Conversa limpa ✨');
+}
+
+function copiarConversa(){
+  const msgs = dados.msgs[atual] || [];
+  if(!msgs.length){ toast('Não tem nada pra copiar 🤷'); return; }
+  const txt = msgs.map(m => `[${new Date(m.ts).toLocaleString('pt-BR')}] ${PESSOAS[m.de].curto}: ${textoDe(m)}`).join('\n');
+  navigator.clipboard?.writeText(txt)
+    .then(() => toast('Conversa copiada! 📋'))
+    .catch(() => toast('Teu navegador não deixou copiar 😕'));
+}
+
+/* ---------- ajustes ---------- */
+function abrirConfig(){
+  $('#cfgNome').value = dados.nome;
+  $('#cfgAvisos').classList.toggle('on', avisoLigado());
+  desenharLembretes();
+  $('#cfgSom').classList.toggle('on', !!dados.som);
+  $('#cfgTema').classList.toggle('on', dados.tema === 'escuro');
+  $('#modalConfig').classList.add('aberto');
+}
+function fecharConfig(){ $('#modalConfig').classList.remove('aberto'); }
+function salvarConfig(){
+  dados.nome = $('#cfgNome').value.trim();
+  dados.som  = $('#cfgSom').classList.contains('on');
+  dados.avisos = $('#cfgAvisos').classList.contains('on');
+  dados.tema = $('#cfgTema').classList.contains('on') ? 'escuro' : 'claro';
+  salvar(); aplicarTema(); saudacao(); fecharConfig();
+  if(atual) atualizarPlaceholder();
+  toast('Salvo! ✅');
+}
+function saudacao(){
+  const h = new Date().getHours();
+  const parte = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+  $('#ola').textContent = dados.nome ? `${parte}, ${dados.nome}! 👋` : `${parte}! 👋`;
+}
+function aplicarTema(){
+  document.documentElement.dataset.tema = dados.tema;
+  $('#btnTema').textContent = dados.tema === 'escuro' ? '☀️' : '🌙';
+  document.querySelector('meta[name="theme-color"]')
+    .setAttribute('content', dados.tema === 'escuro' ? '#171331' : '#7c3aed');
+}
+
+/* ---------- eventos gerais ---------- */
+$('#btnConfig').addEventListener('click', abrirConfig);
+$('#cfgFechar').addEventListener('click', fecharConfig);
+$('#cfgSalvar').addEventListener('click', salvarConfig);
+$('#cfgSom').addEventListener('click',  e => e.currentTarget.classList.toggle('on'));
+$('#cfgAvisos').addEventListener('click', async e => {
+  const bt = e.currentTarget;
+  if(bt.classList.contains('on')){ bt.classList.remove('on'); dados.avisos = false; salvar(); return; }
+  if(await pedirAvisos()) bt.classList.add('on');
+});
+$('#addLembrete').addEventListener('click', novoLembrete);
+$('#cfgTema').addEventListener('click', e => e.currentTarget.classList.toggle('on'));
+$('#modalConfig').addEventListener('click', e => { if(e.target.id === 'modalConfig') fecharConfig(); });
+$('#busca').addEventListener('input', desenharContatos);
+$('#btnTema').addEventListener('click', () => {
+  dados.tema = dados.tema === 'escuro' ? 'claro' : 'escuro';
+  salvar(); aplicarTema();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ fecharConfig(); const b = $('#reagirBar'); if(b) b.classList.remove('aberta'); }
+});
+document.addEventListener('click', e => {
+  const mt = $('#menuTopo');
+  if(mt && mt.classList.contains('aberto') && !e.target.closest('#btnMenu')) mt.classList.remove('aberto');
+  const b = $('#reagirBar');
+  if(b && b.classList.contains('aberta') && !e.target.closest('#reagirBar') && !e.target.closest('[data-acao="reagir"]'))
+    b.classList.remove('aberta');
+});
+
+window.addEventListener('online',  verInternet);
+window.addEventListener('offline', verInternet);
+/* De meio em meio minuto confere quem ainda está por aqui. */
+setInterval(() => { desenharContatos(); atualizarStatusTopo(); }, 30000);
+
+/* ---------- começo ---------- */
+if(!localStorage.getItem(CHAVE) && !localStorage.getItem('fala-familia:v1')
+   && window.matchMedia('(prefers-color-scheme: dark)').matches) dados.tema = 'escuro';
+if(dados.migrou){ delete dados.migrou; salvar(); }   // guarda o que veio da versão antiga
+aplicarTema(); saudacao(); verInternet(); desenharContatos(); telaVazia();
+verLembretes(true); atualizarBolinhaDoIcone();
+if(window.innerWidth > 860) abrir('familia');
+
+/* Deixa o site funcionar sem internet e dá pra instalar na tela do celular. */
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
