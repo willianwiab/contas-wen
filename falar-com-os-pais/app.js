@@ -44,7 +44,7 @@ function padrao(){
     msgs:{pai:[],mae:[],sofia:[],familia:[]},
     visto:{pai:0,mae:0,sofia:0,familia:0},
     presenca:{eu:0,pai:0,mae:0,irma:0},
-    fotos:{}, tarefas:[], pontos:{eu:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{},
+    fotos:{}, tarefas:[], pontos:{eu:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{}, agenda:[], bicho:{},
     avisos:false, lembretes:[] };
 }
 function carregar(){
@@ -58,6 +58,8 @@ function carregar(){
     d.fotos    = d.fotos || {};
     d.nasc     = d.nasc || {};
     d.fixado   = d.fixado || {};
+    if(!Array.isArray(d.agenda)) d.agenda = [];
+    d.bicho    = d.bicho || {};
     if(!Array.isArray(d.tarefas)) d.tarefas = [];
     if(!Array.isArray(d.lembretes)) d.lembretes = [];
     if(!bruto) d = migrarV1(d);
@@ -94,7 +96,11 @@ const textoDe = m =>
   m.tipo === 'audio'   ? `🎤 recadinho de voz (${(m.dur||0).toFixed(1)}s)` :
   m.tipo === 'foto'    ? '📷 foto' :
   m.tipo === 'enquete' ? `📊 ${m.q}` :
-  m.tipo === 'jogo'    ? '🕹️ jogo da velha' : (m.t || '');
+  m.tipo === 'jogo'    ? '🕹️ jogo da velha' :
+  m.tipo === 'capsula' ? '🕰️ cápsula do tempo' :
+  m.tipo === 'lugar'   ? '📍 mandou onde está' :
+  m.tipo === 'som'     ? '🎺 figurinha de som' :
+  m.tipo === 'timer'   ? '⏱️ cronômetro' : (m.t || '');
 const soEmoji = t => { const p = [...t.trim()]; return p.length > 0 && p.length <= 5 && /^(?:\p{Extended_Pictographic}|‍|️|\p{Emoji_Modifier}|\s)+$/u.test(t); };
 
 function diaTexto(ts){
@@ -213,6 +219,7 @@ function desenharContatos(){
     }).join('') || `<div style="padding:20px;text-align:center;color:var(--texto2);font-size:.88rem">Nada com esse nome 🤷</div>`;
 
   document.querySelectorAll('.contato').forEach(b => b.addEventListener('click', () => abrir(b.dataset.id)));
+  desenharBicho();   // o bichinho acompanha o movimento da família
 }
 
 /* ---------- abrir / fechar ---------- */
@@ -278,6 +285,7 @@ function desenharConversa(){
       </div>
       <button class="enviar mic" id="btnEnviar" title="Segura pra gravar">🎤</button>
     </div>
+    <div class="resposta" id="barraResposta"></div>
     <div class="gravando" id="gravBar">
       <span class="pulso"></span><b id="gravTempo">0,0s</b>
       <span class="g-dica">gravando... toca no ⏹ pra mandar</span>
@@ -293,6 +301,7 @@ function desenharConversa(){
 
   desenharMensagens();
   desenharFixado();
+  respondendo = null; desenharRespondendo();
 
   const entrada = $('#entrada');
   $('#btnVoltar').addEventListener('click', fechar);
@@ -431,11 +440,12 @@ function desenharMensagens(){
       <div class="linha-msg ${eu ? 'eu' : 'eles'} ${m.r ? 'tem-reacao' : ''} ${real === animar ? 'nova' : ''}" data-i="${real}">
         <div class="mini-av ${repetido ? 'oculto' : ''}" style="background:linear-gradient(135deg,${p.cor},${p.cor}bb)">${avatarDe(m.de)}</div>
         <div class="msg ${eu ? 'eu' : 'eles'} ${grande ? 'emojao' : ''} ${m.tipo ? 'tipo-' + m.tipo : ''}">
-          ${nome}${corpo}
+          ${nome}${citacaoNoBalao(m)}${corpo}
           <div class="rodape">${hora(m.ts)}</div>
           ${m.r ? `<span class="reacao">${m.r}</span>` : ''}
         </div>
         <div class="ferramentas">
+          <button data-acao="responder" data-i="${real}" title="Responder">↩</button>
           <button data-acao="reagir" data-i="${real}" title="Reagir">☺</button>
           <button data-acao="fixar" data-i="${real}" title="Fixar no topo">📌</button>
           <button data-acao="apagar" data-i="${real}" title="Apagar">✕</button>
@@ -445,6 +455,13 @@ function desenharMensagens(){
 
   caixa.querySelectorAll('[data-acao="apagar"]').forEach(b =>
     b.addEventListener('click', () => apagarMensagem(+b.dataset.i)));
+  caixa.querySelectorAll('[data-acao="responder"]').forEach(b =>
+    b.addEventListener('click', () => responderMsg(+b.dataset.i)));
+  caixa.querySelectorAll('[data-somtocar]').forEach(b =>
+    b.addEventListener('click', () => {
+      const m = dados.msgs[atual][+b.dataset.somtocar];
+      if(m) tocarSom(m.som);
+    }));
   caixa.querySelectorAll('[data-acao="fixar"]').forEach(b =>
     b.addEventListener('click', () => fixarRecado(+b.dataset.i)));
   caixa.querySelectorAll('[data-acao="reagir"]').forEach(b =>
@@ -493,7 +510,9 @@ function reagir(i, emoji){
 function enviar(texto){
   texto = (texto || '').trim();
   if(!texto) return;
-  dados.msgs[atual].push({ t:texto, de:autor, ts:Date.now() });
+  const nova = { t:texto, de:autor, ts:Date.now() };
+  if(respondendo){ nova.resp = respondendo; pararDeResponder(); }
+  dados.msgs[atual].push(nova);
   dados.visto[atual] = Date.now();
   dados.presenca[autor] = Date.now();
   animar = dados.msgs[atual].length - 1;
@@ -576,6 +595,9 @@ $('#cfgAvisos').addEventListener('click', async e => {
 });
 $('#addLembrete').addEventListener('click', novoLembrete);
 $('#btnTarefas').addEventListener('click', abrirTarefas);
+$('#btnAlbum').addEventListener('click', abrirAlbum);
+$('#btnAgenda').addEventListener('click', abrirAgenda);
+$('#cardBicho').addEventListener('click', abrirBicho);
 $('#btnAjuda').addEventListener('click', abrirAjuda);
 $('#btnTranca').addEventListener('click', mudarTranca);
 $('#btnSalvarTudo').addEventListener('click', exportarTudo);
@@ -609,7 +631,8 @@ if(!localStorage.getItem(CHAVE) && !localStorage.getItem('fala-familia:v1')
 if(dados.migrou){ delete dados.migrou; salvar(); }   // guarda o que veio da versão antiga
 aplicarTema(); saudacao(); verInternet(); desenharContatos(); telaVazia();
 carregarPerfis().then(() => { desenharContatos(); if(atual) desenharConversa(); });
-verLembretes(true); atualizarBolinhaDoIcone(); mostrarAniversario(); pedirTranca();
+verLembretes(true); atualizarBolinhaDoIcone(); mostrarAniversario(); mostrarProximo();
+verCapsulas(); verAgenda(); desenharBicho(); pedirTranca();
 if(window.innerWidth > 860) abrir('familia');
 
 /* Deixa o site funcionar sem internet e dá pra instalar na tela do celular. */
