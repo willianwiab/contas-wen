@@ -545,6 +545,37 @@ html[data-tema="escuro"] .bi-txt small{color:#c4b5fd}
 .bi-info div{background:var(--painel);border-radius:14px;padding:10px 16px;text-align:center;box-shadow:var(--sombra)}
 .bi-info b{display:block;font-size:1.05rem}
 .bi-info span{font-size:.72rem;color:var(--texto2)}
+
+/* ===================== PAPEL DE PAREDE ===================== */
+.conversa[data-papel="liso"]{background-image:none}
+.conversa[data-papel="listras"]{background-image:repeating-linear-gradient(45deg,var(--papel1) 0 12px,transparent 12px 34px);background-size:auto}
+.conversa[data-papel="coracoes"]{background-size:64px 64px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M16 28c-6-5-10-8-10-12a5 5 0 0110-3 5 5 0 0110 3c0 4-4 7-10 12z' fill='%237c3aed' opacity='.13'/%3E%3Cpath d='M46 56c-6-5-10-8-10-12a5 5 0 0110-3 5 5 0 0110 3c0 4-4 7-10 12z' fill='%23ec4899' opacity='.12'/%3E%3C/svg%3E")}
+.conversa[data-papel="estrelas"]{background-size:70px 70px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70'%3E%3Cpath d='M18 6l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1z' fill='%237c3aed' opacity='.13'/%3E%3Cpath d='M50 40l2 5 6 1-4 4 1 6-5-3-5 3 1-6-4-4 6-1z' fill='%232563eb' opacity='.12'/%3E%3C/svg%3E")}
+.papeis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
+.papel-op{display:flex;align-items:center;gap:8px;background:var(--painel2);border:2px solid transparent;border-radius:14px;padding:10px 12px;font-size:.86rem;font-weight:700}
+.papel-op.on{border-color:var(--roxo)}
+.papel-mostra{width:34px;height:34px;border-radius:10px;background:var(--fundo);flex-shrink:0;background-size:34px 34px}
+.papel-mostra[data-papel="bolinhas"]{background-image:radial-gradient(circle at 30% 30%,var(--papel1) 3px,transparent 3.5px)}
+.papel-mostra[data-papel="listras"]{background-image:repeating-linear-gradient(45deg,var(--papel1) 0 5px,transparent 5px 12px)}
+.papel-mostra[data-papel="coracoes"]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34'%3E%3Cpath d='M17 26c-7-6-11-9-11-13a6 6 0 0111-3 6 6 0 0111 3c0 4-4 7-11 13z' fill='%23ec4899' opacity='.5'/%3E%3C/svg%3E")}
+.papel-mostra[data-papel="estrelas"]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34'%3E%3Cpath d='M17 5l4 8 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1z' fill='%237c3aed' opacity='.5'/%3E%3C/svg%3E")}
+
+/* ===================== CONFETE ===================== */
+.confete-caixa{position:fixed;inset:0;pointer-events:none;z-index:95;overflow:hidden}
+.confete-caixa span{position:absolute;top:-16px;width:10px;height:16px;border-radius:3px;animation:cair linear forwards}
+@keyframes cair{to{transform:translateY(105vh) rotate(680deg);opacity:.2}}
+
+/* ===================== CÓDIGO SECRETO ===================== */
+.cod-previa{background:var(--painel2);border-radius:14px;padding:12px 14px;font-size:.92rem;font-weight:700;
+  min-height:46px;word-break:break-word;color:var(--roxo)}
+html[data-tema="escuro"] .cod-previa{color:#c4b5fd}
+
+/* ===================== TAMANHO DA LETRA ===================== */
+html[data-letra="grande"]{font-size:18.5px}
+html[data-letra="gigante"]{font-size:21.5px}
+.msg .rodape i{font-style:normal;opacity:.75}
 </style>
 </head>
 <body>
@@ -608,6 +639,27 @@ html[data-tema="escuro"] .bi-txt small{color:#c4b5fd}
     <div class="bloco-titulo">🖼️ Foto de cada um</div>
     <div class="perfis" id="listaPerfis"></div>
 
+    <div class="bloco-titulo">🔠 Tamanho da letra</div>
+    <div class="tm-opcoes" id="tamanhos">
+      <button class="tm-op" data-letra="normal">Normal</button>
+      <button class="tm-op" data-letra="grande">Grande</button>
+      <button class="tm-op" data-letra="gigante">Gigante</button>
+    </div>
+
+    <div class="opcao" style="margin-top:16px">
+      <div><b>🗣️ Ler em voz alta</b><small>põe um 🔊 nos recados pro celular ler</small></div>
+      <button class="switch" id="cfgVoz" aria-label="Ligar ou desligar a leitura em voz alta"></button>
+    </div>
+
+    <div class="bloco-titulo">🔕 Modo soneca</div>
+    <p class="sem-lembrete" id="estadoSoneca">🔔 Os avisos estão ligados</p>
+    <div class="lig-botoes" style="margin:8px 0 0">
+      <button class="lig-bt" data-soneca="30">30 min</button>
+      <button class="lig-bt" data-soneca="60">1 hora</button>
+      <button class="lig-bt" data-soneca="manha">Até 8h</button>
+      <button class="lig-bt escondido" id="sonecaOff" data-soneca="0">🔔 Ligar de novo</button>
+    </div>
+
     <div class="bloco-titulo">🎂 Aniversários</div>
     <div id="listaAniversarios"></div>
 
@@ -645,6 +697,7 @@ html[data-tema="escuro"] .bi-txt small{color:#c4b5fd}
 <script src="jogo.js"></script>
 <script src="mais.js"></script>
 <script src="casa.js"></script>
+<script src="enfeites.js"></script>
 <script src="trancar.js"></script>
 <script src="audio.js"></script>
 <script src="video.js"></script>

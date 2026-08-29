@@ -45,6 +45,13 @@ quem escreve na barra **“Falando como”** (🧒 Eu, 👨 Papai, 👩 Mamãe, 
 | 🖼️ Álbum da família | Botão na lista: todas as fotos e vídeos juntos, por mês |
 | 📅 Agenda | Botão na lista: combinados com dia e hora, avisa na hora |
 | 🐣 Bichinho da família | Cartão na lista: cresce quando todo mundo conversa |
+| 🎨 Papel de parede | Menu ⋯ → bolinhas, corações, estrelas, listras ou liso, por conversa |
+| ✏️ Editar recado | Botão ✏️ no próprio recado; fica marcado como “editado” |
+| 🔠 Tamanho da letra | ⚙️ Ajustes → normal, grande ou gigante |
+| 🎊 Confete | Mandar 🎉 🥳 🎂 faz cair confete na tela |
+| 🔤 Código secreto | ➕ → língua do P ou ao contrário |
+| 🔕 Modo soneca | ⚙️ Ajustes → silencia avisos e sons por um tempo |
+| 🗣️ Ler em voz alta | ⚙️ Ajustes → põe um 🔊 nos recados (voz do próprio aparelho) |
 | ❓ Como usar | Botão ❓ no topo da lista: o guia de tudo, dentro do site |
 | 📞 Ligação de voz **ou vídeo** | Ligação de verdade entre dois aparelhos (veja abaixo) |
 | 🖼️ Foto de perfil | ⚙️ Ajustes → toca no bonequinho de cada um |
@@ -116,6 +123,7 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 | `jogo.js` | Jogo da velha |
 | `mais.js` | Responder, cápsula do tempo, lugar, sons e cronômetro |
 | `casa.js` | Álbum, agenda e o bichinho da família |
+| `enfeites.js` | Papel de parede, confete, código secreto, soneca e voz alta |
 | `trancar.js` | A senha de abrir o chat |
 | `ajuda.js` | A tela ❓ Como usar |
 | `ligacao.js` | Ligação de voz e vídeo (WebRTC) |

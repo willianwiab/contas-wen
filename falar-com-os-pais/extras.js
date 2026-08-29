@@ -219,6 +219,7 @@ function abrirMaisMenu(){
     <button data-acao="lugar">🗺️ Mandar onde eu estou</button>
     <button data-acao="som">🎺 Figurinhas de som</button>
     <button data-acao="timer">⏱️ Cronômetro</button>
+    <button data-acao="codigo">🔤 Código secreto</button>
     <button data-acao="walkie">📻 Walkie-talkie</button>`;
   document.querySelector('.barra').insertAdjacentElement('beforebegin', menu);
   menu.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
@@ -234,6 +235,7 @@ function abrirMaisMenu(){
     if(a === 'lugar') mandarLugar();
     if(a === 'som') abrirSons();
     if(a === 'timer') abrirCronometro();
+    if(a === 'codigo') abrirCodigo();
     if(a === 'walkie') abrirWalkie();
   }));
   setTimeout(() => document.addEventListener('click', function fora(e){
