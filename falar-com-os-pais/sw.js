@@ -1,8 +1,8 @@
 /* Service worker simples: tenta a internet primeiro e, se não tiver,
    usa a cópia guardada. Assim o site abre offline e sempre atualiza. */
-const CACHE = 'fala-familia-v6';
+const CACHE = 'fala-familia-v7';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg',
-  './app.js', './ajuda.js', './audio.js', './video.js', './familia.js', './extras.js', './ligacao.js', './avisos.js',
+  './app.js', './ajuda.js', './jogo.js', './trancar.js', './audio.js', './video.js', './familia.js', './extras.js', './ligacao.js', './avisos.js',
   './icone-192.png', './icone-512.png', './icone-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', ev => {

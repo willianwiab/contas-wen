@@ -27,6 +27,7 @@ const AJUDA = [
       ['🎤 Microfone','toca pra gravar, toca no ⏹ pra mandar (🗑️ joga fora)'],
       ['No áudio','▶ tocar e 🎛️ voz de esquilo 🐿️, monstro 👹 ou robô 🤖'],
       ['☺ Reagir','no balão — ou dois cliques nele. O ✕ apaga um recadinho'],
+      ['📌 Fixar','põe o recado lá no topo da conversa (o ✕ tira)'],
       ['📻 e 📞 no topo','walkie-talkie e ligação (só voz ou com vídeo)'],
       ['⋯ Menu do topo','🔍 procurar na conversa, 📋 copiar tudo, 🗑️ apagar a conversa']
     ]
@@ -40,7 +41,8 @@ const AJUDA = [
       ['🎞️ GIF caseiro','2 segundos que ficam repetindo'],
       ['✏️ Recado desenhado','desenha com cores e manda como figurinha'],
       ['😄 Figurinhas','emoji gigante num toque'],
-      ['📊 Enquete','pergunta + até 4 respostas, todo mundo vota']
+      ['📊 Enquete','pergunta + até 4 respostas, todo mundo vota'],
+      ['🕹️ Jogo da velha','joga com quem estiver junto, cada um na sua vez pelo “Falando como”']
     ]
   },
   {
@@ -52,6 +54,8 @@ const AJUDA = [
       ['🔊 Som e 🌙 Tema escuro','liga e desliga'],
       ['🔔 Avisos','notificação quando chega recadinho novo'],
       ['⏰ Lembretes','ex.: “21:00 — dar boa noite”'],
+      ['🎂 Aniversários','põe a data de cada um e a lista avisa quantos dias faltam'],
+      ['🔒 Tranca do chat','senha de 4 números pedida ao abrir (tem dica depois de 3 erros)'],
       ['💾 Salvar num arquivo','e 📂 abrir em outro celular, com áudios e fotos junto']
     ]
   },
@@ -70,7 +74,8 @@ const AJUDA = [
       ['Tudo fica neste aparelho','nada é enviado pra internet — nem os áudios, nem as fotos. Por isso existe o 💾 backup'],
       ['📞 A ligação','os dois precisam estar com o site aberto ao mesmo tempo e trocar o código. No wi-fi quase sempre funciona; no 4G às vezes não conecta'],
       ['🔔 Os avisos','funcionam com o site aberto ou atrás de outro app. Com o celular guardado e o app fechado, não dá (precisaria de servidor)'],
-      ['🎤 Microfone e câmera','só funcionam abrindo pelo link (https), não no arquivo solto']
+      ['🎤 Microfone e câmera','só funcionam abrindo pelo link (https), não no arquivo solto'],
+      ['🔒 A tranca','é uma cortina pra ninguém xeretar sem querer, não é um cofre: os recadinhos continuam guardados no aparelho']
     ]
   }
 ];

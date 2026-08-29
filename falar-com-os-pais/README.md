@@ -33,6 +33,11 @@ quem escreve na barra **“Falando como”** (🧒 Eu, 👨 Papai, 👩 Mamãe, 
 | ✏️ Recado desenhado | ➕ → quadro de desenho com cores e borracha, vira figurinha |
 | 😄 Figurinhas | ➕ → emoji gigante com um toque |
 | 📊 Enquetes | ➕ → pergunta + até 4 respostas, cada um vota |
+| 🕹️ Jogo da velha | ➕ → joga com quem estiver junto, cada um na sua vez |
+| 📌 Recado fixado | Botão 📌 do lado do balão põe o recado no topo da conversa |
+| 🎂 Aniversários | ⚙️ Ajustes → a lista avisa quantos dias faltam |
+| 🔒 Tranca | ⚙️ Ajustes → senha de 4 números pedida ao abrir |
+| ❓ Como usar | Botão ❓ no topo da lista: o guia de tudo, dentro do site |
 | 📞 Ligação de voz **ou vídeo** | Ligação de verdade entre dois aparelhos (veja abaixo) |
 | 🖼️ Foto de perfil | ⚙️ Ajustes → toca no bonequinho de cada um |
 | ✅ Tarefas e 🏆 estrelinhas | Botão na lista: tarefas com dono, pontos e placar |
@@ -69,6 +74,14 @@ videinho sempre funcionam.
 | Lembrete com o app fechado | ⚠️ aparece quando abrir de novo |
 | App fechado, ou de um celular pro outro | ❌ precisa de servidor (Firebase e afins) |
 
+## 🔒 Sobre a tranca
+
+A senha de 4 números é uma **cortina**, não um cofre: ela esconde o chat de quem pega o
+aparelho sem querer, mas os recadinhos continuam guardados no navegador do mesmo jeito.
+Depois de 3 erros ela mostra a dica que foi escolhida; depois de 6, aparece um
+“esqueci a senha” que **tira a tranca** (sem apagar nada) — pra ninguém da família
+ficar trancado pra fora.
+
 ## 💾 Backup: levar pra outro aparelho
 
 ⚙️ Ajustes → **Salvar num arquivo** baixa um `.json` com as conversas, tarefas, pontos,
@@ -91,7 +104,10 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 | `audio.js` | Gravar voz, tocar, vozes engraçadas e walkie-talkie |
 | `video.js` | Videinho e GIF caseiro |
 | `extras.js` | Fotos, GIF, figurinhas, desenho e enquetes |
-| `familia.js` | Foto de perfil, tarefas com estrelinhas e backup |
+| `familia.js` | Foto de perfil, tarefas, backup, aniversários e recado fixado |
+| `jogo.js` | Jogo da velha |
+| `trancar.js` | A senha de abrir o chat |
+| `ajuda.js` | A tela ❓ Como usar |
 | `ligacao.js` | Ligação de voz e vídeo (WebRTC) |
 | `avisos.js` | Notificações, lembretes e bolinha no ícone |
 | `sw.js`, `manifest.webmanifest`, ícones | Instalar como aplicativo e abrir sem internet |
