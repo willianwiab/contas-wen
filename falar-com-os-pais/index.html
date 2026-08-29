@@ -408,6 +408,16 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
 .t-txt small{color:var(--texto2);font-size:.76rem}
 .t-apagar{color:var(--texto2);padding:4px 7px;border-radius:8px}
 .t-apagar:hover{background:var(--painel2)}
+
+/* ===================== COMO USAR ===================== */
+.aj-meio{flex:1;overflow-y:auto;padding:16px 14px 30px;display:flex;flex-direction:column;gap:14px}
+.aj-bloco{background:var(--painel);border-radius:18px;padding:15px 16px;box-shadow:var(--sombra);border-left:5px solid var(--roxo)}
+.aj-bloco h3{font-size:1rem;font-weight:800;margin-bottom:10px}
+.aj-item{display:flex;flex-direction:column;gap:1px;padding:8px 0;border-top:1px solid var(--borda)}
+.aj-item:first-of-type{border-top:none}
+.aj-item b{font-size:.92rem}
+.aj-item span{font-size:.84rem;color:var(--texto2);line-height:1.45}
+.aj-fim{text-align:center;font-size:.85rem;color:var(--texto2);padding:6px 10px 14px}
 </style>
 </head>
 <body>
@@ -423,6 +433,7 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
           <div class="net" id="net"><span class="bolinha"></span><span id="netTxt">Vendo a internet...</span></div>
         </div>
         <div class="icones">
+          <button class="icone" id="btnAjuda" title="Como usar">❓</button>
           <button class="icone" id="btnTema" title="Trocar o tema">🌙</button>
           <button class="icone" id="btnConfig" title="Ajustes">⚙️</button>
         </div>
@@ -488,6 +499,7 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
 
 <div class="aviso-flutua" id="toast"></div>
 
+<script src="ajuda.js"></script>
 <script src="audio.js"></script>
 <script src="video.js"></script>
 <script src="familia.js"></script>

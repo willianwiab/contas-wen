@@ -230,8 +230,9 @@ function telaVazia(){
     <div class="vazio"><div>
       <div class="balao-deco">💬</div>
       <h2>Escolhe com quem falar</h2>
-      <p>Deixa um recadinho pro <b>papai</b>, pra <b>mamãe</b> ou pros dois na conversa da <b>Família</b>.
+      <p>Deixa um recadinho pro <b>papai</b>, pra <b>mamãe</b>, pra <b>Sofia</b> ou pra família toda.
       Eles respondem aqui mesmo, neste aparelho. 💜</p>
+      <button class="lig-bt ok" style="margin-top:16px" onclick="abrirAjuda()">❓ Ver tudo que dá pra fazer</button>
     </div></div>`;
 }
 
@@ -562,6 +563,7 @@ $('#cfgAvisos').addEventListener('click', async e => {
 });
 $('#addLembrete').addEventListener('click', novoLembrete);
 $('#btnTarefas').addEventListener('click', abrirTarefas);
+$('#btnAjuda').addEventListener('click', abrirAjuda);
 $('#btnSalvarTudo').addEventListener('click', exportarTudo);
 $('#btnAbrirTudo').addEventListener('click', importarTudo);
 $('#cfgTema').addEventListener('click', e => e.currentTarget.classList.toggle('on'));
