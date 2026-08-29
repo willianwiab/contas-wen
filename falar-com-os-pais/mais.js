@@ -287,5 +287,6 @@ function mandarEspecial(extra){
   dados.presenca[autor] = Date.now();
   animar = dados.msgs[atual].length - 1;
   salvar(); blim(true);
+  mandarPraNuvem(atual, msg);
   desenharMensagens(); desenharContatos(); atualizarStatusTopo();
 }

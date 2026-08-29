@@ -527,6 +527,7 @@ function enviar(texto){
   dados.presenca[autor] = Date.now();
   animar = dados.msgs[atual].length - 1;
   salvar(); blim(autor === 'eu');
+  mandarPraNuvem(atual, nova);
   if(temFesta(texto)) confete();
   desenharBicho();
 
@@ -578,7 +579,7 @@ function copiarConversa(){
 function abrirConfig(){
   $('#cfgNome').value = dados.nome;
   $('#cfgAvisos').classList.toggle('on', avisoLigado());
-  desenharLembretes(); desenharPerfis(); desenharAniversarios(); desenharTranca(); desenharSoneca();
+  desenharLembretes(); desenharPerfis(); desenharAniversarios(); desenharTranca(); desenharSoneca(); desenharNuvem();
   $('#cfgVoz').classList.toggle('on', !!dados.voz);
   document.querySelectorAll('#tamanhos .tm-op').forEach(b =>
     b.classList.toggle('on', b.dataset.letra === (dados.letra || 'normal')));
@@ -630,6 +631,20 @@ $('#cardBicho').addEventListener('click', abrirBicho);
 $('#btnAjuda').addEventListener('click', abrirAjuda);
 $('#btnTranca').addEventListener('click', mudarTranca);
 /* Joga fora a cópia velha guardada e baixa o site de novo (sem apagar recadinho). */
+$('#btnSortear').addEventListener('click', sortearSala);
+$('#btnLigarNuvem').addEventListener('click', salvarNuvem);
+$('#btnDesligarNuvem').addEventListener('click', desligarDeVez);
+$('#btnConvite').addEventListener('click', () => {
+  navigator.clipboard?.writeText(fazerConvite())
+    .then(() => toast('Convite copiado! Cola no outro aparelho 📋'))
+    .catch(() => prompt('Copia este convite:', fazerConvite()));
+});
+$('#btnColarConvite').addEventListener('click', () => {
+  const t = prompt('Cola aqui o convite que veio do outro aparelho:');
+  if(t == null) return;
+  toast(usarConvite(t) ? 'Pronto! Este aparelho entrou na família ☁️' : 'Esse convite não parece certo 🤔');
+  desenharNuvem();
+});
 $('#btnAtualizar').addEventListener('click', async () => {
   if(!confirm('Baixar o site de novo?\n\nOs recadinhos NÃO são apagados.')) return;
   toast('Limpando a cópia velha... 🔄', 4000);
@@ -687,6 +702,7 @@ aplicarTema(); aplicarLetra(); saudacao(); verInternet(); desenharContatos(); te
 carregarPerfis().then(() => { desenharContatos(); if(atual) desenharConversa(); });
 verLembretes(true); atualizarBolinhaDoIcone(); mostrarAniversario(); mostrarProximo();
 verCapsulas(); verAgenda(); desenharBicho(); pedirTranca();
+if(nuvemLigada()) ligarNuvem();
 if(window.innerWidth > 860) abrir('familia');
 
 /* Deixa o site funcionar sem internet e dá pra instalar na tela do celular. */

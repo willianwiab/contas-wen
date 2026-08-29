@@ -141,6 +141,7 @@ async function mandarAudio(blob, segundos){
   dados.presenca[autor] = Date.now();
   animar = dados.msgs[atual].length - 1;
   salvar(); blim(autor === 'eu');
+  mandarPraNuvem(atual, msg);
   desenharMensagens(); desenharContatos(); atualizarStatusTopo();
 }
 
