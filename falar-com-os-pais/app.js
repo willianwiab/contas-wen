@@ -7,15 +7,19 @@
 const CHAVE = 'fala-familia:v2';
 
 const PESSOAS = {
-  eu : { nome:'Eu',              curto:'Eu',     emoji:'🧒', cor:'#7c3aed' },
-  pai: { nome:'Papai Wilian',    curto:'Papai',  emoji:'👨', cor:'#0ea5e9' },
-  mae: { nome:'Mamãe Grabiela',  curto:'Mamãe',  emoji:'👩', cor:'#ec4899' }
+  eu  : { nome:'Eu',              curto:'Eu',     emoji:'🧒', cor:'#7c3aed' },
+  pai : { nome:'Papai Wilian',    curto:'Papai',  emoji:'👨', cor:'#0ea5e9' },
+  mae : { nome:'Mamãe Grabiela',  curto:'Mamãe',  emoji:'👩', cor:'#ec4899' },
+  irma: { nome:'Sofia',           curto:'Sofia',  emoji:'👧', cor:'#f59e0b' }
 };
+const OUTROS = ['pai','mae','irma'];   // todo mundo menos eu
 
 const CONVERSAS = [
-  { id:'pai',     nome:'Papai Wilian',   emoji:'👨', cor:'#0ea5e9', quem:['eu','pai'],       sobre:'toca aqui pra deixar um recado' },
-  { id:'mae',     nome:'Mamãe Grabiela', emoji:'👩', cor:'#ec4899', quem:['eu','mae'],       sobre:'toca aqui pra deixar um recado' },
-  { id:'familia', nome:'Família 💜',      emoji:'🏠', cor:'#7c3aed', quem:['eu','pai','mae'], sobre:'a conversa dos três juntos' }
+  { id:'pai',     nome:'Papai Wilian',   emoji:'👨', cor:'#0ea5e9', pessoa:'pai',  quem:['eu','pai'],  sobre:'toca aqui pra deixar um recado' },
+  { id:'mae',     nome:'Mamãe Grabiela', emoji:'👩', cor:'#ec4899', pessoa:'mae',  quem:['eu','mae'],  sobre:'toca aqui pra deixar um recado' },
+  { id:'sofia',   nome:'Sofia',          emoji:'👧', cor:'#f59e0b', pessoa:'irma', quem:['eu','irma'], sobre:'toca aqui pra falar com a mana' },
+  { id:'familia', nome:'Família 💜',      emoji:'🏠', cor:'#7c3aed', pessoa:null,
+    quem:['eu','pai','mae','irma'], sobre:'a conversa da família toda' }
 ];
 
 const RAPIDAS = [
@@ -36,15 +40,23 @@ let animar = -1;     // índice da mensagem que acabou de chegar
 let buscaMsg = '';   // filtro dentro da conversa
 
 function padrao(){
-  return { nome:'', tema:'claro', som:true, msgs:{pai:[],mae:[],familia:[]}, visto:{pai:0,mae:0,familia:0}, presenca:{eu:0,pai:0,mae:0}, avisos:false, lembretes:[] };
+  return { nome:'', tema:'claro', som:true,
+    msgs:{pai:[],mae:[],sofia:[],familia:[]},
+    visto:{pai:0,mae:0,sofia:0,familia:0},
+    presenca:{eu:0,pai:0,mae:0,irma:0},
+    fotos:{}, tarefas:[], pontos:{eu:0,pai:0,mae:0,irma:0},
+    avisos:false, lembretes:[] };
 }
 function carregar(){
   try{
     const bruto = localStorage.getItem(CHAVE);
     let d = bruto ? Object.assign(padrao(), JSON.parse(bruto)) : padrao();
-    d.msgs  = Object.assign({pai:[],mae:[],familia:[]}, d.msgs);
-    d.visto = Object.assign({pai:0,mae:0,familia:0}, d.visto);
-    d.presenca = Object.assign({eu:0,pai:0,mae:0}, d.presenca);
+    d.msgs  = Object.assign({pai:[],mae:[],sofia:[],familia:[]}, d.msgs);
+    d.visto = Object.assign({pai:0,mae:0,sofia:0,familia:0}, d.visto);
+    d.presenca = Object.assign({eu:0,pai:0,mae:0,irma:0}, d.presenca);
+    d.pontos   = Object.assign({eu:0,pai:0,mae:0,irma:0}, d.pontos);
+    d.fotos    = d.fotos || {};
+    if(!Array.isArray(d.tarefas)) d.tarefas = [];
     if(!Array.isArray(d.lembretes)) d.lembretes = [];
     if(!bruto) d = migrarV1(d);
     return d;
@@ -58,7 +70,7 @@ function migrarV1(d){
     const v = JSON.parse(velho);
     d.nome = v.nome || '';
     d.tema = v.tema || 'claro';
-    ['pai','mae','familia'].forEach(k => {
+    ['pai','mae','sofia','familia'].forEach(k => {
       d.msgs[k] = (v.msgs?.[k] || []).map(m => ({ t:m.texto, de:m.de === 'eu' ? 'eu' : m.de, ts:m.ts }));
     });
     d.migrou = true;
@@ -120,12 +132,12 @@ function vistoTexto(p){
 }
 function statusTexto(c){
   if(c.id === 'familia'){
-    const on = ['pai','mae'].filter(estaOnline).map(p => PESSOAS[p].curto);
-    if(on.length === 2) return 'papai e mamãe estão por aqui 🟢';
+    const on = OUTROS.filter(estaOnline).map(p => PESSOAS[p].curto);
+    if(on.length > 1) return `${on.slice(0,-1).join(', ')} e ${on.at(-1)} estão por aqui 🟢`;
     if(on.length === 1) return `${on[0]} está por aqui 🟢`;
     return 'ninguém por aqui agora — deixa o recado 💜';
   }
-  return estaOnline(c.id) ? 'por aqui agora 🟢' : vistoTexto(c.id);
+  return estaOnline(c.pessoa) ? 'por aqui agora 🟢' : vistoTexto(c.pessoa);
 }
 function atualizarStatusTopo(){
   const el = document.querySelector('.conversa-topo .status');
@@ -133,8 +145,7 @@ function atualizarStatusTopo(){
   const pt = document.querySelector('.conversa-topo .ponto');
   if(pt && atual){
     const c = conversaPor(atual);
-    const on = c.id === 'familia' ? ['pai','mae'].some(estaOnline) : estaOnline(c.id);
-    pt.classList.toggle('on', on);
+    pt.classList.toggle('on', c.pessoa ? estaOnline(c.pessoa) : OUTROS.some(estaOnline));
   }
 }
 
@@ -184,10 +195,10 @@ function desenharContatos(){
       const nova = naoLidas(c.id);
       const autorTxt = ultima ? (ultima.de === 'eu' ? 'Tu: ' : PESSOAS[ultima.de].curto + ': ') : '';
       const previa = ultima ? escapar(autorTxt + textoDe(ultima)).slice(0,64) : c.sobre;
-      const on = c.id === 'familia' ? ['pai','mae'].some(estaOnline) : estaOnline(c.id);
+      const on = c.pessoa ? estaOnline(c.pessoa) : OUTROS.some(estaOnline);
       return `
         <button class="contato ${atual === c.id ? 'ativo' : ''}" data-id="${c.id}">
-          <div class="avatar" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${c.emoji}
+          <div class="avatar" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${avatarConversa(c)}
             <span class="ponto ${on ? 'on' : ''}" title="${on ? 'por aqui agora' : 'não está por aqui'}"></span></div>
           <div class="contato-txt">
             <div class="contato-nome"><span>${c.nome}</span>
@@ -230,7 +241,7 @@ function desenharConversa(){
   $('#conversa').innerHTML = `
     <div class="conversa-topo" style="background:linear-gradient(135deg,${c.cor},${c.cor}cc)">
       <button class="voltar" id="btnVoltar" title="Voltar">←</button>
-      <div class="avatar">${c.emoji}<span class="ponto"></span></div>
+      <div class="avatar">${avatarConversa(c)}<span class="ponto"></span></div>
       <div class="txt-topo">
         <div class="nome">${c.nome}</div>
         <div class="status">${statusTexto(c)}</div>
@@ -271,7 +282,7 @@ function desenharConversa(){
   $('#autorBar').insertAdjacentHTML('beforeend', c.quem.map(p =>
     `<button class="pilula ${p === autor ? 'on' : ''}" data-p="${p}"
       style="${p === autor ? `background:linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)` : ''}">
-      ${PESSOAS[p].emoji} ${PESSOAS[p].curto}</button>`).join(''));
+      <span class="pil-av">${avatarDe(p)}</span> ${PESSOAS[p].curto}</button>`).join(''));
   $('#rapidas').innerHTML = RAPIDAS.map(t => `<button class="rapida">${t}</button>`).join('');
   $('#paleta').innerHTML  = EMOJIS.map(e => `<button data-e="${e}">${e}</button>`).join('');
 
@@ -412,7 +423,7 @@ function desenharMensagens(){
 
     return `${sep}
       <div class="linha-msg ${eu ? 'eu' : 'eles'} ${m.r ? 'tem-reacao' : ''} ${real === animar ? 'nova' : ''}" data-i="${real}">
-        <div class="mini-av ${repetido ? 'oculto' : ''}" style="background:linear-gradient(135deg,${p.cor},${p.cor}bb)">${p.emoji}</div>
+        <div class="mini-av ${repetido ? 'oculto' : ''}" style="background:linear-gradient(135deg,${p.cor},${p.cor}bb)">${avatarDe(m.de)}</div>
         <div class="msg ${eu ? 'eu' : 'eles'} ${grande ? 'emojao' : ''} ${m.tipo ? 'tipo-' + m.tipo : ''}">
           ${nome}${corpo}
           <div class="rodape">${hora(m.ts)}</div>
@@ -512,7 +523,7 @@ function copiarConversa(){
 function abrirConfig(){
   $('#cfgNome').value = dados.nome;
   $('#cfgAvisos').classList.toggle('on', avisoLigado());
-  desenharLembretes();
+  desenharLembretes(); desenharPerfis();
   $('#cfgSom').classList.toggle('on', !!dados.som);
   $('#cfgTema').classList.toggle('on', dados.tema === 'escuro');
   $('#modalConfig').classList.add('aberto');
@@ -550,6 +561,9 @@ $('#cfgAvisos').addEventListener('click', async e => {
   if(await pedirAvisos()) bt.classList.add('on');
 });
 $('#addLembrete').addEventListener('click', novoLembrete);
+$('#btnTarefas').addEventListener('click', abrirTarefas);
+$('#btnSalvarTudo').addEventListener('click', exportarTudo);
+$('#btnAbrirTudo').addEventListener('click', importarTudo);
 $('#cfgTema').addEventListener('click', e => e.currentTarget.classList.toggle('on'));
 $('#modalConfig').addEventListener('click', e => { if(e.target.id === 'modalConfig') fecharConfig(); });
 $('#busca').addEventListener('input', desenharContatos);
@@ -578,6 +592,7 @@ if(!localStorage.getItem(CHAVE) && !localStorage.getItem('fala-familia:v1')
    && window.matchMedia('(prefers-color-scheme: dark)').matches) dados.tema = 'escuro';
 if(dados.migrou){ delete dados.migrou; salvar(); }   // guarda o que veio da versão antiga
 aplicarTema(); saudacao(); verInternet(); desenharContatos(); telaVazia();
+carregarPerfis().then(() => { desenharContatos(); if(atual) desenharConversa(); });
 verLembretes(true); atualizarBolinhaDoIcone();
 if(window.innerWidth > 860) abrir('familia');
 

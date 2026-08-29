@@ -10,7 +10,7 @@ const SERVIDORES = { iceServers: [
   { urls: 'stun:stun1.l.google.com:19302' }
 ]};
 
-let pc = null, meuAudio = null, relogioLig = null, segundosLig = 0, mudo = false;
+let pc = null, meuAudio = null, relogioLig = null, segundosLig = 0, mudo = false, comVideo = false;
 
 /* Empacota o convite num texto que dá pra copiar. */
 function empacotar(obj){
@@ -38,6 +38,10 @@ function esperarCaminhos(conexao){
 function criarConexao(){
   const conexao = new RTCPeerConnection(SERVIDORES);
   conexao.ontrack = ev => {
+    if(comVideo){
+      const v = document.getElementById('videoDoOutro');
+      if(v){ v.srcObject = ev.streams[0]; v.play().catch(()=>{}); return; }
+    }
     let el = document.getElementById('audioDoOutro');
     if(!el){
       el = document.createElement('audio');
@@ -58,6 +62,21 @@ function criarConexao(){
 function passo(html){ const p = document.getElementById('ligPasso'); if(p) p.innerHTML = html; }
 function ligStatus(txt){ const s = document.getElementById('ligStatus'); if(s) s.textContent = txt; }
 
+/* Caixinhas de vídeo: a pessoa grande e eu no cantinho. */
+function mostrarVideos(){
+  if(document.getElementById('caixaVideos')) return;
+  const meio = document.querySelector('#telaLigacao .lig-meio');
+  if(!meio) return;
+  const caixa = document.createElement('div');
+  caixa.id = 'caixaVideos'; caixa.className = 'videos-lig';
+  caixa.innerHTML = `<video id="videoDoOutro" autoplay playsinline></video>
+                     <video id="meuVideo" autoplay playsinline muted></video>`;
+  meio.insertBefore(caixa, meio.firstChild);
+  const meu = document.getElementById('meuVideo');
+  if(meuAudio) meu.srcObject = meuAudio;
+  const av = meio.querySelector('.lig-avatar'); if(av) av.style.display = 'none';
+}
+
 function emChamada(){
   clearInterval(relogioLig); segundosLig = 0;
   ligStatus('Falando! 🎉');
@@ -65,8 +84,16 @@ function emChamada(){
     <div class="lig-tempo" id="ligTempo">00:00</div>
     <div class="lig-botoes">
       <button class="lig-bt mudo" id="btMudo">🔇 Mudo</button>
+      ${comVideo ? '<button class="lig-bt" id="btCamera">📷 Desligar câmera</button>' : ''}
       <button class="lig-bt desligar" id="btDesligar">📵 Desligar</button>
     </div>`);
+  const btCam = document.getElementById('btCamera');
+  if(btCam) btCam.addEventListener('click', e => {
+    const faixas = meuAudio ? meuAudio.getVideoTracks() : [];
+    const ligada = faixas[0] && faixas[0].enabled;
+    faixas.forEach(t => t.enabled = !ligada);
+    e.currentTarget.textContent = ligada ? '📷 Ligar câmera' : '📷 Desligar câmera';
+  });
   relogioLig = setInterval(() => {
     segundosLig++;
     const t = document.getElementById('ligTempo');
@@ -98,6 +125,7 @@ function desligar(){
   pc = null;
   if(meuAudio){ meuAudio.getTracks().forEach(t => t.stop()); meuAudio = null; }
   const el = document.getElementById('audioDoOutro'); if(el) el.remove();
+  comVideo = false;
   const tela = document.getElementById('telaLigacao'); if(tela) tela.remove();
   mudo = false;
 }
@@ -127,7 +155,8 @@ function ligarBotoesCodigo(){
 /* ---------- eu quero chamar ---------- */
 async function chamar(){
   ligStatus('Preparando o convite...');
-  meuAudio = await pegarMicrofone();
+  meuAudio = comVideo ? await pegarCamera(true) : await pegarMicrofone();
+  if(comVideo && meuAudio) mostrarVideos();
   if(!meuAudio){ ligStatus('Sem microfone, não dá pra ligar 😕'); return; }
   pc = criarConexao();
   meuAudio.getTracks().forEach(t => pc.addTrack(t, meuAudio));
@@ -168,8 +197,9 @@ function atender(){
     const oferta = desempacotar(document.getElementById('colaOferta').value);
     if(!oferta){ toast('Esse código não parece certo 🤔'); return; }
     ligStatus('Preparando...');
-    meuAudio = await pegarMicrofone();
+    meuAudio = comVideo ? await pegarCamera(true) : await pegarMicrofone();
     if(!meuAudio){ ligStatus('Sem microfone, não dá pra atender 😕'); return; }
+    if(comVideo) mostrarVideos();
     pc = criarConexao();
     meuAudio.getTracks().forEach(t => pc.addTrack(t, meuAudio));
     try{
@@ -198,12 +228,16 @@ function abrirLigacao(){
   tela.innerHTML = `
     <div class="w-topo">
       <button class="icone" id="ligFechar">✕</button>
-      <div><b>📞 Ligação de voz</b><div class="w-sub">com ${c.nome}</div></div>
+      <div><b>📞 Ligação</b><div class="w-sub">voz ou vídeo, com ${c.nome}</div></div>
     </div>
     <div class="lig-meio">
-      <div class="lig-avatar" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${c.emoji}</div>
+      <div class="lig-avatar" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${avatarConversa(c)}</div>
       <div class="lig-status" id="ligStatus">Como tu quer começar?</div>
       <div id="ligPasso">
+        <div class="lig-botoes">
+          <button class="lig-bt escolha on" id="btSoVoz">🎤 Só voz</button>
+          <button class="lig-bt escolha" id="btComVideo">📹 Com vídeo</button>
+        </div>
         <div class="lig-botoes col">
           <button class="lig-bt ok grande" id="btChamar">📲 Eu quero chamar</button>
           <button class="lig-bt grande" id="btAtender">📥 Me mandaram um código</button>
@@ -217,4 +251,11 @@ function abrirLigacao(){
   document.getElementById('ligFechar').addEventListener('click', desligar);
   document.getElementById('btChamar').addEventListener('click', chamar);
   document.getElementById('btAtender').addEventListener('click', atender);
+  const marca = () => {
+    document.getElementById('btSoVoz').classList.toggle('on', !comVideo);
+    document.getElementById('btComVideo').classList.toggle('on', comVideo);
+  };
+  document.getElementById('btSoVoz').addEventListener('click', () => { comVideo = false; marca(); });
+  document.getElementById('btComVideo').addEventListener('click', () => { comVideo = true; marca(); });
+  marca();
 }
