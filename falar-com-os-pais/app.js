@@ -264,7 +264,8 @@ function desenharConversa(){
     </div>
     <div class="gravando" id="gravBar">
       <span class="pulso"></span><b id="gravTempo">0,0s</b>
-      <span class="g-dica">solta pra mandar • arrasta pra fora pra cancelar</span>
+      <span class="g-dica">gravando... toca no ⏹ pra mandar</span>
+      <button id="gravCancelar" title="Jogar fora">🗑️</button>
     </div>`;
 
   $('#autorBar').insertAdjacentHTML('beforeend', c.quem.map(p =>
@@ -333,6 +334,7 @@ function atualizarPlaceholder(){
 /* O botão vira microfone quando não tem nada escrito. */
 function modoBotao(){
   const bt = $('#btnEnviar'); if(!bt) return;
+  if(gravando()) return;                       // no meio da gravação não mexe no botão
   const temTexto = $('#entrada').value.trim().length > 0;
   bt.textContent = temTexto ? '➤' : '🎤';
   bt.classList.toggle('mic', !temTexto);
@@ -341,47 +343,36 @@ function modoBotao(){
 
 function ligarBotaoDeEnviar(entrada){
   const bt = $('#btnEnviar'), bar = $('#gravBar'), tempo = $('#gravTempo');
-  let relogio = null, longe = false, inicio = null;
+  let relogio = null;
 
-  const paraRelogio = () => {
-    clearInterval(relogio);
-    bar.classList.remove('on','longe'); bt.classList.remove('rec');
+  const mostrarBarra = ligada => {
+    bar.classList.toggle('on', ligada);
+    bt.classList.toggle('rec', ligada);
+    bt.textContent = ligada ? '⏹' : '🎤';
+    if(!ligada) clearInterval(relogio);
   };
 
-  bt.addEventListener('pointerdown', async ev => {
-    if(!bt.classList.contains('mic')) return;          // tem texto: é botão de enviar
-    ev.preventDefault();
-    try{ bt.setPointerCapture(ev.pointerId); }catch(e){}   // o dedo não "escapa" do botão
-    inicio = { x:ev.clientX, y:ev.clientY }; longe = false;
-    const ok = await comecarGravacao((blob, seg) => { paraRelogio(); mandarAudio(blob, seg); });
-    if(!ok) return;
-    bar.classList.add('on'); bt.classList.add('rec');
-    relogio = setInterval(() => {
-      tempo.textContent = segundosGravados().toFixed(1).replace('.', ',') + 's';
-      if(segundosGravados() > 120){ paraRelogio(); pararGravacao(false); }   // 2 minutos é o limite
-    }, 100);
+  bt.addEventListener('click', async () => {
+    if(!bt.classList.contains('mic')){ enviar(entrada.value); return; }   // tem texto: manda
+    await alternarGravacao({
+      aoComecar(){
+        mostrarBarra(true);
+        relogio = setInterval(() => {
+          tempo.textContent = segundosGravados().toFixed(1).replace('.', ',') + 's';
+          if(segundosGravados() > 120) pararGravacao(false);              // 2 minutos é o limite
+        }, 100);
+      },
+      aoTerminar(blob, seg){ mostrarBarra(false); mandarAudio(blob, seg); },
+      aoFalhar(){ mostrarBarra(false); }
+    });
   });
 
-  /* arrastar pra longe do botão = cancelar */
-  bt.addEventListener('pointermove', ev => {
-    if(!gravando() || !inicio) return;
-    longe = Math.hypot(ev.clientX - inicio.x, ev.clientY - inicio.y) > 90;
-    bar.classList.toggle('longe', longe);
-    tempo.textContent = longe ? 'solta pra cancelar 🗑️'
-                              : segundosGravados().toFixed(1).replace('.', ',') + 's';
-  });
-
-  const solta = cancelar => ev => {
+  /* botão de cancelar da barrinha de gravação */
+  $('#gravCancelar').addEventListener('click', () => {
     if(!gravando()) return;
-    ev.preventDefault();
-    paraRelogio();
-    const cancelou = cancelar || longe;
-    if(cancelou) toast('Gravação cancelada 🗑️');
-    pararGravacao(cancelou);
-  };
-  bt.addEventListener('pointerup', solta(false));
-  bt.addEventListener('pointercancel', solta(true));
-  bt.addEventListener('click', () => { if(!bt.classList.contains('mic')) enviar(entrada.value); });
+    mostrarBarra(false); pararGravacao(true); toast('Gravação cancelada 🗑️');
+  });
+
   modoBotao();
 }
 
