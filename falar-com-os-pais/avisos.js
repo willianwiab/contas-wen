@@ -8,7 +8,7 @@
    ========================================================= */
 
 const podeAvisar  = () => 'Notification' in window;
-const avisoLigado = () => podeAvisar() && Notification.permission === 'granted' && dados.avisos !== false;
+const avisoLigado = () => podeAvisar() && Notification.permission === 'granted' && dados.avisos !== false && !sonecaLigada();
 
 async function pedirAvisos(){
   if(!podeAvisar()){ toast('Este navegador não tem notificação 😕'); return false; }

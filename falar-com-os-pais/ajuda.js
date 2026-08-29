@@ -29,9 +29,12 @@ const AJUDA = [
       ['No áudio','▶ tocar e 🎛️ voz de esquilo 🐿️, monstro 👹 ou robô 🤖'],
       ['☺ Reagir','no balão — ou dois cliques nele. O ✕ apaga um recadinho'],
       ['↩ Responder','cita o recado da pessoa em cima da tua resposta'],
+      ['✏️ Editar','arruma o que TU escreveu; fica marcado como “editado”'],
+      ['🔊 Ler em voz alta','aparece quando ligado nos ajustes — o celular lê o recado'],
       ['📌 Fixar','põe o recado lá no topo da conversa (o ✕ tira)'],
       ['📻 e 📞 no topo','walkie-talkie e ligação (só voz ou com vídeo)'],
-      ['⋯ Menu do topo','🔍 procurar na conversa, 📋 copiar tudo, 🗑️ apagar a conversa']
+      ['⋯ Menu do topo','🔍 procurar, 📋 copiar, 🎨 papel de parede e 🗑️ apagar a conversa'],
+      ['🎊 Confete','manda 🎉 🥳 🎂 e cai confete na tela']
     ]
   },
   {
@@ -48,7 +51,8 @@ const AJUDA = [
       ['🕰️ Cápsula do tempo','recado que fica trancado até o dia que tu escolher'],
       ['🗺️ Mandar onde eu estou','usa o GPS e manda o lugar, com botão de ver no mapa'],
       ['🎺 Figurinhas de som','buzina, palmas, tambor, risada, sino, foguete…'],
-      ['⏱️ Cronômetro','combina um tempo (2 min de escovar dente) e toca o alarme no fim']
+      ['⏱️ Cronômetro','combina um tempo (2 min de escovar dente) e toca o alarme no fim'],
+      ['🔤 Código secreto','embaralha teu recado na língua do P ou ao contrário']
     ]
   },
   {
@@ -61,6 +65,9 @@ const AJUDA = [
       ['🔔 Avisos','notificação quando chega recadinho novo'],
       ['⏰ Lembretes','ex.: “21:00 — dar boa noite”'],
       ['🎂 Aniversários','põe a data de cada um e a lista avisa quantos dias faltam'],
+      ['🔠 Tamanho da letra','normal, grande ou gigante'],
+      ['🗣️ Ler em voz alta','põe um 🔊 nos recados pro celular ler pra ti'],
+      ['🔕 Modo soneca','silencia os avisos por 30 min, 1 hora ou até as 8h'],
       ['🔒 Tranca do chat','senha de 4 números pedida ao abrir (tem dica depois de 3 erros)'],
       ['💾 Salvar num arquivo','e 📂 abrir em outro celular, com áudios e fotos junto']
     ]

@@ -44,7 +44,7 @@ function padrao(){
     msgs:{pai:[],mae:[],sofia:[],familia:[]},
     visto:{pai:0,mae:0,sofia:0,familia:0},
     presenca:{eu:0,pai:0,mae:0,irma:0},
-    fotos:{}, tarefas:[], pontos:{eu:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{}, agenda:[], bicho:{},
+    fotos:{}, tarefas:[], pontos:{eu:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{}, agenda:[], bicho:{}, papel:{}, letra:'normal', voz:false,
     avisos:false, lembretes:[] };
 }
 function carregar(){
@@ -60,6 +60,7 @@ function carregar(){
     d.fixado   = d.fixado || {};
     if(!Array.isArray(d.agenda)) d.agenda = [];
     d.bicho    = d.bicho || {};
+    d.papel    = d.papel || {};
     if(!Array.isArray(d.tarefas)) d.tarefas = [];
     if(!Array.isArray(d.lembretes)) d.lembretes = [];
     if(!bruto) d = migrarV1(d);
@@ -179,7 +180,7 @@ function toast(txt){
 /* ---------- somzinho (sem arquivo, feito na hora) ---------- */
 let audio;
 function blim(subindo){
-  if(!dados.som) return;
+  if(!dados.som || sonecaLigada()) return;
   try{
     audio = audio || new (window.AudioContext || window.webkitAudioContext)();
     const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
@@ -264,6 +265,7 @@ function desenharConversa(){
         <div class="menu-topo" id="menuTopo">
           <button id="btnBuscaMsg">🔍 Procurar na conversa</button>
           <button id="btnCopiar">📋 Copiar a conversa</button>
+          <button id="btnPapel">🎨 Papel de parede</button>
           <button id="btnLimpar">🗑️ Apagar a conversa</button>
         </div>
       </div>
@@ -299,6 +301,7 @@ function desenharConversa(){
   $('#rapidas').innerHTML = RAPIDAS.map(t => `<button class="rapida">${t}</button>`).join('');
   $('#paleta').innerHTML  = EMOJIS.map(e => `<button data-e="${e}">${e}</button>`).join('');
 
+  aplicarPapel();
   desenharMensagens();
   desenharFixado();
   respondendo = null; desenharRespondendo();
@@ -307,6 +310,7 @@ function desenharConversa(){
   $('#btnVoltar').addEventListener('click', fechar);
   $('#btnLimpar').addEventListener('click', limparConversa);
   $('#btnCopiar').addEventListener('click', copiarConversa);
+  $('#btnPapel').addEventListener('click', abrirPapeis);
   $('#btnWalkie').addEventListener('click', abrirWalkie);
   $('#btnMenu').addEventListener('click', ev => {
     ev.stopPropagation();
@@ -441,11 +445,13 @@ function desenharMensagens(){
         <div class="mini-av ${repetido ? 'oculto' : ''}" style="background:linear-gradient(135deg,${p.cor},${p.cor}bb)">${avatarDe(m.de)}</div>
         <div class="msg ${eu ? 'eu' : 'eles'} ${grande ? 'emojao' : ''} ${m.tipo ? 'tipo-' + m.tipo : ''}">
           ${nome}${citacaoNoBalao(m)}${corpo}
-          <div class="rodape">${hora(m.ts)}</div>
+          <div class="rodape">${m.editado ? '<i>editado</i> ' : ''}${hora(m.ts)}</div>
           ${m.r ? `<span class="reacao">${m.r}</span>` : ''}
         </div>
         <div class="ferramentas">
           <button data-acao="responder" data-i="${real}" title="Responder">↩</button>
+          ${!m.tipo && m.de === autor ? `<button data-acao="editar" data-i="${real}" title="Arrumar o que escrevi">✏️</button>` : ''}
+          ${dados.voz && podeFalar() ? `<button data-acao="falar" data-i="${real}" title="Ler em voz alta">🔊</button>` : ''}
           <button data-acao="reagir" data-i="${real}" title="Reagir">☺</button>
           <button data-acao="fixar" data-i="${real}" title="Fixar no topo">📌</button>
           <button data-acao="apagar" data-i="${real}" title="Apagar">✕</button>
@@ -455,6 +461,10 @@ function desenharMensagens(){
 
   caixa.querySelectorAll('[data-acao="apagar"]').forEach(b =>
     b.addEventListener('click', () => apagarMensagem(+b.dataset.i)));
+  caixa.querySelectorAll('[data-acao="editar"]').forEach(b =>
+    b.addEventListener('click', () => editarMensagem(+b.dataset.i)));
+  caixa.querySelectorAll('[data-acao="falar"]').forEach(b =>
+    b.addEventListener('click', () => lerEmVozAlta(+b.dataset.i)));
   caixa.querySelectorAll('[data-acao="responder"]').forEach(b =>
     b.addEventListener('click', () => responderMsg(+b.dataset.i)));
   caixa.querySelectorAll('[data-somtocar]').forEach(b =>
@@ -517,6 +527,8 @@ function enviar(texto){
   dados.presenca[autor] = Date.now();
   animar = dados.msgs[atual].length - 1;
   salvar(); blim(autor === 'eu');
+  if(temFesta(texto)) confete();
+  desenharBicho();
 
   const entrada = $('#entrada');
   entrada.value = ''; crescer(entrada);
@@ -524,6 +536,16 @@ function enviar(texto){
   buscaMsg = ''; const ib = $('#inputBuscaMsg'); if(ib) ib.value = '';
   desenharMensagens(); desenharContatos(); atualizarStatusTopo(); atualizarBolinhaDoIcone();
   modoBotao(); entrada.focus();
+}
+
+function editarMensagem(i){
+  const m = dados.msgs[atual][i];
+  if(!m || m.tipo) return;
+  const novo = (prompt('Arruma o recadinho:', m.t) || '').trim();
+  if(!novo || novo === m.t) return;
+  m.t = novo; m.editado = true;
+  salvar(); desenharMensagens(); desenharContatos();
+  toast('Recadinho arrumado ✏️');
 }
 
 function apagarMensagem(i){
@@ -556,7 +578,10 @@ function copiarConversa(){
 function abrirConfig(){
   $('#cfgNome').value = dados.nome;
   $('#cfgAvisos').classList.toggle('on', avisoLigado());
-  desenharLembretes(); desenharPerfis(); desenharAniversarios(); desenharTranca();
+  desenharLembretes(); desenharPerfis(); desenharAniversarios(); desenharTranca(); desenharSoneca();
+  $('#cfgVoz').classList.toggle('on', !!dados.voz);
+  document.querySelectorAll('#tamanhos .tm-op').forEach(b =>
+    b.classList.toggle('on', b.dataset.letra === (dados.letra || 'normal')));
   $('#cfgSom').classList.toggle('on', !!dados.som);
   $('#cfgTema').classList.toggle('on', dados.tema === 'escuro');
   $('#modalConfig').classList.add('aberto');
@@ -576,6 +601,10 @@ function saudacao(){
   const parte = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
   $('#ola').textContent = dados.nome ? `${parte}, ${dados.nome}! 👋` : `${parte}! 👋`;
 }
+function aplicarLetra(){
+  document.documentElement.dataset.letra = dados.letra || 'normal';
+}
+
 function aplicarTema(){
   document.documentElement.dataset.tema = dados.tema;
   $('#btnTema').textContent = dados.tema === 'escuro' ? '☀️' : '🌙';
@@ -600,6 +629,19 @@ $('#btnAgenda').addEventListener('click', abrirAgenda);
 $('#cardBicho').addEventListener('click', abrirBicho);
 $('#btnAjuda').addEventListener('click', abrirAjuda);
 $('#btnTranca').addEventListener('click', mudarTranca);
+$('#cfgVoz').addEventListener('click', e => {
+  e.currentTarget.classList.toggle('on');
+  dados.voz = e.currentTarget.classList.contains('on'); salvar();
+  if(atual) desenharMensagens();
+});
+document.querySelectorAll('#tamanhos .tm-op').forEach(b => b.addEventListener('click', () => {
+  dados.letra = b.dataset.letra; salvar(); aplicarLetra();
+  document.querySelectorAll('#tamanhos .tm-op').forEach(o => o.classList.toggle('on', o === b));
+}));
+document.querySelectorAll('[data-soneca]').forEach(b => b.addEventListener('click', () => {
+  const v = b.dataset.soneca;
+  porSoneca(v === 'manha' ? 'manha' : +v);
+}));
 $('#btnSalvarTudo').addEventListener('click', exportarTudo);
 $('#btnAbrirTudo').addEventListener('click', importarTudo);
 $('#cfgTema').addEventListener('click', e => e.currentTarget.classList.toggle('on'));
@@ -629,7 +671,7 @@ setInterval(() => { desenharContatos(); atualizarStatusTopo(); }, 30000);
 if(!localStorage.getItem(CHAVE) && !localStorage.getItem('fala-familia:v1')
    && window.matchMedia('(prefers-color-scheme: dark)').matches) dados.tema = 'escuro';
 if(dados.migrou){ delete dados.migrou; salvar(); }   // guarda o que veio da versão antiga
-aplicarTema(); saudacao(); verInternet(); desenharContatos(); telaVazia();
+aplicarTema(); aplicarLetra(); saudacao(); verInternet(); desenharContatos(); telaVazia();
 carregarPerfis().then(() => { desenharContatos(); if(atual) desenharConversa(); });
 verLembretes(true); atualizarBolinhaDoIcone(); mostrarAniversario(); mostrarProximo();
 verCapsulas(); verAgenda(); desenharBicho(); pedirTranca();
