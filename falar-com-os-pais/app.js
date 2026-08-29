@@ -629,6 +629,18 @@ $('#btnAgenda').addEventListener('click', abrirAgenda);
 $('#cardBicho').addEventListener('click', abrirBicho);
 $('#btnAjuda').addEventListener('click', abrirAjuda);
 $('#btnTranca').addEventListener('click', mudarTranca);
+/* Joga fora a cópia velha guardada e baixa o site de novo (sem apagar recadinho). */
+$('#btnAtualizar').addEventListener('click', async () => {
+  if(!confirm('Baixar o site de novo?\n\nOs recadinhos NÃO são apagados.')) return;
+  toast('Limpando a cópia velha... 🔄', 4000);
+  try{
+    const regs = await navigator.serviceWorker?.getRegistrations?.() || [];
+    await Promise.all(regs.map(r => r.unregister()));
+    const nomes = await caches.keys();
+    await Promise.all(nomes.map(n => caches.delete(n)));
+  }catch(e){}
+  setTimeout(() => location.reload(), 700);
+});
 $('#cfgVoz').addEventListener('click', e => {
   e.currentTarget.classList.toggle('on');
   dados.voz = e.currentTarget.classList.contains('on'); salvar();

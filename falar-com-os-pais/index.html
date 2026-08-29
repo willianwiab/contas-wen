@@ -576,9 +576,36 @@ html[data-tema="escuro"] .cod-previa{color:#c4b5fd}
 html[data-letra="grande"]{font-size:18.5px}
 html[data-letra="gigante"]{font-size:21.5px}
 .msg .rodape i{font-style:normal;opacity:.75}
+
+#barraErro{display:none}
+#barraErro.on{display:flex;align-items:center;gap:10px;position:fixed;left:0;right:0;top:0;z-index:99;
+  background:#b91c1c;color:#fff;padding:10px 14px;font-size:.8rem;line-height:1.35;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+#barraErro span{flex:1;min-width:0;word-break:break-word}
+#barraErro button{background:rgba(255,255,255,.22);color:#fff;border-radius:9px;padding:5px 10px;font-size:.75rem;font-weight:700;flex-shrink:0}
 </style>
 </head>
 <body>
+
+<div id="barraErro"></div>
+<script>
+/* Se acontecer qualquer erro, ele aparece aqui em vez de o site morrer calado. */
+window.__erros = [];
+function mostrarErroNaTela(txt){
+  window.__erros.push(txt);
+  var b = document.getElementById('barraErro');
+  if(!b) return;
+  b.className = 'on';
+  b.innerHTML = '<span>😖 Deu um probleminha: <b>' + String(txt).slice(0,140) + '</b></span>' +
+    '<button onclick="navigator.clipboard&&navigator.clipboard.writeText(window.__erros.join(\'\\n\'));this.textContent=\'copiado!\'">copiar</button>' +
+    '<button onclick="document.getElementById(\'barraErro\').className=\'\'">✕</button>';
+}
+window.addEventListener('error', function(e){
+  mostrarErroNaTela(e.message + ' — ' + String(e.filename||'').split('/').pop() + ':' + e.lineno);
+});
+window.addEventListener('unhandledrejection', function(e){
+  mostrarErroNaTela('promessa: ' + ((e.reason && e.reason.message) || e.reason));
+});
+</script>
 
 <div class="app no-chat" id="app">
 
@@ -684,6 +711,13 @@ html[data-letra="gigante"]{font-size:21.5px}
     <p class="sem-lembrete" style="margin-top:8px">O arquivo guarda as conversas, os áudios e as fotos.
     É só passar pro outro celular e abrir por lá.</p>
 
+    <div class="bloco-titulo">🩹 Se der problema</div>
+    <div class="lig-botoes" style="margin:0">
+      <button class="lig-bt" id="btnAtualizar">🔄 Atualizar o site</button>
+    </div>
+    <p class="sem-lembrete" style="margin-top:8px">Isso joga fora a cópia velha guardada no aparelho e baixa a mais
+    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">10</b>.</p>
+
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
       <button class="btn principal" id="cfgSalvar">Salvar</button>
@@ -693,19 +727,19 @@ html[data-letra="gigante"]{font-size:21.5px}
 
 <div class="aviso-flutua" id="toast"></div>
 
-<script src="ajuda.js"></script>
-<script src="jogo.js"></script>
-<script src="mais.js"></script>
-<script src="casa.js"></script>
-<script src="enfeites.js"></script>
-<script src="trancar.js"></script>
-<script src="audio.js"></script>
-<script src="video.js"></script>
-<script src="familia.js"></script>
-<script src="extras.js"></script>
-<script src="ligacao.js"></script>
-<script src="avisos.js"></script>
-<script src="app.js"></script>
+<script src="ajuda.js?v=10"></script>
+<script src="jogo.js?v=10"></script>
+<script src="mais.js?v=10"></script>
+<script src="casa.js?v=10"></script>
+<script src="enfeites.js?v=10"></script>
+<script src="trancar.js?v=10"></script>
+<script src="audio.js?v=10"></script>
+<script src="video.js?v=10"></script>
+<script src="familia.js?v=10"></script>
+<script src="extras.js?v=10"></script>
+<script src="ligacao.js?v=10"></script>
+<script src="avisos.js?v=10"></script>
+<script src="app.js?v=10"></script>
 </body>
 
 </html>
