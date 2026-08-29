@@ -89,6 +89,20 @@ videinho sempre funcionam.
 | Lembrete com o app fechado | ⚠️ aparece quando abrir de novo |
 | App fechado, ou de um celular pro outro | ❌ precisa de servidor (Firebase e afins) |
 
+## ☁️ Enviar de verdade entre aparelhos
+
+Por padrão os recados ficam **só no aparelho**. Pra eles viajarem (o Jojo manda
+no computador e chega no celular da mãe), a família liga um banco **Firebase**
+grátis: **⚙️ Ajustes → ☁️ Enviar de verdade**. O passo a passo completo está em
+**[GUIA-FIREBASE.md](GUIA-FIREBASE.md)**.
+
+- O recado sai do aparelho **embaralhado** (AES-GCM) com a senha da família:
+  o servidor guarda só letra embaralhada.
+- Funciona mesmo com o outro **offline** — o recado espera ele abrir.
+- Áudio, foto e vídeo até ~300 KB viajam junto; maiores ficam no aparelho de origem.
+- Nos outros aparelhos, é só **copiar o convite** num e **colar** no outro.
+- Desligou? Os recadinhos guardados continuam lá, só param de viajar.
+
 ## 🔒 Sobre a tranca
 
 A senha de 4 números é uma **cortina**, não um cofre: ela esconde o chat de quem pega o
@@ -124,6 +138,7 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 | `mais.js` | Responder, cápsula do tempo, lugar, sons e cronômetro |
 | `casa.js` | Álbum, agenda e o bichinho da família |
 | `enfeites.js` | Papel de parede, confete, código secreto, soneca e voz alta |
+| `nuvem.js` | Envio de verdade entre aparelhos (Firebase + criptografia) |
 | `trancar.js` | A senha de abrir o chat |
 | `ajuda.js` | A tela ❓ Como usar |
 | `ligacao.js` | Ligação de voz e vídeo (WebRTC) |

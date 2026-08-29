@@ -69,6 +69,7 @@ function escolherFoto(){
       dados.presenca[autor] = Date.now();
       animar = dados.msgs[atual].length - 1;
       salvar(); blim(autor === 'eu');
+      mandarPraNuvem(atual, msg);
       desenharMensagens(); desenharContatos(); atualizarStatusTopo();
     }catch(e){ toast('Não consegui abrir essa foto 😕'); }
   });
@@ -147,7 +148,9 @@ function abrirNovaEnquete(){
     const ops = [...tela.querySelectorAll('.enq-op')].map(i => i.value.trim()).filter(Boolean);
     if(!q){ toast('Faltou a pergunta 🤔'); return; }
     if(ops.length < 2){ toast('Precisa de pelo menos 2 respostas 😊'); return; }
-    dados.msgs[atual].push({ tipo:'enquete', q, ops, votos:{}, de: autor, ts: Date.now() });
+    const enq = { tipo:'enquete', q, ops, votos:{}, de: autor, ts: Date.now() };
+    dados.msgs[atual].push(enq);
+    mandarPraNuvem(atual, enq);
     dados.visto[atual] = Date.now();
     dados.presenca[autor] = Date.now();
     animar = dados.msgs[atual].length - 1;
