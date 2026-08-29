@@ -418,6 +418,56 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
 .aj-item b{font-size:.92rem}
 .aj-item span{font-size:.84rem;color:var(--texto2);line-height:1.45}
 .aj-fim{text-align:center;font-size:.85rem;color:var(--texto2);padding:6px 10px 14px}
+
+/* ===================== RECADO FIXADO ===================== */
+.fixado{display:none;align-items:center;gap:10px;background:var(--painel);border-bottom:1px solid var(--borda);padding:10px 14px;font-size:.86rem}
+.fixado.on{display:flex;animation:surge .2s}
+.fx-estrela{font-size:1rem}
+.fx-txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--texto2)}
+.fx-txt b{color:var(--texto)}
+.fixado button{color:var(--texto2);padding:3px 7px;border-radius:8px}
+.fixado button:hover{background:var(--painel2)}
+
+/* ===================== ANIVERSÁRIOS ===================== */
+.aviso-aniv{display:none;margin:2px 14px 8px;background:linear-gradient(135deg,#fde68a,#fca5a5);color:#7c2d12;
+  border-radius:14px;padding:11px 14px;font-size:.84rem;line-height:1.4;box-shadow:var(--sombra)}
+.aviso-aniv.on{display:block;animation:surge .25s}
+html[data-tema="escuro"] .aviso-aniv{background:linear-gradient(135deg,#78350f,#7f1d1d);color:#fde68a}
+.aniv-linha{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--painel2);border-radius:12px;padding:8px 12px;margin-bottom:7px}
+.aniv-nome{font-size:.9rem;font-weight:600}
+.aniv-linha input{background:var(--painel);border:2px solid transparent;border-radius:10px;padding:7px 10px;outline:none;font-size:.85rem}
+.aniv-linha input:focus{border-color:var(--roxo)}
+
+/* ===================== JOGO DA VELHA ===================== */
+.jogo{min-width:210px;text-align:center}
+.jogo-topo{font-weight:800;font-size:.95rem;margin-bottom:2px}
+.jogo-times{font-size:.76rem;opacity:.85;margin-bottom:8px}
+.tabuleiro{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:0 auto 8px;width:186px}
+.casa{width:58px;height:58px;border-radius:14px;background:rgba(255,255,255,.2);font-size:1.7rem;display:grid;place-items:center}
+.msg.eles .casa{background:var(--painel2)}
+.casa:not(:disabled):hover{background:rgba(255,255,255,.35)}
+.msg.eles .casa:not(:disabled):hover{background:var(--painel3)}
+.casa.ganhou{background:#fde047;color:#1e1b33}
+.jogo-vez{font-size:.8rem;font-weight:700;opacity:.9}
+.jogo-vez.fim{font-size:.92rem;opacity:1}
+
+/* ===================== TRANCA ===================== */
+body.trancado .app{filter:blur(14px)}
+.tela-cheia.tranca{background:linear-gradient(160deg,var(--roxo),var(--azul));color:#fff;z-index:90}
+.tr-meio{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px}
+.tr-cadeado{font-size:3.4rem}
+.tr-meio h2{font-size:1.4rem;font-weight:800}
+.tr-txt{font-size:.9rem;opacity:.9;text-align:center;min-height:22px}
+.tr-bolinhas{display:flex;gap:12px;margin:6px 0 10px}
+.tr-bolinhas span{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.3)}
+.tr-bolinhas span.on{background:#fff}
+.teclado{display:grid;grid-template-columns:repeat(3,74px);gap:12px}
+.teclado button{height:66px;border-radius:22px;background:rgba(255,255,255,.18);color:#fff;font-size:1.5rem;font-weight:700}
+.teclado button:active{background:rgba(255,255,255,.32);transform:scale(.94)}
+.tr-esqueci{color:#fff;opacity:.75;text-decoration:underline;font-size:.84rem;margin-top:10px}
+.escondido{display:none}
+.treme{animation:treme .45s}
+@keyframes treme{25%{transform:translateX(-9px)}50%{transform:translateX(9px)}75%{transform:translateX(-5px)}}
 </style>
 </head>
 <body>
@@ -440,6 +490,7 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
       </div>
     </div>
     <div class="busca-wrap"><input class="busca" id="busca" placeholder="🔍 Procurar conversa" autocomplete="off"></div>
+    <div class="aviso-aniv" id="avisoAniversario"></div>
     <div class="titulo-secao">Conversas</div>
     <div class="contatos" id="contatos"></div>
     <button class="atalho-tarefas" id="btnTarefas">✅ Tarefas e estrelinhas 🏆</button>
@@ -474,6 +525,14 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
     <div class="bloco-titulo">🖼️ Foto de cada um</div>
     <div class="perfis" id="listaPerfis"></div>
 
+    <div class="bloco-titulo">🎂 Aniversários</div>
+    <div id="listaAniversarios"></div>
+
+    <div class="bloco-titulo">🔒 Tranca do chat</div>
+    <div class="lig-botoes" style="margin:0"><button class="lig-bt" id="btnTranca">🔒 Pôr uma senha</button></div>
+    <p class="sem-lembrete" style="margin-top:8px">É uma cortina pra ninguém xeretar sem querer — os recadinhos
+    continuam guardados no aparelho do mesmo jeito.</p>
+
     <div class="bloco-titulo">⏰ Lembretes</div>
     <div id="listaLembretes"></div>
     <div class="form-lembrete">
@@ -500,6 +559,8 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
 <div class="aviso-flutua" id="toast"></div>
 
 <script src="ajuda.js"></script>
+<script src="jogo.js"></script>
+<script src="trancar.js"></script>
 <script src="audio.js"></script>
 <script src="video.js"></script>
 <script src="familia.js"></script>

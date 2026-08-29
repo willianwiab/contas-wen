@@ -233,3 +233,78 @@ function importarTudo(){
   });
   inp.click();
 }
+
+
+/* ---------- ANIVERSÁRIOS ---------- */
+/* Guarda a data de nascimento de cada um e mostra quantos dias faltam. */
+function diasParaAniversario(iso){
+  if(!iso) return null;
+  const [ano, mes, dia] = iso.split('-').map(Number);
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  let prox = new Date(hoje.getFullYear(), mes - 1, dia);
+  if(prox < hoje) prox = new Date(hoje.getFullYear() + 1, mes - 1, dia);
+  return { dias: Math.round((prox - hoje) / 86400000), idade: prox.getFullYear() - ano };
+}
+
+function desenharAniversarios(){
+  const caixa = document.getElementById('listaAniversarios');
+  if(!caixa) return;
+  caixa.innerHTML = Object.keys(PESSOAS).map(p => `
+    <div class="aniv-linha">
+      <span class="aniv-nome">${PESSOAS[p].emoji} ${p === 'eu' ? 'Eu' : PESSOAS[p].curto}</span>
+      <input type="date" data-nasc="${p}" value="${(dados.nasc && dados.nasc[p]) || ''}">
+    </div>`).join('');
+  caixa.querySelectorAll('[data-nasc]').forEach(i => i.addEventListener('change', () => {
+    dados.nasc = dados.nasc || {};
+    if(i.value) dados.nasc[i.dataset.nasc] = i.value; else delete dados.nasc[i.dataset.nasc];
+    salvar(); mostrarAniversario();
+  }));
+}
+
+/* A tarjinha na lista com o aniversário mais pertinho. */
+function mostrarAniversario(){
+  const caixa = document.getElementById('avisoAniversario');
+  if(!caixa) return;
+  const nascs = dados.nasc || {};
+  let melhor = null;
+  Object.keys(nascs).forEach(p => {
+    const q = diasParaAniversario(nascs[p]);
+    if(q && (!melhor || q.dias < melhor.dias)) melhor = { ...q, p };
+  });
+  if(!melhor || melhor.dias > 30){ caixa.classList.remove('on'); caixa.innerHTML = ''; return; }
+  const nome = melhor.p === 'eu' ? 'teu' : 'd' + (PESSOAS[melhor.p].curto === 'Papai' ? 'o papai' : 'a ' + PESSOAS[melhor.p].curto);
+  caixa.classList.add('on');
+  caixa.innerHTML = melhor.dias === 0
+    ? `🎂 <b>Hoje é o aniversário ${nome}!</b> ${melhor.idade} anos 🎉`
+    : `🎂 Falta${melhor.dias > 1 ? 'm' : ''} <b>${melhor.dias} dia${melhor.dias > 1 ? 's' : ''}</b> pro aniversário ${nome}`;
+  if(melhor.dias === 0 && dados.avisouAniv !== new Date().toISOString().slice(0,10)){
+    dados.avisouAniv = new Date().toISOString().slice(0,10); salvar();
+    avisar('🎂 Tem aniversário hoje!', `${PESSOAS[melhor.p].curto} está fazendo ${melhor.idade} anos 🎉`, 'aniv');
+  }
+}
+
+/* ---------- RECADO FIXADO ---------- */
+function fixarRecado(indice){
+  const m = dados.msgs[atual][indice];
+  if(!m) return;
+  dados.fixado = dados.fixado || {};
+  dados.fixado[atual] = { txt: textoDe(m), de: m.de, ts: m.ts };
+  salvar(); desenharFixado();
+  toast('Recado fixado no topo ⭐');
+}
+function tirarFixado(){
+  if(dados.fixado) delete dados.fixado[atual];
+  salvar(); desenharFixado();
+}
+function desenharFixado(){
+  const caixa = document.getElementById('barraFixado');
+  if(!caixa) return;
+  const f = dados.fixado && dados.fixado[atual];
+  caixa.classList.toggle('on', !!f);
+  caixa.innerHTML = f
+    ? `<span class="fx-estrela">⭐</span>
+       <span class="fx-txt"><b>${PESSOAS[f.de].curto}:</b> ${escapar(f.txt)}</span>
+       <button id="fxTirar" title="Tirar do topo">✕</button>` : '';
+  const bt = document.getElementById('fxTirar');
+  if(bt) bt.addEventListener('click', tirarFixado);
+}

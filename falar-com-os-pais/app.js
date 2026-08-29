@@ -44,7 +44,7 @@ function padrao(){
     msgs:{pai:[],mae:[],sofia:[],familia:[]},
     visto:{pai:0,mae:0,sofia:0,familia:0},
     presenca:{eu:0,pai:0,mae:0,irma:0},
-    fotos:{}, tarefas:[], pontos:{eu:0,pai:0,mae:0,irma:0},
+    fotos:{}, tarefas:[], pontos:{eu:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{},
     avisos:false, lembretes:[] };
 }
 function carregar(){
@@ -56,6 +56,8 @@ function carregar(){
     d.presenca = Object.assign({eu:0,pai:0,mae:0,irma:0}, d.presenca);
     d.pontos   = Object.assign({eu:0,pai:0,mae:0,irma:0}, d.pontos);
     d.fotos    = d.fotos || {};
+    d.nasc     = d.nasc || {};
+    d.fixado   = d.fixado || {};
     if(!Array.isArray(d.tarefas)) d.tarefas = [];
     if(!Array.isArray(d.lembretes)) d.lembretes = [];
     if(!bruto) d = migrarV1(d);
@@ -91,7 +93,8 @@ const hora = ts => new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minut
 const textoDe = m =>
   m.tipo === 'audio'   ? `🎤 recadinho de voz (${(m.dur||0).toFixed(1)}s)` :
   m.tipo === 'foto'    ? '📷 foto' :
-  m.tipo === 'enquete' ? `📊 ${m.q}` : (m.t || '');
+  m.tipo === 'enquete' ? `📊 ${m.q}` :
+  m.tipo === 'jogo'    ? '🕹️ jogo da velha' : (m.t || '');
 const soEmoji = t => { const p = [...t.trim()]; return p.length > 0 && p.length <= 5 && /^(?:\p{Extended_Pictographic}|‍|️|\p{Emoji_Modifier}|\s)+$/u.test(t); };
 
 function diaTexto(ts){
@@ -258,6 +261,7 @@ function desenharConversa(){
         </div>
       </div>
     </div>
+    <div class="fixado" id="barraFixado"></div>
     <div class="barra-busca" id="barraBusca">
       <input id="inputBuscaMsg" placeholder="Procurar palavra na conversa..." autocomplete="off">
       <span id="contaBusca"></span>
@@ -288,6 +292,7 @@ function desenharConversa(){
   $('#paleta').innerHTML  = EMOJIS.map(e => `<button data-e="${e}">${e}</button>`).join('');
 
   desenharMensagens();
+  desenharFixado();
 
   const entrada = $('#entrada');
   $('#btnVoltar').addEventListener('click', fechar);
@@ -432,6 +437,7 @@ function desenharMensagens(){
         </div>
         <div class="ferramentas">
           <button data-acao="reagir" data-i="${real}" title="Reagir">☺</button>
+          <button data-acao="fixar" data-i="${real}" title="Fixar no topo">📌</button>
           <button data-acao="apagar" data-i="${real}" title="Apagar">✕</button>
         </div>
       </div>`;
@@ -439,10 +445,17 @@ function desenharMensagens(){
 
   caixa.querySelectorAll('[data-acao="apagar"]').forEach(b =>
     b.addEventListener('click', () => apagarMensagem(+b.dataset.i)));
+  caixa.querySelectorAll('[data-acao="fixar"]').forEach(b =>
+    b.addEventListener('click', () => fixarRecado(+b.dataset.i)));
   caixa.querySelectorAll('[data-acao="reagir"]').forEach(b =>
     b.addEventListener('click', () => abrirReacoes(+b.dataset.i)));
   caixa.querySelectorAll('.msg').forEach(el =>
     el.addEventListener('dblclick', () => reagir(+el.parentElement.dataset.i, '❤️')));
+  caixa.querySelectorAll('[data-jogo]').forEach(b =>
+    b.addEventListener('click', () => {
+      const [i, casa] = b.dataset.jogo.split(':').map(Number);
+      jogar(i, casa);
+    }));
   caixa.querySelectorAll('[data-play]').forEach(b =>
     b.addEventListener('click', () => tocarAudio(+b.dataset.play)));
   caixa.querySelectorAll('[data-efeito]').forEach(b =>
@@ -524,7 +537,7 @@ function copiarConversa(){
 function abrirConfig(){
   $('#cfgNome').value = dados.nome;
   $('#cfgAvisos').classList.toggle('on', avisoLigado());
-  desenharLembretes(); desenharPerfis();
+  desenharLembretes(); desenharPerfis(); desenharAniversarios(); desenharTranca();
   $('#cfgSom').classList.toggle('on', !!dados.som);
   $('#cfgTema').classList.toggle('on', dados.tema === 'escuro');
   $('#modalConfig').classList.add('aberto');
@@ -564,6 +577,7 @@ $('#cfgAvisos').addEventListener('click', async e => {
 $('#addLembrete').addEventListener('click', novoLembrete);
 $('#btnTarefas').addEventListener('click', abrirTarefas);
 $('#btnAjuda').addEventListener('click', abrirAjuda);
+$('#btnTranca').addEventListener('click', mudarTranca);
 $('#btnSalvarTudo').addEventListener('click', exportarTudo);
 $('#btnAbrirTudo').addEventListener('click', importarTudo);
 $('#cfgTema').addEventListener('click', e => e.currentTarget.classList.toggle('on'));
@@ -595,7 +609,7 @@ if(!localStorage.getItem(CHAVE) && !localStorage.getItem('fala-familia:v1')
 if(dados.migrou){ delete dados.migrou; salvar(); }   // guarda o que veio da versão antiga
 aplicarTema(); saudacao(); verInternet(); desenharContatos(); telaVazia();
 carregarPerfis().then(() => { desenharContatos(); if(atual) desenharConversa(); });
-verLembretes(true); atualizarBolinhaDoIcone();
+verLembretes(true); atualizarBolinhaDoIcone(); mostrarAniversario(); pedirTranca();
 if(window.innerWidth > 860) abrir('familia');
 
 /* Deixa o site funcionar sem internet e dá pra instalar na tela do celular. */
