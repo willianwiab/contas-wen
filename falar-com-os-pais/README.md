@@ -37,6 +37,14 @@ quem escreve na barra **“Falando como”** (🧒 Eu, 👨 Papai, 👩 Mamãe, 
 | 📌 Recado fixado | Botão 📌 do lado do balão põe o recado no topo da conversa |
 | 🎂 Aniversários | ⚙️ Ajustes → a lista avisa quantos dias faltam |
 | 🔒 Tranca | ⚙️ Ajustes → senha de 4 números pedida ao abrir |
+| ↩ Responder | Botão ↩ do balão: cita o recado em cima da tua resposta |
+| 🕰️ Cápsula do tempo | ➕ → recado trancado até o dia escolhido |
+| 🗺️ Mandar onde eu estou | ➕ → GPS do aparelho, com link do mapa |
+| 🎺 Figurinhas de som | ➕ → buzina, palmas, tambor, risada, sino, foguete… |
+| ⏱️ Cronômetro | ➕ → combina um tempo e toca o alarme no fim |
+| 🖼️ Álbum da família | Botão na lista: todas as fotos e vídeos juntos, por mês |
+| 📅 Agenda | Botão na lista: combinados com dia e hora, avisa na hora |
+| 🐣 Bichinho da família | Cartão na lista: cresce quando todo mundo conversa |
 | ❓ Como usar | Botão ❓ no topo da lista: o guia de tudo, dentro do site |
 | 📞 Ligação de voz **ou vídeo** | Ligação de verdade entre dois aparelhos (veja abaixo) |
 | 🖼️ Foto de perfil | ⚙️ Ajustes → toca no bonequinho de cada um |
@@ -106,6 +114,8 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 | `extras.js` | Fotos, GIF, figurinhas, desenho e enquetes |
 | `familia.js` | Foto de perfil, tarefas, backup, aniversários e recado fixado |
 | `jogo.js` | Jogo da velha |
+| `mais.js` | Responder, cápsula do tempo, lugar, sons e cronômetro |
+| `casa.js` | Álbum, agenda e o bichinho da família |
 | `trancar.js` | A senha de abrir o chat |
 | `ajuda.js` | A tela ❓ Como usar |
 | `ligacao.js` | Ligação de voz e vídeo (WebRTC) |

@@ -11,6 +11,10 @@ function conteudoEspecial(m, indice){
   if(m.tipo === 'video')   return balaoVideo(m, indice);
   if(m.tipo === 'enquete') return balaoEnquete(m, indice);
   if(m.tipo === 'jogo')    return balaoJogo(m, indice);
+  if(m.tipo === 'capsula') return balaoCapsula(m);
+  if(m.tipo === 'lugar')   return balaoLugar(m);
+  if(m.tipo === 'som')     return balaoSom(m, indice);
+  if(m.tipo === 'timer')   return balaoTimer(m, indice);
   return `<span class="txt">${escapar(m.t || '')}</span>`;
 }
 
@@ -211,6 +215,10 @@ function abrirMaisMenu(){
     <button data-acao="figurinha">😄 Figurinhas</button>
     <button data-acao="enquete">📊 Fazer enquete</button>
     <button data-acao="jogo">🕹️ Jogo da velha</button>
+    <button data-acao="capsula">🕰️ Cápsula do tempo</button>
+    <button data-acao="lugar">🗺️ Mandar onde eu estou</button>
+    <button data-acao="som">🎺 Figurinhas de som</button>
+    <button data-acao="timer">⏱️ Cronômetro</button>
     <button data-acao="walkie">📻 Walkie-talkie</button>`;
   document.querySelector('.barra').insertAdjacentElement('beforebegin', menu);
   menu.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
@@ -222,6 +230,10 @@ function abrirMaisMenu(){
     if(a === 'figurinha') abrirFigurinhas();
     if(a === 'enquete') abrirNovaEnquete();
     if(a === 'jogo') novoJogo();
+    if(a === 'capsula') abrirNovaCapsula();
+    if(a === 'lugar') mandarLugar();
+    if(a === 'som') abrirSons();
+    if(a === 'timer') abrirCronometro();
     if(a === 'walkie') abrirWalkie();
   }));
   setTimeout(() => document.addEventListener('click', function fora(e){

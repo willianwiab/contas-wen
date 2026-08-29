@@ -10,7 +10,8 @@ const AJUDA = [
     itens:[
       ['4 conversas','👨 Papai, 👩 Mamãe, 👧 Sofia e 💜 Família (todo mundo junto)'],
       ['🔍 Procurar conversa','a barrinha lá em cima da lista'],
-      ['✅ Tarefas e estrelinhas 🏆','o botão laranja embaixo da lista'],
+      ['✅ Tarefas, 🖼️ Álbum e 📅 Agenda','os três botões coloridos embaixo da lista'],
+      ['🐣 O bichinho','o cartãozinho acima dos botões — toca nele pra ver o nível'],
       ['🌙 / ☀️','troca o tema claro e escuro'],
       ['⚙️','abre os ajustes'],
       ['🟢 e 🔴','bolinha verde em quem mexeu no chat faz pouco, e o número de recadinhos não lidos']
@@ -27,6 +28,7 @@ const AJUDA = [
       ['🎤 Microfone','toca pra gravar, toca no ⏹ pra mandar (🗑️ joga fora)'],
       ['No áudio','▶ tocar e 🎛️ voz de esquilo 🐿️, monstro 👹 ou robô 🤖'],
       ['☺ Reagir','no balão — ou dois cliques nele. O ✕ apaga um recadinho'],
+      ['↩ Responder','cita o recado da pessoa em cima da tua resposta'],
       ['📌 Fixar','põe o recado lá no topo da conversa (o ✕ tira)'],
       ['📻 e 📞 no topo','walkie-talkie e ligação (só voz ou com vídeo)'],
       ['⋯ Menu do topo','🔍 procurar na conversa, 📋 copiar tudo, 🗑️ apagar a conversa']
@@ -42,7 +44,11 @@ const AJUDA = [
       ['✏️ Recado desenhado','desenha com cores e manda como figurinha'],
       ['😄 Figurinhas','emoji gigante num toque'],
       ['📊 Enquete','pergunta + até 4 respostas, todo mundo vota'],
-      ['🕹️ Jogo da velha','joga com quem estiver junto, cada um na sua vez pelo “Falando como”']
+      ['🕹️ Jogo da velha','joga com quem estiver junto, cada um na sua vez pelo “Falando como”'],
+      ['🕰️ Cápsula do tempo','recado que fica trancado até o dia que tu escolher'],
+      ['🗺️ Mandar onde eu estou','usa o GPS e manda o lugar, com botão de ver no mapa'],
+      ['🎺 Figurinhas de som','buzina, palmas, tambor, risada, sino, foguete…'],
+      ['⏱️ Cronômetro','combina um tempo (2 min de escovar dente) e toca o alarme no fim']
     ]
   },
   {
