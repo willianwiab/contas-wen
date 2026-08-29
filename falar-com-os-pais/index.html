@@ -345,6 +345,69 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
   box-shadow:var(--sombra2);margin:0 14px 6px;animation:surge .18s}
 .mais-menu button{text-align:left;padding:11px 13px;border-radius:11px;font-size:.92rem;font-weight:600}
 .mais-menu button:hover{background:var(--painel2)}
+
+/* ===================== FOTO DE PERFIL ===================== */
+.avatar img,.mini-av img,.lig-avatar img,.perfil-av img,.placar-av img,.pil-av img{
+  width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+.pil-av{width:20px;height:20px;border-radius:7px;overflow:hidden;display:inline-grid;place-items:center;font-size:.95rem;vertical-align:-4px}
+.perfis{display:flex;gap:12px;flex-wrap:wrap}
+.perfil{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.74rem}
+.perfil-av{width:60px;height:60px;border-radius:20px;display:grid;place-items:center;font-size:1.8rem;color:#fff;overflow:hidden;box-shadow:var(--sombra)}
+.perfil-av:hover{transform:scale(1.05)}
+.perfil-tirar{font-size:.7rem;color:#b91c1c;font-weight:700}
+.perfil-dica{font-size:.7rem;color:var(--texto2)}
+
+/* ===================== VÍDEO ===================== */
+.msg.tipo-video{padding:5px 5px 4px}
+.video-msg{position:relative;border-radius:15px;overflow:hidden;min-width:200px;max-width:260px;background:var(--painel2);display:grid;place-items:center}
+.video-msg video{display:block;width:100%;height:auto;border-radius:15px}
+.selo-gif{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.6);color:#fff;font-size:.65rem;font-weight:800;padding:2px 7px;border-radius:8px;letter-spacing:.08em}
+.cam-meio{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px}
+#camPreview{width:min(100%,460px);border-radius:20px;background:#000;transform:scaleX(-1)}
+.cam-status{font-weight:700;text-align:center;min-height:24px}
+.cam-botoes{display:flex;align-items:center;gap:26px}
+.cam-bt{width:52px;height:52px;border-radius:50%;background:var(--painel);display:grid;place-items:center;font-size:1.3rem;box-shadow:var(--sombra)}
+.cam-bt.rec{width:74px;height:74px;background:#ef4444;border:5px solid var(--painel)}
+.cam-bt.rec.gravando{border-radius:18px;background:#b91c1c;animation:pisca 1s infinite}
+.videos-lig{position:relative;width:min(100%,460px)}
+.videos-lig #videoDoOutro{width:100%;border-radius:20px;background:#000;min-height:220px}
+.videos-lig #meuVideo{position:absolute;right:10px;bottom:10px;width:96px;border-radius:12px;background:#000;transform:scaleX(-1);box-shadow:var(--sombra2)}
+.lig-bt.escolha.on{background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff;border-color:transparent}
+
+/* ===================== FIGURINHAS E DESENHO ===================== */
+.figurinhas{display:flex;flex-wrap:wrap;gap:4px;background:var(--painel);border-radius:16px;padding:9px;margin:0 14px 6px;box-shadow:var(--sombra2);max-height:190px;overflow-y:auto;animation:surge .18s}
+.figurinhas button{font-size:1.7rem;padding:4px 6px;border-radius:12px}
+.figurinhas button:hover{background:var(--painel2);transform:scale(1.15)}
+.d-meio{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;padding:14px;overflow-y:auto}
+#quadro{width:min(100%,420px);aspect-ratio:3/4;background:#fff;border-radius:18px;box-shadow:var(--sombra2);touch-action:none;cursor:crosshair}
+.d-cores{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.d-cor{width:38px;height:38px;border-radius:12px;box-shadow:var(--sombra);border:3px solid transparent}
+.d-cor.on{border-color:var(--roxo);transform:scale(1.08)}
+.d-cor.grossura,#dLimpar{background:var(--painel);font-size:.85rem;font-weight:800;width:auto;padding:0 12px}
+
+/* ===================== TAREFAS ===================== */
+.atalho-tarefas{display:block;width:calc(100% - 20px);margin:0 10px 12px;padding:13px;border-radius:16px;
+  background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-weight:800;font-size:.92rem;box-shadow:var(--sombra)}
+.atalho-tarefas:hover{transform:translateY(-2px)}
+.t-meio{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.placar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.placar-item{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--painel);border-radius:16px;padding:11px 15px;box-shadow:var(--sombra);font-size:.74rem;color:var(--texto2)}
+.placar-item b{font-size:1.05rem;color:var(--texto)}
+.placar-av{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:1.3rem;color:#fff;overflow:hidden}
+.t-form{display:flex;gap:7px;flex-wrap:wrap}
+.t-form input{flex:1 1 100%;min-width:150px;background:var(--painel);border:2px solid var(--borda);border-radius:12px;padding:11px 13px;outline:none;font-size:.9rem}
+.t-form input:focus{border-color:var(--roxo)}
+.t-form select{background:var(--painel);border:2px solid var(--borda);border-radius:12px;padding:11px 9px;outline:none;font-size:.88rem}
+.t-form button{background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff;border-radius:12px;padding:0 18px;font-weight:800}
+.tarefa{display:flex;align-items:center;gap:11px;background:var(--painel);border-radius:14px;padding:11px 13px;margin-bottom:8px;box-shadow:var(--sombra)}
+.tarefa.feita{opacity:.6}
+.tarefa.feita .t-txt b{text-decoration:line-through}
+.t-check{font-size:1.3rem}
+.t-txt{flex:1;min-width:0}
+.t-txt b{display:block;font-size:.93rem}
+.t-txt small{color:var(--texto2);font-size:.76rem}
+.t-apagar{color:var(--texto2);padding:4px 7px;border-radius:8px}
+.t-apagar:hover{background:var(--painel2)}
 </style>
 </head>
 <body>
@@ -368,6 +431,7 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
     <div class="busca-wrap"><input class="busca" id="busca" placeholder="🔍 Procurar conversa" autocomplete="off"></div>
     <div class="titulo-secao">Conversas</div>
     <div class="contatos" id="contatos"></div>
+    <button class="atalho-tarefas" id="btnTarefas">✅ Tarefas e estrelinhas 🏆</button>
     <div class="rodape-lista">🔒 Os recadinhos ficam guardados só neste aparelho.<br>Nada é enviado pra internet.</div>
   </aside>
 
@@ -396,6 +460,9 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
       <button class="switch" id="cfgAvisos" aria-label="Ligar ou desligar os avisos"></button>
     </div>
 
+    <div class="bloco-titulo">🖼️ Foto de cada um</div>
+    <div class="perfis" id="listaPerfis"></div>
+
     <div class="bloco-titulo">⏰ Lembretes</div>
     <div id="listaLembretes"></div>
     <div class="form-lembrete">
@@ -403,6 +470,14 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
       <input type="text" id="lembreteTxt" placeholder="Ex.: dar boa noite" maxlength="60">
       <button id="addLembrete">+</button>
     </div>
+
+    <div class="bloco-titulo">💾 Levar pra outro aparelho</div>
+    <div class="lig-botoes" style="margin:0">
+      <button class="lig-bt" id="btnSalvarTudo">💾 Salvar num arquivo</button>
+      <button class="lig-bt" id="btnAbrirTudo">📂 Abrir um arquivo</button>
+    </div>
+    <p class="sem-lembrete" style="margin-top:8px">O arquivo guarda as conversas, os áudios e as fotos.
+    É só passar pro outro celular e abrir por lá.</p>
 
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
@@ -414,6 +489,8 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
 <div class="aviso-flutua" id="toast"></div>
 
 <script src="audio.js"></script>
+<script src="video.js"></script>
+<script src="familia.js"></script>
 <script src="extras.js"></script>
 <script src="ligacao.js"></script>
 <script src="avisos.js"></script>

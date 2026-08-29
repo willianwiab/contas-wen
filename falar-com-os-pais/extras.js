@@ -8,6 +8,7 @@
 function conteudoEspecial(m, indice){
   if(m.tipo === 'audio')   return balaoAudio(m, indice);
   if(m.tipo === 'foto')    return balaoFoto(m, indice);
+  if(m.tipo === 'video')   return balaoVideo(m, indice);
   if(m.tipo === 'enquete') return balaoEnquete(m, indice);
   return `<span class="txt">${escapar(m.t || '')}</span>`;
 }
@@ -46,10 +47,13 @@ function escolherFoto(){
     if(!arq) return;
     toast('Preparando a foto... 📷');
     try{
-      const { blob, l, a } = await encolherFoto(arq);
+      /* GIF não pode passar pelo canvas, senão perde a animação. */
+      const ehGif = arq.type === 'image/gif';
+      if(ehGif && arq.size > 4000000){ toast('Esse GIF é grande demais 😕'); return; }
+      const { blob, l, a } = ehGif ? { blob: arq, l: 0, a: 0 } : await encolherFoto(arq);
       const id = 'f' + Date.now() + Math.random().toString(36).slice(2,7);
       const guardou = await guardarAudio(id, blob);      // mesmo cofre dos áudios
-      const msg = { tipo:'foto', id, l, a, de: autor, ts: Date.now() };
+      const msg = { tipo:'foto', id, l, a, gif: ehGif, de: autor, ts: Date.now() };
       if(!guardou){
         const txt = await blobParaTexto(blob);
         if(txt.length > 700000){ toast('Essa foto é grande demais 😕'); return; }
@@ -182,6 +186,7 @@ function votar(indice, opcao){
 /* ---------- ligações depois de cada desenho ---------- */
 function ligarExtras(){
   carregarFotos();
+  carregarVideos();
   document.querySelectorAll('[data-foto]').forEach(el =>
     el.addEventListener('click', () => abrirFotoGrande(+el.dataset.foto)));
   document.querySelectorAll('[data-voto]').forEach(b =>
@@ -198,13 +203,21 @@ function abrirMaisMenu(){
   const menu = document.createElement('div');
   menu.id = 'maisMenu'; menu.className = 'mais-menu';
   menu.innerHTML = `
-    <button data-acao="foto">📷 Mandar foto</button>
+    <button data-acao="foto">📷 Foto ou GIF</button>
+    <button data-acao="video">🎥 Videinho da câmera</button>
+    <button data-acao="gif">🎞️ GIF caseiro (2s)</button>
+    <button data-acao="desenho">✏️ Recado desenhado</button>
+    <button data-acao="figurinha">😄 Figurinhas</button>
     <button data-acao="enquete">📊 Fazer enquete</button>
     <button data-acao="walkie">📻 Walkie-talkie</button>`;
   document.querySelector('.barra').insertAdjacentElement('beforebegin', menu);
   menu.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
     const a = b.dataset.acao; menu.remove();
     if(a === 'foto') escolherFoto();
+    if(a === 'video') abrirCamera(false);
+    if(a === 'gif') abrirCamera(true);
+    if(a === 'desenho') abrirDesenho();
+    if(a === 'figurinha') abrirFigurinhas();
     if(a === 'enquete') abrirNovaEnquete();
     if(a === 'walkie') abrirWalkie();
   }));
@@ -213,4 +226,102 @@ function abrirMaisMenu(){
       menu.remove(); document.removeEventListener('click', fora);
     }
   }), 0);
+}
+
+
+/* ---------- FIGURINHAS ---------- */
+const FIGURINHAS = ['😀','😂','🥰','😎','🤩','😭','😡','🤯','🥳','😴','🤗','🤪','👍','👎','🙏','👏','💪','🫶',
+  '❤️','💜','💔','✨','🔥','💯','🎉','🎂','🎁','🐶','🐱','🦄','🦖','🐢','🍕','🍔','🍫','🍦','⚽','🎮','🏆','🚗',
+  '🌈','⭐','🌙','☀️','💤','🤝','🤙','🫡'];
+
+function abrirFigurinhas(){
+  const antigo = document.getElementById('telaFig');
+  if(antigo){ antigo.remove(); return; }
+  const tela = document.createElement('div');
+  tela.className = 'figurinhas'; tela.id = 'telaFig';
+  tela.innerHTML = FIGURINHAS.map(f => `<button data-fig="${f}">${f}</button>`).join('');
+  document.querySelector('.barra').insertAdjacentElement('beforebegin', tela);
+  tela.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    tela.remove();
+    enviar(b.dataset.fig);          // emoji sozinho já aparece gigante
+  }));
+}
+
+/* ---------- RECADO DESENHADO ---------- */
+function abrirDesenho(){
+  if(document.getElementById('telaDesenho')) return;
+  const cores = ['#1e1b33','#ef4444','#f59e0b','#22c55e','#3b82f6','#a855f7','#ec4899','#ffffff'];
+  const tela = document.createElement('div');
+  tela.className = 'tela-cheia'; tela.id = 'telaDesenho';
+  tela.innerHTML = `
+    <div class="w-topo">
+      <button class="icone" id="dFechar">✕</button>
+      <div><b>✏️ Recado desenhado</b><div class="w-sub">desenha e manda como figurinha</div></div>
+    </div>
+    <div class="d-meio">
+      <canvas id="quadro" width="900" height="1200"></canvas>
+      <div class="d-cores">
+        ${cores.map((c,i) => `<button class="d-cor ${i===0?'on':''}" data-cor="${c}" style="background:${c}"></button>`).join('')}
+        <button class="d-cor grossura" id="dGrossura">✏️ 6</button>
+        <button class="d-cor" id="dLimpar">🧽</button>
+      </div>
+      <div class="lig-botoes">
+        <button class="lig-bt ok" id="dMandar">Mandar desenho 📨</button>
+      </div>
+    </div>`;
+  document.body.appendChild(tela);
+
+  const quadro = document.getElementById('quadro');
+  const ctx = quadro.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,quadro.width,quadro.height);
+  ctx.lineCap = ctx.lineJoin = 'round';
+  let cor = cores[0], grossura = 6, desenhando = false;
+
+  const ponto = ev => {
+    const r = quadro.getBoundingClientRect();
+    return { x:(ev.clientX - r.left) * quadro.width / r.width,
+             y:(ev.clientY - r.top)  * quadro.height / r.height };
+  };
+  quadro.addEventListener('pointerdown', ev => {
+    ev.preventDefault(); desenhando = true;
+    try{ quadro.setPointerCapture(ev.pointerId); }catch(e){}
+    const p = ponto(ev);
+    ctx.strokeStyle = cor; ctx.lineWidth = grossura;
+    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + .1, p.y); ctx.stroke();
+  });
+  quadro.addEventListener('pointermove', ev => {
+    if(!desenhando) return;
+    const p = ponto(ev);
+    ctx.lineTo(p.x, p.y); ctx.stroke();
+  });
+  const solta = () => { desenhando = false; };
+  quadro.addEventListener('pointerup', solta);
+  quadro.addEventListener('pointercancel', solta);
+
+  tela.querySelectorAll('[data-cor]').forEach(b => b.addEventListener('click', () => {
+    cor = b.dataset.cor;
+    tela.querySelectorAll('[data-cor]').forEach(o => o.classList.toggle('on', o === b));
+  }));
+  document.getElementById('dGrossura').addEventListener('click', e => {
+    grossura = grossura >= 24 ? 3 : grossura * 2;
+    e.currentTarget.textContent = '✏️ ' + grossura;
+  });
+  document.getElementById('dLimpar').addEventListener('click', () => {
+    ctx.fillStyle = '#fff'; ctx.fillRect(0,0,quadro.width,quadro.height);
+  });
+  document.getElementById('dFechar').addEventListener('click', () => tela.remove());
+  document.getElementById('dMandar').addEventListener('click', () => {
+    quadro.toBlob(async blob => {
+      if(!blob){ toast('Não deu pra salvar o desenho 😕'); return; }
+      const id = 'd' + Date.now();
+      const guardou = await guardarAudio(id, blob);
+      const msg = { tipo:'foto', id, l:quadro.width, a:quadro.height, desenho:true, de:autor, ts:Date.now() };
+      if(!guardou) msg.b64 = await blobParaTexto(blob);
+      dados.msgs[atual].push(msg);
+      dados.visto[atual] = Date.now(); dados.presenca[autor] = Date.now();
+      animar = dados.msgs[atual].length - 1;
+      salvar(); blim(true); tela.remove();
+      desenharMensagens(); desenharContatos(); atualizarStatusTopo();
+    }, 'image/png');
+  });
 }
