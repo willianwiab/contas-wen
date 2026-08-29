@@ -55,10 +55,19 @@ function blobParaTexto(blob){
 let gravador = null, pedacos = [], inicioGrav = 0, timerGrav = null, cancelado = false;
 
 async function pegarMicrofone(){
+  if(!window.isSecureContext || !navigator.mediaDevices?.getUserMedia){
+    toast('Pra gravar, abre o site pelo link (https) 🔒', 5000);
+    return null;
+  }
   try{
     return await navigator.mediaDevices.getUserMedia({ audio:true });
   }catch(e){
-    toast('Precisa deixar eu usar o microfone 🎤');
+    const recado =
+      e.name === 'NotAllowedError' ? 'Aperta "Permitir" quando o celular pedir o microfone 🎤' :
+      e.name === 'NotFoundError'   ? 'Não achei microfone neste aparelho 😕' :
+      e.name === 'NotReadableError'? 'Outro aplicativo está usando o microfone 😕' :
+      'Não deu pra abrir o microfone (' + e.name + ')';
+    toast(recado, 5000);
     return null;
   }
 }
@@ -98,6 +107,24 @@ function pararGravacao(cancelar){
 }
 const gravando = () => !!gravador;
 const segundosGravados = () => (Date.now() - inicioGrav) / 1000;
+
+/* Toca pra começar, toca de novo pra mandar.
+   Enquanto o celular pergunta "pode usar o microfone?", quem tocar de novo
+   só cancela — antes isso deixava a gravação presa ligada. */
+let iniciandoGrav = false, querParar = false;
+
+async function alternarGravacao({ aoComecar, aoTerminar, aoFalhar }){
+  if(iniciandoGrav){ querParar = true; return 'esperando'; }
+  if(gravando()){ pararGravacao(false); return 'mandou'; }
+
+  iniciandoGrav = true; querParar = false;
+  const ok = await comecarGravacao(aoTerminar);
+  iniciandoGrav = false;
+  if(!ok){ aoFalhar && aoFalhar(); return 'falhou'; }
+  if(querParar){ pararGravacao(true); return 'cancelou'; }
+  aoComecar && aoComecar();
+  return 'gravando';
+}
 
 /* ---------- mandar o recadinho de voz ---------- */
 async function mandarAudio(blob, segundos){
@@ -243,9 +270,9 @@ function abrirWalkie(){
     </div>
     <div class="w-meio">
       <div class="w-luz" id="wLuz"></div>
-      <div class="w-status" id="wStatus">Aperta e segura pra falar</div>
+      <div class="w-status" id="wStatus">Toca no botão pra falar</div>
       <button class="w-botao" id="wBotao">🎙️<span>FALAR</span></button>
-      <div class="w-dica">Solta pra mandar. O recado fica na conversa também.</div>
+      <div class="w-dica">Toca pra começar, toca de novo pra mandar. O recado fica na conversa também.</div>
       <div class="autor-bar" id="wAutor"><span class="rot">Falando como</span></div>
     </div>`;
   document.body.appendChild(tela);
@@ -266,34 +293,32 @@ function abrirWalkie(){
   const botao = $('#wBotao'), status = $('#wStatus'), luz = $('#wLuz');
   let relogio = null;
 
-  const comeca = async ev => {
-    ev.preventDefault();
-    if(gravando()) return;
-    try{ botao.setPointerCapture(ev.pointerId); }catch(e){}
-    const ok = await comecarGravacao(async (blob, seg) => {
-      luz.classList.remove('on'); botao.classList.remove('falando');
+  const desligarLuz = () => {
+    clearInterval(relogio);
+    luz.classList.remove('on'); botao.classList.remove('falando');
+    botao.querySelector('span').textContent = 'FALAR';
+  };
+
+  botao.addEventListener('click', () => alternarGravacao({
+    aoComecar(){
+      pipoco(true);
+      luz.classList.add('on'); botao.classList.add('falando');
+      botao.querySelector('span').textContent = 'MANDAR';
+      relogio = setInterval(() => {
+        if(gravando()) status.textContent = `NO AR! 🔴 ${segundosGravados().toFixed(1)}s`;
+      }, 100);
+    },
+    async aoTerminar(blob, seg){
+      desligarLuz();
       status.textContent = 'Mandando... 📡';
       pipoco(false);
       await mandarAudio(blob, seg);
       const url = await urlDoAudio(dados.msgs[atual][dados.msgs[atual].length - 1]);
       if(url){ const a = new Audio(url); a.play().catch(()=>{}); }
-      status.textContent = 'Mandado! Aperta de novo pra falar 🎉';
-    });
-    if(!ok){ status.textContent = 'Não deu pra usar o microfone 😕'; return; }
-    pipoco(true);
-    luz.classList.add('on'); botao.classList.add('falando');
-    relogio = setInterval(() => {
-      if(gravando()) status.textContent = `NO AR! 🔴 ${segundosGravados().toFixed(1)}s`;
-    }, 100);
-  };
-  const para = ev => {
-    ev.preventDefault();
-    clearInterval(relogio);
-    if(gravando()) pararGravacao(false);
-  };
+      status.textContent = 'Mandado! Toca pra falar de novo 🎉';
+    },
+    aoFalhar(){ desligarLuz(); status.textContent = 'Não deu pra usar o microfone 😕'; }
+  }));
 
-  botao.addEventListener('pointerdown', comeca);
-  botao.addEventListener('pointerup', para);
-  botao.addEventListener('pointercancel', para);
   $('#wFechar').addEventListener('click', () => { if(gravando()) pararGravacao(true); tela.remove(); });
 }
