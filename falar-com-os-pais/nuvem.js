@@ -16,8 +16,8 @@ const LIMITE_ANEXO = 400000;   // arquivos maiores que isso não viajam (~300 KB
    ninguém precisa digitar nada — só a senha da família na primeira abertura. */
 const NUVEM_PADRAO = {
   modo: 'firebase',
-  url : '',                                  // <- endereço do Realtime Database
-  sala: 'fam-conversa-com-a-familia-2026'    // mesma sala em todos os aparelhos
+  url : 'https://conversa-com-a-familia-default-rtdb.firebaseio.com',
+  sala: ''    // vazio = a sala nasce da própria senha da família (veja salaDaSenha)
 };
 const temPadrao = () => !!NUVEM_PADRAO.url;
 
@@ -130,6 +130,14 @@ async function chegouDaNuvem(pacote, conversaEsperada){
 }
 
 /* ---------- ligar e desligar ---------- */
+/* O nome da sala nasce da senha: quem tem a mesma senha cai na mesma sala,
+   e quem não tem nem sabe em que canto do banco procurar. */
+async function salaDaSenha(senha){
+  const digest = await crypto.subtle.digest('SHA-256', bytes('sala:' + senha));
+  const hex = [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2,'0')).join('');
+  return 'fam-' + hex.slice(0, 24);
+}
+
 /* Primeira abertura com o banco já embutido: pede só a senha da família. */
 function pedirSenhaDaFamilia(){
   if(!temPadrao() || dados.nuvem || document.getElementById('telaSenhaFamilia')) return;
@@ -148,10 +156,11 @@ function pedirSenhaDaFamilia(){
       </div>
     </div>`;
   document.body.appendChild(tela);
-  const entrar = () => {
+  const entrar = async () => {
     const senha = document.getElementById('senhaFamilia').value.trim();
     if(senha.length < 3){ toast('Escreve a palavra combinada 😊'); return; }
-    dados.nuvem = Object.assign({}, NUVEM_PADRAO, { senha });
+    const sala = NUVEM_PADRAO.sala || await salaDaSenha(senha);
+    dados.nuvem = Object.assign({}, NUVEM_PADRAO, { senha, sala });
     salvar(); chaveNuvem = null; ligarNuvem();
     tela.remove();
     toast('Pronto! Agora os recados viajam ☁️');
@@ -251,17 +260,20 @@ function desenharNuvem(){
   marcarNuvem(estadoNuvem);
 }
 
-function salvarNuvem(){
+async function salvarNuvem(){
   const modo = document.querySelector('.modo-op.on').dataset.modo;
   const url = document.getElementById('nuvemUrl').value.trim();
   const sala = document.getElementById('nuvemSala').value.trim();
   const senha = document.getElementById('nuvemSenha').value.trim();
-  if(!sala || !senha){ toast('Falta o código da sala e a senha 😊'); return; }
+  if(!senha){ toast('Falta a senha da família 😊'); return; }
+  const salaFinal = sala || await salaDaSenha(senha);   // sem código, a senha vira a sala
   if(modo === 'firebase'){
     if(!url){ toast('Falta o endereço do banco 😊'); return; }
     if(!/^https:\/\/.+/.test(url)){ toast('O endereço tem que começar com https:// 😊'); return; }
   }
-  dados.nuvem = modo === 'publico' ? { modo, sala, senha } : { modo, url, sala, senha };
+  dados.nuvem = modo === 'publico'
+    ? { modo, sala: salaFinal, senha }
+    : { modo, url, sala: salaFinal, senha };
   salvar(); chaveNuvem = null;
   ligarNuvem(); desenharNuvem();
   toast('Ligando o envio de verdade... ☁️');
@@ -278,4 +290,45 @@ function sortearSala(){
   let s = '';
   for(let i = 0; i < 20; i++) s += letras[Math.floor(Math.random() * letras.length)];
   document.getElementById('nuvemSala').value = 'fam-' + s;
+}
+
+
+/* ---------- teste do banco Firebase ---------- */
+/* Escreve um recadinho de teste e lê de volta: assim dá pra ver se as regras
+   foram publicadas e se o endereço está certo. */
+async function testarFirebase(){
+  const caixa = document.getElementById('passosTeste');
+  if(!caixa) return;
+  caixa.innerHTML = '';
+  const passo = (txt, estado) => caixa.insertAdjacentHTML('beforeend', `<div class="passo ${estado}">${txt}</div>`);
+
+  if(!dados.nuvem || !dados.nuvem.url){ passo('Primeiro liga o envio com o endereço do banco.', 'ruim'); return; }
+  passo('1. Banco: ' + dados.nuvem.url.replace('https://',''), 'bom');
+  passo('2. Sala: ' + dados.nuvem.sala, 'bom');
+
+  const alvo = `${enderecoConversa('teste')}/ping.json`;
+  try{
+    const r = await fetch(alvo, { method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ iv:'teste', c:'teste', ts: Date.now() }) });
+    if(r.status === 401 || r.status === 403){
+      passo('3. ❌ O banco recusou (' + r.status + ') — as <b>regras</b> não foram publicadas.', 'ruim');
+      passo('No Firebase: Realtime Database → aba Regras → cola as regras do GUIA-FIREBASE.md → Publicar.', 'aviso');
+      return;
+    }
+    if(!r.ok){ passo('3. ❌ O banco respondeu ' + r.status, 'ruim'); return; }
+    passo('3. Consegui escrever no banco ✅', 'bom');
+  }catch(e){
+    passo('3. ❌ Não consegui falar com o banco: ' + e.message, 'ruim');
+    passo('Confere se o endereço está certinho e se este aparelho está com internet.', 'aviso');
+    return;
+  }
+
+  try{
+    const volta = await (await fetch(alvo)).json();
+    passo(volta && volta.iv === 'teste' ? '4. Li de volta o que escrevi ✅' : '4. ❌ Escrevi mas não consegui ler de volta',
+          volta && volta.iv === 'teste' ? 'bom' : 'ruim');
+  }catch(e){ passo('4. ❌ Não consegui ler de volta: ' + e.message, 'ruim'); }
+
+  fetch(alvo, { method:'PUT', headers:{'Content-Type':'application/json'}, body:'null' }).catch(() => {});
+  passo('5. Tudo pronto! Agora é só cada um abrir e pôr a mesma senha da família 🎉', 'bom');
 }

@@ -718,7 +718,7 @@ document.querySelectorAll('.modo-op').forEach(b => b.addEventListener('click', (
   $('#avisoPublico').classList.toggle('escondido', b.dataset.modo !== 'publico');
 }));
 $('#btnLigarNuvem').addEventListener('click', salvarNuvem);
-$('#btnTestarNuvem').addEventListener('click', testarPublico);
+$('#btnTestarNuvem').addEventListener('click', () => modoPublico() ? testarPublico() : testarFirebase());
 $('#btnTestarMic').addEventListener('click', testarMicrofone);
 $('#btnTrocarServidor').addEventListener('click', () => { trocarServidor(); toast('Trocando de servidor... 🔁'); });
 $('#btnDesligarNuvem').addEventListener('click', desligarDeVez);
