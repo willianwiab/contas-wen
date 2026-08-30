@@ -722,6 +722,16 @@ window.addEventListener('unhandledrejection', function(e){
     <p class="sem-lembrete" id="estadoNuvem">🔌 Desligado — os recados ficam só neste aparelho</p>
     <div id="camposNuvem">
       <div class="campo-form" style="margin-top:10px">
+        <label>Jeito de enviar</label>
+        <div class="tm-opcoes">
+          <button class="tm-op modo-op on" data-modo="publico">📡 Servidor público</button>
+          <button class="tm-op modo-op" data-modo="firebase">🔥 Firebase da família</button>
+        </div>
+      </div>
+      <p class="sem-lembrete escondido" id="avisoPublico">📡 Sem conta nenhuma, funciona hoje. É um servidor
+      <b>público de teste</b>: os recados vão embaralhados com a senha, mas ele pode ficar fora do ar ou apagar
+      tudo sem avisar. Pra recado do dia a dia serve; pra guardar coisa importante, o Firebase é melhor.</p>
+      <div class="campo-form escondido" id="campoUrl">
         <label>Endereço do banco</label>
         <input id="nuvemUrl" placeholder="https://nome-do-projeto.firebaseio.com" inputmode="url">
         <small>O papai pega isso no Firebase. Tem o passo a passo no ❓ Como usar.</small>
@@ -751,7 +761,7 @@ window.addEventListener('unhandledrejection', function(e){
       <button class="lig-bt" id="btnAtualizar">🔄 Atualizar o site</button>
     </div>
     <p class="sem-lembrete" style="margin-top:8px">Isso joga fora a cópia velha guardada no aparelho e baixa a mais
-    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">11</b>.</p>
+    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">12</b>.</p>
 
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
@@ -762,20 +772,21 @@ window.addEventListener('unhandledrejection', function(e){
 
 <div class="aviso-flutua" id="toast"></div>
 
-<script src="ajuda.js?v=11"></script>
-<script src="jogo.js?v=11"></script>
-<script src="mais.js?v=11"></script>
-<script src="casa.js?v=11"></script>
-<script src="enfeites.js?v=11"></script>
-<script src="nuvem.js?v=11"></script>
-<script src="trancar.js?v=11"></script>
-<script src="audio.js?v=11"></script>
-<script src="video.js?v=11"></script>
-<script src="familia.js?v=11"></script>
-<script src="extras.js?v=11"></script>
-<script src="ligacao.js?v=11"></script>
-<script src="avisos.js?v=11"></script>
-<script src="app.js?v=11"></script>
+<script src="ajuda.js?v=12"></script>
+<script src="jogo.js?v=12"></script>
+<script src="mais.js?v=12"></script>
+<script src="casa.js?v=12"></script>
+<script src="enfeites.js?v=12"></script>
+<script src="nuvem.js?v=12"></script>
+<script src="publico.js?v=12"></script>
+<script src="trancar.js?v=12"></script>
+<script src="audio.js?v=12"></script>
+<script src="video.js?v=12"></script>
+<script src="familia.js?v=12"></script>
+<script src="extras.js?v=12"></script>
+<script src="ligacao.js?v=12"></script>
+<script src="avisos.js?v=12"></script>
+<script src="app.js?v=12"></script>
 </body>
 
 </html>

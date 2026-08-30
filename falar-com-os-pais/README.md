@@ -96,8 +96,15 @@ no computador e chega no celular da mãe), a família liga um banco **Firebase**
 grátis: **⚙️ Ajustes → ☁️ Enviar de verdade**. O passo a passo completo está em
 **[GUIA-FIREBASE.md](GUIA-FIREBASE.md)**.
 
+Tem **dois jeitos**, escolhidos na mesma tela:
+
+| Jeito | Precisa de conta? | Como é |
+|---|---|---|
+| 📡 **Servidor público** (HiveMQ) | não | funciona na hora; é um broker MQTT **de teste**, aberto, que pode cair ou limpar tudo sem avisar |
+| 🔥 **Firebase da família** | sim, um adulto cria (grátis) | é de vocês, estável, guarda o histórico — veja [GUIA-FIREBASE.md](GUIA-FIREBASE.md) |
+
 - O recado sai do aparelho **embaralhado** (AES-GCM) com a senha da família:
-  o servidor guarda só letra embaralhada.
+  o servidor guarda só letra embaralhada — nos dois jeitos.
 - Funciona mesmo com o outro **offline** — o recado espera ele abrir.
 - Áudio, foto e vídeo até ~300 KB viajam junto; maiores ficam no aparelho de origem.
 - Nos outros aparelhos, é só **copiar o convite** num e **colar** no outro.
@@ -139,6 +146,7 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 | `casa.js` | Álbum, agenda e o bichinho da família |
 | `enfeites.js` | Papel de parede, confete, código secreto, soneca e voz alta |
 | `nuvem.js` | Envio de verdade entre aparelhos (Firebase + criptografia) |
+| `publico.js` | O envio pelo servidor público (MQTT escrito na mão, sem biblioteca) |
 | `trancar.js` | A senha de abrir o chat |
 | `ajuda.js` | A tela ❓ Como usar |
 | `ligacao.js` | Ligação de voz e vídeo (WebRTC) |
