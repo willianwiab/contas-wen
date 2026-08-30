@@ -9,7 +9,21 @@
    família (a mesma criptografia do nuvem.js).
    ========================================================= */
 
-const SERVIDOR_PUBLICO = 'wss://broker.hivemq.com:8884/mqtt';
+/* Se um servidor não deixar passar, o site tenta o próximo sozinho. */
+const SERVIDORES_PUBLICOS = [
+  'wss://broker.emqx.io:8084/mqtt',
+  'wss://broker.hivemq.com:8884/mqtt',
+  'wss://test.mosquitto.org:8081/mqtt'
+];
+let servidorAtual = 0;
+const diario = [];   // últimas coisas que aconteceram, pra mostrar nos ajustes
+
+function anotar(txt){
+  diario.unshift(new Date().toLocaleTimeString('pt-BR') + ' — ' + txt);
+  diario.length = Math.min(diario.length, 8);
+  const caixa = document.getElementById('diarioNuvem');
+  if(caixa) caixa.innerHTML = diario.map(l => `<div>${escapar(l)}</div>`).join('');
+}
 const VALIDADE_RETIDO = 30 * 86400000;   // recado retido mais velho que isso é apagado
 
 let teia = null, pingTimer = null, tentativasPublico = 0, sobra = new Uint8Array(0);
@@ -67,6 +81,8 @@ async function tratarPacote(tipo, corpo){
     if(corpo[1] !== 0){ marcarNuvem('erro', 'o servidor recusou (código ' + corpo[1] + ')'); return; }
     tentativasPublico = 0;
     teia.send(pacoteAssinar(assuntoBase() + '/#', 1));
+    dados.nuvem.servidorOk = enderecoPublico(); salvar();
+    anotar('pronto! ouvindo a sala ' + dados.nuvem.sala);
     marcarNuvem('ligado');
     clearInterval(pingTimer);
     pingTimer = setInterval(() => { try{ teia.send(new Uint8Array([0xC0, 0])); }catch(e){} }, 45000);
@@ -95,24 +111,38 @@ function apagarRetido(assunto){
 }
 
 /* ---------- ligar / desligar ---------- */
+function enderecoPublico(){
+  return dados.nuvem.servidor || SERVIDORES_PUBLICOS[servidorAtual % SERVIDORES_PUBLICOS.length];
+}
+
 function ligarPublico(){
   desligarPublico();
   if(!dados.nuvem || !dados.nuvem.sala || !dados.nuvem.senha) return;
   marcarNuvem('ligando');
+  const endereco = enderecoPublico();
+  anotar('tentando ' + endereco.split('/')[2]);
   const id = 'fam' + Math.random().toString(36).slice(2, 12);
   try{
-    teia = new WebSocket(dados.nuvem.servidor || SERVIDOR_PUBLICO, 'mqtt');
-  }catch(e){ marcarNuvem('erro', 'não achei o servidor'); return; }
+    teia = new WebSocket(endereco, 'mqtt');
+  }catch(e){ marcarNuvem('erro', 'não achei o servidor'); trocarServidor(); return; }
+
+  /* se em 8 segundos não conectar, tenta o próximo servidor */
+  const desistir = setTimeout(() => {
+    if(teia && teia.readyState !== 1){ anotar('demorou demais, trocando de servidor'); trocarServidor(); }
+  }, 8000);
+  teia.addEventListener('open', () => clearTimeout(desistir));
   teia.binaryType = 'arraybuffer';
   sobra = new Uint8Array(0);
 
-  teia.onopen = () => { try{ teia.send(pacoteConectar(id)); }catch(e){} };
+  teia.onopen = () => { anotar('conectei, dizendo oi pro servidor'); try{ teia.send(pacoteConectar(id)); }catch(e){} };
   teia.onmessage = ev => { sobra = juntar(sobra, new Uint8Array(ev.data)); lerPacotes(); };
-  teia.onerror = () => marcarNuvem('erro', 'não consegui falar com o servidor');
+  teia.onerror = () => { anotar('deu erro na conexão'); marcarNuvem('erro', 'não consegui falar com o servidor'); };
   teia.onclose = () => {
     clearInterval(pingTimer);
     if(!modoPublico()) return;
+    anotar('a conexão caiu');
     marcarNuvem('erro', 'caiu — tentando de novo');
+    if(tentativasPublico > 0 && tentativasPublico % 2 === 0) servidorAtual++;
     const espera = Math.min(30000, 2000 * Math.pow(2, tentativasPublico++));
     setTimeout(() => { if(modoPublico()) ligarPublico(); }, espera);
   };
@@ -143,4 +173,56 @@ async function mandarPeloPublico(conversa, msg){
     teia.send(pacotePublicar(`${assuntoBase()}/${uid}`, JSON.stringify(embrulho), true));
     return true;
   }catch(e){ marcarNuvem('erro', e.message); return false; }
+}
+
+
+function trocarServidor(){
+  desligarPublico();
+  servidorAtual++;
+  if(modoPublico()) setTimeout(ligarPublico, 400);
+}
+
+/* ---------- teste de conexão ---------- */
+/* Manda um recadinho de teste pra própria sala e vê se ele volta.
+   Se voltar, o caminho está inteiro: conectar, assinar, mandar e receber. */
+function testarPublico(){
+  const passos = document.getElementById('passosTeste');
+  if(!passos) return;
+  const marcar = (txt, estado) => {
+    passos.insertAdjacentHTML('beforeend', `<div class="passo ${estado}">${txt}</div>`);
+  };
+  passos.innerHTML = '';
+  marcar('1. Conectando no servidor...', 'indo');
+
+  if(!teia || teia.readyState !== 1){
+    ligarPublico();
+    marcar('conexão estava desligada — liguei agora, espera uns segundos e testa de novo', 'ruim');
+    return;
+  }
+  passos.innerHTML = '';
+  marcar('1. Conectado no servidor ' + enderecoPublico().split('/')[2], 'bom');
+  marcar('2. Ouvindo a sala ' + dados.nuvem.sala, 'bom');
+
+  const marca = 'teste-' + Math.random().toString(36).slice(2, 8);
+  let voltou = false;
+  const ouvinte = ev => {
+    const t = new TextDecoder().decode(new Uint8Array(ev.data));
+    if(t.includes(marca)) voltou = true;
+  };
+  teia.addEventListener('message', ouvinte);
+  try{
+    teia.send(pacotePublicar(assuntoBase() + '/teste', JSON.stringify({ marca }), false));
+    marcar('3. Mandei um recado de teste', 'bom');
+  }catch(e){ marcar('3. Não consegui mandar: ' + e.message, 'ruim'); return; }
+
+  setTimeout(() => {
+    teia.removeEventListener('message', ouvinte);
+    if(voltou){
+      marcar('4. O recado voltou! O envio está funcionando ✅', 'bom');
+      marcar('Se mesmo assim não chega no outro aparelho, é porque lá o código da sala ou a senha estão diferentes — usa o 📋 convite.', 'aviso');
+    }else{
+      marcar('4. O recado NÃO voltou 😕', 'ruim');
+      marcar('Esse servidor não deixou passar. Aperta “trocar de servidor” e testa de novo.', 'aviso');
+    }
+  }, 2500);
 }

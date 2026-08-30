@@ -638,6 +638,8 @@ document.querySelectorAll('.modo-op').forEach(b => b.addEventListener('click', (
   $('#avisoPublico').classList.toggle('escondido', b.dataset.modo !== 'publico');
 }));
 $('#btnLigarNuvem').addEventListener('click', salvarNuvem);
+$('#btnTestarNuvem').addEventListener('click', testarPublico);
+$('#btnTrocarServidor').addEventListener('click', () => { trocarServidor(); toast('Trocando de servidor... 🔁'); });
 $('#btnDesligarNuvem').addEventListener('click', desligarDeVez);
 $('#btnConvite').addEventListener('click', () => {
   navigator.clipboard?.writeText(fazerConvite())

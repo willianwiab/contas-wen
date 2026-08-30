@@ -1,8 +1,8 @@
 /* Service worker simples: tenta a internet primeiro e, se não tiver,
    usa a cópia guardada. Assim o site abre offline e sempre atualiza. */
-const CACHE = 'fala-familia-v12';
+const CACHE = 'fala-familia-v13';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg',
-  './app.js?v=12', './ajuda.js?v=12', './jogo.js?v=12', './trancar.js?v=12', './mais.js?v=12', './casa.js?v=12', './enfeites.js?v=12', './nuvem.js?v=12', './publico.js?v=12', './audio.js?v=12', './video.js?v=12', './familia.js?v=12', './extras.js?v=12', './ligacao.js?v=12', './avisos.js?v=12',
+  './app.js?v=13', './ajuda.js?v=13', './jogo.js?v=13', './trancar.js?v=13', './mais.js?v=13', './casa.js?v=13', './enfeites.js?v=13', './nuvem.js?v=13', './publico.js?v=13', './audio.js?v=13', './video.js?v=13', './familia.js?v=13', './extras.js?v=13', './ligacao.js?v=13', './avisos.js?v=13',
   './icone-192.png', './icone-512.png', './icone-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', ev => {
