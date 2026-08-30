@@ -632,6 +632,11 @@ $('#btnAjuda').addEventListener('click', abrirAjuda);
 $('#btnTranca').addEventListener('click', mudarTranca);
 /* Joga fora a cópia velha guardada e baixa o site de novo (sem apagar recadinho). */
 $('#btnSortear').addEventListener('click', sortearSala);
+document.querySelectorAll('.modo-op').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.modo-op').forEach(o => o.classList.toggle('on', o === b));
+  $('#campoUrl').classList.toggle('escondido', b.dataset.modo !== 'firebase');
+  $('#avisoPublico').classList.toggle('escondido', b.dataset.modo !== 'publico');
+}));
 $('#btnLigarNuvem').addEventListener('click', salvarNuvem);
 $('#btnDesligarNuvem').addEventListener('click', desligarDeVez);
 $('#btnConvite').addEventListener('click', () => {

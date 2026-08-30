@@ -16,7 +16,11 @@ let fonteNuvem = null;    // EventSection aberta
 let chaveNuvem = null;    // chave de embaralhar
 let estadoNuvem = 'desligado';   // desligado | ligando | ligado | erro
 
-const nuvemLigada = () => !!(dados.nuvem && dados.nuvem.url && dados.nuvem.sala && dados.nuvem.senha);
+const nuvemLigada = () => {
+  const n = dados.nuvem;
+  if(!n || !n.sala || !n.senha) return false;
+  return n.modo === 'publico' ? true : !!n.url;
+};
 
 /* ---------- embaralhar (criptografia) ---------- */
 const bytes = t => new TextEncoder().encode(t);
@@ -53,6 +57,7 @@ const enderecoSala = () => `${dados.nuvem.url.replace(/\/$/,'')}/salas/${dados.n
 /* ---------- mandar ---------- */
 async function mandarPraNuvem(conversa, msg){
   if(!nuvemLigada() || msg.naNuvem) return;
+  if(modoPublico()) return void mandarPeloPublico(conversa, msg);
   const copia = Object.assign({}, msg);
   delete copia.naNuvem;
 
@@ -116,6 +121,7 @@ async function chegouDaNuvem(pacote){
 function ligarNuvem(){
   desligarNuvem();
   if(!nuvemLigada()) return;
+  if(modoPublico()) return ligarPublico();
   marcarNuvem('ligando');
   try{
     fonteNuvem = new EventSource(enderecoSala() + '.json');
@@ -139,6 +145,7 @@ function ligarNuvem(){
 }
 
 function desligarNuvem(){
+  desligarPublico();
   if(fonteNuvem){ try{ fonteNuvem.close(); }catch(e){} fonteNuvem = null; }
   chaveNuvem = null;
   marcarNuvem('desligado');
@@ -183,6 +190,10 @@ function desenharNuvem(){
   const caixa = document.getElementById('camposNuvem');
   if(!caixa) return;
   const n = dados.nuvem || {};
+  const modo = n.modo || 'publico';
+  document.querySelectorAll('.modo-op').forEach(b => b.classList.toggle('on', b.dataset.modo === modo));
+  document.getElementById('campoUrl').classList.toggle('escondido', modo !== 'firebase');
+  document.getElementById('avisoPublico').classList.toggle('escondido', modo !== 'publico');
   document.getElementById('nuvemUrl').value  = n.url  || '';
   document.getElementById('nuvemSala').value = n.sala || '';
   document.getElementById('nuvemSenha').value= n.senha|| '';
@@ -192,12 +203,17 @@ function desenharNuvem(){
 }
 
 function salvarNuvem(){
+  const modo = document.querySelector('.modo-op.on').dataset.modo;
   const url = document.getElementById('nuvemUrl').value.trim();
   const sala = document.getElementById('nuvemSala').value.trim();
   const senha = document.getElementById('nuvemSenha').value.trim();
-  if(!url || !sala || !senha){ toast('Falta preencher os três campos 😊'); return; }
-  if(!/^https:\/\/.+/.test(url)){ toast('O endereço tem que começar com https:// 😊'); return; }
-  dados.nuvem = { url, sala, senha }; salvar(); chaveNuvem = null;
+  if(!sala || !senha){ toast('Falta o código da sala e a senha 😊'); return; }
+  if(modo === 'firebase'){
+    if(!url){ toast('Falta o endereço do banco 😊'); return; }
+    if(!/^https:\/\/.+/.test(url)){ toast('O endereço tem que começar com https:// 😊'); return; }
+  }
+  dados.nuvem = modo === 'publico' ? { modo, sala, senha } : { modo, url, sala, senha };
+  salvar(); chaveNuvem = null;
   ligarNuvem(); desenharNuvem();
   toast('Ligando o envio de verdade... ☁️');
 }

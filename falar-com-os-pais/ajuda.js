@@ -85,7 +85,8 @@ const AJUDA = [
     cor:'#0284c7',
     itens:[
       ['O normal','sem ligar isso, o recado fica só neste aparelho — é um caderno de recados da casa'],
-      ['Pra viajar','precisa de um banco Firebase da família (grátis). O papai cria em uns 10 minutos'],
+      ['Dois jeitos','📡 servidor público (funciona hoje, sem conta) ou 🔥 Firebase da família (precisa um adulto criar, mas é de vocês)'],
+      ['📡 O servidor público','é de teste, aberto pra todo mundo: pode cair ou apagar tudo sem avisar. Serve pro dia a dia'],
       ['Onde liga','⚙️ Ajustes → ☁️ Enviar de verdade: endereço do banco, código da sala e senha da família'],
       ['Nos outros aparelhos','é só 📋 copiar o convite num e 📥 colar no outro'],
       ['Segredo','o recado sai embaralhado com a senha da família — nem o servidor entende o que passa'],
