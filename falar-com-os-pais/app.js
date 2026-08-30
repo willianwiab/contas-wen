@@ -305,7 +305,7 @@ function perguntarQuemSou(){
   tela.querySelectorAll('[data-quem]').forEach(b => b.addEventListener('click', () => {
     souAgora(b.dataset.quem);
     tela.remove();
-    pedirSenhaDaFamilia();   // se o banco da família já vem no site, pede só a senha
+    ligarSozinho();          // o banco da família já vem no site: liga sem pedir nada
     toast(`Este aparelho é d${b.dataset.quem === 'irma' ? 'a' : 'o'} ${PESSOAS[b.dataset.quem].curto}! 💜`);
   }));
 }
@@ -810,7 +810,7 @@ if(nuvemLigada()) ligarNuvem();
 if(!dados.euSou){
   perguntarQuemSou();                         // primeira vez: de quem é este aparelho?
 }else{
-  pedirSenhaDaFamilia();                      // já sabe quem é: falta a senha da família?
+  ligarSozinho();                             // já sabe quem é: liga o envio sozinho
   if(window.innerWidth > 860) abrir('familia');
 }
 

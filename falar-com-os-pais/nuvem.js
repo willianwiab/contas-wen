@@ -12,22 +12,33 @@
 
 const LIMITE_ANEXO = 400000;   // arquivos maiores que isso não viajam (~300 KB)
 
-/* Configuração de fábrica da família: com o endereço do banco preenchido aqui,
-   ninguém precisa digitar nada — só a senha da família na primeira abertura. */
+/* Configuração de fábrica da família: banco e sala já vêm prontos, então
+   ninguém precisa digitar nada — abriu, escolheu quem é, está conversando.
+
+   Sem senha, a chave de embaralhar nasce do próprio nome da sala, que está
+   aqui no código (público). Ou seja: serve pra o recado não ficar à mostra
+   pra quem passar os olhos no banco, mas NÃO é segredo de verdade — quem
+   achar este repositório consegue ler. Pra privacidade mesmo, é só pôr uma
+   senha nos Ajustes: aí a sala e a chave passam a nascer dela, e o site
+   deixa de saber o segredo da família. */
 const NUVEM_PADRAO = {
   modo: 'firebase',
   url : 'https://conversa-com-a-familia-default-rtdb.firebaseio.com',
-  sala: ''    // vazio = a sala nasce da própria senha da família (veja salaDaSenha)
+  sala: 'fam-casa-wen-2026-conversa'
 };
 const temPadrao = () => !!NUVEM_PADRAO.url;
+/* sem senha combinada, a própria sala vira a chave */
+const chaveEmUso = () => (dados.nuvem && dados.nuvem.senha) || (dados.nuvem && dados.nuvem.sala) || '';
 
 let fontesNuvem = [];     // uma escuta pra cada conversa minha
+let relogioPuxar = null;  // rede teimosa: confere o banco de tempos em tempos
+let relogioAviso = null;  // avisa que este aparelho está na sala
 let chaveNuvem = null;    // chave de embaralhar
 let estadoNuvem = 'desligado';   // desligado | ligando | ligado | erro
 
 const nuvemLigada = () => {
   const n = dados.nuvem;
-  if(!n || !n.sala || !n.senha) return false;
+  if(!n || !n.sala) return false;
   return n.modo === 'publico' ? true : !!n.url;
 };
 
@@ -39,7 +50,7 @@ const deB64 = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
 
 async function pegarChave(){
   if(chaveNuvem) return chaveNuvem;
-  const base = await crypto.subtle.importKey('raw', bytes(dados.nuvem.senha), 'PBKDF2', false, ['deriveKey']);
+  const base = await crypto.subtle.importKey('raw', bytes(chaveEmUso()), 'PBKDF2', false, ['deriveKey']);
   chaveNuvem = await crypto.subtle.deriveKey(
     { name:'PBKDF2', salt: bytes('fala-familia:' + dados.nuvem.sala), iterations: 120000, hash:'SHA-256' },
     base, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
@@ -87,7 +98,10 @@ async function mandarPraNuvem(conversa, msg){
     const r = await fetch(`${enderecoConversa(conversa)}/${id}.json`, {
       method:'PUT', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(pacote)
     });
-    if(!r.ok) throw new Error('HTTP ' + r.status);
+    if(!r.ok){
+      if(r.status === 401 || r.status === 403) avisarRegras(r.status);
+      throw new Error('HTTP ' + r.status);
+    }
     marcarNuvem('ligado');
   }catch(e){
     marcarNuvem('erro', e.message);
@@ -151,38 +165,18 @@ async function passarPraFamiliaNaNuvem(){
   return true;
 }
 
-/* Primeira abertura com o banco já embutido: pede só a senha da família. */
-function pedirSenhaDaFamilia(){
-  if(!temPadrao() || document.getElementById('telaSenhaFamilia')) return;
-  if(dados.nuvem){ passarPraFamiliaNaNuvem(); return; }
-  const tela = document.createElement('div');
-  tela.className = 'tela-cheia quem-sou'; tela.id = 'telaSenhaFamilia';
-  tela.innerHTML = `
-    <div class="qs-meio">
-      <div class="balao-deco">🔐</div>
-      <h2>Senha da família</h2>
-      <p class="lig-txt">É a mesma palavra em todos os aparelhos da casa. Ela embaralha os recados:
-      sem ela ninguém consegue ler o que passa pela internet.</p>
-      <input id="senhaFamilia" class="senha-grande" placeholder="a palavra combinada" autocomplete="off">
-      <div class="lig-botoes">
-        <button class="lig-bt ok grande" id="senhaOk">☁️ Ligar o envio</button>
-        <button class="lig-bt" id="senhaDepois">agora não</button>
-      </div>
-    </div>`;
-  document.body.appendChild(tela);
-  const entrar = async () => {
-    const senha = document.getElementById('senhaFamilia').value.trim();
-    if(senha.length < 3){ toast('Escreve a palavra combinada 😊'); return; }
-    const sala = NUVEM_PADRAO.sala || await salaDaSenha(senha);
-    dados.nuvem = Object.assign({}, NUVEM_PADRAO, { senha, sala });
-    salvar(); chaveNuvem = null; ligarNuvem();
-    tela.remove();
-    toast('Pronto! Agora os recados viajam ☁️');
-  };
-  document.getElementById('senhaOk').addEventListener('click', entrar);
-  document.getElementById('senhaFamilia').addEventListener('keydown', e => { if(e.key === 'Enter') entrar(); });
-  document.getElementById('senhaDepois').addEventListener('click', () => tela.remove());
-  document.getElementById('senhaFamilia').focus();
+/* Liga sozinho com o que já vem no site. Se o aparelho tinha ficado numa
+   configuração antiga (servidor público, ou uma palavra que não bateu com a
+   dos outros aparelhos), ele volta pro padrão da casa — era isso que impedia
+   os aparelhos de se encontrarem. */
+function ligarSozinho(){
+  if(!temPadrao()) return;
+  if(!dados.nuvem || dados.nuvemVersao !== 2){
+    dados.nuvem = Object.assign({}, NUVEM_PADRAO);
+    dados.nuvemVersao = 2;
+    salvar(); chaveNuvem = null;
+  }
+  ligarNuvem();
 }
 
 function ligarNuvem(){
@@ -213,10 +207,62 @@ function ligarNuvem(){
     fonte.onerror = () => marcarNuvem(fonte.readyState === 1 ? 'ligado' : 'erro', 'sem conexão com o banco');
     fontesNuvem.push(fonte);
   });
+
+  /* Rede teimosa: mesmo que a escuta falhe, busca os recados de novo sozinho.
+     Recado repetido é jogado fora pelo uid, então não tem risco de dobrar. */
+  puxarTudo();
+  clearInterval(relogioPuxar);
+  relogioPuxar = setInterval(puxarTudo, 8000);
+
+  /* Diz pros outros que este aparelho está na sala (serve pro painel). */
+  avisarQueEstouAqui();
+  clearInterval(relogioAviso);
+  relogioAviso = setInterval(avisarQueEstouAqui, 60000);
+}
+
+/* Busca tudo que está no banco, conversa por conversa. */
+async function puxarTudo(){
+  if(!nuvemLigada() || modoPublico()) return;
+  for(const c of CONVERSAS){
+    try{
+      const r = await fetch(enderecoConversa(c.id) + '.json');
+      if(!r.ok){
+        if(r.status === 401 || r.status === 403) avisarRegras(r.status);
+        marcarNuvem('erro', 'o banco respondeu ' + r.status); continue;
+      }
+      const tudo = await r.json();
+      if(!tudo) continue;
+      marcarNuvem('ligado');
+      for(const pacote of Object.values(tudo)) await chegouDaNuvem(pacote, c.id);
+    }catch(e){ marcarNuvem('erro', 'sem conexão com o banco'); }
+  }
+}
+
+/* ---------- quem está na sala ---------- */
+function enderecoQuem(){
+  return `${dados.nuvem.url.replace(/\/$/,'')}/salas/${dados.nuvem.sala}/quem`;
+}
+async function avisarQueEstouAqui(){
+  if(!nuvemLigada() || modoPublico() || !dados.euSou) return;
+  try{
+    await fetch(`${enderecoQuem()}/${dados.euSou}.json`, {
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ ts: Date.now(), versao: document.getElementById('versaoSite')?.textContent || '?' })
+    });
+  }catch(e){}
+}
+async function quemEstaNaSala(){
+  if(!nuvemLigada() || modoPublico()) return null;
+  try{
+    const r = await fetch(enderecoQuem() + '.json');
+    if(!r.ok) return null;
+    return await r.json();
+  }catch(e){ return null; }
 }
 
 function desligarNuvem(){
   desligarPublico();
+  clearInterval(relogioPuxar); clearInterval(relogioAviso);
   fontesNuvem.forEach(f => { try{ f.close(); }catch(e){} });
   fontesNuvem = [];
   chaveNuvem = null;
@@ -252,6 +298,8 @@ function abrirPainelNuvem(){
         <b class="cod">${codigoDaFamilia()}</b>
         <small>tem que ser <b>igual</b> nos quatro aparelhos.<br>Se estiver diferente, a senha foi digitada diferente.</small>
       </div>
+      <div class="bloco-titulo" style="margin-top:6px">Quem está nesta sala</div>
+      <div id="quemNaSala" class="quem-sala">procurando...</div>
       <div id="passosTeste" class="passos"></div>
       <div class="lig-botoes">
         <button class="lig-bt ok" id="painelTestar">🔎 Testar agora</button>
@@ -262,8 +310,34 @@ function abrirPainelNuvem(){
   document.body.appendChild(tela);
   tela.addEventListener('click', e => { if(e.target.id === 'painelNuvem') tela.remove(); });
   document.getElementById('painelFechar').addEventListener('click', () => tela.remove());
+
+  quemEstaNaSala().then(quem => {
+    const caixa = document.getElementById('quemNaSala');
+    if(!caixa) return;
+    if(!quem){ caixa.innerHTML = '<i>não consegui perguntar pro banco (sem conexão ou regras não publicadas)</i>'; return; }
+    const agora = Date.now();
+    const linhas = Object.entries(quem).map(([p, info]) => {
+      const min = Math.round((agora - (info.ts || 0)) / 60000);
+      const quando = min < 2 ? 'agora' : min < 60 ? `há ${min} min` : `há ${Math.round(min/60)} h`;
+      return `<div><b>${PESSOAS[p] ? PESSOAS[p].emoji + ' ' + PESSOAS[p].curto : p}</b><span>${quando}${info.versao ? ' • v' + info.versao : ''}</span></div>`;
+    });
+    caixa.innerHTML = linhas.join('') || '<i>ninguém ainda</i>';
+    if(linhas.length < 2) caixa.insertAdjacentHTML('beforeend',
+      '<div class="passo aviso" style="margin-top:8px">Só este aparelho apareceu aqui. Os outros precisam abrir o site e digitar a <b>mesma senha</b> — o código de 4 letras tem que bater.</div>');
+  });
   document.getElementById('painelTestar').addEventListener('click', () => modoPublico() ? testarPublico() : testarFirebase());
   document.getElementById('painelDiag').addEventListener('click', copiarDiagnostico);
+}
+
+/* Banco bloqueado é o tropeço mais comum: grita na tela em vez de sussurrar. */
+let jaAvisouRegras = false;
+function avisarRegras(codigo){
+  if(jaAvisouRegras) return;
+  jaAvisouRegras = true;
+  const recado = 'O banco recusou (' + codigo + '): faltam publicar as REGRAS no Firebase ' +
+                 '(Realtime Database → aba Regras → colar as regras do GUIA-FIREBASE.md → Publicar).';
+  if(window.mostrarErroNaTela) mostrarErroNaTela(recado);
+  toast('O banco está bloqueado — faltam as regras 🔒', 6000);
 }
 
 function marcarNuvem(estado, detalhe){
@@ -323,8 +397,8 @@ async function salvarNuvem(){
   const url = document.getElementById('nuvemUrl').value.trim();
   const sala = document.getElementById('nuvemSala').value.trim();
   const senha = document.getElementById('nuvemSenha').value.trim();
-  if(!senha){ toast('Falta a senha da família 😊'); return; }
-  const salaFinal = sala || await salaDaSenha(senha);   // sem código, a senha vira a sala
+  /* senha vazia = usa a sala padrão e a chave que nasce dela */
+  const salaFinal = sala || (senha ? await salaDaSenha(senha) : NUVEM_PADRAO.sala);
   if(modo === 'firebase'){
     if(!url){ toast('Falta o endereço do banco 😊'); return; }
     if(!/^https:\/\/.+/.test(url)){ toast('O endereço tem que começar com https:// 😊'); return; }
@@ -332,6 +406,7 @@ async function salvarNuvem(){
   dados.nuvem = modo === 'publico'
     ? { modo, sala: salaFinal, senha }
     : { modo, url, sala: salaFinal, senha };
+  dados.nuvemVersao = 2;
   salvar(); chaveNuvem = null;
   ligarNuvem(); desenharNuvem();
   toast('Ligando o envio de verdade... ☁️');
