@@ -37,7 +37,7 @@ function jogar(indice, casa){
 
   const daVez = m.vez === 'x' ? m.x : m.o;
   if(autor !== daVez){
-    toast(`Agora é a vez de ${daVez === 'eu' ? 'quem começou' : PESSOAS[daVez].curto} 😊`);
+    toast(`Agora é a vez d${daVez === 'irma' ? 'a' : 'o'} ${PESSOAS[daVez].curto} 😊`);
     return;
   }
   m.tab[casa] = m.vez;
@@ -49,13 +49,13 @@ function jogar(indice, casa){
   if(fim){
     const vencedor = fim.quem === 'x' ? m.x : m.o;
     toast(fim.quem === 'velha' ? 'Deu velha! 🤝'
-        : vencedor === 'eu' ? 'Tu ganhou! 🎉' : `${PESSOAS[vencedor].curto} ganhou! 🎉`);
+        : souEu(vencedor) ? 'Tu ganhou! 🎉' : `${PESSOAS[vencedor].curto} ganhou! 🎉`);
   }
 }
 
 function balaoJogo(m, indice){
   const fim = ganhador(m.tab);
-  const nome = p => p === 'eu' ? 'Eu' : PESSOAS[p].curto;
+  const nome = p => nomeDe(p);
   const casas = m.tab.map((v,k) => `
     <button class="casa ${v || ''} ${fim && fim.linha.includes(k) ? 'ganhou' : ''}"
       data-jogo="${indice}:${k}" ${v || fim ? 'disabled' : ''}>${v === 'x' ? '❌' : v === 'o' ? '⭕' : ''}</button>`).join('');
@@ -63,8 +63,8 @@ function balaoJogo(m, indice){
   const daVez = m.vez === 'x' ? m.x : m.o;
   const recado = fim
     ? (fim.quem === 'velha' ? '🤝 Deu velha!'
-      : vencedor === 'eu' ? '🎉 Tu ganhou!' : `🎉 ${nome(vencedor)} ganhou!`)
-    : `${daVez === 'eu' ? 'Tua vez' : 'Vez d' + (nome(daVez) === 'Papai' ? 'o papai' : 'a ' + nome(daVez))} ${m.vez === 'x' ? '❌' : '⭕'}`;
+      : souEu(vencedor) ? '🎉 Tu ganhou!' : `🎉 ${nome(vencedor)} ganhou!`)
+    : `${souEu(daVez) ? 'Tua vez' : 'Vez d' + (daVez === 'pai' ? 'o papai' : 'a ' + nome(daVez))} ${m.vez === 'x' ? '❌' : '⭕'}`;
   return `
     <div class="jogo">
       <div class="jogo-topo">🕹️ Jogo da velha</div>

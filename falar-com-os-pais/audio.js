@@ -140,7 +140,7 @@ async function mandarAudio(blob, segundos){
   dados.visto[atual] = Date.now();
   dados.presenca[autor] = Date.now();
   animar = dados.msgs[atual].length - 1;
-  salvar(); blim(autor === 'eu');
+  salvar(); blim(true);
   mandarPraNuvem(atual, msg);
   desenharMensagens(); desenharContatos(); atualizarStatusTopo();
 }
@@ -274,22 +274,8 @@ function abrirWalkie(){
       <div class="w-status" id="wStatus">Toca no botão pra falar</div>
       <button class="w-botao" id="wBotao">🎙️<span>FALAR</span></button>
       <div class="w-dica">Toca pra começar, toca de novo pra mandar. O recado fica na conversa também.</div>
-      <div class="autor-bar" id="wAutor"><span class="rot">Falando como</span></div>
     </div>`;
   document.body.appendChild(tela);
-
-  $('#wAutor').insertAdjacentHTML('beforeend', c.quem.map(p =>
-    `<button class="pilula ${p === autor ? 'on' : ''}" data-p="${p}"
-      style="${p === autor ? `background:linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)` : ''}">
-      ${PESSOAS[p].emoji} ${PESSOAS[p].curto}</button>`).join(''));
-  tela.querySelectorAll('#wAutor .pilula').forEach(b => b.addEventListener('click', () => {
-    autor = b.dataset.p; marcarPresenca(autor);
-    tela.querySelectorAll('#wAutor .pilula').forEach(o => {
-      const on = o.dataset.p === autor;
-      o.classList.toggle('on', on);
-      o.style.background = on ? `linear-gradient(135deg,${PESSOAS[autor].cor},${PESSOAS[autor].cor}bb)` : '';
-    });
-  }));
 
   const botao = $('#wBotao'), status = $('#wStatus'), luz = $('#wLuz');
   let relogio = null;

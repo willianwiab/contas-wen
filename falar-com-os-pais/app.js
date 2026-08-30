@@ -6,21 +6,37 @@
 
 const CHAVE = 'fala-familia:v2';
 
+/* Cada pessoa da família tem um crachá. O aparelho sabe de quem ele é
+   (dados.euSou), e a lista de conversas é montada do ponto de vista dele. */
 const PESSOAS = {
-  eu  : { nome:'Eu',              curto:'Eu',     emoji:'🧒', cor:'#7c3aed' },
+  jojo: { nome:'Jojo',            curto:'Jojo',   emoji:'🧒', cor:'#7c3aed' },
   pai : { nome:'Papai Wilian',    curto:'Papai',  emoji:'👨', cor:'#0ea5e9' },
   mae : { nome:'Mamãe Grabiela',  curto:'Mamãe',  emoji:'👩', cor:'#ec4899' },
   irma: { nome:'Sofia',           curto:'Sofia',  emoji:'👧', cor:'#f59e0b' }
 };
-const OUTROS = ['pai','mae','irma'];   // todo mundo menos eu
+const TODOS = ['jojo','pai','mae','irma'];
+let OUTROS = [];        // todo mundo menos quem é dono deste aparelho
+let CONVERSAS = [];     // montada por montarConversas()
 
-const CONVERSAS = [
-  { id:'pai',     nome:'Papai Wilian',   emoji:'👨', cor:'#0ea5e9', pessoa:'pai',  quem:['eu','pai'],  sobre:'toca aqui pra deixar um recado' },
-  { id:'mae',     nome:'Mamãe Grabiela', emoji:'👩', cor:'#ec4899', pessoa:'mae',  quem:['eu','mae'],  sobre:'toca aqui pra deixar um recado' },
-  { id:'sofia',   nome:'Sofia',          emoji:'👧', cor:'#f59e0b', pessoa:'irma', quem:['eu','irma'], sobre:'toca aqui pra falar com a mana' },
-  { id:'familia', nome:'Família 💜',      emoji:'🏠', cor:'#7c3aed', pessoa:null,
-    quem:['eu','pai','mae','irma'], sobre:'a conversa da família toda' }
-];
+/* O nome da conversa entre duas pessoas é sempre igual nos dois aparelhos. */
+const idDupla = (a, b) => 'd-' + [a, b].sort().join('-');
+const souEu = p => p === (dados.euSou || 'jojo');
+const nomeDe = p => souEu(p) ? 'Eu' : PESSOAS[p].curto;
+
+function montarConversas(){
+  const eu = dados.euSou || 'jojo';
+  OUTROS = TODOS.filter(p => p !== eu);
+  CONVERSAS = OUTROS.map(p => ({
+    id: idDupla(eu, p), nome: PESSOAS[p].nome, emoji: PESSOAS[p].emoji, cor: PESSOAS[p].cor,
+    pessoa: p, quem: [eu, p], sobre: 'toca aqui pra deixar um recado'
+  }));
+  CONVERSAS.push({ id:'familia', nome:'Família 💜', emoji:'🏠', cor:'#7c3aed', pessoa:null,
+    quem: TODOS.slice(), sobre:'a conversa da família toda' });
+  CONVERSAS.forEach(c => {
+    if(!Array.isArray(dados.msgs[c.id])) dados.msgs[c.id] = [];
+    if(dados.visto[c.id] == null) dados.visto[c.id] = 0;
+  });
+}
 
 const RAPIDAS = [
   'Cheguei bem! 🏠','Tô com saudade 🥺','Pode me buscar? 🚗','Já almocei 🍽️',
@@ -35,26 +51,26 @@ const REACOES = ['❤️','👍','😂','🎉','🥺','🔥'];
 /* ---------- estado ---------- */
 let dados  = carregar();
 let atual  = null;   // conversa aberta
-let autor  = 'eu';   // quem está escrevendo agora
+let autor  = 'jojo'; // quem escreve neste aparelho (o dono dele)
 let animar = -1;     // índice da mensagem que acabou de chegar
 let buscaMsg = '';   // filtro dentro da conversa
 
 function padrao(){
-  return { nome:'', tema:'claro', som:true,
-    msgs:{pai:[],mae:[],sofia:[],familia:[]},
-    visto:{pai:0,mae:0,sofia:0,familia:0},
-    presenca:{eu:0,pai:0,mae:0,irma:0},
-    fotos:{}, tarefas:[], pontos:{eu:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{}, agenda:[], bicho:{}, papel:{}, letra:'normal', voz:false,
-    avisos:false, lembretes:[] };
+  return { nome:'', tema:'claro', som:true, euSou:null,
+    msgs:{familia:[]}, visto:{familia:0},
+    presenca:{jojo:0,pai:0,mae:0,irma:0},
+    fotos:{}, tarefas:[], pontos:{jojo:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{}, agenda:[], bicho:{},
+    papel:{}, letra:'normal', voz:false, vozContrario:false, antiPalavrao:true, avisos:false, lembretes:[] };
 }
 function carregar(){
   try{
     const bruto = localStorage.getItem(CHAVE);
     let d = bruto ? Object.assign(padrao(), JSON.parse(bruto)) : padrao();
-    d.msgs  = Object.assign({pai:[],mae:[],sofia:[],familia:[]}, d.msgs);
-    d.visto = Object.assign({pai:0,mae:0,sofia:0,familia:0}, d.visto);
-    d.presenca = Object.assign({eu:0,pai:0,mae:0,irma:0}, d.presenca);
-    d.pontos   = Object.assign({eu:0,pai:0,mae:0,irma:0}, d.pontos);
+    d.msgs  = Object.assign({familia:[]}, d.msgs);
+    d.visto = Object.assign({familia:0}, d.visto);
+    d.presenca = Object.assign({jojo:0,pai:0,mae:0,irma:0}, d.presenca);
+    d.pontos   = Object.assign({jojo:0,pai:0,mae:0,irma:0}, d.pontos);
+    d = passarPraFamilia(d);
     d.fotos    = d.fotos || {};
     d.nasc     = d.nasc || {};
     d.fixado   = d.fixado || {};
@@ -67,6 +83,36 @@ function carregar(){
     return d;
   }catch(e){ return padrao(); }
 }
+/* O site nasceu só pro aparelho do Jojo: as conversas se chamavam "pai",
+   "mae", "sofia" e quem escrevia era "eu". Agora cada aparelho tem dono e as
+   conversas são duplas com nome igual nos dois lados — isto converte o antigo. */
+function passarPraFamilia(d){
+  if(d.formato === 3) return d;
+  const eu = d.euSou || 'jojo';
+  const de = p => (p === 'eu' ? eu : p);
+  const antigas = { pai: idDupla(eu,'pai'), mae: idDupla(eu,'mae'), sofia: idDupla(eu,'irma') };
+
+  Object.entries(antigas).forEach(([velho, novo]) => {
+    if(!d.msgs[velho]) return;
+    d.msgs[novo] = (d.msgs[novo] || []).concat(d.msgs[velho].map(m => ({ ...m, de: de(m.de) })));
+    d.msgs[novo].sort((a,b) => a.ts - b.ts);
+    delete d.msgs[velho];
+    if(d.visto[velho] != null){ d.visto[novo] = d.visto[velho]; delete d.visto[velho]; }
+    if(d.papel && d.papel[velho]){ d.papel[novo] = d.papel[velho]; delete d.papel[velho]; }
+    if(d.fixado && d.fixado[velho]){ d.fixado[novo] = d.fixado[velho]; delete d.fixado[velho]; }
+  });
+  (d.msgs.familia || []).forEach(m => { m.de = de(m.de); });
+
+  /* quem era "eu" nas outras listas vira a pessoa mesmo */
+  ['presenca','pontos','fotos','nasc'].forEach(campo => {
+    if(d[campo] && d[campo].eu !== undefined){ d[campo][eu] = d[campo].eu; delete d[campo].eu; }
+  });
+  (d.tarefas || []).forEach(t => { t.dono = de(t.dono); });
+  (d.agenda  || []).forEach(g => { g.quem = de(g.quem); });
+  d.formato = 3;
+  return d;
+}
+
 /* Se existir conversa da versão antiga, aproveita as mensagens. */
 function migrarV1(d){
   try{
@@ -114,7 +160,7 @@ function diaTexto(ts){
   return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
 }
 function naoLidas(id){
-  return (dados.msgs[id] || []).filter(m => m.de !== 'eu' && m.ts > (dados.visto[id] || 0)).length;
+  return (dados.msgs[id] || []).filter(m => !souEu(m.de) && m.ts > (dados.visto[id] || 0)).length;
 }
 /* ---------- quem está por aqui agora ---------- */
 const TEMPO_ONLINE = 5 * 60 * 1000;   // 5 minutinhos
@@ -127,7 +173,7 @@ function ultimoSinal(p){
   return t;
 }
 function estaOnline(p){
-  if(p === 'eu') return true;                       // tu está aqui, ora essa 😄
+  if(souEu(p)) return true;                         // tu está aqui, ora essa 😄
   return Date.now() - ultimoSinal(p) < TEMPO_ONLINE;
 }
 function marcarPresenca(p){ dados.presenca[p] = Date.now(); salvar(); }
@@ -203,8 +249,8 @@ function desenharContatos(){
       const msgs = dados.msgs[c.id] || [];
       const ultima = msgs[msgs.length - 1];
       const nova = naoLidas(c.id);
-      const autorTxt = ultima ? (ultima.de === 'eu' ? 'Tu: ' : PESSOAS[ultima.de].curto + ': ') : '';
-      const previa = ultima ? escapar(autorTxt + textoDe(ultima)).slice(0,64) : c.sobre;
+      const autorTxt = ultima ? (souEu(ultima.de) ? 'Tu: ' : PESSOAS[ultima.de].curto + ': ') : '';
+      const previa = ultima ? escapar(limpar(autorTxt + textoDe(ultima))).slice(0,64) : c.sobre;
       const on = c.pessoa ? estaOnline(c.pessoa) : OUTROS.some(estaOnline);
       return `
         <button class="contato ${atual === c.id ? 'ativo' : ''}" data-id="${c.id}">
@@ -225,7 +271,7 @@ function desenharContatos(){
 
 /* ---------- abrir / fechar ---------- */
 function abrir(id){
-  atual = id; autor = 'eu'; buscaMsg = ''; animar = -1;
+  atual = id; autor = dados.euSou || 'jojo'; buscaMsg = ''; animar = -1;
   dados.visto[id] = Date.now(); salvar();
   atualizarBolinhaDoIcone();
   $('#app').classList.remove('no-chat');
@@ -236,6 +282,45 @@ function fechar(){
   $('#app').classList.add('no-chat');
   desenharContatos(); telaVazia();
 }
+/* Primeira vez no aparelho: de quem ele é? */
+function perguntarQuemSou(){
+  if(document.getElementById('telaQuemSou')) return;
+  const tela = document.createElement('div');
+  tela.className = 'tela-cheia quem-sou'; tela.id = 'telaQuemSou';
+  tela.innerHTML = `
+    <div class="qs-meio">
+      <div class="balao-deco">💜</div>
+      <h2>Quem é você neste aparelho?</h2>
+      <p class="lig-txt">Cada um usa o site no seu próprio celular ou computador. Quem escolher aqui é quem
+      manda os recados por este aparelho — dá pra trocar depois nos ⚙️ Ajustes.</p>
+      <div class="qs-gente">
+        ${TODOS.map(p => `
+          <button class="qs-pessoa" data-quem="${p}">
+            <span class="qs-av" style="background:linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)">${PESSOAS[p].emoji}</span>
+            ${PESSOAS[p].nome}
+          </button>`).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(tela);
+  tela.querySelectorAll('[data-quem]').forEach(b => b.addEventListener('click', () => {
+    souAgora(b.dataset.quem);
+    tela.remove();
+    toast(`Este aparelho é d${b.dataset.quem === 'irma' ? 'a' : 'o'} ${PESSOAS[b.dataset.quem].curto}! 💜`);
+  }));
+}
+
+function desenharQuemSou(){
+  const caixa = document.getElementById('listaQuemSou');
+  if(!caixa) return;
+  caixa.innerHTML = TODOS.map(p => `
+    <button class="tm-op ${souEu(p) ? 'on' : ''}" data-souagora="${p}">${PESSOAS[p].emoji} ${PESSOAS[p].curto}</button>`).join('');
+  caixa.querySelectorAll('[data-souagora]').forEach(b => b.addEventListener('click', () => {
+    souAgora(b.dataset.souagora);
+    desenharQuemSou(); desenharPerfis(); desenharNuvem();
+    toast('Pronto! Este aparelho agora é d' + (b.dataset.souagora === 'irma' ? 'a ' : 'o ') + PESSOAS[b.dataset.souagora].curto);
+  }));
+}
+
 function telaVazia(){
   $('#conversa').innerHTML = `
     <div class="vazio"><div>
@@ -276,7 +361,6 @@ function desenharConversa(){
       <span id="contaBusca"></span>
     </div>
     <div class="mensagens" id="mensagens"></div>
-    <div class="autor-bar" id="autorBar"><span class="rot">Falando como</span></div>
     <div class="rapidas" id="rapidas"></div>
     <div class="paleta" id="paleta"></div>
     <div class="barra">
@@ -294,10 +378,6 @@ function desenharConversa(){
       <button id="gravCancelar" title="Jogar fora">🗑️</button>
     </div>`;
 
-  $('#autorBar').insertAdjacentHTML('beforeend', c.quem.map(p =>
-    `<button class="pilula ${p === autor ? 'on' : ''}" data-p="${p}"
-      style="${p === autor ? `background:linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)` : ''}">
-      <span class="pil-av">${avatarDe(p)}</span> ${PESSOAS[p].curto}</button>`).join(''));
   $('#rapidas').innerHTML = RAPIDAS.map(t => `<button class="rapida">${t}</button>`).join('');
   $('#paleta').innerHTML  = EMOJIS.map(e => `<button data-e="${e}">${e}</button>`).join('');
 
@@ -328,7 +408,6 @@ function desenharConversa(){
   });
   $('#inputBuscaMsg').addEventListener('input', e => { buscaMsg = e.target.value.trim(); desenharMensagens(); });
 
-  document.querySelectorAll('.pilula').forEach(b => b.addEventListener('click', () => trocarAutor(b.dataset.p)));
   document.querySelectorAll('.rapida').forEach(b =>
     b.addEventListener('click', () => { entrada.value = b.textContent.trim(); entrada.focus(); crescer(entrada); }));
   document.querySelectorAll('#paleta button').forEach(b =>
@@ -342,24 +421,21 @@ function desenharConversa(){
   if(window.innerWidth > 860) entrada.focus();
 }
 
-function trocarAutor(p){
-  autor = p;
-  marcarPresenca(p);
-  desenharContatos(); atualizarStatusTopo();
-  document.querySelectorAll('.pilula').forEach(b => {
-    const on = b.dataset.p === p;
-    b.classList.toggle('on', on);
-    b.style.background = on ? `linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)` : '';
-  });
-  atualizarPlaceholder();
-  $('#entrada').focus();
+/* Diz de quem é este aparelho. Muda a lista inteira de conversas. */
+function souAgora(p){
+  dados.euSou = p; autor = p;
+  salvar(); montarConversas();
+  atual = null;
+  document.getElementById('app').classList.add('no-chat');
+  desenharContatos(); telaVazia(); saudacao();
+  if(nuvemLigada()) ligarNuvem();
 }
+
 function atualizarPlaceholder(){
-  const pra = dados.nome ? `pro ${dados.nome}` : 'pra família';
-  $('#entrada').placeholder = autor === 'eu'
-    ? 'Escreve teu recadinho...'
-    : `Respondendo como ${PESSOAS[autor].curto} ${pra}...`;
-  $('#entrada').parentElement.style.borderColor = autor === 'eu' ? '' : PESSOAS[autor].cor;
+  const c = conversaPor(atual);
+  $('#entrada').placeholder = c && c.pessoa
+    ? `Escreve pro(a) ${PESSOAS[c.pessoa].curto}...`
+    : 'Escreve pra família...';
 }
 /* O botão vira microfone quando não tem nada escrito. */
 function modoBotao(){
@@ -429,14 +505,14 @@ function desenharMensagens(){
     let sep = '';
     if(d !== ultimoDia){ ultimoDia = d; ultimoDe = ''; sep = `<div class="dia">${d}</div>`; }
 
-    const p = PESSOAS[m.de] || PESSOAS.eu;
-    const eu = m.de === 'eu';
+    const p = PESSOAS[m.de] || PESSOAS.jojo;
+    const eu = souEu(m.de);
     const repetido = m.de === ultimoDe; ultimoDe = m.de;
     const especial = m.tipo && m.tipo !== 'texto';
     const grande = !especial && soEmoji(m.t);
     const corpo = especial
       ? conteudoEspecial(m, real)
-      : `<span class="txt">${filtro ? realce(m.t, buscaMsg) : escapar(m.t)}</span>`;
+      : `<span class="txt">${filtro ? realce(limpar(m.t), buscaMsg) : escapar(limpar(m.t))}</span>`;
     const nome = (!eu && atual === 'familia' && !repetido)
       ? `<div class="quem" style="color:${p.cor}">${p.nome}</div>` : '';
 
@@ -526,7 +602,7 @@ function enviar(texto){
   dados.visto[atual] = Date.now();
   dados.presenca[autor] = Date.now();
   animar = dados.msgs[atual].length - 1;
-  salvar(); blim(autor === 'eu');
+  salvar(); blim(true);
   mandarPraNuvem(atual, nova);
   if(temFesta(texto)) confete();
   desenharBicho();
@@ -579,8 +655,10 @@ function copiarConversa(){
 function abrirConfig(){
   $('#cfgNome').value = dados.nome;
   $('#cfgAvisos').classList.toggle('on', avisoLigado());
-  desenharLembretes(); desenharPerfis(); desenharAniversarios(); desenharTranca(); desenharSoneca(); desenharNuvem();
+  desenharQuemSou(); desenharLembretes(); desenharPerfis(); desenharAniversarios(); desenharTranca(); desenharSoneca(); desenharNuvem();
   $('#cfgVoz').classList.toggle('on', !!dados.voz);
+  $('#cfgVozContrario').classList.toggle('on', !!dados.vozContrario);
+  $('#cfgPalavrao').classList.toggle('on', dados.antiPalavrao !== false);
   document.querySelectorAll('#tamanhos .tm-op').forEach(b =>
     b.classList.toggle('on', b.dataset.letra === (dados.letra || 'normal')));
   $('#cfgSom').classList.toggle('on', !!dados.som);
@@ -600,7 +678,8 @@ function salvarConfig(){
 function saudacao(){
   const h = new Date().getHours();
   const parte = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
-  $('#ola').textContent = dados.nome ? `${parte}, ${dados.nome}! 👋` : `${parte}! 👋`;
+  const quem = dados.nome || (dados.euSou ? PESSOAS[dados.euSou].curto : '');
+  $('#ola').textContent = quem ? `${parte}, ${quem}! 👋` : `${parte}! 👋`;
 }
 function aplicarLetra(){
   document.documentElement.dataset.letra = dados.letra || 'normal';
@@ -663,6 +742,18 @@ $('#btnAtualizar').addEventListener('click', async () => {
   }catch(e){}
   setTimeout(() => location.reload(), 700);
 });
+$('#cfgVozContrario').addEventListener('click', e => {
+  e.currentTarget.classList.toggle('on');
+  dados.vozContrario = e.currentTarget.classList.contains('on'); salvar();
+  toast(dados.vozContrario ? 'Agora ele lê ao contrário 🔁' : 'Voltou a ler normal 🗣️');
+});
+$('#cfgPalavrao').addEventListener('click', e => {
+  e.currentTarget.classList.toggle('on');
+  dados.antiPalavrao = e.currentTarget.classList.contains('on'); salvar();
+  if(atual) desenharMensagens();
+  desenharContatos();
+  toast(dados.antiPalavrao ? 'Anti-palavrão ligado 🤬' : 'Anti-palavrão desligado');
+});
 $('#cfgVoz').addEventListener('click', e => {
   e.currentTarget.classList.toggle('on');
   dados.voz = e.currentTarget.classList.contains('on'); salvar();
@@ -705,12 +796,15 @@ setInterval(() => { desenharContatos(); atualizarStatusTopo(); }, 30000);
 if(!localStorage.getItem(CHAVE) && !localStorage.getItem('fala-familia:v1')
    && window.matchMedia('(prefers-color-scheme: dark)').matches) dados.tema = 'escuro';
 if(dados.migrou){ delete dados.migrou; salvar(); }   // guarda o que veio da versão antiga
+autor = dados.euSou || 'jojo';
+montarConversas();
 aplicarTema(); aplicarLetra(); saudacao(); verInternet(); desenharContatos(); telaVazia();
 carregarPerfis().then(() => { desenharContatos(); if(atual) desenharConversa(); });
 verLembretes(true); atualizarBolinhaDoIcone(); mostrarAniversario(); mostrarProximo();
 verCapsulas(); verAgenda(); desenharBicho(); pedirTranca();
 if(nuvemLigada()) ligarNuvem();
-if(window.innerWidth > 860) abrir('familia');
+if(!dados.euSou) perguntarQuemSou();          // primeira vez: de quem é este aparelho?
+else if(window.innerWidth > 860) abrir('familia');
 
 /* Deixa o site funcionar sem internet e dá pra instalar na tela do celular. */
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){

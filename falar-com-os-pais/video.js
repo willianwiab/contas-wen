@@ -130,7 +130,7 @@ async function mandarVideo(blob, segundos, ehGif){
   dados.visto[atual] = Date.now();
   dados.presenca[autor] = Date.now();
   animar = dados.msgs[atual].length - 1;
-  salvar(); blim(autor === 'eu');
+  salvar(); blim(true);
   mandarPraNuvem(atual, msg);
   desenharMensagens(); desenharContatos(); atualizarStatusTopo();
 }

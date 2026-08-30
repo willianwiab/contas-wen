@@ -87,7 +87,7 @@ function desenharPerfis(){
     <div class="perfil">
       <button class="perfil-av" data-perfil="${p}"
         style="background:linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)">${avatarDe(p)}</button>
-      <b>${p === 'eu' ? 'Eu' : PESSOAS[p].curto}</b>
+      <b>${nomeDe(p)}</b>
       ${dados.fotos[p] ? `<button class="perfil-tirar" data-tirar="${p}">tirar</button>` : '<span class="perfil-dica">tocar</span>'}
     </div>`).join('');
   caixa.querySelectorAll('[data-perfil]').forEach(b =>
@@ -122,7 +122,7 @@ function abrirTarefas(){
     </div>`;
   document.body.appendChild(tela);
   document.getElementById('tarefaDono').innerHTML = Object.keys(PESSOAS)
-    .map(p => `<option value="${p}">${PESSOAS[p].emoji} ${p === 'eu' ? 'Eu' : PESSOAS[p].curto}</option>`).join('');
+    .map(p => `<option value="${p}">${PESSOAS[p].emoji} ${nomeDe(p)}</option>`).join('');
   document.getElementById('tFechar').addEventListener('click', () => tela.remove());
   document.getElementById('tarefaAdd').addEventListener('click', novaTarefa);
   document.getElementById('tarefaTxt').addEventListener('keydown', e => { if(e.key === 'Enter') novaTarefa(); });
@@ -149,7 +149,7 @@ function marcarTarefa(id){
   t.feito = !t.feito;
   dados.pontos[t.dono] = Math.max(0, (dados.pontos[t.dono] || 0) + (t.feito ? t.pontos : -t.pontos));
   salvar(); desenharTarefas();
-  if(t.feito){ blim(true); toast(`Boa! +${t.pontos} ⭐ ${t.dono === 'eu' ? 'pra ti' : 'pra ' + PESSOAS[t.dono].curto}`); }
+  if(t.feito){ blim(true); toast(`Boa! +${t.pontos} ⭐ ${souEu(t.dono) ? 'pra ti' : 'pra ' + PESSOAS[t.dono].curto}`); }
 }
 function apagarTarefa(id){
   const t = dados.tarefas.find(x => x.id === id);
@@ -167,7 +167,7 @@ function desenharTarefas(){
     <div class="placar-item">
       <div class="placar-av" style="background:linear-gradient(135deg,${PESSOAS[p].cor},${PESSOAS[p].cor}bb)">${avatarDe(p)}</div>
       <b>${dados.pontos[p] || 0} ⭐</b>
-      <span>${p === 'eu' ? 'Eu' : PESSOAS[p].curto}</span>
+      <span>${nomeDe(p)}</span>
     </div>`).join('');
 
   const abertas = dados.tarefas.filter(t => !t.feito);
@@ -251,7 +251,7 @@ function desenharAniversarios(){
   if(!caixa) return;
   caixa.innerHTML = Object.keys(PESSOAS).map(p => `
     <div class="aniv-linha">
-      <span class="aniv-nome">${PESSOAS[p].emoji} ${p === 'eu' ? 'Eu' : PESSOAS[p].curto}</span>
+      <span class="aniv-nome">${PESSOAS[p].emoji} ${nomeDe(p)}</span>
       <input type="date" data-nasc="${p}" value="${(dados.nasc && dados.nasc[p]) || ''}">
     </div>`).join('');
   caixa.querySelectorAll('[data-nasc]').forEach(i => i.addEventListener('change', () => {
@@ -272,7 +272,7 @@ function mostrarAniversario(){
     if(q && (!melhor || q.dias < melhor.dias)) melhor = { ...q, p };
   });
   if(!melhor || melhor.dias > 30){ caixa.classList.remove('on'); caixa.innerHTML = ''; return; }
-  const nome = melhor.p === 'eu' ? 'teu' : 'd' + (PESSOAS[melhor.p].curto === 'Papai' ? 'o papai' : 'a ' + PESSOAS[melhor.p].curto);
+  const nome = souEu(melhor.p) ? 'teu' : 'd' + (PESSOAS[melhor.p].curto === 'Papai' ? 'o papai' : 'a ' + PESSOAS[melhor.p].curto);
   caixa.classList.add('on');
   caixa.innerHTML = melhor.dias === 0
     ? `🎂 <b>Hoje é o aniversário ${nome}!</b> ${melhor.idade} anos 🎉`

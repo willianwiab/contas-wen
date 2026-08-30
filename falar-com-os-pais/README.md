@@ -14,10 +14,22 @@ falado, desenhado ou fotografado fica **guardado no próprio aparelho**.
 > Pra gravar áudio e vídeo o site precisa ser aberto **pelo link (https)** — no arquivo
 > solto (`file://`) o navegador não deixa usar microfone nem câmera.
 
-## Como funciona a conversa
+## Cada aparelho é de uma pessoa
 
-Não existe envio pela internet: as pessoas conversam **no mesmo aparelho**, revezando
-quem escreve na barra **“Falando como”** (🧒 Eu, 👨 Papai, 👩 Mamãe, 👧 Sofia).
+Na primeira abertura o site pergunta **quem é você neste aparelho** (Jojo, Papai,
+Mamãe ou Sofia) — dá pra trocar depois em **⚙️ Ajustes → 👤 Este aparelho é de**.
+A partir daí:
+
+- a lista mostra as conversas **do seu ponto de vista** (o aparelho do Jojo mostra
+  Papai/Mamãe/Sofia; o do Papai mostra Jojo/Mamãe/Sofia);
+- o que você escreve já sai como você, sem escolher nada;
+- as conversas são **duplas** (Jojo↔Papai, Jojo↔Mamãe, Papai↔Sofia…) mais o grupo da
+  **Família**, e cada dupla tem o mesmo nome nos dois aparelhos;
+- com o envio ligado, **cada aparelho só escuta as conversas de que participa** — o
+  recado da dupla Jojo↔Mamãe nem chega no aparelho do Papai.
+
+Sem o envio ligado, tudo continua funcionando: o site vira um caderno de recados
+daquele aparelho.
 
 ## Tudo que dá pra fazer
 

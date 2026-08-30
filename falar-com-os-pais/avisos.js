@@ -70,8 +70,8 @@ window.addEventListener('storage', ev => {
   // achou recado novo de outra pessoa? avisa.
   CONVERSAS.forEach(c => {
     const nova = (dados.msgs[c.id] || []).slice((antes.msgs[c.id] || []).length);
-    nova.filter(m => m.de !== 'eu').forEach(m => {
-      const p = PESSOAS[m.de];
+    nova.filter(m => !souEu(m.de)).forEach(m => {
+      const p = PESSOAS[m.de] || PESSOAS.jojo;
       const texto = m.tipo === 'audio' ? '🎤 mandou um recadinho de voz' : m.t;
       if(document.hidden || atual !== c.id) blim(false);
       avisar(`${p.emoji} ${p.nome}`, texto, c.id);

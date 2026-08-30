@@ -80,7 +80,7 @@ async function tratarPacote(tipo, corpo){
   if(tipo === 2){                                 // CONNACK
     if(corpo[1] !== 0){ marcarNuvem('erro', 'o servidor recusou (código ' + corpo[1] + ')'); return; }
     tentativasPublico = 0;
-    teia.send(pacoteAssinar(assuntoBase() + '/#', 1));
+    CONVERSAS.forEach((c, i) => teia.send(pacoteAssinar(`${assuntoBase()}/${c.id}/#`, i + 1)));
     dados.nuvem.servidorOk = enderecoPublico(); salvar();
     anotar('pronto! ouvindo a sala ' + dados.nuvem.sala);
     marcarNuvem('ligado');
@@ -101,7 +101,7 @@ async function tratarPacote(tipo, corpo){
     salvar(); desenharContatos();
     if(atual === claro.conversa) desenharMensagens();
     atualizarBolinhaDoIcone();
-    const p = PESSOAS[claro.msg.de] || PESSOAS.eu;
+    const p = PESSOAS[claro.msg.de] || PESSOAS.jojo;
     blim(false);
     avisar(`${p.emoji} ${p.nome}`, textoDe(claro.msg), claro.conversa);
   }
@@ -170,7 +170,7 @@ async function mandarPeloPublico(conversa, msg){
   msg.uid = uid;
   try{
     const embrulho = await embaralhar({ conversa, msg: copia });
-    teia.send(pacotePublicar(`${assuntoBase()}/${uid}`, JSON.stringify(embrulho), true));
+    teia.send(pacotePublicar(`${assuntoBase()}/${conversa}/${uid}`, JSON.stringify(embrulho), true));
     return true;
   }catch(e){ marcarNuvem('erro', e.message); return false; }
 }
@@ -211,7 +211,7 @@ function testarPublico(){
   };
   teia.addEventListener('message', ouvinte);
   try{
-    teia.send(pacotePublicar(assuntoBase() + '/teste', JSON.stringify({ marca }), false));
+    teia.send(pacotePublicar(`${assuntoBase()}/${CONVERSAS[0].id}/teste`, JSON.stringify({ marca }), false));
     marcar('3. Mandei um recado de teste', 'bom');
   }catch(e){ marcar('3. Não consegui mandar: ' + e.message, 'ruim'); return; }
 
