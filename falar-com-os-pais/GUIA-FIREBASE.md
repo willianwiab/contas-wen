@@ -33,8 +33,12 @@ Firebase** — é grátis nesse tamanho e leva uns 10 minutos.
       "$sala": {
         ".read": "$sala.length > 12",
         ".write": "$sala.length > 12",
-        "$recado": {
-          ".validate": "newData.hasChildren(['iv','c'])"
+        "recados": {
+          "$conversa": {
+            "$recado": {
+              ".validate": "newData.hasChildren(['iv','c'])"
+            }
+          }
         }
       }
     }
