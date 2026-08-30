@@ -52,7 +52,6 @@ function atualizarBolinhaDoIcone(){
 }
 
 /* ---------- recado novo escrito em outra janela ---------- */
-let ultimoTotal = null;
 window.addEventListener('storage', ev => {
   if(ev.key !== CHAVE) return;
   const antes = dados;

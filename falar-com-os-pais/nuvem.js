@@ -75,6 +75,10 @@ async function desembaralhar(pacote){
 const enderecoSala = () => `${dados.nuvem.url.replace(/\/$/,'')}/salas/${dados.nuvem.sala}/recados`;
 /* Cada conversa tem o seu cantinho: o aparelho só escuta as conversas de quem é dono dele. */
 const enderecoConversa = c => `${enderecoSala()}/${c}`;
+/* Só os últimos recados: sem isto, cada conferida baixava a conversa inteira
+   (com áudio e foto dentro), o que ficaria pesado e gastaria a cota do banco. */
+let usarRecentes = true;   // se o banco não aceitar a consulta, volta ao jeito simples
+const RECENTES = () => usarRecentes ? '?orderBy="$key"&limitToLast=40' : '';
 
 /* ---------- mandar ---------- */
 async function mandarPraNuvem(conversa, msg){
@@ -109,9 +113,18 @@ async function mandarPraNuvem(conversa, msg){
 }
 
 /* ---------- receber ---------- */
+/* Recados que já passaram por aqui (ou estão a caminho): a escuta e a
+   conferida periódica correm juntas, e sem isto o mesmo recado entrava duas
+   vezes na conversa. */
+const jaVistos = new Set();
+const emAndamento = new Set();
+
 async function guardarRecebido(conversa, msg){
   if(!dados.msgs[conversa]) return false;
+  if(msg.uid && emAndamento.has(msg.uid)) return false;                          // já está entrando
   if(dados.msgs[conversa].some(m => m.uid && m.uid === msg.uid)) return false;   // já tenho
+  if(msg.uid) emAndamento.add(msg.uid);
+  try{
 
   /* arquivo que veio junto vai pro cofre do aparelho */
   if(msg.b64 && msg.id){
@@ -120,11 +133,14 @@ async function guardarRecebido(conversa, msg){
       if(await guardarAudio(msg.id, blob)) delete msg.b64;
     }catch(e){}
   }
-  msg.naNuvem = true;
-  dados.msgs[conversa].push(msg);
-  dados.msgs[conversa].sort((a,b) => a.ts - b.ts);
-  if(!souEu(msg.de)) dados.presenca[msg.de] = Math.max(dados.presenca[msg.de] || 0, msg.ts);
-  return true;
+    msg.naNuvem = true;
+    dados.msgs[conversa].push(msg);
+    dados.msgs[conversa].sort((a,b) => a.ts - b.ts);
+    if(!souEu(msg.de)) dados.presenca[msg.de] = Math.max(dados.presenca[msg.de] || 0, msg.ts);
+    return true;
+  }finally{
+    if(msg.uid) emAndamento.delete(msg.uid);
+  }
 }
 
 async function chegouDaNuvem(pacote, conversaEsperada){
@@ -152,19 +168,6 @@ async function salaDaSenha(senha){
   return 'fam-' + hex.slice(0, 24);
 }
 
-/* Quem já estava no servidor público muda pro banco da família sozinho,
-   aproveitando a mesma senha — senão ficava preso no servidor antigo. */
-async function passarPraFamiliaNaNuvem(){
-  if(!temPadrao()) return false;
-  const n = dados.nuvem;
-  if(!n || n.modo !== 'publico' || !n.senha) return false;
-  dados.nuvem = { modo:'firebase', url: NUVEM_PADRAO.url, senha: n.senha,
-                  sala: NUVEM_PADRAO.sala || await salaDaSenha(n.senha) };
-  salvar(); chaveNuvem = null; ligarNuvem();
-  toast('Agora usando o banco da família 🔥', 5000);
-  return true;
-}
-
 /* Liga sozinho com o que já vem no site. Se o aparelho tinha ficado numa
    configuração antiga (servidor público, ou uma palavra que não bateu com a
    dos outros aparelhos), ele volta pro padrão da casa — era isso que impedia
@@ -187,7 +190,7 @@ function ligarNuvem(){
 
   CONVERSAS.forEach(c => {
     let fonte;
-    try{ fonte = new EventSource(enderecoConversa(c.id) + '.json'); }
+    try{ fonte = new EventSource(enderecoConversa(c.id) + '.json' + RECENTES()); }
     catch(e){ marcarNuvem('erro', 'endereço estranho'); return; }
 
     fonte.addEventListener('put', async ev => {
@@ -214,18 +217,31 @@ function ligarNuvem(){
   clearInterval(relogioPuxar);
   relogioPuxar = setInterval(puxarTudo, 8000);
 
+  /* Voltou pra tela ou pra internet? confere na hora. */
+  document.addEventListener('visibilitychange', aoVoltar);
+  window.addEventListener('online', aoVoltar);
+
   /* Diz pros outros que este aparelho está na sala (serve pro painel). */
   avisarQueEstouAqui();
   clearInterval(relogioAviso);
   relogioAviso = setInterval(avisarQueEstouAqui, 60000);
+  setTimeout(faxinaDaNuvem, 15000);   // depois que tudo acalmar
 }
 
 /* Busca tudo que está no banco, conversa por conversa. */
-async function puxarTudo(){
+async function puxarTudo(forcado){
   if(!nuvemLigada() || modoPublico()) return;
+  if(!forcado && document.hidden) return;        // tela apagada: a escuta dá conta
+  if(!navigator.onLine) return;
   for(const c of CONVERSAS){
     try{
-      const r = await fetch(enderecoConversa(c.id) + '.json');
+      let r = await fetch(enderecoConversa(c.id) + '.json' + RECENTES());
+      if(!r.ok && usarRecentes && r.status === 400){
+        /* banco não gostou da consulta: volta ao jeito simples e avisa a escuta */
+        usarRecentes = false;
+        r = await fetch(enderecoConversa(c.id) + '.json');
+        if(r.ok) ligarNuvem();
+      }
       if(!r.ok){
         if(r.status === 401 || r.status === 403) avisarRegras(r.status);
         marcarNuvem('erro', 'o banco respondeu ' + r.status); continue;
@@ -233,7 +249,11 @@ async function puxarTudo(){
       const tudo = await r.json();
       if(!tudo) continue;
       marcarNuvem('ligado');
-      for(const pacote of Object.values(tudo)) await chegouDaNuvem(pacote, c.id);
+      for(const [chave, pacote] of Object.entries(tudo)){
+        if(jaVistos.has(chave)) continue;        // já cuidei deste
+        jaVistos.add(chave);
+        await chegouDaNuvem(pacote, c.id);
+      }
     }catch(e){ marcarNuvem('erro', 'sem conexão com o banco'); }
   }
 }
@@ -398,7 +418,9 @@ async function salvarNuvem(){
   const sala = document.getElementById('nuvemSala').value.trim();
   const senha = document.getElementById('nuvemSenha').value.trim();
   /* senha vazia = usa a sala padrão e a chave que nasce dela */
-  const salaFinal = sala || (senha ? await salaDaSenha(senha) : NUVEM_PADRAO.sala);
+  /* Com senha, a sala SEMPRE nasce dela — senão o campo da sala (que vem
+     preenchido com a antiga) vencia a senha nova e a privacidade não valia. */
+  const salaFinal = senha ? await salaDaSenha(senha) : (sala || NUVEM_PADRAO.sala);
   if(modo === 'firebase'){
     if(!url){ toast('Falta o endereço do banco 😊'); return; }
     if(!/^https:\/\/.+/.test(url)){ toast('O endereço tem que começar com https:// 😊'); return; }
@@ -501,4 +523,35 @@ function copiarDiagnostico(){
       if(caixa) caixa.innerHTML = `<textarea class="lig-codigo" style="height:200px">${escapar(txt)}</textarea>`;
       toast('Copia o texto que apareceu aí 😊', 5000);
     });
+}
+
+
+/* Quando o aparelho volta pra tela ou recupera a internet, confere na hora
+   em vez de esperar os 8 segundos. */
+function aoVoltar(){
+  if(!document.hidden && navigator.onLine) puxarTudo(true);
+}
+
+/* Faxina: uma vez por dia, apaga do banco o que já passou de 30 dias.
+   Pede só as chaves (shallow), então é uma consulta leve. */
+async function faxinaDaNuvem(){
+  if(!nuvemLigada() || modoPublico()) return;
+  const hoje = new Date().toISOString().slice(0,10);
+  if(dados.faxina === hoje) return;
+  dados.faxina = hoje; salvar();
+  const limite = Date.now() - 30 * 86400000;
+  for(const c of CONVERSAS){
+    try{
+      const r = await fetch(enderecoConversa(c.id) + '.json?shallow=true');
+      if(!r.ok) return;
+      const chaves = Object.keys(await r.json() || {});
+      for(const chave of chaves){
+        const quando = parseInt(chave.split('-')[0], 10);
+        if(quando && quando < limite){
+          await fetch(`${enderecoConversa(c.id)}/${chave}.json`,
+            { method:'PUT', headers:{'Content-Type':'application/json'}, body:'null' });
+        }
+      }
+    }catch(e){ return; }
+  }
 }
