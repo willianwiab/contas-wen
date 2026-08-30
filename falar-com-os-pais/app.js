@@ -718,6 +718,7 @@ document.querySelectorAll('.modo-op').forEach(b => b.addEventListener('click', (
 }));
 $('#btnLigarNuvem').addEventListener('click', salvarNuvem);
 $('#btnTestarNuvem').addEventListener('click', testarPublico);
+$('#btnTestarMic').addEventListener('click', testarMicrofone);
 $('#btnTrocarServidor').addEventListener('click', () => { trocarServidor(); toast('Trocando de servidor... 🔁'); });
 $('#btnDesligarNuvem').addEventListener('click', desligarDeVez);
 $('#btnConvite').addEventListener('click', () => {
