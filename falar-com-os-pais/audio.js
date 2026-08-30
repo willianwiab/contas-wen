@@ -133,7 +133,11 @@ async function mandarAudio(blob, segundos){
   const msg = { tipo:'audio', id, dur: Math.round(segundos * 10) / 10, de: autor, ts: Date.now() };
   if(!guardou){
     const txt = await blobParaTexto(blob);
-    if(txt.length > 700000){ toast('Áudio grande demais pra guardar aqui 😕'); return; }
+    if(txt.length > 2500000){
+      toast('Áudio grande demais pra guardar neste navegador 😕', 5000);
+      if(window.mostrarErroNaTela) mostrarErroNaTela('áudio de ' + Math.round(txt.length/1024) + ' KB não coube (cofre do aparelho indisponível)');
+      return;
+    }
     msg.b64 = txt;
   }
   dados.msgs[atual].push(msg);
@@ -308,4 +312,92 @@ function abrirWalkie(){
   }));
 
   $('#wFechar').addEventListener('click', () => { if(gravando()) pararGravacao(true); tela.remove(); });
+}
+
+/* =========================================================
+   Teste do microfone: diz passo a passo onde travou, em vez
+   de o áudio simplesmente não aparecer.
+   ========================================================= */
+async function testarMicrofone(){
+  const caixa = document.getElementById('passosMic');
+  if(!caixa) return;
+  caixa.innerHTML = '';
+  const passo = (txt, estado) => caixa.insertAdjacentHTML('beforeend', `<div class="passo ${estado}">${txt}</div>`);
+
+  /* 1. a página está no https? */
+  if(!window.isSecureContext){
+    passo('1. ❌ A página não está no endereço seguro (https). O navegador nunca vai deixar gravar assim.', 'ruim');
+    passo('Abre o site pelo link https://willianwiab.github.io/contas-wen/falar-com-os-pais/', 'aviso');
+    return;
+  }
+  passo('1. Página segura (https) ✅', 'bom');
+
+  /* 2. o navegador tem microfone? */
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    passo('2. ❌ Este navegador não tem gravação de som. Tenta pelo Chrome, Edge ou Safari atualizado.', 'ruim');
+    return;
+  }
+  passo('2. O navegador sabe gravar ✅', 'bom');
+
+  /* 3. dá pra usar o microfone? */
+  let trilha;
+  try{
+    trilha = await navigator.mediaDevices.getUserMedia({ audio:true });
+    passo('3. Microfone liberado ✅ (' + (trilha.getAudioTracks()[0]?.label || 'microfone') + ')', 'bom');
+  }catch(e){
+    passo('3. ❌ Não consegui abrir o microfone: <b>' + e.name + '</b>', 'ruim');
+    passo(e.name === 'NotAllowedError'
+      ? 'O navegador está bloqueando. No cadeadinho do endereço, põe o microfone em "Permitir" e recarrega.'
+      : e.name === 'NotFoundError' ? 'Este computador não tem microfone ligado.'
+      : e.name === 'NotReadableError' ? 'Outro programa (chamada, gravador) está segurando o microfone.'
+      : 'Mensagem do navegador: ' + e.message, 'aviso');
+    return;
+  }
+
+  /* 4. grava 2 segundos */
+  let gravadorTeste, pedacinhos = [];
+  try{
+    const tipo = tipoSuportado();
+    passo('4. Formato usado: ' + (tipo || 'o padrão do navegador'), 'bom');
+    gravadorTeste = tipo ? new MediaRecorder(trilha, { mimeType:tipo }) : new MediaRecorder(trilha);
+  }catch(e){
+    passo('4. ❌ Este navegador não deixou criar o gravador: ' + e.name, 'ruim');
+    trilha.getTracks().forEach(t => t.stop());
+    return;
+  }
+
+  const blob = await new Promise(res => {
+    gravadorTeste.ondataavailable = ev => { if(ev.data && ev.data.size) pedacinhos.push(ev.data); };
+    gravadorTeste.onstop = () => res(new Blob(pedacinhos, { type: gravadorTeste.mimeType || 'audio/webm' }));
+    gravadorTeste.start();
+    passo('5. Gravando 2 segundos... fala alguma coisa! 🎤', 'aviso');
+    setTimeout(() => { try{ gravadorTeste.stop(); }catch(e){} }, 2000);
+  });
+  trilha.getTracks().forEach(t => t.stop());
+
+  if(!blob.size){
+    passo('6. ❌ A gravação saiu vazia (0 bytes). O microfone abriu mas não capturou som.', 'ruim');
+    return;
+  }
+  passo('6. Gravou ' + Math.round(blob.size / 1024) + ' KB ✅', 'bom');
+
+  /* 7. consegue guardar no aparelho? */
+  const idTeste = 'teste-mic';
+  const guardou = await guardarAudio(idTeste, blob);
+  if(guardou){
+    const devolta = await pegarAudio(idTeste);
+    passo(devolta ? '7. Guardou e leu de volta do aparelho ✅' : '7. ❌ Guardou mas não conseguiu ler de volta', devolta ? 'bom' : 'ruim');
+    apagarAudio(idTeste);
+  }else{
+    passo('7. ⚠️ O cofre do aparelho (IndexedDB) não funcionou — os áudios vão junto da mensagem, e os grandes podem não caber.', 'aviso');
+  }
+
+  /* 8. toca de volta */
+  try{
+    const som = new Audio(URL.createObjectURL(blob));
+    await som.play();
+    passo('8. Tocando o que gravou 🔊 — se você ouviu, está tudo certo!', 'bom');
+  }catch(e){
+    passo('8. ⚠️ Gravou, mas o navegador não deixou tocar sozinho (' + e.name + '). Toca no ▶ do balão.', 'aviso');
+  }
 }
