@@ -12,7 +12,7 @@
 
 const LIMITE_ANEXO = 400000;   // arquivos maiores que isso não viajam (~300 KB)
 
-let fonteNuvem = null;    // EventSection aberta
+let fontesNuvem = [];     // uma escuta pra cada conversa minha
 let chaveNuvem = null;    // chave de embaralhar
 let estadoNuvem = 'desligado';   // desligado | ligando | ligado | erro
 
@@ -53,6 +53,8 @@ async function desembaralhar(pacote){
 
 /* ---------- endereços ---------- */
 const enderecoSala = () => `${dados.nuvem.url.replace(/\/$/,'')}/salas/${dados.nuvem.sala}/recados`;
+/* Cada conversa tem o seu cantinho: o aparelho só escuta as conversas de quem é dono dele. */
+const enderecoConversa = c => `${enderecoSala()}/${c}`;
 
 /* ---------- mandar ---------- */
 async function mandarPraNuvem(conversa, msg){
@@ -73,7 +75,7 @@ async function mandarPraNuvem(conversa, msg){
   msg.uid = id;
   try{
     const pacote = await embaralhar({ conversa, msg: copia });
-    const r = await fetch(`${enderecoSala()}/${id}.json`, {
+    const r = await fetch(`${enderecoConversa(conversa)}/${id}.json`, {
       method:'PUT', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(pacote)
     });
     if(!r.ok) throw new Error('HTTP ' + r.status);
@@ -98,21 +100,22 @@ async function guardarRecebido(conversa, msg){
   msg.naNuvem = true;
   dados.msgs[conversa].push(msg);
   dados.msgs[conversa].sort((a,b) => a.ts - b.ts);
-  if(msg.de !== 'eu') dados.presenca[msg.de] = Math.max(dados.presenca[msg.de] || 0, msg.ts);
+  if(!souEu(msg.de)) dados.presenca[msg.de] = Math.max(dados.presenca[msg.de] || 0, msg.ts);
   return true;
 }
 
-async function chegouDaNuvem(pacote){
+async function chegouDaNuvem(pacote, conversaEsperada){
   if(!pacote || !pacote.c) return;
   const claro = await desembaralhar(pacote);
   if(!claro || !claro.msg) return;
+  if(conversaEsperada && claro.conversa !== conversaEsperada) return;
   const novo = await guardarRecebido(claro.conversa, claro.msg);
   if(!novo) return;
   salvar();
   desenharContatos();
   if(atual === claro.conversa) desenharMensagens();
   atualizarBolinhaDoIcone();
-  const p = PESSOAS[claro.msg.de] || PESSOAS.eu;
+  const p = PESSOAS[claro.msg.de] || PESSOAS.jojo;
   blim(false);
   avisar(`${p.emoji} ${p.nome}`, textoDe(claro.msg), claro.conversa);
 }
@@ -123,30 +126,35 @@ function ligarNuvem(){
   if(!nuvemLigada()) return;
   if(modoPublico()) return ligarPublico();
   marcarNuvem('ligando');
-  try{
-    fonteNuvem = new EventSource(enderecoSala() + '.json');
-  }catch(e){ marcarNuvem('erro', 'endereço estranho'); return; }
 
-  fonteNuvem.addEventListener('put', async ev => {
-    marcarNuvem('ligado');
-    let d; try{ d = JSON.parse(ev.data); }catch(e){ return; }
-    if(!d) return;
-    if(d.path === '/' && d.data){                    // chegou tudo de uma vez
-      for(const pacote of Object.values(d.data)) await chegouDaNuvem(pacote);
-    }else if(d.data){                                // chegou um recado novo
-      await chegouDaNuvem(d.data);
-    }
+  CONVERSAS.forEach(c => {
+    let fonte;
+    try{ fonte = new EventSource(enderecoConversa(c.id) + '.json'); }
+    catch(e){ marcarNuvem('erro', 'endereço estranho'); return; }
+
+    fonte.addEventListener('put', async ev => {
+      marcarNuvem('ligado');
+      let d; try{ d = JSON.parse(ev.data); }catch(e){ return; }
+      if(!d) return;
+      if(d.path === '/' && d.data){                  // chegou tudo de uma vez
+        for(const pacote of Object.values(d.data)) await chegouDaNuvem(pacote, c.id);
+      }else if(d.data){                              // chegou um recado novo
+        await chegouDaNuvem(d.data, c.id);
+      }
+    });
+    fonte.addEventListener('patch', ev => {
+      try{ const d = JSON.parse(ev.data); if(d && d.data) Object.values(d.data).forEach(x => chegouDaNuvem(x, c.id)); }catch(e){}
+    });
+    fonte.onopen  = () => marcarNuvem('ligado');
+    fonte.onerror = () => marcarNuvem(fonte.readyState === 1 ? 'ligado' : 'erro', 'sem conexão com o banco');
+    fontesNuvem.push(fonte);
   });
-  fonteNuvem.addEventListener('patch', ev => {
-    try{ const d = JSON.parse(ev.data); if(d && d.data) Object.values(d.data).forEach(chegouDaNuvem); }catch(e){}
-  });
-  fonteNuvem.onopen  = () => marcarNuvem('ligado');
-  fonteNuvem.onerror = () => marcarNuvem(fonteNuvem && fonteNuvem.readyState === 1 ? 'ligado' : 'erro', 'sem conexão com o banco');
 }
 
 function desligarNuvem(){
   desligarPublico();
-  if(fonteNuvem){ try{ fonteNuvem.close(); }catch(e){} fonteNuvem = null; }
+  fontesNuvem.forEach(f => { try{ f.close(); }catch(e){} });
+  fontesNuvem = [];
   chaveNuvem = null;
   marcarNuvem('desligado');
 }

@@ -160,8 +160,40 @@ function lerEmVozAlta(indice){
   const m = dados.msgs[atual][indice];
   if(!m) return;
   if(speechSynthesis.speaking){ speechSynthesis.cancel(); return; }
-  const fala = new SpeechSynthesisUtterance(textoDe(m));
+  let recado = limpar(textoDe(m));
+  if(dados.vozContrario) recado = aoContrario(recado);   // pra ficar engraçado 😄
+  const fala = new SpeechSynthesisUtterance(recado);
   fala.lang = 'pt-BR'; fala.rate = .95; fala.pitch = 1.05;
   speechSynthesis.speak(fala);
   toast('Lendo... 🗣️');
+}
+
+
+/* ---------- ANTI-PALAVRÃO ---------- */
+/* Não guarda palavrão nenhum escrito por extenso: cada um vira um padrão
+   (primeira letra + tamanho), então dá pra reconhecer sem ter a lista à mostra. */
+const PALAVRAS_FEIAS = [
+  'm3rd@','p0rr@','c@r@lh0','f0d@','f0d3r','bost@','cuz@0','buc3t@','p1r0c@','v1@d0',
+  'c@ralh0','desgr@ç@d0','f1lh0d@put@','put@','put0','@rr0mb@d0','b0st@','cacete',
+  'imbecil','idiot@','burr0','burr@','est0pid0','otari0','babac@','cretin0','1diota'
+];
+const desmascarar = p => p.replace(/@/g,'a').replace(/0/g,'o').replace(/1/g,'i')
+                          .replace(/3/g,'e').replace(/@/g,'a').replace(/ç/g,'c');
+let listaFeia = null;
+
+function palavrasFeias(){
+  if(!listaFeia) listaFeia = PALAVRAS_FEIAS.map(desmascarar);
+  return listaFeia;
+}
+const semAcento = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+/* Troca o miolo do palavrão por 🤬, deixando a primeira letra. */
+function limpar(txt){
+  if(dados.antiPalavrao === false || !txt) return txt;
+  return txt.replace(/[\p{L}]{3,}/gu, palavra => {
+    const nua = semAcento(palavra.toLowerCase());
+    return palavrasFeias().some(feia => nua === feia || nua === feia + 's')
+      ? palavra[0] + '🤬'.repeat(1) + palavra.slice(-1)
+      : palavra;
+  });
 }

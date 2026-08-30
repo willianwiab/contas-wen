@@ -598,6 +598,16 @@ html[data-tema="escuro"] .passo.bom{background:#052e16;color:#bbf7d0}
 html[data-tema="escuro"] .passo.ruim{background:#450a0a;color:#fecaca}
 html[data-tema="escuro"] .passo.aviso{background:#422006;color:#fde68a}
 .diario{margin-top:8px;font-size:.72rem;color:var(--texto2);font-family:ui-monospace,monospace;line-height:1.5;max-height:120px;overflow-y:auto}
+
+/* ===================== QUEM É VOCÊ ===================== */
+.tela-cheia.quem-sou{background:linear-gradient(160deg,var(--roxo),var(--azul));color:#fff;z-index:88}
+.qs-meio{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:26px;text-align:center}
+.qs-meio h2{font-size:1.5rem;font-weight:800}
+.qs-meio .lig-txt{color:rgba(255,255,255,.9)}
+.qs-gente{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:11px;width:min(430px,100%);margin-top:6px}
+.qs-pessoa{display:flex;flex-direction:column;align-items:center;gap:8px;background:rgba(255,255,255,.16);border-radius:20px;padding:16px 10px;color:#fff;font-weight:800;font-size:.92rem}
+.qs-pessoa:hover{background:rgba(255,255,255,.28);transform:translateY(-2px)}
+.qs-av{width:58px;height:58px;border-radius:20px;display:grid;place-items:center;font-size:1.8rem}
 </style>
 </head>
 <body>
@@ -683,6 +693,11 @@ window.addEventListener('unhandledrejection', function(e){
     <div class="bloco-titulo">🖼️ Foto de cada um</div>
     <div class="perfis" id="listaPerfis"></div>
 
+    <div class="bloco-titulo">👤 Este aparelho é de</div>
+    <div class="tm-opcoes" id="listaQuemSou"></div>
+    <p class="sem-lembrete" style="margin-top:8px">Quem escolher aqui é quem manda os recados por este aparelho.
+    As conversas mudam pro ponto de vista dele.</p>
+
     <div class="bloco-titulo">🔠 Tamanho da letra</div>
     <div class="tm-opcoes" id="tamanhos">
       <button class="tm-op" data-letra="normal">Normal</button>
@@ -693,6 +708,14 @@ window.addEventListener('unhandledrejection', function(e){
     <div class="opcao" style="margin-top:16px">
       <div><b>🗣️ Ler em voz alta</b><small>põe um 🔊 nos recados pro celular ler</small></div>
       <button class="switch" id="cfgVoz" aria-label="Ligar ou desligar a leitura em voz alta"></button>
+    </div>
+    <div class="opcao">
+      <div><b>🔁 Ler ao contrário</b><small>o celular lê de trás pra frente — fica engraçado 😄</small></div>
+      <button class="switch" id="cfgVozContrario" aria-label="Ligar ou desligar a leitura ao contrário"></button>
+    </div>
+    <div class="opcao">
+      <div><b>🤬 Anti-palavrão</b><small>esconde palavra feia nos recados. Dá pra desligar aqui</small></div>
+      <button class="switch" id="cfgPalavrao" aria-label="Ligar ou desligar o anti-palavrão"></button>
     </div>
 
     <div class="bloco-titulo">🔕 Modo soneca</div>
@@ -775,7 +798,7 @@ window.addEventListener('unhandledrejection', function(e){
       <button class="lig-bt" id="btnAtualizar">🔄 Atualizar o site</button>
     </div>
     <p class="sem-lembrete" style="margin-top:8px">Isso joga fora a cópia velha guardada no aparelho e baixa a mais
-    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">13</b>.</p>
+    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">15</b>.</p>
 
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
@@ -786,21 +809,21 @@ window.addEventListener('unhandledrejection', function(e){
 
 <div class="aviso-flutua" id="toast"></div>
 
-<script src="ajuda.js?v=13"></script>
-<script src="jogo.js?v=13"></script>
-<script src="mais.js?v=13"></script>
-<script src="casa.js?v=13"></script>
-<script src="enfeites.js?v=13"></script>
-<script src="nuvem.js?v=13"></script>
-<script src="publico.js?v=13"></script>
-<script src="trancar.js?v=13"></script>
-<script src="audio.js?v=13"></script>
-<script src="video.js?v=13"></script>
-<script src="familia.js?v=13"></script>
-<script src="extras.js?v=13"></script>
-<script src="ligacao.js?v=13"></script>
-<script src="avisos.js?v=13"></script>
-<script src="app.js?v=13"></script>
+<script src="ajuda.js?v=15"></script>
+<script src="jogo.js?v=15"></script>
+<script src="mais.js?v=15"></script>
+<script src="casa.js?v=15"></script>
+<script src="enfeites.js?v=15"></script>
+<script src="nuvem.js?v=15"></script>
+<script src="publico.js?v=15"></script>
+<script src="trancar.js?v=15"></script>
+<script src="audio.js?v=15"></script>
+<script src="video.js?v=15"></script>
+<script src="familia.js?v=15"></script>
+<script src="extras.js?v=15"></script>
+<script src="ligacao.js?v=15"></script>
+<script src="avisos.js?v=15"></script>
+<script src="app.js?v=15"></script>
 </body>
 
 </html>

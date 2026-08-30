@@ -8,7 +8,8 @@ const AJUDA = [
     titulo:'📋 Na primeira tela (a lista)',
     cor:'#7c3aed',
     itens:[
-      ['4 conversas','👨 Papai, 👩 Mamãe, 👧 Sofia e 💜 Família (todo mundo junto)'],
+      ['Este aparelho é de você','na primeira vez o site pergunta quem você é; a lista mostra as conversas do seu ponto de vista'],
+      ['4 conversas','as três outras pessoas da família + 💜 Família (todo mundo junto)'],
       ['🔍 Procurar conversa','a barrinha lá em cima da lista'],
       ['✅ Tarefas, 🖼️ Álbum e 📅 Agenda','os três botões coloridos embaixo da lista'],
       ['🐣 O bichinho','o cartãozinho acima dos botões — toca nele pra ver o nível'],
@@ -22,7 +23,7 @@ const AJUDA = [
     cor:'#0ea5e9',
     itens:[
       ['Escrever e mandar','Enter manda, Shift+Enter pula linha'],
-      ['Falando como','troca entre 🧒 Eu / 👨 Papai / 👩 Mamãe / 👧 Sofia pra cada um responder'],
+      ['Quem escreve','é o dono deste aparelho — dá pra trocar em ⚙️ Ajustes → 👤 Este aparelho é de'],
       ['Frases prontas','“Cheguei bem 🏠”, “Pode me buscar? 🚗”…'],
       ['😀 Emojis','emoji sozinho vira <b>gigante</b>'],
       ['🎤 Microfone','toca pra gravar, toca no ⏹ pra mandar (🗑️ joga fora)'],
@@ -67,6 +68,8 @@ const AJUDA = [
       ['🎂 Aniversários','põe a data de cada um e a lista avisa quantos dias faltam'],
       ['🔠 Tamanho da letra','normal, grande ou gigante'],
       ['🗣️ Ler em voz alta','põe um 🔊 nos recados pro celular ler pra ti'],
+      ['🔁 Ler ao contrário','o celular lê de trás pra frente, só de brincadeira 😄'],
+      ['🤬 Anti-palavrão','esconde palavra feia na tela (o recado continua inteiro por baixo). Dá pra desligar'],
       ['🔕 Modo soneca','silencia os avisos por 30 min, 1 hora ou até as 8h'],
       ['🔒 Tranca do chat','senha de 4 números pedida ao abrir (tem dica depois de 3 erros)'],
       ['💾 Salvar num arquivo','e 📂 abrir em outro celular, com áudios e fotos junto']
