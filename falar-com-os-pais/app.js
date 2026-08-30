@@ -305,6 +305,7 @@ function perguntarQuemSou(){
   tela.querySelectorAll('[data-quem]').forEach(b => b.addEventListener('click', () => {
     souAgora(b.dataset.quem);
     tela.remove();
+    pedirSenhaDaFamilia();   // se o banco da família já vem no site, pede só a senha
     toast(`Este aparelho é d${b.dataset.quem === 'irma' ? 'a' : 'o'} ${PESSOAS[b.dataset.quem].curto}! 💜`);
   }));
 }
@@ -804,8 +805,12 @@ carregarPerfis().then(() => { desenharContatos(); if(atual) desenharConversa(); 
 verLembretes(true); atualizarBolinhaDoIcone(); mostrarAniversario(); mostrarProximo();
 verCapsulas(); verAgenda(); desenharBicho(); pedirTranca();
 if(nuvemLigada()) ligarNuvem();
-if(!dados.euSou) perguntarQuemSou();          // primeira vez: de quem é este aparelho?
-else if(window.innerWidth > 860) abrir('familia');
+if(!dados.euSou){
+  perguntarQuemSou();                         // primeira vez: de quem é este aparelho?
+}else{
+  pedirSenhaDaFamilia();                      // já sabe quem é: falta a senha da família?
+  if(window.innerWidth > 860) abrir('familia');
+}
 
 /* Deixa o site funcionar sem internet e dá pra instalar na tela do celular. */
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){

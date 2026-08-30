@@ -12,6 +12,15 @@
 
 const LIMITE_ANEXO = 400000;   // arquivos maiores que isso não viajam (~300 KB)
 
+/* Configuração de fábrica da família: com o endereço do banco preenchido aqui,
+   ninguém precisa digitar nada — só a senha da família na primeira abertura. */
+const NUVEM_PADRAO = {
+  modo: 'firebase',
+  url : '',                                  // <- endereço do Realtime Database
+  sala: 'fam-conversa-com-a-familia-2026'    // mesma sala em todos os aparelhos
+};
+const temPadrao = () => !!NUVEM_PADRAO.url;
+
 let fontesNuvem = [];     // uma escuta pra cada conversa minha
 let chaveNuvem = null;    // chave de embaralhar
 let estadoNuvem = 'desligado';   // desligado | ligando | ligado | erro
@@ -121,6 +130,38 @@ async function chegouDaNuvem(pacote, conversaEsperada){
 }
 
 /* ---------- ligar e desligar ---------- */
+/* Primeira abertura com o banco já embutido: pede só a senha da família. */
+function pedirSenhaDaFamilia(){
+  if(!temPadrao() || dados.nuvem || document.getElementById('telaSenhaFamilia')) return;
+  const tela = document.createElement('div');
+  tela.className = 'tela-cheia quem-sou'; tela.id = 'telaSenhaFamilia';
+  tela.innerHTML = `
+    <div class="qs-meio">
+      <div class="balao-deco">🔐</div>
+      <h2>Senha da família</h2>
+      <p class="lig-txt">É a mesma palavra em todos os aparelhos da casa. Ela embaralha os recados:
+      sem ela ninguém consegue ler o que passa pela internet.</p>
+      <input id="senhaFamilia" class="senha-grande" placeholder="a palavra combinada" autocomplete="off">
+      <div class="lig-botoes">
+        <button class="lig-bt ok grande" id="senhaOk">☁️ Ligar o envio</button>
+        <button class="lig-bt" id="senhaDepois">agora não</button>
+      </div>
+    </div>`;
+  document.body.appendChild(tela);
+  const entrar = () => {
+    const senha = document.getElementById('senhaFamilia').value.trim();
+    if(senha.length < 3){ toast('Escreve a palavra combinada 😊'); return; }
+    dados.nuvem = Object.assign({}, NUVEM_PADRAO, { senha });
+    salvar(); chaveNuvem = null; ligarNuvem();
+    tela.remove();
+    toast('Pronto! Agora os recados viajam ☁️');
+  };
+  document.getElementById('senhaOk').addEventListener('click', entrar);
+  document.getElementById('senhaFamilia').addEventListener('keydown', e => { if(e.key === 'Enter') entrar(); });
+  document.getElementById('senhaDepois').addEventListener('click', () => tela.remove());
+  document.getElementById('senhaFamilia').focus();
+}
+
 function ligarNuvem(){
   desligarNuvem();
   if(!nuvemLigada()) return;
@@ -197,8 +238,8 @@ function usarConvite(txt){
 function desenharNuvem(){
   const caixa = document.getElementById('camposNuvem');
   if(!caixa) return;
-  const n = dados.nuvem || {};
-  const modo = n.modo || 'publico';
+  const n = dados.nuvem || (temPadrao() ? NUVEM_PADRAO : {});
+  const modo = n.modo || (temPadrao() ? 'firebase' : 'publico');
   document.querySelectorAll('.modo-op').forEach(b => b.classList.toggle('on', b.dataset.modo === modo));
   document.getElementById('campoUrl').classList.toggle('escondido', modo !== 'firebase');
   document.getElementById('avisoPublico').classList.toggle('escondido', modo !== 'publico');
