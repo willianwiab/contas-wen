@@ -223,12 +223,56 @@ function desligarNuvem(){
   marcarNuvem('desligado');
 }
 
+/* 4 letrinhas tiradas da sala: se os aparelhos mostram o MESMO código,
+   estão todos na mesma sala. Se mostram códigos diferentes, a senha está diferente. */
+function codigoDaFamilia(){
+  const sala = (dados.nuvem && dados.nuvem.sala) || '';
+  return sala ? sala.replace('fam-','').slice(0,4).toUpperCase() : '----';
+}
+
+/* Painel rápido: toca na bolinha lá em cima e vê tudo. */
+function abrirPainelNuvem(){
+  if(document.getElementById('painelNuvem')) return;
+  const n = dados.nuvem || {};
+  const total = Object.values(dados.msgs).reduce((soma, lista) => soma + lista.filter(m => !souEu(m.de)).length, 0);
+  const tela = document.createElement('div');
+  tela.className = 'fundo-modal aberto'; tela.id = 'painelNuvem';
+  tela.innerHTML = `
+    <div class="modal">
+      <h2>☁️ Estado do envio</h2>
+      <div class="painel-linhas">
+        <div><b>Versão do site</b><span>${document.getElementById('versaoSite')?.textContent || '?'}</span></div>
+        <div><b>Este aparelho é de</b><span>${dados.euSou ? PESSOAS[dados.euSou].curto : '—'}</span></div>
+        <div><b>Jeito de enviar</b><span>${n.modo === 'firebase' ? '🔥 banco da família' : n.modo === 'publico' ? '📡 servidor público' : '🔌 desligado'}</span></div>
+        <div><b>Conexão</b><span>${ {ligado:'🟢 ligada', ligando:'🟡 conectando', erro:'🔴 com erro', desligado:'⚪ desligada'}[estadoNuvem] }</span></div>
+        <div><b>Recados que chegaram</b><span>${total}</span></div>
+      </div>
+      <div class="codigo-familia">
+        <small>CÓDIGO DA FAMÍLIA</small>
+        <b class="cod">${codigoDaFamilia()}</b>
+        <small>tem que ser <b>igual</b> nos quatro aparelhos.<br>Se estiver diferente, a senha foi digitada diferente.</small>
+      </div>
+      <div id="passosTeste" class="passos"></div>
+      <div class="lig-botoes">
+        <button class="lig-bt ok" id="painelTestar">🔎 Testar agora</button>
+        <button class="lig-bt" id="painelDiag">📋 Copiar diagnóstico</button>
+        <button class="lig-bt desligar" id="painelFechar">Fechar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(tela);
+  tela.addEventListener('click', e => { if(e.target.id === 'painelNuvem') tela.remove(); });
+  document.getElementById('painelFechar').addEventListener('click', () => tela.remove());
+  document.getElementById('painelTestar').addEventListener('click', () => modoPublico() ? testarPublico() : testarFirebase());
+  document.getElementById('painelDiag').addEventListener('click', copiarDiagnostico);
+}
+
 function marcarNuvem(estado, detalhe){
   estadoNuvem = estado;
   const chip = document.getElementById('chipNuvem');
   if(chip){
     chip.className = 'net nuvem ' + estado;
-    const txt = { desligado:'Só neste aparelho', ligando:'Conectando...', ligado:'Enviando de verdade ☁️', erro:'Deu erro no envio' }[estado];
+    const txt = { desligado:'Só neste aparelho', ligando:'Conectando...',
+                  ligado:'Enviando ☁️ ' + codigoDaFamilia(), erro:'Deu erro no envio' }[estado];
     chip.innerHTML = `<span class="bolinha"></span><span>${txt}</span>`;
     chip.title = detalhe || '';
   }

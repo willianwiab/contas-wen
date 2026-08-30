@@ -721,6 +721,7 @@ $('#btnLigarNuvem').addEventListener('click', salvarNuvem);
 $('#btnTestarNuvem').addEventListener('click', () => modoPublico() ? testarPublico() : testarFirebase());
 $('#btnTestarMic').addEventListener('click', testarMicrofone);
 $('#btnDiagnostico').addEventListener('click', copiarDiagnostico);
+$('#chipNuvem').addEventListener('click', abrirPainelNuvem);   // toca na bolinha e vê tudo
 $('#btnTrocarServidor').addEventListener('click', () => { trocarServidor(); toast('Trocando de servidor... 🔁'); });
 $('#btnDesligarNuvem').addEventListener('click', desligarDeVez);
 $('#btnConvite').addEventListener('click', () => {
