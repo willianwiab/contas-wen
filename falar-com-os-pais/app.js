@@ -720,6 +720,7 @@ document.querySelectorAll('.modo-op').forEach(b => b.addEventListener('click', (
 $('#btnLigarNuvem').addEventListener('click', salvarNuvem);
 $('#btnTestarNuvem').addEventListener('click', () => modoPublico() ? testarPublico() : testarFirebase());
 $('#btnTestarMic').addEventListener('click', testarMicrofone);
+$('#btnDiagnostico').addEventListener('click', copiarDiagnostico);
 $('#btnTrocarServidor').addEventListener('click', () => { trocarServidor(); toast('Trocando de servidor... 🔁'); });
 $('#btnDesligarNuvem').addEventListener('click', desligarDeVez);
 $('#btnConvite').addEventListener('click', () => {
