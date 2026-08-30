@@ -128,9 +128,20 @@ function migrarV1(d){
   }catch(e){}
   return d;
 }
+let jaAvisouMemoria = false;
 function salvar(){
-  try{ localStorage.setItem(CHAVE, JSON.stringify(dados)); }
-  catch(e){ toast('Não deu pra guardar 😕'); }
+  try{
+    localStorage.setItem(CHAVE, JSON.stringify(dados));
+    jaAvisouMemoria = false;
+  }catch(e){
+    /* memória do navegador cheia: sem avisar direito, os recados somem ao
+       recarregar e parece que o site "não funciona". */
+    toast('A memória deste aparelho encheu 😕', 6000);
+    if(!jaAvisouMemoria && window.mostrarErroNaTela){
+      jaAvisouMemoria = true;
+      mostrarErroNaTela('a memória do navegador encheu (' + e.name + '). Faz um backup em ⚙️ Ajustes e apaga conversas antigas com o 🗑️.');
+    }
+  }
 }
 
 /* ---------- ajudantes ---------- */
