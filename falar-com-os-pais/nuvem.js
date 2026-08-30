@@ -138,9 +138,23 @@ async function salaDaSenha(senha){
   return 'fam-' + hex.slice(0, 24);
 }
 
+/* Quem já estava no servidor público muda pro banco da família sozinho,
+   aproveitando a mesma senha — senão ficava preso no servidor antigo. */
+async function passarPraFamiliaNaNuvem(){
+  if(!temPadrao()) return false;
+  const n = dados.nuvem;
+  if(!n || n.modo !== 'publico' || !n.senha) return false;
+  dados.nuvem = { modo:'firebase', url: NUVEM_PADRAO.url, senha: n.senha,
+                  sala: NUVEM_PADRAO.sala || await salaDaSenha(n.senha) };
+  salvar(); chaveNuvem = null; ligarNuvem();
+  toast('Agora usando o banco da família 🔥', 5000);
+  return true;
+}
+
 /* Primeira abertura com o banco já embutido: pede só a senha da família. */
 function pedirSenhaDaFamilia(){
-  if(!temPadrao() || dados.nuvem || document.getElementById('telaSenhaFamilia')) return;
+  if(!temPadrao() || document.getElementById('telaSenhaFamilia')) return;
+  if(dados.nuvem){ passarPraFamiliaNaNuvem(); return; }
   const tela = document.createElement('div');
   tela.className = 'tela-cheia quem-sou'; tela.id = 'telaSenhaFamilia';
   tela.innerHTML = `
@@ -331,4 +345,41 @@ async function testarFirebase(){
 
   fetch(alvo, { method:'PUT', headers:{'Content-Type':'application/json'}, body:'null' }).catch(() => {});
   passo('5. Tudo pronto! Agora é só cada um abrir e pôr a mesma senha da família 🎉', 'bom');
+}
+
+
+/* ---------- diagnóstico pra mandar pro Claude ---------- */
+function juntarDiagnostico(){
+  const n = dados.nuvem || {};
+  const linhas = [
+    'Fala, Família — diagnóstico',
+    'versão do site: ' + (document.getElementById('versaoSite')?.textContent || '?'),
+    'navegador: ' + navigator.userAgent,
+    'endereço seguro (https): ' + window.isSecureContext,
+    'com internet: ' + navigator.onLine,
+    'este aparelho é de: ' + (dados.euSou || '(ninguém ainda)'),
+    'modo de envio: ' + (n.modo || '(desligado)'),
+    'banco: ' + (n.url || '-'),
+    'sala: ' + (n.sala || '-'),
+    'senha configurada: ' + (n.senha ? 'sim (' + n.senha.length + ' letras)' : 'NÃO'),
+    'estado da conexão: ' + estadoNuvem,
+    'recados guardados: ' + Object.entries(dados.msgs).map(([k,v]) => k + '=' + v.length).join(', '),
+    'passos do último teste:',
+    ...[...document.querySelectorAll('#passosTeste .passo')].map(e => '  - ' + e.textContent.trim()),
+    'erros que apareceram:',
+    ...((window.__erros || []).slice(0,5).map(e => '  - ' + e)),
+    ...(typeof diario !== 'undefined' ? ['diário do servidor público:', ...diario.map(l => '  - ' + l)] : [])
+  ];
+  return linhas.join('\n');
+}
+
+function copiarDiagnostico(){
+  const txt = juntarDiagnostico();
+  navigator.clipboard?.writeText(txt)
+    .then(() => toast('Diagnóstico copiado! Cola na conversa com o Claude 📋', 5000))
+    .catch(() => {
+      const caixa = document.getElementById('passosTeste');
+      if(caixa) caixa.innerHTML = `<textarea class="lig-codigo" style="height:200px">${escapar(txt)}</textarea>`;
+      toast('Copia o texto que apareceu aí 😊', 5000);
+    });
 }
