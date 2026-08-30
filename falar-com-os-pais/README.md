@@ -103,6 +103,12 @@ videinho sempre funcionam.
 
 ## ☁️ Enviar de verdade entre aparelhos
 
+> **Já está configurado para esta família.** O banco (`conversa-com-a-familia`) vem
+> embutido no site: cada pessoa abre o link, escolhe **quem é** e digita a **senha da
+> família**. O nome da sala nasce da própria senha, então ninguém precisa combinar
+> código nenhum — quem digita a mesma senha cai na mesma sala, e quem não sabe a
+> senha nem descobre em que canto do banco procurar.
+
 Por padrão os recados ficam **só no aparelho**. Pra eles viajarem (o Jojo manda
 no computador e chega no celular da mãe), a família liga um banco **Firebase**
 grátis: **⚙️ Ajustes → ☁️ Enviar de verdade**. O passo a passo completo está em
