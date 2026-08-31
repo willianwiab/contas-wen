@@ -80,10 +80,56 @@ const enderecoConversa = c => `${enderecoSala()}/${c}`;
 let usarRecentes = true;   // se o banco não aceitar a consulta, volta ao jeito simples
 const RECENTES = () => usarRecentes ? '?orderBy="$key"&limitToLast=40' : '';
 
+/* ---------- a fila de espera ----------
+   Recado escrito sem internet (ou quando o banco não respondeu) não some
+   nem fica parado pra sempre: ele fica marcado como "pendente" e sai
+   sozinho assim que a internet voltar. */
+function porNaFila(conversa, msg){
+  if(msg.pendente) return;
+  msg.pendente = true; salvar(); avisarDaFila();
+}
+function tirarDaFila(msg){
+  if(!msg.pendente) return;
+  delete msg.pendente; salvar(); avisarDaFila();
+}
+function contarFila(){
+  let n = 0;
+  Object.values(dados.msgs || {}).forEach(lista => lista.forEach(m => { if(m.pendente) n++; }));
+  return n;
+}
+function avisarDaFila(){
+  const chip = document.getElementById('chipFila');
+  if(chip){
+    const n = contarFila();
+    chip.classList.toggle('escondido', n === 0);
+    chip.innerHTML = `<span class="bolinha"></span><span>⏳ ${n} recad${n === 1 ? 'o esperando' : 'os esperando'} a internet</span>`;
+  }
+  if(typeof atual !== 'undefined' && atual && typeof atualizarTiquinhos === 'function') atualizarTiquinhos();
+}
+
+let soltandoFila = false;
+async function soltarFila(){
+  if(soltandoFila || !nuvemLigada() || modoPublico() || !navigator.onLine) return;
+  soltandoFila = true;
+  try{
+    for(const [conversa, lista] of Object.entries(dados.msgs || {})){
+      for(const m of lista){
+        if(!m.pendente || m.naNuvem) continue;
+        delete m.pendente;                 // se falhar de novo, volta pra fila sozinho
+        await mandarPraNuvem(conversa, m);
+        if(m.pendente) return;             // ainda sem rede: para e tenta na próxima
+      }
+    }
+  }finally{ soltandoFila = false; avisarDaFila(); }
+}
+window.addEventListener('online', () => setTimeout(soltarFila, 800));
+
 /* ---------- mandar ---------- */
 async function mandarPraNuvem(conversa, msg){
   if(!nuvemLigada() || msg.naNuvem) return;
   if(modoPublico()) return void mandarPeloPublico(conversa, msg);
+  /* sem internet nem adianta tentar: vai direto pra fila */
+  if(!navigator.onLine) return void porNaFila(conversa, msg);
   const copia = Object.assign({}, msg);
   delete copia.naNuvem;
 
@@ -107,8 +153,10 @@ async function mandarPraNuvem(conversa, msg){
       throw new Error('HTTP ' + r.status);
     }
     marcarNuvem('ligado');
+    tirarDaFila(msg);
   }catch(e){
     marcarNuvem('erro', e.message);
+    porNaFila(conversa, msg);
   }
 }
 
@@ -265,6 +313,7 @@ async function puxarTudo(forcado){
       }
     }catch(e){ marcarNuvem('erro', 'sem conexão com o banco'); }
   }
+  soltarFila();     // se ficou recado esperando, esta é a hora de mandar
 }
 
 /* ---------- quem está na sala ---------- */

@@ -13,6 +13,7 @@ const AJUDA = [
       ['🔍 Procurar conversa','a barrinha lá em cima da lista'],
       ['✅ Tarefas, 🖼️ Álbum e 📅 Agenda','os botões coloridos embaixo da lista'],
       ['🤖 Ajudante','uma inteligência artificial de verdade pra ajudar na lição e explicar coisas'],
+      ['💭 Recado do dia','a fileirinha em cima das conversas: toca no teu cartão e diz o que tu tá fazendo'],
       ['🐣 O bichinho','o cartãozinho acima dos botões — toca nele pra ver o nível'],
       ['🌙 / ☀️','troca o tema claro e escuro'],
       ['⚙️','abre os ajustes'],
@@ -35,8 +36,10 @@ const AJUDA = [
       ['🔊 Ler em voz alta','aparece quando ligado nos ajustes — o celular lê o recado'],
       ['📌 Fixar','põe o recado lá no topo da conversa (o ✕ tira)'],
       ['📻 📞 📹 no topo','walkie-talkie, ligação e videochamada — agora de UM TOQUE: toca no aparelho do outro, sem código'],
+      ['📞 Ninguém atendeu?','o site te oferece deixar um recado de voz na conversa, a pessoa ouve depois'],
       ['✍️ Está escrevendo','aparece no topo quando a outra pessoa está digitando'],
-      ['✓ e ✓✓','✓ = saiu daqui; ✓✓ = a pessoa abriu a conversa'],
+      ['✓ ✓✓ e ⏳','✓ = saiu daqui; ✓✓ = a pessoa abriu; ⏳ = esperando a internet voltar'],
+      ['✨ Me ajuda a escrever','aparece na caixinha quando tu escreve: o Ajudante arruma o recado e TU escolhe se usa'],
       ['🗑️ Apagar','pergunta se é pra apagar pra TODOS — some do aparelho dos outros também'],
       ['⋯ Menu do topo','🔍 procurar, 📋 copiar, 🎨 papel de parede e 🗑️ apagar a conversa'],
       ['🎊 Confete','manda 🎉 🥳 🎂 e cai confete na tela']
@@ -111,10 +114,31 @@ const AJUDA = [
       ['A chave é tua','fica guardada só no teu aparelho. Não vai pro site, nem pro backup, nem pra nuvem da família — quem tem a chave é quem paga o uso'],
       ['Qual cérebro','dá pra escolher o Opus 5 (o mais inteligente) ou o Haiku 4.5 (o mais barato)'],
       ['Cuidado','o que tu escrever pro Ajudante vai pra internet, pro computador da Anthropic — diferente dos recados da família. E IA às vezes erra: confere o que for importante'],
+      ['🌙 Historinha de dormir','o botão 🌙 lá em cima: ele inventa uma história com os nomes da família e o site lê em voz alta (o ⏹ para)'],
+      ['✨ Arruma teu recado','o ✨ na caixinha de escrever conserta o português sem mandar nada sozinho'],
       ['Sem chave','o resto do site funciona igualzinho; só o 🤖 fica esperando'],
       ['Precisa de internet','o Ajudante só responde online — na primeira vez ele baixa um pedacinho de programa'],
       ['Ele não lê as conversas','o Ajudante só vê o que tu digitar na tela dele'],
       ['Custa por uso','cada pergunta gasta uns centavos da chave de quem colou. Quem manda muita pergunta, gasta mais']
+    ]
+  },
+  {
+    titulo:'💭 Recado do dia',
+    cor:'#d946ef',
+    itens:[
+      ['O que é','uma frase curtinha tipo “tô na escola 🏫” que a família toda vê na fileirinha em cima das conversas'],
+      ['Como põe','toca no teu cartão (o tracejado) e escreve, ou escolhe uma das frases prontas'],
+      ['Some sozinho','vale 12 horas e depois sai da lista — senão o “tô na escola” de terça ficava valendo na quinta'],
+      ['É embaralhado','viaja pro banco embaralhado igual aos recados, e o “Tirar o meu” apaga na hora']
+    ]
+  },
+  {
+    titulo:'📶 Quando falta internet',
+    cor:'#f59e0b',
+    itens:[
+      ['O recado não some','ele fica na conversa com um ⏳ do lado, esperando'],
+      ['Sai sozinho','assim que a internet voltar, ele vai embora e o ⏳ vira ✓ — não precisa mandar de novo'],
+      ['O avisinho','lá em cima aparece “⏳ 2 recados esperando a internet” enquanto tiver algum na fila']
     ]
   },
   {

@@ -103,7 +103,8 @@ async function esperarResposta(conversa, conexao){
     }
     if(info.estado === 'recusada'){
       clearInterval(olhar); pararTelefone();
-      toast('Não atenderam 📵'); limparChamada(conversa); desligar();
+      limparChamada(conversa); desligar();
+      oferecerRecadoDeVoz(conversa, 'não pôde atender agora');
       return;
     }
     if(info.resposta){
@@ -114,7 +115,8 @@ async function esperarResposta(conversa, conexao){
     }
     if(Date.now() - comecou > TEMPO_TOQUE){
       clearInterval(olhar); pararTelefone();
-      toast('Ninguém atendeu 📵'); limparChamada(conversa); desligar();
+      limparChamada(conversa); desligar();
+      oferecerRecadoDeVoz(conversa, 'não atendeu');
     }
   }, 2000);
 }
@@ -217,3 +219,62 @@ function ligarCentral(){
   relogioChamadas = setInterval(verSeEstaoLigando, 2500);
 }
 function desligarCentral(){ clearInterval(relogioChamadas); pararTelefone(); }
+
+
+/* ---------- recado de voz de quem não atendeu ----------
+   Ligou e ninguém pegou? Em vez de ficar por isso mesmo, dá pra deixar
+   um áudio na conversa — a pessoa ouve quando abrir. */
+function oferecerRecadoDeVoz(conversa, porque){
+  const c = conversaPor(conversa);
+  if(!c){ toast('Ninguém atendeu 📵'); return; }
+  if(document.getElementById('telaRecadoVoz')) return;
+
+  const tela = document.createElement('div');
+  tela.className = 'tela-cheia tocando'; tela.id = 'telaRecadoVoz';
+  tela.innerHTML = `
+    <div class="qs-meio">
+      <div class="lig-avatar" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${avatarConversa(c)}</div>
+      <h2>📵 ${c.nome} ${porque}</h2>
+      <p class="lig-txt" id="rvDica">Quer deixar um recado de voz? A pessoa ouve quando abrir a conversa.</p>
+      <div class="lig-botoes">
+        <button class="lig-bt ok grande" id="rvGravar">🎤 Deixar um recado</button>
+        <button class="lig-bt desligar grande" id="rvSair">Agora não</button>
+      </div>
+    </div>`;
+  document.body.appendChild(tela);
+
+  const sair = () => { if(gravando()) pararGravacao(true); tela.remove(); };
+  document.getElementById('rvSair').addEventListener('click', sair);
+
+  const bt = document.getElementById('rvGravar');
+  const dica = document.getElementById('rvDica');
+  let relogio = null, comecou = 0;
+
+  bt.addEventListener('click', async () => {
+    const estado = await alternarGravacao({
+      aoComecar(){
+        comecou = Date.now();
+        bt.textContent = '⏹ Mandar o recado';
+        bt.classList.add('gravando-bt');
+        relogio = setInterval(() => {
+          dica.textContent = 'gravando... ' + ((Date.now() - comecou) / 1000).toFixed(1) + 's';
+        }, 100);
+      },
+      async aoTerminar(blob, segundos){
+        clearInterval(relogio);
+        if(segundos < .4){ toast('Muito curtinho 😅'); tela.remove(); return; }
+        await mandarAudioPara(conversa, blob, segundos, { recadoDeVoz:true });
+        tela.remove();
+        toast('Recado de voz deixado! 📞🎤', 4000);
+      },
+      aoFalhar(){
+        clearInterval(relogio);
+        dica.textContent = 'Não consegui usar o microfone 😕';
+      }
+    });
+    if(estado === 'cancelou'){ clearInterval(relogio); tela.remove(); }
+  });
+
+  /* ninguém mexeu: some sozinha, pra não ficar entulhando a tela */
+  setTimeout(() => { if(document.getElementById('telaRecadoVoz') && !gravando()) tela.remove(); }, 25000);
+}

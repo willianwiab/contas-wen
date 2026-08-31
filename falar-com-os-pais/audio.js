@@ -127,10 +127,17 @@ async function alternarGravacao({ aoComecar, aoTerminar, aoFalhar }){
 }
 
 /* ---------- mandar o recadinho de voz ---------- */
-async function mandarAudio(blob, segundos){
+/* O recado de voz que fica quando ninguém atende a ligação não sai da
+   conversa aberta (às vezes nem tem uma aberta), por isso dá pra dizer
+   pra qual conversa ele vai. */
+const mandarAudio = (blob, segundos) => mandarAudioPara(atual, blob, segundos);
+
+async function mandarAudioPara(conversa, blob, segundos, extra){
+  if(!conversa || !dados.msgs[conversa]) return;
   const id = 'a' + Date.now() + Math.random().toString(36).slice(2,7);
   const guardou = await guardarAudio(id, blob);
-  const msg = { tipo:'audio', id, dur: Math.round(segundos * 10) / 10, de: autor, ts: Date.now() };
+  const msg = Object.assign({ tipo:'audio', id, dur: Math.round(segundos * 10) / 10,
+                              de: dados.euSou || autor, ts: Date.now() }, extra || {});
   if(!guardou){
     const txt = await blobParaTexto(blob);
     if(txt.length > 2500000){
@@ -140,13 +147,14 @@ async function mandarAudio(blob, segundos){
     }
     msg.b64 = txt;
   }
-  dados.msgs[atual].push(msg);
-  dados.visto[atual] = Date.now();
-  dados.presenca[autor] = Date.now();
-  animar = dados.msgs[atual].length - 1;
+  dados.msgs[conversa].push(msg);
+  dados.visto[conversa] = Date.now();
+  dados.presenca[msg.de] = Date.now();
+  if(conversa === atual) animar = dados.msgs[conversa].length - 1;
   salvar(); blim(true);
-  mandarPraNuvem(atual, msg);
-  desenharMensagens(); desenharContatos(); atualizarStatusTopo();
+  mandarPraNuvem(conversa, msg);
+  if(conversa === atual){ desenharMensagens(); atualizarStatusTopo(); }
+  desenharContatos();
 }
 
 /* ---------- tocar ---------- */
@@ -227,6 +235,7 @@ function balaoAudio(m, indice){
   const barras = Array.from({length:22}, (_,k) =>
     `<span style="height:${18 + Math.round(Math.abs(Math.sin((indice + 1) * (k + 2))) * 62)}%"></span>`).join('');
   return `
+    ${m.recadoDeVoz ? '<div class="marca-recado">📵 ligou e tu não atendeu</div>' : ''}
     <div class="audio-msg">
       <button class="bt-play" data-play="${indice}" title="Tocar">▶</button>
       <div class="onda">${barras}</div>
