@@ -49,6 +49,11 @@ daquele aparelho.
 | 📌 Recado fixado | Botão 📌 do lado do balão põe o recado no topo da conversa |
 | 🎂 Aniversários | ⚙️ Ajustes → a lista avisa quantos dias faltam |
 | 🔒 Tranca | ⚙️ Ajustes → senha de 4 números pedida ao abrir |
+| 📞 Ligação de um toque | Botões 📞 e 📹 do topo: toca no aparelho do outro, sem trocar código |
+| ✍️ Está escrevendo | Aparece no topo da conversa, de verdade, pelo banco |
+| ✓ / ✓✓ | Saiu daqui / a pessoa abriu a conversa |
+| 🗑️ Apagar pra todos | Some também no aparelho dos outros ("Este recado foi apagado") |
+| 🆘 Pedido de ajuda | ➕ → alerta com o lugar, com alarme alto que passa por cima do modo soneca |
 | ↩ Responder | Botão ↩ do balão: cita o recado em cima da tua resposta |
 | 🕰️ Cápsula do tempo | ➕ → recado trancado até o dia escolhido |
 | 🗺️ Mandar onde eu estou | ➕ → GPS do aparelho, com link do mapa |

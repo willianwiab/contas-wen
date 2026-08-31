@@ -628,6 +628,41 @@ html[data-tema="escuro"] .passo.aviso{background:#422006;color:#fde68a}
 .quem-sala div{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;background:var(--painel2);border-radius:10px}
 .quem-sala span{color:var(--texto2);font-weight:600}
 .quem-sala i{color:var(--texto2);font-size:.82rem}
+
+/* ===================== ESCREVENDO, VISTO, APAGADO ===================== */
+.escrevendo{font-style:normal;font-weight:700}
+.escrevendo span{animation:pontinho 1.2s infinite}
+.escrevendo span:nth-child(2){animation-delay:.2s}
+.escrevendo span:nth-child(3){animation-delay:.4s}
+@keyframes pontinho{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.tique{font-size:.72rem;font-weight:700;opacity:.75}
+.tique.visto{color:#7dd3fc;opacity:1}
+.msg.eles .tique.visto{color:#0284c7}
+.msg.apagada{opacity:.75;font-style:italic}
+.msg.apagada .txt{font-size:.88rem}
+
+/* ===================== PEDIDO DE AJUDA ===================== */
+.acao-sos{color:#b91c1c;font-weight:800}
+.tela-cheia.sos-tela{background:linear-gradient(160deg,#b91c1c,#7f1d1d);color:#fff;z-index:96;animation:piscaSos 1.2s infinite alternate}
+@keyframes piscaSos{to{filter:brightness(1.25)}}
+.sos-meio{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:26px;text-align:center}
+.sos-sino{font-size:4.5rem;animation:treme .5s infinite}
+.sos-meio h2{font-size:1.6rem;font-weight:900}
+.sos-meio .lig-txt{color:rgba(255,255,255,.92)}
+.sos-meio .lig-bt{background:rgba(255,255,255,.2);color:#fff;border-color:transparent;text-decoration:none}
+.sos-meio .lig-bt.ok{background:#fff;color:#b91c1c}
+.msg.tipo-sos{background:linear-gradient(135deg,#ef4444,#b91c1c)!important;color:#fff!important}
+.sos-balao{display:flex;flex-direction:column;gap:4px;min-width:190px}
+.sos-balao b{font-size:1rem}
+.sos-balao span{font-size:.78rem;opacity:.9}
+
+.tela-cheia.tocando{background:linear-gradient(160deg,#16a34a,#0ea5e9);color:#fff;z-index:97}
+.tela-cheia.tocando h2{font-size:1.6rem;font-weight:800}
+.tela-cheia.tocando .lig-txt{color:rgba(255,255,255,.9)}
+.lig-avatar.tremendo{animation:tremer 1s infinite}
+@keyframes tremer{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.tela-cheia.tocando .lig-bt{background:rgba(255,255,255,.2);color:#fff;border-color:transparent}
+.tela-cheia.tocando .lig-bt.ok{background:#fff;color:#16a34a}
 </style>
 </head>
 <body>
@@ -826,7 +861,7 @@ window.addEventListener('unhandledrejection', function(e){
       <button class="lig-bt" id="btnAtualizar">🔄 Atualizar o site</button>
     </div>
     <p class="sem-lembrete" style="margin-top:8px">Isso joga fora a cópia velha guardada no aparelho e baixa a mais
-    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">22</b>.</p>
+    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">24</b>.</p>
 
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
@@ -837,21 +872,23 @@ window.addEventListener('unhandledrejection', function(e){
 
 <div class="aviso-flutua" id="toast"></div>
 
-<script src="ajuda.js?v=22"></script>
-<script src="jogo.js?v=22"></script>
-<script src="mais.js?v=22"></script>
-<script src="casa.js?v=22"></script>
-<script src="enfeites.js?v=22"></script>
-<script src="nuvem.js?v=22"></script>
-<script src="publico.js?v=22"></script>
-<script src="trancar.js?v=22"></script>
-<script src="audio.js?v=22"></script>
-<script src="video.js?v=22"></script>
-<script src="familia.js?v=22"></script>
-<script src="extras.js?v=22"></script>
-<script src="ligacao.js?v=22"></script>
-<script src="avisos.js?v=22"></script>
-<script src="app.js?v=22"></script>
+<script src="ajuda.js?v=24"></script>
+<script src="jogo.js?v=24"></script>
+<script src="mais.js?v=24"></script>
+<script src="casa.js?v=24"></script>
+<script src="enfeites.js?v=24"></script>
+<script src="nuvem.js?v=24"></script>
+<script src="sinais.js?v=24"></script>
+<script src="chamada.js?v=24"></script>
+<script src="publico.js?v=24"></script>
+<script src="trancar.js?v=24"></script>
+<script src="audio.js?v=24"></script>
+<script src="video.js?v=24"></script>
+<script src="familia.js?v=24"></script>
+<script src="extras.js?v=24"></script>
+<script src="ligacao.js?v=24"></script>
+<script src="avisos.js?v=24"></script>
+<script src="app.js?v=24"></script>
 </body>
 
 </html>

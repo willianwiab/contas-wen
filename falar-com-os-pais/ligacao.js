@@ -121,6 +121,14 @@ function caiu(motivo){
 
 function desligar(){
   clearInterval(relogioLig);
+  /* avisa o outro lado pelo banco (ligação de um toque) */
+  if(typeof chamadaAtual !== 'undefined' && chamadaAtual){
+    const conversa = chamadaAtual.conversa;
+    chamadaAtual = null;
+    pararTelefone();
+    escreverChamada(conversa, { estado:'fim', ts: Date.now() });
+    setTimeout(() => limparChamada(conversa), 3000);
+  }
   try{ pc && pc.close(); }catch(e){}
   pc = null;
   if(meuAudio){ meuAudio.getTracks().forEach(t => t.stop()); meuAudio = null; }

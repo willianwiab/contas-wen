@@ -101,6 +101,12 @@ async function tratarPacote(tipo, corpo){
     salvar(); desenharContatos();
     if(atual === claro.conversa) desenharMensagens();
     atualizarBolinhaDoIcone();
+    if(claro.msg.tipo === 'sos' && !souEu(claro.msg.de)){
+      /* só toca o alarme se for de agora: SOS velho guardado no banco não
+         pode assustar quem abrir o site dias depois */
+      if(Date.now() - claro.msg.ts < 600000) chegouPedidoDeAjuda(claro.msg);
+      return;
+    }
     const p = PESSOAS[claro.msg.de] || PESSOAS.jojo;
     blim(false);
     avisar(`${p.emoji} ${p.nome}`, textoDe(claro.msg), claro.conversa);

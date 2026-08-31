@@ -158,7 +158,8 @@ const textoDe = m =>
   m.tipo === 'capsula' ? '🕰️ cápsula do tempo' :
   m.tipo === 'lugar'   ? '📍 mandou onde está' :
   m.tipo === 'som'     ? '🎺 figurinha de som' :
-  m.tipo === 'timer'   ? '⏱️ cronômetro' : (m.t || '');
+  m.tipo === 'timer'   ? '⏱️ cronômetro' :
+  m.tipo === 'sos'     ? '🆘 PEDIDO DE AJUDA' : (m.t || '');
 const soEmoji = t => { const p = [...t.trim()]; return p.length > 0 && p.length <= 5 && /^(?:\p{Extended_Pictographic}|‍|️|\p{Emoji_Modifier}|\s)+$/u.test(t); };
 
 function diaTexto(ts){
@@ -285,6 +286,7 @@ function abrir(id){
   atual = id; autor = dados.euSou || 'jojo'; buscaMsg = ''; animar = -1;
   dados.visto[id] = Date.now(); salvar();
   atualizarBolinhaDoIcone();
+  avisarQueVi(id);
   $('#app').classList.remove('no-chat');
   desenharContatos(); desenharConversa();
 }
@@ -357,7 +359,8 @@ function desenharConversa(){
       </div>
       <div class="icones">
         <button class="icone" id="btnWalkie" title="Walkie-talkie">📻</button>
-        ${c.id !== 'familia' ? '<button class="icone" id="btnLigar" title="Ligação de voz">📞</button>' : ''}
+        ${c.id !== 'familia' ? '<button class="icone" id="btnLigar" title="Ligar">📞</button>' : ''}
+        ${c.id !== 'familia' ? '<button class="icone" id="btnVideo" title="Videochamada">📹</button>' : ''}
         <button class="icone" id="btnMenu" title="Mais coisas">⋯</button>
         <div class="menu-topo" id="menuTopo">
           <button id="btnBuscaMsg">🔍 Procurar na conversa</button>
@@ -409,7 +412,14 @@ function desenharConversa(){
     $('#menuTopo').classList.toggle('aberto');
   });
   $('#menuTopo').addEventListener('click', () => $('#menuTopo').classList.remove('aberto'));
-  if($('#btnLigar')) $('#btnLigar').addEventListener('click', abrirLigacao);
+  if($('#btnLigar')) $('#btnLigar').addEventListener('click', () => {
+    if(podeChamar()) chamarDeUmToque(atual, false);   // toca no aparelho do outro
+    else abrirLigacao();                              // sem banco: o jeito manual
+  });
+  if($('#btnVideo')) $('#btnVideo').addEventListener('click', () => {
+    if(podeChamar()) chamarDeUmToque(atual, true);
+    else abrirLigacao();
+  });
   ligarBotaoDeEnviar(entrada);
   $('#btnEmoji').addEventListener('click', () => $('#paleta').classList.toggle('aberta'));
   $('#btnMais').addEventListener('click', ev => { ev.stopPropagation(); abrirMaisMenu(); });
@@ -425,7 +435,7 @@ function desenharConversa(){
   document.querySelectorAll('#paleta button').forEach(b =>
     b.addEventListener('click', () => { entrada.value += b.dataset.e; entrada.focus(); crescer(entrada); }));
 
-  entrada.addEventListener('input', () => { crescer(entrada); modoBotao(); });
+  entrada.addEventListener('input', () => { crescer(entrada); modoBotao(); avisarQueEstouEscrevendo(); });
   entrada.addEventListener('keydown', ev => {
     if(ev.key === 'Enter' && !ev.shiftKey){ ev.preventDefault(); enviar(entrada.value); }
   });
@@ -520,6 +530,16 @@ function desenharMensagens(){
     const p = PESSOAS[m.de] || PESSOAS.jojo;
     const eu = souEu(m.de);
     const repetido = m.de === ultimoDe; ultimoDe = m.de;
+    if(m.apagado){
+      return `${sep}
+        <div class="linha-msg ${souEu(m.de) ? 'eu' : 'eles'}" data-i="${real}">
+          <div class="mini-av oculto"></div>
+          <div class="msg ${souEu(m.de) ? 'eu' : 'eles'} apagada">
+            <span class="txt">🗑️ Este recado foi apagado</span>
+            <div class="rodape">${hora(m.ts)}</div>
+          </div>
+        </div>`;
+    }
     const especial = m.tipo && m.tipo !== 'texto';
     const grande = !especial && soEmoji(m.t);
     const corpo = especial
@@ -533,7 +553,8 @@ function desenharMensagens(){
         <div class="mini-av ${repetido ? 'oculto' : ''}" style="background:linear-gradient(135deg,${p.cor},${p.cor}bb)">${avatarDe(m.de)}</div>
         <div class="msg ${eu ? 'eu' : 'eles'} ${grande ? 'emojao' : ''} ${m.tipo ? 'tipo-' + m.tipo : ''}">
           ${nome}${citacaoNoBalao(m)}${corpo}
-          <div class="rodape">${m.editado ? '<i>editado</i> ' : ''}${hora(m.ts)}</div>
+          <div class="rodape">${m.editado ? '<i>editado</i> ' : ''}${hora(m.ts)}${
+          eu ? ` <span class="tique ${foiVisto(atual, m) ? 'visto' : ''}" data-i="${real}">${m.uid ? (foiVisto(atual, m) ? '✓✓' : '✓') : ''}</span>` : ''}</div>
           ${m.r ? `<span class="reacao">${m.r}</span>` : ''}
         </div>
         <div class="ferramentas">
@@ -622,6 +643,7 @@ function enviar(texto){
   const entrada = $('#entrada');
   entrada.value = ''; crescer(entrada);
   $('#paleta').classList.remove('aberta');
+  pareiDeEscrever();
   buscaMsg = ''; const ib = $('#inputBuscaMsg'); if(ib) ib.value = '';
   desenharMensagens(); desenharContatos(); atualizarStatusTopo(); atualizarBolinhaDoIcone();
   modoBotao(); entrada.focus();
@@ -637,13 +659,20 @@ function editarMensagem(i){
   toast('Recadinho arrumado ✏️');
 }
 
-function apagarMensagem(i){
-  if(!confirm('Apagar este recadinho?')) return;
+async function apagarMensagem(i){
   const m = dados.msgs[atual][i];
-  if(m && (m.tipo === 'audio' || m.tipo === 'foto') && m.id) apagarAudio(m.id);
+  if(!m) return;
+  const podeTirarDosOutros = m.uid && souEu(m.de) && podeSinalizar();
+  const pergunta = podeTirarDosOutros
+    ? 'Apagar este recadinho?\n\nOK = apaga pra TODOS (some do aparelho dos outros também)\nCancelar = não apaga'
+    : 'Apagar este recadinho?';
+  if(!confirm(pergunta)) return;
+
+  if(podeTirarDosOutros) await apagarPraTodos(atual, m);
+  if((m.tipo === 'audio' || m.tipo === 'foto' || m.tipo === 'video') && m.id) apagarAudio(m.id);
   dados.msgs[atual].splice(i,1);
   salvar(); desenharMensagens(); desenharContatos();
-  toast('Recadinho apagado 🗑️');
+  toast(podeTirarDosOutros ? 'Apagado pra todos 🗑️' : 'Recadinho apagado 🗑️');
 }
 
 function limparConversa(){
