@@ -381,6 +381,13 @@ function marcarNuvem(estado, detalhe){
     chip.innerHTML = `<span class="bolinha"></span><span>${txt}</span>`;
     chip.title = detalhe || '';
   }
+  /* o rodapé da lista tem que contar a verdade: com o ☁️ ligado os
+     recados saem daqui, e o 🤖 Ajudante sempre fala com a internet. */
+  const rodape = document.getElementById('rodapeLista');
+  if(rodape) rodape.innerHTML = estado === 'ligado'
+    ? '☁️ Os recadinhos viajam pro banco da família, embaralhados.<br>O 🤖 Ajudante fala com a internet; o resto fica aqui.'
+    : '🔒 Os recadinhos ficam guardados só neste aparelho.<br>Só o 🤖 Ajudante fala com a internet.';
+
   const st = document.getElementById('estadoNuvem');
   if(st) st.textContent = {
     desligado:'🔌 Desligado — os recados ficam só neste aparelho',

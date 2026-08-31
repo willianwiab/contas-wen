@@ -60,7 +60,8 @@ function padrao(){
     msgs:{familia:[]}, visto:{familia:0},
     presenca:{jojo:0,pai:0,mae:0,irma:0},
     fotos:{}, tarefas:[], pontos:{jojo:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{}, agenda:[], bicho:{},
-    papel:{}, letra:'normal', voz:false, vozContrario:false, antiPalavrao:true, avisos:false, lembretes:[] };
+    papel:{}, letra:'normal', voz:false, vozContrario:false, antiPalavrao:true, avisos:false, lembretes:[],
+    ia:{ chave:'', modelo:'claude-opus-5' } };
 }
 function carregar(){
   try{
@@ -79,6 +80,7 @@ function carregar(){
     d.papel    = d.papel || {};
     if(!Array.isArray(d.tarefas)) d.tarefas = [];
     if(!Array.isArray(d.lembretes)) d.lembretes = [];
+    d.ia = Object.assign({ chave:'', modelo:'claude-opus-5' }, d.ia);
     if(!bruto) d = migrarV1(d);
     return d;
   }catch(e){ return padrao(); }
@@ -696,7 +698,7 @@ function copiarConversa(){
 function abrirConfig(){
   $('#cfgNome').value = dados.nome;
   $('#cfgAvisos').classList.toggle('on', avisoLigado());
-  desenharQuemSou(); desenharLembretes(); desenharPerfis(); desenharAniversarios(); desenharTranca(); desenharSoneca(); desenharNuvem();
+  desenharQuemSou(); desenharLembretes(); desenharPerfis(); desenharAniversarios(); desenharTranca(); desenharSoneca(); desenharNuvem(); desenharAjustesIA();
   $('#cfgVoz').classList.toggle('on', !!dados.voz);
   $('#cfgVozContrario').classList.toggle('on', !!dados.vozContrario);
   $('#cfgPalavrao').classList.toggle('on', dados.antiPalavrao !== false);
@@ -747,6 +749,7 @@ $('#addLembrete').addEventListener('click', novoLembrete);
 $('#btnTarefas').addEventListener('click', abrirTarefas);
 $('#btnAlbum').addEventListener('click', abrirAlbum);
 $('#btnAgenda').addEventListener('click', abrirAgenda);
+$('#btnIA').addEventListener('click', abrirIA);
 $('#cardBicho').addEventListener('click', abrirBicho);
 $('#btnAjuda').addEventListener('click', abrirAjuda);
 $('#btnTranca').addEventListener('click', mudarTranca);

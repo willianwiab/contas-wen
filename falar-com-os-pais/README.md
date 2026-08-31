@@ -80,6 +80,7 @@ daquele aparelho.
 | 🔔 Avisos e ⏰ lembretes | Notificação de recadinho novo e lembrete de horário |
 | 🔍 📋 🗑️ | Menu ⋯ do topo: procurar, copiar ou apagar a conversa |
 | 🔊 Som e 🌙 Tema | Nos ⚙️ Ajustes |
+| 🤖 Ajudante | Uma IA de verdade (Claude) pra ajudar na lição — cada um usa a própria chave (veja abaixo) |
 
 ## 📞 Sobre a ligação (voz ou vídeo)
 
@@ -95,6 +96,35 @@ Os dois precisam estar com o site aberto **ao mesmo tempo**. No wi-fi de casa qu
 sempre funciona; na internet do celular às vezes os aparelhos não se acham (isso
 precisaria de um servidor TURN, que é pago). Se não conectar, o recadinho de voz e o
 videinho sempre funcionam.
+
+## 🤖 O Ajudante (IA de verdade)
+
+O botão **🤖 Ajudante** na lista abre uma conversa com a **Claude**, da Anthropic — uma
+inteligência artificial de verdade, não um robozinho de respostas prontas. Ela ajuda na
+lição explicando o caminho em vez de entregar a resposta, explica coisa difícil de um
+jeito fácil e dá ideia de brincadeira.
+
+**Por que precisa de uma chave.** IA de verdade cobra por uso, e a cobrança vai pra conta
+de quem for dono da chave. Por isso o site não vem com nenhuma chave dentro: cada pessoa
+cria a sua em `console.anthropic.com` → *API keys* e cola em
+**⚙️ Ajustes → 🤖 Ajudante**.
+
+**Onde a chave fica.** Só no `localStorage` daquele aparelho. Ela **não está no código**
+(este repositório é público), **não vai no 💾 backup** e **não passa pela nuvem da
+família** — sai do aparelho só dentro do pedido pra própria Anthropic. Pra desligar o
+Ajudante, apaga o campo e salva.
+
+**Qual cérebro.** Dá pra escolher `claude-opus-5` (o mais inteligente, padrão) ou
+`claude-haiku-4-5` (bem mais barato). O preço de cada um aparece embaixo da escolha.
+Cada pergunta usa `max_tokens: 1024` e esforço baixo, pra não gastar à toa.
+
+**O que sai do aparelho.** Só o que a pessoa digitar na tela do Ajudante. Ele não lê as
+conversas da família, nem as fotos, nem os áudios. Sem chave, o resto do site funciona
+exatamente igual.
+
+**Como foi feito.** O SDK oficial (`@anthropic-ai/sdk`) é baixado do esm.sh só na primeira
+vez que o Ajudante é usado, com `dangerouslyAllowBrowser: true` — o que aqui é seguro
+porque a chave é do próprio dono do aparelho, não uma chave compartilhada do site.
 
 ## 🔔 O que os avisos conseguem (e o que não conseguem)
 
@@ -151,7 +181,9 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 
 - Textos, enquetes, tarefas, pontos e ajustes: `localStorage` (`fala-familia:v2`).
 - Áudios, vídeos, fotos e fotos de perfil: `IndexedDB` (`fala-familia-audios`).
-- **Nada sai do aparelho** — nem as fotos, nem os vídeos.
+- A chave do 🤖 Ajudante: `localStorage` também, e **só ali** — fora do backup.
+- **Nada sai do aparelho** — nem as fotos, nem os vídeos —, a não ser com o ☁️ ligado ou
+  no que for digitado pro 🤖 Ajudante.
 - Quem usou a primeira versão do site não perde as mensagens antigas.
 
 ## Arquivos
@@ -174,6 +206,9 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 | `ajuda.js` | A tela ❓ Como usar |
 | `ligacao.js` | Ligação de voz e vídeo (WebRTC) |
 | `avisos.js` | Notificações, lembretes e bolinha no ícone |
+| `ia.js` | O 🤖 Ajudante: a IA de verdade, com a chave de quem usa |
+| `sinais.js` | “Está escrevendo”, ✓✓ visto e apagar pra todos |
+| `chamada.js` | Ligação de um toque (o Firebase avisa o outro aparelho) |
 | `sw.js`, `manifest.webmanifest`, ícones | Instalar como aplicativo e abrir sem internet |
 
 ## Independência do resto do repositório

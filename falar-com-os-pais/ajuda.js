@@ -11,7 +11,8 @@ const AJUDA = [
       ['Este aparelho é de você','na primeira vez o site pergunta quem você é; a lista mostra as conversas do seu ponto de vista'],
       ['4 conversas','as três outras pessoas da família + 💜 Família (todo mundo junto)'],
       ['🔍 Procurar conversa','a barrinha lá em cima da lista'],
-      ['✅ Tarefas, 🖼️ Álbum e 📅 Agenda','os três botões coloridos embaixo da lista'],
+      ['✅ Tarefas, 🖼️ Álbum e 📅 Agenda','os botões coloridos embaixo da lista'],
+      ['🤖 Ajudante','uma inteligência artificial de verdade pra ajudar na lição e explicar coisas'],
       ['🐣 O bichinho','o cartãozinho acima dos botões — toca nele pra ver o nível'],
       ['🌙 / ☀️','troca o tema claro e escuro'],
       ['⚙️','abre os ajustes'],
@@ -101,10 +102,27 @@ const AJUDA = [
     ]
   },
   {
+    titulo:'🤖 O Ajudante (a IA)',
+    cor:'#0891b2',
+    itens:[
+      ['O que é','a Claude, uma inteligência artificial de verdade — a mesma que gente grande usa no trabalho'],
+      ['Pra que serve','ajuda na lição explicando o caminho, explica coisa difícil de um jeito fácil, dá ideia de brincadeira e conta curiosidade'],
+      ['Precisa de uma chave','IA de verdade custa dinheiro de quem usa. Cada um cria a sua chave em console.anthropic.com e cola em ⚙️ Ajustes → 🤖 Ajudante'],
+      ['A chave é tua','fica guardada só no teu aparelho. Não vai pro site, nem pro backup, nem pra nuvem da família — quem tem a chave é quem paga o uso'],
+      ['Qual cérebro','dá pra escolher o Opus 5 (o mais inteligente) ou o Haiku 4.5 (o mais barato)'],
+      ['Cuidado','o que tu escrever pro Ajudante vai pra internet, pro computador da Anthropic — diferente dos recados da família. E IA às vezes erra: confere o que for importante'],
+      ['Sem chave','o resto do site funciona igualzinho; só o 🤖 fica esperando'],
+      ['Precisa de internet','o Ajudante só responde online — na primeira vez ele baixa um pedacinho de programa'],
+      ['Ele não lê as conversas','o Ajudante só vê o que tu digitar na tela dele'],
+      ['Custa por uso','cada pergunta gasta uns centavos da chave de quem colou. Quem manda muita pergunta, gasta mais']
+    ]
+  },
+  {
     titulo:'🤔 Coisas importantes de saber',
     cor:'#64748b',
     itens:[
-      ['Tudo fica neste aparelho','nada é enviado pra internet — nem os áudios, nem as fotos. Por isso existe o 💾 backup'],
+      ['Tudo fica neste aparelho','os recados, áudios e fotos só saem daqui se o ☁️ estiver ligado. Por isso existe o 💾 backup'],
+      ['A única coisa que sai sozinha','o que tu escrever pro 🤖 Ajudante vai pra internet, porque é lá que a IA pensa'],
       ['📞 A ligação','os dois precisam estar com o site aberto ao mesmo tempo e trocar o código. No wi-fi quase sempre funciona; no 4G às vezes não conecta'],
       ['🔔 Os avisos','funcionam com o site aberto ou atrás de outro app. Com o celular guardado e o app fechado, não dá (precisaria de servidor)'],
       ['🎤 Microfone e câmera','só funcionam abrindo pelo link (https), não no arquivo solto'],
