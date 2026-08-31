@@ -15,6 +15,7 @@ function conteudoEspecial(m, indice){
   if(m.tipo === 'lugar')   return balaoLugar(m);
   if(m.tipo === 'som')     return balaoSom(m, indice);
   if(m.tipo === 'timer')   return balaoTimer(m, indice);
+  if(m.tipo === 'sos')     return balaoSos(m);
   return `<span class="txt">${escapar(m.t || '')}</span>`;
 }
 
@@ -223,6 +224,7 @@ function abrirMaisMenu(){
     <button data-acao="som">🎺 Figurinhas de som</button>
     <button data-acao="timer">⏱️ Cronômetro</button>
     <button data-acao="codigo">🔤 Código secreto</button>
+    <button data-acao="sos" class="acao-sos">🆘 Preciso de ajuda</button>
     <button data-acao="walkie">📻 Walkie-talkie</button>`;
   document.querySelector('.barra').insertAdjacentElement('beforebegin', menu);
   menu.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
@@ -239,6 +241,7 @@ function abrirMaisMenu(){
     if(a === 'som') abrirSons();
     if(a === 'timer') abrirCronometro();
     if(a === 'codigo') abrirCodigo();
+    if(a === 'sos') pedirAjuda();
     if(a === 'walkie') abrirWalkie();
   }));
   setTimeout(() => document.addEventListener('click', function fora(e){

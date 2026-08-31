@@ -33,7 +33,10 @@ const AJUDA = [
       ['✏️ Editar','arruma o que TU escreveu; fica marcado como “editado”'],
       ['🔊 Ler em voz alta','aparece quando ligado nos ajustes — o celular lê o recado'],
       ['📌 Fixar','põe o recado lá no topo da conversa (o ✕ tira)'],
-      ['📻 e 📞 no topo','walkie-talkie e ligação (só voz ou com vídeo)'],
+      ['📻 📞 📹 no topo','walkie-talkie, ligação e videochamada — agora de UM TOQUE: toca no aparelho do outro, sem código'],
+      ['✍️ Está escrevendo','aparece no topo quando a outra pessoa está digitando'],
+      ['✓ e ✓✓','✓ = saiu daqui; ✓✓ = a pessoa abriu a conversa'],
+      ['🗑️ Apagar','pergunta se é pra apagar pra TODOS — some do aparelho dos outros também'],
       ['⋯ Menu do topo','🔍 procurar, 📋 copiar, 🎨 papel de parede e 🗑️ apagar a conversa'],
       ['🎊 Confete','manda 🎉 🥳 🎂 e cai confete na tela']
     ]
@@ -53,6 +56,7 @@ const AJUDA = [
       ['🗺️ Mandar onde eu estou','usa o GPS e manda o lugar, com botão de ver no mapa'],
       ['🎺 Figurinhas de som','buzina, palmas, tambor, risada, sino, foguete…'],
       ['⏱️ Cronômetro','combina um tempo (2 min de escovar dente) e toca o alarme no fim'],
+      ['🆘 Preciso de ajuda','manda um alerta pra família com o lugar; no aparelho deles toca alarme alto, mesmo no modo soneca'],
       ['🔤 Código secreto','embaralha teu recado na língua do P ou ao contrário']
     ]
   },

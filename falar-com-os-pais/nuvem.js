@@ -154,6 +154,12 @@ async function chegouDaNuvem(pacote, conversaEsperada){
   desenharContatos();
   if(atual === claro.conversa) desenharMensagens();
   atualizarBolinhaDoIcone();
+  if(claro.msg.tipo === 'sos' && !souEu(claro.msg.de)){
+      /* só toca o alarme se for de agora: SOS velho guardado no banco não
+         pode assustar quem abrir o site dias depois */
+      if(Date.now() - claro.msg.ts < 600000) chegouPedidoDeAjuda(claro.msg);
+      return;
+    }
   const p = PESSOAS[claro.msg.de] || PESSOAS.jojo;
   blim(false);
   avisar(`${p.emoji} ${p.nome}`, textoDe(claro.msg), claro.conversa);
@@ -216,6 +222,9 @@ function ligarNuvem(){
   puxarTudo();
   clearInterval(relogioPuxar);
   relogioPuxar = setInterval(puxarTudo, 8000);
+
+  ligarSinais();
+  if(typeof ligarCentral === 'function') ligarCentral();
 
   /* Voltou pra tela ou pra internet? confere na hora. */
   document.addEventListener('visibilitychange', aoVoltar);
@@ -282,6 +291,8 @@ async function quemEstaNaSala(){
 
 function desligarNuvem(){
   desligarPublico();
+  if(typeof desligarSinais === 'function') desligarSinais();
+  if(typeof desligarCentral === 'function') desligarCentral();
   clearInterval(relogioPuxar); clearInterval(relogioAviso);
   fontesNuvem.forEach(f => { try{ f.close(); }catch(e){} });
   fontesNuvem = [];
