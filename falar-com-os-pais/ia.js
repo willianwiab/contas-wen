@@ -46,6 +46,7 @@ function abrirIA(){
     <div class="w-topo" style="background:linear-gradient(135deg,#0f766e,#0891b2)">
       <button class="icone" id="iaFechar">✕</button>
       <div><b>🤖 Ajudante</b><div class="w-sub">uma inteligência artificial de verdade</div></div>
+      <div class="icones"><button class="icone" id="iaHistoria" title="Historinha de dormir">🌙</button></div>
     </div>
     <div class="ia-conversa" id="iaConversa"></div>
     <div class="rapidas" id="iaRapidas">
@@ -61,7 +62,8 @@ function abrirIA(){
       <button class="enviar" id="iaEnviar" title="Perguntar">➤</button>
     </div>`;
   document.body.appendChild(tela);
-  document.getElementById('iaFechar').addEventListener('click', () => tela.remove());
+  document.getElementById('iaFechar').addEventListener('click', () => { pararHistorinha(); tela.remove(); });
+  document.getElementById('iaHistoria').addEventListener('click', contarHistorinha);
   document.getElementById('iaEnviar').addEventListener('click', perguntarPraIA);
   document.getElementById('iaEntrada').addEventListener('keydown', e => {
     if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); perguntarPraIA(); }
@@ -98,6 +100,20 @@ function desenharIA(){
        <p>Posso ajudar na lição, explicar coisas difíceis, dar ideias e contar curiosidades.
        Sou uma inteligência artificial — às vezes erro, então confere as coisas importantes. 😊</p></div>`;
   caixa.scrollTop = caixa.scrollHeight;
+}
+
+/* Pergunta avulsa, sem entrar no histórico da conversa do Ajudante:
+   é o que a 🌙 historinha e o ✍️ "me ajuda a escrever" usam. */
+async function pedirPraIA(pergunta, comoSer, teto){
+  const cliente = await pegarClienteIA();
+  const resposta = await cliente.messages.create({
+    model: (dados.ia && dados.ia.modelo) || 'claude-opus-5',
+    max_tokens: teto || 1024,
+    system: comoSer || COMO_SER,
+    output_config: { effort: 'low' },
+    messages: [{ role:'user', content: pergunta }]
+  });
+  return resposta.content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
 }
 
 async function perguntarPraIA(){
@@ -173,4 +189,132 @@ function salvarIA(){
   clienteIA = null;
   salvar(); desenharAjustesIA();
   toast(chave ? 'Ajudante ligado! 🤖' : 'Chave apagada deste aparelho', 4000);
+}
+
+
+/* =========================================================
+   🌙 HISTORINHA DE DORMIR
+   A IA inventa uma história com os nomes da própria família e
+   o aparelho lê em voz alta.
+   ========================================================= */
+let lendoHistoria = false;
+
+const nomesDaFamilia = () => TODOS.map(p => PESSOAS[p].curto).join(', ');
+
+async function contarHistorinha(){
+  if(!temChaveIA()){ toast('Falta a chave nos ⚙️ Ajustes 🔑', 5000); return; }
+  if(lendoHistoria){ pararHistorinha(); return; }
+
+  const caixa = document.getElementById('iaConversa');
+  const bt = document.getElementById('iaHistoria');
+  conversaIA.push({ role:'user', texto:'🌙 Me conta uma historinha de dormir' });
+  desenharIA();
+  caixa.insertAdjacentHTML('beforeend',
+    `<div class="linha-msg eles" id="iaPensando"><div class="msg eles"><span class="txt">inventando a história<span class="escrevendo"><span>.</span><span>.</span><span>.</span></span></span></div></div>`);
+  caixa.scrollTop = caixa.scrollHeight;
+  if(bt) bt.textContent = '⏳';
+
+  try{
+    const historia = await pedirPraIA(
+      `Inventa uma historinha de dormir curtinha (uns 5 parágrafos) com estes personagens, que são
+       uma família de verdade: ${nomesDaFamilia()}. Uma aventura calma e gostosa, que termine com
+       todo mundo dormindo em paz. Sem susto, sem nada triste. Escreve só a história, sem título
+       e sem comentário no fim.`,
+      COMO_SER + '\nAgora tu é um contador de histórias de dormir. Fala baixinho e devagar.',
+      1400);
+    conversaIA.push({ role:'assistant', texto: historia });
+    falarAHistoria(historia);
+  }catch(e){
+    conversaIA.push({ role:'assistant', texto: explicarErroIA(e) });
+  }
+  const pensando = document.getElementById('iaPensando');
+  if(pensando) pensando.remove();
+  if(bt) bt.textContent = lendoHistoria ? '⏹' : '🌙';
+  desenharIA();
+}
+
+/* Lê em pedaços: história grande de uma vez só faz o celular travar a fala. */
+function falarAHistoria(texto){
+  if(!('speechSynthesis' in window)){ toast('Este aparelho não sabe ler em voz alta 😕', 5000); return; }
+  pararHistorinha();
+  lendoHistoria = true;
+  const bt = document.getElementById('iaHistoria');
+  if(bt) bt.textContent = '⏹';
+
+  const pedacos = texto.split(/(?<=[.!?])\s+/).filter(p => p.trim());
+  pedacos.forEach((pedaco, i) => {
+    const fala = new SpeechSynthesisUtterance(pedaco);
+    fala.lang = 'pt-BR'; fala.rate = .85; fala.pitch = 1.02;   // devagarinho, é hora de dormir
+    if(i === pedacos.length - 1) fala.onend = () => {
+      lendoHistoria = false;
+      const b = document.getElementById('iaHistoria'); if(b) b.textContent = '🌙';
+    };
+    speechSynthesis.speak(fala);
+  });
+  toast('Boa noite! 🌙 Toca no ⏹ pra parar', 5000);
+}
+
+function pararHistorinha(){
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  lendoHistoria = false;
+  const bt = document.getElementById('iaHistoria');
+  if(bt) bt.textContent = '🌙';
+}
+
+/* =========================================================
+   ✍️ ME AJUDA A ESCREVER
+   Pega o que está escrito na caixinha e o Ajudante arruma.
+   Quem escreveu escolhe se usa ou não — nada é mandado sozinho.
+   ========================================================= */
+async function ajudaAEscrever(){
+  const entrada = document.getElementById('entrada');
+  if(!entrada) return;
+  const meu = entrada.value.trim();
+  if(!meu){ toast('Escreve alguma coisa primeiro 😊'); return; }
+  if(!temChaveIA()){ toast('Precisa da chave do Ajudante nos ⚙️ Ajustes 🔑', 5000); return; }
+
+  const bt = document.getElementById('btnEscrever');
+  if(bt){ bt.textContent = '⏳'; bt.disabled = true; }
+  const c = conversaPor(atual);
+
+  try{
+    const pronto = await pedirPraIA(
+      `Arruma este recado que vai pra ${c ? c.nome : 'a família'} num aplicativo de recados.
+       Conserta o português e deixa mais bonitinho, mas guarda o jeito de falar de quem escreveu
+       e o tamanho parecido. Não inventa informação nova. Responde SÓ com o recado arrumado,
+       sem aspas e sem explicação:\n\n${meu}`,
+      'Você arruma recadinhos de família em português do Brasil. Responde só com o recado pronto.',
+      400);
+    mostrarSugestao(meu, pronto);
+  }catch(e){
+    toast(explicarErroIA(e), 6000);
+  }
+  if(bt){ bt.textContent = '✨'; bt.disabled = false; }
+}
+
+function mostrarSugestao(meu, pronto){
+  const antigo = document.getElementById('telaSugestao');
+  if(antigo) antigo.remove();
+  const tela = document.createElement('div');
+  tela.className = 'fundo-modal aberto'; tela.id = 'telaSugestao';
+  tela.innerHTML = `
+    <div class="modal">
+      <h2>✍️ Que tal assim?</h2>
+      <p class="sub">Tu escolhe: nada é mandado sem tu mandar.</p>
+      <div class="sug-caixa antes"><b>O teu</b><span>${escapar(meu)}</span></div>
+      <div class="sug-caixa depois"><b>Arrumado</b><span>${escapar(pronto)}</span></div>
+      <div class="acoes">
+        <button class="btn neutro" id="sugNao">Deixar o meu</button>
+        <button class="btn principal" id="sugSim">Usar esse ✨</button>
+      </div>
+    </div>`;
+  document.body.appendChild(tela);
+  tela.addEventListener('click', e => { if(e.target.id === 'telaSugestao') tela.remove(); });
+  document.getElementById('sugNao').addEventListener('click', () => tela.remove());
+  document.getElementById('sugSim').addEventListener('click', () => {
+    const entrada = document.getElementById('entrada');
+    entrada.value = pronto; crescer(entrada); entrada.focus();
+    tela.remove();
+    toast('Pronto! Agora é só mandar 😊');
+  });
 }

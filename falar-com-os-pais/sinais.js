@@ -83,6 +83,9 @@ async function lerSinais(){
     });
     if(mudou){ salvar(); if(atual) desenharMensagens(); desenharContatos(); }
 
+    /* 💭 os recados do dia dos outros vêm no mesmo pacote */
+    if(typeof receberRecados === 'function') await receberRecados(tudo.recados);
+
     mostrarQuemEstaEscrevendo();
     if(atual) atualizarTiquinhos();
   }catch(e){}
@@ -114,8 +117,10 @@ function atualizarTiquinhos(){
     const m = dados.msgs[atual] && dados.msgs[atual][+el.dataset.i];
     if(!m) return;
     const visto = foiVisto(atual, m);
-    el.textContent = m.uid ? (visto ? '✓✓' : '✓') : '';
-    el.classList.toggle('visto', visto);
+    el.textContent = m.pendente ? '⏳' : (m.uid ? (visto ? '✓✓' : '✓') : '');
+    el.classList.toggle('visto', visto && !m.pendente);
+    el.classList.toggle('esperando', !!m.pendente);
+    el.title = m.pendente ? 'esperando a internet voltar' : '';
   });
 }
 
@@ -124,6 +129,7 @@ function ligarSinais(){
   clearInterval(relogioSinais);
   if(!podeSinalizar()) return;
   lerSinais();
+  if(typeof lembrarMeuRecado === 'function') lembrarMeuRecado();   // 💭 o meu volta pro banco
   relogioSinais = setInterval(() => { if(!document.hidden) lerSinais(); }, 3000);
 }
 function desligarSinais(){ clearInterval(relogioSinais); }

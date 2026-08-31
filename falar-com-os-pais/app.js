@@ -61,7 +61,7 @@ function padrao(){
     presenca:{jojo:0,pai:0,mae:0,irma:0},
     fotos:{}, tarefas:[], pontos:{jojo:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{}, agenda:[], bicho:{},
     papel:{}, letra:'normal', voz:false, vozContrario:false, antiPalavrao:true, avisos:false, lembretes:[],
-    ia:{ chave:'', modelo:'claude-opus-5' } };
+    ia:{ chave:'', modelo:'claude-opus-5' }, recados:{} };
 }
 function carregar(){
   try{
@@ -81,6 +81,7 @@ function carregar(){
     if(!Array.isArray(d.tarefas)) d.tarefas = [];
     if(!Array.isArray(d.lembretes)) d.lembretes = [];
     d.ia = Object.assign({ chave:'', modelo:'claude-opus-5' }, d.ia);
+    d.recados = d.recados || {};
     if(!bruto) d = migrarV1(d);
     return d;
   }catch(e){ return padrao(); }
@@ -153,7 +154,7 @@ const escapar = t => t.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&g
 const hora = ts => new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 /* Mensagem de voz não tem texto: mostra um resuminho no lugar. */
 const textoDe = m =>
-  m.tipo === 'audio'   ? `🎤 recadinho de voz (${(m.dur||0).toFixed(1)}s)` :
+  m.tipo === 'audio'   ? `${m.recadoDeVoz ? '📵 recado de quem ligou' : '🎤 recadinho de voz'} (${(m.dur||0).toFixed(1)}s)` :
   m.tipo === 'foto'    ? '📷 foto' :
   m.tipo === 'enquete' ? `📊 ${m.q}` :
   m.tipo === 'jogo'    ? '🕹️ jogo da velha' :
@@ -280,6 +281,8 @@ function desenharContatos(){
     }).join('') || `<div style="padding:20px;text-align:center;color:var(--texto2);font-size:.88rem">Nada com esse nome 🤷</div>`;
 
   document.querySelectorAll('.contato').forEach(b => b.addEventListener('click', () => abrir(b.dataset.id)));
+  desenharRecadosDoDia();
+  avisarDaFila();
   desenharBicho();   // o bichinho acompanha o movimento da família
 }
 
@@ -385,6 +388,7 @@ function desenharConversa(){
         <button class="emoji-btn" id="btnMais" title="Foto, enquete e mais">➕</button>
         <button class="emoji-btn" id="btnEmoji" title="Emojis">😀</button>
         <textarea id="entrada" rows="1" placeholder="Escreve teu recadinho..."></textarea>
+        <button class="emoji-btn escrever escondido" id="btnEscrever" title="O Ajudante arruma o recado">✨</button>
       </div>
       <button class="enviar mic" id="btnEnviar" title="Segura pra gravar">🎤</button>
     </div>
@@ -424,6 +428,7 @@ function desenharConversa(){
   });
   ligarBotaoDeEnviar(entrada);
   $('#btnEmoji').addEventListener('click', () => $('#paleta').classList.toggle('aberta'));
+  $('#btnEscrever').addEventListener('click', ajudaAEscrever);
   $('#btnMais').addEventListener('click', ev => { ev.stopPropagation(); abrirMaisMenu(); });
   $('#btnBuscaMsg').addEventListener('click', () => {
     const b = $('#barraBusca'); b.classList.toggle('aberta');
@@ -469,6 +474,9 @@ function modoBotao(){
   bt.textContent = temTexto ? '➤' : '🎤';
   bt.classList.toggle('mic', !temTexto);
   bt.title = temTexto ? 'Enviar' : 'Segura pra gravar';
+  /* o ✨ só aparece quando há o que arrumar e o Ajudante tem chave */
+  const ajuda = $('#btnEscrever');
+  if(ajuda) ajuda.classList.toggle('escondido', !(temTexto && temChaveIA()));
 }
 
 function ligarBotaoDeEnviar(entrada){
@@ -556,7 +564,8 @@ function desenharMensagens(){
         <div class="msg ${eu ? 'eu' : 'eles'} ${grande ? 'emojao' : ''} ${m.tipo ? 'tipo-' + m.tipo : ''}">
           ${nome}${citacaoNoBalao(m)}${corpo}
           <div class="rodape">${m.editado ? '<i>editado</i> ' : ''}${hora(m.ts)}${
-          eu ? ` <span class="tique ${foiVisto(atual, m) ? 'visto' : ''}" data-i="${real}">${m.uid ? (foiVisto(atual, m) ? '✓✓' : '✓') : ''}</span>` : ''}</div>
+          eu ? ` <span class="tique ${m.pendente ? 'esperando' : (foiVisto(atual, m) ? 'visto' : '')}" data-i="${real}" title="${m.pendente ? 'esperando a internet voltar' : ''}">${
+            m.pendente ? '⏳' : (m.uid ? (foiVisto(atual, m) ? '✓✓' : '✓') : '')}</span>` : ''}</div>
           ${m.r ? `<span class="reacao">${m.r}</span>` : ''}
         </div>
         <div class="ferramentas">

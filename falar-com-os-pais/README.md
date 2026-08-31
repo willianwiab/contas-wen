@@ -81,6 +81,11 @@ daquele aparelho.
 | 🔍 📋 🗑️ | Menu ⋯ do topo: procurar, copiar ou apagar a conversa |
 | 🔊 Som e 🌙 Tema | Nos ⚙️ Ajustes |
 | 🤖 Ajudante | Uma IA de verdade (Claude) pra ajudar na lição — cada um usa a própria chave (veja abaixo) |
+| 🌙 Historinha de dormir | O Ajudante inventa uma história com os nomes da família e o aparelho lê em voz alta |
+| ✨ Me ajuda a escrever | Na caixinha de escrever: o Ajudante arruma o recado, quem escreveu decide se usa |
+| 💭 Recado do dia | Uma frase curta de cada um ("tô na escola 🏫") na fileirinha em cima das conversas |
+| 📶 Fila de espera | Recado escrito sem internet sai sozinho quando ela volta |
+| 📞 Recado de voz | Ligou e ninguém atendeu? Dá pra deixar um áudio na conversa |
 
 ## 📞 Sobre a ligação (voz ou vídeo)
 
@@ -125,6 +130,31 @@ exatamente igual.
 **Como foi feito.** O SDK oficial (`@anthropic-ai/sdk`) é baixado do esm.sh só na primeira
 vez que o Ajudante é usado, com `dangerouslyAllowBrowser: true` — o que aqui é seguro
 porque a chave é do próprio dono do aparelho, não uma chave compartilhada do site.
+
+## 💭 Recado do dia
+
+Uma frase curtinha de cada pessoa, mostrada numa fileirinha de cartões acima das conversas.
+Vale **12 horas** e some sozinha depois — um "tô na escola" de terça não pode continuar
+valendo na quinta. Viaja **embaralhada** pelo mesmo cantinho dos sinais
+(`salas/<sala>/sinais/recados/<pessoa>`), então o banco guarda mas não entende. Sem o ☁️
+ligado, funciona igual — só não sai do aparelho.
+
+## 📶 A fila de espera
+
+Recado escrito sem internet (ou quando o banco não respondeu) fica marcado como `pendente`:
+ele **aparece na conversa com um ⏳** e um chip no topo diz quantos estão esperando. Assim que
+a internet volta — pelo evento `online` ou na conferida de 8 em 8 segundos — a fila é solta na
+ordem e o ⏳ vira ✓. Nada é reenviado duas vezes: cada recado tem o seu `uid`.
+
+Isso só vale com o ☁️ ligado. Sem nuvem, o recado sempre foi e continua sendo só deste
+aparelho — não há fila porque não há pra onde mandar.
+
+## 📞 Recado de voz de quem não atendeu
+
+Se a ligação de um toque estourar o tempo (45 s) ou a pessoa recusar, em vez de só avisar
+"ninguém atendeu" o site oferece **gravar um áudio ali mesmo**. Ele entra na conversa daquela
+pessoa marcado como `recadoDeVoz`, aparece com a etiqueta *"📵 ligou e tu não atendeu"* e
+viaja pela nuvem como qualquer outro áudio.
 
 ## 🔔 O que os avisos conseguem (e o que não conseguem)
 
@@ -206,7 +236,8 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 | `ajuda.js` | A tela ❓ Como usar |
 | `ligacao.js` | Ligação de voz e vídeo (WebRTC) |
 | `avisos.js` | Notificações, lembretes e bolinha no ícone |
-| `ia.js` | O 🤖 Ajudante: a IA de verdade, com a chave de quem usa |
+| `ia.js` | O 🤖 Ajudante: a IA de verdade, a 🌙 historinha e o ✨ me ajuda a escrever |
+| `recado.js` | O 💭 recado do dia de cada um |
 | `sinais.js` | “Está escrevendo”, ✓✓ visto e apagar pra todos |
 | `chamada.js` | Ligação de um toque (o Firebase avisa o outro aparelho) |
 | `sw.js`, `manifest.webmanifest`, ícones | Instalar como aplicativo e abrir sem internet |
