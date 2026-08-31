@@ -200,7 +200,10 @@ async function exportarTudo(){
     const blob = await pegarAudio(id);
     if(blob) arquivos[id] = await blobParaTexto(blob);
   }
-  const pacote = { app:'fala-familia', versao:2, quando:new Date().toISOString(), dados, arquivos };
+  /* a chave da IA é segredo de quem paga por ela: nunca vai junto no arquivo,
+     que pode acabar num grupo de zap ou num pendrive esquecido. */
+  const semSegredo = Object.assign({}, dados, { ia: Object.assign({}, dados.ia, { chave:'' }) });
+  const pacote = { app:'fala-familia', versao:2, quando:new Date().toISOString(), dados: semSegredo, arquivos };
   const blob = new Blob([JSON.stringify(pacote)], { type:'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -226,7 +229,10 @@ function importarTudo(){
         const blob = await (await fetch(texto)).blob();
         await guardarAudio(id, blob);
       }
-      localStorage.setItem(CHAVE, JSON.stringify(pacote.dados));
+      /* o backup nunca traz chave de IA; a deste aparelho continua valendo. */
+      const vindo = pacote.dados || {};
+      vindo.ia = Object.assign({}, vindo.ia, { chave: (dados.ia && dados.ia.chave) || '' });
+      localStorage.setItem(CHAVE, JSON.stringify(vindo));
       toast('Pronto! Abrindo de novo... 🎉');
       setTimeout(() => location.reload(), 900);
     }catch(e){ toast('Esse arquivo não é um backup do Fala, Família 😕', 5000); }
