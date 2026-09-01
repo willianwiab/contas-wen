@@ -160,6 +160,22 @@ async function mandarPraNuvem(conversa, msg){
   }
 }
 
+/* ---------- mandar de novo um recado que mudou ----------
+   Jogo da velha, reação e voto de enquete mexem num recado que JÁ foi
+   mandado. Sem isto eles ficavam só no aparelho de quem mexeu — o jogo
+   simplesmente não aparecia pros outros. Como cada recado tem o seu uid
+   e o banco guarda por uid, mandar de novo é só sobrescrever. O contador
+   `v` diz qual versão é a mais nova, pra dois aparelhos mexendo quase
+   junto não voltarem no tempo. */
+async function atualizarNaNuvem(conversa, msg){
+  if(!nuvemLigada() || !msg) return;
+  msg.v = (msg.v || 0) + 1;
+  const eraDaNuvem = msg.naNuvem;
+  delete msg.naNuvem;                 // senão o envio se recusa a sair
+  try{ await mandarPraNuvem(conversa, msg); }
+  finally{ if(eraDaNuvem) msg.naNuvem = true; }
+}
+
 /* ---------- receber ---------- */
 /* Recados que já passaram por aqui (ou estão a caminho): a escuta e a
    conferida periódica correm juntas, e sem isto o mesmo recado entrava duas
@@ -170,7 +186,15 @@ const emAndamento = new Set();
 async function guardarRecebido(conversa, msg){
   if(!dados.msgs[conversa]) return false;
   if(msg.uid && emAndamento.has(msg.uid)) return false;                          // já está entrando
-  if(dados.msgs[conversa].some(m => m.uid && m.uid === msg.uid)) return false;   // já tenho
+  const tenho = msg.uid && dados.msgs[conversa].find(m => m.uid === msg.uid);
+  if(tenho){
+    /* já tenho este recado: só interessa se veio uma versão mais nova
+       (uma jogada, uma reação, um voto) */
+    if((msg.v || 0) <= (tenho.v || 0)) return false;
+    Object.keys(tenho).forEach(k => { if(k !== 'naNuvem') delete tenho[k]; });
+    Object.assign(tenho, msg, { naNuvem: true });
+    return true;
+  }
   if(msg.uid) emAndamento.add(msg.uid);
   try{
 
@@ -307,8 +331,11 @@ async function puxarTudo(forcado){
       if(!tudo) continue;
       marcarNuvem('ligado');
       for(const [chave, pacote] of Object.entries(tudo)){
-        if(jaVistos.has(chave)) continue;        // já cuidei deste
-        jaVistos.add(chave);
+        /* o iv muda toda vez que o recado é embaralhado de novo, então
+           uma versão nova do MESMO recado não é pulada por engano */
+        const marca = chave + ':' + (pacote && pacote.iv || '');
+        if(jaVistos.has(marca)) continue;        // já cuidei desta versão
+        jaVistos.add(marca);
         await chegouDaNuvem(pacote, c.id);
       }
     }catch(e){ marcarNuvem('erro', 'sem conexão com o banco'); }

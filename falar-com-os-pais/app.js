@@ -61,7 +61,8 @@ function padrao(){
     presenca:{jojo:0,pai:0,mae:0,irma:0},
     fotos:{}, tarefas:[], pontos:{jojo:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{}, agenda:[], bicho:{},
     papel:{}, letra:'normal', voz:false, vozContrario:false, antiPalavrao:true, avisos:false, lembretes:[],
-    ia:{ chave:'', modelo:'claude-opus-5' }, recados:{} };
+    ia:{ chave:'', modelo:'claude-opus-5' }, recados:{},
+    humor:{}, livros:[], cartoes:{}, tempo:null };
 }
 function carregar(){
   try{
@@ -82,6 +83,9 @@ function carregar(){
     if(!Array.isArray(d.lembretes)) d.lembretes = [];
     d.ia = Object.assign({ chave:'', modelo:'claude-opus-5' }, d.ia);
     d.recados = d.recados || {};
+    d.humor   = d.humor   || {};
+    d.cartoes = d.cartoes || {};
+    if(!Array.isArray(d.livros)) d.livros = [];
     if(!bruto) d = migrarV1(d);
     return d;
   }catch(e){ return padrao(); }
@@ -370,6 +374,8 @@ function desenharConversa(){
         <div class="menu-topo" id="menuTopo">
           <button id="btnBuscaMsg">🔍 Procurar na conversa</button>
           <button id="btnCopiar">📋 Copiar a conversa</button>
+          <button id="btnQuadro">🎨 Quadro ao vivo</button>
+          <button id="btnTraduzir">🗣️ Mandar em outra língua</button>
           <button id="btnPapel">🎨 Papel de parede</button>
           <button id="btnLimpar">🗑️ Apagar a conversa</button>
         </div>
@@ -412,6 +418,8 @@ function desenharConversa(){
   $('#btnLimpar').addEventListener('click', limparConversa);
   $('#btnCopiar').addEventListener('click', copiarConversa);
   $('#btnPapel').addEventListener('click', abrirPapeis);
+  $('#btnQuadro').addEventListener('click', abrirQuadro);
+  $('#btnTraduzir').addEventListener('click', abrirTradutor);
   $('#btnWalkie').addEventListener('click', abrirWalkie);
   $('#btnMenu').addEventListener('click', ev => {
     ev.stopPropagation();
@@ -603,6 +611,21 @@ function desenharMensagens(){
       const [i, casa] = b.dataset.jogo.split(':').map(Number);
       jogar(i, casa);
     }));
+  caixa.querySelectorAll('[data-ppt]').forEach(b =>
+    b.addEventListener('click', () => {
+      const [i, mao] = b.dataset.ppt.split(':');
+      escolherMao(+i, mao);
+    }));
+  caixa.querySelectorAll('[data-forca]').forEach(b =>
+    b.addEventListener('click', () => {
+      const [i, letra] = b.dataset.forca.split(':');
+      chutarLetra(+i, letra);
+    }));
+  caixa.querySelectorAll('[data-mapa]').forEach(b =>
+    b.addEventListener('click', () => {
+      const m = dados.msgs[atual][+b.dataset.mapa];
+      if(m && m.lugar) window.open(`https://www.openstreetmap.org/?mlat=${m.lugar.lat}&mlon=${m.lugar.lon}#map=17/${m.lugar.lat}/${m.lugar.lon}`, '_blank');
+    }));
   caixa.querySelectorAll('[data-play]').forEach(b =>
     b.addEventListener('click', () => tocarAudio(+b.dataset.play)));
   caixa.querySelectorAll('[data-efeito]').forEach(b =>
@@ -633,7 +656,7 @@ function reagir(i, emoji){
   const m = dados.msgs[atual][i];
   if(!m) return;
   m.r = (m.r === emoji) ? null : emoji;
-  salvar(); desenharMensagens();
+  salvar(); atualizarNaNuvem(atual, m); desenharMensagens();
 }
 
 /* ---------- ações ---------- */
@@ -759,6 +782,11 @@ $('#btnTarefas').addEventListener('click', abrirTarefas);
 $('#btnAlbum').addEventListener('click', abrirAlbum);
 $('#btnAgenda').addEventListener('click', abrirAgenda);
 $('#btnIA').addEventListener('click', abrirIA);
+$('#btnPlacar').addEventListener('click', abrirPlacar);
+$('#btnHumor').addEventListener('click', abrirHumor);
+$('#btnLivros').addEventListener('click', abrirEstante);
+$('#btnCartao').addEventListener('click', abrirCartoes);
+$('#btnRetro').addEventListener('click', abrirRetrospectiva);
 $('#cardBicho').addEventListener('click', abrirBicho);
 $('#btnAjuda').addEventListener('click', abrirAjuda);
 $('#btnTranca').addEventListener('click', mudarTranca);
@@ -858,6 +886,7 @@ aplicarTema(); aplicarLetra(); saudacao(); verInternet(); desenharContatos(); te
 carregarPerfis().then(() => { desenharContatos(); if(atual) desenharConversa(); });
 verLembretes(true); atualizarBolinhaDoIcone(); mostrarAniversario(); mostrarProximo();
 verCapsulas(); verAgenda(); desenharBicho(); pedirTranca();
+verOTempo();                                  // ⛅ leva casaco hoje?
 if(nuvemLigada()) ligarNuvem();
 if(!dados.euSou){
   perguntarQuemSou();                         // primeira vez: de quem é este aparelho?

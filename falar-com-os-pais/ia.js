@@ -318,3 +318,71 @@ function mostrarSugestao(meu, pronto){
     toast('Pronto! Agora é só mandar 😊');
   });
 }
+
+
+/* =========================================================
+   🗣️ TRADUZIR O RECADO
+   Escreve em português e manda em outra língua.
+   ========================================================= */
+const LINGUAS = [
+  { id:'inglês',   emoji:'🇺🇸', nome:'Inglês' },
+  { id:'espanhol', emoji:'🇪🇸', nome:'Espanhol' },
+  { id:'francês',  emoji:'🇫🇷', nome:'Francês' },
+  { id:'italiano', emoji:'🇮🇹', nome:'Italiano' },
+  { id:'alemão',   emoji:'🇩🇪', nome:'Alemão' },
+  { id:'japonês',  emoji:'🇯🇵', nome:'Japonês' }
+];
+
+function abrirTradutor(){
+  const entrada = document.getElementById('entrada');
+  const meu = entrada ? entrada.value.trim() : '';
+  if(!meu){ toast('Escreve o recado primeiro 😊'); return; }
+  if(!temChaveIA()){ toast('Precisa da chave do Ajudante nos ⚙️ Ajustes 🔑', 5000); return; }
+  if(document.getElementById('telaTraduzir')) return;
+
+  const tela = document.createElement('div');
+  tela.className = 'fundo-modal aberto'; tela.id = 'telaTraduzir';
+  tela.innerHTML = `
+    <div class="modal">
+      <h2>🗣️ Mandar em outra língua</h2>
+      <p class="sub">O Ajudante traduz e põe na caixinha. Tu que manda, como sempre.</p>
+      <div class="sug-caixa antes"><b>O teu recado</b><span>${escapar(meu)}</span></div>
+      <div class="tr-linguas">
+        ${LINGUAS.map(l => `<button class="rapida" data-lingua="${l.id}">${l.emoji} ${l.nome}</button>`).join('')}
+      </div>
+      <div id="trSaida"></div>
+      <div class="acoes"><button class="btn neutro" id="trFechar">Fechar</button></div>
+    </div>`;
+  document.body.appendChild(tela);
+  tela.addEventListener('click', e => { if(e.target.id === 'telaTraduzir') tela.remove(); });
+  document.getElementById('trFechar').addEventListener('click', () => tela.remove());
+  tela.querySelectorAll('[data-lingua]').forEach(b =>
+    b.addEventListener('click', () => traduzirPara(meu, b.dataset.lingua, b)));
+}
+
+async function traduzirPara(texto, lingua, botao){
+  const saida = document.getElementById('trSaida');
+  if(!saida) return;
+  const antes = botao.textContent;
+  botao.textContent = '⏳'; botao.disabled = true;
+  saida.innerHTML = '<div class="sug-caixa depois"><b>Traduzindo</b><span>um instantinho...</span></div>';
+  try{
+    const pronto = await pedirPraIA(
+      `Traduz este recado de família para ${lingua}. Responde SÓ com a tradução, sem aspas,
+       sem explicação e sem o texto original:\n\n${texto}`,
+      'Você traduz recadinhos de família. Responde só com a tradução, mantendo o jeito carinhoso e os emojis.',
+      400);
+    saida.innerHTML = `
+      <div class="sug-caixa depois"><b>Em ${lingua}</b><span>${escapar(pronto)}</span></div>
+      <div class="lig-botoes" style="margin:0"><button class="lig-bt ok" id="trUsar">Pôr na caixinha ✨</button></div>`;
+    document.getElementById('trUsar').addEventListener('click', () => {
+      const entrada = document.getElementById('entrada');
+      entrada.value = pronto; crescer(entrada); entrada.focus();
+      document.getElementById('telaTraduzir')?.remove();
+      toast('Pronto! Agora é só mandar 😊');
+    });
+  }catch(e){
+    saida.innerHTML = `<div class="sug-caixa antes"><b>Deu erro</b><span>${escapar(explicarErroIA(e))}</span></div>`;
+  }
+  botao.textContent = antes; botao.disabled = false;
+}

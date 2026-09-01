@@ -521,6 +521,163 @@ body.trancado .app{filter:blur(14px)}
 .atalhos{flex-wrap:wrap}
 .atalhos button{flex:1 1 44%}
 
+/* ---- ⛅ o tempo ---- */
+.card-tempo{display:flex;align-items:center;gap:12px;margin:0 10px 12px;padding:11px 14px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(14,165,233,.14),rgba(124,58,237,.12));border:1.5px solid var(--borda)}
+.card-tempo .tempo-agora{font-size:1.5rem;white-space:nowrap}
+.card-tempo .tempo-agora b{font-size:1.15rem}
+.card-tempo .tempo-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.card-tempo .tempo-txt b{font-size:.85rem}
+.card-tempo .tempo-txt small{font-size:.72rem;color:var(--texto2)}
+
+/* ---- ✋ pedra, papel e tesoura ---- */
+.jogo.ppt .ppt-maos{display:flex;gap:10px;justify-content:center;margin:10px 0}
+.ppt-mao{width:58px;height:58px;border-radius:18px;background:var(--painel2);font-size:1.8rem;
+  border:2px solid var(--borda);transition:transform .12s,border-color .15s}
+.ppt-mao:hover{transform:translateY(-3px) scale(1.06);border-color:var(--roxo)}
+.ppt-segredo{text-align:center;font-size:1.6rem;margin:10px 0}
+.ppt-fim{display:flex;align-items:center;justify-content:center;gap:12px;margin:10px 0}
+.ppt-lado{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:14px;
+  border:2px solid transparent}
+.ppt-lado span{font-size:2rem}
+.ppt-lado b{font-size:.72rem;color:var(--texto2)}
+.ppt-lado.venceu{border-color:#22c55e;background:rgba(34,197,94,.12)}
+.ppt-x{font-weight:800;color:var(--texto2)}
+
+/* ---- 🎯 forca ---- */
+.jogo.forca .forca-boneco{text-align:center;font-size:1rem;letter-spacing:.1em;margin:6px 0}
+.forca-palavra{text-align:center;font-size:1.35rem;font-weight:800;letter-spacing:.22em;margin:8px 0;word-break:break-all}
+.forca-dica{text-align:center;font-size:.78rem;color:var(--texto2);margin-bottom:8px}
+.forca-teclado{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0}
+.forca-letra{padding:7px 0;border-radius:9px;background:var(--painel2);font-weight:800;font-size:.82rem;
+  border:1.5px solid transparent}
+.forca-letra.certa{background:rgba(34,197,94,.22);border-color:#22c55e}
+.forca-letra.errada{background:rgba(239,68,68,.18);border-color:#ef4444;opacity:.6}
+
+/* ---- 🧩 quebra-cabeça ---- */
+.qb-meio{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.qb-tam{display:flex;gap:8px}
+.qb-tabuleiro{display:grid;gap:3px;width:min(92vw,420px);aspect-ratio:1;background:var(--borda);
+  padding:3px;border-radius:14px;box-shadow:var(--sombra2)}
+.qb-peca{border-radius:6px;background-repeat:no-repeat;transition:transform .1s,outline .1s;outline:0 solid var(--roxo)}
+.qb-peca.escolhida{outline:4px solid var(--roxo);transform:scale(.93);z-index:2}
+.qb-recado{font-weight:800;font-size:.95rem;color:var(--texto2)}
+.qb-recado.pronto{color:#16a34a;font-size:1.1rem}
+
+/* ---- 🚸 cheguei / 🚗 tô indo ---- */
+.ch-meio{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:14px}
+.ch-botoes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ch-bt{padding:18px 8px;border-radius:18px;background:var(--painel);border:2px solid var(--borda);
+  display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:800;font-size:.82rem;
+  box-shadow:var(--sombra);transition:transform .12s,border-color .15s}
+.ch-bt span{font-size:2rem}
+.ch-bt:hover{transform:translateY(-3px);border-color:#16a34a}
+.cheguei-balao,.indo-balao{display:flex;align-items:center;gap:11px;padding:4px 2px}
+.ch-emoji{font-size:2rem;flex-shrink:0}
+.ch-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ch-txt b{font-size:.92rem}
+.ch-txt small{font-size:.72rem;opacity:.75}
+.ch-mapa{background:rgba(255,255,255,.22);border-radius:11px;padding:7px 10px;font-size:.72rem;font-weight:800;
+  white-space:nowrap}
+.msg.eles .ch-mapa{background:var(--painel2)}
+.indo-balao.chegou .ch-emoji{animation:flutua 2s ease-in-out infinite}
+
+/* ---- 🎨 quadro ao vivo ---- */
+.qd-meio{flex:1;display:grid;place-items:center;padding:10px;min-height:0;background:var(--painel2)}
+#qdTela{width:min(94vw,min(94vw,70vh));height:auto;aspect-ratio:1;border-radius:16px;box-shadow:var(--sombra2);
+  touch-action:none;cursor:crosshair;background:#fff}
+.qd-barra{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px calc(14px + env(safe-area-inset-bottom,0px));
+  background:var(--painel);border-top:1px solid var(--borda);flex-wrap:wrap}
+.qd-cores{display:flex;gap:7px;flex-wrap:wrap}
+.qd-cor{width:32px;height:32px;border-radius:50%;border:3px solid transparent;box-shadow:var(--sombra)}
+.qd-cor.on{border-color:var(--roxo);transform:scale(1.12)}
+.qd-tam{display:flex;gap:7px}
+.qd-grossura{width:38px;height:32px;border-radius:11px;background:var(--painel2);display:grid;place-items:center;
+  border:2px solid transparent}
+.qd-grossura.on{border-color:var(--roxo)}
+.qd-grossura span{background:var(--texto);border-radius:50%;display:block}
+
+/* ---- 📊 placar ---- */
+.pl-meio{flex:1;overflow-y:auto;padding:16px}
+.pl-linha{display:grid;grid-template-columns:38px 1fr 52px;grid-template-areas:"av barra conta" "av nome conta";
+  gap:4px 10px;align-items:center;margin-bottom:12px}
+.pl-av{grid-area:av;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;
+  font-size:1.1rem;overflow:hidden}
+.pl-av img{width:100%;height:100%;object-fit:cover}
+.pl-barra-fora{grid-area:barra;height:16px;background:var(--painel2);border-radius:9px;overflow:hidden}
+.pl-barra{height:100%;border-radius:9px;transition:width .5s}
+.pl-conta{grid-area:conta;text-align:right;display:flex;flex-direction:column;line-height:1.1}
+.pl-conta b{font-size:1rem}
+.pl-conta small{font-size:.68rem;color:var(--texto2)}
+.pl-nome{grid-area:nome;font-size:.74rem;color:var(--texto2);font-weight:700}
+.pl-medalhas{display:flex;flex-direction:column;gap:8px}
+.pl-medalha{display:flex;align-items:center;gap:11px;background:var(--painel);border-radius:14px;padding:10px 13px;
+  box-shadow:var(--sombra)}
+.pl-md-emoji{font-size:1.7rem}
+.pl-md-txt{display:flex;flex-direction:column}
+.pl-md-txt b{font-size:.88rem}
+.pl-md-txt small{font-size:.74rem;color:var(--texto2)}
+
+/* ---- 🌡️ humor ---- */
+.hu-meio{flex:1;overflow-y:auto;padding:16px}
+.hu-escolhas{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:9px}
+.hu-bt{padding:13px 6px;border-radius:16px;background:var(--painel);border:2px solid var(--borda);
+  display:flex;flex-direction:column;align-items:center;gap:5px;font-size:.76rem;font-weight:800;box-shadow:var(--sombra)}
+.hu-bt span{font-size:1.7rem}
+.hu-bt.on{border-color:var(--cor);background:color-mix(in srgb, var(--cor) 14%, transparent)}
+.hu-mes{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+.hu-dia{aspect-ratio:1;border-radius:9px;display:grid;place-items:center;font-size:.85rem;color:#fff}
+.hu-dia.vazio{background:var(--painel2);color:var(--texto2);font-size:.6rem;font-weight:700}
+.hu-resumo{margin-top:12px;font-size:.86rem;color:var(--texto2);line-height:1.5}
+
+/* ---- 📚 estante ---- */
+.lv-meio{flex:1;overflow-y:auto;padding:16px}
+.lv-form{background:var(--painel);border-radius:16px;padding:13px;box-shadow:var(--sombra);margin-bottom:14px;
+  display:flex;flex-direction:column;gap:9px}
+.lv-form input{background:var(--painel2);border:2px solid transparent;border-radius:12px;padding:11px 13px;
+  outline:none;font-size:.9rem}
+.lv-form input:focus{border-color:var(--roxo)}
+.lv-form>button{background:linear-gradient(135deg,#0891b2,#16a34a);color:#fff;border-radius:12px;padding:11px;
+  font-weight:800;font-size:.88rem}
+.lv-estrelas{display:flex;gap:3px;justify-content:center}
+.lv-estrelas button{font-size:1.6rem;color:#f59e0b;line-height:1}
+.lv-conta{font-size:.8rem;color:var(--texto2);font-weight:800;margin-bottom:9px}
+.lv-livro{display:flex;align-items:center;gap:11px;background:var(--painel);border-radius:14px;padding:10px;
+  box-shadow:var(--sombra);margin-bottom:8px}
+.lv-lombada{width:34px;height:48px;border-radius:4px 8px 8px 4px;display:grid;place-items:center;font-size:1.1rem;
+  flex-shrink:0}
+.lv-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.lv-txt b{font-size:.9rem}
+.lv-txt small{font-size:.74rem;color:var(--texto2)}
+.lv-nota{font-size:.76rem;color:#f59e0b;font-weight:800}
+
+/* ---- 🎂 cartão / 🎞️ retrospectiva ---- */
+.ct-meio,.sp-meio{flex:1;overflow-y:auto;padding:16px}
+.ct-gente{display:grid;grid-template-columns:repeat(auto-fill,minmax(102px,1fr));gap:10px}
+.ct-pessoa{padding:13px 8px;border-radius:18px;background:var(--painel);border:2px solid var(--borda);
+  display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:var(--sombra)}
+.ct-pessoa.pronto{border-color:#16a34a}
+.ct-pessoa b{font-size:.82rem}
+.ct-pessoa small{font-size:.68rem;color:var(--texto2);text-align:center;line-height:1.3}
+.ct-av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:1.3rem;overflow:hidden}
+.ct-av img{width:100%;height:100%;object-fit:cover}
+.ct-av.grande{width:64px;height:64px;font-size:1.9rem}
+.ct-gravando,.ct-surpresa{background:var(--painel);border-radius:20px;padding:18px;box-shadow:var(--sombra2);
+  display:flex;flex-direction:column;align-items:center;gap:9px;margin-bottom:16px;text-align:center}
+.ct-surpresa h3{font-size:1.15rem}
+.sp-cartao{background:rgba(255,255,255,.94);border-radius:18px;padding:15px;margin-bottom:12px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;color:#1e1b33}
+.sp-cartao audio{width:100%}
+.rt-meses{display:flex;gap:8px;overflow-x:auto;padding:11px 14px;scrollbar-width:none;flex-shrink:0}
+.rt-meses .rapida.on{border-color:var(--roxo);background:var(--painel3)}
+.rt-palco{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:11px;align-items:center}
+.rt-titulo{font-weight:800;font-size:.92rem}
+.rt-quadro{width:100%;max-width:460px;aspect-ratio:1;border-radius:18px;overflow:hidden;background:var(--painel2);
+  display:grid;place-items:center;box-shadow:var(--sombra2)}
+.rt-quadro img{width:100%;height:100%;object-fit:contain;animation:surge .5s}
+.rt-legenda{font-size:.78rem;color:var(--texto2)}
+.tr-linguas{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+
 /* ---- 💭 recado do dia ---- */
 .recados-dia{display:flex;gap:8px;overflow-x:auto;padding:2px 10px 12px;scrollbar-width:none}
 .recados-dia::-webkit-scrollbar{display:none}
@@ -758,6 +915,7 @@ window.addEventListener('unhandledrejection', function(e){
     <div class="busca-wrap"><input class="busca" id="busca" placeholder="🔍 Procurar conversa" autocomplete="off"></div>
     <div class="aviso-aniv" id="avisoAniversario"></div>
     <div class="aviso-aniv agenda" id="avisoAgenda"></div>
+    <div class="card-tempo escondido" id="cardTempo"></div>
     <div class="titulo-secao">Recado do dia</div>
     <div class="recados-dia" id="recadosDoDia"></div>
     <div class="titulo-secao">Conversas</div>
@@ -768,6 +926,11 @@ window.addEventListener('unhandledrejection', function(e){
       <button id="btnAlbum">🖼️ Álbum</button>
       <button id="btnAgenda">📅 Agenda</button>
       <button id="btnIA">🤖 Ajudante</button>
+      <button id="btnPlacar">📊 Placar</button>
+      <button id="btnHumor">🌡️ Como tu tá</button>
+      <button id="btnLivros">📚 Estante</button>
+      <button id="btnCartao">🎂 Cartão</button>
+      <button id="btnRetro">🎞️ Retrospectiva</button>
     </div>
     <div class="rodape-lista" id="rodapeLista">🔒 Os recadinhos ficam guardados só neste aparelho.<br>Nada é enviado pra internet.</div>
   </aside>
@@ -931,7 +1094,7 @@ window.addEventListener('unhandledrejection', function(e){
       <button class="lig-bt" id="btnAtualizar">🔄 Atualizar o site</button>
     </div>
     <p class="sem-lembrete" style="margin-top:8px">Isso joga fora a cópia velha guardada no aparelho e baixa a mais
-    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">26</b>.</p>
+    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">27</b>.</p>
 
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
@@ -942,25 +1105,31 @@ window.addEventListener('unhandledrejection', function(e){
 
 <div class="aviso-flutua" id="toast"></div>
 
-<script src="ajuda.js?v=26"></script>
-<script src="jogo.js?v=26"></script>
-<script src="mais.js?v=26"></script>
-<script src="casa.js?v=26"></script>
-<script src="enfeites.js?v=26"></script>
-<script src="nuvem.js?v=26"></script>
-<script src="sinais.js?v=26"></script>
-<script src="chamada.js?v=26"></script>
-<script src="publico.js?v=26"></script>
-<script src="trancar.js?v=26"></script>
-<script src="audio.js?v=26"></script>
-<script src="video.js?v=26"></script>
-<script src="familia.js?v=26"></script>
-<script src="extras.js?v=26"></script>
-<script src="ligacao.js?v=26"></script>
-<script src="avisos.js?v=26"></script>
-<script src="ia.js?v=26"></script>
-<script src="recado.js?v=26"></script>
-<script src="app.js?v=26"></script>
+<script src="ajuda.js?v=27"></script>
+<script src="jogo.js?v=27"></script>
+<script src="mais.js?v=27"></script>
+<script src="casa.js?v=27"></script>
+<script src="enfeites.js?v=27"></script>
+<script src="nuvem.js?v=27"></script>
+<script src="sinais.js?v=27"></script>
+<script src="chamada.js?v=27"></script>
+<script src="publico.js?v=27"></script>
+<script src="trancar.js?v=27"></script>
+<script src="audio.js?v=27"></script>
+<script src="video.js?v=27"></script>
+<script src="familia.js?v=27"></script>
+<script src="extras.js?v=27"></script>
+<script src="ligacao.js?v=27"></script>
+<script src="avisos.js?v=27"></script>
+<script src="ia.js?v=27"></script>
+<script src="recado.js?v=27"></script>
+<script src="jogos.js?v=27"></script>
+<script src="quadro.js?v=27"></script>
+<script src="momentos.js?v=27"></script>
+<script src="placar.js?v=27"></script>
+<script src="meu.js?v=27"></script>
+<script src="festa.js?v=27"></script>
+<script src="app.js?v=27"></script>
 </body>
 
 </html>

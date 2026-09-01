@@ -13,6 +13,12 @@ const AJUDA = [
       ['🔍 Procurar conversa','a barrinha lá em cima da lista'],
       ['✅ Tarefas, 🖼️ Álbum e 📅 Agenda','os botões coloridos embaixo da lista'],
       ['🤖 Ajudante','uma inteligência artificial de verdade pra ajudar na lição e explicar coisas'],
+      ['📊 Placar','quem falou mais, quem grava mais áudio, quem acorda mais cedo'],
+      ['🌡️ Como tu tá','uma carinha por dia, e o mês inteiro num quadrinho'],
+      ['📚 Estante','os livros que tu leu, com estrelinhas'],
+      ['🎂 Cartão','gravar uma surpresa de aniversário pra alguém'],
+      ['🎞️ Retrospectiva','as fotos de um mês passando como filminho'],
+      ['⛅ O tempo','aparece no alto quando o site sabe onde vocês estão: diz se leva casaco'],
       ['💭 Recado do dia','a fileirinha em cima das conversas: toca no teu cartão e diz o que tu tá fazendo'],
       ['🐣 O bichinho','o cartãozinho acima dos botões — toca nele pra ver o nível'],
       ['🌙 / ☀️','troca o tema claro e escuro'],
@@ -36,6 +42,7 @@ const AJUDA = [
       ['🔊 Ler em voz alta','aparece quando ligado nos ajustes — o celular lê o recado'],
       ['📌 Fixar','põe o recado lá no topo da conversa (o ✕ tira)'],
       ['📻 📞 📹 no topo','walkie-talkie, ligação e videochamada — agora de UM TOQUE: toca no aparelho do outro, sem código'],
+      ['🔄 Virar a câmera','na videochamada: troca entre a câmera da frente e a de trás sem desligar'],
       ['📞 Ninguém atendeu?','o site te oferece deixar um recado de voz na conversa, a pessoa ouve depois'],
       ['✍️ Está escrevendo','aparece no topo quando a outra pessoa está digitando'],
       ['✓ ✓✓ e ⏳','✓ = saiu daqui; ✓✓ = a pessoa abriu; ⏳ = esperando a internet voltar'],
@@ -55,7 +62,13 @@ const AJUDA = [
       ['✏️ Recado desenhado','desenha com cores e manda como figurinha'],
       ['😄 Figurinhas','emoji gigante num toque'],
       ['📊 Enquete','pergunta + até 4 respostas, todo mundo vota'],
-      ['🕹️ Jogo da velha','joga com quem estiver junto, cada um na sua vez pelo “Falando como”'],
+      ['🕹️ Jogo da velha','agora vai de verdade pro celular do outro — cada um joga do seu aparelho'],
+      ['✋ Pedra, papel e tesoura','os dois escolhem escondido e só revela quando os dois escolheram'],
+      ['🎯 Jogo da forca','tu escolhe a palavra e a outra pessoa adivinha do celular dela'],
+      ['🧩 Quebra-cabeça','pega uma foto do álbum e vira quebra-cabeça de 9 ou 16 peças'],
+      ['🚸 CHEGUEI!','um toque e a família toda fica sabendo, com o lugar no mapa'],
+      ['🚗 Tô indo te buscar','avisa e mostra um relógio contando o tempo que falta'],
+      ['⏰ Despertador de longe','põe um despertador que toca no celular DA OUTRA PESSOA'],
       ['🕰️ Cápsula do tempo','recado que fica trancado até o dia que tu escolher'],
       ['🗺️ Mandar onde eu estou','usa o GPS e manda o lugar, com botão de ver no mapa'],
       ['🎺 Figurinhas de som','buzina, palmas, tambor, risada, sino, foguete…'],
@@ -142,6 +155,27 @@ const AJUDA = [
     ]
   },
   {
+    titulo:'🎮 Os jogos de dois',
+    cor:'#8b5cf6',
+    itens:[
+      ['Todos viajam','🕹️ velha, ✋ pedra-papel-tesoura e 🎯 forca aparecem no celular do outro em segundos'],
+      ['✋ O segredo','ninguém vê a mão do outro até os dois escolherem'],
+      ['🎯 A palavra','fica embaralhada no recado, mas é uma cortina, não um cofre — alguém muito curioso e que entenda de computador conseguiria achar. Vale pro ✋ também. É brincadeira de família 😊'],
+      ['🧩 O quebra-cabeça','é só teu, no teu aparelho — toca em duas peças pra trocar de lugar'],
+      ['Precisa do ☁️','os jogos de dois só viajam com o Firebase ligado']
+    ]
+  },
+  {
+    titulo:'🎂 A surpresa de aniversário',
+    cor:'#ec4899',
+    itens:[
+      ['Como funciona','tu grava um áudio pra alguém e ele fica ESCONDIDO até o dia do aniversário dela'],
+      ['Ninguém vê antes','fica guardado no teu aparelho, não vai pra nuvem nem aparece pra pessoa'],
+      ['No dia','quem faz aniversário abre o 🎂 e encontra os recadinhos de todo mundo juntos'],
+      ['Precisa da data','põe a data de nascimento de cada um em ⚙️ Ajustes → 🎂 Aniversários']
+    ]
+  },
+  {
     titulo:'🤔 Coisas importantes de saber',
     cor:'#64748b',
     itens:[
@@ -150,7 +184,9 @@ const AJUDA = [
       ['📞 A ligação','os dois precisam estar com o site aberto ao mesmo tempo e trocar o código. No wi-fi quase sempre funciona; no 4G às vezes não conecta'],
       ['🔔 Os avisos','funcionam com o site aberto ou atrás de outro app. Com o celular guardado e o app fechado, não dá (precisaria de servidor)'],
       ['🎤 Microfone e câmera','só funcionam abrindo pelo link (https), não no arquivo solto'],
-      ['🔒 A tranca','é uma cortina pra ninguém xeretar sem querer, não é um cofre: os recadinhos continuam guardados no aparelho']
+      ['🔒 A tranca','é uma cortina pra ninguém xeretar sem querer, não é um cofre: os recadinhos continuam guardados no aparelho'],
+      ['⏰ O despertador de longe','só toca se o outro estiver com o site aberto ou atrás de outro app. Com o celular guardado e o app fechado, não dá'],
+      ['⛅ O tempo','usa o Open-Meteo, que é de graça e não pede chave. Precisa deixar o site ver onde tu está']
     ]
   }
 ];

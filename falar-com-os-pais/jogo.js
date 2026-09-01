@@ -9,18 +9,20 @@ const VITORIAS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6
 function novoJogo(){
   const c = conversaPor(atual);
   const adversario = c.pessoa || c.quem.find(p => p !== autor) || 'pai';
-  dados.msgs[atual].push({
+  const jogo = {
     tipo:'jogo',
     tab: Array(9).fill(null),
     x: autor,                         // quem começou joga de ❌
     o: adversario === autor ? (c.quem.find(p => p !== autor) || 'pai') : adversario,
-    vez: 'x',
+    vez: 'x', v: 0,
     de: autor, ts: Date.now()
-  });
+  };
+  dados.msgs[atual].push(jogo);
   dados.visto[atual] = Date.now();
   dados.presenca[autor] = Date.now();
   animar = dados.msgs[atual].length - 1;
   salvar(); blim(true);
+  mandarPraNuvem(atual, jogo);        // sem isto o jogo não aparecia pros outros
   desenharMensagens(); desenharContatos();
 }
 
@@ -45,6 +47,7 @@ function jogar(indice, casa){
   marcarPresenca(autor);
   const fim = ganhador(m.tab);
   salvar(); blim(true);
+  atualizarNaNuvem(atual, m);         // a jogada viaja pro aparelho do outro
   desenharMensagens(); desenharContatos();
   if(fim){
     const vencedor = fim.quem === 'x' ? m.x : m.o;

@@ -5,6 +5,13 @@
    ========================================================= */
 
 /* ---------- decide o que desenhar dentro do balão ---------- */
+/* Acha o recado de uma foto pelo id dela, em qualquer conversa. */
+function fotoPorId(id){
+  for(const lista of Object.values(dados.msgs))
+    for(const m of lista) if(m.tipo === 'foto' && m.id === id) return m;
+  return null;
+}
+
 function conteudoEspecial(m, indice){
   if(m.tipo === 'audio')   return balaoAudio(m, indice);
   if(m.tipo === 'foto')    return balaoFoto(m, indice);
@@ -16,6 +23,10 @@ function conteudoEspecial(m, indice){
   if(m.tipo === 'som')     return balaoSom(m, indice);
   if(m.tipo === 'timer')   return balaoTimer(m, indice);
   if(m.tipo === 'sos')     return balaoSos(m);
+  if(m.tipo === 'ppt')     return balaoPPT(m, indice);
+  if(m.tipo === 'forca')   return balaoForca(m, indice);
+  if(m.tipo === 'cheguei') return balaoCheguei(m);
+  if(m.tipo === 'indo')    return balaoIndo(m);
   return `<span class="txt">${escapar(m.t || '')}</span>`;
 }
 
@@ -82,6 +93,19 @@ function balaoFoto(m, indice){
   return `<div class="foto-msg" data-foto="${indice}" style="min-height:${alt}px">
             <div class="foto-carregando">📷</div>
           </div>`;
+}
+
+/* A foto como endereço, pra quem precisar dela fora do balão
+   (o 🧩 quebra-cabeça e a 🎞️ retrospectiva usam isto). */
+async function urlDaFoto(m){
+  if(!m) return null;
+  if(m.b64) return m.b64;
+  if(urlsFoto.has(m.id)) return urlsFoto.get(m.id);
+  const blob = await pegarAudio(m.id);
+  if(!blob) return null;
+  const url = URL.createObjectURL(blob);
+  urlsFoto.set(m.id, url);
+  return url;
 }
 
 /* Depois de desenhar, busca cada foto no cofre e coloca na tela. */
@@ -189,7 +213,7 @@ function votar(indice, opcao){
   if(m.votos[autor] === opcao) delete m.votos[autor];   // tocar de novo tira o voto
   else m.votos[autor] = opcao;
   marcarPresenca(autor);
-  salvar(); desenharMensagens();
+  salvar(); atualizarNaNuvem(atual, m); desenharMensagens();   // o voto conta pra todos
 }
 
 /* ---------- ligações depois de cada desenho ---------- */
@@ -219,6 +243,12 @@ function abrirMaisMenu(){
     <button data-acao="figurinha">😄 Figurinhas</button>
     <button data-acao="enquete">📊 Fazer enquete</button>
     <button data-acao="jogo">🕹️ Jogo da velha</button>
+    <button data-acao="ppt">✋ Pedra, papel e tesoura</button>
+    <button data-acao="forca">🎯 Jogo da forca</button>
+    <button data-acao="quebra">🧩 Quebra-cabeça</button>
+    <button data-acao="cheguei">🚸 CHEGUEI!</button>
+    <button data-acao="indo">🚗 Tô indo te buscar</button>
+    <button data-acao="despertador">⏰ Despertador de longe</button>
     <button data-acao="capsula">🕰️ Cápsula do tempo</button>
     <button data-acao="lugar">🗺️ Mandar onde eu estou</button>
     <button data-acao="som">🎺 Figurinhas de som</button>
@@ -236,6 +266,12 @@ function abrirMaisMenu(){
     if(a === 'figurinha') abrirFigurinhas();
     if(a === 'enquete') abrirNovaEnquete();
     if(a === 'jogo') novoJogo();
+    if(a === 'ppt') novoPPT();
+    if(a === 'forca') abrirNovaForca();
+    if(a === 'quebra') abrirQuebraCabeca();
+    if(a === 'cheguei') abrirCheguei();
+    if(a === 'indo') abrirTouIndo();
+    if(a === 'despertador') abrirDespertador();
     if(a === 'capsula') abrirNovaCapsula();
     if(a === 'lugar') mandarLugar();
     if(a === 'som') abrirSons();
