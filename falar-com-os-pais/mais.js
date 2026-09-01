@@ -338,6 +338,7 @@ function balaoSos(m){
   const link = m.lugar ? `https://www.openstreetmap.org/?mlat=${m.lugar.lat}&mlon=${m.lugar.lon}#map=17/${m.lugar.lat}/${m.lugar.lon}` : '';
   return `<div class="sos-balao">
     <b>${m.emoji || '🆘'} ${escapar(m.t || 'Pedido de ajuda')}</b>
+    ${m.contou ? `<i class="sos-contou-balao">“${escapar(m.contou)}”</i>` : ''}
     ${m.automatico ? '<i class="sos-auto">avisado pelo próprio site</i>' : ''}
     <span>${m.lugar ? `${m.lugar.lat}, ${m.lugar.lon}` : 'o lugar não veio'}</span>
     ${link ? `<a class="lug-bt" href="${link}" target="_blank" rel="noopener">🗺️ Ver no mapa</a>` : ''}
