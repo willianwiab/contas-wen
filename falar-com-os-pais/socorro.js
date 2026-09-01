@@ -51,6 +51,7 @@ function pedirAjuda(){
         <button class="pa-extra" id="paCasa">🧭 Como volto pra casa<small>o caminho até em casa</small></button>
         <button class="pa-extra" id="paDeNovo">📢 Mandar de novo<small>se ninguém viu o teu pedido</small></button>
         <button class="pa-extra" id="paBem">🤕 Já tô bem<small>encerra o alerta e acalma todos</small></button>
+        <button class="pa-extra" id="paConfianca">🧑‍🤝‍🧑 Quem pode me buscar<small>vó, tio, vizinho — liga num toque</small></button>
       </div>
     </div>`;
   document.body.appendChild(tela);
@@ -65,12 +66,13 @@ function pedirAjuda(){
   document.getElementById('paCasa').addEventListener('click', () => { tela.remove(); comoVoltoPraCasa(); });
   document.getElementById('paDeNovo').addEventListener('click', () => { tela.remove(); mandarDeNovo(); });
   document.getElementById('paBem').addEventListener('click', () => { tela.remove(); jaEstouBem(); });
+  document.getElementById('paConfianca').addEventListener('click', () => abrirGenteDeConfianca());
   tela.querySelectorAll('[data-ajuda]').forEach(b =>
-    b.addEventListener('click', () => { tela.remove(); mandarPedidoDeAjuda(b.dataset.ajuda); }));
+    b.addEventListener('click', () => { tela.remove(); perguntarOQueAconteceu(b.dataset.ajuda); }));
 }
 
 /* ---------- mandar de verdade ---------- */
-async function mandarPedidoDeAjuda(qual, semTela){
+async function mandarPedidoDeAjuda(qual, semTela, contou){
   const tipo = tipoDeAjuda(qual);
   const aviso = semTela ? null : mostrarMandando(tipo);
 
@@ -80,6 +82,7 @@ async function mandarPedidoDeAjuda(qual, semTela){
     tipo:'sos', qual: tipo.id, emoji: tipo.emoji, t: tipo.txt, urgente: tipo.urgente,
     de: dados.euSou || autor, ts: Date.now(), v: 0
   };
+  if(contou) sos.contou = String(contou).slice(0, 200);
   dados.msgs.familia.push(sos);
   dados.visto.familia = Date.now();
   salvar();
@@ -206,6 +209,7 @@ function chegouPedidoDeAjuda(msg){
     <div class="sos-meio">
       <div class="sos-sino">${msg.emoji || '🆘'}</div>
       <h2>${p.nome}: ${escapar(msg.t || 'precisa de ajuda!')}</h2>
+      ${msg.contou ? `<div class="sos-contou">“${escapar(msg.contou)}”</div>` : ''}
       <p class="lig-txt">${hora(msg.ts)}${msg.lugar ? '' : ' — o lugar ainda não chegou'}</p>
       <div class="lig-botoes col">
         ${link ? `<a class="lig-bt ok grande" href="${link}" target="_blank" rel="noopener">🗺️ Ver onde está</a>` : ''}
@@ -240,7 +244,7 @@ function chegouPedidoDeAjuda(msg){
     toast('Avisei que tu está indo 🏃', 4000);
   });
   avisar('🆘 ' + p.nome + ': ' + (msg.t || 'precisa de ajuda!'),
-         msg.lugar ? 'Toca pra ver onde está' : 'Sem o lugar', 'sos');
+         msg.contou || (msg.lugar ? 'Toca pra ver onde está' : 'Sem o lugar'), 'sos');
 }
 
 function insistirNoAlarme(msg, p){
@@ -358,6 +362,13 @@ function abrirFicha(soVer){
                <input id="fi-${id}" maxlength="60" placeholder="${dica}" value="${escapar(f[id] || '').replace(/"/g,'&quot;')}"></div>`
         ).join('') || '<p class="lig-txt">A ficha ainda está vazia.</p>'}
       </div>
+      ${soVer && (dados.confianca || []).length ? `
+        <div class="bloco-titulo">🧑‍🤝‍🧑 Quem pode buscar</div>
+        <div class="num-botoes">
+          ${dados.confianca.map(g => `
+            <a class="num-bt" href="tel:${String(g.fone).replace(/[^0-9+]/g,'')}" style="--cor:#16a34a">
+              <span>📞</span><b>${escapar(g.nome)}</b><small>${escapar(g.quem || g.fone)}</small></a>`).join('')}
+        </div>` : ''}
       ${soVer && (f.fone1 || f.fone2) ? `
         <div class="num-botoes" style="margin-top:14px">
           ${[f.fone1, f.fone2].filter(Boolean).map(t => `
@@ -821,4 +832,156 @@ function receberBaterias(todas){
     dados.baterias[p] = b; mudou = true;
   });
   if(mudou) salvar();
+}
+
+
+/* ============ ✍️ O QUE ACONTECEU ============
+   Uma frase muda tudo pra quem recebe: "tô com medo" e "tô com medo,
+   tem um cachorro solto na esquina da padaria" pedem coisas diferentes.
+
+   Mas quem está em perigo não pode ficar preso digitando: tem um
+   botão GRANDE de "manda logo" que sai na hora, sem escrever nada. E
+   se a pessoa ficar 12 segundos sem tocar em nada, o pedido sai
+   sozinho — talvez ela não esteja conseguindo mexer no celular. */
+const SEGUNDOS_PRA_ESCREVER = 12;
+
+const JA_ACONTECEU = {
+  busca:     ['Tô na escola', 'Tô na rua', 'A aula acabou', 'Perdi o ônibus'],
+  medo:      ['Tem alguém estranho', 'Tô sozinho', 'Cachorro solto', 'Tá escuro'],
+  machucado: ['Caí', 'Cortei', 'Bati a cabeça', 'Tô passando mal'],
+  perdido:   ['Não sei onde tô', 'Me perdi de vocês', 'Peguei o caminho errado', 'Sem bateria logo']
+};
+
+function perguntarOQueAconteceu(qual){
+  const tipo = tipoDeAjuda(qual);
+  if(document.getElementById('telaOQue')) return;
+
+  const tela = document.createElement('div');
+  tela.className = 'tela-cheia socorro'; tela.id = 'telaOQue';
+  tela.style.background = `linear-gradient(160deg,${tipo.cor},#450a0a)`;
+  tela.innerHTML = `
+    <div class="w-topo" style="background:transparent">
+      <button class="icone" id="oqVoltar">←</button>
+      <div><b>${tipo.emoji} ${tipo.nome}</b><div class="w-sub">conta o que houve — ou manda logo</div></div>
+    </div>
+    <div class="oq-meio">
+      <button class="oq-agora" id="oqAgora">
+        🆘 MANDAR AGORA
+        <small>sem escrever nada · sai sozinho em <b id="oqConta">${SEGUNDOS_PRA_ESCREVER}</b>s</small>
+      </button>
+      <div class="oq-ou">ou conta o que aconteceu:</div>
+      <textarea id="oqTexto" rows="3" maxlength="200"
+        placeholder="Ex.: tô na frente da escola e ninguém veio me buscar"></textarea>
+      <div class="oq-prontas">
+        ${(JA_ACONTECEU[tipo.id] || []).map(t => `<button class="oq-pronta" data-pronta="${t}">${t}</button>`).join('')}
+      </div>
+      <button class="oq-mandar" id="oqMandar">📨 Mandar com o recado</button>
+    </div>`;
+  document.body.appendChild(tela);
+
+  let relogio = null, mandou = false;
+  const parar = () => { clearInterval(relogio); relogio = null; };
+  const mandar = () => {
+    if(mandou) return;
+    mandou = true; parar();
+    const contou = (document.getElementById('oqTexto').value || '').trim();
+    tela.remove();
+    mandarPedidoDeAjuda(tipo.id, false, contou);
+  };
+
+  document.getElementById('oqAgora').addEventListener('click', mandar);
+  document.getElementById('oqMandar').addEventListener('click', mandar);
+  document.getElementById('oqVoltar').addEventListener('click', () => { parar(); tela.remove(); pedirAjuda(); });
+
+  const campo = document.getElementById('oqTexto');
+
+  /* Mexeu em alguma coisa? Então está conseguindo usar o celular — a
+     contagem para e a pessoa termina no tempo dela. Vale tanto pra
+     digitar quanto pra tocar numa frase pronta (tocar não dispara o
+     evento de digitação, e sem isto a contagem seguia correndo). */
+  const pararContagem = () => {
+    if(!relogio) return;
+    parar();
+    const c = document.getElementById('oqConta');
+    if(c && c.closest('small')) c.closest('small').textContent = 'sem escrever nada';
+  };
+
+  tela.querySelectorAll('[data-pronta]').forEach(b => b.addEventListener('click', () => {
+    pararContagem();
+    campo.value = campo.value ? campo.value + ', ' + b.dataset.pronta.toLowerCase() : b.dataset.pronta;
+    campo.focus();
+  }));
+  campo.addEventListener('input', pararContagem);
+  campo.addEventListener('focus', pararContagem);
+
+  let faltam = SEGUNDOS_PRA_ESCREVER;
+  relogio = setInterval(() => {
+    faltam--;
+    const c = document.getElementById('oqConta');
+    if(c) c.textContent = faltam;
+    if(faltam <= 0) mandar();
+  }, 1000);
+}
+
+/* ============ 🧑‍🤝‍🧑 GENTE DE CONFIANÇA ============
+   Quem pode ir te buscar quando a família não puder: vó, tio, vizinho.
+   Fica só neste aparelho, junto com a ficha. */
+function abrirGenteDeConfianca(){
+  if(document.getElementById('telaConfianca')) return;
+  if(!Array.isArray(dados.confianca)) dados.confianca = [];
+
+  const tela = document.createElement('div');
+  tela.className = 'tela-cheia ficha'; tela.id = 'telaConfianca';
+  tela.innerHTML = `
+    <div class="w-topo" style="background:linear-gradient(135deg,#16a34a,#0891b2)">
+      <button class="icone" id="cfFechar">✕</button>
+      <div><b>🧑‍🤝‍🧑 Quem pode me buscar</b><div class="w-sub">gente de confiança, além da família</div></div>
+    </div>
+    <div class="fi-meio">
+      <div class="cf-lista" id="cfLista"></div>
+      <div class="bloco-titulo">Pôr mais alguém</div>
+      <div class="lv-form">
+        <input id="cfNome" maxlength="30" placeholder="Quem é? Ex.: Vó Maria">
+        <input id="cfFone" maxlength="20" inputmode="tel" placeholder="Telefone. Ex.: 55 99999-0000">
+        <input id="cfQuem" maxlength="24" placeholder="O que é teu? Ex.: minha avó">
+        <button id="cfAdd">➕ Guardar</button>
+      </div>
+      <p class="sem-lembrete" style="margin-top:10px">Fica só neste aparelho. Combina com os teus pais quem entra
+      nesta lista — tem que ser gente que <b>eles</b> confiam também.</p>
+    </div>`;
+  document.body.appendChild(tela);
+  document.getElementById('cfFechar').addEventListener('click', () => tela.remove());
+  document.getElementById('cfAdd').addEventListener('click', () => {
+    const nome = document.getElementById('cfNome').value.trim();
+    const fone = document.getElementById('cfFone').value.trim();
+    if(!nome || !fone){ toast('Precisa do nome e do telefone 😊'); return; }
+    dados.confianca.push({ id:'c'+Date.now(), nome, fone, quem: document.getElementById('cfQuem').value.trim() });
+    salvar(); desenharConfianca();
+    ['cfNome','cfFone','cfQuem'].forEach(i => document.getElementById(i).value = '');
+    toast('Guardado! 🧑‍🤝‍🧑');
+  });
+  desenharConfianca();
+}
+
+function desenharConfianca(){
+  const caixa = document.getElementById('cfLista');
+  if(!caixa) return;
+  const gente = dados.confianca || [];
+  if(!gente.length){
+    caixa.innerHTML = `<div class="ia-aviso"><div class="balao-deco">🧑‍🤝‍🧑</div><h3>Ainda não tem ninguém</h3>
+      <p>Põe aí embaixo quem pode ir te buscar se a família não puder — a vó, um tio, um vizinho.</p></div>`;
+    return;
+  }
+  caixa.innerHTML = gente.map(g => `
+    <div class="cf-pessoa">
+      <a class="cf-ligar" href="tel:${String(g.fone).replace(/[^0-9+]/g,'')}">
+        <span>📞</span>
+        <div><b>${escapar(g.nome)}</b><small>${escapar(g.quem || '')}${g.quem ? ' · ' : ''}${escapar(g.fone)}</small></div>
+      </a>
+      <button class="t-apagar" data-tiraconf="${g.id}">✕</button>
+    </div>`).join('');
+  caixa.querySelectorAll('[data-tiraconf]').forEach(b => b.addEventListener('click', () => {
+    dados.confianca = dados.confianca.filter(g => g.id !== b.dataset.tiraconf);
+    salvar(); desenharConfianca();
+  }));
 }

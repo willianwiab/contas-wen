@@ -165,6 +165,10 @@ const AJUDA = [
     cor:'#dc2626',
     itens:[
       ['4 tipos de ajuda','🚗 me busca AGORA · 😰 tô com medo · 🤕 tô machucado · 🧭 tô perdido. Cada um com uma cor'],
+      ['✍️ Conta o que houve','depois de escolher o tipo, dá pra escrever uma frase: “tem um cachorro solto na esquina”. Isso muda tudo pra quem recebe'],
+      ['🆘 MANDAR AGORA','o botão branco e grande manda na hora, sem escrever nada'],
+      ['⏱️ E se tu não conseguir mexer','sem tocar em nada, o pedido sai sozinho em 12 segundos. Se tu começar a escrever, a contagem para'],
+      ['🧑‍🤝‍🧑 Quem pode me buscar','telefones de gente de confiança (vó, tio, vizinho) pra ligar num toque. Combina com teus pais quem entra na lista'],
       ['O pedido sai primeiro','o aviso vai na hora; o lugar e o som chegam depois. Melhor chegar sem o lugar do que não chegar'],
       ['🎙️ Grava o lugar','30 segundos do som de onde tu está vão junto — se tu não puder falar, eles ouvem'],
       ['☎️ Liga sozinho','na mesma hora ele já chama alguém da família no aparelho'],
@@ -174,7 +178,7 @@ const AJUDA = [
       ['🚨 Sirene','o celular grita bem alto por até 2 minutos, pra chamar quem estiver perto'],
       ['🔦 Lanterna SOS','a tela pisca branco em código morse — dá pra ver de longe no escuro'],
       ['☎️ 190 · 192 · 193','botões grandes que ligam de verdade. É de graça, funciona até sem crédito'],
-      ['🩺 Ficha de emergência','tipo de sangue, alergia, remédio e telefone dos pais. Abre SEM a senha da tranca, pra quem achar teu celular conseguir ajudar'],
+      ['🩺 Ficha de emergência','tipo de sangue, alergia, remédio, telefone dos pais e a gente de confiança. Abre SEM a senha da tranca, pra quem achar teu celular conseguir ajudar'],
       ['🧭 Como volto pra casa','marca onde é a casa uma vez e depois ele mostra a distância e o caminho a pé']
     ]
   },

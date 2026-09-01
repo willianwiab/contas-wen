@@ -63,7 +63,7 @@ function padrao(){
     papel:{}, letra:'normal', voz:false, vozContrario:false, antiPalavrao:true, avisos:false, lembretes:[],
     ia:{ chave:'', modelo:'claude-opus-5' }, recados:{},
     humor:{}, livros:[], cartoes:{}, tempo:null, ficha:{}, vigia:null,
-    favoritos:{}, baterias:{}, casa:null, velocidadeAudio:1 };
+    favoritos:{}, baterias:{}, casa:null, velocidadeAudio:1, confianca:[] };
 }
 function carregar(){
   try{
@@ -88,6 +88,7 @@ function carregar(){
     d.cartoes = d.cartoes || {};
     d.ficha   = d.ficha   || {};
     d.favoritos = d.favoritos || {};
+    if(!Array.isArray(d.confianca)) d.confianca = [];
     d.baterias  = d.baterias  || {};
     if(!Array.isArray(d.livros)) d.livros = [];
     if(!bruto) d = migrarV1(d);

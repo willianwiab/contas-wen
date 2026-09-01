@@ -104,6 +104,8 @@ daquele aparelho.
 | 🆘 Ajuda | 4 tipos de pedido, alarme que insiste, som do lugar, ligação automática |
 | 🚨 🔦 ☎️ | Sirene, lanterna SOS em morse e 190/192/193 |
 | 🩺 Ficha de emergência | Abre sem a senha da tranca, pra quem achar o celular |
+| ✍️ O que aconteceu | Uma frase junto com o pedido, ou MANDAR AGORA sem escrever |
+| 🧑‍🤝‍🧑 Quem pode me buscar | Telefones de gente de confiança, com botão de ligar |
 | ⏱️ Se eu não avisar | O site avisa a família sozinho se ninguém confirmar que chegou |
 | 📍 Me acompanha | 30 minutos de localização ao vivo pra família |
 | 🏠 🔋 Quem chegou | Quem está em casa e a bateria de cada um |
@@ -161,6 +163,13 @@ A regra desse arquivo inteiro: **nada pode depender de dar tudo certo.** GPS que
 responde, microfone negado, banco fora do ar — o pedido de ajuda sai do mesmo jeito, com o
 que der. Chegar sem o lugar é melhor do que não chegar.
 
+Depois de escolher o tipo, uma tela pergunta **o que aconteceu** — uma frase muda tudo para
+quem recebe ("tô com medo" e "tô com medo, tem um cachorro solto na esquina" pedem coisas
+diferentes). Mas quem está em perigo não pode ficar preso digitando: há um botão grande de
+**MANDAR AGORA**, e se ninguém tocar em nada por 12 segundos **o pedido sai sozinho** —
+talvez a pessoa não esteja conseguindo mexer no celular. Tocar numa frase pronta ou começar
+a escrever para a contagem.
+
 Por isso a ordem é: **1)** o pedido vai pra nuvem imediatamente, com o tipo escolhido;
 **2)** o lugar chega depois, como uma nova versão do mesmo recado (`atualizarNaNuvem`);
 **3)** a gravação de 30 s do ambiente roda **em paralelo** — ligar pra alguém só depois
@@ -175,7 +184,8 @@ de todo mundo.
 
 A **🩺 ficha de emergência** é o único lugar do site que abre **sem a senha da tranca** —
 de propósito: quem achar o celular caído na rua precisa conseguir ligar pros pais. Ela não
-tem recado nenhum dentro, só o que serve pra ajudar, e fica só no `localStorage`.
+tem recado nenhum dentro, só o que serve pra ajudar, e fica só no `localStorage`. Junto dela
+vai a lista de **🧑‍🤝‍🧑 gente de confiança** — vó, tio, vizinho — com botão de ligar.
 
 O **⏱️ "se eu não avisar, avisa por mim"** guarda `dados.vigia` com a hora limite e o
 lugar de saída; um relógio confere de minuto em minuto e, se passar, manda um `sos`
