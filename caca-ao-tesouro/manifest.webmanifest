@@ -1,0 +1,10 @@
+{
+  "name": "Caça ao Tesouro",
+  "short_name": "Caça",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f0fdfa",
+  "theme_color": "#0f766e",
+  "description": "Esconde pistas em lugares de verdade e desafia teus amigos a achar.",
+  "icons": [{ "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
