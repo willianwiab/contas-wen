@@ -48,26 +48,36 @@ button{cursor:pointer;border:none;background:none}
 .app{display:grid;grid-template-columns:minmax(310px,370px) 1fr;height:100dvh;background:var(--painel)}
 
 /* ===================== LISTA ===================== */
-.lista{display:flex;flex-direction:column;background:var(--painel);border-right:1px solid var(--borda);min-height:0}
+/* A barra da esquerda ROLA INTEIRA. Antes só a lista de conversas rolava,
+   e ela era a única coisa que esticava — quando entraram o ⛅ tempo, o 💭
+   recado do dia e os botões novos, sobrou 10 pixels pra ela e as pessoas
+   sumiram da tela. */
+.lista{display:flex;flex-direction:column;background:var(--painel);border-right:1px solid var(--borda);
+  min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.lista::-webkit-scrollbar{width:6px}
+.lista::-webkit-scrollbar-thumb{background:var(--borda);border-radius:4px}
 .lista-topo{
   background:linear-gradient(135deg,var(--roxo) 0%,var(--azul) 100%);color:#fff;
-  padding:calc(18px + env(safe-area-inset-top,0px)) 18px 22px;position:relative;overflow:hidden;
+  padding:calc(18px + env(safe-area-inset-top,0px)) 18px 22px;position:sticky;top:0;z-index:6;overflow:hidden;
+  flex-shrink:0;
 }
 .lista-topo::after{content:"";position:absolute;right:-40px;top:-50px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.12)}
 .lista-topo .linha{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:relative;z-index:1}
 .lista-topo h1{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
 .lista-topo p{font-size:.82rem;opacity:.9;margin-top:3px;font-weight:500}
+/* as etiquetas lado a lado: empilhadas, comiam a altura das conversas */
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
 .icones{display:flex;gap:4px}
 .icone{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:1.05rem;transition:background .15s,transform .15s}
 .icone:hover{background:rgba(255,255,255,.18)}
 .icone:active{transform:scale(.9)}
 .conversa-topo .icone:hover,.lista-topo .icone:hover{background:rgba(255,255,255,.18)}
 
-.busca-wrap{padding:12px 14px 6px}
+.busca-wrap{padding:12px 14px 6px;flex-shrink:0}
 .busca{width:100%;background:var(--painel2);border:2px solid transparent;border-radius:14px;padding:11px 16px;outline:none;font-size:.9rem;transition:border-color .15s}
 .busca:focus{border-color:var(--roxo)}
 .titulo-secao{padding:10px 18px 6px;font-size:.7rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--texto2)}
-.contatos{flex:1;overflow-y:auto;min-height:0;padding:0 10px 10px}
+.contatos{flex:0 0 auto;padding:0 10px 10px}
 .contato{
   display:flex;gap:13px;align-items:center;padding:12px;width:100%;text-align:left;
   border-radius:16px;transition:background .15s,transform .12s;margin-bottom:3px;
@@ -88,7 +98,7 @@ button{cursor:pointer;border:none;background:none}
 .contato-hora.online-txt{color:#16a34a;font-weight:800}
 html[data-tema="escuro"] .contato-hora.online-txt{color:#4ade80}
 .net{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.2);border-radius:20px;
-  padding:5px 12px;font-size:.73rem;font-weight:700;margin-top:9px;position:relative;z-index:1}
+  padding:5px 11px;font-size:.71rem;font-weight:700;position:relative;z-index:1}
 .net .bolinha{width:9px;height:9px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.3)}
 .net.off .bolinha{background:#e5e7eb;box-shadow:0 0 0 3px rgba(229,231,235,.25)}
 .contato-txt{flex:1;min-width:0}
@@ -341,10 +351,27 @@ html[data-tema="escuro"] .lig-bt.desligar{background:#4c1d1d;color:#fca5a5}
 .menu-topo button{display:block;width:100%;text-align:left;padding:11px 13px;border-radius:11px;font-size:.9rem;font-weight:600;color:var(--texto)}
 .menu-topo button:hover{background:var(--painel2)}
 .conversa-topo{position:relative}
-.mais-menu{display:flex;flex-direction:column;gap:4px;background:var(--painel);border-radius:16px;padding:7px;
-  box-shadow:var(--sombra2);margin:0 14px 6px;animation:surge .18s}
-.mais-menu button{text-align:left;padding:11px 13px;border-radius:11px;font-size:.92rem;font-weight:600}
-.mais-menu button:hover{background:var(--painel2)}
+/* O menu do ➕ tem muita coisa: por isso ele rola por dentro e nunca
+   passa de metade da tela — antes os últimos botões ficavam fora e não
+   dava pra chegar neles de jeito nenhum. */
+.mais-menu{display:flex;flex-direction:column;gap:6px;background:var(--painel);border-radius:18px;padding:9px;
+  box-shadow:var(--sombra2);margin:0 14px 6px;animation:surge .18s;max-height:min(56vh,440px)}
+.mm-rolo{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;gap:3px;padding-right:2px}
+.mm-rolo::-webkit-scrollbar{width:5px}
+.mm-rolo::-webkit-scrollbar-thumb{background:var(--borda);border-radius:4px}
+.mm-titulo{font-size:.68rem;font-weight:800;color:var(--texto2);text-transform:uppercase;letter-spacing:.07em;
+  padding:9px 4px 4px}
+.mm-titulo:first-child{padding-top:2px}
+.mm-grade{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.mais-menu button{display:flex;align-items:center;gap:8px;text-align:left;padding:11px 10px;border-radius:13px;
+  font-size:.82rem;font-weight:700;background:var(--painel2);transition:transform .1s,background .15s}
+.mais-menu button span{font-size:1.15rem;flex-shrink:0}
+.mais-menu button:hover{background:var(--painel3);transform:translateY(-1px)}
+.mais-menu button:active{transform:scale(.96)}
+.mm-sos{justify-content:center;background:linear-gradient(135deg,#ef4444,#b91c1c)!important;color:#fff;
+  flex-shrink:0;margin-top:2px}
+.mm-sos:hover{filter:brightness(1.08)}
 
 /* ===================== FOTO DE PERFIL ===================== */
 .avatar img,.mini-av img,.lig-avatar img,.perfil-av img,.placar-av img,.pil-av img{
@@ -518,11 +545,19 @@ body.trancado .app{filter:blur(14px)}
 .atalhos #btnAlbum{background:linear-gradient(135deg,#0ea5e9,#6366f1)}
 .atalhos #btnAgenda{background:linear-gradient(135deg,#10b981,#0ea5e9)}
 .atalhos #btnIA{background:linear-gradient(135deg,#0f766e,#0891b2)}
-.atalhos{flex-wrap:wrap}
-.atalhos button{flex:1 1 44%}
+/* 8 botões em 4 fileiras comiam a tela toda: agora é uma fileira só
+   que desliza de lado, igual às frases prontas. */
+.atalhos{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;flex-shrink:0}
+.atalhos::-webkit-scrollbar{display:none}
+.atalhos button{flex:0 0 auto;padding:11px 15px;white-space:nowrap}
+.atalhos #btnPlacar{background:linear-gradient(135deg,#f59e0b,#ec4899)}
+.atalhos #btnHumor{background:linear-gradient(135deg,#f97316,#ec4899)}
+.atalhos #btnLivros{background:linear-gradient(135deg,#0891b2,#16a34a)}
+.atalhos #btnCartao{background:linear-gradient(135deg,#ec4899,#f59e0b)}
+.atalhos #btnRetro{background:linear-gradient(135deg,#6366f1,#ec4899)}
 
 /* ---- ⛅ o tempo ---- */
-.card-tempo{display:flex;align-items:center;gap:12px;margin:0 10px 12px;padding:11px 14px;border-radius:16px;
+.card-tempo{display:flex;flex-shrink:0;align-items:center;gap:12px;margin:0 10px 12px;padding:11px 14px;border-radius:16px;
   background:linear-gradient(135deg,rgba(14,165,233,.14),rgba(124,58,237,.12));border:1.5px solid var(--borda)}
 .card-tempo .tempo-agora{font-size:1.5rem;white-space:nowrap}
 .card-tempo .tempo-agora b{font-size:1.15rem}
@@ -679,7 +714,7 @@ body.trancado .app{filter:blur(14px)}
 .tr-linguas{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
 
 /* ---- 💭 recado do dia ---- */
-.recados-dia{display:flex;gap:8px;overflow-x:auto;padding:2px 10px 12px;scrollbar-width:none}
+.recados-dia{display:flex;gap:8px;overflow-x:auto;padding:2px 10px 12px;scrollbar-width:none;flex-shrink:0}
 .recados-dia::-webkit-scrollbar{display:none}
 .rec-card{flex:0 0 86px;background:var(--painel);border:1.5px solid var(--borda);border-radius:16px;
   padding:9px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:var(--sombra);
@@ -901,9 +936,11 @@ window.addEventListener('unhandledrejection', function(e){
         <div>
           <h1>💜 Fala, Família!</h1>
           <p id="ola">Oi! 👋</p>
-          <div class="net" id="net"><span class="bolinha"></span><span id="netTxt">Vendo a internet...</span></div>
-          <div class="net nuvem desligado" id="chipNuvem"><span class="bolinha"></span><span>Só neste aparelho</span></div>
-          <div class="net fila escondido" id="chipFila"><span class="bolinha"></span><span>⏳</span></div>
+          <div class="chips">
+            <div class="net" id="net"><span class="bolinha"></span><span id="netTxt">Vendo a internet...</span></div>
+            <div class="net nuvem desligado" id="chipNuvem"><span class="bolinha"></span><span>Só neste aparelho</span></div>
+            <div class="net fila escondido" id="chipFila"><span class="bolinha"></span><span>⏳</span></div>
+          </div>
         </div>
         <div class="icones">
           <button class="icone" id="btnAjuda" title="Como usar">❓</button>
@@ -915,11 +952,11 @@ window.addEventListener('unhandledrejection', function(e){
     <div class="busca-wrap"><input class="busca" id="busca" placeholder="🔍 Procurar conversa" autocomplete="off"></div>
     <div class="aviso-aniv" id="avisoAniversario"></div>
     <div class="aviso-aniv agenda" id="avisoAgenda"></div>
-    <div class="card-tempo escondido" id="cardTempo"></div>
-    <div class="titulo-secao">Recado do dia</div>
-    <div class="recados-dia" id="recadosDoDia"></div>
     <div class="titulo-secao">Conversas</div>
     <div class="contatos" id="contatos"></div>
+    <div class="titulo-secao">Recado do dia</div>
+    <div class="recados-dia" id="recadosDoDia"></div>
+    <div class="card-tempo escondido" id="cardTempo"></div>
     <button class="card-bicho" id="cardBicho"></button>
     <div class="atalhos">
       <button id="btnTarefas">✅ Tarefas</button>
@@ -1094,7 +1131,7 @@ window.addEventListener('unhandledrejection', function(e){
       <button class="lig-bt" id="btnAtualizar">🔄 Atualizar o site</button>
     </div>
     <p class="sem-lembrete" style="margin-top:8px">Isso joga fora a cópia velha guardada no aparelho e baixa a mais
-    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">27</b>.</p>
+    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">28</b>.</p>
 
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
@@ -1105,31 +1142,31 @@ window.addEventListener('unhandledrejection', function(e){
 
 <div class="aviso-flutua" id="toast"></div>
 
-<script src="ajuda.js?v=27"></script>
-<script src="jogo.js?v=27"></script>
-<script src="mais.js?v=27"></script>
-<script src="casa.js?v=27"></script>
-<script src="enfeites.js?v=27"></script>
-<script src="nuvem.js?v=27"></script>
-<script src="sinais.js?v=27"></script>
-<script src="chamada.js?v=27"></script>
-<script src="publico.js?v=27"></script>
-<script src="trancar.js?v=27"></script>
-<script src="audio.js?v=27"></script>
-<script src="video.js?v=27"></script>
-<script src="familia.js?v=27"></script>
-<script src="extras.js?v=27"></script>
-<script src="ligacao.js?v=27"></script>
-<script src="avisos.js?v=27"></script>
-<script src="ia.js?v=27"></script>
-<script src="recado.js?v=27"></script>
-<script src="jogos.js?v=27"></script>
-<script src="quadro.js?v=27"></script>
-<script src="momentos.js?v=27"></script>
-<script src="placar.js?v=27"></script>
-<script src="meu.js?v=27"></script>
-<script src="festa.js?v=27"></script>
-<script src="app.js?v=27"></script>
+<script src="ajuda.js?v=28"></script>
+<script src="jogo.js?v=28"></script>
+<script src="mais.js?v=28"></script>
+<script src="casa.js?v=28"></script>
+<script src="enfeites.js?v=28"></script>
+<script src="nuvem.js?v=28"></script>
+<script src="sinais.js?v=28"></script>
+<script src="chamada.js?v=28"></script>
+<script src="publico.js?v=28"></script>
+<script src="trancar.js?v=28"></script>
+<script src="audio.js?v=28"></script>
+<script src="video.js?v=28"></script>
+<script src="familia.js?v=28"></script>
+<script src="extras.js?v=28"></script>
+<script src="ligacao.js?v=28"></script>
+<script src="avisos.js?v=28"></script>
+<script src="ia.js?v=28"></script>
+<script src="recado.js?v=28"></script>
+<script src="jogos.js?v=28"></script>
+<script src="quadro.js?v=28"></script>
+<script src="momentos.js?v=28"></script>
+<script src="placar.js?v=28"></script>
+<script src="meu.js?v=28"></script>
+<script src="festa.js?v=28"></script>
+<script src="app.js?v=28"></script>
 </body>
 
 </html>
