@@ -18,13 +18,33 @@ const enderecoSinais = () =>
 
 const podeSinalizar = () => nuvemLigada() && !modoPublico() && dados.euSou;
 
+/* Sinais que carregam coisa PRIVADA vão embaralhados, igual aos recados.
+   Antes iam em texto puro — e "ondeestou" leva as coordenadas do GPS de
+   uma criança, o que é a última coisa que devia ficar legível no banco.
+   Os outros (digitando, visto) são só horários e não valem o custo de
+   embaralhar de 3 em 3 segundos. */
+const SINAIS_PRIVADOS = ['ondeestou', 'despertador', 'recados'];
+const sinalEhPrivado = caminho => SINAIS_PRIVADOS.some(p => caminho.startsWith(p));
+
 async function escreverSinal(caminho, valor){
   if(!podeSinalizar()) return;
   try{
+    let corpo = valor;
+    if(valor !== null && sinalEhPrivado(caminho) && !(valor && valor.iv && valor.c)){
+      corpo = await embaralhar(valor);
+    }
     await fetch(`${enderecoSinais()}/${caminho}.json`, {
-      method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(valor)
+      method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(corpo)
     });
   }catch(e){}
+}
+
+/* abre um pacote de sinal privado, aceitando também o formato antigo
+   (texto puro) pra não sumir o que já estava no banco */
+async function abrirSinal(pacote){
+  if(!pacote) return null;
+  if(pacote.iv && pacote.c) return await desembaralhar(pacote);
+  return pacote;
 }
 
 /* ---------- está escrevendo ---------- */
@@ -85,10 +105,20 @@ async function lerSinais(){
 
     /* 💭 os recados do dia dos outros vêm no mesmo pacote */
     if(typeof receberRecados === 'function') await receberRecados(tudo.recados);
-    /* ⏰ tem despertador marcado pra mim? */
-    if(typeof conferirDespertador === 'function') conferirDespertador(tudo.despertador);
-    /* 📍 quem está deixando a família ver onde está */
-    if(typeof receberOndeEstao === 'function') receberOndeEstao(tudo.ondeestou);
+    /* ⏰ tem despertador marcado pra mim? (vem embaralhado) */
+    if(typeof conferirDespertador === 'function' && tudo.despertador && dados.euSou){
+      const meu = await abrirSinal(tudo.despertador[dados.euSou]);
+      if(meu) conferirDespertador({ [dados.euSou]: meu });
+    }
+    /* 📍 quem está deixando a família ver onde está (embaralhado) */
+    if(typeof receberOndeEstao === 'function'){
+      const abertos = {};
+      for(const [p, pacote] of Object.entries(tudo.ondeestou || {})){
+        const o = await abrirSinal(pacote);
+        if(o) abertos[p] = o;
+      }
+      receberOndeEstao(abertos);
+    }
     /* 🔋 a bateria de cada um */
     if(typeof receberBaterias === 'function') receberBaterias(tudo.baterias);
 

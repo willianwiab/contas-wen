@@ -17,10 +17,14 @@ const podeChamar = () => nuvemLigada() && !modoPublico() && dados.euSou;
 const enderecoChamada = conversa =>
   `${dados.nuvem.url.replace(/\/$/,'')}/salas/${dados.nuvem.sala}/ligacoes/${conversa}`;
 
+/* O convite da ligação (o SDP) descreve a rede de quem chama: IP de
+   casa, portas, caminhos. Ia em texto puro no banco — agora vai
+   embaralhado, igual aos recados. */
 async function escreverChamada(conversa, dadosChamada){
   try{
+    const corpo = dadosChamada === null ? null : await embaralhar(dadosChamada);
     await fetch(enderecoChamada(conversa) + '.json', {
-      method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(dadosChamada)
+      method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(corpo)
     });
     return true;
   }catch(e){ return false; }
@@ -28,7 +32,11 @@ async function escreverChamada(conversa, dadosChamada){
 async function lerChamada(conversa){
   try{
     const r = await fetch(enderecoChamada(conversa) + '.json');
-    return r.ok ? await r.json() : null;
+    if(!r.ok) return null;
+    const cru = await r.json();
+    if(!cru) return null;
+    if(cru.iv && cru.c) return await desembaralhar(cru);
+    return cru;                       // ligação começada numa versão antiga
   }catch(e){ return null; }
 }
 const limparChamada = conversa => escreverChamada(conversa, null);
