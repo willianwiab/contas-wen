@@ -1,12 +1,65 @@
 /* =========================================================
    trancar.js — a tranca com número (PIN) pra abrir o chat.
-   É uma cortina pra ninguém xeretar sem querer: os recados
-   continuam guardados no aparelho, então não é um cofre.
+
+   DUAS COISAS QUE ESTAVAM ERRADAS E FORAM CONSERTADAS:
+
+   1) O número ficava guardado em texto puro. Quem abrisse o
+      armazenamento do navegador lia a senha. Agora fica só a
+      MISTURA dele (PBKDF2 + um sal sorteado): dá pra conferir
+      se o número está certo, mas não dá pra descobrir qual é.
+
+   2) A tela trancada só DESFOCAVA o conteúdo por cima. Os
+      recados continuavam desenhados por baixo — bastava tirar
+      um filtro do CSS pra ler tudo. Agora o miolo do site nem
+      é desenhado antes de a senha entrar.
+
+   Continua não sendo um cofre: os recados seguem guardados no
+   aparelho, e quem souber mexer no navegador chega neles. É
+   uma cortina — mas agora uma cortina de verdade.
    ========================================================= */
 
 let tentativas = 0;
 
-function temTranca(){ return !!(dados.pin && dados.pin.length >= 4); }
+/* pin novo = { sal, mistura }. Texto puro só existe no formato velho. */
+function temTranca(){
+  const p = dados.pin;
+  if(!p) return false;
+  return typeof p === 'string' ? p.length >= 4 : !!(p.sal && p.mistura);
+}
+
+const bytesTranca = t => new TextEncoder().encode(t);
+const b64Tranca = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+
+async function misturarPin(pin, sal){
+  const base = await crypto.subtle.importKey('raw', bytesTranca(pin), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits(
+    { name:'PBKDF2', salt: bytesTranca(sal), iterations: 210000, hash:'SHA-256' }, base, 256);
+  return b64Tranca(bits);
+}
+
+async function guardarPin(pin){
+  const sal = b64Tranca(crypto.getRandomValues(new Uint8Array(16)));
+  dados.pin = { sal, mistura: await misturarPin(pin, sal), tam: pin.length };
+  salvar();
+}
+
+async function pinConfere(digitado){
+  const p = dados.pin;
+  if(!p) return false;
+  if(typeof p === 'string'){
+    /* formato velho: confere e já converte pro novo, sem incomodar ninguém */
+    if(digitado !== p) return false;
+    await guardarPin(digitado);
+    return true;
+  }
+  try{ return (await misturarPin(digitado, p.sal)) === p.mistura; }
+  catch(e){ return false; }
+}
+
+const tamanhoDoPin = () => {
+  const p = dados.pin;
+  return typeof p === 'string' ? p.length : (p && p.tam) || 4;
+};
 
 function pedirTranca(){
   if(!temTranca()) return;
@@ -44,11 +97,13 @@ function pedirTranca(){
   const bolinhas = () => {
     document.querySelectorAll('#trBolinhas span').forEach((b,i) => b.classList.toggle('on', i < digitado.length));
   };
-  const conferir = () => {
-    if(digitado === dados.pin){
+  const conferir = async () => {
+    if(await pinConfere(digitado)){
       tela.remove();
       document.body.classList.remove('trancado');
+      destrancado = true;
       tentativas = 0;
+      desenharDepoisDaTranca();
       return;
     }
     tentativas++;
@@ -64,7 +119,7 @@ function pedirTranca(){
   tela.querySelectorAll('[data-n]').forEach(b => b.addEventListener('click', () => {
     if(digitado.length >= 8) return;
     digitado += b.dataset.n; bolinhas();
-    if(digitado.length === dados.pin.length) setTimeout(conferir, 150);
+    if(digitado.length === tamanhoDoPin()) setTimeout(conferir, 150);
   }));
   document.getElementById('trApaga').addEventListener('click', () => { digitado = digitado.slice(0,-1); bolinhas(); });
   document.getElementById('trOk').addEventListener('click', conferir);
@@ -72,8 +127,22 @@ function pedirTranca(){
     if(!confirm('Tirar a tranca?\n\nOs recadinhos continuam todos aqui — só a senha some.\nQualquer um que pegar o aparelho vai poder abrir.')) return;
     delete dados.pin; delete dados.dica; salvar();
     tela.remove(); document.body.classList.remove('trancado');
+    destrancado = true; desenharDepoisDaTranca();
     toast('Tranca tirada 🔓');
   });
+}
+
+/* Trocar a senha sem tirar a tranca: pede a de agora, depois a nova. */
+async function trocarSenhaDaTranca(){
+  if(!temTranca()){ mudarTranca(); return; }
+  const velha = (prompt('Digita a senha de AGORA:') || '').replace(/\D/g,'');
+  if(!(await pinConfere(velha))){ toast('Essa não é a senha de agora 😕', 5000); return; }
+  const nova = (prompt('Agora a senha NOVA (4 números):') || '').replace(/\D/g,'');
+  if(nova.length < 4){ toast('Precisa ser de 4 números 😊'); return; }
+  await guardarPin(nova.slice(0,8));
+  dados.dica = (prompt('Uma dica nova pra lembrar. Pode deixar vazio:') || '').trim();
+  salvar(); desenharTranca();
+  toast('Senha trocada! 🔒');
 }
 
 function mudarTranca(){
@@ -86,13 +155,37 @@ function mudarTranca(){
   const pin = (prompt('Escolhe uma senha de 4 números (ex.: 2013):') || '').replace(/\D/g,'');
   if(pin.length < 4){ toast('Precisa ser de 4 números 😊'); return; }
   const dica = (prompt('Uma dica pra lembrar (aparece depois de 3 erros). Pode deixar vazio:') || '').trim();
-  dados.pin = pin.slice(0,8); dados.dica = dica; salvar();
-  desenharTranca();
-  toast('Tranca ligada! 🔒 Na próxima vez ele vai pedir a senha');
+  dados.dica = dica;
+  guardarPin(pin.slice(0,8)).then(() => {
+    desenharTranca();
+    toast('Tranca ligada! 🔒 Na próxima vez ele vai pedir a senha');
+  });
 }
 
 function desenharTranca(){
   const bt = document.getElementById('btnTranca');
   if(!bt) return;
   bt.textContent = temTranca() ? '🔓 Tirar a senha' : '🔒 Pôr uma senha';
+  const troca = document.getElementById('btnTrocarSenha');
+  if(troca) troca.classList.toggle('escondido', !temTranca());
+}
+
+
+/* ---------- o conteúdo só existe DEPOIS da senha ----------
+   Antes o site inteiro era desenhado e a tranca só punha um desfoque
+   por cima: bastava tirar um filtro do CSS pra ler tudo. Agora nada é
+   desenhado antes. */
+let destrancado = false;
+
+function precisaDestrancar(){ return temTranca() && !destrancado; }
+
+function desenharDepoisDaTranca(){
+  if(precisaDestrancar()) return;
+  try{
+    desenharContatos();
+    if(typeof desenharRecadosDoDia === 'function') desenharRecadosDoDia();
+    if(typeof desenharVigia === 'function') desenharVigia();
+    if(typeof telaVazia === 'function' && !atual) telaVazia();
+    if(atual) desenharConversa();
+  }catch(e){}
 }

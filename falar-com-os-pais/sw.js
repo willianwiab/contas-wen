@@ -1,8 +1,8 @@
 /* Service worker simples: tenta a internet primeiro e, se não tiver,
    usa a cópia guardada. Assim o site abre offline e sempre atualiza. */
-const CACHE = 'fala-familia-v32';
+const CACHE = 'fala-familia-v33';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg',
-  './app.js?v=32', './ajuda.js?v=32', './jogo.js?v=32', './trancar.js?v=32', './mais.js?v=32', './casa.js?v=32', './enfeites.js?v=32', './nuvem.js?v=32', './sinais.js?v=32', './chamada.js?v=32', './publico.js?v=32', './audio.js?v=32', './video.js?v=32', './familia.js?v=32', './extras.js?v=32', './ligacao.js?v=32', './avisos.js?v=32', './ia.js?v=32', './recado.js?v=32', './jogos.js?v=32', './quadro.js?v=32', './momentos.js?v=32', './placar.js?v=32', './meu.js?v=32', './festa.js?v=32', './socorro.js?v=32', './guardados.js?v=32',
+  './app.js?v=33', './ajuda.js?v=33', './jogo.js?v=33', './trancar.js?v=33', './mais.js?v=33', './casa.js?v=33', './enfeites.js?v=33', './nuvem.js?v=33', './sinais.js?v=33', './chamada.js?v=33', './publico.js?v=33', './audio.js?v=33', './video.js?v=33', './familia.js?v=33', './extras.js?v=33', './ligacao.js?v=33', './avisos.js?v=33', './ia.js?v=33', './recado.js?v=33', './jogos.js?v=33', './quadro.js?v=33', './momentos.js?v=33', './placar.js?v=33', './meu.js?v=33', './festa.js?v=33', './socorro.js?v=33', './guardados.js?v=33',
   './icone-192.png', './icone-512.png', './icone-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', ev => {

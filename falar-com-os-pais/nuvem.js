@@ -27,8 +27,47 @@ const NUVEM_PADRAO = {
   sala: 'fam-casa-wen-2026-conversa'
 };
 const temPadrao = () => !!NUVEM_PADRAO.url;
-/* sem senha combinada, a própria sala vira a chave */
-const chaveEmUso = () => (dados.nuvem && dados.nuvem.senha) || (dados.nuvem && dados.nuvem.sala) || '';
+
+/* ---------- de onde vem a chave ----------
+   PROBLEMA QUE ISTO CONSERTA: antes, quando a família não punha senha,
+   a chave nascia do NOME DA SALA — e o nome da sala padrão está escrito
+   no código, que é público no GitHub. Ou seja: qualquer pessoa que
+   lesse o repositório conseguia abrir os recados. Embaralhado com uma
+   chave que está publicada não protege de ninguém.
+
+   Agora existe um SEGREDO DA FAMÍLIA: 32 bytes sorteados no primeiro
+   aparelho, que nunca vão pro banco e viajam pros outros aparelhos
+   dentro do 📋 convite. Quem não tem o segredo não abre nada.
+
+   A senha digitada, quando existe, entra junto: aí nem o convite basta.
+
+   O jeito velho continua servindo SÓ pra ler o que já estava lá antes
+   desta versão — nada novo sai por ele. */
+/* O segredo NÃO nasce sozinho, de propósito: se cada aparelho sorteasse
+   o seu, cada um ficaria com uma chave diferente e a família inteira
+   pararia de se entender no dia da atualização. Ele só existe quando
+   alguém aperta "🔐 Proteger de verdade" e manda o convite pros outros.
+
+   Enquanto isso, vale a chave de antes — que funciona, mas protege
+   pouco, e por isso o site diz na cara: 🔓 "Ainda sem chave própria". */
+const segredoDaFamilia = () => (dados.nuvem && dados.nuvem.segredo) || '';
+
+function criarSegredoDaFamilia(){
+  if(!dados.nuvem) return '';
+  if(!dados.nuvem.segredo){
+    dados.nuvem.segredo = paraB64(crypto.getRandomValues(new Uint8Array(32)));
+    salvar();
+  }
+  return dados.nuvem.segredo;
+}
+
+/* a chave de antes: nasce da senha da família ou, sem senha, do nome da
+   sala — que está no código público. Só serve enquanto não há segredo. */
+const chaveAntiga = () => (dados.nuvem && dados.nuvem.senha) || (dados.nuvem && dados.nuvem.sala) || '';
+const chaveEmUso = () => {
+  const seg = segredoDaFamilia();
+  return seg ? seg + '|' + ((dados.nuvem && dados.nuvem.senha) || '') : chaveAntiga();
+};
 
 let fontesNuvem = [];     // uma escuta pra cada conversa minha
 let relogioPuxar = null;  // rede teimosa: confere o banco de tempos em tempos
@@ -48,13 +87,29 @@ const texto = b => new TextDecoder().decode(b);
 const paraB64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
 const deB64 = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
 
+async function derivarChave(material){
+  const base = await crypto.subtle.importKey('raw', bytes(material), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt: bytes('fala-familia:' + dados.nuvem.sala), iterations: 210000, hash:'SHA-256' },
+    base, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
+}
 async function pegarChave(){
   if(chaveNuvem) return chaveNuvem;
-  const base = await crypto.subtle.importKey('raw', bytes(chaveEmUso()), 'PBKDF2', false, ['deriveKey']);
-  chaveNuvem = await crypto.subtle.deriveKey(
+  chaveNuvem = await derivarChave(chaveEmUso());
+  return chaveNuvem;
+}
+/* só pra LER o que foi guardado antes desta versão */
+let chaveVelha = null;
+async function pegarChaveVelha(){
+  if(chaveVelha) return chaveVelha;
+  chaveVelha = await derivarChaveVelha(chaveAntiga());
+  return chaveVelha;
+}
+async function derivarChaveVelha(material){
+  const base = await crypto.subtle.importKey('raw', bytes(material), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
     { name:'PBKDF2', salt: bytes('fala-familia:' + dados.nuvem.sala), iterations: 120000, hash:'SHA-256' },
     base, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
-  return chaveNuvem;
 }
 async function embaralhar(obj){
   const chave = await pegarChave();
@@ -63,12 +118,18 @@ async function embaralhar(obj){
   return { iv: paraB64(iv), c: paraB64(cifra) };
 }
 async function desembaralhar(pacote){
-  try{
-    const chave = await pegarChave();
-    const claro = await crypto.subtle.decrypt(
-      { name:'AES-GCM', iv: deB64(pacote.iv) }, chave, deB64(pacote.c));
-    return JSON.parse(texto(claro));
-  }catch(e){ return null; }   // senha diferente: o recado não é desta família
+  if(!pacote || typeof pacote.iv !== 'string' || typeof pacote.c !== 'string') return null;
+  /* tenta a chave de agora; se não abrir, tenta a de antes desta versão,
+     senão os recados que já estavam no banco sumiriam da vista */
+  const tentativas = segredoDaFamilia() ? [pegarChave, pegarChaveVelha] : [pegarChave];
+  for(const pegar of tentativas){
+    try{
+      const claro = await crypto.subtle.decrypt(
+        { name:'AES-GCM', iv: deB64(pacote.iv) }, await pegar(), deB64(pacote.c));
+      return JSON.parse(texto(claro));
+    }catch(e){}
+  }
+  return null;   // não é desta família (ou a senha é outra)
 }
 
 /* ---------- endereços ---------- */
@@ -183,8 +244,35 @@ async function atualizarNaNuvem(conversa, msg){
 const jaVistos = new Set();
 const emAndamento = new Set();
 
+/* ---------- conferir o que chega ----------
+   O que vem do banco foi escrito por outro aparelho. Mesmo estando
+   embaralhado com a chave da família, vale conferir o formato antes de
+   usar: um campo estranho não pode virar HTML na tela nem um recado com
+   dono inventado. */
+const TIPOS_QUE_EXISTEM = ['audio','foto','video','enquete','jogo','capsula','lugar','som','timer',
+  'sos','ppt','forca','cheguei','indo','tudobem'];
+
+function recadoConfere(msg){
+  if(!msg || typeof msg !== 'object' || Array.isArray(msg)) return false;
+  if(typeof msg.de !== 'string' || !PESSOAS[msg.de]) return false;      // dono precisa ser da família
+  if(typeof msg.ts !== 'number' || !isFinite(msg.ts)) return false;
+  if(msg.ts > Date.now() + 86400000) return false;                      // recado do futuro, não
+  if(msg.tipo !== undefined && !TIPOS_QUE_EXISTEM.includes(msg.tipo)) return false;
+  if(msg.t !== undefined && typeof msg.t !== 'string') return false;
+  if(msg.t && msg.t.length > 20000) return false;
+  if(msg.uid !== undefined && (typeof msg.uid !== 'string' || msg.uid.length > 80)) return false;
+  if(msg.b64 !== undefined && (typeof msg.b64 !== 'string' || !/^data:/.test(msg.b64))) return false;
+  if(msg.lugar !== undefined && msg.lugar !== null){
+    const l = msg.lugar;
+    if(typeof l !== 'object' || typeof l.lat !== 'number' || typeof l.lon !== 'number') return false;
+    if(Math.abs(l.lat) > 90 || Math.abs(l.lon) > 180) return false;
+  }
+  return true;
+}
+
 async function guardarRecebido(conversa, msg){
-  if(!dados.msgs[conversa]) return false;
+  if(typeof conversa !== 'string' || !dados.msgs[conversa]) return false;
+  if(!recadoConfere(msg)) return false;
   if(msg.uid && emAndamento.has(msg.uid)) return false;                          // já está entrando
   const tenho = msg.uid && dados.msgs[conversa].find(m => m.uid === msg.uid);
   if(tenho){
@@ -218,7 +306,8 @@ async function guardarRecebido(conversa, msg){
 async function chegouDaNuvem(pacote, conversaEsperada){
   if(!pacote || !pacote.c) return;
   const claro = await desembaralhar(pacote);
-  if(!claro || !claro.msg) return;
+  if(!claro || typeof claro !== 'object' || !claro.msg) return;
+  if(typeof claro.conversa !== 'string') return;
   if(conversaEsperada && claro.conversa !== conversaEsperada) return;
   const novo = await guardarRecebido(claro.conversa, claro.msg);
   if(!novo) return;
@@ -258,9 +347,13 @@ async function salaDaSenha(senha){
 function ligarSozinho(){
   if(!temPadrao()) return;
   if(!dados.nuvem || dados.nuvemVersao !== 2){
+    /* o segredo da família NÃO pode se perder aqui: sem ele, este
+       aparelho deixaria de abrir os recados dos outros */
+    const segredo = dados.nuvem && dados.nuvem.segredo;
     dados.nuvem = Object.assign({}, NUVEM_PADRAO);
+    if(segredo) dados.nuvem.segredo = segredo;
     dados.nuvemVersao = 2;
-    salvar(); chaveNuvem = null;
+    salvar(); chaveNuvem = null; chaveVelha = null;
   }
   ligarNuvem();
 }
@@ -377,7 +470,7 @@ function desligarNuvem(){
   clearInterval(relogioPuxar); clearInterval(relogioAviso);
   fontesNuvem.forEach(f => { try{ f.close(); }catch(e){} });
   fontesNuvem = [];
-  chaveNuvem = null;
+  chaveNuvem = null; chaveVelha = null;
   marcarNuvem('desligado');
 }
 
@@ -457,10 +550,36 @@ function marcarNuvem(estado, detalhe){
   const chip = document.getElementById('chipNuvem');
   if(chip){
     chip.className = 'net nuvem ' + estado;
-    const txt = { desligado:'Só neste aparelho', ligando:'Conectando...',
-                  ligado:'Enviando ☁️ ' + codigoDaFamilia(), erro:'Deu erro no envio' }[estado];
+    const txt = { desligado:'🟢 Só neste aparelho', ligando:'⏳ Conectando...',
+                  ligado:'🔵 Enviando ☁️ ' + codigoDaFamilia(), erro:'⚠️ Deu erro no envio' }[estado];
     chip.innerHTML = `<span class="bolinha"></span><span>${txt}</span>`;
-    chip.title = detalhe || '';
+    chip.title = { desligado:'Nada sai deste aparelho', ligando:'',
+                   ligado:'Os recados viajam pro banco da família, embaralhados',
+                   erro: detalhe || 'não consegui falar com o banco' }[estado] || '';
+  }
+
+  /* Dois avisos que faltavam, e que mudam o que a família precisa saber:
+     se os recados estão mesmo embaralhados, e se o servidor é o de teste. */
+  const chipCripto = document.getElementById('chipCripto');
+  if(chipCripto){
+    const ligado = estado === 'ligado' || estado === 'ligando';
+    const temSegredo = !!(dados.nuvem && dados.nuvem.segredo);
+    const temSenha = !!(dados.nuvem && dados.nuvem.senha);
+    chipCripto.classList.toggle('escondido', !ligado);
+    chipCripto.classList.toggle('fraco', !temSegredo && !temSenha);
+    chipCripto.innerHTML = temSegredo || temSenha
+      ? '<span class="bolinha"></span><span>🔒 Conversas embaralhadas</span>'
+      : '<span class="bolinha"></span><span>🔓 Ainda sem chave própria</span>';
+    chipCripto.title = temSegredo || temSenha
+      ? 'Só quem tem o convite (ou a senha) da família consegue ler'
+      : 'Toca no ⚙️ Ajustes → ☁️ e aperta "Proteger de verdade"';
+  }
+
+  const chipPublico = document.getElementById('chipPublico');
+  if(chipPublico){
+    chipPublico.classList.toggle('escondido', !(modoPublico() && estado !== 'desligado'));
+    chipPublico.innerHTML = '<span class="bolinha"></span><span>⚠️ Servidor público de teste</span>';
+    chipPublico.title = 'Servidor aberto: pode cair ou apagar tudo sem avisar';
   }
   /* o rodapé da lista tem que contar a verdade: com o ☁️ ligado os
      recados saem daqui, e o 🤖 Ajudante sempre fala com a internet. */
@@ -487,8 +606,23 @@ function usarConvite(txt){
     const limpo = (txt || '').trim().replace(/\s+/g,'');
     if(!limpo.startsWith('FAMILIA-NUVEM.')) return false;
     const cfg = JSON.parse(decodeURIComponent(escape(atob(limpo.slice(14)))));
-    if(!cfg.url || !cfg.sala || !cfg.senha) return false;
-    dados.nuvem = cfg; salvar(); chaveNuvem = null;
+    if(!cfg.sala || typeof cfg.sala !== 'string' || cfg.sala.length > 120) return false;
+    if(cfg.modo !== 'publico'){
+      /* O convite vem de fora e diz PRA ONDE mandar os recados. Só https
+         é aceito: um convite apontando pra um endereço comum jogaria o
+         que a família escreve numa conexão aberta, no computador de
+         quem mandou o convite. (O endereço da própria máquina é aceito
+         porque é onde o site é testado, e dali nada sai.) */
+      if(!cfg.url || typeof cfg.url !== 'string') return false;
+      const soLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(cfg.url);
+      if(!/^https:\/\//i.test(cfg.url) && !soLocal){
+        toast('Esse convite manda os recados por uma conexão aberta — não aceitei 🔒', 7000);
+        return false;
+      }
+    }
+    if(cfg.segredo !== undefined && (typeof cfg.segredo !== 'string' || cfg.segredo.length > 200)) return false;
+    if(cfg.senha !== undefined && typeof cfg.senha !== 'string') return false;
+    dados.nuvem = cfg; salvar(); chaveNuvem = null; chaveVelha = null;
     ligarNuvem(); desenharNuvem();
     return true;
   }catch(e){ return false; }
@@ -524,11 +658,13 @@ async function salvarNuvem(){
     if(!url){ toast('Falta o endereço do banco 😊'); return; }
     if(!/^https:\/\/.+/.test(url)){ toast('O endereço tem que começar com https:// 😊'); return; }
   }
+  const segredo = (dados.nuvem && dados.nuvem.segredo) || '';
   dados.nuvem = modo === 'publico'
     ? { modo, sala: salaFinal, senha }
     : { modo, url, sala: salaFinal, senha };
+  if(segredo) dados.nuvem.segredo = segredo;   // trocar a senha não perde o segredo
   dados.nuvemVersao = 2;
-  salvar(); chaveNuvem = null;
+  salvar(); chaveNuvem = null; chaveVelha = null;
   ligarNuvem(); desenharNuvem();
   toast('Ligando o envio de verdade... ☁️');
 }
@@ -653,4 +789,38 @@ async function faxinaDaNuvem(){
       }
     }catch(e){ return; }
   }
+}
+
+
+/* ---------- 🔐 proteger de verdade ----------
+   Explica em português o que muda e cria a chave da família. Depois
+   disso, só quem receber o convite consegue ler os recados. */
+function protegerDeVerdade(){
+  if(!dados.nuvem){ toast('Liga o ☁️ primeiro 😊'); return; }
+  const jaTem = !!dados.nuvem.segredo;
+  if(jaTem){
+    mostrarConvite();
+    return;
+  }
+  if(!confirm(
+    '🔐 Criar a chave da família?\n\n' +
+    'Hoje os recados são embaralhados com uma chave que nasce do nome da sala — e o nome ' +
+    'da sala está no código do site, que é público. Quem souber olhar consegue ler.\n\n' +
+    'Com a chave própria, só quem tiver o convite lê.\n\n' +
+    'IMPORTANTE: depois de criar, tu precisa mandar o 📋 convite pros outros aparelhos, ' +
+    'senão eles param de ver os recados NOVOS (os antigos continuam).')) return;
+
+  criarSegredoDaFamilia();     // sorteia e guarda
+  chaveNuvem = null;
+  marcarNuvem(estadoNuvem);
+  mostrarConvite();
+  toast('🔐 Chave criada! Manda o convite pros outros AGORA', 9000);
+}
+
+function mostrarConvite(){
+  const convite = fazerConvite();
+  if(navigator.clipboard) navigator.clipboard.writeText(convite)
+    .then(() => toast('Convite copiado! Cola no outro aparelho 📋', 6000))
+    .catch(() => prompt('Copia este convite e cola no outro aparelho:', convite));
+  else prompt('Copia este convite e cola no outro aparelho:', convite);
 }

@@ -157,6 +157,60 @@ exatamente igual.
 vez que o Ajudante é usado, com `dangerouslyAllowBrowser: true` — o que aqui é seguro
 porque a chave é do próprio dono do aparelho, não uma chave compartilhada do site.
 
+## 🔒 Segurança — o que foi encontrado e o que foi corrigido
+
+**1. A chave saía do nome da sala, e o nome da sala está no código público.**
+Sem senha da família, `chaveEmUso()` caía no nome da sala — que é uma constante deste
+repositório. Embaralhar com uma chave publicada não protege de ninguém. Agora existe um
+**segredo da família**: 32 bytes sorteados, que **nunca vão pro banco** e viajam pros
+outros aparelhos dentro do 📋 convite. Ele **não nasce sozinho** — se cada aparelho
+sorteasse o seu, a família inteira pararia de se entender no dia da atualização. Nasce
+quando alguém aperta **🔐 Proteger de verdade** e manda o convite. Até lá o site diz na
+cara: 🔓 *"Ainda sem chave própria"*.
+
+**2. A localização do GPS ia em texto puro.** `sinais/ondeestou` guardava as coordenadas
+de uma criança legíveis no banco. Agora vão embaralhadas, junto com o `despertador` (que
+leva texto livre) e o SDP das `ligacoes` (que descreve o IP e a rede de casa).
+
+**3. O PIN da tranca ficava em texto puro** no `localStorage`. Agora fica só a mistura
+(PBKDF2-SHA256, 210 000 voltas, com sal sorteado). Migra sozinho no primeiro acerto.
+
+**4. A tranca só desfocava a tela.** O conteúdo continuava desenhado por baixo — bastava
+tirar um filtro do CSS. Agora o miolo **não é desenhado** antes da senha.
+
+**5. O backup era um arquivo aberto com tudo dentro** (conversas, fotos, ficha de
+emergência, telefones). Agora avisa o que tem ali e oferece **trancar com senha**
+(AES-GCM + PBKDF2); importar um arquivo trancado pede a senha. A chave da IA e o segredo
+da família ficam de fora do arquivo.
+
+**6. O que chegava do banco era usado quase direto.** Agora `recadoConfere()` valida dono
+(tem que ser da família), horário, tipo, tamanho, formato do anexo e coordenadas antes de
+guardar.
+
+**7. Um convite podia apontar pra `http://`.** Isso jogaria o tráfego da família numa
+conexão aberta escolhida por quem mandou o convite. Só `https` é aceito (o endereço da
+própria máquina é aceito porque é onde o site é testado).
+
+**8. Aumentado o PBKDF2** de 120 000 para 210 000 voltas. A chave antiga continua sendo
+tentada na leitura, então nada do que já estava no banco se perde.
+
+### O que ainda depende da configuração do Firebase (não dá pra fazer daqui)
+
+- **As regras do banco.** As do `GUIA-FIREBASE.md` liberam leitura e escrita pra qualquer
+  sala com nome maior que 12 letras. Quem descobrir o nome da sala pode **escrever** nela.
+  O conteúdo continua ilegível sem a chave, mas dá pra encher o banco de lixo. Regras
+  melhores exigem autenticação, que a família decidiu não usar.
+- **O nome da sala padrão está no código público.** Trocar o código da sala (⚙️ Ajustes →
+  ☁️ → 🎲 Sortear) tira o banco da vista de quem lê o repositório.
+- **Quem tem o convite tem tudo.** Não há como revogar um convite já entregue a não ser
+  criando outra sala.
+
+### O que este site não promete
+
+Os recados ficam guardados no aparelho, em texto puro no `localStorage` — quem souber
+mexer no navegador chega neles. A tranca é uma cortina contra bisbilhotice, não um cofre.
+O 🤖 Ajudante manda pra Anthropic o que for digitado na tela dele.
+
 ## 🆘 Emergência (`socorro.js`)
 
 A regra desse arquivo inteiro: **nada pode depender de dar tudo certo.** GPS que não

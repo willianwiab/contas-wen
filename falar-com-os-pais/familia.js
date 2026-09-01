@@ -188,7 +188,50 @@ function desenharTarefas(){
 }
 
 /* ---------- BACKUP: levar tudo pra outro aparelho ---------- */
+/* ---------- guardar o backup com senha ----------
+   O arquivo do backup leva TUDO: conversas, áudios, fotos, a ficha de
+   emergência, os telefones de quem pode buscar. Ele costuma acabar num
+   grupo de zap ou num pendrive esquecido — por isso agora o site avisa
+   o que tem ali dentro e oferece trancar com uma senha. */
+const bytesBk = t => new TextEncoder().encode(t);
+const b64Bk = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const deB64Bk = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
+
+async function chaveDoBackup(senha, salB64){
+  const base = await crypto.subtle.importKey('raw', bytesBk(senha), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt: deB64Bk(salB64), iterations: 210000, hash:'SHA-256' },
+    base, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
+}
+
+async function trancarBackup(texto, senha){
+  const sal = b64Bk(crypto.getRandomValues(new Uint8Array(16)));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const cifra = await crypto.subtle.encrypt(
+    { name:'AES-GCM', iv }, await chaveDoBackup(senha, sal), bytesBk(texto));
+  return { app:'fala-familia', trancado:true, sal, iv: b64Bk(iv), c: b64Bk(cifra) };
+}
+
+async function abrirBackup(pacote, senha){
+  const claro = await crypto.subtle.decrypt(
+    { name:'AES-GCM', iv: deB64Bk(pacote.iv) },
+    await chaveDoBackup(senha, pacote.sal), deB64Bk(pacote.c));
+  return JSON.parse(new TextDecoder().decode(claro));
+}
+
 async function exportarTudo(){
+  const querSenha = confirm(
+    '💾 O arquivo do backup leva TUDO:\n\n' +
+    '• todas as conversas, áudios, fotos e vídeos\n' +
+    '• a 🩺 ficha de emergência e os telefones de quem pode te buscar\n\n' +
+    'Se ele cair na mão de outra pessoa, ela lê tudo isso.\n\n' +
+    'Quer trancar o arquivo com uma senha? (recomendado)\n' +
+    'OK = com senha · Cancelar = arquivo aberto');
+  let senha = '';
+  if(querSenha){
+    senha = (prompt('Escolhe uma senha pro arquivo.\nSem ela, nem tu consegue abrir depois:') || '').trim();
+    if(senha.length < 4){ toast('A senha precisa ter 4 letrinhas ou mais 😊', 5000); return; }
+  }
   toast('Preparando o arquivo... 💾', 4000);
   const arquivos = {};
   const ids = new Set();
@@ -203,7 +246,10 @@ async function exportarTudo(){
   /* a chave da IA é segredo de quem paga por ela: nunca vai junto no arquivo,
      que pode acabar num grupo de zap ou num pendrive esquecido. */
   const semSegredo = Object.assign({}, dados, { ia: Object.assign({}, dados.ia, { chave:'' }) });
-  const pacote = { app:'fala-familia', versao:2, quando:new Date().toISOString(), dados: semSegredo, arquivos };
+  /* o segredo da nuvem também fica de fora: é a chave dos recados */
+  if(semSegredo.nuvem) semSegredo.nuvem = Object.assign({}, semSegredo.nuvem, { segredo:'', senha:'' });
+  let pacote = { app:'fala-familia', versao:2, quando:new Date().toISOString(), dados: semSegredo, arquivos };
+  if(senha) pacote = await trancarBackup(JSON.stringify(pacote), senha);
   const blob = new Blob([JSON.stringify(pacote)], { type:'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -211,7 +257,7 @@ async function exportarTudo(){
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   const mb = (blob.size / 1048576).toFixed(1);
-  toast(`Arquivo salvo! (${mb} MB) 💾`, 5000);
+  toast(senha ? `Arquivo salvo e trancado! (${mb} MB) 🔒` : `Arquivo salvo, SEM senha (${mb} MB) 💾`, 6000);
 }
 
 function importarTudo(){
@@ -221,8 +267,15 @@ function importarTudo(){
     const arq = inp.files && inp.files[0];
     if(!arq) return;
     try{
-      const pacote = JSON.parse(await arq.text());
+      let pacote = JSON.parse(await arq.text());
       if(pacote.app !== 'fala-familia') throw new Error('outro arquivo');
+      if(pacote.trancado){
+        const senha = (prompt('🔒 Este backup está trancado.\nDigita a senha dele:') || '').trim();
+        if(!senha){ toast('Sem a senha eu não consigo abrir 🔒', 5000); return; }
+        try{ pacote = await abrirBackup(pacote, senha); }
+        catch(e){ toast('Senha errada — não consegui abrir esse arquivo 🔒', 6000); return; }
+      }
+      if(!pacote.dados || typeof pacote.dados !== 'object') throw new Error('arquivo estragado');
       if(!confirm('Isso vai TROCAR tudo que está neste aparelho pelo que está no arquivo.\nPode ir?')) return;
       toast('Abrindo o backup... 💾', 4000);
       for(const [id, texto] of Object.entries(pacote.arquivos || {})){

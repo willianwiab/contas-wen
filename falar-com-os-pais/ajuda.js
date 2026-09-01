@@ -225,6 +225,22 @@ const AJUDA = [
     ]
   },
   {
+    titulo:'🔒 Segurança: o que é protegido e o que não é',
+    cor:'#16a34a',
+    itens:[
+      ['🟢 Só neste aparelho','com o ☁️ desligado, NADA sai daqui. Nem recado, nem foto, nem áudio'],
+      ['🔵 Enviando','com o ☁️ ligado, os recados viajam pro banco da família'],
+      ['🔒 Conversas embaralhadas','o banco guarda os recados EMBARALHADOS. Nem o dono do banco entende o que passa'],
+      ['⚠️ Servidor público','o modo 📡 usa um servidor de teste aberto: dá pro dia a dia, mas pode cair ou apagar tudo'],
+      ['🔐 Proteger de verdade','em ⚙️ Ajustes → ☁️. Cria uma chave só de vocês. Sem ela, a chave nasce do nome da sala — e esse nome está no código do site, que é público'],
+      ['📋 O convite','leva a chave da família. Manda pra quem é da família, e só. Quem tiver o convite lê os recados'],
+      ['🔒 A tranca','a senha não fica guardada: fica só uma mistura dela. E o site não desenha nada antes de tu digitar'],
+      ['💾 O backup','leva TUDO — conversas, fotos, a ficha de emergência. Dá pra trancar o arquivo com senha na hora de salvar'],
+      ['🤖 A chave do Ajudante','fica só neste aparelho. Não vai pro backup, nem pra nuvem, nem pros outros'],
+      ['O que NÃO dá pra prometer','os recados ficam guardados no aparelho. Quem souber mexer no navegador chega neles. A tranca é uma cortina, não um cofre']
+    ]
+  },
+  {
     titulo:'🤔 Coisas importantes de saber',
     cor:'#64748b',
     itens:[

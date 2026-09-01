@@ -824,6 +824,7 @@ $('#btnQuemChegou').addEventListener('click', abrirQuemChegou);
 $('#cardBicho').addEventListener('click', abrirBicho);
 $('#btnAjuda').addEventListener('click', abrirAjuda);
 $('#btnTranca').addEventListener('click', mudarTranca);
+$('#btnTrocarSenha').addEventListener('click', trocarSenhaDaTranca);
 /* Joga fora a cópia velha guardada e baixa o site de novo (sem apagar recadinho). */
 $('#btnSortear').addEventListener('click', sortearSala);
 document.querySelectorAll('.modo-op').forEach(b => b.addEventListener('click', () => {
@@ -838,6 +839,7 @@ $('#btnDiagnostico').addEventListener('click', copiarDiagnostico);
 $('#chipNuvem').addEventListener('click', abrirPainelNuvem);   // toca na bolinha e vê tudo
 $('#btnTrocarServidor').addEventListener('click', () => { trocarServidor(); toast('Trocando de servidor... 🔁'); });
 $('#btnDesligarNuvem').addEventListener('click', desligarDeVez);
+$('#btnProteger').addEventListener('click', protegerDeVerdade);
 $('#btnConvite').addEventListener('click', () => {
   navigator.clipboard?.writeText(fazerConvite())
     .then(() => toast('Convite copiado! Cola no outro aparelho 📋'))
@@ -916,8 +918,15 @@ if(!localStorage.getItem(CHAVE) && !localStorage.getItem('fala-familia:v1')
 if(dados.migrou){ delete dados.migrou; salvar(); }   // guarda o que veio da versão antiga
 autor = dados.euSou || 'jojo';
 montarConversas();
-aplicarTema(); aplicarLetra(); saudacao(); verInternet(); desenharContatos(); telaVazia();
-carregarPerfis().then(() => { desenharContatos(); if(atual) desenharConversa(); });
+aplicarTema(); aplicarLetra(); saudacao(); verInternet();
+/* com tranca ligada, o miolo do site só é desenhado depois da senha */
+if(!(typeof precisaDestrancar === 'function' && precisaDestrancar())){
+  desenharContatos(); telaVazia();
+}
+carregarPerfis().then(() => {
+  if(typeof precisaDestrancar === 'function' && precisaDestrancar()) return;
+  desenharContatos(); if(atual) desenharConversa();
+});
 verLembretes(true); atualizarBolinhaDoIcone(); mostrarAniversario(); mostrarProximo();
 verCapsulas(); verAgenda(); desenharBicho(); pedirTranca();
 verOTempo();                                  // ⛅ leva casaco hoje?

@@ -107,9 +107,8 @@ async function mandarMeuRecado(){
   const eu = dados.euSou;
   const meu = (dados.recados || {})[eu];
   try{
-    /* embaralhado igual aos recados: o banco guarda, mas não entende */
-    const valor = meu ? await embaralhar({ txt: meu.txt, ts: meu.ts }) : null;
-    await escreverSinal(`recados/${eu}`, valor);
+    /* o escreverSinal já embaralha o que é privado */
+    await escreverSinal(`recados/${eu}`, meu ? { txt: meu.txt, ts: meu.ts } : null);
   }catch(e){}
 }
 
