@@ -312,7 +312,12 @@ function sairDaTurma(){
 function desenharTudo(){
   aplicarTema();
   $('#turmaNome').textContent = dados.turma ? dados.turma.nome : 'Fala, Turma!';
-  $('#euSou').textContent = dados.eu ? `${bichoDe(dados.eu)} ${dados.eu}${emprestado ? ' · emprestado' : ''}` : '';
+  $('#euChip').classList.toggle('escondido', !dados.eu);
+  $('#btGente').classList.toggle('escondido', !naTurma());
+  if(dados.eu){
+    $('#euAv').textContent = bichoDe(dados.eu);
+    $('#euSou').textContent = dados.eu + (emprestado ? ' · emprestado' : '');
+  }
   $('#chipNuvem').classList.toggle('escondido', !naTurma());
   desenharMural();
 }
@@ -324,10 +329,18 @@ function desenharMural(){
   if(!caixa) return;
   const lista = dados.avisos
     .filter(a => filtro === 'tudo' || a.tipo === filtro)
-    .sort((a,b) => b.ts - a.ts);
+    .sort((a,b) => (b.fixado ? 1 : 0) - (a.fixado ? 1 : 0) || b.ts - a.ts);
 
-  document.querySelectorAll('[data-filtro]').forEach(b =>
-    b.classList.toggle('on', b.dataset.filtro === filtro));
+  /* cada filtro mostra quantos tem: sem isso a pessoa toca num filtro
+     vazio sem saber, e parece que o app perdeu os recados */
+  document.querySelectorAll('[data-filtro]').forEach(b => {
+    const f = b.dataset.filtro;
+    const n = f === 'tudo' ? dados.avisos.length : dados.avisos.filter(a => a.tipo === f).length;
+    b.classList.toggle('on', f === filtro);
+    b.classList.toggle('vazio-f', n === 0);
+    const conta = b.querySelector('i');
+    if(conta) conta.textContent = n;
+  });
 
   if(!lista.length){
     caixa.innerHTML = `
@@ -351,7 +364,8 @@ function desenharMural(){
     const total = Object.keys(votos).length;
 
     return `
-      <div class="recado" style="--cor:${t.cor}">
+      <div class="recado ${a.fixado ? 'fixado' : ''}" style="--cor:${t.cor}">
+        ${a.fixado ? '<div class="rec-fixado">📌 Fixado</div>' : ''}
         <div class="rec-topo">
           <span class="rec-av" style="background:${corDe(a.de)}">${bichoDe(a.de)}</span>
           <div class="rec-quem"><b>${escapar(a.de)}${meu ? ' (tu)' : ''}</b>
@@ -359,20 +373,27 @@ function desenharMural(){
           <span class="rec-tipo">${t.emoji} ${t.nome}</span>
         </div>
         ${a.quando ? `<div class="rec-quando">📅 ${escapar(a.quando)}</div>` : ''}
-        <div class="rec-txt">${escapar(a.txt)}</div>
+        <div class="rec-txt">${comLinks(escapar(a.txt))}</div>
         ${a.ops && a.ops.length ? `
           <div class="rec-ops">
-            ${a.ops.map((o, i) => `
+            ${a.ops.map((o, i) => {
+              const n = conta[i] || 0;
+              const pct = total ? Math.round(n / total * 100) : 0;
+              return `
               <button class="rec-op ${meuVoto === i ? 'on' : ''}" data-voto="${a.id}:${i}">
+                <span class="barra" style="width:${pct}%"></span>
                 <span>${escapar(o)}</span>
-                <b>${conta[i] || 0}</b>
-              </button>`).join('')}
-            <div class="rec-total">${total} ${total === 1 ? 'voto' : 'votos'}</div>
+                <b>${n}${n ? ` · ${pct}%` : ''}</b>
+              </button>`;
+            }).join('')}
+            <div class="rec-total">${total} ${total === 1 ? 'voto' : 'votos'}${
+              meuVoto === undefined ? ' · toca pra votar' : ''}</div>
           </div>` : ''}
         <div class="rec-pe">
           <button class="rec-bt ${(a.joia || {})[dados.eu] ? 'on' : ''}" data-joia="${a.id}">👍 ${Object.keys(a.joia || {}).length || ''}</button>
           <button class="rec-bt" data-vi="${a.id}">${(a.vi || {})[dados.eu] ? '👀 vi' : '👀 marcar que vi'}${
             Object.keys(a.vi || {}).length ? ' · ' + Object.keys(a.vi || {}).length : ''}</button>
+          <button class="rec-bt ${a.fixado ? 'on' : ''}" data-fixar="${a.id}">📌</button>
           ${meu ? `<button class="rec-bt fraco" data-apagar="${a.id}">🗑️</button>` : ''}
         </div>
       </div>`;
@@ -386,6 +407,8 @@ function desenharMural(){
     b.addEventListener('click', () => marcar(b.dataset.joia, 'joia')));
   caixa.querySelectorAll('[data-vi]').forEach(b =>
     b.addEventListener('click', () => marcar(b.dataset.vi, 'vi')));
+  caixa.querySelectorAll('[data-fixar]').forEach(b =>
+    b.addEventListener('click', () => fixar(b.dataset.fixar)));
   caixa.querySelectorAll('[data-apagar]').forEach(b =>
     b.addEventListener('click', () => apagarAviso(b.dataset.apagar)));
 }
@@ -419,6 +442,62 @@ async function apagarAviso(id){
   try{ await fetch(`${endereco()}/mural/${id}.json`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:'null' }); }
   catch(e){}
   aviso('Apagado 🗑️');
+}
+
+function fixar(id){
+  const a = achar(id);
+  if(!a) return;
+  a.fixado = !a.fixado;
+  a.v = (a.v || 0) + 1;
+  salvar(); desenharMural(); mandarPraTurma(a);
+  aviso(a.fixado ? '📌 Fixado no topo do mural' : 'Tirado do topo');
+}
+
+/* ---------- 🔗 link escrito vira link ----------
+   Roda DEPOIS de escapar o texto, e só aceita http, https e www.:
+   assim nada que alguém escrever vira HTML nem "javascript:". */
+const REGEX_LINK = /\b((?:https?:\/\/|www\.)[^\s<>"']+)/gi;
+function comLinks(escapado){
+  return escapado.replace(REGEX_LINK, bruto => {
+    let fim = '';
+    const sobra = bruto.match(/[.,!?;:)\]}]+$/);
+    if(sobra){ fim = sobra[0]; bruto = bruto.slice(0, -fim.length); }
+    if(!bruto) return fim;
+    let e = bruto.replace(/&amp;/g,'&');
+    if(!/^https?:\/\//i.test(e)) e = 'https://' + e;
+    return `<a href="${e.replace(/"/g,'%22')}" target="_blank" rel="noopener noreferrer">${bruto}</a>` + fim;
+  });
+}
+
+/* ---------- 👥 quem está na turma ----------
+   Não existe lista de membros no banco (ninguém "se cadastra"): a turma
+   é quem apareceu no mural. Então a lista nasce de quem escreveu, votou,
+   marcou que viu ou deu joinha. */
+function abrirGente(){
+  const conta = {};
+  dados.avisos.forEach(a => {
+    const somar = (nome, campo) => {
+      if(!nome) return;
+      conta[nome] = conta[nome] || { recados:0, votos:0, vistos:0, ultimo:0 };
+      conta[nome][campo]++;
+      conta[nome].ultimo = Math.max(conta[nome].ultimo, a.ts);
+    };
+    somar(a.de, 'recados');
+    Object.keys(a.votos || {}).forEach(n => somar(n, 'votos'));
+    Object.keys(a.vi || {}).forEach(n => somar(n, 'vistos'));
+    Object.keys(a.joia || {}).forEach(n => somar(n, 'vistos'));
+  });
+  if(dados.eu) conta[dados.eu] = conta[dados.eu] || { recados:0, votos:0, vistos:0, ultimo:0 };
+
+  const gente = Object.entries(conta).sort((a,b) => b[1].recados - a[1].recados || a[0].localeCompare(b[0]));
+  $('#codigoTurma').textContent = dados.turma ? dados.turma.codigo : '--------';
+  $('#listaGente').innerHTML = gente.map(([nome, c]) => `
+    <div class="pessoa ${nome === dados.eu ? 'sou-eu' : ''}">
+      <div class="pessoa-av" style="background:${corDe(nome)}">${bichoDe(nome)}</div>
+      <b>${escapar(nome)}${nome === dados.eu ? ' (tu)' : ''}</b>
+      <small>${c.recados ? c.recados + ' recado' + (c.recados > 1 ? 's' : '') : 'só olhando'}</small>
+    </div>`).join('');
+  mostrar('gente');
 }
 
 /* ---------- escrever ---------- */
@@ -524,6 +603,9 @@ $('#btVoltarEsc').addEventListener('click', () => {
 });
 $('#btMandar').addEventListener('click', mandarRecado);
 $('#btConvidar').addEventListener('click', mostrarConvite);
+$('#btConvidar2').addEventListener('click', mostrarConvite);
+$('#btGente').addEventListener('click', abrirGente);
+$('#btVoltarGente').addEventListener('click', () => mostrar('mural'));
 $('#btImprimir').addEventListener('click', imprimirMural);
 $('#btSair').addEventListener('click', sairDaTurma);
 $('#btTema').addEventListener('click', () => {

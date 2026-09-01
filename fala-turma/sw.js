@@ -1,8 +1,8 @@
 /* Abre sem internet — importante pra quem só consegue olhar o mural
    no computador da escola, com a rede ruim. Pedido pra fora do site
    passa direto, e um arquivo que falhou nunca vira a página. */
-const CACHE = 'fala-turma-v1';
-const ARQUIVOS = ['./', './index.html', './turma.js?v=1', './manifest.webmanifest', './icone.svg'];
+const CACHE = 'fala-turma-v2';
+const ARQUIVOS = ['./', './index.html', './turma.js?v=2', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {
   self.skipWaiting();

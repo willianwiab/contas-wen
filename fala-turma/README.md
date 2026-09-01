@@ -36,6 +36,22 @@ dono, horário, tipo, tamanho e formato das opções são conferidos antes de vi
 > conta e cota do adulto da casa** — vale combinar com ele antes de espalhar o convite pra
 > turma inteira.
 
+## O que tem no mural
+
+Cada recado mostra o bichinho e a cor de quem escreveu (nascem do nome, então são sempre
+os mesmos), o tipo numa etiqueta colorida, 👍 joinha, 👀 quem já viu e 📌 fixar no topo.
+Enquete desenha a **barra de proporção** por trás de cada resposta. Endereço escrito vira
+link — a detecção roda depois do escape do HTML e só aceita `http`, `https` e `www.`.
+
+Os filtros mostram **quantos tem de cada tipo**: sem isso a pessoa toca num filtro vazio
+sem saber e parece que o app perdeu os recados.
+
+## 👥 Quem está na turma
+
+Não existe lista de membros no banco — ninguém "se cadastra". A turma **é quem apareceu no
+mural**: a lista nasce de quem escreveu, votou, deu joinha ou marcou que viu. A mesma tela
+mostra o **código de 8 letras**, pra ditar em voz alta pra quem não recebeu o link.
+
 ## Arquivos
 
 | Arquivo | Pra que serve |
