@@ -567,6 +567,112 @@ body.trancado .app *{display:none!important}
 .atalhos #btnCartao{background:linear-gradient(135deg,#ec4899,#f59e0b)}
 .atalhos #btnRetro{background:linear-gradient(135deg,#6366f1,#ec4899)}
 
+/* ============ 📱 BARRA DE BAIXO (celular) ============
+   No celular a mão fica embaixo. Os quatro lugares que mais importam
+   passam a estar a um polegar de distância. */
+.barra-baixo{display:none}
+@media (max-width:860px){
+  .barra-baixo{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:50;
+    background:var(--painel);border-top:1px solid var(--borda);
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 20px rgba(60,40,120,.1)}
+  .barra-baixo button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;
+    border-radius:14px;font-size:.66rem;font-weight:800;color:var(--texto2);transition:color .15s,background .15s}
+  .barra-baixo button span{font-size:1.35rem;line-height:1;transition:transform .15s}
+  .barra-baixo button.on{color:var(--roxo);background:var(--painel2)}
+  .barra-baixo button.on span{transform:scale(1.12)}
+  .barra-baixo button.sos{color:#dc2626}
+  .barra-baixo button:active span{transform:scale(.88)}
+  /* o rodapé da lista não pode ficar embaixo da barra */
+  .lista{padding-bottom:76px}
+  /* dentro de uma conversa a barra de baixo SOME: ali quem manda é o
+     campo de escrever, e ela cobria o 🗑️ de jogar fora a gravação */
+  body.na-conversa .barra-baixo{display:none}
+}
+
+/* ============ ☀️ TELA HOJE ============ */
+.tela-cheia.hoje{background:var(--fundo)}
+.hj-meio{flex:1;overflow-y:auto;padding:14px 14px 24px;display:flex;flex-direction:column;gap:13px}
+.hj-ola{display:flex;align-items:center;gap:13px;padding:2px}
+.hj-ola b{font-size:1.15rem;display:block}
+.hj-ola small{font-size:.78rem;color:var(--texto2)}
+.hj-av{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:1.4rem;
+  overflow:hidden;flex-shrink:0;box-shadow:var(--sombra)}
+.hj-av.peq{width:24px;height:24px;font-size:.85rem;box-shadow:none}
+.hj-av img{width:100%;height:100%;object-fit:cover}
+.hj-cartao{background:var(--painel);border-radius:22px;padding:16px 18px;box-shadow:var(--sombra);
+  text-align:left;width:100%;animation:sobe .3s both}
+.hj-cartao.vazio{border:2px dashed var(--borda)}
+.hj-cartao.vazio p{font-size:.86rem;color:var(--texto2);line-height:1.5;margin-top:6px}
+.hj-cartao.festa{background:linear-gradient(135deg,rgba(236,72,153,.18),rgba(245,158,11,.18));
+  border:2px solid var(--rosa)}
+@keyframes sobe{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.hj-titulo{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--texto2);
+  margin-bottom:11px}
+.hj-linha{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--borda);
+  width:100%;text-align:left}
+.hj-linha:last-of-type{border-bottom:0}
+.hj-hora{font-size:.92rem;font-variant-numeric:tabular-nums;color:var(--roxo);flex-shrink:0;min-width:46px}
+.hj-txt{flex:1;font-size:.92rem;overflow:hidden;text-overflow:ellipsis}
+.hj-check{font-size:1.15rem;flex-shrink:0}
+.hj-linha.tarefa:active{opacity:.6}
+.hj-nada{font-size:.88rem;color:var(--texto2);padding:4px 0}
+.hj-passado{font-size:.74rem;color:var(--texto2);margin-top:8px}
+.hj-mais{margin-top:11px;width:100%;background:var(--painel2);border-radius:14px;padding:11px;
+  font-weight:800;font-size:.82rem;color:var(--roxo)}
+.hj-mais:hover{background:var(--painel3)}
+.hj-aniv{display:flex;align-items:center;gap:13px}
+.hj-aniv b{font-size:1rem;display:block}
+.hj-aniv small{font-size:.84rem;color:var(--texto2)}
+
+/* 💌 o cartão do recado do dia */
+.hj-cartao.recado{background:linear-gradient(135deg,rgba(124,58,237,.14),rgba(37,99,235,.12));
+  border:2px solid var(--roxo)}
+.rd-quem{display:flex;align-items:center;gap:7px;font-size:.76rem;color:var(--texto2);font-weight:700;
+  margin-bottom:9px}
+.rd-frase{font-size:1.18rem;line-height:1.45;font-weight:600;margin-bottom:14px;overflow-wrap:anywhere}
+.rd-botoes{display:flex;flex-wrap:wrap;gap:7px}
+.rd-bt{background:var(--painel);border-radius:14px;padding:9px 13px;font-size:.8rem;font-weight:800;
+  box-shadow:var(--sombra);transition:transform .12s}
+.rd-bt:active{transform:scale(.94)}
+.rd-bt.on{background:var(--rosa);color:#fff}
+
+/* ============ ℹ️ SOBRE ============ */
+.sb-topo{text-align:center;padding:10px 0 20px}
+.sb-topo h2{font-size:1.4rem;margin-top:6px}
+.sb-versao{display:inline-block;background:var(--painel3);color:var(--roxo);border-radius:20px;
+  padding:5px 15px;font-weight:800;font-size:.86rem;margin:8px 0}
+.sb-linhas{display:flex;flex-direction:column;gap:2px}
+.sb-linha{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--painel);
+  border-radius:14px;padding:12px 15px;box-shadow:var(--sombra)}
+.sb-linha b{font-size:.88rem;font-weight:600}
+.sb-ok{font-size:.8rem;font-weight:800;color:#16a34a;white-space:nowrap}
+.sb-off{font-size:.8rem;font-weight:800;color:var(--texto2);white-space:nowrap}
+.sb-aviso{font-size:.8rem;font-weight:800;color:#d97706;white-space:nowrap}
+.sb-numeros,.bk-numeros{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.sb-num{background:var(--painel);border-radius:16px;padding:13px 8px;text-align:center;box-shadow:var(--sombra)}
+.sb-num b{display:block;font-size:.95rem}
+.sb-num small{font-size:.68rem;color:var(--texto2)}
+
+/* ============ 💾 BACKUP ============ */
+.bk-linha{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--painel);
+  border-radius:16px;padding:14px 16px;box-shadow:var(--sombra);margin-bottom:12px}
+.bk-linha.destaque{border:2px solid var(--roxo)}
+.bk-linha b{font-size:.86rem}
+.bk-linha span{font-size:.82rem;font-weight:800;color:var(--texto2);text-align:right}
+
+/* ============ 🤖 CONFIGURAR O AJUDANTE ============ */
+.ci-passo{display:flex;gap:13px;background:var(--painel);border-radius:18px;padding:15px;
+  box-shadow:var(--sombra);margin-bottom:10px}
+.ci-num{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#0f766e,#0891b2);
+  color:#fff;display:grid;place-items:center;font-weight:800;flex-shrink:0}
+.ci-passo b{font-size:.95rem}
+.ci-passo p{font-size:.85rem;color:var(--texto2);line-height:1.5;margin-top:4px}
+.ci-passo code{background:var(--painel2);border-radius:6px;padding:1px 5px;font-size:.82rem}
+.ci-passo select,.ci-passo input{width:100%;background:var(--painel2);border:2px solid transparent;
+  border-radius:14px;padding:12px 14px;outline:none;font-size:.94rem;color:var(--texto)}
+.ci-passo select:focus,.ci-passo input:focus{border-color:var(--roxo)}
+.ia-cadeado{background:var(--painel2);border-radius:12px;padding:9px 12px;font-size:.8rem!important;margin-top:10px}
+
 /* ---- 🆘 emergência ---- */
 .atalhos #btnSeguir{background:linear-gradient(135deg,#0ea5e9,#16a34a)}
 .atalhos #btnSeguir.ligado{background:linear-gradient(135deg,#dc2626,#b91c1c);animation:pulsa 1.6s infinite}
@@ -1219,8 +1325,7 @@ window.addEventListener('unhandledrejection', function(e){
 
     <div class="bloco-titulo">💾 Levar pra outro aparelho</div>
     <div class="lig-botoes" style="margin:0">
-      <button class="lig-bt" id="btnSalvarTudo">💾 Salvar num arquivo</button>
-      <button class="lig-bt" id="btnAbrirTudo">📂 Abrir um arquivo</button>
+      <button class="lig-bt ok" id="btnBackup">💾 Abrir o backup</button>
     </div>
     <p class="sem-lembrete" style="margin-top:8px">O arquivo guarda as conversas, os áudios e as fotos.
     É só passar pro outro celular e abrir por lá.</p>
@@ -1278,13 +1383,14 @@ window.addEventListener('unhandledrejection', function(e){
 
     <div class="bloco-titulo">🤖 Ajudante (uma IA de verdade)</div>
     <div id="camposIA">
-      <p class="sem-lembrete">O Ajudante é a inteligência artificial da Anthropic (a Claude) de verdade.
-      Ela cobra de quem usa, por isso <b>cada um cola a sua própria chave</b> aqui. A chave fica guardada
-      <b>só neste aparelho</b> — ela não vai pro site, nem pro backup, nem pra nuvem da família.</p>
-      <div class="campo-form" style="margin-top:10px">
-        <label>Chave da API (começa com sk-ant-)</label>
-        <input id="iaChave" type="password" placeholder="cola aqui a tua chave" autocomplete="off" spellcheck="false">
-        <small>Pega em console.anthropic.com → API keys. Pra desligar o Ajudante, apaga o campo e salva.</small>
+      <p class="sem-lembrete">Quer usar o Ajudante com inteligência artificial? Ele ajuda na lição,
+      explica coisas difíceis e conta historinha de dormir.<br>
+      🔐 <b>Fica guardado só neste aparelho</b> — não vai pro site, nem pro backup, nem pros outros.</p>
+      <div class="lig-botoes" style="margin:10px 0"><button class="lig-bt ok" id="btnConfigIA">🤖 Configurar Ajudante</button></div>
+      <div class="campo-form">
+        <label>O código do Ajudante</label>
+        <input id="iaChave" type="password" placeholder="toca em Configurar, é mais fácil" autocomplete="off" spellcheck="false">
+        <small>Pra desligar, apaga o campo e salva.</small>
       </div>
       <div class="campo-form">
         <label>Qual cérebro usar</label>
@@ -1299,7 +1405,10 @@ window.addEventListener('unhandledrejection', function(e){
       <button class="lig-bt" id="btnAtualizar">🔄 Atualizar o site</button>
     </div>
     <p class="sem-lembrete" style="margin-top:8px">Isso joga fora a cópia velha guardada no aparelho e baixa a mais
-    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">33</b>.</p>
+    nova. <b>Não apaga</b> nenhum recadinho.</p>
+    <div class="lig-botoes" style="margin:10px 0 0">
+      <button class="lig-bt" id="btnSobre">ℹ️ Sobre — v<span id="versaoSite">3.4.0</span></button>
+    </div>
 
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
@@ -1308,35 +1417,43 @@ window.addEventListener('unhandledrejection', function(e){
   </div>
 </div>
 
+<nav class="barra-baixo" id="barraBaixo">
+  <button data-baixo="hoje"><span>☀️</span>Hoje</button>
+  <button data-baixo="conversas" class="on"><span>💬</span>Conversas</button>
+  <button data-baixo="ajudante"><span>🤖</span>Ajudante</button>
+  <button data-baixo="socorro" class="sos"><span>🆘</span>Ajuda</button>
+</nav>
+
 <div class="aviso-flutua" id="toast"></div>
 
-<script src="ajuda.js?v=33"></script>
-<script src="jogo.js?v=33"></script>
-<script src="mais.js?v=33"></script>
-<script src="casa.js?v=33"></script>
-<script src="enfeites.js?v=33"></script>
-<script src="nuvem.js?v=33"></script>
-<script src="sinais.js?v=33"></script>
-<script src="chamada.js?v=33"></script>
-<script src="publico.js?v=33"></script>
-<script src="trancar.js?v=33"></script>
-<script src="audio.js?v=33"></script>
-<script src="video.js?v=33"></script>
-<script src="familia.js?v=33"></script>
-<script src="extras.js?v=33"></script>
-<script src="ligacao.js?v=33"></script>
-<script src="avisos.js?v=33"></script>
-<script src="ia.js?v=33"></script>
-<script src="recado.js?v=33"></script>
-<script src="jogos.js?v=33"></script>
-<script src="quadro.js?v=33"></script>
-<script src="momentos.js?v=33"></script>
-<script src="placar.js?v=33"></script>
-<script src="meu.js?v=33"></script>
-<script src="festa.js?v=33"></script>
-<script src="socorro.js?v=33"></script>
-<script src="guardados.js?v=33"></script>
-<script src="app.js?v=33"></script>
+<script src="ajuda.js?v=34"></script>
+<script src="jogo.js?v=34"></script>
+<script src="mais.js?v=34"></script>
+<script src="casa.js?v=34"></script>
+<script src="enfeites.js?v=34"></script>
+<script src="nuvem.js?v=34"></script>
+<script src="sinais.js?v=34"></script>
+<script src="chamada.js?v=34"></script>
+<script src="publico.js?v=34"></script>
+<script src="trancar.js?v=34"></script>
+<script src="audio.js?v=34"></script>
+<script src="video.js?v=34"></script>
+<script src="familia.js?v=34"></script>
+<script src="extras.js?v=34"></script>
+<script src="ligacao.js?v=34"></script>
+<script src="avisos.js?v=34"></script>
+<script src="ia.js?v=34"></script>
+<script src="recado.js?v=34"></script>
+<script src="jogos.js?v=34"></script>
+<script src="quadro.js?v=34"></script>
+<script src="momentos.js?v=34"></script>
+<script src="placar.js?v=34"></script>
+<script src="meu.js?v=34"></script>
+<script src="festa.js?v=34"></script>
+<script src="socorro.js?v=34"></script>
+<script src="guardados.js?v=34"></script>
+<script src="hoje.js?v=34"></script>
+<script src="app.js?v=34"></script>
 
 <script>
 /* =========================================================
@@ -1359,7 +1476,7 @@ window.addEventListener('unhandledrejection', function(e){
     'mais.js': 'pedirAjuda', 'casa.js': 'abrirAlbum', 'enfeites.js': 'lerEmVozAlta',
     'jogo.js': 'novoJogo', 'jogos.js': 'novoPPT', 'quadro.js': 'abrirQuadro',
     'momentos.js': 'abrirCheguei', 'placar.js': 'abrirPlacar', 'meu.js': 'abrirHumor',
-    'festa.js': 'abrirCartoes', 'socorro.js': 'pedirAjuda', 'guardados.js': 'abrirFavoritos', 'recado.js': 'desenharRecadosDoDia', 'ia.js': 'abrirIA',
+    'festa.js': 'abrirCartoes', 'socorro.js': 'pedirAjuda', 'guardados.js': 'abrirFavoritos', 'hoje.js': 'abrirHoje', 'recado.js': 'desenharRecadosDoDia', 'ia.js': 'abrirIA',
     'sinais.js': 'atualizarTiquinhos', 'chamada.js': 'chamarDeUmToque',
     'ligacao.js': 'abrirLigacao', 'avisos.js': 'avisar', 'ajuda.js': 'abrirAjuda',
     'trancar.js': 'pedirTranca', 'publico.js': 'mandarPeloPublico'

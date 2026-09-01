@@ -1,4 +1,4 @@
-# 💜 Fala, Família!
+# 💜 Fala, Família! — v3.4.0
 
 O chat da família: recadinhos entre o **Jojo**, a **Sofia**, o **papai Wilian** e a
 **mamãe Grabiela**. Site estático, sem servidor e sem cadastro — tudo que é escrito,
@@ -412,6 +412,7 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 | `avisos.js` | Notificações, lembretes e bolinha no ícone |
 | `ia.js` | O 🤖 Ajudante: a IA de verdade, a 🌙 historinha e o ✨ me ajuda a escrever |
 | `recado.js` | O 💭 recado do dia de cada um |
+| `hoje.js` | ☀️ a tela Hoje, o 💌 recado em cartão grande e o ℹ️ Sobre |
 | `jogos.js` | ✋ pedra-papel-tesoura, 🎯 forca e 🧩 quebra-cabeça |
 | `quadro.js` | O 🎨 quadro de desenho ao vivo |
 | `momentos.js` | 🚸 CHEGUEI, 🚗 tô indo, ⏰ despertador de longe e ⛅ o tempo |
