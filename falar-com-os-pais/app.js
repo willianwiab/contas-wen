@@ -562,7 +562,7 @@ function desenharMensagens(){
     const grande = !especial && soEmoji(m.t);
     const corpo = especial
       ? conteudoEspecial(m, real)
-      : `<span class="txt">${filtro ? realce(limpar(m.t), buscaMsg) : escapar(limpar(m.t))}</span>`;
+      : `<span class="txt">${filtro ? realce(limpar(m.t), buscaMsg) : comLinks(escapar(limpar(m.t)))}</span>`;
     const nome = (!eu && atual === 'familia' && !repetido)
       ? `<div class="quem" style="color:${p.cor}">${p.nome}</div>` : '';
 
@@ -636,6 +636,25 @@ function desenharMensagens(){
   ligarExtras();
   animar = -1;
   if(!filtro) caixa.scrollTop = caixa.scrollHeight;
+}
+
+/* ---------- links viram links de verdade ----------
+   Roda DEPOIS de escapar o texto, então nada que a pessoa escreveu vira
+   HTML. Só http, https e www. entram: assim ninguém consegue esconder um
+   "javascript:" num recadinho. */
+const REGEX_LINK = /\b((?:https?:\/\/|www\.)[^\s<>"']+)/gi;
+
+function comLinks(escapado){
+  return escapado.replace(REGEX_LINK, bruto => {
+    /* ponto ou vírgula no fim da frase não faz parte do endereço */
+    let fim = '';
+    const sobra = bruto.match(/[.,!?;:)\]}]+$/);
+    if(sobra){ fim = sobra[0]; bruto = bruto.slice(0, -fim.length); }
+    if(!bruto) return fim;
+    let endereco = bruto.replace(/&amp;/g, '&');
+    if(!/^https?:\/\//i.test(endereco)) endereco = 'https://' + endereco;
+    return `<a class="link" href="${endereco.replace(/"/g,'%22')}" target="_blank" rel="noopener noreferrer">${bruto}</a>` + fim;
+  });
 }
 
 function realce(txt, termo){
