@@ -226,6 +226,11 @@ async function chegouDaNuvem(pacote, conversaEsperada){
   desenharContatos();
   if(atual === claro.conversa) desenharMensagens();
   atualizarBolinhaDoIcone();
+  /* 💜 "já tô bem": para o alarme no aparelho de todo mundo */
+  if(claro.msg.tipo === 'tudobem' && !souEu(claro.msg.de)){
+    if(typeof chegouTudoBem === 'function') chegouTudoBem(claro.msg);
+    return;
+  }
   if(claro.msg.tipo === 'sos' && !souEu(claro.msg.de)){
       /* só toca o alarme se for de agora: SOS velho guardado no banco não
          pode assustar quem abrir o site dias depois */

@@ -27,6 +27,7 @@ function conteudoEspecial(m, indice){
   if(m.tipo === 'forca')   return balaoForca(m, indice);
   if(m.tipo === 'cheguei') return balaoCheguei(m);
   if(m.tipo === 'indo')    return balaoIndo(m);
+  if(m.tipo === 'tudobem') return balaoTudoBem(m);
   return `<span class="txt">${escapar(m.t || '')}</span>`;
 }
 

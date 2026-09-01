@@ -11,6 +11,8 @@ const AJUDA = [
       ['Este aparelho é de você','na primeira vez o site pergunta quem você é; a lista mostra as conversas do seu ponto de vista'],
       ['4 conversas','as três outras pessoas da família + 💜 Família (todo mundo junto)'],
       ['🔍 Procurar conversa','a barrinha lá em cima da lista'],
+      ['🔍 Procurar em tudo','o botão na fileira: olha em TODAS as conversas de uma vez e pula pro recado'],
+      ['⭐ Favoritos · 🆘 Ajuda · 🏠 Quem chegou · 📍 Me acompanha','os botões da fileira que desliza'],
       ['✅ Tarefas, 🖼️ Álbum e 📅 Agenda','os botões coloridos embaixo da lista'],
       ['🤖 Ajudante','uma inteligência artificial de verdade pra ajudar na lição e explicar coisas'],
       ['📊 Placar','quem falou mais, quem grava mais áudio, quem acorda mais cedo'],
@@ -35,6 +37,8 @@ const AJUDA = [
       ['Frases prontas','“Cheguei bem 🏠”, “Pode me buscar? 🚗”…'],
       ['😀 Emojis','emoji sozinho vira <b>gigante</b>'],
       ['🔗 Links','se tu escrever um endereço de site, ele fica sublinhado e dá pra tocar pra abrir'],
+      ['⭐ Favoritos','o ☆ do lado do balão guarda o recado; o botão ⭐ na lista mostra todos'],
+      ['🎧 Ouvir mais rápido','o botãozinho 1× no áudio vira 1,5× e 2×. Fica guardado pro próximo'],
       ['🎤 Microfone','toca pra gravar, toca no ⏹ pra mandar (🗑️ joga fora)'],
       ['No áudio','▶ tocar e 🎛️ voz de esquilo 🐿️, monstro 👹 ou robô 🤖'],
       ['☺ Reagir','no balão — ou dois cliques nele. O ✕ apaga um recadinho'],
@@ -74,8 +78,9 @@ const AJUDA = [
       ['🗺️ Mandar onde eu estou','usa o GPS e manda o lugar, com botão de ver no mapa'],
       ['🎺 Figurinhas de som','buzina, palmas, tambor, risada, sino, foguete…'],
       ['⏱️ Cronômetro','combina um tempo (2 min de escovar dente) e toca o alarme no fim'],
-      ['🆘 Preciso de ajuda','manda um alerta pra família com o lugar; no aparelho deles toca alarme alto, mesmo no modo soneca'],
-      ['🔤 Código secreto','embaralha teu recado na língua do P ou ao contrário']
+
+      ['🔤 Código secreto','embaralha teu recado na língua do P ou ao contrário'],
+      ['🆘 Preciso de ajuda','tem uma tela inteira só pra isso — olha o bloco 🆘 mais abaixo']
     ]
   },
   {
@@ -153,6 +158,45 @@ const AJUDA = [
       ['O recado não some','ele fica na conversa com um ⏳ do lado, esperando'],
       ['Sai sozinho','assim que a internet voltar, ele vai embora e o ⏳ vira ✓ — não precisa mandar de novo'],
       ['O avisinho','lá em cima aparece “⏳ 2 recados esperando a internet” enquanto tiver algum na fila']
+    ]
+  },
+  {
+    titulo:'🆘 Quando precisar de ajuda',
+    cor:'#dc2626',
+    itens:[
+      ['4 tipos de ajuda','🚗 me busca AGORA · 😰 tô com medo · 🤕 tô machucado · 🧭 tô perdido. Cada um com uma cor'],
+      ['O pedido sai primeiro','o aviso vai na hora; o lugar e o som chegam depois. Melhor chegar sem o lugar do que não chegar'],
+      ['🎙️ Grava o lugar','30 segundos do som de onde tu está vão junto — se tu não puder falar, eles ouvem'],
+      ['☎️ Liga sozinho','na mesma hora ele já chama alguém da família no aparelho'],
+      ['🔔 O alarme insiste','no celular deles ele não para até alguém apertar "estou indo" (ou por 5 minutos)'],
+      ['🤕 Já tô bem','quando passar, aperta aqui: o alarme para no aparelho de TODO mundo e cai confete'],
+      ['📢 Mandar de novo','se ninguém viu, repete o alerta e toca outra vez'],
+      ['🚨 Sirene','o celular grita bem alto por até 2 minutos, pra chamar quem estiver perto'],
+      ['🔦 Lanterna SOS','a tela pisca branco em código morse — dá pra ver de longe no escuro'],
+      ['☎️ 190 · 192 · 193','botões grandes que ligam de verdade. É de graça, funciona até sem crédito'],
+      ['🩺 Ficha de emergência','tipo de sangue, alergia, remédio e telefone dos pais. Abre SEM a senha da tranca, pra quem achar teu celular conseguir ajudar'],
+      ['🧭 Como volto pra casa','marca onde é a casa uma vez e depois ele mostra a distância e o caminho a pé']
+    ]
+  },
+  {
+    titulo:'⏱️ "Se eu não avisar, avisa por mim"',
+    cor:'#f59e0b',
+    itens:[
+      ['Como funciona','tu diz "voltando da escola, 20 minutos". Se tu apertar "cheguei bem", tudo certo'],
+      ['Se tu esquecer','o site avisa a família sozinho, com o lugar de onde tu saiu e o de agora'],
+      ['A barrinha','fica no alto da lista mostrando quanto falta, com o botão ✅ Cheguei'],
+      ['⚠️ Precisa do site aberto','ou atrás de outro app. Com o celular guardado e o site fechado, o aviso sai quando tu abrir de novo']
+    ]
+  },
+  {
+    titulo:'📍🔋 Saber que a família está bem',
+    cor:'#0ea5e9',
+    itens:[
+      ['📍 Me acompanha','o botão na lista: por 30 minutos a família vê teu pontinho no mapa. Desliga sozinho'],
+      ['🏠 Quem chegou','uma tela com quem já avisou que chegou hoje e quem ainda está fora'],
+      ['🔋 Bateria de todo mundo','na mesma tela. A que está acabando fica vermelha'],
+      ['🔋 Aviso automático','quando o teu celular chega em 10%, a família é avisada — assim ninguém acha que tu sumiu'],
+      ['⚠️ No iPhone','a bateria não aparece: o iPhone não deixa o site ver isso. Tudo o mais funciona igual']
     ]
   },
   {

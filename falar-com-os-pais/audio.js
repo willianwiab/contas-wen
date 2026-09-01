@@ -201,7 +201,10 @@ async function tocarAudio(indice, efeito){
   const ef = EFEITOS[efeito || m.efeito || 'normal'] || EFEITOS.normal;
   const el = new Audio(url);
   el.preservesPitch = false; el.mozPreservesPitch = false; el.webkitPreservesPitch = false;
-  el.playbackRate = ef.taxa;
+  /* a voz engraçada já mexe na velocidade; a escolha do 🎧 multiplica
+     em cima dela, então 🐿️ esquilo em 2× continua sendo esquilo */
+  const taxaBase = ef.taxa;
+  el.playbackRate = taxaBase * (typeof velocidadeDoAudio === 'function' ? velocidadeDoAudio() : 1);
 
   let ctx = null;
   if(ef === EFEITOS.robo){
@@ -226,7 +229,7 @@ async function tocarAudio(indice, efeito){
 
   el.onended = () => pararTudo();
   el.onerror = () => { pararTudo(); toast('Não consegui tocar esse áudio 😕'); };
-  tocandoAgora = { i:indice, el, ctx };
+  tocandoAgora = { i:indice, el, ctx, taxaBase };
   el.play().catch(() => { pararTudo(); toast('Toca de novo no play 😊'); });
 }
 
@@ -240,6 +243,8 @@ function balaoAudio(m, indice){
       <button class="bt-play" data-play="${indice}" title="Tocar">▶</button>
       <div class="onda">${barras}</div>
       <span class="dur">${(m.dur || 0).toFixed(1)}s</span>
+      <button class="bt-veloc" data-veloc="${indice}" title="Ouvir mais rápido">${
+        typeof velocidadeDoAudio === 'function' ? velocidadeDoAudio() : 1}×</button>
       <button class="bt-efeito" data-efeito="${indice}" title="Voz engraçada">🎛️</button>
     </div>`;
 }

@@ -496,6 +496,9 @@ body.trancado .app{filter:blur(14px)}
 .teclado{display:grid;grid-template-columns:repeat(3,74px);gap:12px}
 .teclado button{height:66px;border-radius:22px;background:rgba(255,255,255,.18);color:#fff;font-size:1.5rem;font-weight:700}
 .teclado button:active{background:rgba(255,255,255,.32);transform:scale(.94)}
+.tr-ficha{margin-top:14px;background:rgba(255,255,255,.2);color:#fff;border-radius:14px;padding:11px 18px;
+  font-weight:800;font-size:.84rem}
+.tr-ficha:hover{background:rgba(255,255,255,.3)}
 .tr-esqueci{color:#fff;opacity:.75;text-decoration:underline;font-size:.84rem;margin-top:10px}
 .escondido{display:none}
 .treme{animation:treme .45s}
@@ -560,6 +563,115 @@ body.trancado .app{filter:blur(14px)}
 .atalhos #btnLivros{background:linear-gradient(135deg,#0891b2,#16a34a)}
 .atalhos #btnCartao{background:linear-gradient(135deg,#ec4899,#f59e0b)}
 .atalhos #btnRetro{background:linear-gradient(135deg,#6366f1,#ec4899)}
+
+/* ---- 🆘 emergência ---- */
+.atalhos #btnSeguir{background:linear-gradient(135deg,#0ea5e9,#16a34a)}
+.atalhos #btnSeguir.ligado{background:linear-gradient(135deg,#dc2626,#b91c1c);animation:pulsa 1.6s infinite}
+.atalhos #btnSocorro{background:linear-gradient(135deg,#ef4444,#b91c1c)}
+@keyframes pulsa{0%,100%{opacity:1}50%{opacity:.6}}
+
+.pa-meio{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:16px}
+.pa-tipos{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.pa-tipo{padding:22px 8px;border-radius:20px;background:var(--cor);color:#fff;display:flex;flex-direction:column;
+  align-items:center;gap:8px;font-weight:800;font-size:.86rem;box-shadow:var(--sombra2);transition:transform .12s}
+.pa-tipo span{font-size:2.4rem}
+.pa-tipo:active{transform:scale(.95)}
+.pa-extras{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pa-extra{padding:13px 10px;border-radius:16px;background:var(--painel);border:2px solid var(--borda);
+  display:flex;flex-direction:column;gap:3px;font-weight:800;font-size:.84rem;text-align:left}
+.pa-extra small{font-weight:500;font-size:.7rem;color:var(--texto2)}
+/* Emergência fica ACIMA de tudo. Sem isto, os números do 190 abriam
+   atrás da tela do 🆘 e não dava pra tocar neles; e a 🩺 ficha, que
+   precisa abrir por cima da tranca, ficava escondida embaixo dela. */
+.tela-cheia.socorro{background:linear-gradient(160deg,#b91c1c,#450a0a);color:#fff;z-index:95}
+#telaNumeros{z-index:99}
+.tela-cheia.ficha{z-index:98}
+.tela-cheia.socorro .pa-extra{background:rgba(255,255,255,.14);border-color:transparent;color:#fff}
+.tela-cheia.socorro .pa-extra small{color:rgba(255,255,255,.8)}
+.pa-passos{display:flex;flex-direction:column;gap:9px;margin:16px 0;text-align:left;width:100%;max-width:320px}
+.pa-passo{background:rgba(255,255,255,.14);border-radius:13px;padding:11px 14px;font-size:.86rem;font-weight:600}
+.pa-passo.feito{background:rgba(34,197,94,.3)}
+.pa-passo.ruim{background:rgba(250,204,21,.25)}
+.sos-aviso{color:rgba(255,255,255,.85)!important;margin-top:12px}
+.sos-auto{display:block;font-size:.7rem;font-style:normal;opacity:.8;margin:2px 0 4px}
+
+.num-botoes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.num-bt{padding:16px 8px;border-radius:18px;background:var(--cor);color:#fff;display:flex;flex-direction:column;
+  align-items:center;gap:2px;box-shadow:var(--sombra);text-decoration:none}
+.num-bt span{font-size:1.9rem}
+.num-bt b{font-size:1.15rem}
+.num-bt small{font-size:.7rem;opacity:.9;text-align:center}
+
+.fi-meio{flex:1;overflow-y:auto;padding:16px}
+.tela-cheia.ficha{background:var(--fundo);z-index:98}
+.fi-linha{background:var(--painel);border-radius:14px;padding:11px 14px;margin-bottom:8px;box-shadow:var(--sombra)}
+.fi-linha b{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--texto2)}
+.fi-linha span{font-size:1rem;font-weight:700}
+
+.barra-vigia{display:flex;align-items:center;gap:10px;margin:0 10px 10px;padding:11px 13px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(239,68,68,.16));border:1.5px solid #f59e0b;flex-shrink:0}
+.vg-txt{flex:1;min-width:0;display:flex;flex-direction:column;font-size:.84rem}
+.vg-txt small{font-size:.72rem;color:var(--texto2)}
+.vg-bt{background:#16a34a;color:#fff;border-radius:12px;padding:9px 13px;font-weight:800;font-size:.78rem;
+  white-space:nowrap}
+.mapa-chips{display:flex;gap:8px;overflow-x:auto;padding:0 10px 10px;scrollbar-width:none;flex-shrink:0}
+.mapa-chip{display:flex;align-items:center;gap:8px;background:var(--painel);border:1.5px solid #0ea5e9;
+  border-radius:16px;padding:8px 12px;box-shadow:var(--sombra);text-decoration:none;color:var(--texto);flex-shrink:0}
+.mapa-av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:.95rem;overflow:hidden}
+.mapa-av img{width:100%;height:100%;object-fit:cover}
+.mapa-chip b{font-size:.82rem}
+.mapa-chip small{font-size:.7rem;color:#0ea5e9;font-weight:700}
+
+/* ---- 🔦 lanterna SOS ---- */
+.tela-cheia.lanterna{background:#000;z-index:99;align-items:center;justify-content:center;gap:22px}
+.ln-luz{width:min(74vw,300px);aspect-ratio:1;border-radius:50%;background:#111;transition:none}
+.ln-luz.on{background:#fff;box-shadow:0 0 90px 40px rgba(255,255,255,.9)}
+.ln-txt{text-align:center;color:#fff;padding:0 24px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.ln-txt b{font-size:1.5rem;letter-spacing:.3em}
+.ln-txt p{font-size:.86rem;color:rgba(255,255,255,.7);max-width:280px;line-height:1.5}
+
+/* ---- 🏠 quem já chegou ---- */
+.qc-meio{flex:1;overflow-y:auto;padding:16px}
+.qc-linha{display:flex;align-items:center;gap:12px;background:var(--painel);border-radius:16px;padding:12px;
+  margin-bottom:9px;box-shadow:var(--sombra);border:2px solid transparent}
+.qc-linha.em-casa{border-color:#16a34a}
+.qc-av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:1.3rem;
+  overflow:hidden;flex-shrink:0}
+.qc-av img{width:100%;height:100%;object-fit:cover}
+.qc-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.qc-txt b{font-size:.94rem}
+.qc-txt small{font-size:.75rem;color:var(--texto2)}
+.qc-lado{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.qc-casa{font-size:1.4rem}
+.qc-bat{font-size:.72rem;font-weight:800;color:var(--texto2);white-space:nowrap}
+.qc-bat.baixa{color:#dc2626}
+
+/* ---- 💜 já tô bem ---- */
+.bem-balao{display:flex;align-items:center;gap:11px;padding:4px 2px}
+
+/* ---- ⭐ favoritos e 🔍 procurar em tudo ---- */
+.fv-meio,.pg-meio{flex:1;overflow-y:auto;padding:14px 16px}
+.fv-item{display:block;width:100%;text-align:left;background:var(--painel);border-radius:16px;padding:12px 14px;
+  margin-bottom:9px;box-shadow:var(--sombra);border:1.5px solid transparent;transition:border-color .15s}
+.fv-item:hover{border-color:var(--roxo)}
+.fv-topo{display:flex;justify-content:space-between;gap:8px;margin-bottom:5px}
+.fv-onde{font-size:.72rem;font-weight:800;color:var(--roxo)}
+.fv-quando{font-size:.68rem;color:var(--texto2);white-space:nowrap}
+.fv-txt{font-size:.9rem;line-height:1.45;overflow-wrap:anywhere}
+.fv-quem{font-size:.7rem;color:var(--texto2);margin-top:4px;font-weight:700}
+.pg-busca{padding:12px 16px;flex-shrink:0}
+.pg-busca input{width:100%;background:var(--painel2);border:2px solid transparent;border-radius:14px;
+  padding:13px 16px;outline:none;font-size:.95rem}
+.pg-busca input:focus{border-color:var(--roxo)}
+.pg-conta{font-size:.76rem;font-weight:800;color:var(--texto2);margin-bottom:10px}
+.linha-msg.achado .msg{animation:achei 2.2s}
+@keyframes achei{0%,100%{box-shadow:var(--sombra)}25%,75%{box-shadow:0 0 0 4px #f59e0b}}
+.ferramentas [data-acao="favorito"]{font-size:.95rem}
+
+/* ---- 🎧 ouvir mais rápido ---- */
+.bt-veloc{background:rgba(255,255,255,.22);border-radius:9px;padding:3px 7px;font-size:.68rem;font-weight:800;
+  flex-shrink:0}
+.msg.eles .bt-veloc{background:var(--painel2)}
 
 /* ---- ⛅ o tempo ---- */
 .card-tempo{display:flex;flex-shrink:0;align-items:center;gap:12px;margin:0 10px 12px;padding:11px 14px;border-radius:16px;
@@ -957,6 +1069,8 @@ window.addEventListener('unhandledrejection', function(e){
     <div class="busca-wrap"><input class="busca" id="busca" placeholder="🔍 Procurar conversa" autocomplete="off"></div>
     <div class="aviso-aniv" id="avisoAniversario"></div>
     <div class="aviso-aniv agenda" id="avisoAgenda"></div>
+    <div class="barra-vigia escondido" id="barraVigia"></div>
+    <div class="mapa-chips escondido" id="quemNoMapa"></div>
     <div class="titulo-secao">Conversas</div>
     <div class="contatos" id="contatos"></div>
     <div class="titulo-secao">Recado do dia</div>
@@ -973,6 +1087,11 @@ window.addEventListener('unhandledrejection', function(e){
       <button id="btnLivros">📚 Estante</button>
       <button id="btnCartao">🎂 Cartão</button>
       <button id="btnRetro">🎞️ Retrospectiva</button>
+      <button id="btnSeguir">📍 Me acompanha</button>
+      <button id="btnSocorro">🆘 Ajuda</button>
+      <button id="btnQuemChegou">🏠 Quem chegou</button>
+      <button id="btnFavoritos">⭐ Favoritos</button>
+      <button id="btnProcurar">🔍 Procurar em tudo</button>
     </div>
     <div class="rodape-lista" id="rodapeLista">🔒 Os recadinhos ficam guardados só neste aparelho.<br>Nada é enviado pra internet.</div>
   </aside>
@@ -1136,7 +1255,7 @@ window.addEventListener('unhandledrejection', function(e){
       <button class="lig-bt" id="btnAtualizar">🔄 Atualizar o site</button>
     </div>
     <p class="sem-lembrete" style="margin-top:8px">Isso joga fora a cópia velha guardada no aparelho e baixa a mais
-    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">29</b>.</p>
+    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">31</b>.</p>
 
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
@@ -1147,31 +1266,33 @@ window.addEventListener('unhandledrejection', function(e){
 
 <div class="aviso-flutua" id="toast"></div>
 
-<script src="ajuda.js?v=29"></script>
-<script src="jogo.js?v=29"></script>
-<script src="mais.js?v=29"></script>
-<script src="casa.js?v=29"></script>
-<script src="enfeites.js?v=29"></script>
-<script src="nuvem.js?v=29"></script>
-<script src="sinais.js?v=29"></script>
-<script src="chamada.js?v=29"></script>
-<script src="publico.js?v=29"></script>
-<script src="trancar.js?v=29"></script>
-<script src="audio.js?v=29"></script>
-<script src="video.js?v=29"></script>
-<script src="familia.js?v=29"></script>
-<script src="extras.js?v=29"></script>
-<script src="ligacao.js?v=29"></script>
-<script src="avisos.js?v=29"></script>
-<script src="ia.js?v=29"></script>
-<script src="recado.js?v=29"></script>
-<script src="jogos.js?v=29"></script>
-<script src="quadro.js?v=29"></script>
-<script src="momentos.js?v=29"></script>
-<script src="placar.js?v=29"></script>
-<script src="meu.js?v=29"></script>
-<script src="festa.js?v=29"></script>
-<script src="app.js?v=29"></script>
+<script src="ajuda.js?v=31"></script>
+<script src="jogo.js?v=31"></script>
+<script src="mais.js?v=31"></script>
+<script src="casa.js?v=31"></script>
+<script src="enfeites.js?v=31"></script>
+<script src="nuvem.js?v=31"></script>
+<script src="sinais.js?v=31"></script>
+<script src="chamada.js?v=31"></script>
+<script src="publico.js?v=31"></script>
+<script src="trancar.js?v=31"></script>
+<script src="audio.js?v=31"></script>
+<script src="video.js?v=31"></script>
+<script src="familia.js?v=31"></script>
+<script src="extras.js?v=31"></script>
+<script src="ligacao.js?v=31"></script>
+<script src="avisos.js?v=31"></script>
+<script src="ia.js?v=31"></script>
+<script src="recado.js?v=31"></script>
+<script src="jogos.js?v=31"></script>
+<script src="quadro.js?v=31"></script>
+<script src="momentos.js?v=31"></script>
+<script src="placar.js?v=31"></script>
+<script src="meu.js?v=31"></script>
+<script src="festa.js?v=31"></script>
+<script src="socorro.js?v=31"></script>
+<script src="guardados.js?v=31"></script>
+<script src="app.js?v=31"></script>
 
 <script>
 /* =========================================================
@@ -1194,7 +1315,7 @@ window.addEventListener('unhandledrejection', function(e){
     'mais.js': 'pedirAjuda', 'casa.js': 'abrirAlbum', 'enfeites.js': 'lerEmVozAlta',
     'jogo.js': 'novoJogo', 'jogos.js': 'novoPPT', 'quadro.js': 'abrirQuadro',
     'momentos.js': 'abrirCheguei', 'placar.js': 'abrirPlacar', 'meu.js': 'abrirHumor',
-    'festa.js': 'abrirCartoes', 'recado.js': 'desenharRecadosDoDia', 'ia.js': 'abrirIA',
+    'festa.js': 'abrirCartoes', 'socorro.js': 'pedirAjuda', 'guardados.js': 'abrirFavoritos', 'recado.js': 'desenharRecadosDoDia', 'ia.js': 'abrirIA',
     'sinais.js': 'atualizarTiquinhos', 'chamada.js': 'chamarDeUmToque',
     'ligacao.js': 'abrirLigacao', 'avisos.js': 'avisar', 'ajuda.js': 'abrirAjuda',
     'trancar.js': 'pedirTranca', 'publico.js': 'mandarPeloPublico'
