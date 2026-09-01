@@ -230,55 +230,67 @@ function ligarExtras(){
 }
 
 /* ---------- menu do "+" ---------- */
+/* O menu do ➕ cresceu bastante, então vem em grupinhos e ROLA por
+   dentro: sem isso os últimos botões ficavam fora da tela e não tinha
+   como chegar neles. */
+const GRUPOS_MAIS = [
+  { titulo:'📷 Mandar', itens:[
+    ['foto','📷','Foto ou GIF'], ['video','🎥','Videinho'], ['gif','🎞️','GIF caseiro'],
+    ['desenho','✏️','Desenhar'], ['figurinha','😄','Figurinhas'], ['som','🎺','Sons'] ] },
+  { titulo:'🎮 Brincar', itens:[
+    ['jogo','🕹️','Jogo da velha'], ['ppt','✋','Pedra e papel'], ['forca','🎯','Forca'],
+    ['quebra','🧩','Quebra-cabeça'], ['enquete','📊','Enquete'] ] },
+  { titulo:'🚸 Avisar', itens:[
+    ['cheguei','🚸','CHEGUEI!'], ['indo','🚗','Tô indo'], ['despertador','⏰','Despertador'],
+    ['lugar','🗺️','Onde eu tô'], ['timer','⏱️','Cronômetro'] ] },
+  { titulo:'✨ Outras', itens:[
+    ['capsula','🕰️','Cápsula'], ['codigo','🔤','Código secreto'], ['walkie','📻','Walkie-talkie'] ] }
+];
+
+const FAZ_MAIS = {
+  foto: () => escolherFoto(),
+  video: () => abrirCamera(false),
+  gif: () => abrirCamera(true),
+  desenho: () => abrirDesenho(),
+  figurinha: () => abrirFigurinhas(),
+  som: () => abrirSons(),
+  jogo: () => novoJogo(),
+  ppt: () => novoPPT(),
+  forca: () => abrirNovaForca(),
+  quebra: () => abrirQuebraCabeca(),
+  enquete: () => abrirNovaEnquete(),
+  cheguei: () => abrirCheguei(),
+  indo: () => abrirTouIndo(),
+  despertador: () => abrirDespertador(),
+  lugar: () => mandarLugar(),
+  timer: () => abrirCronometro(),
+  capsula: () => abrirNovaCapsula(),
+  codigo: () => abrirCodigo(),
+  walkie: () => abrirWalkie(),
+  sos: () => pedirAjuda()
+};
+
 function abrirMaisMenu(){
   const antigo = document.getElementById('maisMenu');
   if(antigo){ antigo.remove(); return; }
   const menu = document.createElement('div');
   menu.id = 'maisMenu'; menu.className = 'mais-menu';
-  menu.innerHTML = `
-    <button data-acao="foto">📷 Foto ou GIF</button>
-    <button data-acao="video">🎥 Videinho da câmera</button>
-    <button data-acao="gif">🎞️ GIF caseiro (2s)</button>
-    <button data-acao="desenho">✏️ Recado desenhado</button>
-    <button data-acao="figurinha">😄 Figurinhas</button>
-    <button data-acao="enquete">📊 Fazer enquete</button>
-    <button data-acao="jogo">🕹️ Jogo da velha</button>
-    <button data-acao="ppt">✋ Pedra, papel e tesoura</button>
-    <button data-acao="forca">🎯 Jogo da forca</button>
-    <button data-acao="quebra">🧩 Quebra-cabeça</button>
-    <button data-acao="cheguei">🚸 CHEGUEI!</button>
-    <button data-acao="indo">🚗 Tô indo te buscar</button>
-    <button data-acao="despertador">⏰ Despertador de longe</button>
-    <button data-acao="capsula">🕰️ Cápsula do tempo</button>
-    <button data-acao="lugar">🗺️ Mandar onde eu estou</button>
-    <button data-acao="som">🎺 Figurinhas de som</button>
-    <button data-acao="timer">⏱️ Cronômetro</button>
-    <button data-acao="codigo">🔤 Código secreto</button>
-    <button data-acao="sos" class="acao-sos">🆘 Preciso de ajuda</button>
-    <button data-acao="walkie">📻 Walkie-talkie</button>`;
+  menu.innerHTML =
+    `<div class="mm-rolo">` +
+    GRUPOS_MAIS.map(g => `
+      <div class="mm-titulo">${g.titulo}</div>
+      <div class="mm-grade">
+        ${g.itens.map(([acao, emoji, nome]) =>
+          `<button data-acao="${acao}"><span>${emoji}</span>${nome}</button>`).join('')}
+      </div>`).join('') +
+    `</div>
+     <button class="mm-sos" data-acao="sos">🆘 Preciso de ajuda</button>`;
   document.querySelector('.barra').insertAdjacentElement('beforebegin', menu);
-  menu.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
-    const a = b.dataset.acao; menu.remove();
-    if(a === 'foto') escolherFoto();
-    if(a === 'video') abrirCamera(false);
-    if(a === 'gif') abrirCamera(true);
-    if(a === 'desenho') abrirDesenho();
-    if(a === 'figurinha') abrirFigurinhas();
-    if(a === 'enquete') abrirNovaEnquete();
-    if(a === 'jogo') novoJogo();
-    if(a === 'ppt') novoPPT();
-    if(a === 'forca') abrirNovaForca();
-    if(a === 'quebra') abrirQuebraCabeca();
-    if(a === 'cheguei') abrirCheguei();
-    if(a === 'indo') abrirTouIndo();
-    if(a === 'despertador') abrirDespertador();
-    if(a === 'capsula') abrirNovaCapsula();
-    if(a === 'lugar') mandarLugar();
-    if(a === 'som') abrirSons();
-    if(a === 'timer') abrirCronometro();
-    if(a === 'codigo') abrirCodigo();
-    if(a === 'sos') pedirAjuda();
-    if(a === 'walkie') abrirWalkie();
+
+  menu.querySelectorAll('button[data-acao]').forEach(b => b.addEventListener('click', () => {
+    const faz = FAZ_MAIS[b.dataset.acao];
+    menu.remove();
+    if(faz) faz();
   }));
   setTimeout(() => document.addEventListener('click', function fora(e){
     if(!e.target.closest('#maisMenu') && !e.target.closest('#btnMais')){
@@ -286,7 +298,6 @@ function abrirMaisMenu(){
     }
   }), 0);
 }
-
 
 /* ---------- FIGURINHAS ---------- */
 const FIGURINHAS = ['😀','😂','🥰','😎','🤩','😭','😡','🤯','🥳','😴','🤗','🤪','👍','👎','🙏','👏','💪','🫶',
