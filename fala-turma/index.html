@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7c3aed">
+<title>🎒 Fala, Turma!</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icone.svg">
+<style>
+/* ===================== CORES (as mesmas do Fala, Família) ===================== */
+:root{
+  --roxo:#7c3aed; --roxo-esc:#5b21b6; --azul:#2563eb; --rosa:#ec4899; --ceu:#0ea5e9;
+  --fundo:#f4f2fb; --painel:#ffffff; --painel2:#f1eefb; --painel3:#ede9fe;
+  --texto:#1e1b33; --texto2:#6b6885; --borda:#e6e1f5;
+  --sombra:0 2px 8px rgba(60,40,120,.08); --sombra2:0 8px 30px rgba(60,40,120,.14);
+}
+html[data-tema="escuro"]{
+  --roxo:#8b5cf6; --roxo-esc:#6d28d9; --azul:#3b82f6; --rosa:#f472b6; --ceu:#38bdf8;
+  --fundo:#0e0b1d; --painel:#171331; --painel2:#1f1a3d; --painel3:#251f4a;
+  --texto:#ece9fb; --texto2:#a09cc4; --borda:#2b2551;
+  --sombra:0 2px 8px rgba(0,0,0,.35); --sombra2:0 10px 34px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+button,input,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--fundo);color:var(--texto);
+  min-height:100dvh;overflow-x:hidden}
+.escondido{display:none!important}
+
+/* ---- topo, igual ao Fala, Família ---- */
+.topo{background:linear-gradient(135deg,var(--roxo) 0%,var(--azul) 100%);color:#fff;
+  padding:calc(18px + env(safe-area-inset-top,0px)) 18px 22px;position:relative;overflow:hidden}
+.topo::after{content:"";position:absolute;right:-40px;top:-50px;width:150px;height:150px;
+  border-radius:50%;background:rgba(255,255,255,.12)}
+.topo .linha{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:relative;z-index:1}
+.topo h1{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+.topo p{font-size:.82rem;opacity:.9;margin-top:3px;font-weight:500}
+.icones{display:flex;gap:4px}
+.icone{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:1.05rem;
+  transition:background .15s,transform .15s}
+.icone:hover{background:rgba(255,255,255,.18)}
+.icone:active{transform:scale(.9)}
+.net{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.2);border-radius:20px;
+  padding:5px 11px;font-size:.71rem;font-weight:700;position:relative;z-index:1;margin-top:9px}
+.net .bolinha{width:9px;height:9px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.3)}
+.net.erro .bolinha{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.3)}
+.net.ligando .bolinha{background:#cbd5e1;box-shadow:none}
+
+.miolo{padding:14px 14px calc(90px + env(safe-area-inset-bottom,0px));max-width:640px;margin:0 auto}
+.tela{display:none}
+.tela.on{display:block;animation:surge .25s}
+@keyframes surge{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---- peças ---- */
+.cartao{background:var(--painel);border-radius:20px;padding:16px;box-shadow:var(--sombra);margin-bottom:11px}
+.bt{background:var(--painel);border:2px solid var(--borda);border-radius:15px;padding:12px 16px;
+  font-weight:800;font-size:.88rem;box-shadow:var(--sombra);transition:transform .12s}
+.bt:active{transform:scale(.95)}
+.bt.ok{background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff;border-color:transparent}
+.bt.fraco{background:transparent;border-color:transparent;color:var(--texto2);box-shadow:none}
+.bt.grande{width:100%;padding:16px;font-size:.98rem}
+.linha-bt{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}
+.linha-bt .bt{flex:1;min-width:130px}
+h2{font-size:1.14rem;margin-bottom:5px}
+.dica{font-size:.85rem;color:var(--texto2);line-height:1.55}
+.titulo{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;
+  color:var(--texto2);margin:16px 0 9px}
+.campo{margin-bottom:13px}
+.campo label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--texto2);margin-bottom:6px}
+.campo input,.campo textarea{width:100%;background:var(--painel2);border:2px solid transparent;
+  border-radius:14px;padding:12px 14px;outline:none;font-size:.95rem;resize:none}
+.campo input:focus,.campo textarea:focus{border-color:var(--roxo)}
+.campo small{display:block;font-size:.76rem;color:var(--texto2);margin-top:5px;line-height:1.45}
+.vazio{text-align:center;padding:34px 20px;background:var(--painel);border-radius:22px;box-shadow:var(--sombra)}
+.emojao{font-size:3.6rem;animation:flutua 3.4s ease-in-out infinite;display:inline-block}
+@keyframes flutua{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(4deg)}}
+.vazio h3{margin:8px 0 7px;font-size:1.08rem}
+.vazio p{font-size:.87rem;color:var(--texto2);line-height:1.55}
+
+/* ---- filtros ---- */
+.filtros{display:flex;gap:7px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+.filtros::-webkit-scrollbar{display:none}
+.filtro{background:var(--painel);border:1.5px solid var(--borda);border-radius:20px;padding:8px 14px;
+  font-size:.8rem;font-weight:700;white-space:nowrap;box-shadow:var(--sombra);flex-shrink:0}
+.filtro.on{background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff;border-color:transparent}
+
+/* ---- recado do mural ---- */
+.recado{background:var(--painel);border-radius:20px;padding:15px;box-shadow:var(--sombra);
+  margin-bottom:11px;border-left:5px solid var(--cor);animation:surge .25s}
+.rec-topo{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.rec-av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:1.15rem;
+  flex-shrink:0;color:#fff}
+.rec-quem{flex:1;min-width:0}
+.rec-quem b{font-size:.9rem;display:block}
+.rec-quem small{font-size:.72rem;color:var(--texto2)}
+.rec-tipo{font-size:.68rem;font-weight:800;background:var(--painel2);border-radius:20px;padding:5px 10px;
+  white-space:nowrap;color:var(--cor)}
+.rec-quando{font-size:.78rem;font-weight:800;color:var(--cor);margin-bottom:6px}
+.rec-txt{font-size:.97rem;line-height:1.5;overflow-wrap:anywhere;white-space:pre-wrap}
+.rec-ops{margin-top:11px;display:flex;flex-direction:column;gap:6px}
+.rec-op{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--painel2);
+  border-radius:13px;padding:11px 14px;font-size:.88rem;font-weight:600;text-align:left;
+  border:2px solid transparent}
+.rec-op.on{border-color:var(--cor);background:var(--painel3)}
+.rec-op b{font-size:.82rem;color:var(--texto2)}
+.rec-total{font-size:.72rem;color:var(--texto2);font-weight:700;padding-left:4px}
+.rec-pe{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.rec-bt{background:var(--painel2);border-radius:12px;padding:7px 11px;font-size:.75rem;font-weight:700;
+  color:var(--texto2)}
+.rec-bt.on{background:var(--painel3);color:var(--roxo)}
+.rec-bt.fraco{margin-left:auto;background:transparent}
+
+/* ---- escrever ---- */
+.tipos{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:8px;margin-bottom:14px}
+.tipo{background:var(--painel);border:2px solid var(--borda);border-radius:16px;padding:12px 6px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.76rem;font-weight:800;
+  box-shadow:var(--sombra)}
+.tipo span{font-size:1.5rem}
+.tipo.on{background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff;border-color:transparent}
+.esc-barra{height:5px;border-radius:5px;margin-bottom:12px;transition:background .2s}
+.esc-op{margin-top:7px}
+
+/* ---- botão de escrever, flutuando ---- */
+.escrever{position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;
+  background:linear-gradient(135deg,var(--roxo),var(--azul));color:#fff;border-radius:24px;
+  padding:16px 26px;font-weight:800;font-size:.98rem;box-shadow:var(--sombra2);
+  display:flex;align-items:center;gap:8px}
+.escrever:active{transform:translateX(-50%) scale(.95)}
+
+/* ---- modo emprestado ---- */
+.emprestado{display:flex;align-items:flex-start;gap:11px;background:var(--painel2);border-radius:16px;
+  padding:13px;margin-bottom:14px;cursor:pointer}
+.emprestado input{width:22px;height:22px;flex-shrink:0;margin-top:2px;accent-color:var(--roxo)}
+.emprestado b{font-size:.88rem;display:block}
+.emprestado small{font-size:.78rem;color:var(--texto2);line-height:1.45}
+
+.aviso-flutua{position:fixed;left:50%;bottom:96px;transform:translate(-50%,180%);
+  background:var(--texto);color:var(--fundo);padding:13px 22px;border-radius:20px;font-size:.88rem;
+  font-weight:700;box-shadow:var(--sombra2);z-index:400;transition:transform .3s;max-width:92vw;text-align:center}
+.aviso-flutua.on{transform:translate(-50%,0)}
+.rodape{text-align:center;font-size:.72rem;color:var(--texto2);padding:20px 10px;line-height:1.7}
+
+/* ---- 🖨️ a folha impressa ---- */
+#folha{display:none}
+@media print{
+  body.imprimindo>*{display:none!important}
+  body.imprimindo #folha{display:block!important;padding:0;color:#000;font-family:Georgia,serif}
+  #folha h1{font-size:20pt;margin-bottom:2pt}
+  .folha-sub{font-size:9pt;color:#555;margin-bottom:14pt;border-bottom:1pt solid #999;padding-bottom:8pt}
+  .folha-item{border-bottom:1pt dashed #bbb;padding:9pt 0;page-break-inside:avoid;font-size:11pt;line-height:1.45}
+  .folha-topo{display:flex;justify-content:space-between;font-size:9pt;margin-bottom:3pt}
+  .folha-topo span{color:#555}
+  .folha-quando{font-weight:bold;font-size:10pt}
+  .folha-ops{margin:4pt 0 0 16pt;font-size:10pt}
+  .folha-pe{margin-top:16pt;font-size:8pt;color:#666;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<div class="topo">
+  <div class="linha">
+    <div>
+      <h1>🎒 <span id="turmaNome">Fala, Turma!</span></h1>
+      <p id="euSou"></p>
+      <div class="net ligando escondido" id="chipNuvem"><span class="bolinha"></span><span>…</span></div>
+    </div>
+    <div class="icones">
+      <button class="icone" id="btTema" title="Trocar o tema">🌙</button>
+    </div>
+  </div>
+</div>
+
+<div class="miolo">
+
+  <!-- ============ ENTRAR ============ -->
+  <section class="tela" id="tela-entrar">
+    <div class="vazio" style="margin-bottom:14px">
+      <div class="emojao">🎒</div>
+      <h3>Fala, Turma!</h3>
+      <p>O mural da tua turma. Recado, lição, prova, enquete e combinar de sair —
+      tudo num lugar só, que <b>abre em qualquer aparelho</b>.</p>
+    </div>
+
+    <div class="cartao">
+      <div class="titulo" style="margin-top:0">Já te convidaram?</div>
+      <button class="bt ok grande" id="btTenhoConvite">📥 Tenho um convite</button>
+      <p class="dica" style="margin-top:9px">Alguém da turma te manda um link. Abre ele — ou cola aqui.</p>
+    </div>
+
+    <div class="cartao">
+      <div class="titulo" style="margin-top:0">Ou começa a tua</div>
+      <div class="campo">
+        <label>Nome da turma</label>
+        <input id="novaTurma" maxlength="40" placeholder="Ex.: 5º ano B">
+      </div>
+      <div class="campo" style="margin-bottom:10px">
+        <label>Teu nome</label>
+        <input id="meuNomeNovo" maxlength="30" placeholder="Ex.: Jojo">
+      </div>
+      <button class="bt ok grande" id="btCriarTurma">🎒 Criar a turma</button>
+    </div>
+
+    <div class="cartao">
+      <div class="titulo" style="margin-top:0">📱 E quem não tem celular?</div>
+      <p class="dica">Este app <b>não precisa de celular</b>. Ele abre no computador de casa, no da escola
+      ou no celular emprestado de alguém — sem instalar nada e sem senha.<br><br>
+      Quem usa aparelho emprestado marca <b>“é emprestado”</b> e o app <b>não guarda nada</b> ali.<br><br>
+      E quem não tem aparelho nenhum: alguém aperta <b>🖨️ Imprimir</b> e leva o mural da semana no papel.</p>
+    </div>
+    <div class="rodape">Fala, Turma! <span id="versao"></span> · irmão do Fala, Família 💜</div>
+  </section>
+
+  <!-- ============ QUEM SOU ============ -->
+  <section class="tela" id="tela-quemsou">
+    <div class="vazio" style="margin-bottom:14px">
+      <div class="emojao">👋</div>
+      <h3>Te convidaram pra</h3>
+      <p style="font-size:1.1rem;font-weight:800;color:var(--texto);margin-top:6px" id="convTurma"></p>
+    </div>
+    <div class="cartao">
+      <div class="campo">
+        <label>Como tu se chama</label>
+        <input id="meuNome" maxlength="30" placeholder="Teu nome ou apelido">
+        <small>É o nome que a turma vê nos teus recados.</small>
+      </div>
+      <label class="emprestado">
+        <input type="checkbox" id="modoEmprestado">
+        <div><b>📱 Este aparelho é emprestado</b>
+          <small>Marca se for o celular de outra pessoa ou o computador da escola.
+          Assim o app <b>não guarda nada aqui</b> e esquece tudo quando tu fechar.</small></div>
+      </label>
+      <button class="bt ok grande" id="btEntrarTurma">Entrar na turma 🎒</button>
+    </div>
+  </section>
+
+  <!-- ============ MURAL ============ -->
+  <section class="tela" id="tela-mural">
+    <div class="filtros">
+      <button class="filtro on" data-filtro="tudo">📋 Tudo</button>
+      <button class="filtro" data-filtro="recado">💬 Recados</button>
+      <button class="filtro" data-filtro="licao">📚 Lição</button>
+      <button class="filtro" data-filtro="prova">📝 Provas</button>
+      <button class="filtro" data-filtro="combinar">🎮 Combinar</button>
+      <button class="filtro" data-filtro="enquete">🗳️ Enquetes</button>
+    </div>
+    <div id="mural"></div>
+    <div class="linha-bt" style="margin-top:14px">
+      <button class="bt" id="btConvidar">📤 Chamar alguém</button>
+      <button class="bt" id="btImprimir">🖨️ Imprimir</button>
+    </div>
+    <div class="rodape">
+      <button class="bt fraco" id="btSair">Sair da turma neste aparelho</button><br>
+      Fala, Turma! <span id="versao2"></span>
+    </div>
+  </section>
+
+  <!-- ============ ESCREVER ============ -->
+  <section class="tela" id="tela-escrever">
+    <button class="bt fraco" id="btVoltarEsc">← Voltar pro mural</button>
+    <h2 style="margin:10px 0 12px" id="escTitulo">💬 Recado</h2>
+    <div class="esc-barra" id="escCor"></div>
+    <div class="tipos">
+      <button class="tipo" data-tipo="recado"><span>💬</span>Recado</button>
+      <button class="tipo" data-tipo="licao"><span>📚</span>Lição</button>
+      <button class="tipo" data-tipo="prova"><span>📝</span>Prova</button>
+      <button class="tipo" data-tipo="combinar"><span>🎮</span>Combinar</button>
+      <button class="tipo" data-tipo="enquete"><span>🗳️</span>Enquete</button>
+    </div>
+    <div class="cartao">
+      <div class="campo">
+        <label>O que tu quer contar</label>
+        <textarea id="escTxt" rows="3" maxlength="600"></textarea>
+      </div>
+      <div class="campo escondido" id="campoQuando">
+        <label>Quando é</label>
+        <input id="escQuando" maxlength="40" placeholder="Ex.: sexta-feira, dia 12">
+      </div>
+      <div class="campo escondido" id="camposEnquete" style="margin-bottom:0">
+        <label>As respostas</label>
+        <input class="esc-op" maxlength="40" placeholder="1ª resposta">
+        <input class="esc-op esc-op" maxlength="40" placeholder="2ª resposta">
+        <input class="esc-op" maxlength="40" placeholder="3ª (pode deixar vazio)">
+        <input class="esc-op" maxlength="40" placeholder="4ª (pode deixar vazio)">
+      </div>
+    </div>
+    <button class="bt ok grande" id="btMandar">📤 Mandar pra turma</button>
+  </section>
+
+</div>
+
+<button class="escrever escondido" id="btEscrever">✏️ Escrever</button>
+<div class="aviso-flutua" id="aviso"></div>
+<script src="turma.js?v=1"></script>
+</body>
+</html>
