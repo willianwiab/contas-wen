@@ -5,6 +5,28 @@
 
 const AJUDA = [
   {
+    titulo:'☀️ A tela Hoje',
+    cor:'#7c3aed',
+    itens:[
+      ['O que é','o painel da família: o que interessa HOJE, tudo num lugar só'],
+      ['Como abrir','a barrinha de baixo no celular, no ☀️ Hoje'],
+      ['💌 Recado do dia','num cartão grande, com ❤️ Gostei · 🔊 Ouvir · 📌 Fixar · ↩️ Responder'],
+      ['⏰ Compromissos','só os que ainda vêm hoje — o que já passou fica de lado'],
+      ['✅ Tarefas','as que faltam, e dá pra marcar ✔️ direto daqui'],
+      ['🎂 Aniversário','o mais perto, com os dias que faltam']
+    ]
+  },
+  {
+    titulo:'📱 A barrinha de baixo (celular)',
+    cor:'#0ea5e9',
+    itens:[
+      ['☀️ Hoje','o painel da família'],
+      ['💬 Conversas','a lista de sempre'],
+      ['🤖 Ajudante','a inteligência artificial'],
+      ['🆘 Ajuda','a tela de emergência, sempre a um toque']
+    ]
+  },
+  {
     titulo:'📋 Na primeira tela (a lista)',
     cor:'#7c3aed',
     itens:[
@@ -99,7 +121,8 @@ const AJUDA = [
       ['🤬 Anti-palavrão','esconde palavra feia na tela (o recado continua inteiro por baixo). Dá pra desligar'],
       ['🔕 Modo soneca','silencia os avisos por 30 min, 1 hora ou até as 8h'],
       ['🔒 Tranca do chat','senha de 4 números pedida ao abrir (tem dica depois de 3 erros)'],
-      ['💾 Salvar num arquivo','e 📂 abrir em outro celular, com áudios e fotos junto']
+      ['💾 Backup','uma tela só: quando foi o último, quantos recadinhos e fotos tem, o tamanho, e os botões de salvar e restaurar'],
+      ['ℹ️ Sobre','a versão do site e o que está ligado: se está enviando, se está embaralhado, se tem tranca']
     ]
   },
   {

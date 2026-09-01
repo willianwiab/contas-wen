@@ -82,11 +82,14 @@ function desenharIA(){
     caixa.innerHTML = `
       <div class="ia-aviso">
         <div class="balao-deco">🤖</div>
-        <h3>Falta a chave</h3>
-        <p>O Ajudante é uma <b>IA de verdade</b>, e IA de verdade custa dinheiro de quem usa.
-        Por isso a chave não vem no site: quem quiser usar cola a <b>sua própria chave</b> em
-        <b>⚙️ Ajustes → 🤖 Ajudante</b>. Ela fica guardada só neste aparelho.</p>
+        <h3>Ajudante da família</h3>
+        <p>Quer usar o Ajudante com inteligência artificial? Ele ajuda na lição,
+        explica coisas difíceis e conta historinha de dormir.</p>
+        <p class="ia-cadeado">🔐 Fica guardado <b>só neste aparelho</b>.</p>
+        <button class="lig-bt ok grande" id="iaConfigurar">Configurar Ajudante</button>
       </div>`;
+    const bt = document.getElementById('iaConfigurar');
+    if(bt) bt.addEventListener('click', abrirPassoAPasso);
     return;
   }
   caixa.innerHTML = conversaIA.length
@@ -385,4 +388,92 @@ async function traduzirPara(texto, lingua, botao){
     saida.innerHTML = `<div class="sug-caixa antes"><b>Deu erro</b><span>${escapar(explicarErroIA(e))}</span></div>`;
   }
   botao.textContent = antes; botao.disabled = false;
+}
+
+
+/* =========================================================
+   🤖 CONFIGURAR O AJUDANTE — passo a passo
+   "Cole sua chave de API sk-ant-" não quer dizer nada pra
+   quem nunca ouviu falar disso. Esta tela explica o que é,
+   quanto custa e o que fazer, um passo de cada vez.
+   ========================================================= */
+function abrirPassoAPasso(){
+  if(document.getElementById('telaConfigIA')) return;
+  const tela = document.createElement('div');
+  tela.className = 'tela-cheia ficha'; tela.id = 'telaConfigIA';
+  tela.innerHTML = `
+    <div class="w-topo" style="background:linear-gradient(135deg,#0f766e,#0891b2)">
+      <button class="icone" id="ciFechar">✕</button>
+      <div><b>🤖 Configurar o Ajudante</b><div class="w-sub">um passo de cada vez</div></div>
+    </div>
+    <div class="fi-meio">
+      <div class="ci-passo">
+        <div class="ci-num">1</div>
+        <div><b>O que é o Ajudante?</b>
+          <p>É uma inteligência artificial de verdade — a mesma que gente grande usa no trabalho.
+          Ela conversa, explica a lição e inventa histórias.</p></div>
+      </div>
+      <div class="ci-passo">
+        <div class="ci-num">2</div>
+        <div><b>Por que precisa de uma chave?</b>
+          <p>Ela cobra por uso, e a conta vai pra quem for dono da chave. Por isso o site não vem com
+          nenhuma: cada família usa a sua. <b>Uma criança não deve fazer isso sozinha</b> — chama um adulto.</p></div>
+      </div>
+      <div class="ci-passo">
+        <div class="ci-num">3</div>
+        <div><b>Como pegar a chave (adulto)</b>
+          <p>Entra em <b>console.anthropic.com</b>, faz uma conta, põe um crédito e clica em
+          <b>API keys → Create key</b>. Copia o código que aparece (começa com <code>sk-ant-</code>)
+          — ele só aparece uma vez.</p></div>
+      </div>
+      <div class="ci-passo">
+        <div class="ci-num">4</div>
+        <div><b>Cola aqui</b>
+          <div class="campo-form" style="margin:8px 0 0">
+            <input id="ciChave" type="password" placeholder="cola o código aqui" autocomplete="off" spellcheck="false">
+            <small>🔐 Fica guardado só neste aparelho. Não vai pro site, nem pro backup, nem pros outros.</small>
+          </div>
+        </div>
+      </div>
+      <div class="ci-passo">
+        <div class="ci-num">5</div>
+        <div><b>Quanto custa?</b>
+          <div class="campo-form" style="margin:8px 0 0">
+            <select id="ciModelo"></select>
+            <small class="ia-preco" id="ciPreco"></small>
+            <small>Uma pergunta custa centavos. Quem manda muita pergunta, gasta mais.</small>
+          </div>
+        </div>
+      </div>
+      <div class="lig-botoes" style="margin:6px 0 0">
+        <button class="lig-bt ok grande" id="ciSalvar">🤖 Ligar o Ajudante</button>
+      </div>
+    </div>`;
+  document.body.appendChild(tela);
+  document.getElementById('ciFechar').addEventListener('click', () => tela.remove());
+
+  const escolha = document.getElementById('ciModelo');
+  const preco = document.getElementById('ciPreco');
+  escolha.innerHTML = Object.entries(MODELOS_IA)
+    .map(([id, m]) => `<option value="${id}">${m.nome}</option>`).join('');
+  const mostrarPreco = () => { preco.textContent = MODELOS_IA[escolha.value].preco; };
+  escolha.addEventListener('change', mostrarPreco);
+  mostrarPreco();
+
+  document.getElementById('ciSalvar').addEventListener('click', () => {
+    const chave = document.getElementById('ciChave').value.trim();
+    if(!chave){ toast('Falta colar o código 😊'); return; }
+    if(!/^sk-/.test(chave)){
+      if(!confirm('Esse código não parece uma chave da Anthropic (elas começam com "sk-").\n\nGuardar assim mesmo?')) return;
+    }
+    dados.ia = { chave, modelo: escolha.value };
+    clienteIA = null;
+    salvar();
+    if(typeof desenharAjustesIA === 'function') desenharAjustesIA();
+    tela.remove();
+    desenharIA();
+    const campo = document.getElementById('iaEntrada');
+    if(campo) campo.placeholder = 'Pergunta o que tu quiser...';
+    toast('Ajudante ligado! 🤖 Manda uma pergunta', 5000);
+  });
 }

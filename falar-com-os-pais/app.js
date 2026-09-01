@@ -302,11 +302,13 @@ function abrir(id){
   atualizarBolinhaDoIcone();
   avisarQueVi(id);
   $('#app').classList.remove('no-chat');
+  document.body.classList.add('na-conversa');    // some com a barra de baixo
   desenharContatos(); desenharConversa();
 }
 function fechar(){
   atual = null;
   $('#app').classList.add('no-chat');
+  document.body.classList.remove('na-conversa');
   desenharContatos(); telaVazia();
 }
 /* Primeira vez no aparelho: de quem ele é? */
@@ -887,8 +889,28 @@ document.querySelectorAll('[data-soneca]').forEach(b => b.addEventListener('clic
   const v = b.dataset.soneca;
   porSoneca(v === 'manha' ? 'manha' : +v);
 }));
-$('#btnSalvarTudo').addEventListener('click', exportarTudo);
-$('#btnAbrirTudo').addEventListener('click', importarTudo);
+$('#btnBackup').addEventListener('click', abrirBackup);
+$('#btnSobre').addEventListener('click', abrirSobre);
+$('#btnConfigIA').addEventListener('click', abrirPassoAPasso);
+
+/* ---------- 📱 a barra de baixo (celular) ---------- */
+document.querySelectorAll('[data-baixo]').forEach(b => b.addEventListener('click', () => {
+  const onde = b.dataset.baixo;
+  document.querySelectorAll('[data-baixo]').forEach(o => o.classList.toggle('on', o === b));
+  if(onde === 'hoje') abrirHoje();
+  if(onde === 'ajudante') abrirIA();
+  if(onde === 'socorro') pedirAjuda();
+  if(onde === 'conversas'){
+    ['telaHoje','telaIA','telaPedirAjuda'].forEach(id => document.getElementById(id)?.remove());
+    if(atual) fechar();
+  }
+}));
+/* fechando uma tela dessas, a barra volta pra Conversas */
+new MutationObserver(() => {
+  const aberta = ['telaHoje','telaIA','telaPedirAjuda'].some(id => document.getElementById(id));
+  if(!aberta) document.querySelectorAll('[data-baixo]').forEach(o =>
+    o.classList.toggle('on', o.dataset.baixo === 'conversas'));
+}).observe(document.body, { childList:true });
 $('#cfgTema').addEventListener('click', e => e.currentTarget.classList.toggle('on'));
 $('#modalConfig').addEventListener('click', e => { if(e.target.id === 'modalConfig') fecharConfig(); });
 $('#busca').addEventListener('input', desenharContatos);

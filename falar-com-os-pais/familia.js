@@ -212,11 +212,61 @@ async function trancarBackup(texto, senha){
   return { app:'fala-familia', trancado:true, sal, iv: b64Bk(iv), c: b64Bk(cifra) };
 }
 
-async function abrirBackup(pacote, senha){
+async function destrancarBackup(pacote, senha){
   const claro = await crypto.subtle.decrypt(
     { name:'AES-GCM', iv: deB64Bk(pacote.iv) },
     await chaveDoBackup(senha, pacote.sal), deB64Bk(pacote.c));
   return JSON.parse(new TextDecoder().decode(claro));
+}
+
+/* ---------- 💾 a tela do backup, com resumo ----------
+   Antes eram dois botões soltos. Agora dá pra ver o que está guardado,
+   quando foi o último backup e o tamanho — e restaurar pede confirmação
+   antes de passar por cima do que está aqui. */
+async function abrirBackup(){
+  if(document.getElementById('telaBackup')) return;
+  const tela = document.createElement('div');
+  tela.className = 'tela-cheia ficha'; tela.id = 'telaBackup';
+  tela.innerHTML = `
+    <div class="w-topo" style="background:linear-gradient(135deg,#0891b2,#7c3aed)">
+      <button class="icone" id="bkFechar">✕</button>
+      <div><b>💾 Backup</b><div class="w-sub">levar tudo pra outro aparelho</div></div>
+    </div>
+    <div class="fi-meio">
+      <div class="bk-resumo" id="bkResumo"><p class="hj-nada">Contando o que tem guardado...</p></div>
+      <div class="lig-botoes" style="margin:14px 0 0">
+        <button class="lig-bt ok grande" id="bkSalvar">💾 Fazer backup agora</button>
+        <button class="lig-bt grande" id="bkAbrir">📥 Restaurar um backup</button>
+      </div>
+      <p class="sem-lembrete" style="margin-top:12px">O arquivo leva as conversas, os áudios, as fotos e a
+      🩺 ficha de emergência. <b>Restaurar troca tudo que está neste aparelho</b> pelo que está no arquivo.</p>
+    </div>`;
+  document.body.appendChild(tela);
+  document.getElementById('bkFechar').addEventListener('click', () => tela.remove());
+  document.getElementById('bkSalvar').addEventListener('click', exportarTudo);
+  document.getElementById('bkAbrir').addEventListener('click', importarTudo);
+  desenharResumoDoBackup();
+}
+
+async function desenharResumoDoBackup(){
+  const caixa = document.getElementById('bkResumo');
+  if(!caixa) return;
+  const c = await contarTudoGuardado();
+  const bk = dados.ultimoBackup;
+  const mb = (c.bytes / 1048576);
+  caixa.innerHTML = `
+    <div class="bk-linha destaque">
+      <b>Último backup</b>
+      <span>${bk ? `${diaTexto(bk.ts)} às ${hora(bk.ts)}${bk.trancado ? ' 🔒' : ''}` : '⚠️ nunca foi feito'}</span>
+    </div>
+    <div class="bk-numeros">
+      <div class="sb-num"><b>📦 ${mb < 0.1 ? '<0,1' : mb.toFixed(1)} MB</b><small>mais ou menos</small></div>
+      <div class="sb-num"><b>💬 ${c.msgs}</b><small>recadinhos</small></div>
+      <div class="sb-num"><b>🖼️ ${c.fotos}</b><small>fotos</small></div>
+      <div class="sb-num"><b>🎤 ${c.audios}</b><small>áudios</small></div>
+      <div class="sb-num"><b>🎥 ${c.videos}</b><small>vídeos</small></div>
+      <div class="sb-num"><b>✅ ${c.tarefas}</b><small>tarefas</small></div>
+    </div>`;
 }
 
 async function exportarTudo(){
@@ -257,6 +307,8 @@ async function exportarTudo(){
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   const mb = (blob.size / 1048576).toFixed(1);
+  dados.ultimoBackup = { ts: Date.now(), mb: +mb, trancado: !!senha };
+  salvar(); desenharResumoDoBackup();
   toast(senha ? `Arquivo salvo e trancado! (${mb} MB) 🔒` : `Arquivo salvo, SEM senha (${mb} MB) 💾`, 6000);
 }
 
@@ -272,11 +324,22 @@ function importarTudo(){
       if(pacote.trancado){
         const senha = (prompt('🔒 Este backup está trancado.\nDigita a senha dele:') || '').trim();
         if(!senha){ toast('Sem a senha eu não consigo abrir 🔒', 5000); return; }
-        try{ pacote = await abrirBackup(pacote, senha); }
+        try{ pacote = await destrancarBackup(pacote, senha); }
         catch(e){ toast('Senha errada — não consegui abrir esse arquivo 🔒', 6000); return; }
       }
       if(!pacote.dados || typeof pacote.dados !== 'object') throw new Error('arquivo estragado');
-      if(!confirm('Isso vai TROCAR tudo que está neste aparelho pelo que está no arquivo.\nPode ir?')) return;
+      const agora = await contarTudoGuardado();
+      const doArquivo = (() => {
+        let n = 0;
+        Object.values((pacote.dados && pacote.dados.msgs) || {}).forEach(l => n += l.length);
+        return n;
+      })();
+      if(!confirm(
+        '⚠️ RESTAURAR VAI TROCAR TUDO\n\n' +
+        `Neste aparelho agora: ${agora.msgs} recadinhos, ${agora.fotos} fotos, ${agora.audios} áudios.\n` +
+        `No arquivo: ${doArquivo} recadinhos.\n\n` +
+        'O que está aqui hoje vai ser APAGADO e trocado pelo que está no arquivo.\n' +
+        'Isso não tem como desfazer.\n\nPode ir?')) return;
       toast('Abrindo o backup... 💾', 4000);
       for(const [id, texto] of Object.entries(pacote.arquivos || {})){
         const blob = await (await fetch(texto)).blob();
