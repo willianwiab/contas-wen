@@ -27,8 +27,18 @@ function pedirTranca(){
         <button id="trOk">✅</button>
       </div>
       <button class="tr-esqueci escondido" id="trEsqueci">esqueci a senha</button>
+      <button class="tr-ficha escondido" id="trFicha">🩺 Ficha de emergência</button>
     </div>`;
   document.body.appendChild(tela);
+
+  /* A ficha abre SEM a senha, de propósito: quem achar este celular
+     caído na rua precisa conseguir ligar pros pais. Não tem recado
+     nenhum ali dentro, só o que serve pra ajudar. */
+  const btFicha = document.getElementById('trFicha');
+  if(typeof fichaTemAlgo === 'function' && fichaTemAlgo()){
+    btFicha.classList.remove('escondido');
+    btFicha.addEventListener('click', () => abrirFicha(true));
+  }
 
   let digitado = '';
   const bolinhas = () => {

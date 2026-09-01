@@ -329,72 +329,17 @@ function pararAlarme(){
   alarmeTocando = null;
 }
 
-/* ---------- mandar o pedido de ajuda ---------- */
-function pedirAjuda(){
-  if(!confirm('🆘 Mandar um pedido de ajuda?\n\nTodo mundo da família vai receber um alarme alto com o lugar onde tu está.')) return;
-  toast('Mandando pedido de ajuda... 🆘', 4000);
-
-  const mandar = lugar => {
-    /* Vai só pra conversa da Família: assim todo mundo recebe uma vez só.
-       Mandar pra cada dupla fazia o alarme tocar duas vezes no mesmo aparelho. */
-    const sos = { tipo:'sos', de: dados.euSou, ts: Date.now(), lugar };
-    dados.msgs.familia.push(sos);
-    dados.visto.familia = Date.now();
-    mandarPraNuvem('familia', sos);
-    salvar(); desenharContatos();
-    if(atual) desenharMensagens();
-    toast('Pedido de ajuda enviado 🆘', 5000);
-  };
-
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(
-      pos => mandar({ lat:+pos.coords.latitude.toFixed(5), lon:+pos.coords.longitude.toFixed(5) }),
-      () => mandar(null),
-      { enableHighAccuracy:true, timeout:8000 }
-    );
-  }else mandar(null);
-}
-
-/* ---------- quando chega um pedido de ajuda ---------- */
-function chegouPedidoDeAjuda(msg){
-  if(document.getElementById('telaSos')) return;   // já está tocando
-  tocarAlarme();
-  const p = PESSOAS[msg.de] || PESSOAS.jojo;
-  const link = msg.lugar ? `https://www.openstreetmap.org/?mlat=${msg.lugar.lat}&mlon=${msg.lugar.lon}#map=17/${msg.lugar.lat}/${msg.lugar.lon}` : '';
-  const tela = document.createElement('div');
-  tela.className = 'tela-cheia sos-tela';
-  tela.id = 'telaSos';
-  tela.innerHTML = `
-    <div class="sos-meio">
-      <div class="sos-sino">🆘</div>
-      <h2>${p.nome} precisa de ajuda!</h2>
-      <p class="lig-txt">${hora(msg.ts)}${msg.lugar ? '' : ' — sem o lugar (o GPS não respondeu)'}</p>
-      <div class="lig-botoes col">
-        ${link ? `<a class="lig-bt ok grande" href="${link}" target="_blank" rel="noopener">🗺️ Ver onde está</a>` : ''}
-        <button class="lig-bt grande" id="sosIndo">🏃 Estou indo!</button>
-        <button class="lig-bt desligar" id="sosFechar">Silenciar</button>
-      </div>
-    </div>`;
-  document.body.appendChild(tela);
-  document.getElementById('sosFechar').addEventListener('click', () => { pararAlarme(); tela.remove(); });
-  document.getElementById('sosIndo').addEventListener('click', () => {
-    pararAlarme(); tela.remove();
-    const conversa = CONVERSAS.find(c => c.pessoa === msg.de) || CONVERSAS.find(c => c.id === 'familia');
-    if(!conversa) return;
-    const resposta = { t:'🏃 Estou indo te ajudar!', de: dados.euSou, ts: Date.now() };
-    dados.msgs[conversa.id].push(resposta);
-    salvar(); mandarPraNuvem(conversa.id, resposta);
-    desenharContatos(); if(atual === conversa.id) desenharMensagens();
-    toast('Avisei que tu está indo 🏃');
-  });
-  avisar('🆘 ' + p.nome + ' precisa de ajuda!', msg.lugar ? 'Toca pra ver onde está' : 'Sem o lugar', 'sos');
-}
+/* O pedido de ajuda mudou de casa: agora mora inteiro no socorro.js,
+   com tipos de ajuda, alarme que insiste, gravação do ambiente, ligação
+   automática, sirene, ficha e o "se eu não avisar, avisa por mim". Aqui
+   ficou só o desenho do balão, que é coisa de conversa. */
 
 function balaoSos(m){
   const link = m.lugar ? `https://www.openstreetmap.org/?mlat=${m.lugar.lat}&mlon=${m.lugar.lon}#map=17/${m.lugar.lat}/${m.lugar.lon}` : '';
   return `<div class="sos-balao">
-    <b>🆘 Pedido de ajuda</b>
-    <span>${m.lugar ? `${m.lugar.lat}, ${m.lugar.lon}` : 'sem o lugar'}</span>
+    <b>${m.emoji || '🆘'} ${escapar(m.t || 'Pedido de ajuda')}</b>
+    ${m.automatico ? '<i class="sos-auto">avisado pelo próprio site</i>' : ''}
+    <span>${m.lugar ? `${m.lugar.lat}, ${m.lugar.lon}` : 'o lugar não veio'}</span>
     ${link ? `<a class="lug-bt" href="${link}" target="_blank" rel="noopener">🗺️ Ver no mapa</a>` : ''}
   </div>`;
 }

@@ -101,6 +101,15 @@ daquele aparelho.
 | 🗣️ Traduzir | O Ajudante manda teu recado em outra língua |
 | 🔄 Virar a câmera | Na videochamada, troca entre a câmera da frente e a de trás |
 | 🔗 Links | Endereço escrito num recado vira link sublinhado e clicável |
+| 🆘 Ajuda | 4 tipos de pedido, alarme que insiste, som do lugar, ligação automática |
+| 🚨 🔦 ☎️ | Sirene, lanterna SOS em morse e 190/192/193 |
+| 🩺 Ficha de emergência | Abre sem a senha da tranca, pra quem achar o celular |
+| ⏱️ Se eu não avisar | O site avisa a família sozinho se ninguém confirmar que chegou |
+| 📍 Me acompanha | 30 minutos de localização ao vivo pra família |
+| 🏠 🔋 Quem chegou | Quem está em casa e a bateria de cada um |
+| ⭐ Favoritos | Guarda os recados que não podem se perder |
+| 🔍 Procurar em tudo | Busca em todas as conversas de uma vez |
+| 🎧 Áudio 1,5× e 2× | Ouvir recado de voz mais rápido |
 
 ## 📞 Sobre a ligação (voz ou vídeo)
 
@@ -145,6 +154,33 @@ exatamente igual.
 **Como foi feito.** O SDK oficial (`@anthropic-ai/sdk`) é baixado do esm.sh só na primeira
 vez que o Ajudante é usado, com `dangerouslyAllowBrowser: true` — o que aqui é seguro
 porque a chave é do próprio dono do aparelho, não uma chave compartilhada do site.
+
+## 🆘 Emergência (`socorro.js`)
+
+A regra desse arquivo inteiro: **nada pode depender de dar tudo certo.** GPS que não
+responde, microfone negado, banco fora do ar — o pedido de ajuda sai do mesmo jeito, com o
+que der. Chegar sem o lugar é melhor do que não chegar.
+
+Por isso a ordem é: **1)** o pedido vai pra nuvem imediatamente, com o tipo escolhido;
+**2)** o lugar chega depois, como uma nova versão do mesmo recado (`atualizarNaNuvem`);
+**3)** a gravação de 30 s do ambiente roda **em paralelo** — ligar pra alguém só depois
+dela seria tarde demais; **4)** a ligação sai na mesma hora, pra quem mexeu no site mais
+recentemente. Uma tela mostra cada passo à medida que acontece, porque quem está com medo
+precisa **ver** que o pedido saiu.
+
+O alarme de quem recebe **insiste**: antes tocava 20 segundos e desistia (quem estava com
+o celular no bolso não via). Agora ele se repete até alguém apertar "estou indo", ou por
+5 minutos. "Silenciar" pede confirmação. O **🤕 Já tô bem** encerra o alerta no aparelho
+de todo mundo.
+
+A **🩺 ficha de emergência** é o único lugar do site que abre **sem a senha da tranca** —
+de propósito: quem achar o celular caído na rua precisa conseguir ligar pros pais. Ela não
+tem recado nenhum dentro, só o que serve pra ajudar, e fica só no `localStorage`.
+
+O **⏱️ "se eu não avisar, avisa por mim"** guarda `dados.vigia` com a hora limite e o
+lugar de saída; um relógio confere de minuto em minuto e, se passar, manda um `sos`
+marcado como `automatico`. Só funciona com o site aberto ou atrás de outro app — está
+escrito na própria tela.
 
 ## 🩹 Quando a atualização vem pela metade
 
@@ -318,6 +354,8 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 | `placar.js` | O 📊 quem falou mais |
 | `meu.js` | 🌡️ o humor de cada dia e 📚 a estante de livros |
 | `festa.js` | 🎂 cartão de aniversário e 🎞️ retrospectiva |
+| `socorro.js` | Tudo que é emergência: 🆘 🚨 🔦 🩺 ⏱️ 📍 🔋 🧭 |
+| `guardados.js` | ⭐ favoritos, 🔍 procurar em tudo e 🎧 áudio mais rápido |
 | `sinais.js` | “Está escrevendo”, ✓✓ visto e apagar pra todos |
 | `chamada.js` | Ligação de um toque (o Firebase avisa o outro aparelho) |
 | `sw.js`, `manifest.webmanifest`, ícones | Instalar como aplicativo e abrir sem internet |

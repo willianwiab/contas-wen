@@ -62,7 +62,8 @@ function padrao(){
     fotos:{}, tarefas:[], pontos:{jojo:0,pai:0,mae:0,irma:0}, nasc:{}, fixado:{}, agenda:[], bicho:{},
     papel:{}, letra:'normal', voz:false, vozContrario:false, antiPalavrao:true, avisos:false, lembretes:[],
     ia:{ chave:'', modelo:'claude-opus-5' }, recados:{},
-    humor:{}, livros:[], cartoes:{}, tempo:null };
+    humor:{}, livros:[], cartoes:{}, tempo:null, ficha:{}, vigia:null,
+    favoritos:{}, baterias:{}, casa:null, velocidadeAudio:1 };
 }
 function carregar(){
   try{
@@ -85,6 +86,9 @@ function carregar(){
     d.recados = d.recados || {};
     d.humor   = d.humor   || {};
     d.cartoes = d.cartoes || {};
+    d.ficha   = d.ficha   || {};
+    d.favoritos = d.favoritos || {};
+    d.baterias  = d.baterias  || {};
     if(!Array.isArray(d.livros)) d.livros = [];
     if(!bruto) d = migrarV1(d);
     return d;
@@ -581,6 +585,7 @@ function desenharMensagens(){
           ${!m.tipo && m.de === autor ? `<button data-acao="editar" data-i="${real}" title="Arrumar o que escrevi">✏️</button>` : ''}
           ${dados.voz && podeFalar() ? `<button data-acao="falar" data-i="${real}" title="Ler em voz alta">🔊</button>` : ''}
           <button data-acao="reagir" data-i="${real}" title="Reagir">☺</button>
+          <button data-acao="favorito" data-i="${real}" title="Guardar nos favoritos">${ehFavorito(atual, m) ? '⭐' : '☆'}</button>
           <button data-acao="fixar" data-i="${real}" title="Fixar no topo">📌</button>
           <button data-acao="apagar" data-i="${real}" title="Apagar">✕</button>
         </div>
@@ -600,6 +605,10 @@ function desenharMensagens(){
       const m = dados.msgs[atual][+b.dataset.somtocar];
       if(m) tocarSom(m.som);
     }));
+  caixa.querySelectorAll('[data-acao="favorito"]').forEach(b =>
+    b.addEventListener('click', () => favoritar(+b.dataset.i)));
+  caixa.querySelectorAll('[data-veloc]').forEach(b =>
+    b.addEventListener('click', trocarVelocidade));
   caixa.querySelectorAll('[data-acao="fixar"]').forEach(b =>
     b.addEventListener('click', () => fixarRecado(+b.dataset.i)));
   caixa.querySelectorAll('[data-acao="reagir"]').forEach(b =>
@@ -806,6 +815,11 @@ $('#btnHumor').addEventListener('click', abrirHumor);
 $('#btnLivros').addEventListener('click', abrirEstante);
 $('#btnCartao').addEventListener('click', abrirCartoes);
 $('#btnRetro').addEventListener('click', abrirRetrospectiva);
+$('#btnSeguir').addEventListener('click', abrirMeAcompanha);
+$('#btnSocorro').addEventListener('click', pedirAjuda);
+$('#btnFavoritos').addEventListener('click', abrirFavoritos);
+$('#btnProcurar').addEventListener('click', abrirProcuraGeral);
+$('#btnQuemChegou').addEventListener('click', abrirQuemChegou);
 $('#cardBicho').addEventListener('click', abrirBicho);
 $('#btnAjuda').addEventListener('click', abrirAjuda);
 $('#btnTranca').addEventListener('click', mudarTranca);
@@ -906,6 +920,8 @@ carregarPerfis().then(() => { desenharContatos(); if(atual) desenharConversa(); 
 verLembretes(true); atualizarBolinhaDoIcone(); mostrarAniversario(); mostrarProximo();
 verCapsulas(); verAgenda(); desenharBicho(); pedirTranca();
 verOTempo();                                  // ⛅ leva casaco hoje?
+desenharVigia(); conferirVigia(); olharABateria();   // 🆘 as coisas de emergência
+contarMinhaBateria(); setInterval(contarMinhaBateria, 15 * 60000);
 if(nuvemLigada()) ligarNuvem();
 if(!dados.euSou){
   perguntarQuemSou();                         // primeira vez: de quem é este aparelho?

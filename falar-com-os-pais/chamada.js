@@ -138,6 +138,15 @@ async function verSeEstaoLigando(){
 
 function mostrarChamadaChegando(c, info){
   if(document.getElementById('telaTocando')) return;
+
+  /* Se esta pessoa acabou de pedir ajuda, o 🆘 dela já está berrando aqui:
+     dois alarmes ao mesmo tempo viram barulho e ninguém entende nada. O
+     telefone toca, o alarme cala — a tela do 🆘 continua atrás, com o
+     "estou indo", pra quando a ligação acabar. */
+  const socorroAberto = document.getElementById('telaSos');
+  const daMesmaPessoa = socorroAberto && typeof pararDeInsistir === 'function';
+  if(daMesmaPessoa) pararDeInsistir();
+
   tocarTelefone();
   const tela = document.createElement('div');
   tela.className = 'tela-cheia tocando'; tela.id = 'telaTocando';
@@ -145,7 +154,8 @@ function mostrarChamadaChegando(c, info){
     <div class="qs-meio">
       <div class="lig-avatar tremendo" style="background:linear-gradient(135deg,${c.cor},${c.cor}bb)">${avatarConversa(c)}</div>
       <h2>${c.nome}</h2>
-      <p class="lig-txt">${info.comVideo ? '📹 videochamada' : '📞 ligação'} chamando...</p>
+      <p class="lig-txt">${daMesmaPessoa ? '🆘 <b>ligando por causa do pedido de ajuda</b>'
+        : (info.comVideo ? '📹 videochamada' : '📞 ligação') + ' chamando...'}</p>
       <div class="lig-botoes">
         <button class="lig-bt ok grande" id="atenderAgora">📞 Atender</button>
         <button class="lig-bt desligar grande" id="recusarAgora">📵 Recusar</button>

@@ -87,6 +87,10 @@ async function lerSinais(){
     if(typeof receberRecados === 'function') await receberRecados(tudo.recados);
     /* ⏰ tem despertador marcado pra mim? */
     if(typeof conferirDespertador === 'function') conferirDespertador(tudo.despertador);
+    /* 📍 quem está deixando a família ver onde está */
+    if(typeof receberOndeEstao === 'function') receberOndeEstao(tudo.ondeestou);
+    /* 🔋 a bateria de cada um */
+    if(typeof receberBaterias === 'function') receberBaterias(tudo.baterias);
 
     mostrarQuemEstaEscrevendo();
     if(atual) atualizarTiquinhos();
