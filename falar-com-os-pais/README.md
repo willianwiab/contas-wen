@@ -86,6 +86,20 @@ daquele aparelho.
 | 💭 Recado do dia | Uma frase curta de cada um ("tô na escola 🏫") na fileirinha em cima das conversas |
 | 📶 Fila de espera | Recado escrito sem internet sai sozinho quando ela volta |
 | 📞 Recado de voz | Ligou e ninguém atendeu? Dá pra deixar um áudio na conversa |
+| ✋ 🎯 Jogos de dois | Pedra-papel-tesoura e forca, cada um no seu aparelho |
+| 🧩 Quebra-cabeça | Uma foto do álbum vira quebra-cabeça de 9 ou 16 peças |
+| 🎨 Quadro ao vivo | Os dois desenham no mesmo quadro ao mesmo tempo |
+| 🚸 CHEGUEI! | Um toque avisa a família com o lugar no mapa |
+| 🚗 Tô indo te buscar | Avisa com um relógio contando o tempo que falta |
+| ⏰ Despertador de longe | Toca no celular da outra pessoa |
+| ⛅ Levo casaco hoje? | O tempo da cidade, de graça, sem chave nenhuma |
+| 📊 Quem falou mais | Placar e medalhas feitos com o que já está guardado |
+| 🌡️ Como tu tá | Uma carinha por dia e o mês num quadrinho |
+| 📚 Estante | Os livros lidos, com estrelinhas |
+| 🎂 Cartão de aniversário | Áudios escondidos que só abrem no dia |
+| 🎞️ Retrospectiva | As fotos de um mês passando como filminho |
+| 🗣️ Traduzir | O Ajudante manda teu recado em outra língua |
+| 🔄 Virar a câmera | Na videochamada, troca entre a câmera da frente e a de trás |
 
 ## 📞 Sobre a ligação (voz ou vídeo)
 
@@ -130,6 +144,40 @@ exatamente igual.
 **Como foi feito.** O SDK oficial (`@anthropic-ai/sdk`) é baixado do esm.sh só na primeira
 vez que o Ajudante é usado, com `dangerouslyAllowBrowser: true` — o que aqui é seguro
 porque a chave é do próprio dono do aparelho, não uma chave compartilhada do site.
+
+## 🎮 Os jogos que viajam (e um bug que existia)
+
+🕹️ velha, ✋ pedra-papel-tesoura e 🎯 forca são **um recado dentro da conversa**. Quem
+joga muda esse recado e chama `atualizarNaNuvem()`, que reenvia o mesmo `uid` com um
+contador `v` a mais; o outro aparelho recebe e **substitui** a sua cópia quando o `v` que
+chega é maior.
+
+Isso conserta um bug que existia desde o começo: o jogo da velha (e também **as reações e
+os votos de enquete**) só era salvo no aparelho de quem mexeu. Nada disso era enviado — a
+outra pessoa simplesmente nunca via. Junto com a correção, a conferida periódica passou a
+marcar cada versão por `chave + iv` em vez de só pela chave, senão uma versão nova do
+mesmo recado era pulada como se já tivesse sido lida.
+
+A palavra da forca vai embaralhada no recado (base64 do texto invertido) e a mão do ✋ só
+aparece na tela quando os dois escolheram. **Isso é uma cortina, não um cofre**: quem
+entender de computador consegue achar. É brincadeira de família.
+
+## 🎨 O quadro ao vivo
+
+Cada risco (do apertar até o soltar) vira um pacotinho **embaralhado** em
+`salas/<sala>/quadro/<conversa>/<id>`; o outro aparelho pega os riscos novos de 1,2 em 1,2
+segundo e desenha por cima. O desenho é sempre 1000×1000 e a tela se adapta, então os dois
+veem a mesma coisa em telas de tamanhos diferentes. Limpar apaga pros dois.
+
+## ⛅ O tempo
+
+Usa o [Open-Meteo](https://open-meteo.com), que é gratuito e **não pede chave de API** —
+por isso funciona pra todo mundo sem ninguém pagar nada. Pergunta no máximo uma vez por
+hora e guarda a última resposta, que continua servindo se a internet cair.
+
+> Esta é a única parte que **não pôde ser testada contra o servidor de verdade** durante o
+> desenvolvimento (o ambiente onde o código foi escrito não alcança `api.open-meteo.com`).
+> Foi testada contra uma resposta simulada com o formato documentado da API.
 
 ## 💭 Recado do dia
 
@@ -238,6 +286,12 @@ que vai **trocar** o que estiver lá antes de fazer qualquer coisa.
 | `avisos.js` | Notificações, lembretes e bolinha no ícone |
 | `ia.js` | O 🤖 Ajudante: a IA de verdade, a 🌙 historinha e o ✨ me ajuda a escrever |
 | `recado.js` | O 💭 recado do dia de cada um |
+| `jogos.js` | ✋ pedra-papel-tesoura, 🎯 forca e 🧩 quebra-cabeça |
+| `quadro.js` | O 🎨 quadro de desenho ao vivo |
+| `momentos.js` | 🚸 CHEGUEI, 🚗 tô indo, ⏰ despertador de longe e ⛅ o tempo |
+| `placar.js` | O 📊 quem falou mais |
+| `meu.js` | 🌡️ o humor de cada dia e 📚 a estante de livros |
+| `festa.js` | 🎂 cartão de aniversário e 🎞️ retrospectiva |
 | `sinais.js` | “Está escrevendo”, ✓✓ visto e apagar pra todos |
 | `chamada.js` | Ligação de um toque (o Firebase avisa o outro aparelho) |
 | `sw.js`, `manifest.webmanifest`, ícones | Instalar como aplicativo e abrir sem internet |

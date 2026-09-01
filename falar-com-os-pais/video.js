@@ -12,14 +12,14 @@ function tipoVideoSuportado(){
   return tipos.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
 }
 
-async function pegarCamera(comSom = true){
+async function pegarCamera(comSom = true, lado = 'user'){
   if(!window.isSecureContext || !navigator.mediaDevices?.getUserMedia){
     toast('Pra usar a câmera, abre o site pelo link (https) 🔒', 5000);
     return null;
   }
   try{
     return await navigator.mediaDevices.getUserMedia({
-      video: { facingMode:'user', width:{ ideal:640 }, height:{ ideal:480 } },
+      video: { facingMode: lado, width:{ ideal:640 }, height:{ ideal:480 } },
       audio: comSom
     });
   }catch(e){

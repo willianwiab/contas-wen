@@ -85,6 +85,8 @@ async function lerSinais(){
 
     /* 💭 os recados do dia dos outros vêm no mesmo pacote */
     if(typeof receberRecados === 'function') await receberRecados(tudo.recados);
+    /* ⏰ tem despertador marcado pra mim? */
+    if(typeof conferirDespertador === 'function') conferirDespertador(tudo.despertador);
 
     mostrarQuemEstaEscrevendo();
     if(atual) atualizarTiquinhos();

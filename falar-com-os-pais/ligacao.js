@@ -84,9 +84,12 @@ function emChamada(){
     <div class="lig-tempo" id="ligTempo">00:00</div>
     <div class="lig-botoes">
       <button class="lig-bt mudo" id="btMudo">🔇 Mudo</button>
+      ${comVideo ? '<button class="lig-bt" id="btVirar">🔄 Virar a câmera</button>' : ''}
       ${comVideo ? '<button class="lig-bt" id="btCamera">📷 Desligar câmera</button>' : ''}
       <button class="lig-bt desligar" id="btDesligar">📵 Desligar</button>
     </div>`);
+  const btVirar = document.getElementById('btVirar');
+  if(btVirar) btVirar.addEventListener('click', virarCameraNaLigacao);
   const btCam = document.getElementById('btCamera');
   if(btCam) btCam.addEventListener('click', e => {
     const faixas = meuAudio ? meuAudio.getVideoTracks() : [];
@@ -266,4 +269,62 @@ function abrirLigacao(){
   document.getElementById('btSoVoz').addEventListener('click', () => { comVideo = false; marca(); });
   document.getElementById('btComVideo').addEventListener('click', () => { comVideo = true; marca(); });
   marca();
+}
+
+
+/* ---------- 🔄 virar a câmera no meio da videochamada ----------
+   Pega a imagem do outro lado do celular e TROCA a faixa que já está
+   indo pela ligação (replaceTrack). Assim ninguém precisa desligar e
+   ligar de novo: pro outro, a imagem só vira. */
+let ladoDaCamera = 'user';
+let virandoCamera = false;
+
+async function virarCameraNaLigacao(){
+  if(virandoCamera) return;
+  if(!pc || !meuAudio){ toast('A câmera só vira durante a videochamada 😊'); return; }
+  const bt = document.getElementById('btVirar');
+  virandoCamera = true;
+  if(bt){ bt.textContent = '🔄 virando...'; bt.disabled = true; }
+
+  const novoLado = ladoDaCamera === 'user' ? 'environment' : 'user';
+  let nova = null;
+  try{
+    nova = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { exact: novoLado }, width:{ ideal:640 }, height:{ ideal:480 } }, audio: false
+    });
+  }catch(e){
+    /* celular com uma câmera só (ou computador): pede sem exigir o lado */
+    try{
+      nova = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: novoLado, width:{ ideal:640 }, height:{ ideal:480 } }, audio: false
+      });
+    }catch(e2){ nova = null; }
+  }
+
+  if(!nova){
+    toast('Este aparelho só tem uma câmera 🤷', 4000);
+    virandoCamera = false;
+    if(bt){ bt.textContent = '🔄 Virar a câmera'; bt.disabled = false; }
+    return;
+  }
+
+  const faixaNova = nova.getVideoTracks()[0];
+  const faixaVelha = meuAudio.getVideoTracks()[0];
+  /* se a câmera estava desligada, a nova entra desligada também */
+  if(faixaVelha) faixaNova.enabled = faixaVelha.enabled;
+
+  try{
+    const canal = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+    if(canal) await canal.replaceTrack(faixaNova);
+  }catch(e){ toast('Não consegui trocar a imagem 😕'); }
+
+  if(faixaVelha){ meuAudio.removeTrack(faixaVelha); faixaVelha.stop(); }
+  meuAudio.addTrack(faixaNova);
+  const meu = document.getElementById('meuVideo');
+  if(meu) meu.srcObject = meuAudio;
+
+  ladoDaCamera = novoLado;
+  virandoCamera = false;
+  if(bt){ bt.textContent = '🔄 Virar a câmera'; bt.disabled = false; }
+  toast(novoLado === 'user' ? '🤳 Câmera da frente' : '📸 Câmera de trás');
 }
