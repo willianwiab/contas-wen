@@ -16,7 +16,7 @@
      nenhum receber os recados no papel.
    ========================================================= */
 
-const VERSAO = '1.0.0';
+const VERSAO = '2.0.0';
 const CHAVE = 'fala-turma:v1';
 
 const CORES = ['#7c3aed','#2563eb','#ec4899','#f59e0b','#16a34a','#0ea5e9','#ef4444','#8b5cf6','#14b8a6','#f97316'];
@@ -24,10 +24,35 @@ const BICHOS = ['🦊','🐼','🦉','🐢','🦁','🐨','🐧','🦄','🐸','
 
 const TIPOS = {
   recado:  { emoji:'💬', nome:'Recado',  cor:'#7c3aed' },
-  licao:   { emoji:'📚', nome:'Lição',   cor:'#2563eb' },
-  prova:   { emoji:'📝', nome:'Prova',   cor:'#ef4444' },
-  combinar:{ emoji:'🎮', nome:'Combinar',cor:'#16a34a' },
-  enquete: { emoji:'🗳️', nome:'Enquete', cor:'#f59e0b' }
+  licao:   { emoji:'📚', nome:'Lição',   cor:'#2563eb', temData:true, temFeito:true },
+  prova:   { emoji:'📝', nome:'Prova',   cor:'#ef4444', temData:true, contagem:true },
+  combinar:{ emoji:'🎮', nome:'Combinar',cor:'#16a34a', temData:true },
+  enquete: { emoji:'🗳️', nome:'Enquete', cor:'#f59e0b' },
+  evento:  { emoji:'🎉', nome:'Passeio',  cor:'#ec4899', temData:true, temLugar:true, temQuemVai:true },
+  vaquinha:{ emoji:'💰', nome:'Vaquinha', cor:'#0891b2', temAlvo:true },
+  aniver:  { emoji:'🎂', nome:'Aniversário', cor:'#f97316', temData:true }
+};
+
+/* quantos dias faltam pra uma data (aaaa-mm-dd) */
+function diasAte(iso){
+  if(!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+  const [a, m, d] = iso.split('-').map(Number);
+  const alvo = new Date(a, m - 1, d); alvo.setHours(0,0,0,0);
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  return Math.round((alvo - hoje) / 86400000);
+}
+function faltaTexto(dias){
+  if(dias === null) return '';
+  if(dias < 0)  return `foi há ${-dias} dia${dias === -1 ? '' : 's'}`;
+  if(dias > 300) return `faltam ${Math.round(dias / 30)} meses`;
+  if(dias === 0) return 'É HOJE!';
+  if(dias === 1) return 'É AMANHÃ!';
+  return `faltam ${dias} dias`;
+}
+const dataBonita = iso => {
+  if(!iso) return '';
+  const [a,m,d] = iso.split('-');
+  return `${d}/${m}`;
 };
 
 let dados = carregar();
@@ -155,6 +180,17 @@ function avisoConfere(a){
   if(a.quando !== undefined && typeof a.quando !== 'string') return false;
   if(a.ops !== undefined && (!Array.isArray(a.ops) || a.ops.length > 6 ||
      a.ops.some(o => typeof o !== 'string' || o.length > 40))) return false;
+  if(a.data !== undefined && (typeof a.data !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(a.data))) return false;
+  if(a.foto !== undefined && (typeof a.foto !== 'string' || !/^data:image\//.test(a.foto) ||
+     a.foto.length > 400000)) return false;
+  if(a.lugar !== undefined && a.lugar !== null){
+    const l = a.lugar;
+    if(typeof l !== 'object' || typeof l.lat !== 'number' || typeof l.lon !== 'number') return false;
+    if(Math.abs(l.lat) > 90 || Math.abs(l.lon) > 180) return false;
+  }
+  if(a.alvo !== undefined && (typeof a.alvo !== 'number' || !isFinite(a.alvo) || a.alvo < 0 || a.alvo > 1e6)) return false;
+  if(a.resp !== undefined && (typeof a.resp !== 'object' || typeof a.resp.txt !== 'string' ||
+     a.resp.txt.length > 200)) return false;
   return true;
 }
 
@@ -189,6 +225,7 @@ async function puxarDaTurma(){
       else if((a.v || 0) > (tem.v || 0)){ Object.assign(tem, a); mudou = true; }
     }
     if(mudou){ dados.avisos.sort((a,b) => b.ts - a.ts); salvar(); desenharMural(); }
+    puxarTodasPrivadas();
   }catch(e){ marcarNuvem('erro'); }
 }
 
@@ -363,8 +400,21 @@ function desenharMural(){
     Object.values(votos).forEach(v => conta[v] = (conta[v] || 0) + 1);
     const total = Object.keys(votos).length;
 
+    /* aniversário conta pro PRÓXIMO — o ano é o de nascimento */
+    const dias = a.data ? (a.tipo === 'aniver' ? diasDoAno(a.data) : diasAte(a.data)) : null;
+    const feito = !!(dados.feitos || {})[a.id];
+    const denuncias = Object.keys(a.denuncias || {}).length;
+
+    /* escondido por quem viu: 2 pessoas marcando já basta pra tirar da
+       frente de todo mundo — melhor esconder demais do que de menos */
+    if(denuncias >= 2 && !meu && !escondidosAbertos.has(a.id)) return `
+      <div class="recado escondido-turma">
+        <div class="rec-txt">🚨 Um recado foi escondido porque a turma avisou que era ruim.
+        <button class="rec-bt" data-vermesmo="${a.id}">ver mesmo assim</button></div>
+      </div>`;
+
     return `
-      <div class="recado ${a.fixado ? 'fixado' : ''}" style="--cor:${t.cor}">
+      <div class="recado ${a.fixado ? 'fixado' : ''} ${feito ? 'feito' : ''}" style="--cor:${t.cor}">
         ${a.fixado ? '<div class="rec-fixado">📌 Fixado</div>' : ''}
         <div class="rec-topo">
           <span class="rec-av" style="background:${corDe(a.de)}">${bichoDe(a.de)}</span>
@@ -372,8 +422,19 @@ function desenharMural(){
             <small>${diaTexto(a.ts)} · ${hora(a.ts)}</small></div>
           <span class="rec-tipo">${t.emoji} ${t.nome}</span>
         </div>
+        ${a.resp ? `<div class="rec-citado">↩️ <b>${escapar(a.resp.de)}</b>: ${escapar(a.resp.txt)}</div>` : ''}
+        ${dias !== null && t.contagem ? `
+          <div class="conta-grande ${dias <= 1 ? 'perto' : ''} ${dias < 0 ? 'passou' : ''}">
+            <b>${faltaTexto(dias)}</b><small>${dataBonita(a.data)}</small>
+          </div>` : ''}
+        ${a.data && !t.contagem ? `<div class="rec-quando">📅 ${dataBonita(a.data)} · ${faltaTexto(dias)}</div>` : ''}
         ${a.quando ? `<div class="rec-quando">📅 ${escapar(a.quando)}</div>` : ''}
         <div class="rec-txt">${comLinks(escapar(a.txt))}</div>
+        ${a.foto ? `<img class="rec-foto" src="${a.foto}" alt="foto do quadro" loading="lazy" data-foto="${a.id}">` : ''}
+        ${a.lugar ? `<a class="rec-mapa" target="_blank" rel="noopener"
+           href="https://www.openstreetmap.org/?mlat=${a.lugar.lat}&mlon=${a.lugar.lon}#map=17/${a.lugar.lat}/${a.lugar.lon}">📍 Ver onde é no mapa</a>` : ''}
+        ${t.temQuemVai ? balaoQuemVai(a) : ''}
+        ${t.temAlvo ? balaoVaquinha(a) : ''}
         ${a.ops && a.ops.length ? `
           <div class="rec-ops">
             ${a.ops.map((o, i) => {
@@ -389,12 +450,17 @@ function desenharMural(){
             <div class="rec-total">${total} ${total === 1 ? 'voto' : 'votos'}${
               meuVoto === undefined ? ' · toca pra votar' : ''}</div>
           </div>` : ''}
+        ${desenharReacoes(a)}
         <div class="rec-pe">
-          <button class="rec-bt ${(a.joia || {})[dados.eu] ? 'on' : ''}" data-joia="${a.id}">👍 ${Object.keys(a.joia || {}).length || ''}</button>
-          <button class="rec-bt" data-vi="${a.id}">${(a.vi || {})[dados.eu] ? '👀 vi' : '👀 marcar que vi'}${
+          <button class="rec-bt" data-reagir="${a.id}">😀</button>
+          <button class="rec-bt" data-responder="${a.id}">↩️</button>
+          ${t.temFeito ? `<button class="rec-bt ${feito ? 'on' : ''}" data-feito="${a.id}">${
+            feito ? '✅ já fiz' : '⬜ já fiz'}</button>` : ''}
+          <button class="rec-bt" data-vi="${a.id}">${(a.vi || {})[dados.eu] ? '👀 vi' : '👀 vi?'}${
             Object.keys(a.vi || {}).length ? ' · ' + Object.keys(a.vi || {}).length : ''}</button>
           <button class="rec-bt ${a.fixado ? 'on' : ''}" data-fixar="${a.id}">📌</button>
-          ${meu ? `<button class="rec-bt fraco" data-apagar="${a.id}">🗑️</button>` : ''}
+          ${meu ? `<button class="rec-bt fraco" data-apagar="${a.id}">🗑️</button>`
+                : `<button class="rec-bt fraco" data-denunciar="${a.id}" title="Avisar que este recado é ruim">🚨</button>`}
         </div>
       </div>`;
   }).join('');
@@ -403,12 +469,33 @@ function desenharMural(){
     const [id, i] = b.dataset.voto.split(':');
     votar(id, +i);
   }));
-  caixa.querySelectorAll('[data-joia]').forEach(b =>
-    b.addEventListener('click', () => marcar(b.dataset.joia, 'joia')));
+  caixa.querySelectorAll('[data-reagir]').forEach(b =>
+    b.addEventListener('click', () => abrirReacoes(b.dataset.reagir, b)));
+  caixa.querySelectorAll('[data-emoji]').forEach(b => b.addEventListener('click', () => {
+    const [id, e] = b.dataset.emoji.split('|'); reagir(id, e);
+  }));
+  caixa.querySelectorAll('[data-responder]').forEach(b =>
+    b.addEventListener('click', () => responderA(b.dataset.responder)));
+  caixa.querySelectorAll('[data-feito]').forEach(b =>
+    b.addEventListener('click', () => marcarFeito(b.dataset.feito)));
+  caixa.querySelectorAll('[data-denunciar]').forEach(b =>
+    b.addEventListener('click', () => denunciar(b.dataset.denunciar)));
+  caixa.querySelectorAll('[data-vermesmo]').forEach(b =>
+    b.addEventListener('click', () => { escondidosAbertos.add(b.dataset.vermesmo); desenharMural(); }));
+  caixa.querySelectorAll('[data-foto]').forEach(b =>
+    b.addEventListener('click', () => verFotoGrande(b.getAttribute('src'))));
+  caixa.querySelectorAll('[data-vai]').forEach(b => {
+    const [id, v] = b.dataset.vai.split('|'); b.addEventListener('click', () => euVou(id, v));
+  });
+  caixa.querySelectorAll('[data-levar]').forEach(b =>
+    b.addEventListener('click', () => euLevo(b.dataset.levar)));
+  caixa.querySelectorAll('[data-poravaquinha]').forEach(b =>
+    b.addEventListener('click', () => porNaVaquinha(b.dataset.poravaquinha)));
   caixa.querySelectorAll('[data-vi]').forEach(b =>
     b.addEventListener('click', () => marcar(b.dataset.vi, 'vi')));
   caixa.querySelectorAll('[data-fixar]').forEach(b =>
     b.addEventListener('click', () => fixar(b.dataset.fixar)));
+  if(typeof desenharAvisosDoTopo === 'function') desenharAvisosDoTopo();
   caixa.querySelectorAll('[data-apagar]').forEach(b =>
     b.addEventListener('click', () => apagarAviso(b.dataset.apagar)));
 }
@@ -485,7 +572,10 @@ function abrirGente(){
     somar(a.de, 'recados');
     Object.keys(a.votos || {}).forEach(n => somar(n, 'votos'));
     Object.keys(a.vi || {}).forEach(n => somar(n, 'vistos'));
-    Object.keys(a.joia || {}).forEach(n => somar(n, 'vistos'));
+    Object.keys(a.reacoes || {}).forEach(n => somar(n, 'vistos'));
+    Object.keys(a.vai || {}).forEach(n => somar(n, 'vistos'));
+    Object.keys(a.deram || {}).forEach(n => somar(n, 'vistos'));
+    Object.keys(a.jeitos || {}).forEach(n => somar(n, 'vistos'));
   });
   if(dados.eu) conta[dados.eu] = conta[dados.eu] || { recados:0, votos:0, vistos:0, ultimo:0 };
 
@@ -504,10 +594,16 @@ function abrirGente(){
 let tipoEscolhido = 'recado';
 
 function abrirEscrever(){
-  tipoEscolhido = 'recado';
+  if(!respondendo) tipoEscolhido = 'recado';
   $('#escTxt').value = dados.rascunho || '';
-  $('#escQuando').value = '';
-  document.querySelectorAll('.esc-op').forEach(i => i.value = '');
+  $('#escData').value = '';
+  $('#escAlvo').value = '';
+  $('#lugarPego').textContent = '';
+  lugarEscolhido = null;
+  fotoEscolhida = null;
+  $('#escFotoPrevia').classList.add('escondido');
+  $('#escFotoPrevia').innerHTML = '';
+  document.querySelectorAll('.esc-op, .esc-item').forEach(i => i.value = '');
   desenharEscolha();
   mostrar('escrever');
   $('#escTxt').focus();
@@ -522,12 +618,24 @@ function desenharEscolha(){
     licao:   'Ex.: matemática, página 42, exercícios 1 a 8',
     prova:   'Ex.: prova de história, capítulos 3 e 4',
     combinar:'Ex.: quem vai no parque sábado de tarde?',
-    enquete: 'Ex.: qual filme a gente vê na sexta?'
+    enquete: 'Ex.: qual filme a gente vê na sexta?',
+    evento:  'Ex.: passeio no zoológico! Ponto de encontro no portão',
+    vaquinha:'Ex.: presente da professora',
+    aniver:  'Ex.: aniversário da Ana'
   }[tipoEscolhido];
-  $('#campoQuando').classList.toggle('escondido', !['licao','prova','combinar'].includes(tipoEscolhido));
+  $('#campoQuando').classList.toggle('escondido', !t.temData);
   $('#camposEnquete').classList.toggle('escondido', tipoEscolhido !== 'enquete');
+  $('#camposItens').classList.toggle('escondido', !t.temQuemVai);
+  $('#campoLugar').classList.toggle('escondido', !t.temLugar);
+  $('#campoAlvo').classList.toggle('escondido', !t.temAlvo);
   $('#escCor').style.background = t.cor;
   $('#escTitulo').textContent = t.emoji + ' ' + t.nome;
+  $('#citando').classList.toggle('escondido', !respondendo);
+  if(respondendo) $('#citando').innerHTML =
+    `<span>↩️ respondendo <b>${escapar(respondendo.de)}</b>: ${escapar(respondendo.txt).slice(0,50)}</span>
+     <button class="bt fraco" id="pararResp">✕</button>`;
+  const pr = document.getElementById('pararResp');
+  if(pr) pr.addEventListener('click', () => { respondendo = null; desenharEscolha(); });
 }
 
 async function mandarRecado(){
@@ -537,8 +645,22 @@ async function mandarRecado(){
     id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
     tipo: tipoEscolhido, txt: txt.slice(0,600), de: dados.eu, ts: Date.now(), v: 0
   };
-  const quando = ($('#escQuando').value || '').trim();
-  if(quando && !$('#campoQuando').classList.contains('escondido')) a.quando = quando.slice(0,40);
+  const t = TIPOS[tipoEscolhido];
+  const data = $('#escData').value;
+  if(data && t.temData) a.data = data;
+  if(fotoEscolhida) a.foto = fotoEscolhida;
+  if(lugarEscolhido && t.temLugar) a.lugar = lugarEscolhido;
+  if(respondendo) a.resp = respondendo;
+  if(t.temQuemVai){
+    a.vai = {};
+    const itens = [...document.querySelectorAll('.esc-item')].map(i => i.value.trim()).filter(Boolean);
+    if(itens.length) a.itens = itens.slice(0,6).map(x => ({ txt: x.slice(0,40), quem:'' }));
+  }
+  if(t.temAlvo){
+    const alvo = parseFloat(String($('#escAlvo').value).replace(',','.'));
+    if(isFinite(alvo) && alvo > 0) a.alvo = Math.min(999999, Math.round(alvo * 100) / 100);
+    a.deram = {};
+  }
   if(tipoEscolhido === 'enquete'){
     const ops = [...document.querySelectorAll('.esc-op')].map(i => i.value.trim()).filter(Boolean);
     if(ops.length < 2){ aviso('A enquete precisa de pelo menos 2 respostas 😊'); return; }
@@ -547,6 +669,7 @@ async function mandarRecado(){
   }
   dados.avisos.unshift(a);
   dados.rascunho = '';
+  respondendo = null; fotoEscolhida = null; lugarEscolhido = null;
   salvar(); desenharMural(); mostrar('mural');
 
   const foi = await mandarPraTurma(a);
@@ -619,6 +742,48 @@ document.querySelectorAll('[data-filtro]').forEach(b => b.addEventListener('clic
   filtro = b.dataset.filtro; desenharMural();
 }));
 $('#escTxt').addEventListener('input', () => { dados.rascunho = $('#escTxt').value; });
+$('#btFoto').addEventListener('click', escolherFoto);
+$('#btLugarAqui').addEventListener('click', pegarLugar);
+document.querySelectorAll('[data-ir]').forEach(b => b.addEventListener('click', () => {
+  const onde = b.dataset.ir;
+  if(onde === 'album') abrirAlbum();
+  if(onde === 'privadas') abrirPrivadas();
+  if(onde === 'transporte') abrirTransporte();
+  if(onde === 'tempo'){ mostrar('tempo'); verOTempo(); }
+}));
+$('#btVoltarAlbum').addEventListener('click', () => mostrar('mural'));
+$('#btVoltarPriv').addEventListener('click', () => mostrar('mural'));
+$('#btVoltarTr').addEventListener('click', () => mostrar('mural'));
+$('#btVoltarTempo').addEventListener('click', () => mostrar('mural'));
+$('#btVoltarConversa').addEventListener('click', fecharConversa);
+$('#btPvMandar').addEventListener('click', mandarPrivada);
+$('#pvEntrada').addEventListener('keydown', e => { if(e.key === 'Enter') mandarPrivada(); });
+$('#horaSaida').addEventListener('change', () => {
+  dados.horaSaida = $('#horaSaida').value; dados.tempo = null; salvar(); verOTempo();
+});
+
+/* ---------- ⏰ que dia é hoje e que horas são ---------- */
+const DIAS_LONGOS = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+const MESES_LONGOS = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function relogio(){
+  const d = new Date();
+  const el = $('#agora');
+  if(el) el.textContent = `📅 ${DIAS_LONGOS[d.getDay()]}, ${d.getDate()} de ${MESES_LONGOS[d.getMonth()]} · ⏰ ${
+    String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+relogio();
+setInterval(relogio, 20000);
+
+let lugarEscolhido = null;
+async function pegarLugar(){
+  const bt = $('#btLugarAqui');
+  bt.disabled = true; bt.textContent = '📍 Procurando...';
+  const onde = await ondeEstou(12000);
+  bt.disabled = false; bt.textContent = '📍 É aqui onde eu estou';
+  if(!onde){ aviso('O GPS não respondeu 😕 tenta lá fora', 5000); return; }
+  lugarEscolhido = onde;
+  $('#lugarPego').textContent = `✅ Lugar guardado (${onde.lat.toFixed(3)}, ${onde.lon.toFixed(3)})`;
+}
 window.addEventListener('online', puxarDaTurma);
 
 /* ---------- começar ---------- */
@@ -648,4 +813,187 @@ comecar();
 
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+
+/* =========================================================
+   AS COISAS QUE VÃO EM CIMA DE QUALQUER RECADO
+   ========================================================= */
+const EMOJIS = ['👍','❤️','😂','😮','😢','🎉'];
+const escondidosAbertos = new Set();
+
+function desenharReacoes(a){
+  const r = a.reacoes || {};
+  const conta = {};
+  Object.values(r).forEach(e => conta[e] = (conta[e] || 0) + 1);
+  const usados = Object.keys(conta);
+  if(!usados.length) return '';
+  return `<div class="rec-reacoes">${usados.map(e => `
+    <button class="rec-reacao ${r[dados.eu] === e ? 'on' : ''}" data-emoji="${a.id}|${e}">${e} ${conta[e]}</button>`).join('')}</div>`;
+}
+
+function abrirReacoes(id, botao){
+  const antigo = document.getElementById('menuEmoji');
+  if(antigo){ antigo.remove(); if(antigo.dataset.de === id) return; }
+  const menu = document.createElement('div');
+  menu.id = 'menuEmoji'; menu.className = 'menu-emoji'; menu.dataset.de = id;
+  menu.innerHTML = EMOJIS.map(e => `<button data-emoji="${id}|${e}">${e}</button>`).join('');
+  botao.parentElement.insertBefore(menu, botao);
+  menu.querySelectorAll('[data-emoji]').forEach(b => b.addEventListener('click', () => {
+    const [i, e] = b.dataset.emoji.split('|');
+    menu.remove(); reagir(i, e);
+  }));
+}
+
+function reagir(id, emoji){
+  const a = achar(id);
+  if(!a) return;
+  a.reacoes = a.reacoes || {};
+  if(a.reacoes[dados.eu] === emoji) delete a.reacoes[dados.eu];
+  else a.reacoes[dados.eu] = emoji;
+  a.v = (a.v || 0) + 1;
+  salvar(); desenharMural(); mandarPraTurma(a);
+}
+
+/* ---------- ↩️ responder ---------- */
+let respondendo = null;
+function responderA(id){
+  const a = achar(id);
+  if(!a) return;
+  respondendo = { de: a.de, txt: (a.txt || '').slice(0,200) };
+  abrirEscrever();
+  aviso('↩️ Respondendo ' + a.de, 4000);
+}
+
+/* ---------- ✅ já fiz (só neste aparelho) ---------- */
+function marcarFeito(id){
+  dados.feitos = dados.feitos || {};
+  if(dados.feitos[id]) delete dados.feitos[id];
+  else { dados.feitos[id] = Date.now(); }
+  salvar(); desenharMural();
+  aviso(dados.feitos[id] ? '✅ Marcado como feito (só pra ti)' : 'Desmarcado');
+}
+
+/* ---------- 🚨 avisar de recado ruim ---------- */
+function denunciar(id){
+  const a = achar(id);
+  if(!a) return;
+  if(!confirm('🚨 Avisar que este recado é ruim?\n\n' +
+      'Com 2 avisos ele some da frente de todo mundo.\n\n' +
+      'Se for coisa séria, conta pra um adulto também — o app não substitui isso.')) return;
+  a.denuncias = a.denuncias || {};
+  a.denuncias[dados.eu] = Date.now();
+  a.v = (a.v || 0) + 1;
+  salvar(); desenharMural(); mandarPraTurma(a);
+  aviso('🚨 Avisado. Conta pra um adulto se for sério 💜', 8000);
+}
+
+/* ---------- 📸 a foto grande ---------- */
+function verFotoGrande(src){
+  const tela = document.createElement('div');
+  tela.className = 'foto-grande';
+  tela.innerHTML = `<button class="fg-x">✕</button><img src="${src}" alt="">`;
+  tela.addEventListener('click', () => tela.remove());
+  document.body.appendChild(tela);
+}
+
+/* =========================================================
+   🎉 PASSEIO: quem vai e quem leva o quê
+   ========================================================= */
+function balaoQuemVai(a){
+  const vai = a.vai || {};
+  const sim = Object.entries(vai).filter(([,v]) => v === 'sim').map(([n]) => n);
+  const nao = Object.entries(vai).filter(([,v]) => v === 'nao').map(([n]) => n);
+  const talvez = Object.entries(vai).filter(([,v]) => v === 'talvez').map(([n]) => n);
+  const meu = vai[dados.eu];
+  const itens = a.itens || [];
+
+  return `
+    <div class="evento">
+      <div class="ev-titulo">Tu vai?</div>
+      <div class="ev-botoes">
+        ${[['sim','✅ Vou'],['talvez','🤔 Talvez'],['nao','❌ Não vou']].map(([v, txt]) =>
+          `<button class="ev-bt ${meu === v ? 'on ' + v : ''}" data-vai="${a.id}|${v}">${txt}</button>`).join('')}
+      </div>
+      <div class="ev-gente">
+        ${sim.length ? `<b>✅ ${sim.length} vão:</b> ${sim.map(escapar).join(', ')}` : '<i>ninguém confirmou ainda</i>'}
+        ${talvez.length ? `<br><b>🤔 ${talvez.length} talvez:</b> ${talvez.map(escapar).join(', ')}` : ''}
+        ${nao.length ? `<br><b>❌ ${nao.length} não:</b> ${nao.map(escapar).join(', ')}` : ''}
+      </div>
+      ${itens.length ? `
+        <div class="ev-titulo" style="margin-top:12px">Quem leva o quê</div>
+        <div class="ev-itens">
+          ${itens.map((it, i) => `
+            <button class="ev-item ${it.quem ? 'pego' : ''}" data-levar="${a.id}|${i}">
+              <span>${escapar(it.txt)}</span>
+              <b>${it.quem ? '✅ ' + escapar(it.quem) : 'eu levo!'}</b>
+            </button>`).join('')}
+        </div>` : ''}
+    </div>`;
+}
+
+function euVou(id, v){
+  const a = achar(id);
+  if(!a) return;
+  a.vai = a.vai || {};
+  if(a.vai[dados.eu] === v) delete a.vai[dados.eu];
+  else a.vai[dados.eu] = v;
+  a.v = (a.v || 0) + 1;
+  salvar(); desenharMural(); mandarPraTurma(a);
+}
+
+function euLevo(marca){
+  const [id, i] = marca.split('|');
+  const a = achar(id);
+  if(!a || !a.itens || !a.itens[+i]) return;
+  const it = a.itens[+i];
+  if(it.quem && it.quem !== dados.eu){
+    aviso(`${it.quem} já pegou esse 😊`); return;
+  }
+  it.quem = it.quem === dados.eu ? '' : dados.eu;
+  a.v = (a.v || 0) + 1;
+  salvar(); desenharMural(); mandarPraTurma(a);
+}
+
+/* =========================================================
+   💰 VAQUINHA
+   O dinheiro NÃO passa pelo app: aqui é só a conta de quem já
+   deu e quanto falta. Quem junta o dinheiro é uma pessoa de
+   verdade — e isso está escrito na tela.
+   ========================================================= */
+function balaoVaquinha(a){
+  const deram = a.deram || {};
+  const total = Object.values(deram).reduce((s, v) => s + (+v || 0), 0);
+  const alvo = a.alvo || 0;
+  const pct = alvo ? Math.min(100, Math.round(total / alvo * 100)) : 0;
+  const meu = deram[dados.eu];
+
+  return `
+    <div class="evento">
+      <div class="vq-numeros">
+        <b>R$ ${total.toFixed(2).replace('.',',')}</b>
+        ${alvo ? `<small>de R$ ${alvo.toFixed(2).replace('.',',')}</small>` : ''}
+      </div>
+      ${alvo ? `<div class="vq-barra-fora"><div class="vq-barra" style="width:${pct}%"></div></div>` : ''}
+      <div class="ev-gente">
+        ${Object.keys(deram).length
+          ? Object.entries(deram).map(([n, v]) => `${escapar(n)} R$ ${(+v).toFixed(2).replace('.',',')}`).join(' · ')
+          : '<i>ninguém pôs ainda</i>'}
+      </div>
+      <button class="ev-bt largo" data-poravaquinha="${a.id}">${meu ? `✏️ Eu pus R$ ${(+meu).toFixed(2).replace('.',',')}` : '💰 Eu vou dar...'}</button>
+      <p class="vq-aviso">⚠️ O dinheiro <b>não passa por aqui</b>. Isto é só a conta — quem junta é uma pessoa de verdade.</p>
+    </div>`;
+}
+
+function porNaVaquinha(id){
+  const a = achar(id);
+  if(!a) return;
+  const agora = (a.deram || {})[dados.eu];
+  const txt = prompt('Quanto tu vai dar? (só o número, ex.: 5)', agora != null ? String(agora) : '');
+  if(txt === null) return;
+  const v = parseFloat(String(txt).replace(',','.'));
+  a.deram = a.deram || {};
+  if(!txt.trim() || !isFinite(v) || v <= 0) delete a.deram[dados.eu];
+  else a.deram[dados.eu] = Math.min(9999, Math.round(v * 100) / 100);
+  a.v = (a.v || 0) + 1;
+  salvar(); desenharMural(); mandarPraTurma(a);
 }

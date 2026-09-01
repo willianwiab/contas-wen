@@ -1,7 +1,8 @@
 # 🎒 Fala, Turma!
 
 O irmão do [Fala, Família](../falar-com-os-pais/) — mesma cara, mesmo roxo — mas pra turma
-da escola. Um mural com **recado, lição, prova, combinar de sair e enquete**.
+da escola. Um mural com **recado, lição, prova, combinar de sair, enquete, passeio,
+vaquinha e aniversário**.
 
 ## A regra que manda neste app
 
@@ -39,9 +40,48 @@ dono, horário, tipo, tamanho e formato das opções são conferidos antes de vi
 ## O que tem no mural
 
 Cada recado mostra o bichinho e a cor de quem escreveu (nascem do nome, então são sempre
-os mesmos), o tipo numa etiqueta colorida, 👍 joinha, 👀 quem já viu e 📌 fixar no topo.
+os mesmos), o tipo numa etiqueta colorida, 😀 reagir com emoji, ↩️ responder, 👀 quem já
+viu, 📌 fixar no topo e 🚨 avisar que o recado é ruim.
 Enquete desenha a **barra de proporção** por trás de cada resposta. Endereço escrito vira
 link — a detecção roda depois do escape do HTML e só aceita `http`, `https` e `www.`.
+
+No alto da tela ficam **o dia de hoje por extenso e a hora**, e abaixo os avisos que não
+podem passar batido: **prova amanhã** e **aniversário desta semana**.
+
+### O que dá pra fazer
+
+| | |
+|---|---|
+| ⏰ **Contagem pra prova** | Bola grande com "É AMANHÃ!" / "faltam 3 dias" |
+| 🔔 **Aviso na véspera** | Notificação no celular, uma vez por dia por prova |
+| 📸 **Foto do quadro** | Encolhida no próprio aparelho antes de sair (≈300 KB) |
+| 📷 **Álbum da turma** | Todas as fotos do mural numa tela só |
+| ✅ **Já fiz a lição** | Marca **só neste aparelho** — não vai pro banco nem pros outros |
+| 🎂 **Aniversários** | Conta pro **próximo**, não pro nascimento |
+| 😀 **Reagir** | 👍 ❤️ 😂 😮 😢 🎉, uma por pessoa, e chega nos outros aparelhos |
+| ↩️ **Responder** | O recado citado aparece dentro da resposta |
+| 💬 **Conversa particular** | Só entre duas pessoas — com o aviso honesto abaixo |
+| 🎉 **Passeio** | Quem vai / talvez / não vai, e **quem leva o quê** |
+| 💰 **Vaquinha** | Barra de quanto já juntou. O dinheiro **não passa pelo app** |
+| 🌧️ **Vai chover na saída?** | Open-Meteo, de graça e sem chave nenhuma |
+| 🚌 **Como cada um vai** | Ônibus, carro, a pé, bici — e quem precisa/pode dar carona |
+| 📍 **Onde é o encontro** | O lugar vai junto do recado e abre no mapa |
+| 🚨 **Recado ruim** | Com 2 avisos ele some da frente de todo mundo (dá pra abrir mesmo assim) |
+
+### 💬 O que a conversa particular NÃO é
+
+Ela é embaralhada com a **mesma chave da turma**. Quem tem o convite tem a chave — então é
+particular na tela, não é segredo de verdade, e o app fala isso em cima da lista. Coisa
+séria se fala pessoalmente.
+
+Mensagem nova chega **mesmo com a conversa fechada** (uma bolinha vermelha no atalho 💬):
+sem isso, quem escrevesse pra ti não aparecia em lugar nenhum e tu nunca ia saber.
+
+### 🚨 Recado ruim
+
+Denunciar não apaga nada e não chama ninguém: com **2 avisos** o recado sai da frente de
+todo mundo, com um "ver mesmo assim" pra quem quiser. O aviso na tela diz o que importa —
+**se for coisa séria, conta pra um adulto**; o app não substitui isso.
 
 Os filtros mostram **quantos tem de cada tipo**: sem isso a pessoa toca num filtro vazio
 sem saber e parece que o app perdeu os recados.
@@ -49,7 +89,8 @@ sem saber e parece que o app perdeu os recados.
 ## 👥 Quem está na turma
 
 Não existe lista de membros no banco — ninguém "se cadastra". A turma **é quem apareceu no
-mural**: a lista nasce de quem escreveu, votou, deu joinha ou marcou que viu. A mesma tela
+mural**: a lista nasce de quem escreveu, votou, reagiu, marcou que viu, disse que vai no passeio,
+pôs na vaquinha ou escolheu como vai pra escola. A mesma tela
 mostra o **código de 8 letras**, pra ditar em voz alta pra quem não recebeu o link.
 
 ## Arquivos
@@ -58,4 +99,19 @@ mostra o **código de 8 letras**, pra ditar em voz alta pra quem não recebeu o 
 |---|---|
 | `index.html` | As telas e o visual (as mesmas cores do Fala, Família) |
 | `turma.js` | Entrar, o mural, a nuvem, a criptografia e a impressão |
+| `turma-mais.js` | Foto, álbum, conversa particular, transporte, tempo e aniversários |
 | `sw.js` | Abrir sem internet — a rede da escola costuma ser ruim |
+
+`turma-mais.js` carrega **antes** de `turma.js`: o `turma.js` liga os botões assim que roda,
+e um botão só liga se a função já existir.
+
+## O que foi testado de verdade
+
+95 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
+localização simulada: recado chegando de um aparelho no outro, reação, resposta, passeio,
+vaquinha, conversa particular, denúncia, modo emprestado e o mural impresso.
+
+**O que não deu pra testar de verdade:** a caixa onde este app foi feito não alcança o
+`firebaseio.com` nem o `api.open-meteo.com`. O Firebase foi testado contra um de mentira
+com as mesmas respostas, e o tempo contra uma resposta gravada do Open-Meteo. Na primeira
+vez que rodar no celular de verdade, vale conferir esses dois.
