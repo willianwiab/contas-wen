@@ -1,8 +1,8 @@
 /* Service worker simples: tenta a internet primeiro e, se não tiver,
    usa a cópia guardada. Assim o site abre offline e sempre atualiza. */
-const CACHE = 'fala-familia-v28';
+const CACHE = 'fala-familia-v29';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg',
-  './app.js?v=28', './ajuda.js?v=28', './jogo.js?v=28', './trancar.js?v=28', './mais.js?v=28', './casa.js?v=28', './enfeites.js?v=28', './nuvem.js?v=28', './sinais.js?v=28', './chamada.js?v=28', './publico.js?v=28', './audio.js?v=28', './video.js?v=28', './familia.js?v=28', './extras.js?v=28', './ligacao.js?v=28', './avisos.js?v=28', './ia.js?v=28', './recado.js?v=28', './jogos.js?v=28', './quadro.js?v=28', './momentos.js?v=28', './placar.js?v=28', './meu.js?v=28', './festa.js?v=28',
+  './app.js?v=29', './ajuda.js?v=29', './jogo.js?v=29', './trancar.js?v=29', './mais.js?v=29', './casa.js?v=29', './enfeites.js?v=29', './nuvem.js?v=29', './sinais.js?v=29', './chamada.js?v=29', './publico.js?v=29', './audio.js?v=29', './video.js?v=29', './familia.js?v=29', './extras.js?v=29', './ligacao.js?v=29', './avisos.js?v=29', './ia.js?v=29', './recado.js?v=29', './jogos.js?v=29', './quadro.js?v=29', './momentos.js?v=29', './placar.js?v=29', './meu.js?v=29', './festa.js?v=29',
   './icone-192.png', './icone-512.png', './icone-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', ev => {
@@ -32,6 +32,27 @@ self.addEventListener('fetch', ev => {
         caches.open(CACHE).then(c => c.put(ev.request, copia)).catch(() => {});
         return resp;
       })
-      .catch(() => caches.match(ev.request).then(r => r || caches.match('./index.html')))
+      .catch(async () => {
+        /* 1) a cópia exata desta versão */
+        const exata = await caches.match(ev.request);
+        if(exata) return exata;
+
+        /* 2) a mesma coisa de uma versão anterior (o ?v= muda a cada
+              atualização, então sem ignorar a busca a cópia de ontem
+              nunca era achada) */
+        const parecida = await caches.match(ev.request, { ignoreSearch: true });
+        if(parecida) return parecida;
+
+        /* 3) Página? devolve o index guardado. QUALQUER OUTRA COISA não
+              pode virar index.html: o navegador tentava ler a página
+              inteira como se fosse JavaScript, o arquivo morria e o site
+              quebrava com "não está definido". Melhor falhar de verdade —
+              a página percebe e se conserta sozinha. */
+        if(ev.request.mode === 'navigate' || ev.request.destination === 'document'){
+          const pagina = await caches.match('./index.html');
+          if(pagina) return pagina;
+        }
+        return new Response('offline', { status: 503, statusText: 'sem conexão' });
+      })
   );
 });

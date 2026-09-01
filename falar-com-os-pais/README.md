@@ -100,6 +100,7 @@ daquele aparelho.
 | 🎞️ Retrospectiva | As fotos de um mês passando como filminho |
 | 🗣️ Traduzir | O Ajudante manda teu recado em outra língua |
 | 🔄 Virar a câmera | Na videochamada, troca entre a câmera da frente e a de trás |
+| 🔗 Links | Endereço escrito num recado vira link sublinhado e clicável |
 
 ## 📞 Sobre a ligação (voz ou vídeo)
 
@@ -144,6 +145,31 @@ exatamente igual.
 **Como foi feito.** O SDK oficial (`@anthropic-ai/sdk`) é baixado do esm.sh só na primeira
 vez que o Ajudante é usado, com `dangerouslyAllowBrowser: true` — o que aqui é seguro
 porque a chave é do próprio dono do aparelho, não uma chave compartilhada do site.
+
+## 🩹 Quando a atualização vem pela metade
+
+O service worker é *network-first*: pede o arquivo, e só usa a cópia guardada se a
+internet falhar. O problema é o que ele fazia quando falhava **e** não havia cópia daquela
+versão (`?v=` novo): devolvia o `index.html`. O navegador então tentava ler a página
+inteira como JavaScript, o arquivo morria calado e o site quebrava com
+`carregarVideos is not defined` — sem ninguém entender por quê.
+
+Agora, quando o download falha, o service worker tenta nesta ordem: a cópia exata → a
+cópia de uma versão anterior (`ignoreSearch`) → e, **só para navegação**, o `index.html`.
+Qualquer outra coisa devolve 503 em vez de HTML disfarçado de script.
+
+E a própria página passou a se conferir: no fim do `index.html` há uma checagem de que
+cada arquivo definiu a sua função principal. Se faltar alguma, ela apaga os caches,
+desregistra o service worker e recarrega **uma vez**; se ainda faltar, mostra qual arquivo
+não veio, avisa que os recadinhos estão a salvo e oferece um botão — em vez de recarregar
+para sempre.
+
+## 🔗 Links nos recados
+
+Endereço escrito num recadinho vira link sublinhado e clicável. A detecção roda **depois**
+do escape do HTML e só aceita `http://`, `https://` e `www.` — então nada que a pessoa
+escreveu vira HTML, e não há como esconder um `javascript:` num recado. Pontuação no fim
+da frase fica fora do endereço.
 
 ## 🎮 Os jogos que viajam (e um bug que existia)
 

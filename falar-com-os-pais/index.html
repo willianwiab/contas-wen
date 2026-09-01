@@ -148,6 +148,11 @@ html[data-tema="escuro"] .contato-hora.online-txt{color:#4ade80}
 .msg.eu{background:linear-gradient(135deg,var(--roxo),var(--roxo-esc));color:#fff;border-bottom-right-radius:6px}
 .msg.eles{background:var(--eles);color:var(--eles-txt);border-bottom-left-radius:6px}
 .msg .txt{display:block;white-space:pre-wrap;overflow-wrap:anywhere}
+/* link escrito num recadinho vira link de verdade, com sublinhado */
+.msg .link{text-decoration:underline;text-underline-offset:2px;font-weight:700}
+.msg.eu .link{color:#fff;text-decoration-color:rgba(255,255,255,.65)}
+.msg.eles .link{color:var(--roxo);text-decoration-color:rgba(124,58,237,.5)}
+.msg .link:hover{text-decoration-thickness:2px}
 .msg.emojao{background:none!important;box-shadow:none;padding:2px 6px;color:var(--texto)!important}
 .msg.emojao .txt{font-size:3rem;line-height:1.15}
 .msg .quem{font-size:.74rem;font-weight:800;margin-bottom:3px}
@@ -1131,7 +1136,7 @@ window.addEventListener('unhandledrejection', function(e){
       <button class="lig-bt" id="btnAtualizar">🔄 Atualizar o site</button>
     </div>
     <p class="sem-lembrete" style="margin-top:8px">Isso joga fora a cópia velha guardada no aparelho e baixa a mais
-    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">28</b>.</p>
+    nova. <b>Não apaga</b> nenhum recadinho. Versão <b id="versaoSite">29</b>.</p>
 
     <div class="acoes">
       <button class="btn neutro" id="cfgFechar">Fechar</button>
@@ -1142,31 +1147,115 @@ window.addEventListener('unhandledrejection', function(e){
 
 <div class="aviso-flutua" id="toast"></div>
 
-<script src="ajuda.js?v=28"></script>
-<script src="jogo.js?v=28"></script>
-<script src="mais.js?v=28"></script>
-<script src="casa.js?v=28"></script>
-<script src="enfeites.js?v=28"></script>
-<script src="nuvem.js?v=28"></script>
-<script src="sinais.js?v=28"></script>
-<script src="chamada.js?v=28"></script>
-<script src="publico.js?v=28"></script>
-<script src="trancar.js?v=28"></script>
-<script src="audio.js?v=28"></script>
-<script src="video.js?v=28"></script>
-<script src="familia.js?v=28"></script>
-<script src="extras.js?v=28"></script>
-<script src="ligacao.js?v=28"></script>
-<script src="avisos.js?v=28"></script>
-<script src="ia.js?v=28"></script>
-<script src="recado.js?v=28"></script>
-<script src="jogos.js?v=28"></script>
-<script src="quadro.js?v=28"></script>
-<script src="momentos.js?v=28"></script>
-<script src="placar.js?v=28"></script>
-<script src="meu.js?v=28"></script>
-<script src="festa.js?v=28"></script>
-<script src="app.js?v=28"></script>
+<script src="ajuda.js?v=29"></script>
+<script src="jogo.js?v=29"></script>
+<script src="mais.js?v=29"></script>
+<script src="casa.js?v=29"></script>
+<script src="enfeites.js?v=29"></script>
+<script src="nuvem.js?v=29"></script>
+<script src="sinais.js?v=29"></script>
+<script src="chamada.js?v=29"></script>
+<script src="publico.js?v=29"></script>
+<script src="trancar.js?v=29"></script>
+<script src="audio.js?v=29"></script>
+<script src="video.js?v=29"></script>
+<script src="familia.js?v=29"></script>
+<script src="extras.js?v=29"></script>
+<script src="ligacao.js?v=29"></script>
+<script src="avisos.js?v=29"></script>
+<script src="ia.js?v=29"></script>
+<script src="recado.js?v=29"></script>
+<script src="jogos.js?v=29"></script>
+<script src="quadro.js?v=29"></script>
+<script src="momentos.js?v=29"></script>
+<script src="placar.js?v=29"></script>
+<script src="meu.js?v=29"></script>
+<script src="festa.js?v=29"></script>
+<script src="app.js?v=29"></script>
+
+<script>
+/* =========================================================
+   CONSERTO AUTOMÁTICO
+
+   Se um dos arquivos do site não baixar direito (internet ruim no meio
+   da atualização), aquele pedaço do site simplesmente não existe e tudo
+   quebra com "não está definido" — sem o dono do celular fazer ideia do
+   que houve.
+
+   Aqui a página confere se as peças principais chegaram. Se faltar
+   alguma, ela mesma joga fora a cópia guardada, desliga o ajudante de
+   offline e baixa tudo de novo. Uma vez só: se mesmo assim faltar,
+   mostra um botão em vez de ficar recarregando pra sempre.
+   ========================================================= */
+(function(){
+  var PECAS = {
+    'app.js': 'desenharContatos', 'nuvem.js': 'mandarPraNuvem', 'extras.js': 'conteudoEspecial',
+    'audio.js': 'mandarAudioPara', 'video.js': 'carregarVideos', 'familia.js': 'avatarDe',
+    'mais.js': 'pedirAjuda', 'casa.js': 'abrirAlbum', 'enfeites.js': 'lerEmVozAlta',
+    'jogo.js': 'novoJogo', 'jogos.js': 'novoPPT', 'quadro.js': 'abrirQuadro',
+    'momentos.js': 'abrirCheguei', 'placar.js': 'abrirPlacar', 'meu.js': 'abrirHumor',
+    'festa.js': 'abrirCartoes', 'recado.js': 'desenharRecadosDoDia', 'ia.js': 'abrirIA',
+    'sinais.js': 'atualizarTiquinhos', 'chamada.js': 'chamarDeUmToque',
+    'ligacao.js': 'abrirLigacao', 'avisos.js': 'avisar', 'ajuda.js': 'abrirAjuda',
+    'trancar.js': 'pedirTranca', 'publico.js': 'mandarPeloPublico'
+  };
+
+  function faltando(){
+    var faltam = [];
+    for(var arquivo in PECAS){
+      if(typeof window[PECAS[arquivo]] !== 'function') faltam.push(arquivo);
+    }
+    return faltam;
+  }
+
+  async function limparTudoEVoltar(){
+    try{
+      if(window.caches){
+        var nomes = await caches.keys();
+        await Promise.all(nomes.map(function(n){ return caches.delete(n); }));
+      }
+      if(navigator.serviceWorker){
+        var regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(function(r){ return r.unregister(); }));
+      }
+    }catch(e){}
+    location.reload(true);
+  }
+
+  var faltam = faltando();
+  if(!faltam.length) return;
+
+  var JA_TENTOU = 'fala-familia:consertando';
+  if(!sessionStorage.getItem(JA_TENTOU)){
+    /* primeira vez: conserta sozinho, sem incomodar ninguém */
+    sessionStorage.setItem(JA_TENTOU, '1');
+    document.body.innerHTML =
+      '<div style="position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px;' +
+      'font:600 15px system-ui;background:#f4f2fb;color:#1e1b33">' +
+      '<div><div style="font-size:3rem">🔄</div><p>A atualização veio pela metade.<br>Baixando de novo...</p></div></div>';
+    limparTudoEVoltar();
+    return;
+  }
+
+  /* já tentou e continua faltando: aí é caso de mostrar e deixar a pessoa decidir */
+  var tela = document.createElement('div');
+  tela.setAttribute('style',
+    'position:fixed;inset:0;z-index:99999;display:grid;place-items:center;text-align:center;padding:24px;' +
+    'font:600 15px system-ui;background:#f4f2fb;color:#1e1b33');
+  tela.innerHTML =
+    '<div style="max-width:340px"><div style="font-size:3rem">😖</div>' +
+    '<h2 style="margin:10px 0;font-size:1.15rem">O site não baixou inteiro</h2>' +
+    '<p style="font-weight:500;line-height:1.5;color:#6b6885">Faltou: <b>' + faltam.join(', ') + '</b>.<br>' +
+    'Costuma ser internet fraca no meio da atualização. Os teus recadinhos estão a salvo.</p>' +
+    '<button id="consertarDeNovo" style="margin-top:14px;padding:13px 22px;border:0;border-radius:14px;' +
+    'background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font:800 15px system-ui">🔄 Tentar de novo</button></div>';
+  document.body.appendChild(tela);
+  document.getElementById('consertarDeNovo').addEventListener('click', function(){
+    sessionStorage.removeItem(JA_TENTOU);
+    limparTudoEVoltar();
+  });
+})();
+</script>
 </body>
 
 </html>

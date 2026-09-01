@@ -34,6 +34,7 @@ const AJUDA = [
       ['Quem escreve','é o dono deste aparelho — dá pra trocar em ⚙️ Ajustes → 👤 Este aparelho é de'],
       ['Frases prontas','“Cheguei bem 🏠”, “Pode me buscar? 🚗”…'],
       ['😀 Emojis','emoji sozinho vira <b>gigante</b>'],
+      ['🔗 Links','se tu escrever um endereço de site, ele fica sublinhado e dá pra tocar pra abrir'],
       ['🎤 Microfone','toca pra gravar, toca no ⏹ pra mandar (🗑️ joga fora)'],
       ['No áudio','▶ tocar e 🎛️ voz de esquilo 🐿️, monstro 👹 ou robô 🤖'],
       ['☺ Reagir','no balão — ou dois cliques nele. O ✕ apaga um recadinho'],
