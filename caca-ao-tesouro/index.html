@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>🗺️ Caça ao Tesouro</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icone.svg">
+<style>
+:root{
+  --verde:#0f766e; --verde2:#14b8a6; --areia:#fef3c7; --ouro:#f59e0b;
+  --fundo:#f0fdfa; --cartao:#ffffff; --texto:#134e4a; --texto2:#5b8480; --borda:#ccfbf1;
+  --sombra:0 2px 10px rgba(15,118,110,.1); --sombra2:0 10px 34px rgba(15,118,110,.2);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --fundo:#042f2e; --cartao:#0b3f3c; --texto:#ccfbf1; --texto2:#7fc9c2; --borda:#115e59;
+    --sombra:0 2px 10px rgba(0,0,0,.35); --sombra2:0 10px 34px rgba(0,0,0,.5);
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+button,input,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--fundo);color:var(--texto);
+  min-height:100dvh;overflow-x:hidden;
+  background-image:radial-gradient(circle at 12% 18%,rgba(20,184,166,.09),transparent 42%),
+                   radial-gradient(circle at 88% 74%,rgba(245,158,11,.09),transparent 42%);
+}
+.escondido{display:none!important}
+
+.topo{
+  background:linear-gradient(135deg,var(--verde),var(--verde2));color:#fff;
+  padding:calc(20px + env(safe-area-inset-top,0px)) 20px 24px;position:relative;overflow:hidden;
+}
+.topo::after{content:"";position:absolute;right:-46px;top:-56px;width:170px;height:170px;
+  border-radius:50%;background:rgba(255,255,255,.12)}
+.topo h1{font-size:1.45rem;font-weight:800;letter-spacing:-.02em;position:relative;z-index:1}
+.topo p{font-size:.85rem;opacity:.92;margin-top:4px;position:relative;z-index:1}
+
+.miolo{padding:16px 14px calc(24px + env(safe-area-inset-bottom,0px));max-width:640px;margin:0 auto}
+.tela{display:none}
+.tela.on{display:block;animation:surge .25s}
+@keyframes surge{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.cartao{background:var(--cartao);border-radius:20px;padding:16px;box-shadow:var(--sombra);margin-bottom:11px}
+.bt{background:var(--cartao);border:2px solid var(--borda);border-radius:15px;padding:12px 16px;
+  font-weight:800;font-size:.88rem;box-shadow:var(--sombra);transition:transform .12s,filter .15s}
+.bt:active{transform:scale(.95)}
+.bt.ok{background:linear-gradient(135deg,var(--verde),var(--verde2));color:#fff;border-color:transparent}
+.bt.ouro{background:linear-gradient(135deg,var(--ouro),#ef4444);color:#fff;border-color:transparent}
+.bt.fraco{background:transparent;border-color:transparent;color:var(--texto2);box-shadow:none;padding:12px}
+.bt.grande{width:100%;padding:17px;font-size:1rem}
+.bt:disabled{opacity:.6}
+.linha-bt{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.linha-bt .bt{flex:1;min-width:130px}
+
+h2{font-size:1.12rem;margin-bottom:5px}
+.dica{font-size:.85rem;color:var(--texto2);line-height:1.55}
+.titulo{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;
+  color:var(--texto2);margin:18px 0 9px}
+.campo{margin-bottom:13px}
+.campo label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--texto2);margin-bottom:6px}
+.campo input,.campo textarea{width:100%;background:var(--fundo);border:2px solid var(--borda);
+  border-radius:14px;padding:12px 14px;outline:none;font-size:.95rem;resize:none}
+.campo input:focus,.campo textarea:focus{border-color:var(--verde2)}
+.campo small{display:block;font-size:.75rem;color:var(--texto2);margin-top:5px;line-height:1.45}
+
+/* ---- lista de caças ---- */
+.caca-topo{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.caca-topo b{font-size:1rem}
+.etiqueta{background:var(--fundo);border-radius:20px;padding:4px 10px;font-size:.7rem;
+  font-weight:800;white-space:nowrap}
+.cartao.caca small{display:block;font-size:.76rem;color:var(--texto2);margin-top:4px}
+.caca-botoes{display:flex;gap:7px;margin-top:12px}
+.caca-botoes .bt{flex:1;padding:10px}
+.caca-botoes .bt.fraco{flex:0 0 46px}
+
+.vazio{text-align:center;padding:34px 20px;background:var(--cartao);border-radius:22px;box-shadow:var(--sombra)}
+.emojao{font-size:3.6rem;animation:flutua 3.4s ease-in-out infinite;display:inline-block}
+@keyframes flutua{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(4deg)}}
+.vazio h3{margin:8px 0 7px;font-size:1.08rem}
+.vazio p{font-size:.87rem;color:var(--texto2);line-height:1.55}
+
+/* ---- criar ---- */
+.dificuldades{display:flex;gap:8px}
+.dificuldades .bt{flex:1;text-align:center;padding:13px 6px;font-size:.8rem}
+.dificuldades .bt.on{background:linear-gradient(135deg,var(--verde),var(--verde2));color:#fff;border-color:transparent}
+.cartao.pista{display:flex;align-items:center;gap:12px}
+.pista-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--verde),var(--verde2));
+  color:#fff;display:grid;place-items:center;font-weight:800;flex-shrink:0}
+.pista-txt{flex:1;min-width:0}
+.pista-txt b{font-size:.92rem;display:block}
+.pista-txt small{font-size:.72rem;color:var(--texto2)}
+
+/* ---- jogar ---- */
+.termometro{border-radius:24px;padding:26px 20px;text-align:center;transition:background .5s;
+  background:linear-gradient(160deg,#64748b,#475569);color:#fff;margin-bottom:13px}
+.termometro.frio{background:linear-gradient(160deg,#3b82f6,#1e40af)}
+.termometro.morno{background:linear-gradient(160deg,#8b5cf6,#6d28d9)}
+.termometro.quente{background:linear-gradient(160deg,#f59e0b,#ea580c)}
+.termometro.pegando-fogo{background:linear-gradient(160deg,#ef4444,#b91c1c);animation:pulsa 1s infinite}
+.termometro.achou{background:linear-gradient(160deg,#22c55e,#15803d)}
+@keyframes pulsa{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+#jogoDist b{display:block;font-size:1.22rem;margin-bottom:4px}
+#jogoDist small{font-size:.84rem;opacity:.9}
+.seta-caixa{display:grid;place-items:center;margin:14px 0 4px}
+.seta{font-size:3.8rem;transition:transform .4s;line-height:1}
+.seta-legenda{font-size:.74rem;color:var(--texto2);margin-top:2px}
+.bolinhas{display:flex;gap:6px;justify-content:center;margin:14px 0}
+.bolinha{width:9px;height:9px;border-radius:50%;background:var(--borda)}
+.bolinha.feita{background:var(--verde2)}
+.bolinha.agora{background:var(--ouro);transform:scale(1.35)}
+.pista-grande{background:var(--areia);color:#78350f;border-radius:20px;padding:20px;
+  font-size:1.12rem;line-height:1.5;font-weight:600;box-shadow:var(--sombra);margin-bottom:12px}
+#jogoDica{background:var(--cartao);border-radius:16px;padding:14px;font-size:.9rem;
+  border:2px dashed var(--ouro);margin-bottom:12px}
+.piscando{animation:piscaTela .45s 2}
+@keyframes piscaTela{0%,100%{background:transparent}50%{background:rgba(34,197,94,.28)}}
+
+/* ---- fim ---- */
+.fim-caixa{text-align:center;padding:30px 20px;background:linear-gradient(160deg,var(--ouro),#ef4444);
+  color:#fff;border-radius:26px;box-shadow:var(--sombra2);margin-bottom:14px}
+.fim-caixa .emojao{animation:gira 1.4s ease-in-out}
+@keyframes gira{from{transform:rotate(-24deg) scale(.4)}to{transform:none}}
+.fim-caixa h2{font-size:1.5rem;margin:8px 0}
+.fim-caixa p{font-size:1rem;line-height:1.5;opacity:.96}
+#fimTempo{font-size:.88rem;margin-top:12px;background:rgba(255,255,255,.2);border-radius:14px;padding:10px}
+.confete{position:fixed;top:-14px;width:9px;height:15px;border-radius:2px;z-index:999;
+  animation:cai linear forwards;pointer-events:none}
+@keyframes cai{to{transform:translateY(105vh) rotate(760deg);opacity:0}}
+
+/* ---- regras ---- */
+.regra{display:flex;gap:13px;background:var(--cartao);border-radius:18px;padding:15px;
+  box-shadow:var(--sombra);margin-bottom:10px}
+.regra .ico{font-size:1.7rem;flex-shrink:0}
+.regra b{font-size:.94rem;display:block;margin-bottom:3px}
+.regra p{font-size:.85rem;color:var(--texto2);line-height:1.5}
+
+.janela{position:fixed;inset:0;background:rgba(4,47,46,.6);backdrop-filter:blur(3px);z-index:300;
+  display:grid;place-items:center;padding:16px;animation:surge .18s}
+.janela-caixa{background:var(--cartao);border-radius:24px;padding:22px;width:100%;max-width:400px;
+  box-shadow:var(--sombra2)}
+.aviso-flutua{position:fixed;left:50%;bottom:26px;transform:translate(-50%,120%);
+  background:var(--texto);color:var(--fundo);padding:13px 22px;border-radius:20px;font-size:.88rem;
+  font-weight:700;box-shadow:var(--sombra2);z-index:400;transition:transform .3s;max-width:92vw;text-align:center}
+.aviso-flutua.on{transform:translate(-50%,0)}
+.rodape{text-align:center;font-size:.72rem;color:var(--texto2);padding:22px 10px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="topo">
+  <h1>🗺️ <span id="olaNome">Caça ao Tesouro</span></h1>
+  <p id="minhasMedalhas"></p>
+</div>
+
+<div class="miolo">
+
+  <!-- ================= INÍCIO ================= -->
+  <section class="tela" id="tela-inicio">
+    <div class="linha-bt">
+      <button class="bt ok" id="btNova">✏️ Criar uma caça</button>
+      <button class="bt" id="btColar">📥 Colar um link</button>
+    </div>
+    <div class="titulo">Minhas caças</div>
+    <div id="listaCacas"></div>
+    <div class="rodape">
+      <button class="bt fraco" id="btRegras">🦺 Ver as regras de segurança</button><br>
+      Caça ao Tesouro <span id="versao"></span> · feito pelo Jojo 💚<br>
+      Tudo fica no teu aparelho. Nada é enviado pra internet.
+    </div>
+  </section>
+
+  <!-- ================= CRIAR ================= -->
+  <section class="tela" id="tela-criar">
+    <button class="bt fraco" id="btVoltarCriar">← Voltar</button>
+    <h2 style="margin:10px 0 4px">✏️ Nova caça</h2>
+    <p class="dica" style="margin-bottom:16px">Vai até cada lugar onde tu quer esconder uma pista
+    e aperta o botão. O celular guarda o ponto exato.</p>
+
+    <div class="cartao">
+      <div class="campo">
+        <label>Nome da caça</label>
+        <input id="novoNome" maxlength="60" placeholder="Ex.: O tesouro da pracinha">
+      </div>
+      <div class="campo">
+        <label>Teu nome</label>
+        <input id="novoAutor" maxlength="40" placeholder="Ex.: Jojo">
+      </div>
+      <div class="campo">
+        <label>Quão perto precisa chegar</label>
+        <div class="dificuldades">
+          <button class="bt" data-dif="facil">🐣 Fácil<br><small>45 m</small></button>
+          <button class="bt" data-dif="medio">🧭 Médio<br><small>25 m</small></button>
+          <button class="bt" data-dif="dificil">🔥 Difícil<br><small>15 m</small></button>
+        </div>
+        <small>O GPS do celular erra uns 10 a 20 metros. No difícil o jogo fica bem apertado.</small>
+      </div>
+      <div class="campo" style="margin-bottom:0">
+        <label>O que tem no fim (o tesouro)</label>
+        <textarea id="novoTesouro" rows="2" maxlength="300"
+          placeholder="Ex.: Parabéns! Olha embaixo do banco azul 🍫"></textarea>
+      </div>
+    </div>
+
+    <div class="titulo">As pistas</div>
+    <div id="listaPistas"></div>
+    <button class="bt ouro grande" id="btPorPista" style="margin-top:10px">📍 Esconder uma pista AQUI</button>
+    <button class="bt ok grande escondido" id="btSalvarCaca" style="margin-top:10px">💾 Guardar e mandar</button>
+  </section>
+
+  <!-- ================= JOGAR ================= -->
+  <section class="tela" id="tela-jogar">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div><b id="jogoNome"></b><br><small class="dica" id="jogoConta"></small></div>
+      <button class="bt fraco" id="btDesistir">Desistir</button>
+    </div>
+    <div class="bolinhas" id="jogoBolinhas"></div>
+    <div class="pista-grande" id="jogoPista"></div>
+    <div id="jogoDica" class="escondido"></div>
+    <button class="bt" id="btDica" style="width:100%;margin-bottom:12px">💡 Tô perdido, me dá uma dica</button>
+    <div class="termometro" id="termometro"><div id="jogoDist">procurando o GPS... 🛰️</div></div>
+    <div class="seta-caixa escondido" id="setaCaixa">
+      <div class="seta" id="seta">⬆️</div>
+      <div class="seta-legenda">é pra esse lado</div>
+    </div>
+    <p class="dica" style="text-align:center;margin-top:14px">Deixa a tela ligada enquanto caminha.
+    Ao ar livre o GPS acerta bem mais.</p>
+  </section>
+
+  <!-- ================= FIM ================= -->
+  <section class="tela" id="tela-fim">
+    <div class="fim-caixa">
+      <div class="emojao">🏆</div>
+      <h2>Achou o tesouro!</h2>
+      <p id="fimNome" style="font-weight:800;margin-bottom:8px"></p>
+      <p id="fimTesouro"></p>
+      <div id="fimTempo"></div>
+    </div>
+    <button class="bt ok grande" id="btFimVoltar">Voltar pro início</button>
+  </section>
+
+  <!-- ================= CONVITE ================= -->
+  <section class="tela" id="tela-convite">
+    <div class="vazio">
+      <div class="emojao">📬</div>
+      <h3>Te desafiaram!</h3>
+      <p style="font-size:1.05rem;font-weight:800;color:var(--texto);margin:10px 0 4px" id="convNome"></p>
+      <p id="convDe"></p>
+      <p id="convDetalhe" style="margin-top:8px"></p>
+    </div>
+    <button class="bt ouro grande" id="btAceitarConv" style="margin-top:12px">🎯 Bora! Começar agora</button>
+    <button class="bt fraco grande" id="btConvNao">Agora não</button>
+  </section>
+
+  <!-- ================= REGRAS ================= -->
+  <section class="tela" id="tela-regras">
+    <h2 style="margin-bottom:4px">🦺 Antes de sair correndo</h2>
+    <p class="dica" style="margin-bottom:16px">Este jogo faz tu andar por lugares de verdade.
+    Então tem quatro combinados:</p>
+
+    <div class="regra"><div class="ico">🧑‍🦱</div><div>
+      <b>Um adulto tem que saber</b>
+      <p>Conta pros teus pais onde tu vai <b>antes</b> de começar. Sempre.</p></div></div>
+    <div class="regra"><div class="ico">🚸</div><div>
+      <b>Olha pra frente, não pro celular</b>
+      <p>Carro não vê quem está olhando a tela. Para de andar pra ler a pista.</p></div></div>
+    <div class="regra"><div class="ico">🏠</div><div>
+      <b>Só em lugar que tu já conhece</b>
+      <p>A tua rua, a pracinha, o pátio da escola. Nunca esconde pista em lugar
+      escondido, na casa de estranho ou onde tu não pode entrar.</p></div></div>
+    <div class="regra"><div class="ico">🛰️</div><div>
+      <b>O GPS erra um pouco</b>
+      <p>Ele acerta uns 10 a 20 metros. Se tu está do lado e não abre, anda alguns
+      passos ou pede a 💡 dica.</p></div></div>
+
+    <p class="dica" style="margin:14px 0">Os lugares que tu marcar ficam <b>só no teu aparelho</b> e
+    dentro do link que tu mandar. Manda só pra quem tu confia — o link mostra onde ficam os lugares.</p>
+    <button class="bt ok grande" id="btAceitoRegras">👍 Entendi, combinado!</button>
+  </section>
+
+</div>
+
+<div class="aviso-flutua" id="aviso"></div>
+<script src="caca.js?v=1"></script>
+</body>
+</html>
