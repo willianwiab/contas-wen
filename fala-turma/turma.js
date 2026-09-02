@@ -16,7 +16,7 @@
      nenhum receber os recados no papel.
    ========================================================= */
 
-const VERSAO = '2.3.0';
+const VERSAO = '2.4.0';
 const CHAVE = 'fala-turma:v1';
 
 const CORES = ['#7c3aed','#2563eb','#ec4899','#f59e0b','#16a34a','#0ea5e9','#ef4444','#8b5cf6','#14b8a6','#f97316'];
@@ -30,7 +30,10 @@ const TIPOS = {
   enquete: { emoji:'🗳️', nome:'Enquete', cor:'#f59e0b' },
   evento:  { emoji:'🎉', nome:'Passeio',  cor:'#ec4899', temData:true, temLugar:true, temQuemVai:true },
   vaquinha:{ emoji:'💰', nome:'Vaquinha', cor:'#0891b2', temAlvo:true },
-  aniver:  { emoji:'🎂', nome:'Aniversário', cor:'#f97316', temData:true }
+  aniver:  { emoji:'🎂', nome:'Aniversário', cor:'#f97316', temData:true },
+  /* o socorro não é escolhido na tela de escrever: ele nasce do
+     botão vermelho, e por isso fica de fora da lista de tipos */
+  socorro: { emoji:'🚨', nome:'PERIGO', cor:'#dc2626', escondido:true }
 };
 
 /* quantos dias faltam pra uma data (aaaa-mm-dd) */
@@ -191,6 +194,9 @@ function avisoConfere(a){
   if(a.alvo !== undefined && (typeof a.alvo !== 'number' || !isFinite(a.alvo) || a.alvo < 0 || a.alvo > 1e6)) return false;
   if(a.resp !== undefined && (typeof a.resp !== 'object' || typeof a.resp.txt !== 'string' ||
      a.resp.txt.length > 200)) return false;
+  if(a.vou !== undefined && (typeof a.vou !== 'object' || Array.isArray(a.vou) ||
+     Object.keys(a.vou).length > 60)) return false;
+  if(a.fim !== undefined && (typeof a.fim !== 'number' || !isFinite(a.fim))) return false;
   return true;
 }
 
@@ -227,6 +233,7 @@ async function puxarDaTurma(){
     if(mudou){ dados.avisos.sort((a,b) => b.ts - a.ts); salvar(); desenharMural(); }
     puxarTodasPrivadas();
     puxarCaras();
+    olharOsSocorros();
   }catch(e){ marcarNuvem('erro'); }
 }
 
@@ -374,6 +381,7 @@ function desenharTudo(){
 let filtro = 'tudo';
 
 function desenharMural(){
+  olharOsSocorros();
   const caixa = $('#mural');
   if(!caixa) return;
   const lista = dados.avisos
@@ -424,6 +432,30 @@ function desenharMural(){
         <div class="rec-txt">🚨 Um recado foi escondido porque a turma avisou que era ruim.
         <button class="rec-bt" data-vermesmo="${a.id}">ver mesmo assim</button></div>
       </div>`;
+
+    /* Um pedido de socorro não é um recado. Ninguém devia poder
+       reagir com 😂 na emergência de alguém, nem fixar, nem
+       denunciar — então ele não tem o rodapé dos outros. */
+    if(a.tipo === 'socorro'){
+      const indo = Object.keys(a.vou || {}).length;
+      const passou = !!a.fim || (Date.now() - a.ts) >= SOCORRO_DURA;
+      return `
+        <div class="recado socorro-rec ${passou ? 'passou' : ''}" style="--cor:${t.cor}">
+          <div class="rec-topo">
+            <span class="rec-av" style="background:${corDe(a.de)}">${caraDe(a.de)}</span>
+            <div class="rec-quem"><b>${escapar(a.de)}${meu ? ' (tu)' : ''}</b>
+              <small>${diaTexto(a.ts)} · ${hora(a.ts)}</small></div>
+            <span class="rec-tipo">${a.fim ? '💚 Passou' : '🚨 PERIGO'}</span>
+          </div>
+          <div class="rec-txt">${a.fim
+            ? `<b>${escapar(a.de)} pediu ajuda e depois avisou que já está bem.</b>`
+            : passou
+              ? `<b>${escapar(a.de)} pediu ajuda ${diaTexto(a.ts)}.</b> O pedido venceu — se
+                 tu não sabe o que aconteceu, pergunta pra ${escapar(a.de)} ou pra um adulto.`
+              : `<b>Está pedindo ajuda AGORA.</b> Olha o alarme vermelho lá em cima.`}</div>
+          ${indo ? `<div class="rec-quando">🏃 ${indo} ${indo === 1 ? 'pessoa foi' : 'pessoas foram'} ajudar</div>` : ''}
+        </div>`;
+    }
 
     return `
       <div class="recado ${a.fixado ? 'fixado' : ''} ${feito ? 'feito' : ''}" style="--cor:${t.cor}">
@@ -771,6 +803,11 @@ $('#euChip').addEventListener('click', trocarMinhaCara);
 $('#btPorCara').addEventListener('click', trocarMinhaCara);
 $('#btTirarCara').addEventListener('click', tirarMinhaCara);
 $('#btArrumarFicha').addEventListener('click', arrumarFicha);
+$('#btPerigo').addEventListener('click', abrirSocorro);
+$('#btVoltarSos').addEventListener('click', () => mostrar('mural'));
+$('#btMandarSocorro').addEventListener('click', mandarSocorro);
+$('#btJaEstouBem').addEventListener('click', jaEstouBem);
+$('#btTocarSirene').addEventListener('click', () => { pararSirene(); tocarSirene(); });
 $('#btGente').addEventListener('click', abrirGente);
 $('#btVoltarGente').addEventListener('click', () => mostrar('mural'));
 $('#btImprimir').addEventListener('click', imprimirMural);

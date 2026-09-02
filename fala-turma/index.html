@@ -208,6 +208,50 @@ h2{font-size:1.14rem;margin-bottom:5px}
 .atalhos button.tem-nova::after{content:attr(data-quantas);position:absolute;top:-5px;right:-4px;
   background:#ef4444;color:#fff;font-size:.62rem;font-weight:900;min-width:17px;height:17px;
   border-radius:9px;display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 6px #0004}
+/* ---- 🚨 perigo ---- */
+.bt.perigo{background:linear-gradient(135deg,#dc2626,#f97316);color:#fff;border-color:transparent;
+  width:100%;font-size:1rem;margin-top:10px}
+/* pulsa o BRILHO, não o tamanho: um botão que se mexe é um botão
+   difícil de acertar — e quem aperta este aqui está com pressa */
+.bt.perigo.grandao{padding:26px;font-size:1.3rem;letter-spacing:.02em;
+  animation:respira 1.8s ease-in-out infinite}
+@keyframes respira{0%,100%{box-shadow:0 8px 22px rgba(220,38,38,.35)}
+  50%{box-shadow:0 8px 38px rgba(220,38,38,.85)}}
+.faixa-sos{margin-bottom:12px}
+.socorro-rec{border-color:#dc2626}
+.socorro-rec.passou{opacity:.72}
+.socorro-rec .rec-tipo{background:#dc2626;color:#fff}
+.socorro-rec.passou .rec-tipo{background:#16a34a}
+.sos-faixa{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border-radius:20px;
+  padding:16px;margin-bottom:10px;box-shadow:0 8px 26px rgba(220,38,38,.4);
+  animation:alarme 1.1s ease-in-out infinite}
+@keyframes alarme{0%,100%{box-shadow:0 8px 26px rgba(220,38,38,.35)}
+  50%{box-shadow:0 8px 34px rgba(220,38,38,.75)}}
+.sos-topo{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+.sos-sino{font-size:1.9rem;animation:chacoalha .7s ease-in-out infinite}
+@keyframes chacoalha{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}}
+.sos-topo b{font-size:1rem;display:block}
+.sos-topo small{opacity:.9;font-size:.76rem}
+.sos-mapa{display:block;text-align:center;background:rgba(255,255,255,.95);color:#b91c1c;
+  border:0;margin-bottom:9px;text-decoration:none}
+.sos-semlugar{font-size:.82rem;opacity:.9;margin-bottom:9px}
+.sos-bts{display:flex;gap:8px}
+.sos-bts .bt{flex:1;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);color:#fff;
+  text-align:center;text-decoration:none}
+.sos-bts .bt.ok{background:#fff;color:#16a34a;border-color:transparent}
+.sos-adulto{font-size:.78rem;line-height:1.5;margin-top:11px;background:rgba(0,0,0,.22);
+  border-radius:12px;padding:9px 11px}
+.chama-adulto{border:2px solid #dc2626}
+.numeros{display:flex;gap:8px;margin-top:10px}
+.numeros .num{flex:1;text-align:center;text-decoration:none;padding:11px 6px;font-size:.95rem;
+  line-height:1.25}
+.numeros .num small{display:block;font-size:.68rem;font-weight:700;color:var(--texto2)}
+.sos-ativo{border:2px solid #dc2626;text-align:center}
+.sos-pisca{font-size:2.6rem;display:block;animation:chacoalha .7s ease-in-out infinite}
+.sos-lugar b,.sos-indo b{display:block;font-size:.92rem}
+.sos-lugar small,.sos-indo small{font-size:.78rem;color:var(--texto2);line-height:1.5}
+.sos-lugar{margin-bottom:12px}
+body.tem-socorro .escrever{display:none}
 .resumo-tempo{background:var(--painel);border-radius:16px;padding:13px 15px;box-shadow:var(--sombra);
   margin-bottom:11px;font-size:.95rem}
 .dias-tempo{background:var(--painel);border-radius:18px;box-shadow:var(--sombra);overflow:hidden}
@@ -476,6 +520,8 @@ h2{font-size:1.14rem;margin-bottom:5px}
 
   <!-- ============ MURAL ============ -->
   <section class="tela" id="tela-mural">
+    <div class="faixa-sos escondido" id="faixaSocorro"></div>
+    <button class="bt escondido" id="btTocarSirene" style="width:100%;margin-bottom:11px">🔊 Tocar o alarme</button>
     <div class="avisos-topo escondido" id="avisosTopo"></div>
     <div class="atalhos">
       <button data-ir="album">📷 Álbum</button>
@@ -497,6 +543,7 @@ h2{font-size:1.14rem;margin-bottom:5px}
       <button class="bt" id="btConvidar">📤 Chamar alguém</button>
       <button class="bt" id="btImprimir">🖨️ Imprimir</button>
     </div>
+    <button class="bt perigo" id="btPerigo">🚨 GENTE, TÔ EM PERIGO</button>
     <div class="rodape">
       <button class="bt fraco" id="btSair">Sair da turma neste aparelho</button><br>
       Fala, Turma! <span id="versao2"></span>
@@ -591,6 +638,59 @@ h2{font-size:1.14rem;margin-bottom:5px}
       </div>
     </div>
     <button class="bt ok grande" id="btMandar">📤 Mandar pra turma</button>
+  </section>
+
+  <!-- ============ 🚨 PERIGO ============ -->
+  <section class="tela" id="tela-socorro">
+    <button class="bt fraco" id="btVoltarSos">← Voltar pro mural</button>
+
+    <div id="socorroAntes">
+      <div class="cartao chama-adulto">
+        <b>📞 Primeiro isto, sempre:</b>
+        <div class="numeros">
+          <a class="bt num" href="tel:190">🚔 190<small>Polícia</small></a>
+          <a class="bt num" href="tel:192">🚑 192<small>Ambulância</small></a>
+          <a class="bt num" href="tel:193">🚒 193<small>Bombeiros</small></a>
+        </div>
+        <p class="dica" style="margin-top:10px">E <b>grita por um adulto perto de ti</b>:
+        tua mãe, teu pai, um professor, um vizinho, o segurança. Um adulto do lado vale mais
+        que qualquer app.</p>
+      </div>
+
+      <h2 style="margin:16px 0 4px">🚨 Avisar a turma</h2>
+      <p class="dica" style="margin-bottom:14px">A turma inteira recebe um alarme alto, um
+      aviso no celular e <b>o lugar onde tu está</b>. Enquanto o pedido estiver de pé, o
+      lugar vai sendo atualizado sozinho.</p>
+
+      <button class="bt perigo grandao" id="btMandarSocorro">🚨 MANDAR AGORA</button>
+
+      <div class="cartao aviso-loja" style="margin-top:14px">
+        <b>🙂 O que este botão NÃO faz</b>
+        <p class="dica" style="margin-top:7px">Ele <b>não chama a polícia</b> e não avisa a
+        tua mãe. Só avisa a turma — e teus colegas podem estar no silencioso, sem bateria ou
+        sem celular. Por isso os números lá em cima vêm primeiro.</p>
+        <p class="dica" style="margin-top:7px">E não aperta de brincadeira: um alarme que
+        grita à toa é um alarme que todo mundo aprende a ignorar. Aí, no dia que for de
+        verdade, ninguém corre.</p>
+      </div>
+    </div>
+
+    <div id="socorroDepois" class="escondido">
+      <div class="cartao sos-ativo">
+        <span class="sos-pisca">🚨</span>
+        <b>A turma foi avisada</b>
+        <p class="dica" style="margin-top:6px">Teu pedido está de pé. Ele para sozinho em 2 horas.</p>
+      </div>
+      <div class="cartao" id="meuSocorroCaixa"></div>
+      <div class="cartao chama-adulto">
+        <b>📞 Não fica só esperando</b>
+        <div class="numeros">
+          <a class="bt num" href="tel:190">🚔 190<small>Polícia</small></a>
+          <a class="bt num" href="tel:192">🚑 192<small>Ambulância</small></a>
+        </div>
+      </div>
+      <button class="bt ok grande" id="btJaEstouBem" style="margin-top:12px">💚 JÁ TÔ BEM</button>
+    </div>
   </section>
 
   <!-- ============ 📲 PÔR NO CELULAR ============ -->
@@ -704,8 +804,9 @@ h2{font-size:1.14rem;margin-bottom:5px}
 
 <button class="escrever escondido" id="btEscrever">✏️ Escrever</button>
 <div class="aviso-flutua" id="aviso"></div>
-<script src="turma-mais.js?v=6"></script>
-<script src="turma-cara.js?v=6"></script>
-<script src="turma.js?v=6"></script>
+<script src="turma-mais.js?v=7"></script>
+<script src="turma-cara.js?v=7"></script>
+<script src="turma-socorro.js?v=7"></script>
+<script src="turma.js?v=7"></script>
 </body>
 </html>
