@@ -21,6 +21,9 @@ self.addEventListener('fetch', ev => {
   /* o aviso de versão nova tem que vir do servidor SEMPRE, senão o
      app pergunta ao próprio cache se tem versão nova e nunca sai do lugar */
   if(new URL(ev.request.url).pathname.endsWith('/versao.json')) return;
+  /* a página de socorro nunca pode vir do cache: ela existe justamente
+     pra quando o cache é o problema */
+  if(new URL(ev.request.url).pathname.endsWith('/consertar.html')) return;
   ev.respondWith(
     fetch(ev.request)
       .then(r => { const c = r.clone(); caches.open(CACHE).then(x => x.put(ev.request, c)).catch(() => {}); return r; })

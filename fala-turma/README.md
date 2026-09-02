@@ -122,6 +122,12 @@ arquivo) qual versão está no ar. Se for outra, joga fora todo o cache, desregi
 service worker e recarrega — **uma vez só**. Se mesmo assim não pegar, ele para e avisa em
 vez de virar um pião de recarga.
 
+**Se mesmo assim travar:** `fala-turma/consertar.html` é a página de socorro. Ela apaga
+todos os caches, desregistra o service worker e devolve pro app com um endereço novo
+(`./?nova=<agora>`), que não existe em cache nenhum. **Não apaga os recados nem a turma** —
+esses ficam no `localStorage`, que ela não toca. O service worker é proibido de guardar
+essa página, senão ela viraria parte do próprio problema.
+
 ### 💬 O que a conversa particular NÃO é
 
 Ela é embaralhada com a **mesma chave da turma**. Quem tem o convite tem a chave — então é
@@ -157,6 +163,7 @@ mostra o **código de 8 letras**, pra ditar em voz alta pra quem não recebeu o 
 | `turma-cara.js` | A foto de perfil e o "pôr no celular" |
 | `manifest.webmanifest` + `icone-*.png` | O que faz virar app instalável |
 | `versao.json` | Qual versão está no ar, pro app se atualizar sozinho |
+| `consertar.html` | Página de socorro: limpa o cache preso, sem apagar os recados |
 | `sw.js` | Abrir sem internet — a rede da escola costuma ser ruim |
 
 `turma-mais.js` e `turma-cara.js` carregam **antes** de `turma.js`: o `turma.js` liga os
@@ -183,7 +190,7 @@ Mac no caso da Apple, e de documento de adulto.
 
 ## O que foi testado de verdade
 
-185 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
+202 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
 localização simulada: recado chegando de um aparelho no outro, reação, resposta, passeio,
 vaquinha, conversa particular, denúncia, modo emprestado, o mural impresso, a foto de
 perfil viajando de um aparelho pro outro, a escola viajando dentro do convite e o
