@@ -208,6 +208,17 @@ h2{font-size:1.14rem;margin-bottom:5px}
 .atalhos button.tem-nova::after{content:attr(data-quantas);position:absolute;top:-5px;right:-4px;
   background:#ef4444;color:#fff;font-size:.62rem;font-weight:900;min-width:17px;height:17px;
   border-radius:9px;display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 6px #0004}
+.resumo-tempo{background:var(--painel);border-radius:16px;padding:13px 15px;box-shadow:var(--sombra);
+  margin-bottom:11px;font-size:.95rem}
+.dias-tempo{background:var(--painel);border-radius:18px;box-shadow:var(--sombra);overflow:hidden}
+.dia-tempo{display:flex;align-items:center;gap:11px;padding:11px 15px;border-bottom:1px solid var(--borda)}
+.dia-tempo:last-child{border-bottom:0}
+.dia-tempo.molhado{background:var(--painel2)}
+.dia-nome{flex:1;min-width:0;font-size:.87rem}
+.dia-emoji{font-size:1.4rem;width:30px;text-align:center}
+.dia-graus{font-size:.87rem;font-weight:800;width:66px;text-align:right}
+.dia-graus small{font-weight:600;color:var(--texto2);font-size:.78rem}
+.dia-chuva{font-size:.78rem;font-weight:800;color:var(--ceu);width:42px;text-align:right}
 .opcional{font-weight:600;opacity:.6;text-transform:none;letter-spacing:0}
 .topo h1+p{font-size:.78rem;opacity:.92;font-weight:600;margin-top:3px;position:relative;z-index:1}
 .ficha{display:grid;gap:9px}
@@ -679,7 +690,8 @@ h2{font-size:1.14rem;margin-bottom:5px}
   <section class="tela" id="tela-tempo">
     <button class="bt fraco" id="btVoltarTempo">← Voltar pro mural</button>
     <h2 style="margin:10px 0 12px">🌧️ Vai chover na saída?</h2>
-    <div class="campo">
+    <div class="filtros" id="quandoTempo"></div>
+    <div class="campo" id="campoHoraSaida">
       <label>Que horas tu sai da escola</label>
       <input type="time" id="horaSaida" value="17:30">
     </div>
@@ -692,8 +704,8 @@ h2{font-size:1.14rem;margin-bottom:5px}
 
 <button class="escrever escondido" id="btEscrever">✏️ Escrever</button>
 <div class="aviso-flutua" id="aviso"></div>
-<script src="turma-mais.js?v=5"></script>
-<script src="turma-cara.js?v=5"></script>
-<script src="turma.js?v=5"></script>
+<script src="turma-mais.js?v=6"></script>
+<script src="turma-cara.js?v=6"></script>
+<script src="turma.js?v=6"></script>
 </body>
 </html>

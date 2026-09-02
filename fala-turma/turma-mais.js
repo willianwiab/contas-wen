@@ -354,61 +354,156 @@ const CEUS = {
   95:['⛈️','trovoada'], 96:['⛈️','trovoada'], 99:['⛈️','trovoada']
 };
 
+const QUANDOS = [
+  { id:'hoje',   emoji:'🌤️', nome:'Hoje',            dias:1  },
+  { id:'amanha', emoji:'🌅', nome:'Amanhã',          dias:2  },
+  { id:'depois', emoji:'📆', nome:'Depois de amanhã', dias:3  },
+  { id:'semana', emoji:'🗓️', nome:'1 semana',        dias:7,  lista:true },
+  { id:'mes',    emoji:'📅', nome:'1 mês',           dias:16, lista:true }
+];
+let quandoEscolhido = 'hoje';
+
+const DIAS_CURTOS = ['dom','seg','ter','qua','qui','sex','sáb'];
+
+function desenharBotoesDoTempo(){
+  const barra = $('#quandoTempo');
+  if(!barra) return;
+  barra.innerHTML = QUANDOS.map(q => `
+    <button class="filtro ${q.id === quandoEscolhido ? 'on' : ''}" data-quando="${q.id}">
+      ${q.emoji} ${q.nome}</button>`).join('');
+  barra.querySelectorAll('[data-quando]').forEach(b =>
+    b.addEventListener('click', () => { quandoEscolhido = b.dataset.quando; verOTempo(); }));
+}
+
+const oQuando = () => QUANDOS.find(q => q.id === quandoEscolhido) || QUANDOS[0];
+
 async function verOTempo(){
   const caixa = $('#tempoSaida');
   if(!caixa) return;
+  const q = oQuando();
   const hora = (dados.horaSaida || '17:30');
   $('#horaSaida').value = hora;
+  /* a hora da saída só importa num dia só; na lista o dia é inteiro */
+  $('#campoHoraSaida').classList.toggle('escondido', !!q.lista);
+  desenharBotoesDoTempo();
 
-  const guardado = dados.tempo;
-  if(guardado && Date.now() - guardado.quando < 3600000 && guardado.hora === hora){
-    desenharTempo(guardado); return;
-  }
+  dados.tempo = dados.tempo || {};
+  const marca = q.lista ? q.id : q.id + '|' + hora;
+  const guardado = dados.tempo[marca];
+  /* uma hora de validade: o tempo não muda de minuto em minuto, e a
+     internet da escola agradece */
+  if(guardado && Date.now() - guardado.quando < 3600000){ desenharTempo(guardado); return; }
+
   caixa.innerHTML = '<p class="dica">Vendo o tempo... 🛰️</p>';
-
-  const onde = (guardado && guardado.onde) || await ondeEstou(9000);
+  const onde = dados.ondeEstou || await ondeEstou(9000);
   if(!onde){
     caixa.innerHTML = `<p class="dica">Pra saber o tempo, o site precisa ver onde tu está.
       <button class="bt" id="btPermitirGPS" style="margin-top:8px">📍 Deixar ver</button></p>`;
     const b = document.getElementById('btPermitirGPS');
-    if(b) b.addEventListener('click', () => { dados.tempo = null; verOTempo(); });
+    if(b) b.addEventListener('click', () => { dados.ondeEstou = null; verOTempo(); });
     return;
   }
+  dados.ondeEstou = onde;
+
   try{
+    const pedido = q.lista
+      ? 'daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'
+      : 'hourly=temperature_2m,precipitation_probability,weather_code';
     const r = await fetch('https://api.open-meteo.com/v1/forecast' +
-      `?latitude=${onde.lat}&longitude=${onde.lon}` +
-      '&hourly=temperature_2m,precipitation_probability,weather_code&timezone=auto&forecast_days=1');
+      `?latitude=${onde.lat}&longitude=${onde.lon}&${pedido}&timezone=auto&forecast_days=${q.dias}`);
     if(!r.ok) throw new Error('HTTP ' + r.status);
     const t = await r.json();
-    const alvo = hora.slice(0,2) + ':00';
-    let i = (t.hourly.time || []).findIndex(x => x.slice(11,16) === alvo);
-    if(i < 0) i = 0;
-    dados.tempo = { onde, quando: Date.now(), hora,
-      temp: Math.round(t.hourly.temperature_2m[i]),
-      chuva: t.hourly.precipitation_probability[i],
-      codigo: t.hourly.weather_code[i] };
-    salvar(); desenharTempo(dados.tempo);
+
+    let dado;
+    if(q.lista){
+      const d = t.daily || {};
+      dado = { tipo:'lista', quando: Date.now(), qual: q.id, onde,
+        dias: (d.time || []).map((iso, i) => ({
+          iso,
+          codigo: d.weather_code[i],
+          max: Math.round(d.temperature_2m_max[i]),
+          min: Math.round(d.temperature_2m_min[i]),
+          chuva: d.precipitation_probability_max ? d.precipitation_probability_max[i] : null
+        })) };
+    }else{
+      const i = acharAHora(t.hourly.time || [], q.dias - 1, hora);
+      dado = { tipo:'dia', quando: Date.now(), qual: q.id, hora, onde,
+        dia: (t.hourly.time || [])[i] || '',
+        temp: Math.round(t.hourly.temperature_2m[i]),
+        chuva: t.hourly.precipitation_probability[i],
+        codigo: t.hourly.weather_code[i] };
+    }
+    dados.tempo[marca] = dado;
+    salvar(); desenharTempo(dado);
   }catch(e){
     if(guardado) desenharTempo(guardado);
     else caixa.innerHTML = '<p class="dica">Não consegui ver o tempo agora 😕 tenta de novo daqui a pouco.</p>';
   }
 }
 
+/* acha a hora certa DO DIA certo: a lista vem seguida, um dia
+   depois do outro, então o dia 2 começa na posição 48 */
+function acharAHora(horas, pulaDias, hora){
+  const comeco = pulaDias * 24;
+  const alvo = hora.slice(0,2) + ':00';
+  for(let i = comeco; i < Math.min(horas.length, comeco + 24); i++)
+    if(horas[i].slice(11,16) === alvo) return i;
+  return Math.min(comeco, horas.length - 1);
+}
+
+function conselhoDoTempo(chuva, temp){
+  if(chuva >= 60) return '☔ LEVA GUARDA-CHUVA!';
+  if(chuva >= 30) return '🌂 Pode chover, leva por garantia';
+  if(temp <= 13)  return '🧥 Leva casaco, vai esfriar';
+  if(temp >= 30)  return '🥤 Vai fazer calor, leva água';
+  return '😎 Dia bom, pode ir tranquilo';
+}
+
 function desenharTempo(t){
   const caixa = $('#tempoSaida');
   if(!caixa || !t) return;
+
+  if(t.tipo === 'lista'){
+    const molhados = t.dias.filter(d => (d.chuva || 0) >= 50).length;
+    caixa.innerHTML = `
+      <div class="resumo-tempo">
+        ${molhados ? `<b>☔ ${molhados} dia${molhados > 1 ? 's' : ''} com cara de chuva</b>`
+                   : '<b>😎 Nenhum dia com cara de chuva</b>'}
+      </div>
+      <div class="dias-tempo">
+        ${t.dias.map((d, i) => {
+          const [emoji, ceu] = CEUS[d.codigo] || ['🌡️',''];
+          const data = new Date(d.iso + 'T12:00');
+          const nome = i === 0 ? 'Hoje' : i === 1 ? 'Amanhã'
+            : `${DIAS_CURTOS[data.getDay()]} ${data.getDate()}/${String(data.getMonth()+1).padStart(2,'0')}`;
+          return `
+            <div class="dia-tempo ${(d.chuva || 0) >= 50 ? 'molhado' : ''}">
+              <b class="dia-nome">${nome}</b>
+              <span class="dia-emoji" title="${ceu}">${emoji}</span>
+              <span class="dia-graus">${d.max}° <small>${d.min}°</small></span>
+              <span class="dia-chuva">${d.chuva == null ? '' : d.chuva + '%'}</span>
+            </div>`;
+        }).join('')}
+      </div>
+      ${t.qual === 'mes' ? `
+        <p class="dica" style="margin-top:12px">📅 <b>Um mês inteiro não dá.</b> O site do tempo
+        só enxerga <b>16 dias</b> pra frente — e depois de uns 7 dias já é mais chute do que
+        conta. Perto do dia, olha de novo.</p>`
+      : `<p class="dica" style="margin-top:12px">Quanto mais longe o dia, mais o tempo muda de
+        ideia. Vale olhar de novo na véspera.</p>`}`;
+    return;
+  }
+
   const [emoji, ceu] = CEUS[t.codigo] || ['🌡️',''];
-  const conselho = t.chuva >= 60 ? '☔ LEVA GUARDA-CHUVA!'
-    : t.chuva >= 30 ? '🌂 Pode chover, leva por garantia'
-    : t.temp <= 13  ? '🧥 Leva casaco, vai esfriar'
-    : t.temp >= 30  ? '🥤 Vai fazer calor, leva água'
-    : '😎 Dia bom, pode ir tranquilo';
+  const q = QUANDOS.find(x => x.id === t.qual) || QUANDOS[0];
   caixa.innerHTML = `
     <div class="tempo-caixa">
       <div class="tempo-emoji">${emoji}</div>
-      <div class="tempo-txt"><b>${conselho}</b>
-        <small>${t.hora} · ${t.temp}° · ${ceu} · ${t.chuva}% de chuva</small></div>
-    </div>`;
+      <div class="tempo-txt"><b>${conselhoDoTempo(t.chuva, t.temp)}</b>
+        <small>${q.nome} às ${t.hora} · ${t.temp}° · ${ceu} · ${t.chuva}% de chuva</small></div>
+    </div>
+    ${t.qual !== 'hoje' ? `<p class="dica" style="margin-top:12px">O tempo ainda pode mudar de
+      ideia até lá. Olha de novo na véspera 😉</p>` : ''}`;
 }
 
 function ondeEstou(limite){
