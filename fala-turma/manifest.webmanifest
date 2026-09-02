@@ -1,10 +1,28 @@
 {
+  "id": "/contas-wen/fala-turma/",
   "name": "Fala, Turma!",
   "short_name": "Turma",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
   "background_color": "#f4f2fb",
   "theme_color": "#7c3aed",
-  "description": "O mural da turma: recado, lição, prova, enquete e combinar de sair.",
-  "icons": [{ "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["education", "social", "productivity"],
+  "description": "O mural da turma: recado, lição, prova, enquete, passeio e vaquinha. Abre em qualquer aparelho, sem conta e sem senha.",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Escrever no mural", "short_name": "Escrever", "url": "./?ir=escrever",
+      "icons": [{ "src": "icone-192.png", "sizes": "192x192" }] },
+    { "name": "Álbum da turma", "short_name": "Álbum", "url": "./?ir=album",
+      "icons": [{ "src": "icone-192.png", "sizes": "192x192" }] }
+  ]
 }

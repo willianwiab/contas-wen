@@ -16,7 +16,7 @@
      nenhum receber os recados no papel.
    ========================================================= */
 
-const VERSAO = '2.0.0';
+const VERSAO = '2.1.0';
 const CHAVE = 'fala-turma:v1';
 
 const CORES = ['#7c3aed','#2563eb','#ec4899','#f59e0b','#16a34a','#0ea5e9','#ef4444','#8b5cf6','#14b8a6','#f97316'];
@@ -226,6 +226,7 @@ async function puxarDaTurma(){
     }
     if(mudou){ dados.avisos.sort((a,b) => b.ts - a.ts); salvar(); desenharMural(); }
     puxarTodasPrivadas();
+    puxarCaras();
   }catch(e){ marcarNuvem('erro'); }
 }
 
@@ -352,7 +353,7 @@ function desenharTudo(){
   $('#euChip').classList.toggle('escondido', !dados.eu);
   $('#btGente').classList.toggle('escondido', !naTurma());
   if(dados.eu){
-    $('#euAv').textContent = bichoDe(dados.eu);
+    $('#euAv').innerHTML = caraDe(dados.eu);
     $('#euSou').textContent = dados.eu + (emprestado ? ' · emprestado' : '');
   }
   $('#chipNuvem').classList.toggle('escondido', !naTurma());
@@ -417,7 +418,7 @@ function desenharMural(){
       <div class="recado ${a.fixado ? 'fixado' : ''} ${feito ? 'feito' : ''}" style="--cor:${t.cor}">
         ${a.fixado ? '<div class="rec-fixado">📌 Fixado</div>' : ''}
         <div class="rec-topo">
-          <span class="rec-av" style="background:${corDe(a.de)}">${bichoDe(a.de)}</span>
+          <span class="rec-av" style="background:${corDe(a.de)}">${caraDe(a.de)}</span>
           <div class="rec-quem"><b>${escapar(a.de)}${meu ? ' (tu)' : ''}</b>
             <small>${diaTexto(a.ts)} · ${hora(a.ts)}</small></div>
           <span class="rec-tipo">${t.emoji} ${t.nome}</span>
@@ -583,10 +584,11 @@ function abrirGente(){
   $('#codigoTurma').textContent = dados.turma ? dados.turma.codigo : '--------';
   $('#listaGente').innerHTML = gente.map(([nome, c]) => `
     <div class="pessoa ${nome === dados.eu ? 'sou-eu' : ''}">
-      <div class="pessoa-av" style="background:${corDe(nome)}">${bichoDe(nome)}</div>
+      <div class="pessoa-av" style="background:${corDe(nome)}">${caraDe(nome)}</div>
       <b>${escapar(nome)}${nome === dados.eu ? ' (tu)' : ''}</b>
       <small>${c.recados ? c.recados + ' recado' + (c.recados > 1 ? 's' : '') : 'só olhando'}</small>
     </div>`).join('');
+  redesenharCaras();
   mostrar('gente');
 }
 
@@ -727,6 +729,9 @@ $('#btVoltarEsc').addEventListener('click', () => {
 $('#btMandar').addEventListener('click', mandarRecado);
 $('#btConvidar').addEventListener('click', mostrarConvite);
 $('#btConvidar2').addEventListener('click', mostrarConvite);
+$('#euChip').addEventListener('click', trocarMinhaCara);
+$('#btPorCara').addEventListener('click', trocarMinhaCara);
+$('#btTirarCara').addEventListener('click', tirarMinhaCara);
 $('#btGente').addEventListener('click', abrirGente);
 $('#btVoltarGente').addEventListener('click', () => mostrar('mural'));
 $('#btImprimir').addEventListener('click', imprimirMural);
@@ -750,11 +755,14 @@ document.querySelectorAll('[data-ir]').forEach(b => b.addEventListener('click', 
   if(onde === 'privadas') abrirPrivadas();
   if(onde === 'transporte') abrirTransporte();
   if(onde === 'tempo'){ mostrar('tempo'); verOTempo(); }
+  if(onde === 'instalar'){ mostrar('instalar'); verSeJaInstalou(); }
 }));
 $('#btVoltarAlbum').addEventListener('click', () => mostrar('mural'));
 $('#btVoltarPriv').addEventListener('click', () => mostrar('mural'));
 $('#btVoltarTr').addEventListener('click', () => mostrar('mural'));
 $('#btVoltarTempo').addEventListener('click', () => mostrar('mural'));
+$('#btVoltarInst').addEventListener('click', () => mostrar('mural'));
+$('#btInstalarJa').addEventListener('click', instalarAgora);
 $('#btVoltarConversa').addEventListener('click', fecharConversa);
 $('#btPvMandar').addEventListener('click', mandarPrivada);
 $('#pvEntrada').addEventListener('keydown', e => { if(e.key === 'Enter') mandarPrivada(); });

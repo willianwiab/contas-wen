@@ -30,6 +30,12 @@ Os recados vão **embaralhados** (AES-GCM, chave derivada por PBKDF2 com 210 000
 **segredo que viaja no convite** — não do código da turma, que anda de mão em mão. O banco
 guarda, mas não entende.
 
+**O nome também não pode ser a chave.** Se a pasta da conversa se chamasse `Ana~Jojo`, o
+banco não leria o que foi escrito, mas leria **quem conversa com quem** — e isso já é
+informação demais. Então a chave de cada conversa particular e de cada foto de perfil é um
+SHA-256 do segredo da turma + os nomes. Quem tem o convite calcula igual; quem não tem só
+vê letra solta (`9f08662474cbae16…`).
+
 O que chega do banco foi escrito por outro aparelho, então passa por `avisoConfere()`:
 dono, horário, tipo, tamanho e formato das opções são conferidos antes de virar tela.
 
@@ -67,6 +73,20 @@ podem passar batido: **prova amanhã** e **aniversário desta semana**.
 | 🚌 **Como cada um vai** | Ônibus, carro, a pé, bici — e quem precisa/pode dar carona |
 | 📍 **Onde é o encontro** | O lugar vai junto do recado e abre no mapa |
 | 🚨 **Recado ruim** | Com 2 avisos ele some da frente de todo mundo (dá pra abrir mesmo assim) |
+| 🙂 **Foto de perfil** | Cada um põe a sua; quem não põe fica com o bichinho |
+
+### 🙂 A foto de perfil
+
+Ela é **minúscula de propósito**: 160px, cortada quadrada, uns 2 KB. Uma turma de 30
+pessoas com foto de celular seriam 120 MB toda vez que alguém abrisse o app — na internet
+da escola isso nunca ia carregar.
+
+E o app **não fica puxando as fotos toda hora**: só busca quando aparece um nome sem cara,
+ou de 5 em 5 minutos.
+
+O que chega de outro aparelho passa por `caraConfere()`: só `data:image/png|jpeg|webp` em
+base64, até 60 000 letras, com dono de nome válido. `javascript:`, HTML e `data:text/html`
+são recusados.
 
 ### 💬 O que a conversa particular NÃO é
 
@@ -99,17 +119,39 @@ mostra o **código de 8 letras**, pra ditar em voz alta pra quem não recebeu o 
 |---|---|
 | `index.html` | As telas e o visual (as mesmas cores do Fala, Família) |
 | `turma.js` | Entrar, o mural, a nuvem, a criptografia e a impressão |
-| `turma-mais.js` | Foto, álbum, conversa particular, transporte, tempo e aniversários |
+| `turma-mais.js` | Foto do quadro, álbum, conversa particular, transporte, tempo e aniversários |
+| `turma-cara.js` | A foto de perfil e o "pôr no celular" |
+| `manifest.webmanifest` + `icone-*.png` | O que faz virar app instalável |
 | `sw.js` | Abrir sem internet — a rede da escola costuma ser ruim |
 
-`turma-mais.js` carrega **antes** de `turma.js`: o `turma.js` liga os botões assim que roda,
-e um botão só liga se a função já existir.
+`turma-mais.js` e `turma-cara.js` carregam **antes** de `turma.js`: o `turma.js` liga os
+botões assim que roda, e um botão só liga se a função já existir.
+
+## 📲 Pôr no celular (Android e iPhone)
+
+O app é um **PWA**: instala pelo próprio navegador, sem loja.
+
+- **Android (Chrome):** ⋮ → *Instalar app*. O Chrome também oferece sozinho, e aí o botão
+  **📲 Instalar agora** aparece dentro do app (é o `beforeinstallprompt` guardado).
+- **iPhone/iPad (Safari):** botão de compartilhar → *Adicionar à Tela de Início*. O iOS não
+  oferece nada sozinho — por isso a tela ensina o caminho na mão.
+- **Computador (Chrome/Edge):** ícone de instalar na barra de endereço.
+
+Depois de instalado tem ícone próprio, abre sem barra de navegador (`display: standalone`),
+tem atalhos de "Escrever" e "Álbum" ao segurar o ícone, e funciona sem internet.
+
+Os ícones são **PNG de verdade** (192, 512, 180 pro iOS e um *maskable* com folga de 12%,
+porque o Android corta as pontas em círculo). SVG sozinho não basta: o iOS ignora.
+
+**Play Store e App Store ficam de fora** — precisam de conta de desenvolvedor paga, de um
+Mac no caso da Apple, e de documento de adulto.
 
 ## O que foi testado de verdade
 
-95 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
+129 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
 localização simulada: recado chegando de um aparelho no outro, reação, resposta, passeio,
-vaquinha, conversa particular, denúncia, modo emprestado e o mural impresso.
+vaquinha, conversa particular, denúncia, modo emprestado, o mural impresso, a foto de
+perfil viajando de um aparelho pro outro e o manifesto com todos os ícones respondendo.
 
 **O que não deu pra testar de verdade:** a caixa onde este app foi feito não alcança o
 `firebaseio.com` nem o `api.open-meteo.com`. O Firebase foi testado contra um de mentira

@@ -6,7 +6,13 @@
 <meta name="theme-color" content="#7c3aed">
 <title>🎒 Fala, Turma!</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icone.svg">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Turma">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="O mural da turma: recado, lição, prova, enquete, passeio e vaquinha.">
 <style>
 /* ===================== CORES (as mesmas do Fala, Família) ===================== */
 :root{
@@ -202,6 +208,26 @@ h2{font-size:1.14rem;margin-bottom:5px}
 .atalhos button.tem-nova::after{content:attr(data-quantas);position:absolute;top:-5px;right:-4px;
   background:#ef4444;color:#fff;font-size:.62rem;font-weight:900;min-width:17px;height:17px;
   border-radius:9px;display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 6px #0004}
+.passo{background:var(--painel);border-radius:20px;padding:15px 17px;box-shadow:var(--sombra);
+  margin-bottom:11px;border:1.5px solid var(--borda)}
+.passo-topo{display:flex;align-items:center;gap:9px;margin-bottom:9px;font-size:.95rem}
+.passo-emoji{font-size:1.5rem}
+.passo ol{margin:0;padding-left:20px}
+.passo li{font-size:.87rem;line-height:1.7;color:var(--texto2)}
+.passo li b{color:var(--texto)}
+.aviso-loja{border:2px dashed var(--borda);background:var(--painel2);box-shadow:none}
+.cara{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+.eu-chip .eu-av{overflow:hidden}
+.eu-lapis{font-size:.62rem;opacity:.75;margin-left:2px}
+.rec-av,.pessoa-av,#pvAv{overflow:hidden}
+.minha-cara{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.cara-previa{width:60px;height:60px;border-radius:20px;display:grid;place-items:center;font-size:1.7rem;
+  background:var(--painel2);flex-shrink:0;overflow:hidden;color:#fff}
+.cara-txt{flex:1;min-width:120px}
+.cara-txt b{display:block;font-size:.92rem}
+.cara-txt small{font-size:.76rem;color:var(--texto2);line-height:1.45}
+.cara-bts{display:flex;gap:7px;width:100%}
+.cara-bts .bt{flex:1;padding:11px}
 .pv-novas{background:#ef4444;color:#fff;font-size:.68rem;font-weight:900;min-width:20px;height:20px;
   border-radius:10px;display:grid;place-items:center;padding:0 5px;margin-left:auto;flex-shrink:0}
 
@@ -342,9 +368,9 @@ h2{font-size:1.14rem;margin-bottom:5px}
   <div class="linha">
     <div class="topo-txt">
       <h1>🎒 <span id="turmaNome">Fala, Turma!</span></h1>
-      <div class="eu-chip escondido" id="euChip">
-        <span class="eu-av" id="euAv">🦊</span><span id="euSou"></span>
-      </div>
+      <button class="eu-chip escondido" id="euChip" title="Trocar a minha foto">
+        <span class="eu-av" id="euAv">🦊</span><span id="euSou"></span><span class="eu-lapis">✏️</span>
+      </button>
       <div class="agora" id="agora"></div>
       <div class="net ligando escondido" id="chipNuvem"><span class="bolinha"></span><span>…</span></div>
     </div>
@@ -426,6 +452,7 @@ h2{font-size:1.14rem;margin-bottom:5px}
       <button data-ir="privadas">💬 Particular</button>
       <button data-ir="transporte">🚌 Como vou</button>
       <button data-ir="tempo">🌧️ Na saída</button>
+      <button data-ir="instalar">📲 Pôr no celular</button>
     </div>
     <div class="filtros">
       <button class="filtro on" data-filtro="tudo">📋 Tudo <i>0</i></button>
@@ -454,6 +481,17 @@ h2{font-size:1.14rem;margin-bottom:5px}
       <small>Código da turma</small>
       <div class="codigo" id="codigoTurma">--------</div>
       <small>dá pra ditar em voz alta pra quem não recebeu o link</small>
+    </div>
+    <div class="cartao minha-cara">
+      <div class="cara-previa" id="caraPrevia">🦊</div>
+      <div class="cara-txt">
+        <b>A tua foto</b>
+        <small>Só a turma vê. Vai embaralhada, igual aos recados.</small>
+      </div>
+      <div class="cara-bts">
+        <button class="bt ok" id="btPorCara">🙂 Pôr foto</button>
+        <button class="bt escondido" id="btTirarCara">Tirar</button>
+      </div>
     </div>
     <div class="gente" id="listaGente"></div>
     <p class="dica" style="margin-top:14px">Aparece quem já escreveu ou votou alguma coisa.
@@ -519,6 +557,57 @@ h2{font-size:1.14rem;margin-bottom:5px}
     <button class="bt ok grande" id="btMandar">📤 Mandar pra turma</button>
   </section>
 
+  <!-- ============ 📲 PÔR NO CELULAR ============ -->
+  <section class="tela" id="tela-instalar">
+    <button class="bt fraco" id="btVoltarInst">← Voltar pro mural</button>
+    <h2 style="margin:10px 0 4px">📲 Pôr o Fala, Turma no aparelho</h2>
+    <p class="dica" style="margin-bottom:14px">Ele vira um app de verdade: ícone na tela,
+    abre sem a barra do navegador e funciona mesmo com a internet ruim da escola.</p>
+
+    <button class="bt ok grande escondido" id="btInstalarJa" style="margin-bottom:14px">📲 Instalar agora</button>
+    <div class="cartao escondido" id="jaInstalado">
+      <b>✅ Já está instalado!</b>
+      <p class="dica" style="margin-top:6px">Tu está usando ele como app agora.</p>
+    </div>
+
+    <div class="passo">
+      <div class="passo-topo"><span class="passo-emoji">🤖</span><b>No Android</b></div>
+      <ol>
+        <li>Abre este site no <b>Chrome</b>.</li>
+        <li>Toca nos <b>três pontinhos ⋮</b> lá em cima.</li>
+        <li>Escolhe <b>"Instalar app"</b> ou <b>"Adicionar à tela inicial"</b>.</li>
+      </ol>
+    </div>
+
+    <div class="passo">
+      <div class="passo-topo"><span class="passo-emoji">🍎</span><b>No iPhone e iPad</b></div>
+      <ol>
+        <li>Abre este site no <b>Safari</b> — no iPhone só funciona pelo Safari.</li>
+        <li>Toca no botão de <b>compartilhar</b>: o quadradinho com a <b>seta pra cima</b>, embaixo.</li>
+        <li>Desce a lista e escolhe <b>"Adicionar à Tela de Início"</b>.</li>
+      </ol>
+    </div>
+
+    <div class="passo">
+      <div class="passo-topo"><span class="passo-emoji">💻</span><b>No computador</b></div>
+      <ol>
+        <li>No Chrome ou no Edge aparece um <b>ícone de instalar</b> na barra de endereço.</li>
+        <li>Se não aparecer, é pelos <b>três pontinhos ⋮ → Instalar</b>.</li>
+      </ol>
+    </div>
+
+    <div class="cartao aviso-loja">
+      <b>🏪 E na Play Store / App Store?</b>
+      <p class="dica" style="margin-top:7px">Pra pôr nas lojas precisa de <b>conta de
+      desenvolvedor paga</b> (a do Google se paga uma vez, a da Apple é todo ano), de um
+      <b>Mac</b> no caso da Apple, e de <b>documento de adulto</b>. Isso é conversa pro teu
+      pai ou pra tua mãe.</p>
+      <p class="dica" style="margin-top:7px">Do jeito de cima o app fica <b>igualzinho</b> na
+      tela do celular: mesmo ícone, mesmo nome, abre sozinho e funciona sem internet. A
+      diferença é que ninguém precisa procurar na loja — é só o link.</p>
+    </div>
+  </section>
+
   <!-- ============ 📷 ÁLBUM ============ -->
   <section class="tela" id="tela-album">
     <button class="bt fraco" id="btVoltarAlbum">← Voltar pro mural</button>
@@ -578,7 +667,8 @@ h2{font-size:1.14rem;margin-bottom:5px}
 
 <button class="escrever escondido" id="btEscrever">✏️ Escrever</button>
 <div class="aviso-flutua" id="aviso"></div>
-<script src="turma-mais.js?v=3"></script>
-<script src="turma.js?v=3"></script>
+<script src="turma-mais.js?v=4"></script>
+<script src="turma-cara.js?v=4"></script>
+<script src="turma.js?v=4"></script>
 </body>
 </html>
