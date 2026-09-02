@@ -86,6 +86,35 @@ podem passar batido: **prova amanhã** e **aniversário desta semana**.
 | 📍 **Onde é o encontro** | O lugar vai junto do recado e abre no mapa |
 | 🚨 **Recado ruim** | Com 2 avisos ele some da frente de todo mundo (dá pra abrir mesmo assim) |
 | 🙂 **Foto de perfil** | Cada um põe a sua; quem não põe fica com o bichinho |
+| 🚨 **Gente, tô em perigo** | Alarme, localização e aviso no celular da turma |
+
+### 🚨 O botão de perigo
+
+**O que ele é:** avisa a TURMA. Alarme alto, notificação no celular, faixa vermelha na
+frente de tudo, e **a localização de quem pediu** (precisão de ~1 metro, atualizada a cada
+25 s enquanto o pedido está de pé).
+
+**O que ele NÃO é**, e isto está escrito na tela em cima do botão: ele **não chama a
+polícia** e não avisa a mãe de ninguém. Os colegas podem estar no silencioso, sem bateria
+ou sem celular — este app inteiro existe assumindo isso. Por isso **190 / 192 / 193 vêm
+antes do botão**, não depois, e "grita por um adulto perto de ti" é a primeira frase.
+
+Decisões que valem explicar:
+
+- **São dois toques pra mandar** (o botão vermelho e depois o "MANDAR AGORA"). Um toque só
+  dispararia no bolso, e um alarme que grita à toa é um alarme que todo mundo aprende a
+  ignorar — aí no dia que for de verdade, ninguém corre. Pelo mesmo motivo o botão pulsa
+  o *brilho*, não o tamanho: um botão que se mexe é difícil de acertar com a mão tremendo.
+- **O aviso sai antes do GPS.** Um GPS lento seguraria o socorro inteiro; a localização
+  entra na batida seguinte.
+- **Quem toca em "🏃 Tô indo" leva um recado antes de sair:** avisa um adulto agora, não vá
+  sozinho, e liga 190/192 se for grave. Chegar junto é bom; chegar junto *com um adulto* é
+  melhor.
+- **O pedido vence sozinho em 2 horas**, e "💚 Já tô bem" para o alarme de todo mundo. Não
+  é um rastreador: a localização só sai enquanto o pedido está de pé.
+- **No mural, socorro não é um recado**: não dá pra reagir com 😂, fixar nem denunciar a
+  emergência de alguém. Ele mostra só o estado — pedindo agora, já está bem, ou venceu.
+
 
 ### 🙂 A foto de perfil
 
@@ -161,6 +190,7 @@ mostra o **código de 8 letras**, pra ditar em voz alta pra quem não recebeu o 
 | `turma.js` | Entrar, o mural, a nuvem, a criptografia e a impressão |
 | `turma-mais.js` | Foto do quadro, álbum, conversa particular, transporte, tempo e aniversários |
 | `turma-cara.js` | A foto de perfil e o "pôr no celular" |
+| `turma-socorro.js` | 🚨 o botão de perigo, a sirene e a localização ao vivo |
 | `manifest.webmanifest` + `icone-*.png` | O que faz virar app instalável |
 | `versao.json` | Qual versão está no ar, pro app se atualizar sozinho |
 | `consertar.html` | Página de socorro: limpa o cache preso, sem apagar os recados |
@@ -190,7 +220,7 @@ Mac no caso da Apple, e de documento de adulto.
 
 ## O que foi testado de verdade
 
-202 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
+226 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
 localização simulada: recado chegando de um aparelho no outro, reação, resposta, passeio,
 vaquinha, conversa particular, denúncia, modo emprestado, o mural impresso, a foto de
 perfil viajando de um aparelho pro outro, a escola viajando dentro do convite e o
