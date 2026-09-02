@@ -37,25 +37,36 @@ function escolherFoto(){
   inp.click();
 }
 
-function encolherFoto(arq){
+function encolherFoto(arq, lado, peso, quadrada){
+  lado = lado || LADO_FOTO; peso = peso || PESO_FOTO;
   return new Promise((res, rej) => {
     const leitor = new FileReader();
     leitor.onload = () => {
       const img = new Image();
       img.onload = () => {
-        let { width:l, height:a } = img;
-        const escala = Math.min(1, LADO_FOTO / Math.max(l, a));
-        l = Math.round(l * escala); a = Math.round(a * escala);
         const tela = document.createElement('canvas');
-        tela.width = l; tela.height = a;
-        tela.getContext('2d').drawImage(img, 0, 0, l, a);
+        const ctx = tela.getContext('2d');
+        if(quadrada){
+          /* foto de perfil é redonda na tela: corta o meio num quadrado,
+             senão a pessoa fica esticada ou com meia cabeça de fora */
+          const m = Math.min(img.width, img.height);
+          tela.width = tela.height = Math.min(lado, m);
+          ctx.drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m,
+                        0, 0, tela.width, tela.height);
+        }else{
+          let { width:l, height:a } = img;
+          const escala = Math.min(1, lado / Math.max(l, a));
+          l = Math.round(l * escala); a = Math.round(a * escala);
+          tela.width = l; tela.height = a;
+          ctx.drawImage(img, 0, 0, l, a);
+        }
         /* vai baixando a qualidade até caber: melhor uma foto um pouco
            mais feia do que uma foto que não chega em ninguém */
         let q = 0.82, saida = tela.toDataURL('image/jpeg', q);
-        while(saida.length > PESO_FOTO && q > 0.3){
+        while(saida.length > peso && q > 0.3){
           q -= 0.12; saida = tela.toDataURL('image/jpeg', q);
         }
-        if(saida.length > PESO_FOTO) return rej(new Error('grande demais'));
+        if(saida.length > peso) return rej(new Error('grande demais'));
         res(saida);
       };
       img.onerror = rej; img.src = leitor.result;
@@ -74,7 +85,7 @@ function abrirAlbum(){
   $('#album').innerHTML = fotos.length ? fotos.map(a => `
     <button class="alb-foto" data-albfoto="${a.id}">
       <img src="${a.foto}" alt="" loading="lazy">
-      <span class="alb-quem">${bichoDe(a.de)} ${escapar(a.de)} · ${diaTexto(a.ts)}</span>
+      <span class="alb-quem">${escapar(a.de)} · ${diaTexto(a.ts)}</span>
     </button>`).join('')
     : `<div class="vazio"><div class="emojao">📷</div><h3>Álbum vazio</h3>
        <p>Manda uma foto no mural — do quadro, do passeio, da festa — e ela aparece aqui.</p></div>`;
@@ -95,8 +106,17 @@ let comQuem = null;
 let relogioPrivado = null;
 
 const parDe = (a, b) => [a, b].sort().join('~').replace(/[.#$\[\]\/]/g, '_').slice(0, 90);
-const saneia = n => String(n || '').replace(/[.#$\[\]\/]/g, '_');
-const noPar = (par, nome) => par.split('~').includes(saneia(nome));
+/* O NOME NÃO PODE SER A CHAVE NO BANCO.
+   Se a pasta se chamasse "Ana~Jojo", o banco não leria a conversa,
+   mas leria quem conversa com quem — e isso já é informação demais.
+   Então a chave é um embaralhado do segredo da turma + os nomes:
+   quem tem o convite calcula igual, quem não tem só vê letra solta. */
+const emHex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+async function chaveDoBanco(...partes){
+  const cru = (dados.turma.segredo || dados.turma.codigo) + '|' + partes.join('|');
+  return emHex(await crypto.subtle.digest('SHA-256', bytes(cru))).slice(0, 32);
+}
+const chavePar = (a, b) => chaveDoBanco('par', ...[a, b].sort());
 
 /* quantas mensagens novas de alguém ainda não foram lidas */
 function naoLidas(par){
@@ -119,10 +139,7 @@ function abrirPrivadas(){
     Object.keys(a.reacoes || {}).forEach(n => gente.add(n));
     Object.keys(a.vi || {}).forEach(n => gente.add(n));
   });
-  Object.entries(dados.privadas || {}).forEach(([par, msgs]) => {
-    if(!noPar(par, dados.eu)) return;
-    msgs.forEach(m => gente.add(m.de));
-  });
+  Object.values(dados.privadas || {}).forEach(msgs => msgs.forEach(m => gente.add(m.de)));
   gente.delete(dados.eu);
   const lista = [...gente].sort((a, b) =>
     naoLidas(parDe(dados.eu, b)) - naoLidas(parDe(dados.eu, a)) || a.localeCompare(b));
@@ -132,7 +149,7 @@ function abrirPrivadas(){
     const novas = naoLidas(parDe(dados.eu, n));
     return `
       <button class="pv-pessoa" data-conversar="${escapar(n)}">
-        <span class="pessoa-av" style="background:${corDe(n)};margin:0">${bichoDe(n)}</span>
+        <span class="pessoa-av" style="background:${corDe(n)};margin:0">${caraDe(n)}</span>
         <div class="pv-txt"><b>${escapar(n)}</b>
           <small>${ultima ? escapar(ultima.txt).slice(0,42) : 'começar a conversar'}</small></div>
         ${novas ? `<span class="pv-novas">${novas}</span>` : ''}
@@ -148,7 +165,7 @@ function abrirPrivadas(){
 function abrirConversa(nome){
   comQuem = nome;
   $('#pvNome').textContent = nome;
-  $('#pvAv').textContent = bichoDe(nome);
+  $('#pvAv').innerHTML = caraDe(nome);
   $('#pvAv').style.background = corDe(nome);
   dados.pvVisto = dados.pvVisto || {};
   dados.pvVisto[parDe(dados.eu, nome)] = Date.now();
@@ -185,7 +202,7 @@ async function mandarPrivada(){
   campo.value = '';
   salvar(); desenharConversa();
   try{
-    await fetch(`${endereco()}/privado/${par}/${m.id}.json`, {
+    await fetch(`${endereco()}/privado/${await chavePar(dados.eu, comQuem)}/${m.id}.json`, {
       method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(await embaralhar(m))
     });
   }catch(e){ aviso('⏳ Sem internet — vai sair quando voltar', 5000); }
@@ -199,23 +216,43 @@ async function puxarTodasPrivadas(){
   try{
     const r = await fetch(`${endereco()}/privado.json?shallow=true`);
     if(!r.ok) return;
-    const pares = await r.json();
-    if(!pares) return;
-    const meus = Object.keys(pares).filter(p => noPar(p, dados.eu)).slice(0, 40);
+    const existem = await r.json();
+    if(!existem) return;
+    /* pra cada pessoa que eu conheço da turma, calculo qual SERIA a
+       chave da nossa conversa. Se ela existe no banco, é minha. As
+       outras eu nem sei de quem são — e é isso que a gente quer. */
     let mudou = false;
-    for(const par of meus) if(await puxarUmPar(par)) mudou = true;
+    for(const n of genteDaTurma()){
+      const k = await chavePar(dados.eu, n);
+      if(!existem[k]) continue;
+      if(await puxarUmPar(k, n)) mudou = true;
+    }
     if(mudou){ salvar(); if(comQuem) desenharConversa(); }
     marcarNaoLidas();
     if(document.getElementById('tela-privadas').classList.contains('on')) abrirPrivadas();
   }catch(e){}
 }
 
+/* quem eu já vi aparecer na turma */
+function genteDaTurma(){
+  const g = new Set();
+  dados.avisos.forEach(a => {
+    if(a.de) g.add(a.de);
+    [a.vai, a.reacoes, a.vi, a.votos, a.deram, a.jeitos].forEach(o =>
+      Object.keys(o || {}).forEach(n => g.add(n)));
+  });
+  Object.keys(dados.caras || {}).forEach(n => g.add(n));
+  g.delete(dados.eu);
+  return [...g];
+}
+
 /* traz uma conversa só; devolve true se veio coisa nova */
-async function puxarUmPar(par){
-  const r = await fetch(`${endereco()}/privado/${par}.json?orderBy="$key"&limitToLast=80`);
+async function puxarUmPar(chave, comEsse){
+  const r = await fetch(`${endereco()}/privado/${chave}.json?orderBy="$key"&limitToLast=80`);
   if(!r.ok) return false;
   const tudo = await r.json();
   if(!tudo) return false;
+  const par = parDe(dados.eu, comEsse);       /* aqui no aparelho a chave é o nome mesmo */
   dados.privadas = dados.privadas || {};
   const lista = dados.privadas[par] = dados.privadas[par] || [];
   let mudou = false;
@@ -223,7 +260,7 @@ async function puxarUmPar(par){
     const m = await desembaralhar(pacote);
     if(!m || typeof m.txt !== 'string' || typeof m.de !== 'string' || typeof m.ts !== 'number') continue;
     if(!m.txt.trim() || m.txt.length > 600 || m.de.length > 30) continue;
-    if(!noPar(par, m.de)) continue;                     /* só quem é da conversa */
+    if(m.de !== dados.eu && m.de !== comEsse) continue;   /* só quem é da conversa */
     if(lista.some(x => x.id === id)) continue;
     lista.push({ id, de:m.de, txt:m.txt, ts:m.ts }); mudou = true;
   }
@@ -232,23 +269,11 @@ async function puxarUmPar(par){
 
 async function puxarPrivadas(){
   if(!comQuem || !naTurma() || !navigator.onLine) return;
-  const par = parDe(dados.eu, comQuem);
+  const quem = comQuem;
   try{
-    const r = await fetch(`${endereco()}/privado/${par}.json?orderBy="$key"&limitToLast=80`);
-    if(!r.ok) return;
-    const tudo = await r.json();
-    if(!tudo) return;
-    dados.privadas = dados.privadas || {};
-    const lista = dados.privadas[par] = dados.privadas[par] || [];
-    let mudou = false;
-    for(const [id, pacote] of Object.entries(tudo)){
-      const m = await desembaralhar(pacote);
-      if(!m || typeof m.txt !== 'string' || typeof m.de !== 'string' || typeof m.ts !== 'number') continue;
-      if(m.txt.length > 600 || (m.de !== dados.eu && m.de !== comQuem)) continue;
-      if(lista.some(x => x.id === id)) continue;
-      lista.push({ id, de:m.de, txt:m.txt, ts:m.ts }); mudou = true;
+    if(await puxarUmPar(await chavePar(dados.eu, quem), quem)){
+      salvar(); if(comQuem === quem) desenharConversa();
     }
-    if(mudou){ salvar(); desenharConversa(); }
   }catch(e){}
 }
 
