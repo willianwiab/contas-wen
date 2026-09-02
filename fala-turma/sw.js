@@ -1,8 +1,8 @@
 /* Abre sem internet — importante pra quem só consegue olhar o mural
    no computador da escola, com a rede ruim. Pedido pra fora do site
    passa direto, e um arquivo que falhou nunca vira a página. */
-const CACHE = 'fala-turma-v5';
-const ARQUIVOS = ['./', './index.html', './turma.js?v=5', './turma-mais.js?v=5', './turma-cara.js?v=5',
+const CACHE = 'fala-turma-v6';
+const ARQUIVOS = ['./', './index.html', './turma.js?v=6', './turma-mais.js?v=6', './turma-cara.js?v=6',
   './manifest.webmanifest', './icone.svg', './icone-192.png', './icone-512.png',
   './icone-mascara.png', './icone-180.png'];
 
@@ -18,6 +18,9 @@ self.addEventListener('activate', ev => {
 self.addEventListener('fetch', ev => {
   if(ev.request.method !== 'GET') return;
   if(new URL(ev.request.url).origin !== self.location.origin) return;
+  /* o aviso de versão nova tem que vir do servidor SEMPRE, senão o
+     app pergunta ao próprio cache se tem versão nova e nunca sai do lugar */
+  if(new URL(ev.request.url).pathname.endsWith('/versao.json')) return;
   ev.respondWith(
     fetch(ev.request)
       .then(r => { const c = r.clone(); caches.open(CACHE).then(x => x.put(ev.request, c)).catch(() => {}); return r; })

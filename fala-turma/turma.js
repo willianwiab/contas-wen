@@ -16,7 +16,7 @@
      nenhum receber os recados no papel.
    ========================================================= */
 
-const VERSAO = '2.2.0';
+const VERSAO = '2.3.0';
 const CHAVE = 'fala-turma:v1';
 
 const CORES = ['#7c3aed','#2563eb','#ec4899','#f59e0b','#16a34a','#0ea5e9','#ef4444','#8b5cf6','#14b8a6','#f97316'];
@@ -806,7 +806,11 @@ $('#btVoltarConversa').addEventListener('click', fecharConversa);
 $('#btPvMandar').addEventListener('click', mandarPrivada);
 $('#pvEntrada').addEventListener('keydown', e => { if(e.key === 'Enter') mandarPrivada(); });
 $('#horaSaida').addEventListener('change', () => {
-  dados.horaSaida = $('#horaSaida').value; dados.tempo = null; salvar(); verOTempo();
+  dados.horaSaida = $('#horaSaida').value;
+  /* trocar a hora só derruba o que foi visto por hora — as listas
+     de semana e mês são do dia inteiro e continuam valendo */
+  Object.keys(dados.tempo || {}).forEach(k => { if(k.includes('|')) delete dados.tempo[k]; });
+  salvar(); verOTempo();
 });
 
 /* ---------- ⏰ que dia é hoje e que horas são ---------- */
@@ -861,6 +865,48 @@ comecar();
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
+
+/* =========================================================
+   🔄 O APP SE CONSERTA SOZINHO
+
+   O celular guarda o site pra abrir sem internet — só que aí
+   ele às vezes fica preso numa versão velha e a pessoa não vê
+   as coisas novas de jeito nenhum.
+
+   Então: a gente pergunta ao servidor (sem deixar o navegador
+   trapacear com o cache) qual é a versão que está no ar. Se for
+   diferente da que está rodando aqui, joga fora tudo que estava
+   guardado e recarrega — UMA VEZ SÓ, senão vira um pião.
+   ========================================================= */
+async function verSeTemVersaoNova(){
+  if(!location.protocol.startsWith('http')) return;
+  try{
+    const r = await fetch('./versao.json?' + Date.now(), { cache:'no-store' });
+    if(!r.ok) return;
+    const nova = (await r.json()).v;
+    if(!nova || nova === VERSAO) return;
+
+    /* o pião: se já tentei consertar pra esta mesma versão e ainda
+       assim não pegou, paro e aviso, em vez de recarregar pra sempre */
+    const jaTentei = sessionStorage.getItem('fala-turma:consertando');
+    if(jaTentei === nova){
+      aviso('⚠️ Tem uma versão nova (' + nova + ') que não quer descer. ' +
+            'Fecha o app de vez e abre de novo.', 12000);
+      return;
+    }
+    sessionStorage.setItem('fala-turma:consertando', nova);
+    aviso('🔄 Chegou a versão ' + nova + '! Atualizando...', 6000);
+
+    if(window.caches) for(const nome of await caches.keys()) await caches.delete(nome);
+    if(navigator.serviceWorker){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for(const reg of regs) await reg.unregister();
+    }
+    setTimeout(() => location.reload(), 800);
+  }catch(e){}
+}
+setTimeout(verSeTemVersaoNova, 1500);
+window.addEventListener('online', verSeTemVersaoNova);
 
 /* =========================================================
    AS COISAS QUE VÃO EM CIMA DE QUALQUER RECADO

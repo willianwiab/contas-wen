@@ -81,7 +81,7 @@ podem passar batido: **prova amanhã** e **aniversário desta semana**.
 | 💬 **Conversa particular** | Só entre duas pessoas — com o aviso honesto abaixo |
 | 🎉 **Passeio** | Quem vai / talvez / não vai, e **quem leva o quê** |
 | 💰 **Vaquinha** | Barra de quanto já juntou. O dinheiro **não passa pelo app** |
-| 🌧️ **Vai chover na saída?** | Open-Meteo, de graça e sem chave nenhuma |
+| 🌧️ **Vai chover na saída?** | Hoje, amanhã, depois, 1 semana e 1 mês |
 | 🚌 **Como cada um vai** | Ônibus, carro, a pé, bici — e quem precisa/pode dar carona |
 | 📍 **Onde é o encontro** | O lugar vai junto do recado e abre no mapa |
 | 🚨 **Recado ruim** | Com 2 avisos ele some da frente de todo mundo (dá pra abrir mesmo assim) |
@@ -99,6 +99,28 @@ ou de 5 em 5 minutos.
 O que chega de outro aparelho passa por `caraConfere()`: só `data:image/png|jpeg|webp` em
 base64, até 60 000 letras, com dono de nome válido. `javascript:`, HTML e `data:text/html`
 são recusados.
+
+### 🌧️ O tempo, e até onde dá pra saber
+
+Cinco botões: **hoje, amanhã, depois de amanhã, 1 semana e 1 mês**. Nos três primeiros vale
+a **hora que tu sai da escola**; nos dois últimos é dia inteiro, então o campo da hora some.
+
+**"1 mês" não entrega um mês** — e o app fala isso na cara: o Open-Meteo só enxerga
+**16 dias**, e depois de uns 7 já é mais chute do que conta. Melhor prometer 16 dias de
+verdade do que 30 dias inventados.
+
+Cada resposta fica guardada **1 hora**: o tempo não muda de minuto em minuto e a internet
+da escola agradece. Trocar a hora da saída só derruba o que era por hora — a semana e o
+mês continuam valendo.
+
+### 🔄 O app se conserta sozinho
+
+O celular guarda o site pra abrir sem internet, e às vezes fica **preso numa versão velha**
+— a pessoa não vê as coisas novas de jeito nenhum. Então o app pergunta ao servidor
+(`versao.json`, com `cache: no-store`, e o service worker é proibido de guardar esse
+arquivo) qual versão está no ar. Se for outra, joga fora todo o cache, desregistra o
+service worker e recarrega — **uma vez só**. Se mesmo assim não pegar, ele para e avisa em
+vez de virar um pião de recarga.
 
 ### 💬 O que a conversa particular NÃO é
 
@@ -134,6 +156,7 @@ mostra o **código de 8 letras**, pra ditar em voz alta pra quem não recebeu o 
 | `turma-mais.js` | Foto do quadro, álbum, conversa particular, transporte, tempo e aniversários |
 | `turma-cara.js` | A foto de perfil e o "pôr no celular" |
 | `manifest.webmanifest` + `icone-*.png` | O que faz virar app instalável |
+| `versao.json` | Qual versão está no ar, pro app se atualizar sozinho |
 | `sw.js` | Abrir sem internet — a rede da escola costuma ser ruim |
 
 `turma-mais.js` e `turma-cara.js` carregam **antes** de `turma.js`: o `turma.js` liga os
@@ -160,11 +183,14 @@ Mac no caso da Apple, e de documento de adulto.
 
 ## O que foi testado de verdade
 
-143 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
+185 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
 localização simulada: recado chegando de um aparelho no outro, reação, resposta, passeio,
 vaquinha, conversa particular, denúncia, modo emprestado, o mural impresso, a foto de
 perfil viajando de um aparelho pro outro, a escola viajando dentro do convite e o
 manifesto com todos os ícones respondendo.
+
+> ⚠️ **Ao publicar uma versão nova, mexe no `versao.json` junto.** É por ele que os
+> aparelhos descobrem que precisam se atualizar.
 
 **O que não deu pra testar de verdade:** a caixa onde este app foi feito não alcança o
 `firebaseio.com` nem o `api.open-meteo.com`. O Firebase foi testado contra um de mentira
