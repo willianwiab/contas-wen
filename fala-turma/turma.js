@@ -16,7 +16,7 @@
      nenhum receber os recados no papel.
    ========================================================= */
 
-const VERSAO = '2.1.0';
+const VERSAO = '2.2.0';
 const CHAVE = 'fala-turma:v1';
 
 const CORES = ['#7c3aed','#2563eb','#ec4899','#f59e0b','#16a34a','#0ea5e9','#ef4444','#8b5cf6','#14b8a6','#f97316'];
@@ -273,6 +273,8 @@ function criarTurma(){
   dados.turma = {
     codigo: codigoNovo(),
     nome: nome.slice(0,40),
+    escola: ($('#novaEscola').value || '').trim().slice(0,60),
+    prof: ($('#novaProf').value || '').trim().slice(0,40),
     segredo: paraB64(crypto.getRandomValues(new Uint8Array(24)))
   };
   dados.eu = meu.slice(0,30);
@@ -296,19 +298,23 @@ function lerConvite(txt){
     while(b64.length % 4) b64 += '=';
     const o = JSON.parse(decodeURIComponent(escape(atob(b64))));
     if(!o || typeof o.c !== 'string' || !o.c || o.c.length > 40) return null;
-    return { codigo: o.c, nome: String(o.n || 'Turma').slice(0,40), segredo: String(o.s || '').slice(0,80) };
+    return { codigo: o.c, nome: String(o.n || 'Turma').slice(0,40),
+             escola: String(o.e || '').slice(0,60), prof: String(o.p || '').slice(0,40),
+             segredo: String(o.s || '').slice(0,80) };
   }catch(e){ return null; }
 }
 function fazerConvite(){
   const t = dados.turma;
-  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify({ c:t.codigo, n:t.nome, s:t.segredo }))));
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(
+    { c:t.codigo, n:t.nome, e:t.escola || '', p:t.prof || '', s:t.segredo }))));
   return location.origin + location.pathname + '#t=' +
     b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
 
 function mostrarConvite(){
   const link = fazerConvite();
-  const txt = `🎒 Entra na "${dados.turma.nome}"!\nAbre este link no celular ou no computador:\n${link}`;
+  const onde = dados.turma.escola ? ` da ${dados.turma.escola}` : '';
+  const txt = `🎒 Entra na "${dados.turma.nome}"${onde}!\nAbre este link no celular ou no computador:\n${link}`;
   if(navigator.share) navigator.share({ title:'Fala, Turma!', text: txt }).catch(() => copiar(txt));
   else copiar(txt);
 }
@@ -322,6 +328,7 @@ function copiar(txt){
 /* ---------- quem é você (e o modo emprestado) ---------- */
 function pedirONome(turma){
   $('#convTurma').textContent = turma.nome;
+  $('#convEscola').textContent = [turma.escola, turma.prof].filter(Boolean).join(' · ');
   mostrar('quemsou');
   $('#btEntrarTurma').onclick = () => {
     const meu = ($('#meuNome').value || '').trim();
@@ -350,6 +357,10 @@ function sairDaTurma(){
 function desenharTudo(){
   aplicarTema();
   $('#turmaNome').textContent = dados.turma ? dados.turma.nome : 'Fala, Turma!';
+  const linhaEscola = $('#escolaNome');
+  const daEscola = dados.turma ? [dados.turma.escola, dados.turma.prof].filter(Boolean).join(' · ') : '';
+  linhaEscola.textContent = daEscola;
+  linhaEscola.classList.toggle('escondido', !daEscola);
   $('#euChip').classList.toggle('escondido', !dados.eu);
   $('#btGente').classList.toggle('escondido', !naTurma());
   if(dados.eu){
@@ -561,6 +572,30 @@ function comLinks(escapado){
    Não existe lista de membros no banco (ninguém "se cadastra"): a turma
    é quem apareceu no mural. Então a lista nasce de quem escreveu, votou,
    marcou que viu ou deu joinha. */
+/* ---------- 🏫 a ficha da turma ---------- */
+function desenharFicha(){
+  const t = dados.turma || {};
+  $('#fichaEscola').textContent = t.escola || 'Sem escola posta ainda';
+  $('#fichaTurma').textContent = t.nome || '—';
+  $('#fichaProf').textContent = t.prof || '';
+  $('#fichaProfLinha').classList.toggle('escondido', !t.prof);
+}
+
+/* Qualquer um da turma pode arrumar: não tem dono nem professor
+   mandando aqui. O que muda fica só neste aparelho — pra valer
+   pra turma inteira, o jeito é mandar o convite de novo. */
+function arrumarFicha(){
+  if(!dados.turma) return;
+  const escola = prompt('Nome da escola:', dados.turma.escola || '');
+  if(escola === null) return;
+  const prof = prompt('Professor(a) (pode deixar vazio):', dados.turma.prof || '');
+  if(prof === null) return;
+  dados.turma.escola = escola.trim().slice(0,60);
+  dados.turma.prof = prof.trim().slice(0,40);
+  salvar(); desenharTudo(); desenharFicha();
+  aviso('🏫 Arrumado! Manda o convite de novo pra turma ver igual', 6000);
+}
+
 function abrirGente(){
   const conta = {};
   dados.avisos.forEach(a => {
@@ -582,6 +617,7 @@ function abrirGente(){
 
   const gente = Object.entries(conta).sort((a,b) => b[1].recados - a[1].recados || a[0].localeCompare(b[0]));
   $('#codigoTurma').textContent = dados.turma ? dados.turma.codigo : '--------';
+  desenharFicha();
   $('#listaGente').innerHTML = gente.map(([nome, c]) => `
     <div class="pessoa ${nome === dados.eu ? 'sou-eu' : ''}">
       <div class="pessoa-av" style="background:${corDe(nome)}">${caraDe(nome)}</div>
@@ -692,6 +728,8 @@ function imprimirMural(){
   folha.id = 'folha';
   folha.innerHTML = `
     <h1>🎒 ${escapar(dados.turma.nome)}</h1>
+    ${dados.turma.escola ? `<p class="folha-escola">🏫 ${escapar(dados.turma.escola)}${
+      dados.turma.prof ? ` · ${escapar(dados.turma.prof)}` : ''}</p>` : ''}
     <p class="folha-sub">Mural dos últimos 7 dias · impresso ${new Date().toLocaleDateString('pt-BR')}</p>
     ${lista.map(a => {
       const t = TIPOS[a.tipo];
@@ -732,6 +770,7 @@ $('#btConvidar2').addEventListener('click', mostrarConvite);
 $('#euChip').addEventListener('click', trocarMinhaCara);
 $('#btPorCara').addEventListener('click', trocarMinhaCara);
 $('#btTirarCara').addEventListener('click', tirarMinhaCara);
+$('#btArrumarFicha').addEventListener('click', arrumarFicha);
 $('#btGente').addEventListener('click', abrirGente);
 $('#btVoltarGente').addEventListener('click', () => mostrar('mural'));
 $('#btImprimir').addEventListener('click', imprimirMural);
