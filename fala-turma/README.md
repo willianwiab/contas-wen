@@ -16,6 +16,18 @@ foi feito.
 - **🖨️ Imprimir o mural** — pra quem não tem aparelho nenhum, alguém imprime a semana e
   leva no papel. É a razão de este app existir do jeito que existe.
 
+## 🏫 A ficha da turma
+
+Quem cria põe o **nome da escola** e o **professor(a)** junto com o nome da turma. Isso
+**viaja dentro do convite**, então a turma inteira vê a mesma coisa — se ficasse só no
+aparelho de quem criou, cada um veria uma coisa diferente.
+
+Aparece no topo do app, na tela 👥, no texto do convite e **no mural impresso** — que é
+justamente o que chega em quem não tem aparelho. Qualquer um da turma pode arrumar depois
+(não tem dono aqui); pra valer pra todo mundo, é mandar o convite de novo.
+
+Turma sem escola não fica com um traço solto na tela: a linha simplesmente não aparece.
+
 ## Como as pessoas entram
 
 Sem cadastro: quem cria a turma manda um **link de convite**; quem recebe abre, escreve o
@@ -148,10 +160,11 @@ Mac no caso da Apple, e de documento de adulto.
 
 ## O que foi testado de verdade
 
-129 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
+143 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
 localização simulada: recado chegando de um aparelho no outro, reação, resposta, passeio,
 vaquinha, conversa particular, denúncia, modo emprestado, o mural impresso, a foto de
-perfil viajando de um aparelho pro outro e o manifesto com todos os ícones respondendo.
+perfil viajando de um aparelho pro outro, a escola viajando dentro do convite e o
+manifesto com todos os ícones respondendo.
 
 **O que não deu pra testar de verdade:** a caixa onde este app foi feito não alcança o
 `firebaseio.com` nem o `api.open-meteo.com`. O Firebase foi testado contra um de mentira

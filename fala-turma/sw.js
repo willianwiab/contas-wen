@@ -1,8 +1,8 @@
 /* Abre sem internet — importante pra quem só consegue olhar o mural
    no computador da escola, com a rede ruim. Pedido pra fora do site
    passa direto, e um arquivo que falhou nunca vira a página. */
-const CACHE = 'fala-turma-v4';
-const ARQUIVOS = ['./', './index.html', './turma.js?v=4', './turma-mais.js?v=4', './turma-cara.js?v=4',
+const CACHE = 'fala-turma-v5';
+const ARQUIVOS = ['./', './index.html', './turma.js?v=5', './turma-mais.js?v=5', './turma-cara.js?v=5',
   './manifest.webmanifest', './icone.svg', './icone-192.png', './icone-512.png',
   './icone-mascara.png', './icone-180.png'];
 
