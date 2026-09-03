@@ -16,7 +16,7 @@
      nenhum receber os recados no papel.
    ========================================================= */
 
-const VERSAO = '2.4.0';
+const VERSAO = '2.5.0';
 const CHAVE = 'fala-turma:v1';
 
 const CORES = ['#7c3aed','#2563eb','#ec4899','#f59e0b','#16a34a','#0ea5e9','#ef4444','#8b5cf6','#14b8a6','#f97316'];
@@ -33,7 +33,15 @@ const TIPOS = {
   aniver:  { emoji:'🎂', nome:'Aniversário', cor:'#f97316', temData:true },
   /* o socorro não é escolhido na tela de escrever: ele nasce do
      botão vermelho, e por isso fica de fora da lista de tipos */
-  socorro: { emoji:'🚨', nome:'PERIGO', cor:'#dc2626', escondido:true }
+  socorro: { emoji:'🚨', nome:'PERIGO', cor:'#dc2626', escondido:true },
+  perdido: { emoji:'🔎', nome:'Achei/Perdi', cor:'#a16207', temFoto:true },
+  musica:  { emoji:'🎵', nome:'Música',   cor:'#8b5cf6' },
+  obrigado:{ emoji:'💛', nome:'Obrigado', cor:'#eab308', escondido:true },
+  cheguei: { emoji:'🏠', nome:'Cheguei',  cor:'#16a34a', escondido:true },
+  /* estes dois não são recados: são configurações da turma que
+     viajam pelo mural. Nunca aparecem na lista. */
+  sinos:   { emoji:'🔔', nome:'Horários', cor:'#64748b', config:true },
+  ferias:  { emoji:'🏖️', nome:'Férias',  cor:'#0891b2', config:true }
 };
 
 /* quantos dias faltam pra uma data (aaaa-mm-dd) */
@@ -173,6 +181,13 @@ async function desembaralhar(p){
   }catch(e){ return null; }
 }
 
+/* "25:99" tem cara de hora e não é hora nenhuma: conferir só o
+   formato deixaria passar, e depois a contagem daria número maluco */
+function horaVale(h){
+  if(typeof h !== 'string' || !/^\d{2}:\d{2}$/.test(h)) return false;
+  return +h.slice(0,2) <= 23 && +h.slice(3,5) <= 59;
+}
+
 /* o que chega foi escrito por outro aparelho: confere antes de usar */
 function avisoConfere(a){
   if(!a || typeof a !== 'object' || Array.isArray(a)) return false;
@@ -197,6 +212,12 @@ function avisoConfere(a){
   if(a.vou !== undefined && (typeof a.vou !== 'object' || Array.isArray(a.vou) ||
      Object.keys(a.vou).length > 60)) return false;
   if(a.fim !== undefined && (typeof a.fim !== 'number' || !isFinite(a.fim))) return false;
+  if(a.pra !== undefined && (typeof a.pra !== 'string' || a.pra.length > 30)) return false;
+  if(a.dono !== undefined && (typeof a.dono !== 'string' || a.dono.length > 30)) return false;
+  if(a.sinos !== undefined && (!Array.isArray(a.sinos) || a.sinos.length > 12 ||
+     a.sinos.some(x => !x || typeof x.nome !== 'string' || !x.nome.trim() || x.nome.length > 20 ||
+       !horaVale(x.hora)))) return false;
+  if(a.desde !== undefined && (typeof a.desde !== 'number' || !isFinite(a.desde))) return false;
   return true;
 }
 
@@ -259,6 +280,7 @@ function marcarNuvem(estado){
    ENTRAR NA TURMA
    ========================================================= */
 function mostrar(qual){
+  if(qual !== 'mural') pararDeLer();      /* a voz não pode continuar em outra tela */
   document.querySelectorAll('.tela').forEach(t => t.classList.toggle('on', t.id === 'tela-' + qual));
   /* o ✏️ flutuante só faz sentido em cima do mural */
   $('#btEscrever').classList.toggle('escondido', qual !== 'mural');
@@ -385,14 +407,17 @@ function desenharMural(){
   const caixa = $('#mural');
   if(!caixa) return;
   const lista = dados.avisos
+    .filter(a => !(TIPOS[a.tipo] || {}).config)          /* horários e férias não são recados */
     .filter(a => filtro === 'tudo' || a.tipo === filtro)
+    .filter(casaComAProcura)
     .sort((a,b) => (b.fixado ? 1 : 0) - (a.fixado ? 1 : 0) || b.ts - a.ts);
 
   /* cada filtro mostra quantos tem: sem isso a pessoa toca num filtro
      vazio sem saber, e parece que o app perdeu os recados */
   document.querySelectorAll('[data-filtro]').forEach(b => {
     const f = b.dataset.filtro;
-    const n = f === 'tudo' ? dados.avisos.length : dados.avisos.filter(a => a.tipo === f).length;
+    const contaveis = dados.avisos.filter(a => !(TIPOS[a.tipo] || {}).config);
+    const n = f === 'tudo' ? contaveis.length : contaveis.filter(a => a.tipo === f).length;
     b.classList.toggle('on', f === filtro);
     b.classList.toggle('vazio-f', n === 0);
     const conta = b.querySelector('i');
@@ -403,8 +428,10 @@ function desenharMural(){
     caixa.innerHTML = `
       <div class="vazio">
         <div class="emojao">🎒</div>
-        <h3>${filtro === 'tudo' ? 'Mural vazio' : 'Nada disso ainda'}</h3>
-        <p>${filtro === 'tudo'
+        <h3>${procurando ? 'Não achei nada' : filtro === 'tudo' ? 'Mural vazio' : 'Nada disso ainda'}</h3>
+        <p>${procurando
+          ? `Nenhum recado com "${escapar(procurando)}". Tenta outra palavra.`
+          : filtro === 'tudo'
           ? 'Escreve o primeiro recado aí embaixo. Todo mundo da turma vai ver.'
           : 'Muda o filtro lá em cima pra ver o resto.'}</p>
       </div>`;
@@ -473,10 +500,16 @@ function desenharMural(){
           </div>` : ''}
         ${a.data && !t.contagem ? `<div class="rec-quando">📅 ${dataBonita(a.data)} · ${faltaTexto(dias)}</div>` : ''}
         ${a.quando ? `<div class="rec-quando">📅 ${escapar(a.quando)}</div>` : ''}
+        ${a.tipo === 'obrigado' ? `<div class="rec-pra">💛 pra <b>${escapar(a.pra || '')}</b></div>` : ''}
         <div class="rec-txt">${comLinks(escapar(a.txt))}</div>
-        ${a.foto ? `<img class="rec-foto" src="${a.foto}" alt="foto do quadro" loading="lazy" data-foto="${a.id}">` : ''}
+        ${a.foto ? (modoEconomia()
+          ? `<button class="rec-mapa" data-abrirfoto="${a.id}">📷 Ver a foto (modo internet ruim)</button>`
+          : `<img class="rec-foto" src="${a.foto}" alt="foto do quadro" loading="lazy" data-foto="${a.id}">`) : ''}
         ${a.lugar ? `<a class="rec-mapa" target="_blank" rel="noopener"
            href="https://www.openstreetmap.org/?mlat=${a.lugar.lat}&mlon=${a.lugar.lon}#map=17/${a.lugar.lat}/${a.lugar.lon}">📍 Ver onde é no mapa</a>` : ''}
+        ${a.tipo === 'perdido' ? balaoPerdido(a) : ''}
+        ${a.tipo === 'musica' ? balaoMusica(a) : ''}
+        <div class="rec-trad" id="trad-${a.id}"></div>
         ${t.temQuemVai ? balaoQuemVai(a) : ''}
         ${t.temAlvo ? balaoVaquinha(a) : ''}
         ${a.ops && a.ops.length ? `
@@ -498,6 +531,9 @@ function desenharMural(){
         <div class="rec-pe">
           <button class="rec-bt" data-reagir="${a.id}">😀</button>
           <button class="rec-bt" data-responder="${a.id}">↩️</button>
+          <button class="rec-bt ${lendoAgora === a.id ? 'on' : ''}" data-ler="${a.id}"
+            title="Ler em voz alta">${lendoAgora === a.id ? '⏸️' : '🔊'}</button>
+          <button class="rec-bt" data-traduzir="${a.id}" title="Traduzir">🌐</button>
           ${t.temFeito ? `<button class="rec-bt ${feito ? 'on' : ''}" data-feito="${a.id}">${
             feito ? '✅ já fiz' : '⬜ já fiz'}</button>` : ''}
           <button class="rec-bt" data-vi="${a.id}">${(a.vi || {})[dados.eu] ? '👀 vi' : '👀 vi?'}${
@@ -518,6 +554,14 @@ function desenharMural(){
   caixa.querySelectorAll('[data-emoji]').forEach(b => b.addEventListener('click', () => {
     const [id, e] = b.dataset.emoji.split('|'); reagir(id, e);
   }));
+  caixa.querySelectorAll('[data-ler]').forEach(b =>
+    b.addEventListener('click', () => lerEmVozAlta(b.dataset.ler)));
+  caixa.querySelectorAll('[data-traduzir]').forEach(b =>
+    b.addEventListener('click', () => traduzir(b.dataset.traduzir)));
+  caixa.querySelectorAll('[data-emeu]').forEach(b =>
+    b.addEventListener('click', () => ehMeu(b.dataset.emeu)));
+  caixa.querySelectorAll('[data-abrirfoto]').forEach(b =>
+    b.addEventListener('click', () => verFotoGrande(b.dataset.abrirfoto)));
   caixa.querySelectorAll('[data-responder]').forEach(b =>
     b.addEventListener('click', () => responderA(b.dataset.responder)));
   caixa.querySelectorAll('[data-feito]').forEach(b =>
@@ -648,14 +692,20 @@ function abrirGente(){
   if(dados.eu) conta[dados.eu] = conta[dados.eu] || { recados:0, votos:0, vistos:0, ultimo:0 };
 
   const gente = Object.entries(conta).sort((a,b) => b[1].recados - a[1].recados || a[0].localeCompare(b[0]));
+  const chegaram = quemChegou();
   $('#codigoTurma').textContent = dados.turma ? dados.turma.codigo : '--------';
   desenharFicha();
   $('#listaGente').innerHTML = gente.map(([nome, c]) => `
     <div class="pessoa ${nome === dados.eu ? 'sou-eu' : ''}">
       <div class="pessoa-av" style="background:${corDe(nome)}">${caraDe(nome)}</div>
       <b>${escapar(nome)}${nome === dados.eu ? ' (tu)' : ''}</b>
-      <small>${c.recados ? c.recados + ' recado' + (c.recados > 1 ? 's' : '') : 'só olhando'}</small>
+      <small>${c.recados ? c.recados + ' recado' + (c.recados > 1 ? 's' : '') : 'só olhando'}${
+        estrelasDe(nome) ? ' · 💛 ' + estrelasDe(nome) : ''}${
+        chegaram[nome] ? ' · 🏠 chegou ' + hora(chegaram[nome]) : ''}</small>
+      <button class="rec-bt" data-obrigado="${escapar(nome)}" title="Dizer obrigado">💛</button>
     </div>`).join('');
+  $('#listaGente').querySelectorAll('[data-obrigado]').forEach(b =>
+    b.addEventListener('click', () => dizerObrigado(b.dataset.obrigado)));
   redesenharCaras();
   mostrar('gente');
 }
@@ -808,6 +858,21 @@ $('#btVoltarSos').addEventListener('click', () => mostrar('mural'));
 $('#btMandarSocorro').addEventListener('click', mandarSocorro);
 $('#btJaEstouBem').addEventListener('click', jaEstouBem);
 $('#btTocarSirene').addEventListener('click', () => { pararSirene(); tocarSirene(); });
+$('#btVoltarSinos').addEventListener('click', () => mostrar('mural'));
+$('#btVoltarCal').addEventListener('click', () => mostrar('mural'));
+$('#btVoltarFerias').addEventListener('click', () => mostrar('mural'));
+$('#btVoltarHumor').addEventListener('click', () => mostrar('mural'));
+$('#btPorSino').addEventListener('click', porSino);
+$('#btMesAntes').addEventListener('click', () => { mesOlhando--; desenharCalendario(); });
+$('#btMesDepois').addEventListener('click', () => { mesOlhando++; desenharCalendario(); });
+$('#btMarcarFerias').addEventListener('click', marcarFerias);
+$('#btCheguei').addEventListener('click', cheguei);
+$('#btObrigado').addEventListener('click', () => dizerObrigado());
+$('#btPais').addEventListener('click', recadoProsPais);
+$('#btAutorizacao').addEventListener('click', autorizacao);
+$('#btEconomia').addEventListener('click', trocarEconomia);
+$('#campoProcura').addEventListener('input', procurar);
+$('#limparProcura').addEventListener('click', limparProcura);
 $('#btGente').addEventListener('click', abrirGente);
 $('#btVoltarGente').addEventListener('click', () => mostrar('mural'));
 $('#btImprimir').addEventListener('click', imprimirMural);
@@ -832,6 +897,10 @@ document.querySelectorAll('[data-ir]').forEach(b => b.addEventListener('click', 
   if(onde === 'transporte') abrirTransporte();
   if(onde === 'tempo'){ mostrar('tempo'); verOTempo(); }
   if(onde === 'instalar'){ mostrar('instalar'); verSeJaInstalou(); }
+  if(onde === 'sinos') abrirSinos();
+  if(onde === 'calendario') abrirCalendario();
+  if(onde === 'ferias') abrirFerias();
+  if(onde === 'humor') abrirHumor();
 }));
 $('#btVoltarAlbum').addEventListener('click', () => mostrar('mural'));
 $('#btVoltarPriv').addEventListener('click', () => mostrar('mural'));
@@ -861,6 +930,7 @@ function relogio(){
 }
 relogio();
 setInterval(relogio, 20000);
+desenharBotaoEconomia();
 
 let lugarEscolhido = null;
 async function pegarLugar(){
