@@ -208,6 +208,83 @@ h2{font-size:1.14rem;margin-bottom:5px}
 .atalhos button.tem-nova::after{content:attr(data-quantas);position:absolute;top:-5px;right:-4px;
   background:#ef4444;color:#fff;font-size:.62rem;font-weight:900;min-width:17px;height:17px;
   border-radius:9px;display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 6px #0004}
+/* ---- 🔍 procurar ---- */
+.procura{display:flex;align-items:center;gap:7px;background:var(--painel);border-radius:16px;
+  padding:4px 6px 4px 13px;box-shadow:var(--sombra);margin-bottom:11px;border:1.5px solid var(--borda)}
+.procura input{flex:1;background:none;border:0;outline:none;padding:9px 0;font-size:.9rem}
+
+/* ---- 🔔 o sinal ---- */
+.sino-grande{background:var(--painel);border-radius:22px;padding:22px;text-align:center;
+  box-shadow:var(--sombra);border:2px solid var(--borda)}
+.sino-grande.perto{border-color:var(--roxo);box-shadow:var(--sombra2)}
+.sino-emoji{font-size:2.8rem;display:block}
+.sino-grande b{display:block;font-size:1.05rem;margin:4px 0}
+.sino-conta{font-size:2.6rem;font-weight:900;letter-spacing:-.03em;color:var(--roxo);line-height:1.1}
+.sino-conta small{font-size:.9rem;font-weight:700;color:var(--texto2);margin-right:6px}
+.sino-grande small{font-size:.8rem;color:var(--texto2)}
+.sino-linha{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--borda)}
+.sino-linha:last-child{border-bottom:0}
+.sino-linha b{flex:1;font-size:.9rem}
+.sino-linha span{font-weight:800;color:var(--roxo)}
+.sino-linha.agora{background:var(--painel2);border-radius:12px;padding-left:9px;padding-right:9px}
+
+/* ---- 📆 o mês ---- */
+.cal-topo{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0 10px}
+.cal-topo h2{font-size:1.05rem;text-align:center;flex:1}
+.cal-dias{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
+.cal-dias span{text-align:center;font-size:.68rem;font-weight:800;color:var(--texto2)}
+.grade-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+.dia-vazio{aspect-ratio:1}
+.dia-cal{aspect-ratio:1;background:var(--painel);border-radius:12px;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.82rem;
+  box-shadow:var(--sombra);border:1.5px solid transparent}
+.dia-cal.fds{opacity:.55}
+.dia-cal.hoje{border-color:var(--roxo);font-weight:900}
+.dia-cal.tem{border-color:var(--borda)}
+.dia-cal:disabled{box-shadow:none;background:var(--painel2)}
+.pontos{display:flex;gap:2px;height:5px}
+.pontos i{width:5px;height:5px;border-radius:50%}
+.cal-item{border-left:4px solid var(--cor);padding:7px 11px;background:var(--painel);
+  border-radius:10px;margin-bottom:6px;font-size:.87rem;box-shadow:var(--sombra)}
+.cal-linha{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--borda);font-size:.85rem}
+.cal-linha:last-child{border-bottom:0}
+.cal-linha b{color:var(--roxo);min-width:44px}
+.cal-linha span{flex:1;min-width:0;color:var(--texto2)}
+
+/* ---- 🏖️ férias ---- */
+.ferias-caixa{text-align:center}
+.ferias-num{font-size:3.2rem;font-weight:900;color:var(--ceu);line-height:1}
+.ferias-txt{font-size:.9rem;font-weight:700;margin-bottom:12px}
+.ferias-fora{height:16px;background:var(--painel2);border-radius:10px;overflow:hidden;margin-bottom:8px}
+.ferias-dentro{height:100%;background:linear-gradient(90deg,var(--ceu),var(--roxo));border-radius:10px;
+  transition:width .5s}
+.feriado{display:flex;align-items:center;gap:9px;background:var(--painel);border-radius:14px;
+  padding:11px 14px;margin-bottom:7px;box-shadow:var(--sombra);font-size:.85rem}
+.feriado.perto{border:1.5px solid var(--roxo)}
+.feriado b{flex:1;min-width:0}
+.feriado span{color:var(--texto2);font-size:.76rem}
+.feriado i{font-style:normal;font-weight:800;color:var(--roxo);font-size:.76rem;white-space:nowrap}
+
+/* ---- 😀 humor ---- */
+.humor-bts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:6px}
+.humor-bt{flex:1;min-width:88px;background:var(--painel);border:2px solid var(--borda);
+  border-radius:16px;padding:13px 8px;font-size:.76rem;font-weight:800;box-shadow:var(--sombra)}
+.humor-bt span{display:block;font-size:1.8rem;margin-bottom:3px}
+.humor-bt.on{border-color:var(--roxo);background:var(--painel3)}
+.humor-linha{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.humor-linha span{font-size:1.3rem;width:28px}
+.humor-fora{flex:1;height:14px;background:var(--painel2);border-radius:8px;overflow:hidden}
+.humor-dentro{height:100%;background:linear-gradient(90deg,var(--roxo),var(--azul));border-radius:8px}
+.humor-linha b{width:22px;text-align:right;font-size:.85rem}
+.humor-barras{background:var(--painel);border-radius:18px;padding:15px;box-shadow:var(--sombra)}
+
+/* ---- 💛 obrigado · 🌐 traduzir ---- */
+.rec-pra{font-size:.82rem;color:var(--texto2);margin-bottom:5px}
+.rec-trad:not(:empty){background:var(--painel2);border-radius:12px;padding:10px 12px;
+  margin-top:9px;font-size:.87rem;line-height:1.5}
+.pessoa [data-obrigado]{margin-left:auto}
+.bt.on{border-color:var(--roxo);background:var(--painel3)}
+
 /* ---- 🚨 perigo ---- */
 .bt.perigo{background:linear-gradient(135deg,#dc2626,#f97316);color:#fff;border-color:transparent;
   width:100%;font-size:1rem;margin-top:10px}
@@ -421,6 +498,10 @@ body.tem-socorro .escrever{display:none}
   .folha-quando{font-weight:bold;font-size:10pt}
   .folha-ops{margin:4pt 0 0 16pt;font-size:10pt}
   .folha-pe{margin-top:16pt;font-size:8pt;color:#666;text-align:center}
+  .folha-assina{margin-top:22pt;page-break-inside:avoid}
+  .folha-assina p{font-size:10pt;margin-bottom:10pt}
+  .linha-assina{border-bottom:1pt solid #000;height:26pt;margin-bottom:3pt}
+  .folha-assina small{font-size:8pt;color:#555}
 }
 </style>
 </head>
@@ -528,7 +609,15 @@ body.tem-socorro .escrever{display:none}
       <button data-ir="privadas">💬 Particular</button>
       <button data-ir="transporte">🚌 Como vou</button>
       <button data-ir="tempo">🌧️ Na saída</button>
+      <button data-ir="sinos">🔔 Falta pro sinal</button>
+      <button data-ir="calendario">📆 O mês</button>
+      <button data-ir="ferias">🏖️ Férias</button>
+      <button data-ir="humor">😀 Como tu tá</button>
       <button data-ir="instalar">📲 Pôr no celular</button>
+    </div>
+    <div class="procura">
+      <input id="campoProcura" placeholder="🔍 Procurar no mural..." maxlength="60">
+      <button class="rec-bt escondido" id="limparProcura">✕</button>
     </div>
     <div class="filtros">
       <button class="filtro on" data-filtro="tudo">📋 Tudo <i>0</i></button>
@@ -543,6 +632,15 @@ body.tem-socorro .escrever{display:none}
       <button class="bt" id="btConvidar">📤 Chamar alguém</button>
       <button class="bt" id="btImprimir">🖨️ Imprimir</button>
     </div>
+    <div class="linha-bt" style="margin-top:10px">
+      <button class="bt" id="btCheguei">🏠 Cheguei em casa</button>
+      <button class="bt" id="btObrigado">💛 Dizer obrigado</button>
+    </div>
+    <div class="linha-bt">
+      <button class="bt" id="btPais">👨‍👩‍👧 Folha pros pais</button>
+      <button class="bt" id="btAutorizacao">✍️ Autorização</button>
+    </div>
+    <button class="bt" id="btEconomia" style="width:100%">📶 Modo internet ruim</button>
     <button class="bt perigo" id="btPerigo">🚨 GENTE, TÔ EM PERIGO</button>
     <div class="rodape">
       <button class="bt fraco" id="btSair">Sair da turma neste aparelho</button><br>
@@ -638,6 +736,57 @@ body.tem-socorro .escrever{display:none}
       </div>
     </div>
     <button class="bt ok grande" id="btMandar">📤 Mandar pra turma</button>
+  </section>
+
+  <!-- ============ 🔔 O SINAL ============ -->
+  <section class="tela" id="tela-sinos">
+    <button class="bt fraco" id="btVoltarSinos">← Voltar pro mural</button>
+    <h2 style="margin:10px 0 12px">🔔 Quanto falta pro sinal</h2>
+    <div id="contaSino"></div>
+    <div class="titulo">Os horários da turma</div>
+    <div class="cartao" id="listaSinos"></div>
+    <button class="bt ok grande" id="btPorSino" style="margin-top:10px">➕ Pôr um horário</button>
+    <p class="dica" style="margin-top:10px">Os horários são <b>da turma</b>: quem arrumar,
+    arruma pra todo mundo. Os que estão aí são um chute — troca pelos da tua escola.</p>
+  </section>
+
+  <!-- ============ 📆 O MÊS ============ -->
+  <section class="tela" id="tela-calendario">
+    <button class="bt fraco" id="btVoltarCal">← Voltar pro mural</button>
+    <div class="cal-topo">
+      <button class="bt fraco" id="btMesAntes">←</button>
+      <h2 id="mesNome">—</h2>
+      <button class="bt fraco" id="btMesDepois">→</button>
+    </div>
+    <div class="cal-dias"><span>D</span><span>S</span><span>T</span><span>Q</span>
+      <span>Q</span><span>S</span><span>S</span></div>
+    <div class="grade-cal" id="gradeCal"></div>
+    <div id="doDia"></div>
+    <div class="titulo">Tudo do mês</div>
+    <div class="cartao" id="listaCal"></div>
+  </section>
+
+  <!-- ============ 🏖️ FÉRIAS ============ -->
+  <section class="tela" id="tela-ferias">
+    <button class="bt fraco" id="btVoltarFerias">← Voltar pro mural</button>
+    <h2 style="margin:10px 0 12px">🏖️ Quanto falta pras férias</h2>
+    <div id="barraFerias"></div>
+    <button class="bt ok grande" id="btMarcarFerias" style="margin-top:10px">📅 Marcar o último dia de aula</button>
+    <div class="titulo">🎌 Próximos feriados</div>
+    <div id="listaFeriados"></div>
+    <p class="dica" style="margin-top:12px">São os feriados nacionais do Brasil. Os da tua
+    cidade e os dias que a escola emenda não estão aqui — esses tu marca no mural.</p>
+  </section>
+
+  <!-- ============ 😀 COMO TU TÁ ============ -->
+  <section class="tela" id="tela-humor">
+    <button class="bt fraco" id="btVoltarHumor">← Voltar pro mural</button>
+    <h2 style="margin:10px 0 4px">😀 Como tu tá hoje?</h2>
+    <p class="dica" style="margin-bottom:12px">Ninguém vê que foi tu — nem o app guarda teu
+    nome junto. Serve pra turma perceber quando tem gente não muito bem.</p>
+    <div class="humor-bts" id="botoesHumor"></div>
+    <div class="titulo">Como a turma tá hoje</div>
+    <div id="resultadoHumor"></div>
   </section>
 
   <!-- ============ 🚨 PERIGO ============ -->
@@ -804,9 +953,11 @@ body.tem-socorro .escrever{display:none}
 
 <button class="escrever escondido" id="btEscrever">✏️ Escrever</button>
 <div class="aviso-flutua" id="aviso"></div>
-<script src="turma-mais.js?v=7"></script>
-<script src="turma-cara.js?v=7"></script>
-<script src="turma-socorro.js?v=7"></script>
-<script src="turma.js?v=7"></script>
+<script src="turma-mais.js?v=8"></script>
+<script src="turma-cara.js?v=8"></script>
+<script src="turma-socorro.js?v=8"></script>
+<script src="turma-escola.js?v=8"></script>
+<script src="turma-junto.js?v=8"></script>
+<script src="turma.js?v=8"></script>
 </body>
 </html>

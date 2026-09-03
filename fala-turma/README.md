@@ -87,6 +87,58 @@ podem passar batido: **prova amanhã** e **aniversário desta semana**.
 | 🚨 **Recado ruim** | Com 2 avisos ele some da frente de todo mundo (dá pra abrir mesmo assim) |
 | 🙂 **Foto de perfil** | Cada um põe a sua; quem não põe fica com o bichinho |
 | 🚨 **Gente, tô em perigo** | Alarme, localização e aviso no celular da turma |
+| 🔔 **Falta pro sinal** | Contagem pro recreio e pra saída, de segundo em segundo |
+| 📆 **O mês** | Grade com provas, passeios, aniversários e feriados |
+| 🏖️ **Férias** | Barrinha que enche, e os próximos feriados nacionais |
+| 💛 **Dizer obrigado** | Estrelinha pra quem te ajudou |
+| 😀 **Como tu tá hoje** | Humor da turma, sem nome |
+| 🏠 **Cheguei em casa** | Avisa a turma que chegou bem |
+| 🔎 **Achados e perdidos** | Com foto e botão de "é meu!" |
+| 🎵 **Playlist** | Cada um põe uma música |
+| 🔊 **Ler em voz alta** | O recado inteiro, com quem escreveu e a data |
+| 🌐 **Traduzir** | 8 línguas, sem chave de API nenhuma |
+| 🔍 **Procurar** | Sem ligar pra maiúscula nem pra acento |
+| 👨‍👩‍👧 **Folha pros pais** | A semana num papel, com linha pra assinar |
+| ✍️ **Autorização do passeio** | Papel pronto pra mãe assinar |
+| 📶 **Modo internet ruim** | As fotos só abrem se tu pedir |
+
+### 🔔 Os horários são da turma, não do aparelho
+
+Quem arruma, arruma pra todo mundo: eles viajam pelo mural num recado especial
+(`tipo: 'sinos'`) que fica **fora da lista e fora da contagem dos filtros**. O mesmo vale
+pro último dia de aula (`tipo: 'ferias'`).
+
+`"25:99"` tem cara de hora e não é hora nenhuma. Conferir só o formato deixaria passar, e
+a contagem daria número maluco — então `horaVale()` confere o intervalo, e horário torto
+que chegue de outro aparelho é ignorado em vez de quebrar a tela.
+
+### 😀 Anônimo de verdade — e quando não dá
+
+A resposta vai com a chave embaralhada do nome + do dia: o banco não sabe de quem é. Mas
+**"sem nome" numa turma de 4 pessoas não engana ninguém** — então o resultado só aparece a
+partir de **3 respostas**, e o app diz na tela por quê. Quando tem gente mal, ele avisa que
+tem, sem dizer quem, e manda contar pra um adulto se for sério.
+
+### 💛 Obrigado só soma
+
+Não tem ranking. Um ranking viraria também uma lista de quem ninguém agradeceu, e não é
+isso que a gente quer pendurado na parede.
+
+### 🌐 Traduzir e 🔊 ler, sem pagar nada
+
+Ler em voz alta é o `speechSynthesis` que já vem no navegador, um tiquinho devagar — é pra
+quem tem dificuldade de ler. Ele fala **quem escreveu, o tipo e a data**, não só o texto.
+
+Traduzir tenta o tradutor embutido do navegador; alguns navegadores **têm** esse tradutor
+mas ficam baixando o idioma pra sempre, então tem tempo limite de 6 s e depois cai no
+Google Tradutor numa aba. Nenhuma chave de API em lugar nenhum — o repositório é público.
+
+### 🎌 Feriados: a conta da Páscoa
+
+Carnaval, Sexta-feira Santa e Corpus Christi andam com a Páscoa, então a Páscoa é
+calculada (algoritmo de Gauss) em vez de escrita numa lista que venceria todo ano. Os
+feriados **da cidade** e as emendas da escola não estão aí — esses a turma marca no mural,
+e o app diz isso.
 
 ### 🚨 O botão de perigo
 
@@ -191,6 +243,8 @@ mostra o **código de 8 letras**, pra ditar em voz alta pra quem não recebeu o 
 | `turma-mais.js` | Foto do quadro, álbum, conversa particular, transporte, tempo e aniversários |
 | `turma-cara.js` | A foto de perfil e o "pôr no celular" |
 | `turma-socorro.js` | 🚨 o botão de perigo, a sirene e a localização ao vivo |
+| `turma-escola.js` | 🔔 o sinal, 📆 o mês, 🏖️ férias, 🔍 procurar, 📶 modo internet ruim |
+| `turma-junto.js` | 💛 obrigado, 😀 humor, 🏠 cheguei, 🔎 achados, 🎵 playlist, 🔊 ler, 🌐 traduzir, folhas |
 | `manifest.webmanifest` + `icone-*.png` | O que faz virar app instalável |
 | `versao.json` | Qual versão está no ar, pro app se atualizar sozinho |
 | `consertar.html` | Página de socorro: limpa o cache preso, sem apagar os recados |
@@ -220,7 +274,7 @@ Mac no caso da Apple, e de documento de adulto.
 
 ## O que foi testado de verdade
 
-226 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
+280 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
 localização simulada: recado chegando de um aparelho no outro, reação, resposta, passeio,
 vaquinha, conversa particular, denúncia, modo emprestado, o mural impresso, a foto de
 perfil viajando de um aparelho pro outro, a escola viajando dentro do convite e o
