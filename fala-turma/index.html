@@ -208,16 +208,6 @@ h2{font-size:1.14rem;margin-bottom:5px}
 .atalhos button.tem-nova::after{content:attr(data-quantas);position:absolute;top:-5px;right:-4px;
   background:#ef4444;color:#fff;font-size:.62rem;font-weight:900;min-width:17px;height:17px;
   border-radius:9px;display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 6px #0004}
-/* ---- 👑 adm ---- */
-.faixa-tranca{background:var(--painel3);border:1.5px solid var(--roxo);border-radius:16px;
-  padding:12px 15px;margin-bottom:11px;font-size:.86rem;line-height:1.5}
-.adm-item{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid var(--borda);
-  flex-wrap:wrap}
-.adm-item:last-child{border-bottom:0}
-.adm-item>div:first-child{flex:1;min-width:130px;font-size:.88rem}
-.adm-item small{display:block;font-size:.74rem;color:var(--texto2);line-height:1.4}
-.adm-bts{display:flex;gap:5px}
-
 /* ---- 🔍 procurar ---- */
 .procura{display:flex;align-items:center;gap:7px;background:var(--painel);border-radius:16px;
   padding:4px 6px 4px 13px;box-shadow:var(--sombra);margin-bottom:11px;border:1.5px solid var(--borda)}
@@ -614,7 +604,6 @@ body.tem-socorro .escrever{display:none}
 
   <!-- ============ MURAL ============ -->
   <section class="tela" id="tela-mural">
-    <div class="faixa-tranca escondido" id="faixaTranca"></div>
     <div class="faixa-sos escondido" id="faixaSocorro"></div>
     <button class="bt escondido" id="btTocarSirene" style="width:100%;margin-bottom:11px">🔊 Tocar o alarme</button>
     <div class="avisos-topo escondido" id="avisosTopo"></div>
@@ -627,7 +616,6 @@ body.tem-socorro .escrever{display:none}
       <button data-ir="calendario">📆 O mês</button>
       <button data-ir="ferias">🏖️ Férias</button>
       <button data-ir="humor">😀 Como tu tá</button>
-      <button data-ir="adm">👑 Adm</button>
       <button data-ir="instalar">📲 Pôr no celular</button>
     </div>
     <div class="procura">
@@ -751,54 +739,6 @@ body.tem-socorro .escrever{display:none}
       </div>
     </div>
     <button class="bt ok grande" id="btMandar">📤 Mandar pra turma</button>
-  </section>
-
-  <!-- ============ 👑 ADM ============ -->
-  <section class="tela" id="tela-adm">
-    <button class="bt fraco" id="btVoltarAdm">← Voltar pro mural</button>
-    <h2 style="margin:10px 0 12px">👑 Modo adm</h2>
-    <div class="cartao" id="admQuemManda"></div>
-
-    <div id="admFora">
-      <button class="bt ok grande" id="btVirarAdm" style="margin-top:12px">👑 Virar o adm da turma</button>
-      <div class="cartao aviso-loja" style="margin-top:14px">
-        <b>🔑 Como funciona</b>
-        <p class="dica" style="margin-top:7px">O adm escolhe uma <b>senha só dele</b>, que
-        nunca sai do aparelho. Tudo que ele manda vai <b>assinado</b> com ela, e os outros
-        celulares conferem a assinatura antes de obedecer. Sem a senha,
-        <b>ninguém consegue fingir que é adm</b>.</p>
-      </div>
-    </div>
-
-    <div id="admDentro" class="escondido">
-      <div class="linha-bt" style="margin-top:12px">
-        <button class="bt" id="btTrancar">🔒 Trancar o mural</button>
-        <button class="bt" id="btLimparMural">🧹 Limpar o velho</button>
-      </div>
-
-      <div class="titulo">🚨 Denúncias esperando</div>
-      <div class="cartao" id="admDenuncias"></div>
-
-      <div class="titulo">👥 A turma</div>
-      <div class="cartao" id="admGente"></div>
-
-      <div class="linha-bt" style="margin-top:14px">
-        <button class="bt" id="btTrocarSenhaAdm">🔑 Trocar a senha</button>
-        <button class="bt fraco" id="btSairAdm">👋 Sair do modo adm</button>
-      </div>
-    </div>
-
-    <div class="cartao aviso-loja" style="margin-top:14px">
-      <b>⚠️ Isto não é um cofre — é uma chave de zelador</b>
-      <p class="dica" style="margin-top:7px">A assinatura impede que alguém <b>finja ser
-      adm</b>, e isso é de verdade. Mas quem souber mexer no código do navegador ainda
-      consegue burlar. Só um servidor com contas resolveria, e este app usa um banco de
-      graça, sem conta nenhuma.</p>
-      <p class="dica" style="margin-top:7px">Por isso o adm <b>não vê conversa particular
-      de ninguém</b>, e <b>não vê quem respondeu o quê</b> no 😀 Como tu tá. Se burlar não
-      dá acesso a segredo nenhum, o pior que acontece é bagunça no mural — e bagunça a
-      gente arruma.</p>
-    </div>
   </section>
 
   <!-- ============ 🔔 O SINAL ============ -->
@@ -1016,12 +956,11 @@ body.tem-socorro .escrever{display:none}
 
 <button class="escrever escondido" id="btEscrever">✏️ Escrever</button>
 <div class="aviso-flutua" id="aviso"></div>
-<script src="turma-mais.js?v=9"></script>
-<script src="turma-cara.js?v=9"></script>
-<script src="turma-socorro.js?v=9"></script>
-<script src="turma-escola.js?v=9"></script>
-<script src="turma-junto.js?v=9"></script>
-<script src="turma-adm.js?v=9"></script>
-<script src="turma.js?v=9"></script>
+<script src="turma-mais.js?v=10"></script>
+<script src="turma-cara.js?v=10"></script>
+<script src="turma-socorro.js?v=10"></script>
+<script src="turma-escola.js?v=10"></script>
+<script src="turma-junto.js?v=10"></script>
+<script src="turma.js?v=10"></script>
 </body>
 </html>

@@ -101,58 +101,6 @@ podem passar batido: **prova amanhã** e **aniversário desta semana**.
 | 👨‍👩‍👧 **Folha pros pais** | A semana num papel, com linha pra assinar |
 | ✍️ **Autorização do passeio** | Papel pronto pra mãe assinar |
 | 📶 **Modo internet ruim** | As fotos só abrem se tu pedir |
-| 👑 **Modo adm** | Apagar recado ruim, trancar o mural, silenciar, tirar da turma |
-
-## 👑 O modo adm
-
-### Por que chave pública, e não uma senha compartilhada
-
-A primeira ideia foi assinar as ordens com a senha do adm (HMAC). Só que aí **quem não sabe
-a senha não consegue conferir a assinatura** — e sobram duas saídas ruins: ou todo mundo
-sabe a senha (aí não é senha), ou os outros conferem por um valor público, que qualquer um
-copiaria. A segunda foi exatamente o furo que apareceu no primeiro teste.
-
-Então é um **par de chaves ECDSA P-256**:
-
-- a **chave de conferir** (pública) vai no mural, à vista de todos;
-- a **chave de assinar** (privada) vai no mural também, mas **trancada com AES-GCM** numa
-  chave derivada da senha do adm (PBKDF2, 210 000 voltas). Sem a senha ela não abre.
-
-Resultado: **qualquer aparelho confere sozinho** se a ordem é do adm de verdade, e só quem
-sabe a senha consegue assinar. A senha nunca sai do aparelho — nem pro banco, nem pro
-`localStorage`.
-
-A **lista de quem é adm também vai assinada**: sem isso qualquer um escrevia o próprio nome
-nela e aparecia de coroa. Lista com assinatura torta é descartada, e vale a última que
-estava certa. E a assinatura é o que manda: `obedecer()` não pergunta se o nome está na
-lista, pergunta se a assinatura confere.
-
-Ordem com mais de 7 dias não vale mais, pra ninguém guardar uma ordem antiga e soltar
-depois.
-
-### O que o adm pode
-
-Apagar qualquer recado (some do banco também, senão voltava na sincronização seguinte),
-resolver denúncias, trancar o mural, silenciar por 1h/1dia/1semana, tirar da turma
-(a pessoa continua **lendo**, só não escreve), fixar, limpar o que passou de 30 dias,
-coroar mais gente e trocar a senha (o que invalida as ordens antigas).
-
-### O que o adm NÃO pode — de propósito
-
-**Ler conversa particular de ninguém** e **ver quem respondeu o quê no 😀 humor.** Não
-existe função nenhuma pra isso no app, e o teste confirma: uma adm de verdade não vê a
-conversa de duas outras pessoas, mesmo depois de puxar tudo que o banco tem.
-
-### ⚠️ Não é um cofre — é uma chave de zelador
-
-A assinatura impede que alguém **finja ser adm**, e isso é de verdade. Mas quem souber
-mexer no código do navegador ainda consegue ignorar a conferência no próprio aparelho e
-escrever direto no banco. Só um servidor com contas e regras resolveria, e este app usa um
-banco de graça, sem conta nenhuma.
-
-**É por isso que o adm não vê nada privado.** Se burlar não dá acesso a segredo nenhum, o
-pior que acontece é bagunça no mural — e bagunça a gente arruma. Isso está escrito dentro
-do app, na própria tela do adm.
 
 ### 🔔 Os horários são da turma, não do aparelho
 
@@ -296,7 +244,6 @@ mostra o **código de 8 letras**, pra ditar em voz alta pra quem não recebeu o 
 | `turma-cara.js` | A foto de perfil e o "pôr no celular" |
 | `turma-socorro.js` | 🚨 o botão de perigo, a sirene e a localização ao vivo |
 | `turma-escola.js` | 🔔 o sinal, 📆 o mês, 🏖️ férias, 🔍 procurar, 📶 modo internet ruim |
-| `turma-adm.js` | 👑 o modo adm: as chaves, as ordens assinadas e a tela |
 | `turma-junto.js` | 💛 obrigado, 😀 humor, 🏠 cheguei, 🔎 achados, 🎵 playlist, 🔊 ler, 🌐 traduzir, folhas |
 | `manifest.webmanifest` + `icone-*.png` | O que faz virar app instalável |
 | `versao.json` | Qual versão está no ar, pro app se atualizar sozinho |
@@ -327,7 +274,7 @@ Mac no caso da Apple, e de documento de adulto.
 
 ## O que foi testado de verdade
 
-327 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
+280 checagens em dois navegadores ao mesmo tempo (Playwright), com um Firebase de mentira e
 localização simulada: recado chegando de um aparelho no outro, reação, resposta, passeio,
 vaquinha, conversa particular, denúncia, modo emprestado, o mural impresso, a foto de
 perfil viajando de um aparelho pro outro, a escola viajando dentro do convite e o
