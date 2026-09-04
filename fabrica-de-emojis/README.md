@@ -4,6 +4,15 @@ Jogo de clicker com física de verdade: os emojis caem dentro da caixa, quicam,
 empilham e você vende a pilha inteira. Um arquivo só (`index.html`), sem
 instalação, funciona offline no celular e no computador.
 
+## Onde ele aparece
+
+- Direto: `https://willianwiab.github.io/contas-wen/fabrica-de-emojis/`
+- No portfólio **Jogos do JoJo**: aparece na página inicial, na lista de jogos e
+  tem a página própria dele em `jogos-do-jojo/pages/jogo.html?id=fabrica-de-emojis`.
+  O cadastro fica em `jogos-do-jojo/data/games.json`, com as artes em
+  `jogos-do-jojo/assets/images/fabrica-de-emojis.svg` (cartão) e
+  `...-banner.svg` (topo da página).
+
 ## Como se joga
 
 - Clique **dentro da caixa** (ou no botão `FAZER EMOJI`, ou na barra de espaço) pra fabricar.

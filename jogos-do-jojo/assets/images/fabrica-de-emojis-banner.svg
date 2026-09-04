@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 420">
+  <defs>
+    <linearGradient id="f" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b0f33"/><stop offset="0.55" stop-color="#3d2160"/><stop offset="1" stop-color="#5c2418"/>
+    </linearGradient>
+    <radialGradient id="g"><stop offset="0" stop-color="#ffc857" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#ffc857" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1280" height="420" fill="url(#f)"/>
+  <g opacity="0.09" stroke="#ffc857" stroke-width="1">
+    <path d="M0 70 H1280 M0 140 H1280 M0 210 H1280 M0 280 H1280 M0 350 H1280"/>
+    <path d="M80 0 V420 M160 0 V420 M240 0 V420 M320 0 V420 M400 0 V420 M480 0 V420 M560 0 V420 M640 0 V420 M720 0 V420 M800 0 V420 M880 0 V420 M960 0 V420 M1040 0 V420 M1120 0 V420 M1200 0 V420"/>
+  </g>
+  <ellipse cx="640" cy="360" rx="520" ry="180" fill="url(#g)"/>
+  <g transform="translate(27 382) rotate(8)"><circle r="30" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">😀</text></g>
+  <g transform="translate(71 386) rotate(-7)"><circle r="30" fill="#ff6b9d" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🚀</text></g>
+  <g transform="translate(120 386) rotate(-23)"><circle r="30" fill="#ff8a3c" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🌟</text></g>
+  <g transform="translate(175 381) rotate(-20)"><circle r="30" fill="#7ac9ff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">💎</text></g>
+  <g transform="translate(224 390) rotate(-19)"><circle r="30" fill="#ffc857" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🎉</text></g>
+  <g transform="translate(269 388) rotate(22)"><circle r="30" fill="#5ce1e6" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🐱</text></g>
+  <g transform="translate(324 385) rotate(24)"><circle r="30" fill="#b47aff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🍀</text></g>
+  <g transform="translate(363 390) rotate(-11)"><circle r="30" fill="#6ee7a0" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🎈</text></g>
+  <g transform="translate(414 381) rotate(-10)"><circle r="30" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🔥</text></g>
+  <g transform="translate(475 382) rotate(4)"><circle r="30" fill="#ff6b9d" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🌈</text></g>
+  <g transform="translate(521 384) rotate(2)"><circle r="30" fill="#ff8a3c" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🦄</text></g>
+  <g transform="translate(559 381) rotate(-15)"><circle r="30" fill="#7ac9ff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">💡</text></g>
+  <g transform="translate(619 385) rotate(-9)"><circle r="30" fill="#ffc857" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🎮</text></g>
+  <g transform="translate(666 385) rotate(-10)"><circle r="30" fill="#5ce1e6" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">📦</text></g>
+  <g transform="translate(718 388) rotate(-13)"><circle r="30" fill="#b47aff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🍕</text></g>
+  <g transform="translate(763 386) rotate(19)"><circle r="30" fill="#6ee7a0" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">⭐</text></g>
+  <g transform="translate(815 383) rotate(24)"><circle r="30" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">😎</text></g>
+  <g transform="translate(853 385) rotate(13)"><circle r="30" fill="#ff6b9d" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🐶</text></g>
+  <g transform="translate(902 386) rotate(-23)"><circle r="30" fill="#ff8a3c" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🌸</text></g>
+  <g transform="translate(960 389) rotate(4)"><circle r="30" fill="#7ac9ff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🎯</text></g>
+  <g transform="translate(1013 384) rotate(10)"><circle r="30" fill="#ffc857" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🧊</text></g>
+  <g transform="translate(1056 387) rotate(-2)"><circle r="30" fill="#5ce1e6" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🪐</text></g>
+  <g transform="translate(1110 391) rotate(-1)"><circle r="30" fill="#b47aff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🎁</text></g>
+  <g transform="translate(1155 381) rotate(10)"><circle r="30" fill="#6ee7a0" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🧠</text></g>
+  <g transform="translate(1204 392) rotate(16)"><circle r="30" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">😀</text></g>
+  <g transform="translate(1246 385) rotate(8)"><circle r="30" fill="#ff6b9d" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">🚀</text></g>
+  <g transform="translate(21 342) rotate(-17)"><circle r="28" fill="#5ce1e6" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🌟</text></g>
+  <g transform="translate(76 337) rotate(13)"><circle r="28" fill="#b47aff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">💎</text></g>
+  <g transform="translate(129 339) rotate(-5)"><circle r="28" fill="#6ee7a0" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🎉</text></g>
+  <g transform="translate(196 337) rotate(-3)"><circle r="28" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🐱</text></g>
+  <g transform="translate(243 347) rotate(16)"><circle r="28" fill="#ff6b9d" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🍀</text></g>
+  <g transform="translate(302 339) rotate(-4)"><circle r="28" fill="#ff8a3c" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🎈</text></g>
+  <g transform="translate(346 347) rotate(23)"><circle r="28" fill="#7ac9ff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🔥</text></g>
+  <g transform="translate(395 338) rotate(-13)"><circle r="28" fill="#ffc857" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🌈</text></g>
+  <g transform="translate(450 342) rotate(4)"><circle r="28" fill="#5ce1e6" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🦄</text></g>
+  <g transform="translate(503 336) rotate(-4)"><circle r="28" fill="#b47aff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">💡</text></g>
+  <g transform="translate(558 343) rotate(23)"><circle r="28" fill="#6ee7a0" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🎮</text></g>
+  <g transform="translate(617 342) rotate(6)"><circle r="28" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">📦</text></g>
+  <g transform="translate(670 337) rotate(20)"><circle r="28" fill="#ff6b9d" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🍕</text></g>
+  <g transform="translate(725 346) rotate(15)"><circle r="28" fill="#ff8a3c" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">⭐</text></g>
+  <g transform="translate(771 341) rotate(-20)"><circle r="28" fill="#7ac9ff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">😎</text></g>
+  <g transform="translate(828 337) rotate(-22)"><circle r="28" fill="#ffc857" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🐶</text></g>
+  <g transform="translate(873 338) rotate(-8)"><circle r="28" fill="#5ce1e6" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🌸</text></g>
+  <g transform="translate(924 336) rotate(-17)"><circle r="28" fill="#b47aff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🎯</text></g>
+  <g transform="translate(978 340) rotate(-24)"><circle r="28" fill="#6ee7a0" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🧊</text></g>
+  <g transform="translate(1045 343) rotate(-18)"><circle r="28" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🪐</text></g>
+  <g transform="translate(1086 340) rotate(-7)"><circle r="28" fill="#ff6b9d" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🎁</text></g>
+  <g transform="translate(1137 346) rotate(25)"><circle r="28" fill="#ff8a3c" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🧠</text></g>
+  <g transform="translate(1196 342) rotate(-21)"><circle r="28" fill="#7ac9ff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">😀</text></g>
+  <g transform="translate(1243 340) rotate(-12)"><circle r="28" fill="#ffc857" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🚀</text></g>
+  <g transform="translate(36 298) rotate(-24)"><circle r="25" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🌟</text></g>
+  <g transform="translate(102 302) rotate(-18)"><circle r="25" fill="#ff6b9d" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">💎</text></g>
+  <g transform="translate(159 296) rotate(1)"><circle r="25" fill="#ff8a3c" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🎉</text></g>
+  <g transform="translate(231 306) rotate(10)"><circle r="25" fill="#7ac9ff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🐱</text></g>
+  <g transform="translate(283 300) rotate(-17)"><circle r="25" fill="#ffc857" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🍀</text></g>
+  <g transform="translate(356 302) rotate(14)"><circle r="25" fill="#5ce1e6" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🎈</text></g>
+  <g transform="translate(412 299) rotate(16)"><circle r="25" fill="#b47aff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🔥</text></g>
+  <g transform="translate(488 306) rotate(15)"><circle r="25" fill="#6ee7a0" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🌈</text></g>
+  <g transform="translate(549 305) rotate(-14)"><circle r="25" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🦄</text></g>
+  <g transform="translate(608 300) rotate(-24)"><circle r="25" fill="#ff6b9d" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">💡</text></g>
+  <g transform="translate(664 299) rotate(-12)"><circle r="25" fill="#ff8a3c" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🎮</text></g>
+  <g transform="translate(740 307) rotate(-3)"><circle r="25" fill="#7ac9ff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">📦</text></g>
+  <g transform="translate(808 308) rotate(23)"><circle r="25" fill="#ffc857" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🍕</text></g>
+  <g transform="translate(862 299) rotate(-14)"><circle r="25" fill="#5ce1e6" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">⭐</text></g>
+  <g transform="translate(923 298) rotate(6)"><circle r="25" fill="#b47aff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">😎</text></g>
+  <g transform="translate(1000 306) rotate(-1)"><circle r="25" fill="#6ee7a0" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🐶</text></g>
+  <g transform="translate(1060 306) rotate(-21)"><circle r="25" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🌸</text></g>
+  <g transform="translate(1124 307) rotate(14)"><circle r="25" fill="#ff6b9d" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🎯</text></g>
+  <g transform="translate(1190 302) rotate(-16)"><circle r="25" fill="#ff8a3c" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🧊</text></g>
+  <g transform="translate(1255 300) rotate(15)"><circle r="25" fill="#7ac9ff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="9" font-size="32" text-anchor="middle">🪐</text></g>
+  <g transform="translate(210 110) rotate(19)"><circle r="34" fill="#b47aff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="12" font-size="44" text-anchor="middle">😀</text></g>
+  <path d="M210 62 V20" stroke="#ffc857" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round"/>
+  <g transform="translate(430 70) rotate(-4)"><circle r="28" fill="#ffc857" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="36" text-anchor="middle">🎉</text></g>
+  <path d="M430 28 V-14" stroke="#ffc857" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round"/>
+  <g transform="translate(640 130) rotate(-4)"><circle r="40" fill="#ff8a3c" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="14" font-size="52" text-anchor="middle">🚀</text></g>
+  <path d="M640 76 V34" stroke="#ffc857" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round"/>
+  <g transform="translate(860 80) rotate(18)"><circle r="30" fill="#c8c8da" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="10" font-size="39" text-anchor="middle">💎</text></g>
+  <path d="M860 36 V-6" stroke="#ffc857" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round"/>
+  <g transform="translate(1070 120) rotate(9)"><circle r="32" fill="#b47aff" fill-opacity="0.9" stroke="#00000038" stroke-width="2"/><text y="11" font-size="42" text-anchor="middle">🌈</text></g>
+  <path d="M1070 74 V32" stroke="#ffc857" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round"/>
+  <g transform="translate(1160 190)"><circle r="46" fill="#ffb347" fill-opacity="0.95"/><circle r="52" fill="none" stroke="#ffffff66" stroke-width="4" stroke-dasharray="220 100"/><text y="16" font-size="46" text-anchor="middle">🌟</text></g>
+</svg>

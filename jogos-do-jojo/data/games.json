@@ -461,6 +461,66 @@
         { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão publicada, com combo, bombas, arco-íris, youtubers convidados e o convidado lendário." }
       ],
       "ranking": []
+    },
+    {
+      "slug": "fabrica-de-emojis",
+      "nome": "Fábrica de Emojis",
+      "descricao": "Um clicker com física de verdade: os emojis caem dentro da caixa, quicam, empilham e você vende a pilha inteira. São 120 raridades, 730 emojis pra descobrir, 330 upgrades e 62 conquistas.",
+      "comoFunciona": "Cada clique dentro da caixa fabrica emojis, que caem e se empilham de verdade — com gravidade, colisão e quique. Quando a caixa enche (ou quando você quiser), o fundo abre, tudo despenca e vira dinheiro. Com o dinheiro você compra upgrades, que fabricam mais emojis, que dão mais dinheiro.",
+      "objetivo": "Descobrir os 730 emojis do índice, abrir as 120 raridades e destravar as 62 conquistas — renascendo quantas vezes for preciso pra ficar cada vez mais forte.",
+      "mecanicas": [
+        "Física real: os emojis caem, quicam e empilham na caixa",
+        "120 raridades, da Comum à Absoluta",
+        "730 emojis no índice, sendo 10 secretos raríssimos",
+        "330 upgrades em 33 famílias, entre dinheiro e cristais",
+        "62 conquistas, cada uma valendo +1,5% em tudo pra sempre",
+        "Combo por cliques em sequência e clique crítico de 10x",
+        "Estrela de bônus: frenesi, dedo de ouro, dilúvio, trevão, cofre ou presente",
+        "Missões que renovam sozinhas e pagam dinheiro ou cristais",
+        "Renascer: troca todo o progresso por cristais permanentes",
+        "Renda offline: a fábrica trabalha com o jogo fechado",
+        "Gravidade que segue a inclinação do celular",
+        "Salvamento automático, com exportar e importar o save"
+      ],
+      "categoria": "Clicker",
+      "plataforma": "Navegador (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "Cada emoji vale conforme a raridade dele: o Comum vale R$ 1 e cada raridade seguinte vale 8,5 vezes mais. O total da pilha ainda é multiplicado pelos upgrades de valor e de venda, pelos cristais, pelas conquistas e pelos bônus ativos.",
+      "popularidade": 88,
+      "imagem": "assets/images/fabrica-de-emojis.svg",
+      "banner": "assets/images/fabrica-de-emojis-banner.svg",
+      "trailer": "",
+      "url": "../fabrica-de-emojis/index.html",
+      "galeria": [],
+      "historia": "No começo a fábrica só sabe fazer carinhas comuns. Mas cada venda abre uma raridade nova — e do outro lado das 120 raridades existem emojis que quase ninguém viu, como o Elevador Infinito e a Bola de Espelhos, que caem uma vez em centenas de milhões.",
+      "comoJogar": "Clique dentro da caixa (ou no botão FAZER EMOJI, ou na barra de espaço) pra fabricar. Quando encher, aperte VENDER e veja tudo despencar. Gaste o dinheiro nos upgrades da loja, fique de olho na estrela de bônus que aparece de vez em quando e cumpra as missões. Lá na frente, chegando a R$ 1 bilhão de recorde, dá pra renascer e ganhar cristais que valem pra sempre.",
+      "controles": [
+        { "tecla": "Clique", "acao": "Fabricar emojis dentro da caixa" },
+        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
+        { "tecla": "Espaço", "acao": "Fabricar sem tirar a mão do teclado" },
+        { "tecla": "Setas", "acao": "Virar a gravidade da caixa" },
+        { "tecla": "📱", "acao": "Usar a inclinação do celular como gravidade" },
+        { "tecla": "📖", "acao": "Abrir o índice de emojis descobertos" },
+        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+      ],
+      "curiosidades": [
+        "A ordem dos 730 emojis é embaralhada com uma semente fixa: o índice sai igualzinho em qualquer aparelho do mundo.",
+        "A caixa simula até 550 emojis com física de verdade; o que passa disso vai pro depósito e continua valendo dinheiro, só não fica quicando — é assim que o jogo não trava no celular.",
+        "O emoji secreto mais raro, a Bola de Espelhos 🪩, tem 1 chance em 250 milhões de cair. O upgrade Radar existe justamente pra isso.",
+        "Todos os sons são gerados pelo próprio navegador na hora: não tem nenhum arquivo de áudio no jogo.",
+        "O jogo inteiro é um arquivo HTML só, e funciona offline depois de abrir uma vez."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: física dos emojis, 120 raridades, 730 emojis no índice, 220 upgrades, renascimento com cristais e modo administrador." },
+        { "versao": "2.0", "data": "2026", "mudancas": "Upgrades novos (crítico, combo, gêmeo, fusão, radar e turno da noite), 62 conquistas, missões, estrela de bônus, turbo, renda offline, painel de estatísticas e 2 emojis secretos a mais." }
+      ],
+      "ranking": []
     }
   ]
 }
