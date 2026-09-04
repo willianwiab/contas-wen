@@ -16,7 +16,7 @@
      nenhum receber os recados no papel.
    ========================================================= */
 
-const VERSAO = '2.5.0';
+const VERSAO = '2.6.0';
 const CHAVE = 'fala-turma:v1';
 
 const CORES = ['#7c3aed','#2563eb','#ec4899','#f59e0b','#16a34a','#0ea5e9','#ef4444','#8b5cf6','#14b8a6','#f97316'];
@@ -41,7 +41,9 @@ const TIPOS = {
   /* estes dois não são recados: são configurações da turma que
      viajam pelo mural. Nunca aparecem na lista. */
   sinos:   { emoji:'🔔', nome:'Horários', cor:'#64748b', config:true },
-  ferias:  { emoji:'🏖️', nome:'Férias',  cor:'#0891b2', config:true }
+  ferias:  { emoji:'🏖️', nome:'Férias',  cor:'#0891b2', config:true },
+  adm:     { emoji:'👑', nome:'Adm',     cor:'#7c3aed', config:true },
+  ordem:   { emoji:'⚖️', nome:'Ordem',   cor:'#64748b', config:true }
 };
 
 /* quantos dias faltam pra uma data (aaaa-mm-dd) */
@@ -218,6 +220,19 @@ function avisoConfere(a){
      a.sinos.some(x => !x || typeof x.nome !== 'string' || !x.nome.trim() || x.nome.length > 20 ||
        !horaVale(x.hora)))) return false;
   if(a.desde !== undefined && (typeof a.desde !== 'number' || !isFinite(a.desde))) return false;
+  if(a.nomes !== undefined && (!Array.isArray(a.nomes) || a.nomes.length > 30 ||
+     a.nomes.some(n => typeof n !== 'string' || !n.trim() || n.length > 30))) return false;
+  if(a.publica !== undefined && (typeof a.publica !== 'string' || a.publica.length > 200)) return false;
+  if(a.fn !== undefined && (typeof a.fn !== 'string' || a.fn.length > 200)) return false;
+  if(a.cofre !== undefined && (typeof a.cofre !== 'object' || !a.cofre ||
+     typeof a.cofre.iv !== 'string' || typeof a.cofre.c !== 'string' ||
+     a.cofre.c.length > 4000)) return false;
+  if(a.ordem !== undefined){
+    const o = a.ordem;
+    if(!o || typeof o !== 'object' || typeof o.acao !== 'string' || typeof o.ts !== 'number') return false;
+    if(typeof o.f !== 'string' || o.f.length > 200) return false;
+    if(String(o.alvo || '').length > 40 || String(o.extra || '').length > 20) return false;
+  }
   return true;
 }
 
@@ -251,7 +266,7 @@ async function puxarDaTurma(){
       if(!tem){ dados.avisos.push(a); mudou = true; }
       else if((a.v || 0) > (tem.v || 0)){ Object.assign(tem, a); mudou = true; }
     }
-    if(mudou){ dados.avisos.sort((a,b) => b.ts - a.ts); salvar(); desenharMural(); }
+    if(mudou){ dados.avisos.sort((a,b) => b.ts - a.ts); salvar(); await obedecerTodas(); desenharMural(); }
     puxarTodasPrivadas();
     puxarCaras();
     olharOsSocorros();
@@ -309,7 +324,13 @@ function criarTurma(){
   dados.eu = meu.slice(0,30);
   chaveTurma = null;
   salvar(); ligarNuvem(); desenharTudo(); mostrar('mural');
-  setTimeout(mostrarConvite, 500);
+  setTimeout(() => {
+    if(confirm('Tu quer ser o ADM desta turma?\n\n' +
+       'O adm apaga recado ruim, tranca o mural e organiza a turma.\n' +
+       'Precisa escolher uma senha só tua.\n\n' +
+       'Dá pra fazer isso depois, no 👑 Adm.')) criarAdm();
+    mostrarConvite();
+  }, 500);
 }
 
 function entrarComConvite(){
@@ -404,6 +425,7 @@ let filtro = 'tudo';
 
 function desenharMural(){
   olharOsSocorros();
+  desenharAvisoDeTranca();
   const caixa = $('#mural');
   if(!caixa) return;
   const lista = dados.avisos
@@ -541,6 +563,8 @@ function desenharMural(){
           <button class="rec-bt ${a.fixado ? 'on' : ''}" data-fixar="${a.id}">📌</button>
           ${meu ? `<button class="rec-bt fraco" data-apagar="${a.id}">🗑️</button>`
                 : `<button class="rec-bt fraco" data-denunciar="${a.id}" title="Avisar que este recado é ruim">🚨</button>`}
+          ${!meu && souAdm() ? `<button class="rec-bt fraco" data-admapagar="${a.id}"
+            title="Apagar como adm">👑🗑️</button>` : ''}
         </div>
       </div>`;
   }).join('');
@@ -554,6 +578,8 @@ function desenharMural(){
   caixa.querySelectorAll('[data-emoji]').forEach(b => b.addEventListener('click', () => {
     const [id, e] = b.dataset.emoji.split('|'); reagir(id, e);
   }));
+  caixa.querySelectorAll('[data-admapagar]').forEach(b =>
+    b.addEventListener('click', () => admApagar(b.dataset.admapagar)));
   caixa.querySelectorAll('[data-ler]').forEach(b =>
     b.addEventListener('click', () => lerEmVozAlta(b.dataset.ler)));
   caixa.querySelectorAll('[data-traduzir]').forEach(b =>
@@ -714,6 +740,7 @@ function abrirGente(){
 let tipoEscolhido = 'recado';
 
 function abrirEscrever(){
+  if(!possoEscrever()) return;
   if(!respondendo) tipoEscolhido = 'recado';
   $('#escTxt').value = dados.rascunho || '';
   $('#escData').value = '';
@@ -872,6 +899,12 @@ $('#btPais').addEventListener('click', recadoProsPais);
 $('#btAutorizacao').addEventListener('click', autorizacao);
 $('#btEconomia').addEventListener('click', trocarEconomia);
 $('#campoProcura').addEventListener('input', procurar);
+$('#btVoltarAdm').addEventListener('click', () => mostrar('mural'));
+$('#btVirarAdm').addEventListener('click', entrarComoAdm);
+$('#btSairAdm').addEventListener('click', sairDoAdm);
+$('#btTrancar').addEventListener('click', admTrancar);
+$('#btLimparMural').addEventListener('click', admLimpar);
+$('#btTrocarSenhaAdm').addEventListener('click', admTrocarSenha);
 $('#limparProcura').addEventListener('click', limparProcura);
 $('#btGente').addEventListener('click', abrirGente);
 $('#btVoltarGente').addEventListener('click', () => mostrar('mural'));
@@ -901,6 +934,7 @@ document.querySelectorAll('[data-ir]').forEach(b => b.addEventListener('click', 
   if(onde === 'calendario') abrirCalendario();
   if(onde === 'ferias') abrirFerias();
   if(onde === 'humor') abrirHumor();
+  if(onde === 'adm') abrirAdm();
 }));
 $('#btVoltarAlbum').addEventListener('click', () => mostrar('mural'));
 $('#btVoltarPriv').addEventListener('click', () => mostrar('mural'));
