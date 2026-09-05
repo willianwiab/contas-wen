@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08060f">
+<title>FÁBRICA DE EMOJIS</title>
+<style>
+  :root {
+    --bg:#08060f; --painel:#150f22; --painel2:#1d1530; --linha:#33254a;
+    --ink:#f7f0ff; --dim:#a294bd;
+    --ouro:#ffc857; --verde:#6ee7a0; --rosa:#ff6b9d; --azul:#7ac9ff; --cristal:#6ef0c8;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --r: 16px;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    margin:0; padding:16px 12px 26px; color:var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(900px 460px at 50% -10%, #3d2160 0%, transparent 60%),
+      radial-gradient(620px 400px at 92% 105%, #5c2418 0%, transparent 55%),
+      radial-gradient(500px 340px at 5% 60%, #142a4a 0%, transparent 60%), var(--bg);
+    background-attachment: fixed;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+  }
+
+  /* ---------- topo ---------- */
+  header { text-align:center; width:min(1080px,100%); }
+  .marca { font-family:var(--mono); font-size:.64rem; letter-spacing:.4em; color:var(--dim); text-transform:uppercase; }
+  .marca b { color:var(--ouro); }
+  #dinheiro {
+    font-family:var(--mono); font-variant-numeric:tabular-nums; font-weight:700;
+    font-size:clamp(1.9rem,7.5vw,3.1rem); line-height:1.05; margin-top:6px;
+    background:linear-gradient(180deg,#fff 8%,var(--ouro) 92%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .stats { display:flex; gap:6px; margin-top:11px; flex-wrap:wrap; justify-content:center; }
+  .stat {
+    background:linear-gradient(180deg,#ffffff0e,#ffffff05); border:1px solid var(--linha);
+    border-radius:12px; padding:6px 12px; min-width:86px; backdrop-filter:blur(4px);
+  }
+  .stat .k { font-size:.55rem; letter-spacing:.16em; color:var(--dim); text-transform:uppercase; }
+  .stat .v { font-family:var(--mono); font-weight:700; font-size:.9rem; margin-top:2px; }
+
+  #jogo { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:14px; width:min(1080px,100%); align-items:start; }
+  @media (max-width:880px){ #jogo { grid-template-columns:1fr; } }
+
+  /* ---------- caixa ---------- */
+  #tela { position:relative; line-height:0; }
+  #caixa {
+    width:100%; aspect-ratio:1/1.02; display:block; border-radius:var(--r);
+    background:linear-gradient(180deg,#120c1e,#0a0713);
+    border:1px solid var(--linha); box-shadow:inset 0 2px 24px #000a, 0 18px 40px #000a;
+    cursor:pointer; touch-action:manipulation;
+  }
+  #caixa.cheia { border-color:var(--rosa); box-shadow:inset 0 2px 24px #000a, 0 0 26px #ff6b9d55; }
+  #caixa.festa { border-color:var(--ouro); box-shadow:inset 0 2px 24px #000a, 0 0 34px #ffc85777; }
+  .flutuando { position:absolute; z-index:3; display:flex; gap:6px; }
+  .fSup { top:9px; left:9px; right:9px; align-items:center; flex-wrap:wrap; }
+  .fInf { bottom:9px; left:9px; right:9px; align-items:flex-end; flex-wrap:wrap; pointer-events:none; }
+  .pilula {
+    background:#0a0713cc; border:1px solid var(--linha); border-radius:99px; color:var(--dim);
+    font-family:var(--mono); font-size:.66rem; padding:5px 11px; line-height:1;
+    display:flex; align-items:center; gap:5px; cursor:pointer; white-space:nowrap;
+  }
+  .pilula:hover { border-color:var(--ouro); color:var(--ouro); }
+  .pilula.info { cursor:default; color:var(--ink); margin-left:auto; }
+  .buff {
+    background:#1d1530dd; border:1px solid var(--ouro); color:var(--ouro); border-radius:99px;
+    font-family:var(--mono); font-size:.66rem; font-weight:700; padding:5px 10px; line-height:1;
+    animation:pulsa 1.1s ease-in-out infinite;
+  }
+  .buff.combo { border-color:var(--rosa); color:var(--rosa); }
+  @keyframes pulsa { 50% { transform:scale(1.06); } }
+  .botoes { display:flex; gap:8px; margin-top:9px; }
+  .grandao {
+    flex:1; padding:14px; border:none; border-radius:13px; cursor:pointer;
+    font-family:var(--mono); font-weight:800; font-size:.95rem; letter-spacing:.08em;
+    background:linear-gradient(180deg,#ffe08a,var(--ouro)); color:#2a1c02;
+    box-shadow:0 5px 0 #a8741a; transition:.08s;
+  }
+  .grandao:active { transform:translateY(5px); box-shadow:none; }
+  .grandao.vender { background:linear-gradient(180deg,#8bf3b6,var(--verde)); box-shadow:0 5px 0 #2c7a4e; color:#052014; }
+  .grandao:disabled { filter:grayscale(.75) brightness(.6); cursor:not-allowed; box-shadow:none; }
+
+  /* ---------- painel ---------- */
+  #painel {
+    background:linear-gradient(180deg,#ffffff0a,#ffffff03); border:1px solid var(--linha);
+    border-radius:var(--r); padding:12px; display:flex; flex-direction:column; gap:10px;
+  }
+  .abasTopo { display:flex; gap:5px; }
+  .abaT {
+    flex:1; padding:9px 4px; border-radius:10px; cursor:pointer; border:1px solid var(--linha);
+    background:#ffffff08; color:var(--dim); font-family:var(--mono); font-size:.68rem; font-weight:700;
+    position:relative;
+  }
+  .abaT.sel { background:#ffffff1a; color:var(--ink); border-color:var(--ouro); }
+  .abaT .aviso { position:absolute; top:4px; right:5px; width:6px; height:6px; border-radius:50%; background:var(--verde); }
+  .abas { display:flex; gap:5px; }
+  .aba {
+    flex:1; padding:8px; border-radius:10px; cursor:pointer; border:1px solid var(--linha);
+    background:#ffffff08; color:var(--dim); font-family:var(--mono); font-size:.7rem; font-weight:700;
+  }
+  .aba.sel { background:var(--ouro); color:#241a02; border-color:var(--ouro); }
+  .aba.cri.sel { background:var(--cristal); color:#052018; border-color:var(--cristal); }
+  .familias { display:grid; grid-template-columns:repeat(9,1fr); gap:4px; }
+  .fam {
+    aspect-ratio:1; border-radius:9px; border:1px solid var(--linha); background:#ffffff08;
+    cursor:pointer; font-size:1rem; display:grid; place-items:center; position:relative; padding:0;
+  }
+  .fam.sel { border-color:var(--ouro); background:#ffc85722; }
+  .fam .pt { position:absolute; bottom:2px; right:3px; font-family:var(--mono); font-size:.5rem; color:var(--ouro); }
+  .fam.pode::after { content:""; position:absolute; top:3px; right:3px; width:5px; height:5px; border-radius:50%; background:var(--verde); }
+
+  .lista { display:flex; flex-direction:column; gap:6px; min-height:330px; }
+  .item {
+    display:grid; grid-template-columns:36px 1fr auto; gap:10px; align-items:center;
+    padding:9px; border-radius:11px; cursor:pointer; text-align:left; width:100%;
+    font-family:inherit; color:inherit; position:relative; overflow:hidden;
+    background:linear-gradient(180deg,var(--painel2),var(--painel)); border:1px solid var(--linha);
+    transition:border-color .12s, transform .08s;
+  }
+  .item .barra { position:absolute; left:0; bottom:0; height:2px; background:var(--ouro); opacity:.55; }
+  .item.ok { border-color:#ffc85766; }
+  .item.ok:hover { transform:translateY(-1px); border-color:var(--ouro); }
+  .item.bloq { opacity:.4; cursor:not-allowed; }
+  .item.cri.ok { border-color:#6ef0c866; }
+  .item.cri .preco { color:var(--cristal); }
+  .item .ic { width:36px; height:36px; border-radius:9px; display:grid; place-items:center; font-size:1.05rem; background:#ffffff0d; border:1px solid var(--linha); }
+  .item .nome { font-weight:700; font-size:.85rem; }
+  .item .desc { font-size:.68rem; color:var(--dim); margin-top:1px; }
+  .item .preco { font-family:var(--mono); font-weight:700; font-size:.8rem; color:var(--ouro); text-align:right; }
+  .item .qtd { font-family:var(--mono); font-size:.62rem; color:var(--dim); text-align:right; margin-top:2px; }
+
+  #renascer {
+    width:100%; padding:12px; border-radius:12px; cursor:pointer; text-align:left;
+    font-family:inherit; color:inherit; border:1px solid #6ef0c855;
+    background:linear-gradient(135deg,#0c3a32,#101a2a);
+  }
+  #renascer:not(.on) { opacity:.4; cursor:not-allowed; }
+  #renascer b { color:var(--cristal); }
+  #renascer span { display:block; font-size:.71rem; color:var(--dim); margin-top:4px; line-height:1.45; }
+  #turbo {
+    width:100%; padding:10px; border-radius:12px; cursor:pointer; text-align:left;
+    font-family:inherit; color:inherit; border:1px solid #ffc85755;
+    background:linear-gradient(135deg,#3a2a0c,#2a101a); font-size:.78rem;
+  }
+  #turbo b { color:var(--ouro); font-family:var(--mono); }
+  #turbo span { display:block; font-size:.7rem; color:var(--dim); margin-top:3px; }
+
+  /* ---------- conquistas / missões / stats ---------- */
+  .cabecinha { font-family:var(--mono); font-size:.68rem; color:var(--dim); line-height:1.5; }
+  .cabecinha b { color:var(--ouro); }
+  .conqGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(126px,1fr)); gap:6px; max-height:430px; overflow-y:auto; padding-right:2px; }
+  .conq {
+    border:1px solid var(--linha); border-radius:11px; padding:8px; background:#ffffff08;
+    display:flex; gap:7px; align-items:flex-start;
+  }
+  .conq.feita { border-color:#ffc85788; background:linear-gradient(180deg,#ffc8571a,#ffffff05); }
+  .conq .ci { font-size:1.05rem; line-height:1; }
+  .conq .cn { font-size:.72rem; font-weight:700; }
+  .conq.nao .cn, .conq.nao .cd { color:#ffffff3d; }
+  .conq .cd { font-size:.62rem; color:var(--dim); margin-top:2px; line-height:1.35; }
+
+  .missao {
+    border:1px solid var(--linha); border-radius:12px; padding:10px; background:linear-gradient(180deg,var(--painel2),var(--painel));
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .missao .mt { display:flex; align-items:center; gap:8px; font-size:.8rem; font-weight:700; }
+  .missao .mt .mp { margin-left:auto; font-family:var(--mono); font-size:.68rem; color:var(--dim); }
+  .trilho { height:7px; border-radius:99px; background:#ffffff12; overflow:hidden; }
+  .trilho i { display:block; height:100%; background:linear-gradient(90deg,var(--ouro),var(--rosa)); }
+  .missao .mr { font-family:var(--mono); font-size:.68rem; color:var(--verde); }
+  .btMissao {
+    padding:8px; border-radius:9px; border:none; cursor:pointer; font-family:var(--mono);
+    font-weight:800; font-size:.74rem; background:linear-gradient(180deg,#8bf3b6,var(--verde)); color:#052014;
+  }
+  .btMissao:disabled { background:#ffffff10; color:#ffffff40; cursor:not-allowed; }
+
+  .linhaStat { display:flex; gap:10px; padding:6px 2px; border-bottom:1px dashed #ffffff12; font-size:.76rem; }
+  .linhaStat b { margin-left:auto; font-family:var(--mono); color:var(--ouro); font-weight:700; }
+
+  .rodape { font-size:.71rem; color:var(--dim); text-align:center; max-width:560px; line-height:1.6; }
+
+  /* ---------- janelas ---------- */
+  #indice, #adm, #volta { position:fixed; inset:0; z-index:60; display:none; background:#04020ae0; backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:16px; }
+  #indice.on, #adm.on, #volta.on { display:flex; }
+  .janela {
+    width:min(680px,100%); max-height:88vh; overflow-y:auto; padding:16px; border-radius:var(--r);
+    background:linear-gradient(180deg,var(--painel2),#0b0713); border:1px solid var(--ouro); box-shadow:0 30px 60px #000;
+  }
+  .janela h3 { margin:0 0 3px; font-family:var(--mono); font-size:.76rem; letter-spacing:.26em; color:var(--ouro); text-transform:uppercase; }
+  .janela .sub { margin:0 0 12px; font-size:.73rem; color:var(--dim); }
+  .paginas { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:12px; }
+  .pag { padding:5px 9px; border-radius:8px; border:1px solid var(--linha); background:#ffffff08;
+         color:var(--dim); font-family:var(--mono); font-size:.65rem; cursor:pointer; }
+  .pag.sel { background:var(--ouro); color:#241a02; border-color:var(--ouro); }
+  .faixa { margin-bottom:11px; }
+  .faixaTop { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+  .pastilha { font-family:var(--mono); font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; padding:3px 9px; border-radius:99px; font-weight:700; }
+  .faixaInfo { font-family:var(--mono); font-size:.63rem; color:var(--dim); margin-left:auto; }
+  .fileira { display:grid; grid-template-columns:repeat(auto-fill,minmax(62px,1fr)); gap:5px; }
+  .ficha { aspect-ratio:1/1.18; border-radius:9px; display:flex; flex-direction:column; align-items:center;
+           justify-content:center; gap:2px; border:1px solid var(--linha); background:#ffffff08; font-size:1.25rem; }
+  .ficha.nao { color:#ffffff20; }
+  .ficha small { font-family:var(--mono); font-size:.5rem; color:var(--dim); }
+  .btFechar { padding:9px 16px; border-radius:10px; cursor:pointer; font-family:var(--mono); font-weight:700;
+              font-size:.75rem; color:var(--ink); background:#ffffff10; border:1px solid var(--linha); }
+
+  /* ---------- modo adm ---------- */
+  #adm { z-index:65; }
+  #adm .janela { border-color:var(--azul); }
+  #adm h3 { color:var(--azul); }
+  .grupo { margin-bottom:12px; }
+  .grupo .lab { font-family:var(--mono); font-size:.6rem; letter-spacing:.2em; color:var(--dim); text-transform:uppercase; margin-bottom:6px; }
+  .btns { display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
+  .bt { padding:7px 11px; border-radius:9px; cursor:pointer; font-family:var(--mono); font-size:.74rem;
+        font-weight:700; color:var(--ink); background:#ffffff10; border:1px solid var(--linha); }
+  .bt:hover { background:#ffffff1e; border-color:var(--azul); }
+  .bt.perigo { border-color:#ff6b6b55; color:#ff9d9d; }
+  .bt.perigo:hover { background:#ff6b6b22; border-color:#ff6b6b; }
+  .campo { flex:1; min-width:110px; padding:7px 10px; border-radius:9px; background:#05030b;
+           border:1px solid var(--linha); color:var(--ink); font-family:var(--mono); font-size:.78rem; }
+  .campo:focus { outline:none; border-color:var(--azul); }
+  #admInfo { font-family:var(--mono); font-size:.7rem; color:var(--verde); background:#05030b;
+             border:1px solid var(--linha); border-radius:9px; padding:9px; line-height:1.65; white-space:pre-wrap; margin-bottom:12px; }
+  #admErro { color:#ff8787; font-size:.73rem; min-height:1.1em; margin-top:7px; }
+  #btAdm { opacity:.3; }
+  #btAdm:hover { opacity:1; }
+
+  #toast {
+    position:fixed; top:12px; left:50%; transform:translate(-50%,-24px); z-index:70;
+    padding:9px 16px; border-radius:99px; background:var(--painel2); border:1px solid var(--ouro);
+    font-family:var(--mono); font-size:.74rem; font-weight:700; color:var(--ouro);
+    opacity:0; transition:.18s; pointer-events:none; max-width:92vw; text-align:center;
+  }
+  #toast.on { opacity:1; transform:translate(-50%,0); }
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<div id="indice"><div class="janela">
+  <h3>📖 Índice de emojis</h3>
+  <p class="sub" id="indiceSub"></p>
+  <div class="paginas" id="paginas"></div>
+  <div id="faixas"></div>
+  <button class="btFechar" onclick="document.getElementById('indice').classList.remove('on')">FECHAR</button>
+</div></div>
+
+<div id="volta"><div class="janela" style="max-width:420px">
+  <h3>🌙 Bem-vindo de volta</h3>
+  <p class="sub" id="voltaSub"></p>
+  <div id="voltaInfo" style="font-family:var(--mono);font-size:.82rem;line-height:1.9;color:var(--verde);background:#05030b;border:1px solid var(--linha);border-radius:10px;padding:12px;margin-bottom:12px;white-space:pre-wrap"></div>
+  <button class="btFechar" onclick="document.getElementById('volta').classList.remove('on')">BELEZA!</button>
+</div></div>
+
+<div id="adm"><div class="janela">
+  <div id="admLogin">
+    <h3>🔒 Acesso restrito</h3>
+    <p class="sub">Modo administrador da fábrica. Digite a senha.</p>
+    <div class="btns">
+      <input class="campo" id="admSenha" type="password" placeholder="senha" autocomplete="off">
+      <button class="bt" id="admEntrar">ENTRAR</button>
+      <button class="bt" onclick="fecharAdm()">SAIR</button>
+    </div>
+    <div id="admErro"></div>
+  </div>
+
+  <div id="admPainel" style="display:none">
+    <h3>⚙ Modo administrador</h3>
+    <p class="sub">A fábrica é sua. Quebra à vontade.</p>
+    <div id="admInfo"></div>
+
+    <div class="grupo"><div class="lab">Dinheiro</div><div class="btns">
+      <button class="bt" onclick="darDinheiro(1e6)">+1M</button>
+      <button class="bt" onclick="darDinheiro(1e9)">+1B</button>
+      <button class="bt" onclick="darDinheiro(1e12)">+1T</button>
+      <button class="bt" onclick="darDinheiro(1e18)">+1Qi</button>
+      <button class="bt" onclick="darDinheiro(1e30)">+1 absurdo</button>
+      <button class="bt perigo" onclick="dinheiro=0;puxarAdm()">ZERAR</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Quantidade exata</div><div class="btns">
+      <input class="campo" id="admQtd" type="number" placeholder="ex: 5000000">
+      <button class="bt" onclick="definirDinheiro()">DEFINIR</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Cristais</div><div class="btns">
+      <button class="bt" onclick="cristais+=10;puxarAdm()">+10</button>
+      <button class="bt" onclick="cristais+=1000;puxarAdm()">+1000</button>
+      <button class="bt" onclick="cristais+=1e6;puxarAdm()">+1 milhão</button>
+      <button class="bt perigo" onclick="cristais=0;puxarAdm()">ZERAR</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Upgrades</div><div class="btns">
+      <button class="bt" onclick="darUpgrades('dinheiro',1)">+1 em cada (dinheiro)</button>
+      <button class="bt" onclick="darUpgrades('dinheiro',10)">+10 em cada</button>
+      <button class="bt" onclick="darUpgrades('cristal',1)">+1 em cada (cristal)</button>
+      <button class="bt perigo" onclick="TODOS.forEach(u=>u.qtd=0);puxarAdm()">ZERAR TODOS</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Raridades — <b id="admRar">1</b> de 120 abertas</div><div class="btns">
+      <button class="bt" onclick="liberarAte(20)">até a 20</button>
+      <button class="bt" onclick="liberarAte(60)">até a 60</button>
+      <button class="bt" onclick="liberarAte(100)">até a 100</button>
+      <button class="bt" onclick="liberarAte(120)">TODAS as 120</button>
+      <button class="bt perigo" onclick="recorde=0;puxarAdm()">TRANCAR TUDO</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Emojis secretos</div><div class="btns" id="admSecretos"></div></div>
+
+    <div class="grupo"><div class="lab">Bônus e turbos</div><div class="btns" id="admBonus"></div></div>
+
+    <div class="grupo"><div class="lab">Conquistas e missões</div><div class="btns">
+      <button class="bt" onclick="darConquistas()">DESTRAVAR TODAS</button>
+      <button class="bt perigo" onclick="conquistasFeitas=[];puxarAdm()">APAGAR CONQUISTAS</button>
+      <button class="bt" onclick="completarMissoes()">COMPLETAR MISSÕES</button>
+      <button class="bt" onclick="sortearMissoes(true)">TROCAR MISSÕES</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Caixa</div><div class="btns">
+      <button class="bt" onclick="fabricar(100)">+100 emojis</button>
+      <button class="bt" onclick="fabricar(500)">+500 emojis</button>
+      <button class="bt" onclick="bolas=[];deposito=0;depositoValor=0;puxarAdm()">ESVAZIAR</button>
+      <button class="bt" onclick="mudarFisicos(-150)">− física</button>
+      <button class="bt" onclick="mudarFisicos(150)">+ física</button>
+      <span class="bt" style="cursor:default" id="admFis">550</span>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Índice</div><div class="btns">
+      <button class="bt" onclick="descobrirTudo()">DESCOBRIR TUDO</button>
+      <button class="bt perigo" onclick="descobertos=[];puxarAdm()">APAGAR ÍNDICE</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Sair</div><div class="btns">
+      <button class="bt perigo" onclick="resetTotal()">RECOMEÇAR DO ZERO</button>
+      <button class="bt" onclick="fecharAdm()">FECHAR</button>
+    </div></div>
+  </div>
+</div></div>
+
+<header>
+  <div class="marca">FÁBRICA DE <b>EMOJIS</b></div>
+  <div id="dinheiro">R$ 0</div>
+  <div class="stats">
+    <div class="stat"><div class="k">Por clique</div><div class="v" id="vClique" style="color:var(--ouro)">1</div></div>
+    <div class="stat"><div class="k">Por segundo</div><div class="v" id="vChuva" style="color:var(--rosa)">0</div></div>
+    <div class="stat"><div class="k">Raridade</div><div class="v" id="vRar">Comum</div></div>
+    <div class="stat"><div class="k">Recorde</div><div class="v" id="vRec">R$ 0</div></div>
+    <div class="stat"><div class="k">Cristais</div><div class="v" id="vCris" style="color:var(--cristal)">0</div></div>
+    <div class="stat"><div class="k">Índice</div><div class="v" id="vInd" style="color:var(--azul)">0</div></div>
+    <div class="stat"><div class="k">Conquistas</div><div class="v" id="vConq" style="color:var(--verde)">0</div></div>
+  </div>
+</header>
+
+<div id="jogo">
+  <div>
+    <div id="tela">
+      <canvas id="caixa"></canvas>
+      <div class="flutuando fSup">
+        <button class="pilula" id="btIndice">📖 <span id="contIndice">0</span></button>
+        <button class="pilula" id="btSom">🔊</button>
+        <button class="pilula" id="btGiro" title="inclinar o celular">📱</button>
+        <button class="pilula" id="btAdm" title="modo adm">🔒</button>
+        <div class="pilula info" id="contadorPilha">vazia</div>
+      </div>
+      <div class="flutuando fInf" id="faixaBuffs"></div>
+    </div>
+    <div class="botoes">
+      <button class="grandao" id="btFazer">FAZER EMOJI</button>
+      <button class="grandao vender" id="btVender">VENDER</button>
+    </div>
+  </div>
+
+  <div id="painel">
+    <div class="abasTopo">
+      <button class="abaT sel" data-p="loja">🛒 LOJA</button>
+      <button class="abaT" data-p="conq">🏆 <span id="ptConq">0</span></button>
+      <button class="abaT" data-p="miss">📜 MISSÕES<span class="aviso" id="avisoMiss" hidden></span></button>
+      <button class="abaT" data-p="stat">📊 STATS</button>
+    </div>
+
+    <div id="pLoja" style="display:flex;flex-direction:column;gap:10px">
+      <div class="abas">
+        <button class="aba sel" id="abaDin" onclick="trocarAba('dinheiro')">💵 DINHEIRO</button>
+        <button class="aba cri" id="abaCri" onclick="trocarAba('cristal')">💠 CRISTAIS</button>
+      </div>
+      <div class="familias" id="familias"></div>
+      <div class="lista" id="lista"></div>
+      <button id="turbo" onclick="comprarTurbo()"></button>
+      <button id="renascer" onclick="renascer()"></button>
+    </div>
+
+    <div id="pConq" style="display:none;flex-direction:column;gap:10px">
+      <div class="cabecinha" id="conqTopo"></div>
+      <div class="conqGrid" id="conqGrid"></div>
+    </div>
+
+    <div id="pMiss" style="display:none;flex-direction:column;gap:10px">
+      <div class="cabecinha" id="missTopo"></div>
+      <div id="missLista" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <div id="pStat" style="display:none;flex-direction:column;gap:10px">
+      <div class="cabecinha">Tudo que a fábrica já viveu.</div>
+      <div id="statLista"></div>
+      <div class="btns">
+        <button class="bt" onclick="exportarSave()">📤 COPIAR CÓDIGO DO JOGO</button>
+        <button class="bt" onclick="importarSave()">📥 COLAR CÓDIGO</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rodape" id="rodape"></div>
+
+<script>
+/* ==========================================================================
+   1. RARIDADES — 20 com nome próprio + 100 geradas
+   ========================================================================== */
+const NOMEADAS = [
+  ["Comum","#c8c8da"], ["Raro","#7ac9ff"], ["Épico","#b47aff"], ["Mítico","#ff6b9d"],
+  ["Lendário","#ffc857"], ["Mega","#ff8a3c"], ["Ômega","#ff4d4d"], ["Espaço","#5ce1e6"],
+  ["Galáctico","#8ab4ff"], ["Estelar","#ffe66d"], ["Nebular","#ff9ecd"], ["Quântico","#6ef0c8"],
+  ["Dimensional","#c0a3ff"], ["Cósmico","#5ad2ff"], ["Universal","#ffb347"], ["Multiversal","#ff6bd6"],
+  ["Infinito","#7dffb8"], ["Divino","#fff3b0"], ["Eterno","#b8c6ff"], ["Absoluto","#ff2e6b"],
+];
+const PREFIXOS = ["Prisma","Vórtice","Aurora","Éter","Nexo","Zênite","Fractal","Miragem","Oráculo","Titânico",
+                  "Serafim","Abissal","Radiante","Espectral","Runa","Cataclismo","Singular","Ápice","Elísio","Paradoxo"];
+const NUCLEOS  = ["Menor","Maior","Ancestral","Supremo","Primordial"];
+
+const RARIDADES = [];
+for (let i = 0; i < 120; i++) {
+  let nome, cor;
+  if (i < NOMEADAS.length) { nome = NOMEADAS[i][0]; cor = NOMEADAS[i][1]; }
+  else {
+    const g = i - NOMEADAS.length;
+    nome = PREFIXOS[g % PREFIXOS.length] + " " + NUCLEOS[Math.floor(g / PREFIXOS.length)];
+    cor = "hsl(" + ((g * 47) % 360) + " 85% 68%)";
+  }
+  RARIDADES.push({
+    id: "r" + i, nome, cor, indice: i,
+    base: Math.pow(8.5, i),
+    desbloqueio: i === 0 ? 0 : 200 * Math.pow(8, i - 1),
+  });
+}
+
+/* ==========================================================================
+   2. EMOJIS — pool fixo, embaralhado de forma determinística (todo mundo vê igual)
+   ========================================================================== */
+const POOL = (
+  "🙂😀😃😄😁😆😅😂🤣😊😇🙃😉😌😍🥰😘😗😙😚😋😛😝😜🤪🤨🧐🤓😎🥸🤩🥳😏😒😞😔😟😕🙁😣😖😫😩🥺😢😭😤😠😡🤬" +
+  "🤯😳🥵🥶😱😨😰😥😓🤗🤔🤭🤫🤥😶😐😑😬🙄😯😦😧😮😲🥱😴🤤😪😵🤐🥴🤢🤮🤧😷🤒🤕🤑🤠😈👿👹👺🤡💩👻💀☠️👽" +
+  "👾🤖🎃😺😸😹😻😼😽🙀😿😾🙈🙉🙊💋💌💘💝💖💗💓💞💕💟❣️💔❤️🧡💛💚💙💜🤎🖤🤍💯💢💥💫💦💨🕳️💬🗯️💭💤👋🤚" +
+  "🖐️✋🖖👌🤌🤏✌️🤞🤟🤘🤙👈👉👆👇☝️👍👎✊👊🤛🤜👏🙌👐🤲🤝🙏💅🤳💪🦾🦿🦵🦶👂🦻👃🧠🫀🫁🦷🦴👀👁️👅👄👶" +
+  "🧒👦👧🧑👱👨🧔👩🧓👴👵🙍🙎🙅🙆💁🙋🧏🙇🤦🤷👮🕵️💂🥷👷🤴👸👳👲🧕🤵👰🤰🤱👼🎅🤶🦸🦹🧙🧚🧛🧜🧝🧞🧟💆💇" +
+  "🚶🧍🧎🏃💃🕺🕴️👯🧖🧗🤺🏇⛷️🏂🏌️🏄🚣🏊⛹️🏋️🚴🚵🤸🤼🤽🤾🤹🧘🛀🛌👭👫👬💏💑👪🗣️👤👥🫂👣🦰🦱🦳🦲🐵🐒🦍" +
+  "🦧🐶🐕🦮🐩🐺🦊🦝🐱🐈🦁🐯🐅🐆🐴🐎🦄🦓🦌🦬🐮🐂🐃🐄🐷🐖🐗🐽🐏🐑🐐🐪🐫🦙🦒🐘🦣🦏🦛🐭🐁🐀🐹🐰🐇🐿️🦫🦔🦇" +
+  "🐻🐨🐼🦥🦦🦨🦘🦡🐾🦃🐔🐓🐣🐤🐥🐦🐧🕊️🦅🦆🦢🦉🦤🪶🦩🦚🦜🐸🐊🐢🦎🐍🐲🐉🦕🦖🐳🐋🐬🦭🐟🐠🐡🦈🐙🐚🐌🦋" +
+  "🐛🐜🐝🪲🐞🦗🕷️🕸️🦂🦟🪰🪱🦠💐🌸💮🏵️🌹🥀🌺🌻🌼🌷🌱🪴🌲🌳🌴🌵🌾🌿☘️🍀🍁🍂🍃🍄🌰🦀🦞🦐🦑🌍🌎🌏🌐🗺️" +
+  "🧭🏔️⛰️🌋🗻🏕️🏖️🏜️🏝️🏞️🏟️🏛️🏗️🧱🪨🪵🛖🏘️🏚️🏠🏡🏢🏣🏤🏥🏦🏨🏩🏪🏫🏬🏭🏯🏰💒🗼🗽⛪🕌🛕🕍⛩️🕋⛲⛺🌁" +
+  "🌃🏙️🌄🌅🌆🌇🌉♨️🎠🎡🎢💈🎪🚂🚃🚄🚅🚆🚇🚈🚉🚊🚝🚞🚋🚌🚍🚎🚐🚑🚒🚓🚔🚕🚖🚗🚘🚙🛻🚚🚛🚜🏎️🏍️🛵🦽🦼🛺" +
+  "🚲🛴🛹🛼🚏🛣️🛤️🛢️⛽🚨🚥🚦🛑🚧⚓⛵🛶🚤🛳️⛴️🛥️🚢✈️🛩️🛫🛬🪂💺🚁🚟🚠🚡🛰️🚀🛸🛎️🧳⌛⏳⌚⏰⏱️⏲️🕰️🕛🕐" +
+  "🌑🌒🌓🌔🌕🌖🌗🌘🌙🌚🌛🌜🌡️☀️🌝🌞🪐⭐🌟🌠🌌☁️⛅⛈️🌤️🌥️🌦️🌧️🌨️🌩️🌪️🌫️🌬️🌀🌈🌂☂️☔⛱️⚡❄️☃️⛄☄️🔥💧🌊" +
+  "🎃🎄🎆🎇🧨✨🎈🎉🎊🎋🎍🎎🎏🎐🎑🧧🎀🎁🎗️🎟️🎫🎖️🏆🏅🥇🥈🥉⚽⚾🥎🏀🏐🏈🏉🎾🥏🎳🏏🏑🏒🥍🏓🏸🥊🥋🥅⛳⛸️🎣" +
+  "🤿🎽🎿🛷🥌🎯🪀🪁🎱🔮🪄🧿🎮🕹️🎰🎲🧩🧸🪅🪆♠️♥️♦️♣️♟️🃏🀄🎴🎭🖼️🎨🧵🪡🧶🪢👓🕶️🥽🥼🦺👔👕👖🧣🧤🧥🧦👗" +
+  "👘🥻🩱🩲🩳👙👚👛👜👝🛍️🎒🩴👞👟🥾🥿👠👡🩰👢👑👒🎩🎓🧢🪖⛑️📿💄💍💎🔇🔈🔉🔊📢📣📯🔔🔕🎼🎵🎶🎙️🎚️🎛️🎤" +
+  "🎧📻🎷🪗🎸🎹🎺🎻🪕🥁🪘📱📲☎️📞📟📠🔋🔌💻🖥️🖨️⌨️🖱️🖲️💽💾💿📀🧮🎥🎞️📽️🎬📺📷📸📹📼🔍🔎🕯️💡🔦🏮🪔📔" +
+  "📕📖📗📘📙📚📓📒📃📜📄📰🗞️📑🔖🏷️💰🪙💴💵💶💷💸💳🧾✉️📧📨📩📤📥📦📫📪📬📭📮🗳️✏️✒️🖋️🖊️🖌️🖍️📝💼📁" +
+  "📂🗂️📅📆🗒️🗓️📇📈📉📊📋📌📍📎🖇️📏📐✂️🗃️🗄️🗑️🔒🔓🔏🔐🔑🗝️🔨🪓⛏️⚒️🛠️🗡️⚔️🔫🪃🏹🛡️🪚🔧🪛🔩⚙️🗜️⚖️🦯" +
+  "🔗⛓️🪝🧰🧲🪜⚗️🧪🧫🧬🔬🔭📡💉🩸💊🩹🩺🚪🛗🪞🪟🛏️🛋️🪑🚽🪠🚿🛁🪤🪒🧴🧷🧹🧺🧻🪣🧼🪥🧽🧯🛒🚬⚰️🪦⚱️🗿🪧" +
+  "🏧🚮🚰♿🚹🚺🚻🚼🚾🛂🛃🛄🛅⚠️🚸⛔🚫🚳🚭🚯🚱🚷📵🔞☢️☣️⬆️↗️➡️↘️⬇️↙️⬅️↖️↕️↔️↩️↪️⤴️⤵️🔃🔄🔙🔚🔛🔜🔝🛐⚛️" +
+  "🕉️✡️☸️☯️✝️☦️☪️☮️🕎🔯♈♉♊♋♌♍♎♏♐♑♒♓⛎🔀🔁🔂▶️⏩⏭️⏯️◀️⏪⏮️🔼⏫🔽⏬⏸️⏹️⏺️⏏️🎦🔅🔆📶📳📴♻️" +
+  "⚜️🔱📛🔰⭕✅☑️✔️❌❎➕➖➗➰➿〽️✳️✴️❇️‼️⁉️❓❔❕❗〰️💱💲⚕️♾️🔟🔠🔡🔢🔣🔤🅰️🆎🅱️🆑🆒🆓🆔🆕🆖🅾️🆗🅿️🆘🆙🆚"
+);
+const LISTA_EMOJIS = [...new Set([...POOL.matchAll(/\p{Extended_Pictographic}(?:️)?/gu)].map(m => m[0]))];
+
+// embaralhador com semente fixa: a ordem é sempre a mesma em qualquer computador
+function baralhoFixo(arr, semente) {
+  const a = arr.slice();
+  let s = semente;
+  const rnd = () => (s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+const BARALHO = baralhoFixo(LISTA_EMOJIS, 20260904);
+const POR_RARIDADE = 6;
+
+const TIPOS = [];
+RARIDADES.forEach((r, ri) => {
+  for (let i = 0; i < POR_RARIDADE; i++) {
+    const e = BARALHO[(ri * POR_RARIDADE + i) % BARALHO.length];
+    TIPOS.push({
+      e, chave: r.id + "|" + e, raridade: r.id, rIndex: ri, cor: r.cor,
+      valor: r.base * (1 + i * 0.3),
+      tam: 12 + Math.min(ri, 30) * .28 + i * .2,
+      desbloqueio: r.desbloqueio,
+    });
+  }
+});
+
+/* ==========================================================================
+   2b. EMOJIS SECRETOS
+   Não são uma raridade: podem cair a qualquer momento, em qualquer fase do
+   jogo, mas com chances absurdas. O valor deles acompanha a sua raridade
+   mais alta, então achar um secreto é sempre um evento. O Radar (loja de
+   cristais) multiplica essas chances.
+   ========================================================================== */
+const SECRETOS = [
+  { e:"🫥", nome:"O Sumido",            chance:1/20000,   fator:20 },
+  { e:"👁️‍🗨️", nome:"O Olho Falante",   chance:1/60000,   fator:60 },
+  { e:"🕴️", nome:"O Homem Flutuante",   chance:1/150000,  fator:150 },
+  { e:"🪬", nome:"A Mão da Sorte",      chance:1/400000,  fator:400 },
+  { e:"☢️", nome:"O Reator",            chance:1/1000000, fator:1200 },
+  { e:"🩻", nome:"O Raio-X",            chance:1/3000000, fator:4000 },
+  { e:"🛗", nome:"O Elevador Infinito", chance:1/9000000, fator:15000 },
+  { e:"🫠", nome:"O Derretido",         chance:1/3e7,     fator:60000 },
+  { e:"🫨", nome:"O Tremido",           chance:1/8e7,     fator:25e4 },
+  { e:"🪩", nome:"A Bola de Espelhos",  chance:1/25e7,    fator:1e6 },
+];
+SECRETOS.forEach((s, i) => {
+  s.secreto = true; s.rIndex = -1; s.chave = "S|" + s.e;
+  s.cor = "#ffffff"; s.tam = 17 + i * .6; s.valor = 0;
+});
+function sortearSecreto() {
+  const radar = multSecreto();
+  for (let i = SECRETOS.length - 1; i >= 0; i--) {      // testa do mais raro pro menos raro
+    if (Math.random() < SECRETOS[i].chance * radar) return SECRETOS[i];
+  }
+  return null;
+}
+function valorDe(tipo) {
+  if (!tipo.secreto) return tipo.valor;
+  const lib = raridadesLiberadas();
+  return lib[lib.length - 1].base * tipo.fator;
+}
+
+/* ==========================================================================
+   3. UPGRADES — 16 famílias de dinheiro + 17 de cristal, 10 níveis cada
+   ========================================================================== */
+const QUALIDADES = ["de Bronze","de Prata","de Ouro","de Platina","de Diamante",
+                    "de Rubi","de Safira","de Esmeralda","de Obsidiana","Cósmico"];
+
+const FAM_DINHEIRO = [
+  { id:"clique",  ic:"👆", nome:"Clique",  tipo:"clique",  base:20,   val:1,    txt:v => "+" + fmt(v) + " emojis por clique" },
+  { id:"chuva",   ic:"🌧️", nome:"Chuva",   tipo:"chuva",   base:300,  val:1,    txt:v => "+" + fmt(v) + " emojis por segundo" },
+  { id:"valor",   ic:"💠", nome:"Valor",   tipo:"valor",   base:150,  val:.2,   txt:v => "+" + Math.round(v * 100) + "% no valor de cada emoji" },
+  { id:"espaco",  ic:"📦", nome:"Espaço",  tipo:"espaco",  base:900,  val:25,   txt:v => "+" + fmt(v) + " de espaço na caixa" },
+  { id:"sorte",   ic:"🍀", nome:"Sorte",   tipo:"sorte",   base:700,  val:.04,  txt:v => "+" + Math.round(v * 100) + "% de chance de raro" },
+  { id:"venda",   ic:"💰", nome:"Venda",   tipo:"venda",   base:8000, val:.1,   txt:v => "venda vale +" + Math.round(v * 100) + "%" },
+  { id:"prensa",  ic:"🏗️", nome:"Prensa",  tipo:"prensa",  base:2e4,  val:.02,  txt:v => "emojis " + Math.round(v * 100) + "% menores" },
+  { id:"ima",     ic:"🧲", nome:"Ímã",     tipo:"ima",     base:1e4,  val:.0004,txt:() => "puxa os emojis pro centro" },
+  { id:"dourado", ic:"🌟", nome:"Dourado", tipo:"dourado", base:5e4,  val:.01,  txt:v => "+" + (v * 100).toFixed(1) + "% de chance de dourado" },
+  { id:"nucleo",  ic:"⚡", nome:"Núcleo",  tipo:"mult",    base:2e6,  val:.06,  txt:v => "multiplica TUDO por " + (1 + v).toFixed(2) },
+  { id:"vendedor",ic:"🤝", nome:"Vendedor",tipo:"auto",    base:4e4,  val:1,    txt:v => "vende sozinho quando encher, e a cada " + segundosAuto(v) + "s" },
+  { id:"critico", ic:"🎯", nome:"Crítico", tipo:"critico", base:1.2e5,val:.015, txt:v => "+" + (v * 100).toFixed(1) + "% de clique crítico (x10)" },
+  { id:"combo",   ic:"🔥", nome:"Combo",   tipo:"combo",   base:6e4,  val:2,    txt:v => "combo até " + Math.round(v) + " (+5% por passo)" },
+  { id:"gemeo",   ic:"♊", nome:"Gêmeo",   tipo:"duplo",   base:3e5,  val:.01,  txt:v => "+" + (v * 100).toFixed(1) + "% de sair 2 emojis de uma vez" },
+  { id:"fusao",   ic:"🧬", nome:"Fusão",   tipo:"fusao",   base:1.5e6,val:.006, txt:v => "+" + (v * 100).toFixed(1) + "% do emoji nascer 1 raridade acima" },
+  { id:"noite",   ic:"🌙", nome:"Turno da Noite", tipo:"offline", base:5e5, val:.05, txt:v => "rende " + Math.round(v * 100) + "% enquanto o jogo tá fechado" },
+];
+const FAM_CRISTAL = [
+  { id:"heranca", ic:"👐", nome:"Herança",  tipo:"clique",  base:2, val:3,    txt:v => "+" + fmt(v) + " por clique, pra sempre" },
+  { id:"diluvio", ic:"⛈️", nome:"Dilúvio",  tipo:"chuva",   base:2, val:3,    txt:v => "+" + fmt(v) + " por segundo, pra sempre" },
+  { id:"eterno",  ic:"♾️", nome:"Eterno",   tipo:"valor",   base:3, val:.5,   txt:v => "+" + Math.round(v * 100) + "% de valor, pra sempre" },
+  { id:"cofre",   ic:"🗄️", nome:"Cofre",    tipo:"espaco",  base:2, val:60,   txt:v => "+" + fmt(v) + " de espaço, pra sempre" },
+  { id:"trevo",   ic:"🍀", nome:"Trevo",    tipo:"sorte",   base:4, val:.08,  txt:v => "+" + Math.round(v * 100) + "% de raro, pra sempre" },
+  { id:"mercado", ic:"🏦", nome:"Mercado",  tipo:"venda",   base:3, val:.25,  txt:v => "venda +" + Math.round(v * 100) + "%, pra sempre" },
+  { id:"compact", ic:"🧊", nome:"Compressor",tipo:"prensa", base:5, val:.03,  txt:v => "emojis " + Math.round(v * 100) + "% menores" },
+  { id:"gravidade",ic:"🌌",nome:"Gravidade",tipo:"ima",     base:4, val:.0006,txt:() => "atração permanente pro centro" },
+  { id:"estrela", ic:"✨", nome:"Estrela",  tipo:"dourado", base:6, val:.02,  txt:v => "+" + (v * 100).toFixed(1) + "% de dourado" },
+  { id:"nucleoC", ic:"🔆", nome:"Núcleo",   tipo:"mult",    base:8, val:.15,  txt:v => "multiplica TUDO por " + (1 + v).toFixed(2) },
+  { id:"leiloeiro",ic:"🏷️",nome:"Leiloeiro",tipo:"auto",    base:5, val:4,    txt:v => "venda automática a cada " + segundosAuto(v) + "s, pra sempre" },
+  { id:"mira",    ic:"🎯", nome:"Mira",     tipo:"critico", base:6, val:.05,  txt:v => "+" + (v * 100).toFixed(1) + "% de crítico, pra sempre" },
+  { id:"fogueira",ic:"🔥", nome:"Fogueira", tipo:"combo",   base:5, val:5,    txt:v => "combo até " + Math.round(v) + " a mais" },
+  { id:"clone",   ic:"👯", nome:"Clone",    tipo:"duplo",   base:7, val:.03,  txt:v => "+" + (v * 100).toFixed(1) + "% de emoji dobrado" },
+  { id:"alquimia",ic:"⚗️", nome:"Alquimia", tipo:"fusao",   base:9, val:.02,  txt:v => "+" + (v * 100).toFixed(1) + "% de subir de raridade" },
+  { id:"sonho",   ic:"🌛", nome:"Sonho",    tipo:"offline", base:6, val:.12,  txt:v => "+" + Math.round(v * 100) + "% de renda offline" },
+  { id:"radar",   ic:"📡", nome:"Radar",    tipo:"radar",   base:12,val:.6,   txt:v => "chance de secreto x" + (1 + v).toFixed(1) },
+];
+// quanto mais "velocidade de venda" você tem, menor o intervalo (nunca menos de 2s)
+const segundosAuto = v => Math.max(2, Math.round(20 / Math.max(v, .001)));
+
+function gerar(familias, moeda) {
+  const out = [];
+  familias.forEach(f => {
+    for (let t = 0; t < 10; t++) {
+      const forca = Math.pow(2, t);
+      out.push({
+        id: f.id + t, fam: f.id, famNome: f.nome, ic: f.ic, tipo: f.tipo, moeda,
+        nome: f.nome + " " + QUALIDADES[t],
+        val: f.val * forca,
+        txt: f.txt,
+        base: moeda === "cristal" ? f.base * Math.pow(3.4, t) : f.base * Math.pow(28, t),
+        qtd: 0, nivel: t,
+      });
+    }
+  });
+  return out;
+}
+const LOJA = gerar(FAM_DINHEIRO, "dinheiro");
+const CRISTALOJA = gerar(FAM_CRISTAL, "cristal");
+const TODOS = LOJA.concat(CRISTALOJA);
+const preco = u => u.moeda === "cristal"
+  ? Math.ceil(u.base * Math.pow(1.55, u.qtd))
+  : Math.ceil(u.base * Math.pow(1.19, u.qtd));
+
+// soma de um efeito em todas as lojas
+function somaEfeito(tipo) {
+  let s = 0;
+  for (let i = 0; i < TODOS.length; i++) if (TODOS[i].tipo === tipo) s += TODOS[i].qtd * TODOS[i].val;
+  return s;
+}
+
+/* ==========================================================================
+   4. ESTADO
+   ========================================================================== */
+let dinheiro = 0, recorde = 0, vendidos = 0, chuvaAcum = 0;
+let cristais = 0, renascimentos = 0, descobertos = [], mudo = false;
+let abaAtual = "dinheiro", famAtual = "clique", pagIndice = 0, painelAtual = "loja";
+let conquistasFeitas = [], missoes = [], nivelMissao = 0;
+let buffs = [], combo = 0, ultimoClique = 0;
+const estat = {
+  cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
+  ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
+  encheu:false, inclinou:false, admUsado:false,
+};
+const el = id => document.getElementById(id);
+
+function fmt(n) {
+  if (!isFinite(n)) return "∞";
+  if (n < 1000) return (Math.floor(n * 10) / 10).toString().replace(".", ",");
+  const u = ["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td","Qd","Qq","Sd","St","Od","Nd","Vg"];
+  let i = 0, x = n;
+  while (x >= 1000 && i < u.length - 1) { x /= 1000; i++; }
+  if (x >= 1000) return n.toExponential(2).replace(".", ",").replace("e+", "×10^");
+  return x.toFixed(1).replace(".", ",") + u[i];
+}
+function tempoCurto(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
+  if (h) return h + "h" + String(m).padStart(2, "0");
+  if (m) return m + "min";
+  return s + "s";
+}
+
+/* ---------- bônus temporários (frenesi, dedo de ouro...) ---------- */
+function multBuff(tipo) {
+  let m = 1, agora = Date.now();
+  for (let i = 0; i < buffs.length; i++) if (buffs[i].tipo === tipo && buffs[i].ate > agora) m *= buffs[i].mult;
+  return m;
+}
+function addBuff(tipo, mult, seg, nome) {
+  const igual = buffs.find(b => b.nome === nome);
+  if (igual) igual.ate = Math.max(igual.ate, Date.now() + seg * 1000);
+  else buffs.push({ tipo, mult, ate: Date.now() + seg * 1000, nome });
+  sujo = true;
+}
+
+/* ---------- contas do jogo ---------- */
+const bonusConquistas = () => 1 + conquistasFeitas.length * .015;
+const porClique      = () => Math.max(1, (1 + somaEfeito("clique")) * multCombo()) * multBuff("clique");
+const porSegundoChuva= () => somaEfeito("chuva") * multBuff("chuva");
+const limite         = () => Math.round(90 + somaEfeito("espaco"));
+const bonusCristais  = () => 1 + cristais * .35;
+const multValor      = () => (1 + somaEfeito("valor")) * (1 + somaEfeito("venda"))
+                           * (1 + somaEfeito("mult")) * bonusCristais()
+                           * bonusConquistas() * multBuff("tudo");
+const encolhe        = () => Math.max(.35, 1 - somaEfeito("prensa"));
+const chanceDourado  = () => Math.min(.6, somaEfeito("dourado"));
+const forcaIma       = () => somaEfeito("ima");
+const multSorte      = () => { const s = somaEfeito("sorte"); return (1 + 1.2 * (1 - 1 / (1 + s))) * multBuff("sorte"); };
+const chanceCritico  = () => Math.min(.85, somaEfeito("critico"));
+const tetoCombo      = () => Math.floor(somaEfeito("combo"));
+const multCombo      = () => 1 + Math.min(combo, tetoCombo()) * .05;
+const chanceDuplo    = () => Math.min(.9, somaEfeito("duplo"));
+const chanceFusao    = () => Math.min(.8, somaEfeito("fusao"));
+const fatorOffline   = () => Math.min(.85, somaEfeito("offline"));
+const multSecreto    = () => 1 + somaEfeito("radar");
+
+const raridadesLiberadas = () => RARIDADES.filter(r => recorde >= r.desbloqueio);
+const tiposLiberados = () => TIPOS.filter(t => recorde >= t.desbloqueio);
+
+// quanto vale, em média, um emoji que sai agora (sem os multiplicadores de venda)
+function valorEsperado() {
+  const nLib = raridadesLiberadas().length, sorte = multSorte();
+  let soma = 0, val = 0;
+  for (let i = 0; i < nLib; i++) {
+    const p = Math.pow(sorte / 4.2, i);
+    soma += p; val += p * RARIDADES[i].base * 1.75;
+  }
+  return soma ? val / soma : 1;
+}
+const rendaPorSegundo = () => porSegundoChuva() * valorEsperado() * multValor();
+
+function sortearTipo() {
+  const s = sortearSecreto();
+  if (s) {
+    if (!descobertos.includes(s.chave)) descobertos.push(s.chave);
+    avisar("🌈 SECRETO!! " + s.e + " " + s.nome + " — R$ " + fmt(valorDe(s)));
+    [880, 1046, 1318, 1568, 2093].forEach((f, i) => setTimeout(() => bip(f, .2), i * 110));
+    sujo = true;
+    return s;
+  }
+  const nLib = raridadesLiberadas().length;
+  const sorte = multSorte();
+  let soma = 0;
+  const pesos = new Array(nLib);
+  for (let i = 0; i < nLib; i++) { pesos[i] = Math.pow(sorte / 4.2, i); soma += pesos[i]; }
+  let x = Math.random() * soma, ri = 0;
+  for (; ri < nLib; ri++) { x -= pesos[ri]; if (x <= 0) break; }
+  if (ri >= nLib) ri = nLib - 1;
+  const fus = chanceFusao();                       // a Fusão pode empurrar pra raridade de cima
+  while (ri < nLib - 1 && Math.random() < fus) ri++;
+  const dentro = Math.floor(Math.random() * POR_RARIDADE);
+  return marcar(TIPOS[ri * POR_RARIDADE + dentro]);
+}
+function marcar(t) {
+  if (!descobertos.includes(t.chave)) {
+    descobertos.push(t.chave);
+    if (t.rIndex >= 3) avisar("✨ " + t.e + " " + RARIDADES[t.rIndex].nome + " — R$ " + fmt(t.valor));
+    sujo = true;
+  }
+  return t;
+}
+
+/* ==========================================================================
+   4b. CONQUISTAS — cada uma destravada dá +1,5% em tudo, pra sempre
+   ========================================================================== */
+const ROMANOS = ["I","II","III","IV","V","VI","VII","VIII"];
+const CONQUISTAS = [];
+function conq(id, ic, nome, desc, teste) { CONQUISTAS.push({ id, ic, nome, desc, teste }); }
+function marcos(pref, ic, nome, valores, desc, valor) {
+  valores.forEach((v, i) => conq(pref + i, ic, nome + " " + ROMANOS[i], desc(v), () => valor() >= v));
+}
+marcos("din", "💵", "Empresário", [1e4, 1e6, 1e9, 1e12, 1e18, 1e30],
+  v => "Chegue a R$ " + fmt(v) + " de recorde", () => recorde);
+marcos("cli", "👆", "Dedo de Ferro", [100, 1000, 1e4, 1e5, 1e6],
+  v => "Dê " + fmt(v) + " cliques", () => estat.cliques);
+marcos("fez", "🏭", "Linha de Produção", [500, 5e3, 5e4, 5e5, 5e6],
+  v => "Fabrique " + fmt(v) + " emojis", () => estat.feitos);
+marcos("ven", "💰", "Comerciante", [10, 100, 1000, 1e4],
+  v => "Venda a caixa " + fmt(v) + " vezes", () => estat.vendas);
+marcos("ind", "📖", "Colecionador", [50, 150, 300, 500, 738],
+  v => "Descubra " + fmt(v) + " emojis diferentes", () => descobertos.length);
+marcos("upg", "🛒", "Cliente Fiel", [25, 100, 500, 2000],
+  v => "Compre " + fmt(v) + " upgrades", () => estat.ups);
+marcos("rar", "🌈", "Escalador", [5, 20, 50, 90, 120],
+  v => "Abra " + v + " raridades", () => raridadesLiberadas().length);
+marcos("cri", "💠", "Cristaleiro", [1, 25, 500, 1e4],
+  v => "Tenha " + fmt(v) + " cristais", () => cristais);
+marcos("ren", "♻️", "Renascido", [1, 5, 25, 100],
+  v => "Renasça " + v + " vezes", () => renascimentos);
+marcos("dou", "🌟", "Caçador de Ouro", [10, 200, 5000],
+  v => "Ache " + fmt(v) + " emojis dourados", () => estat.dourados);
+marcos("sec", "🔮", "Lenda Urbana", [1, 3, 6, 10],
+  v => "Ache " + v + " emojis secretos", () => SECRETOS.filter(s => descobertos.includes(s.chave)).length);
+marcos("com", "🔥", "Em Chamas", [10, 50, 200],
+  v => "Faça um combo de " + v, () => estat.comboMax);
+marcos("bon", "⭐", "Sortudo", [1, 25, 200],
+  v => "Pegue " + v + " estrelas de bônus", () => estat.bonusPegos);
+marcos("cru", "🎯", "Na Mosca", [50, 2000],
+  v => "Acerte " + fmt(v) + " cliques críticos", () => estat.criticos);
+conq("cheia", "📦", "Transbordou", "Encha a caixa até o limite", () => estat.encheu);
+conq("giro",  "📱", "Cabeça pra Baixo", "Use a inclinação do celular", () => estat.inclinou);
+conq("trapa", "🔓", "Trapaceiro", "Entre no modo administrador", () => estat.admUsado);
+conq("miss",  "📜", "Cumpridor", "Complete 10 missões", () => nivelMissao >= 10);
+conq("rico",  "🤑", "Um Só Golpe", "Faça uma venda de R$ 1B", () => estat.maiorVenda >= 1e9);
+
+function checarConquistas() {
+  let novas = 0;
+  for (let i = 0; i < CONQUISTAS.length; i++) {
+    const c = CONQUISTAS[i];
+    if (conquistasFeitas.includes(c.id)) continue;
+    let ok = false;
+    try { ok = !!c.teste(); } catch (e) {}
+    if (ok) {
+      conquistasFeitas.push(c.id); novas++;
+      avisar("🏆 CONQUISTA: " + c.ic + " " + c.nome);
+      [784, 988, 1175].forEach((f, k) => setTimeout(() => bip(f, .13), k * 90));
+    }
+  }
+  if (novas) { sujo = true; if (painelAtual === "conq") montarConquistas(); }
+}
+
+/* ==========================================================================
+   4c. MISSÕES — 3 por vez, sempre renovando
+   ========================================================================== */
+const TIPOS_MISSAO = [
+  { id:"fabricar",  ic:"🏭", txt:n => "Fabrique " + fmt(n) + " emojis",        alvo:n => 150 * Math.pow(1.9, n), conta:() => estat.feitos },
+  { id:"vender",    ic:"💰", txt:n => "Venda a caixa " + fmt(n) + " vezes",     alvo:n => 5 + n * 4,              conta:() => estat.vendas },
+  { id:"descobrir", ic:"📖", txt:n => "Descubra " + fmt(n) + " emojis novos",   alvo:n => 5 + n * 3,              conta:() => descobertos.length },
+  { id:"comprar",   ic:"🛒", txt:n => "Compre " + fmt(n) + " upgrades",         alvo:n => 5 + n * 3,              conta:() => estat.ups },
+  { id:"clicar",    ic:"👆", txt:n => "Dê " + fmt(n) + " cliques",              alvo:n => 60 * Math.pow(1.6, n),  conta:() => estat.cliques },
+  { id:"dourado",   ic:"🌟", txt:n => "Ache " + fmt(n) + " emojis dourados",    alvo:n => 3 + n * 2,              conta:() => estat.dourados },
+  { id:"bonus",     ic:"⭐", txt:n => "Pegue " + fmt(n) + " estrelas de bônus", alvo:n => 1 + Math.floor(n / 2),  conta:() => estat.bonusPegos },
+];
+function novaMissao(slot) {
+  const t = TIPOS_MISSAO[Math.floor(Math.random() * TIPOS_MISSAO.length)];
+  const n = Math.floor(nivelMissao / 3);
+  const alvo = Math.max(3, Math.round(t.alvo(n)));
+  const cristal = (nivelMissao + slot) % 4 === 3;
+  return {
+    tipo: t.id, slot, alvo, base: t.conta(),
+    premio: cristal ? Math.max(1, 1 + Math.floor(nivelMissao / 8)) : Math.max(800, recorde * .22 + 800),
+    moeda: cristal ? "cristal" : "dinheiro", feita: false,
+  };
+}
+const missaoTipo = m => TIPOS_MISSAO.find(t => t.id === m.tipo) || TIPOS_MISSAO[0];
+// o prêmio em dinheiro acompanha o seu recorde: missão velha não vira troco
+const premioMissao = m => m.moeda === "cristal" ? m.premio : Math.max(m.premio, recorde * .22 + 800);
+const missaoProgresso = m => Math.max(0, missaoTipo(m).conta() - m.base);
+function sortearMissoes(forcar) {
+  if (forcar) missoes = [];
+  for (let s = 0; s < 3; s++) if (!missoes[s]) missoes[s] = novaMissao(s);
+  if (painelAtual === "miss") montarMissoes();
+}
+function checarMissoes() {
+  let mudou = false;
+  missoes.forEach(m => {
+    if (!m.feita && missaoProgresso(m) >= m.alvo) { m.feita = true; mudou = true; }
+  });
+  const alguma = missoes.some(m => m.feita);
+  el("avisoMiss").hidden = !alguma;
+  if (mudou) { bip(1046, .16); avisar("📜 missão cumprida! passa lá pegar o prêmio"); if (painelAtual === "miss") montarMissoes(); }
+}
+function receberMissao(slot) {
+  const m = missoes[slot];
+  if (!m || !m.feita) return;
+  const premio = premioMissao(m);
+  if (m.moeda === "cristal") { cristais += premio; avisar("💠 +" + fmt(premio) + " cristais!"); }
+  else { dinheiro += premio; recorde = Math.max(recorde, dinheiro); avisar("💵 +R$ " + fmt(premio) + "!"); }
+  nivelMissao++;
+  missoes[slot] = novaMissao(slot);
+  [660, 880, 1320].forEach((f, i) => setTimeout(() => bip(f, .14), i * 90));
+  sujo = true; montarMissoes(); checarMissoes(); salvar();
+}
+
+/* ==========================================================================
+   5. FÍSICA
+   ========================================================================== */
+const cv = el("caixa"), ctx = cv.getContext("2d");
+let L = 0, A = 0, dpr = 1;
+function ajustar() {
+  const r = cv.getBoundingClientRect();
+  dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  L = r.width; A = r.height;
+  cv.width = L * dpr; cv.height = A * dpr;
+}
+window.addEventListener("resize", ajustar);
+
+const sprites = new Map();
+function sprite(tipo, r, dourado) {
+  const chave = tipo.chave + "|" + r.toFixed(1) + (dourado ? "d" : "");
+  let s = sprites.get(chave);
+  if (s) return s;
+  if (sprites.size > 260) sprites.clear();      // não deixa a memória crescer sem limite
+  const nit = 2, meio = r + 3, lado = Math.ceil(meio * 2 * nit);
+  const c = document.createElement("canvas");
+  c.width = c.height = lado;
+  const x = c.getContext("2d");
+  x.scale(nit, nit);
+  if (tipo.secreto) {                    // anel arco-íris: emoji secreto
+    const grad = x.createLinearGradient(0, 0, meio * 2, meio * 2);
+    ["#ff4d6d","#ffc857","#6ee7a0","#5ce1e6","#b47aff"].forEach((c, i, a) => grad.addColorStop(i / (a.length - 1), c));
+    x.beginPath(); x.arc(meio, meio, r + 2.6, 0, 6.2832); x.fillStyle = grad; x.fill();
+  } else if (dourado) { x.beginPath(); x.arc(meio, meio, r + 2.2, 0, 6.2832); x.fillStyle = "#ffc857"; x.fill(); }
+  x.beginPath(); x.arc(meio, meio, r, 0, 6.2832);
+  x.fillStyle = tipo.cor; x.globalAlpha = .92; x.fill(); x.globalAlpha = 1;
+  x.lineWidth = 1.5; x.strokeStyle = dourado ? "#8a5c00" : "#00000038"; x.stroke();
+  x.textAlign = "center"; x.textBaseline = "middle";
+  x.font = (r * 1.32) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+  x.fillStyle = "#1a1020";
+  x.fillText(tipo.e, meio, meio + r * .06);
+  s = { cv: c, meio };
+  sprites.set(chave, s);
+  return s;
+}
+
+const GRAV = .42, QUIQUE = .32, ATRITO = .995, PAREDE = .5;
+let bolas = [], fundoAberto = false;
+
+/* ---------- GRAVIDADE QUE SEGUE O CELULAR ----------
+   gx/gy é pra onde "cai". Parado, é pra baixo. Com o sensor ligado,
+   vira junto com o aparelho; no computador dá pra testar com as setas. */
+let gx = 0, gy = GRAV, inclinacao = false, tetoFechado = false;
+
+function definirGravidade(ax, ay) {
+  const antesX = gx, antesY = gy;
+  const tam = Math.hypot(ax, ay);
+  if (tam < .25) { gx = 0; gy = GRAV; }            // deitado: cai pra baixo mesmo
+  else { gx = ax / tam * GRAV; gy = ay / tam * GRAV; }
+  tetoFechado = true;                               // com inclinação a caixa fecha em cima
+  // mexeu bastante? acorda a pilha, senão ela fica flutuando de lado
+  if (Math.hypot(gx - antesX, gy - antesY) > .06)
+    for (let i = 0; i < bolas.length; i++) bolas[i].acordar();
+}
+
+// de onde o emoji novo cai: sempre do lado "de cima" em relação à gravidade
+function pontoDeEntrada(x) {
+  if (!tetoFechado) {
+    return [x === undefined ? L * (.2 + Math.random() * .6)
+                            : Math.max(20, Math.min(L - 20, x + (Math.random() - .5) * 44)),
+            -10 - Math.random() * 20];
+  }
+  const d = Math.hypot(gx, gy) || 1;
+  const px = L / 2 - (gx / d) * L * .34 + (Math.random() - .5) * L * .2;
+  const py = A / 2 - (gy / d) * A * .34 + (Math.random() - .5) * A * .2;
+  return [Math.max(14, Math.min(L - 14, px)), Math.max(14, Math.min(A - 14, py))];
+}
+
+function ligarInclinacao() {
+  const ligar = () => {
+    window.addEventListener("deviceorientation", e => {
+      if (!inclinacao || e.beta === null) return;
+      const rad = Math.PI / 180;
+      definirGravidade(Math.sin(e.gamma * rad), Math.sin(e.beta * rad));
+    });
+    inclinacao = true; estat.inclinou = true;
+    el("btGiro").textContent = "📱 ON";
+    avisar("📱 inclina o celular que os emojis caem pro lado!");
+  };
+  if (inclinacao) {                                  // desligar
+    inclinacao = false; tetoFechado = false; gx = 0; gy = GRAV;
+    el("btGiro").textContent = "📱";
+    return;
+  }
+  const D = window.DeviceOrientationEvent;
+  if (D && typeof D.requestPermission === "function") {   // iPhone pede permissão
+    D.requestPermission().then(r => { if (r === "granted") ligar(); else avisar("📱 permissão negada"); })
+                         .catch(() => avisar("📱 não deu pra ligar o sensor"));
+  } else if (D) ligar();
+  else avisar("📱 esse aparelho não tem sensor — use as setas do teclado");
+}
+
+// no computador: setas mudam a gravidade, pra dar pra testar
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  const setas = { ArrowLeft:[-1,0], ArrowRight:[1,0], ArrowUp:[0,-1], ArrowDown:[0,1] };
+  if (setas[e.key]) {
+    e.preventDefault(); estat.inclinou = true;
+    definirGravidade(setas[e.key][0], setas[e.key][1]); bolas.forEach(b => b.acordar());
+  }
+});
+
+class Bola {
+  constructor(x, y, tipo) {
+    this.x = x; this.y = y; this.ux = x; this.uy = y;
+    this.vx = (Math.random() - .5) * 3.4; this.vy = Math.random() * 1.2;
+    this.tipo = tipo;
+    this.dourado = !tipo.secreto && Math.random() < chanceDourado();
+    if (this.dourado) estat.dourados++;
+    this.valor = valorDe(tipo) * (this.dourado ? 10 : 1);
+    this.r = Math.max(6, tipo.tam * encolhe());
+    this.giro = (Math.random() - .5) * .25; this.ang = Math.random() * 6.28;
+    this.quieto = 0; this.dormindo = false;
+    this.sprite = sprite(tipo, this.r, this.dourado);
+  }
+  acordar() { this.dormindo = false; this.quieto = 0; }
+  passo(gIma) {
+    if (this.dormindo) return;
+    this.vx += gx; this.vy += gy;
+    if (gIma) this.vx += (L / 2 - this.x) * gIma;
+    this.x += this.vx; this.y += this.vy;
+    this.vx *= ATRITO; this.vy *= ATRITO;
+    this.ang += this.giro * (Math.abs(this.vx) > .3 ? 1 : .2);
+
+    // paredes: esquerda, direita, chão e (com inclinação) o teto
+    if (this.x < this.r) {
+      const b = -this.vx; this.x = this.r; this.vx = Math.abs(this.vx) * QUIQUE; this.vy *= .93;
+      if (Math.abs(this.vx) < .6) this.vx = 0; plop(b, this.r);
+    }
+    if (this.x > L - this.r) {
+      const b = this.vx; this.x = L - this.r; this.vx = -Math.abs(this.vx) * QUIQUE; this.vy *= .93;
+      if (Math.abs(this.vx) < .6) this.vx = 0; plop(b, this.r);
+    }
+    if (tetoFechado && this.y < this.r) {
+      const b = -this.vy; this.y = this.r; this.vy = Math.abs(this.vy) * QUIQUE; this.vx *= .93;
+      if (Math.abs(this.vy) < .6) this.vy = 0; plop(b, this.r);
+    }
+    if (!fundoAberto && this.y > A - this.r) {
+      const b = this.vy;
+      this.y = A - this.r; this.vy = -this.vy * QUIQUE; this.vx *= .93;
+      if (Math.abs(this.vy) < .6) this.vy = 0;
+      plop(b, this.r);
+    }
+  }
+}
+
+/* A grade divide a caixa em quadrados pra só testar vizinhos.
+   O quadrado tem que acompanhar o tamanho dos emojis: com a Prensa no
+   máximo eles viram bolinhas de 6px e um quadrado fixo de 44px juntaria
+   40 emojis por célula — aí a colisão volta a ser "todos contra todos". */
+let CEL = 44;
+const grade = new Map();
+function ajustarGrade() {
+  if (!bolas.length) return;
+  let soma = 0;
+  for (let i = 0; i < bolas.length; i++) soma += bolas[i].r;
+  CEL = Math.max(13, (soma / bolas.length) * 2.3);
+}
+function colidir() {
+  ajustarGrade();
+  grade.clear();
+  for (let i = 0; i < bolas.length; i++) {
+    const b = bolas[i], k = ((b.x / CEL) | 0) * 4096 + ((b.y / CEL) | 0);
+    let l = grade.get(k); if (!l) grade.set(k, l = []); l.push(i);
+  }
+  for (let i = 0; i < bolas.length; i++) {
+    const a = bolas[i], cx = (a.x / CEL) | 0, cy = (a.y / CEL) | 0;
+    for (let gx = cx - 1; gx <= cx + 1; gx++) for (let gy = cy - 1; gy <= cy + 1; gy++) {
+      const l = grade.get(gx * 4096 + gy); if (!l) continue;
+      for (let n = 0; n < l.length; n++) {
+        const j = l[n]; if (j <= i) continue;
+        const b = bolas[j];
+        if (a.dormindo && b.dormindo) continue;
+        const dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy, min = a.r + b.r;
+        if (d2 > min * min || d2 === 0) continue;
+        const d = Math.sqrt(d2), nx = dx / d, ny = dy / d;
+        const sobra = Math.max((min - d) / 2 - .25, 0) * .7;
+        if (sobra > 0) { a.x -= nx * sobra; a.y -= ny * sobra; b.x += nx * sobra; b.y += ny * sobra; }
+        const vn = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+        if (vn < 0) {
+          const imp = vn * .55;
+          a.vx += imp * nx; a.vy += imp * ny; b.vx -= imp * nx; b.vy -= imp * ny;
+          if (vn < -1.2) { a.acordar(); b.acordar(); }
+          plop(-vn * .8, (a.r + b.r) / 2);
+        }
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   6. SOM
+   ========================================================================== */
+let ctxAudio = null, sonsRecentes = [];
+function bip(f, dur = .06, tipo = "triangle", vol = .05) {
+  if (mudo) return;
+  try {
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctxAudio.currentTime, o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
+    o.type = tipo; o.frequency.value = f;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0005, t + dur);
+    o.connect(g); g.connect(ctxAudio.destination); o.start(t); o.stop(t + dur);
+  } catch (e) {}
+}
+function plop(forca, raio) {
+  if (mudo || forca < 1.1) return;
+  const agora = performance.now();
+  sonsRecentes = sonsRecentes.filter(t => agora - t < 1000);
+  if (sonsRecentes.length > 14) return;
+  sonsRecentes.push(agora);
+  try {
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctxAudio.currentTime, o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
+    const base = 520 - raio * 14 + Math.random() * 70;
+    o.type = "sine";
+    o.frequency.setValueAtTime(base, t);
+    o.frequency.exponentialRampToValueAtTime(base * .45, t + .07);
+    const v = Math.min(.075, .008 * forca);
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0004, t + .09);
+    o.connect(g); g.connect(ctxAudio.destination); o.start(t); o.stop(t + .1);
+  } catch (e) {}
+}
+let tToast = null;
+function avisar(t) {
+  el("toast").textContent = t; el("toast").classList.add("on");
+  clearTimeout(tToast); tToast = setTimeout(() => el("toast").classList.remove("on"), 1600);
+}
+
+/* ==========================================================================
+   7. JOGO
+   ========================================================================== */
+let sujo = true;                       // marca que a tela precisa ser redesenhada
+const valorPilha = () => {
+  let s = 0;
+  for (let i = 0; i < bolas.length; i++) s += bolas[i].valor;
+  return (s + depositoValor) * multValor();
+};
+
+/* A caixa simula no máximo MAX_FISICOS emojis com física de verdade.
+   Passou disso, o emoji vai pro DEPÓSITO: ele conta no valor e no índice
+   igualzinho, só não fica quicando na tela — é o que segura o FPS quando
+   você compra muito upgrade de espaço. */
+let MAX_FISICOS = 550;
+let deposito = 0, depositoValor = 0, ultimaVendaAuto = Date.now();
+
+function guardar(tipo) {
+  deposito++;
+  const dourado = Math.random() < chanceDourado();
+  if (dourado) estat.dourados++;
+  depositoValor += valorDe(tipo) * (dourado ? 10 : 1);
+}
+
+function nascer(tipo, x) {
+  if (bolas.length >= MAX_FISICOS) guardar(tipo);
+  else { const p = pontoDeEntrada(x); bolas.push(new Bola(p[0], p[1], tipo)); }
+}
+
+function fabricar(n, x) {
+  if (fundoAberto) return 0;
+  const lim = limite(), dup = chanceDuplo();
+  let feitos = 0;
+  for (let i = 0; i < n; i++) {
+    if (bolas.length + deposito >= lim) break;
+    nascer(sortearTipo(), x); feitos++;
+    if (Math.random() < dup && bolas.length + deposito < lim) { nascer(sortearTipo(), x); feitos++; }
+  }
+  estat.feitos += feitos;
+  if (feitos) bip(420 + Math.random() * 260);
+  else {
+    estat.encheu = true;
+    avisar("📦 caixa cheia! vende ou compra espaço");
+    cv.classList.add("cheia"); setTimeout(() => cv.classList.remove("cheia"), 480);
+  }
+  if (bolas.length + deposito >= lim) estat.encheu = true;
+  sujo = true;
+  return feitos;
+}
+
+/* ---------- clique com combo e crítico ---------- */
+function clicar(x) {
+  const agora = Date.now();
+  if (tetoCombo() > 0) {
+    combo = (agora - ultimoClique < 1500) ? combo + 1 : 1;
+    if (combo > estat.comboMax) estat.comboMax = combo;
+  }
+  ultimoClique = agora;
+  estat.cliques++;
+  let n = porClique();
+  if (Math.random() < chanceCritico()) {
+    n *= 10; estat.criticos++;
+    avisar("🎯 CRÍTICO! x10");
+    bip(1568, .12); setTimeout(() => bip(2093, .1), 70);
+  }
+  fabricar(Math.round(n), x);
+}
+
+/* ---------- estrela de bônus que aparece na caixa ---------- */
+const BONUS = [
+  { ic:"🌟", nome:"FRENESI",      pega:() => { addBuff("tudo", 7, 20, "🌟 Frenesi x7"); avisar("🌟 FRENESI! tudo vale 7x por 20s"); } },
+  { ic:"👆", nome:"DEDO DE OURO", pega:() => { addBuff("clique", 25, 15, "👆 Dedo x25"); avisar("👆 DEDO DE OURO! clique x25 por 15s"); } },
+  { ic:"⛈️", nome:"DILÚVIO",      pega:() => { addBuff("chuva", 10, 25, "⛈️ Dilúvio x10"); avisar("⛈️ DILÚVIO! chuva x10 por 25s"); } },
+  { ic:"🍀", nome:"TREVÃO",       pega:() => { addBuff("sorte", 3, 30, "🍀 Trevão x3"); avisar("🍀 TREVÃO! sorte x3 por 30s"); } },
+  { ic:"💰", nome:"COFRE",        pega:() => { const g = Math.max(2000, recorde * .22); dinheiro += g; recorde = Math.max(recorde, dinheiro); avisar("💰 COFRE! +R$ " + fmt(g)); } },
+  { ic:"🎁", nome:"PRESENTE",     pega:() => { const q = fabricar(Math.max(20, limite())); avisar("🎁 PRESENTE! +" + fmt(q) + " emojis"); } },
+];
+let estrela = null, proximaEstrela = Date.now() + 75000;
+
+function nasceEstrela() {
+  const r = Math.max(24, Math.min(L, A) * .11);
+  estrela = {
+    x: r + Math.random() * (L - r * 2), y: r + Math.random() * (A - r * 2),
+    r, ate: Date.now() + 11000, tipo: BONUS[Math.floor(Math.random() * BONUS.length)],
+  };
+  avisar("⭐ apareceu uma estrela na caixa — clica nela!");
+  bip(1046, .18); setTimeout(() => bip(1318, .18), 130);
+}
+function pegarEstrela() {
+  if (!estrela) return;
+  const b = estrela.tipo; estrela = null;
+  estat.bonusPegos++;
+  [880, 1174, 1568, 2093].forEach((f, i) => setTimeout(() => bip(f, .15), i * 80));
+  b.pega();
+  cv.classList.add("festa"); setTimeout(() => cv.classList.remove("festa"), 900);
+  sujo = true; salvar();
+}
+
+let vendendo = 0;
+function vender() {
+  if ((!bolas.length && !deposito) || fundoAberto) return;
+  vendendo = valorPilha(); vendidos += bolas.length + deposito;
+  estat.vendas++;
+  if (vendendo > estat.maiorVenda) estat.maiorVenda = vendendo;
+  ultimaVendaAuto = Date.now();          // vender na mão também reinicia o relógio
+  deposito = 0; depositoValor = 0;
+  if (!bolas.length) { terminarVenda(); return; }   // só tinha depósito
+  fundoAberto = true;
+  bolas.forEach(b => { b.acordar(); b.vy += 3 + Math.random() * 3; b.vx += (Math.random() - .5) * 4; });
+  bip(660); setTimeout(() => bip(880), 90); setTimeout(() => bip(1100), 180);
+  avisar("💸 vendendo por R$ " + fmt(vendendo));
+}
+function terminarVenda() {
+  fundoAberto = false;
+  const antes = raridadesLiberadas().length;
+  dinheiro += vendendo; estat.ganhoTotal += vendendo;
+  recorde = Math.max(recorde, dinheiro); vendendo = 0;
+  bip(1320, .18);
+  const agora = raridadesLiberadas();
+  if (agora.length > antes) {
+    avisar("🎉 nova raridade: " + agora[agora.length - 1].nome.toUpperCase() + "!");
+    [660, 880, 1100, 1320].forEach((f, i) => setTimeout(() => bip(f, .12), i * 110));
+  }
+  sujo = true; salvar();
+}
+
+/* ---------- turbo pago em cristais ---------- */
+const CUSTO_TURBO = 3;
+function comprarTurbo() {
+  if (cristais < CUSTO_TURBO) { avisar("💠 precisa de " + CUSTO_TURBO + " cristais"); return; }
+  cristais -= CUSTO_TURBO;
+  addBuff("tudo", 5, 60, "⚡ Turbo x5");
+  avisar("⚡ TURBO! tudo vale 5x por 1 minuto");
+  [660, 880, 1100].forEach((f, i) => setTimeout(() => bip(f, .14), i * 90));
+  sujo = true; salvar();
+}
+
+/* ---------- renascer ---------- */
+const CUSTO_RENASCER = 1e9;
+const cristaisAGanhar = () => recorde < CUSTO_RENASCER ? 0
+  : Math.max(1, Math.floor(Math.pow(recorde / CUSTO_RENASCER, .38) * 3));
+function renascer() {
+  const g = cristaisAGanhar(); if (!g) return;
+  cristais += g; renascimentos++;
+  dinheiro = 0; recorde = 0; vendidos = 0; bolas = []; deposito = 0; depositoValor = 0;
+  LOJA.forEach(u => u.qtd = 0);
+  combo = 0;
+  avisar("💠 renasceu! +" + g + " cristais");
+  [440, 550, 660, 880, 1100].forEach((f, i) => setTimeout(() => bip(f, .15), i * 130));
+  sujo = true; salvar();
+}
+
+/* ---------- o que rendeu enquanto o jogo estava fechado ---------- */
+function ganhosOffline(quando) {
+  const fator = fatorOffline();
+  if (!fator || !quando) return;
+  const seg = Math.min((Date.now() - quando) / 1000, 8 * 3600);
+  if (seg < 120) return;
+  const ganho = rendaPorSegundo() * seg * fator;
+  if (ganho < 1) return;
+  dinheiro += ganho; estat.ganhoTotal += ganho;
+  recorde = Math.max(recorde, dinheiro);
+  el("voltaSub").textContent = "A fábrica ficou " + tempoCurto(seg * 1000) + " sozinha, mas o turno da noite trabalhou.";
+  el("voltaInfo").textContent =
+    "tempo fora....: " + tempoCurto(seg * 1000) + "\n" +
+    "rendimento....: " + Math.round(fator * 100) + "% da produção\n" +
+    "você ganhou...: R$ " + fmt(ganho);
+  el("volta").classList.add("on");
+}
+
+/* ==========================================================================
+   8. PAINEL — loja, conquistas, missões, estatísticas
+   ========================================================================== */
+function mostrarPainel(p) {
+  painelAtual = p;
+  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"]].forEach(([k, id]) =>
+    el(id).style.display = (k === p ? "flex" : "none"));
+  [...document.querySelectorAll(".abaT")].forEach(b => b.classList.toggle("sel", b.dataset.p === p));
+  if (p === "conq") montarConquistas();
+  if (p === "miss") montarMissoes();
+  if (p === "stat") montarStats();
+  bip(700);
+}
+[...document.querySelectorAll(".abaT")].forEach(b => b.onclick = () => mostrarPainel(b.dataset.p));
+
+function famsDaAba() { return abaAtual === "cristal" ? FAM_CRISTAL : FAM_DINHEIRO; }
+function lojaDaAba()  { return abaAtual === "cristal" ? CRISTALOJA : LOJA; }
+function moedaAtual()  { return abaAtual === "cristal" ? cristais : dinheiro; }
+
+function trocarAba(a) {
+  abaAtual = a;
+  famAtual = famsDaAba()[0].id;
+  el("abaDin").classList.toggle("sel", a === "dinheiro");
+  el("abaCri").classList.toggle("sel", a === "cristal");
+  montarFamilias(); montarLista(); bip(700);
+}
+function montarFamilias() {
+  el("familias").innerHTML = famsDaAba().map(f =>
+    '<button class="fam" data-f="' + f.id + '" title="' + f.nome + '">' + f.ic + '<span class="pt" id="pt-' + f.id + '"></span></button>').join("");
+  [...el("familias").children].forEach(b => b.onclick = () => {
+    famAtual = b.dataset.f; montarFamilias(); montarLista(); bip(620);
+  });
+  [...el("familias").children].forEach(b => b.classList.toggle("sel", b.dataset.f === famAtual));
+}
+function montarLista() {
+  const itens = lojaDaAba().filter(u => u.fam === famAtual);
+  el("lista").innerHTML = itens.map(u =>
+    '<button class="item' + (u.moeda === "cristal" ? " cri" : "") + '" data-id="' + u.id + '">' +
+      '<div class="ic">' + u.ic + '</div>' +
+      '<div><div class="nome">' + u.nome + '</div><div class="desc">' + u.txt(u.val) + '</div></div>' +
+      '<div><div class="preco" id="p-' + u.id + '"></div><div class="qtd" id="q-' + u.id + '"></div></div>' +
+      '<div class="barra" id="b-' + u.id + '"></div>' +
+    '</button>').join("");
+  [...el("lista").children].forEach(b => {
+    const u = TODOS.find(x => x.id === b.dataset.id);
+    u.el = b;
+    b.onclick = () => comprar(u);
+  });
+  atualizarLista();
+}
+function comprar(u) {
+  const p = preco(u);
+  if (u.moeda === "cristal") { if (cristais < p) return; cristais -= p; }
+  else { if (dinheiro < p) return; dinheiro -= p; }
+  u.qtd++; estat.ups++; bip(u.moeda === "cristal" ? 1200 : 900);
+  sujo = true; atualizarLista(); salvar();
+}
+function atualizarLista() {
+  if (painelAtual !== "loja") return;
+  const moeda = moedaAtual();
+  lojaDaAba().filter(u => u.fam === famAtual).forEach(u => {
+    const p = preco(u), pode = moeda >= p;
+    const pe = el("p-" + u.id); if (!pe) return;
+    pe.textContent = (u.moeda === "cristal" ? "💠 " : "") + fmt(p);
+    el("q-" + u.id).textContent = u.qtd ? "x" + u.qtd : "—";
+    el("b-" + u.id).style.width = Math.min(100, moeda / p * 100) + "%";
+    u.el.classList.toggle("bloq", !pode);
+    u.el.classList.toggle("ok", pode);
+  });
+  famsDaAba().forEach(f => {
+    const pt = el("pt-" + f.id); if (!pt) return;
+    const meus = lojaDaAba().filter(u => u.fam === f.id);
+    const total = meus.reduce((s, u) => s + u.qtd, 0);
+    pt.textContent = total || "";
+    const podeAlgo = meus.some(u => moeda >= preco(u));
+    pt.parentElement.classList.toggle("pode", podeAlgo);
+  });
+  const t = el("turbo");
+  t.innerHTML = '<b>⚡ TURBO — 💠 ' + CUSTO_TURBO + '</b><span>Tudo vale <b>5x</b> por 1 minuto. Você tem ' +
+    fmt(cristais) + ' cristais.</span>';
+  t.style.opacity = cristais >= CUSTO_TURBO ? 1 : .45;
+}
+
+function montarConquistas() {
+  const feitas = conquistasFeitas.length;
+  el("conqTopo").innerHTML = "<b>" + feitas + " de " + CONQUISTAS.length + "</b> conquistas · cada uma dá +1,5% em tudo · bônus atual: <b>+" +
+    Math.round((bonusConquistas() - 1) * 100) + "%</b>";
+  el("conqGrid").innerHTML = CONQUISTAS.map(c => {
+    const tem = conquistasFeitas.includes(c.id);
+    return '<div class="conq ' + (tem ? "feita" : "nao") + '">' +
+      '<div class="ci">' + (tem ? c.ic : "🔒") + '</div>' +
+      '<div><div class="cn">' + c.nome + '</div><div class="cd">' + c.desc + '</div></div></div>';
+  }).join("");
+  el("ptConq").textContent = feitas;
+}
+
+function montarMissoes() {
+  el("missTopo").innerHTML = "<b>" + nivelMissao + "</b> missões cumpridas · elas ficam mais difíceis (e pagam mais) conforme você avança";
+  el("missLista").innerHTML = missoes.map((m, i) => {
+    const t = missaoTipo(m), p = Math.min(missaoProgresso(m), m.alvo);
+    return '<div class="missao">' +
+      '<div class="mt">' + t.ic + ' ' + t.txt(m.alvo) + '<span class="mp">' + fmt(p) + "/" + fmt(m.alvo) + '</span></div>' +
+      '<div class="trilho"><i style="width:' + (p / m.alvo * 100) + '%"></i></div>' +
+      '<div class="mr">prêmio: ' + (m.moeda === "cristal" ? "💠 " + fmt(m.premio) + " cristais" : "R$ " + fmt(premioMissao(m))) + '</div>' +
+      '<button class="btMissao" data-s="' + i + '"' + (m.feita ? "" : " disabled") + '>' +
+        (m.feita ? "PEGAR PRÊMIO" : "EM ANDAMENTO") + '</button></div>';
+  }).join("");
+  [...el("missLista").querySelectorAll(".btMissao")].forEach(b =>
+    b.onclick = () => receberMissao(+b.dataset.s));
+}
+
+function montarStats() {
+  const linhas = [
+    ["⏱️ Tempo de fábrica", tempoCurto(estat.tempo)],
+    ["👆 Cliques", fmt(estat.cliques)],
+    ["🎯 Cliques críticos", fmt(estat.criticos)],
+    ["🔥 Maior combo", fmt(estat.comboMax)],
+    ["🏭 Emojis fabricados", fmt(estat.feitos)],
+    ["📦 Emojis vendidos", fmt(vendidos)],
+    ["💰 Vendas feitas", fmt(estat.vendas)],
+    ["🏆 Maior venda", "R$ " + fmt(estat.maiorVenda)],
+    ["💵 Dinheiro ganho na vida", "R$ " + fmt(estat.ganhoTotal)],
+    ["🌟 Dourados achados", fmt(estat.dourados)],
+    ["⭐ Estrelas de bônus", fmt(estat.bonusPegos)],
+    ["🛒 Upgrades comprados", fmt(estat.ups)],
+    ["📜 Missões cumpridas", fmt(nivelMissao)],
+    ["♻️ Renascimentos", fmt(renascimentos)],
+    ["📖 Índice", descobertos.length + "/" + (TIPOS.length + SECRETOS.length)],
+    ["🌈 Raridades abertas", raridadesLiberadas().length + "/120"],
+    ["📈 Renda estimada", "R$ " + fmt(rendaPorSegundo()) + "/s"],
+    ["🌙 Renda offline", Math.round(fatorOffline() * 100) + "%"],
+    ["🔮 Chance de secreto", "x" + multSecreto().toFixed(1)],
+  ];
+  el("statLista").innerHTML = linhas.map(l =>
+    '<div class="linhaStat"><span>' + l[0] + '</span><b>' + l[1] + '</b></div>').join("");
+}
+
+/* ==========================================================================
+   9. ÍNDICE
+   ========================================================================== */
+function montarIndice() {
+  const porPag = 10, nPags = Math.ceil(RARIDADES.length / porPag);
+  el("paginas").innerHTML = Array.from({ length: nPags }, (_, i) =>
+    '<button class="pag' + (i === pagIndice ? " sel" : "") + '" data-p="' + i + '">' +
+    (i * porPag + 1) + "–" + Math.min((i + 1) * porPag, RARIDADES.length) + '</button>').join("");
+  [...el("paginas").children].forEach(b => b.onclick = () => { pagIndice = +b.dataset.p; montarIndice(); });
+
+  // faixa dos secretos, sempre no topo
+  const achadosS = SECRETOS.filter(s => descobertos.includes(s.chave)).length;
+  const faixaSecreta =
+    '<div class="faixa"><div class="faixaTop">' +
+    '<span class="pastilha" style="background:linear-gradient(90deg,#ff4d6d33,#5ce1e633);color:#fff;border:1px solid #ffffff55">🌈 Secretos</span>' +
+    '<span class="faixaInfo">' + achadosS + "/" + SECRETOS.length + ' · caem em qualquer fase</span></div>' +
+    '<div class="fileira">' + SECRETOS.map(s => {
+      const tem = descobertos.includes(s.chave);
+      return '<div class="ficha' + (tem ? "" : " nao") + '" style="' + (tem ? "border-color:#ffffff88" : "") + '">' +
+        (tem ? s.e : "❔") + '<small>' + (tem ? "1 em " + fmt(Math.round(1 / s.chance)) : "???") + '</small></div>';
+    }).join("") + '</div></div>';
+
+  const inicio = pagIndice * porPag;
+  el("faixas").innerHTML = (pagIndice === 0 ? faixaSecreta : "") + RARIDADES.slice(inicio, inicio + porPag).map(r => {
+    const desta = TIPOS.filter(t => t.raridade === r.id);
+    const achados = desta.filter(t => descobertos.includes(t.chave)).length;
+    const liberada = recorde >= r.desbloqueio;
+    const fichas = desta.map(t => {
+      const tem = descobertos.includes(t.chave);
+      return '<div class="ficha' + (tem ? "" : " nao") + '" style="' + (tem ? "border-color:" + r.cor + "55" : "") + '">' +
+        (tem ? t.e : "❔") + '<small>' + (tem ? "R$ " + fmt(t.valor) : "???") + '</small></div>';
+    }).join("");
+    return '<div class="faixa" style="' + (liberada ? "" : "opacity:.42") + '">' +
+      '<div class="faixaTop"><span class="pastilha" style="background:' + r.cor + '22;color:' + r.cor +
+      ';border:1px solid ' + r.cor + '55">' + (r.indice + 1) + '. ' + r.nome + '</span>' +
+      '<span class="faixaInfo">' + (liberada ? achados + "/" + desta.length + " · R$ " + fmt(r.base)
+        : "🔒 R$ " + fmt(r.desbloqueio)) + '</span></div>' +
+      '<div class="fileira">' + fichas + '</div></div>';
+  }).join("");
+  el("indiceSub").textContent = descobertos.length + " de " + (TIPOS.length + SECRETOS.length) + " emojis · " +
+    raridadesLiberadas().length + " de " + RARIDADES.length + " raridades abertas";
+}
+
+/* ==========================================================================
+   10. ENTRADA
+   ========================================================================== */
+el("btFazer").onclick = () => clicar();
+el("btVender").onclick = vender;
+cv.addEventListener("pointerdown", e => {
+  const r = cv.getBoundingClientRect();
+  const x = e.clientX - r.left, y = e.clientY - r.top;
+  if (estrela && Math.hypot(x - estrela.x, y - estrela.y) < estrela.r + 10) { pegarEstrela(); return; }
+  clicar(x);
+});
+el("btIndice").onclick = e => { e.stopPropagation(); montarIndice(); el("indice").classList.add("on"); };
+el("indice").onclick = e => { if (e.target === el("indice")) el("indice").classList.remove("on"); };
+el("volta").onclick = e => { if (e.target === el("volta")) el("volta").classList.remove("on"); };
+el("btSom").onclick = e => {
+  e.stopPropagation(); mudo = !mudo;
+  el("btSom").textContent = mudo ? "🔇" : "🔊";
+  if (!mudo) bip(880);
+  salvar();
+};
+
+/* ==========================================================================
+   10b. MODO ADM
+   Senha: mude aqui embaixo. Abre digitando ADMIN, com Ctrl+Shift+A, ou no 🔒
+   ========================================================================== */
+const SENHA_ADM = "1234";
+let admLiberado = false, segredo = "";
+
+function abrirAdm() {
+  el("adm").classList.add("on");
+  el("admLogin").style.display = admLiberado ? "none" : "";
+  el("admPainel").style.display = admLiberado ? "" : "none";
+  el("admErro").textContent = "";
+  if (!admLiberado) { el("admSenha").value = ""; el("admSenha").focus(); } else puxarAdm();
+}
+function fecharAdm() { el("adm").classList.remove("on"); }
+function tentarSenha() {
+  if (el("admSenha").value === SENHA_ADM) {
+    admLiberado = true; estat.admUsado = true;
+    el("admLogin").style.display = "none"; el("admPainel").style.display = "";
+    bip(900); puxarAdm();
+  } else { el("admErro").textContent = "Senha errada!"; el("admSenha").value = ""; bip(140); }
+}
+el("admEntrar").onclick = tentarSenha;
+el("admSenha").addEventListener("keydown", e => { if (e.key === "Enter") tentarSenha(); });
+el("btAdm").onclick = e => { e.stopPropagation(); abrirAdm(); };
+el("btGiro").onclick = e => { e.stopPropagation(); ligarInclinacao(); bip(760); };
+el("adm").onclick = e => { if (e.target === el("adm")) fecharAdm(); };
+
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey && e.shiftKey && e.key.toUpperCase() === "A") { e.preventDefault(); abrirAdm(); return; }
+  if (e.key === "Escape") { fecharAdm(); el("indice").classList.remove("on"); el("volta").classList.remove("on"); }
+  if (e.target.tagName === "INPUT") return;
+  if (e.key === " ") { e.preventDefault(); clicar(); return; }
+  if (e.key.length === 1) {
+    segredo = (segredo + e.key.toUpperCase()).slice(-5);
+    if (segredo === "ADMIN") { segredo = ""; abrirAdm(); }
+  }
+});
+
+// botões de cada emoji secreto
+SECRETOS.forEach((s, i) => {
+  const b = document.createElement("button");
+  b.className = "bt"; b.textContent = s.e; b.title = s.nome;
+  b.onclick = () => soltarSecreto(i);
+  el("admSecretos").appendChild(b);
+});
+function soltarSecreto(i) {
+  const s = SECRETOS[i];
+  if (!descobertos.includes(s.chave)) descobertos.push(s.chave);
+  if (bolas.length < MAX_FISICOS) bolas.push(new Bola(L / 2, -20, s));
+  else guardar(s);
+  avisar("🌈 " + s.e + " " + s.nome + " — R$ " + fmt(valorDe(s)));
+  bip(1568, .2); puxarAdm();
+}
+// botões dos bônus
+BONUS.forEach((b, i) => {
+  const bt = document.createElement("button");
+  bt.className = "bt"; bt.textContent = b.ic + " " + b.nome;
+  bt.onclick = () => { b.pega(); estat.bonusPegos++; puxarAdm(); };
+  el("admBonus").appendChild(bt);
+});
+{
+  const bt = document.createElement("button");
+  bt.className = "bt"; bt.textContent = "⭐ SOLTAR ESTRELA";
+  bt.onclick = () => { nasceEstrela(); fecharAdm(); };
+  el("admBonus").appendChild(bt);
+  const bl = document.createElement("button");
+  bl.className = "bt perigo"; bl.textContent = "LIMPAR BÔNUS";
+  bl.onclick = () => { buffs = []; puxarAdm(); };
+  el("admBonus").appendChild(bl);
+}
+
+function darDinheiro(n) { dinheiro += n; recorde = Math.max(recorde, dinheiro); puxarAdm(); }
+function definirDinheiro() {
+  const v = parseFloat(el("admQtd").value);
+  if (!isNaN(v) && v >= 0) { dinheiro = v; recorde = Math.max(recorde, v); puxarAdm(); }
+}
+function darUpgrades(moeda, n) { TODOS.filter(u => u.moeda === moeda).forEach(u => u.qtd += n); puxarAdm(); }
+function liberarAte(n) { recorde = Math.max(recorde, RARIDADES[Math.min(n, 120) - 1].desbloqueio); puxarAdm(); }
+function mudarFisicos(d) { MAX_FISICOS = Math.max(100, Math.min(3000, MAX_FISICOS + d)); puxarAdm(); }
+function descobrirTudo() {
+  descobertos = TIPOS.map(t => t.chave).concat(SECRETOS.map(s => s.chave));
+  puxarAdm();
+}
+function darConquistas() { conquistasFeitas = CONQUISTAS.map(c => c.id); puxarAdm(); }
+function completarMissoes() { missoes.forEach(m => m.feita = true); checarMissoes(); puxarAdm(); }
+function resetTotal() {
+  dinheiro = 0; recorde = 0; cristais = 0; renascimentos = 0; vendidos = 0;
+  bolas = []; deposito = 0; depositoValor = 0; descobertos = [];
+  conquistasFeitas = []; missoes = []; nivelMissao = 0; buffs = []; combo = 0;
+  Object.assign(estat, {
+    cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
+    ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
+    encheu:false, inclinou:false, admUsado:false,
+  });
+  TODOS.forEach(u => u.qtd = 0);
+  sortearMissoes(true);
+  puxarAdm(); salvar();
+}
+function puxarAdm() {
+  el("admFis").textContent = MAX_FISICOS;
+  el("admRar").textContent = raridadesLiberadas().length;
+  el("admInfo").textContent =
+    "dinheiro.....: R$ " + fmt(dinheiro) + "\n" +
+    "recorde......: R$ " + fmt(recorde) + "\n" +
+    "cristais.....: " + fmt(cristais) + "\n" +
+    "renascimentos: " + renascimentos + "\n" +
+    "raridades....: " + raridadesLiberadas().length + "/120  (" +
+      (raridadesLiberadas().slice(-1)[0] || RARIDADES[0]).nome + ")\n" +
+    "índice.......: " + descobertos.length + "/" + (TIPOS.length + SECRETOS.length) + "\n" +
+    "conquistas...: " + conquistasFeitas.length + "/" + CONQUISTAS.length + "\n" +
+    "missões......: " + nivelMissao + " cumpridas\n" +
+    "na caixa.....: " + bolas.length + " físicos + " + fmt(deposito) + " no depósito\n" +
+    "valor pilha..: R$ " + fmt(valorPilha()) + "\n" +
+    "por clique...: " + fmt(porClique()) + "   por segundo: " + fmt(porSegundoChuva());
+  montarLista(); render(); salvar();
+}
+
+/* ==========================================================================
+   11. LOOPS
+   ========================================================================== */
+let contaQuadros = 0;
+function quadro() {
+  const gIma = forcaIma();
+  for (let i = 0; i < bolas.length; i++) bolas[i].passo(gIma);
+  colidir();
+
+  /* A colisão empurra os emojis pra sair da sobreposição e isso pode
+     espremer um pra fora da parede — inclusive os que estão dormindo,
+     que não passam pela checagem lá do passo(). Aqui todo mundo volta. */
+  if (!fundoAberto) {
+    for (let i = 0; i < bolas.length; i++) {
+      const b = bolas[i];
+      if (b.x < b.r) { b.x = b.r; if (b.vx < 0) b.vx = 0; }
+      else if (b.x > L - b.r) { b.x = L - b.r; if (b.vx > 0) b.vx = 0; }
+      if (b.y > A - b.r) { b.y = A - b.r; if (b.vy > 0) b.vy = 0; }
+      else if (tetoFechado && b.y < b.r) { b.y = b.r; if (b.vy < 0) b.vy = 0; }
+    }
+  }
+
+  if (fundoAberto) {
+    bolas = bolas.filter(b => b.y < A + 60);
+    if (!bolas.length) terminarVenda();
+  } else {
+    for (let i = 0; i < bolas.length; i++) {
+      const b = bolas[i];
+      if (b.dormindo) continue;
+      const dx = b.x - b.ux, dy = b.y - b.uy;
+      if (dx * dx + dy * dy < .09) { if (++b.quieto > 22) { b.dormindo = true; b.vx = 0; b.vy = 0; } }
+      else b.quieto = 0;
+      b.ux = b.x; b.uy = b.y;
+    }
+  }
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, L, A);
+  ctx.fillStyle = fundoAberto ? "#ff6b9d22" : "#ffffff08";
+  ctx.fillRect(0, A - 4, L, 4);
+  for (let i = 0; i < bolas.length; i++) {
+    const b = bolas[i], s = b.sprite, m = s.meio;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.translate(b.x, b.y); ctx.rotate(b.ang);
+    ctx.drawImage(s.cv, -m, -m, m * 2, m * 2);
+  }
+
+  // a estrela de bônus fica por cima de tudo, com um anel mostrando o tempo
+  if (estrela) {
+    if (Date.now() > estrela.ate) estrela = null;
+    else {
+      const p = performance.now() / 260, pulso = 1 + Math.sin(p) * .07, r = estrela.r;
+      const falta = (estrela.ate - Date.now()) / 11000;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.translate(estrela.x, estrela.y); ctx.scale(pulso, pulso);
+      const g = ctx.createRadialGradient(0, 0, 2, 0, 0, r);
+      g.addColorStop(0, "#fff6d0"); g.addColorStop(1, "#ff9d2e");
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.2832); ctx.fillStyle = g; ctx.fill();
+      ctx.lineWidth = 3; ctx.strokeStyle = "#ffffff55";
+      ctx.beginPath(); ctx.arc(0, 0, r + 4, -1.5708, -1.5708 + 6.2832 * falta); ctx.stroke();
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.font = (r * 1.05) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+      ctx.fillText(estrela.tipo.ic, 0, r * .04);
+    }
+  }
+
+  if (++contaQuadros % 12 === 0) {
+    const total = bolas.length + deposito;
+    el("contadorPilha").textContent = total
+      ? total + "/" + fmt(limite()) + (deposito ? " (📦" + fmt(deposito) + ")" : "") + " · R$ " + fmt(valorPilha())
+      : (fundoAberto ? "caindo…" : "vazia");
+    el("btVender").disabled = !total || fundoAberto;
+    const vel = somaEfeito("auto");
+    let txt = total ? "VENDER · R$ " + fmt(valorPilha()) : "VENDER";
+    if (vel) {
+      // mostra o relógio da venda automática, pra dar pra ver que ela existe
+      const falta = Math.max(0, Math.ceil((segundosAuto(vel) * 1000 - (Date.now() - ultimaVendaAuto)) / 1000));
+      txt = "🤝 " + falta + "s · " + txt;
+    }
+    el("btVender").textContent = txt;
+    desenharBuffs();
+  }
+  requestAnimationFrame(quadro);
+}
+
+function desenharBuffs() {
+  const agora = Date.now();
+  buffs = buffs.filter(b => b.ate > agora);
+  let html = buffs.map(b => '<div class="buff">' + b.nome + " · " + Math.ceil((b.ate - agora) / 1000) + "s</div>").join("");
+  if (combo > 1 && agora - ultimoClique < 1500 && tetoCombo() > 0)
+    html += '<div class="buff combo">🔥 combo ' + Math.min(combo, tetoCombo()) + " · x" + multCombo().toFixed(2) + "</div>";
+  const f = el("faixaBuffs");
+  if (f.innerHTML !== html) f.innerHTML = html;
+}
+
+/* ---------- venda automática ---------- */
+setInterval(() => {
+  const vel = somaEfeito("auto");
+  if (!vel || fundoAberto) return;
+  const total = bolas.length + deposito;
+  if (!total) { ultimaVendaAuto = Date.now(); return; }
+  const cheia = total >= limite();
+  const passou = Date.now() - ultimaVendaAuto > segundosAuto(vel) * 1000;
+  if (cheia || passou) { vender(); ultimaVendaAuto = Date.now(); }
+}, 400);
+
+/* ---------- chuva de emojis ---------- */
+setInterval(() => {
+  const porSeg = porSegundoChuva();
+  if (!porSeg || fundoAberto) return;
+  chuvaAcum += porSeg / 10;
+  const lim = limite();
+  let n = 0;
+  while (chuvaAcum >= 1 && n < 400) {
+    chuvaAcum--; n++;
+    if (bolas.length + deposito >= lim) { estat.encheu = true; break; }
+    nascer(sortearTipo());
+    estat.feitos++;
+  }
+  if (chuvaAcum > 1e4) chuvaAcum = 0;
+}, 100);
+
+/* ---------- estrela de bônus, conquistas e missões ---------- */
+setInterval(() => {
+  estat.tempo += 500;
+  checarConquistas();
+  checarMissoes();
+  if (!estrela && recorde >= 3000 && Date.now() > proximaEstrela && !document.hidden) {
+    nasceEstrela();
+    proximaEstrela = Date.now() + 70000 + Math.random() * 90000;
+  }
+  if (painelAtual === "miss") {                     // barrinhas andando ao vivo
+    missoes.forEach((m, i) => {
+      const t = el("missLista").children[i]; if (!t) return;
+      const p = Math.min(missaoProgresso(m), m.alvo);
+      t.querySelector(".mp").textContent = fmt(p) + "/" + fmt(m.alvo);
+      t.querySelector(".trilho i").style.width = (p / m.alvo * 100) + "%";
+    });
+  }
+}, 500);
+
+setInterval(() => {
+  render();
+  atualizarLista();
+  if (painelAtual === "stat") montarStats();
+  if (combo && Date.now() - ultimoClique > 1500) combo = 0;
+}, 250);
+
+function render() {
+  el("dinheiro").textContent = "R$ " + fmt(dinheiro);
+  el("vClique").textContent = fmt(porClique());
+  el("vChuva").textContent = fmt(porSegundoChuva()) + "/s";
+  el("vRec").textContent = "R$ " + fmt(recorde);
+  el("vCris").textContent = cristais + (cristais ? " +" + Math.round(cristais * 35) + "%" : "");
+  el("vInd").textContent = descobertos.length + "/" + (TIPOS.length + SECRETOS.length);
+  el("vConq").textContent = conquistasFeitas.length + "/" + CONQUISTAS.length;
+  el("contIndice").textContent = descobertos.length;
+  el("ptConq").textContent = conquistasFeitas.length;
+  const lib = raridadesLiberadas();
+  const ult = lib[lib.length - 1] || RARIDADES[0];
+  el("vRar").textContent = ult.nome;
+  el("vRar").style.color = ult.cor;
+
+  const g = cristaisAGanhar(), bt = el("renascer");
+  bt.classList.toggle("on", g > 0);
+  bt.innerHTML = g
+    ? '<b>💠 RENASCER</b><span>Zera dinheiro, upgrades de dinheiro e raridades — você ganha <b style="color:var(--cristal)">' +
+      g + ' cristais</b> (+35% cada, pra sempre). Índice, conquistas e loja de cristais <b>não</b> se perdem.</span>'
+    : '<b>💠 RENASCER</b><span>Trancado. Chegue a R$ ' + fmt(CUSTO_RENASCER) + ' de recorde. (' +
+      fmt(recorde) + ' / ' + fmt(CUSTO_RENASCER) + ')</span>';
+}
+
+/* ==========================================================================
+   12. SAVE
+   ========================================================================== */
+const CHAVE = "fabricaEmojis_v3", CHAVE_ANTIGA = "fabricaEmojis_v2";
+function pacote() {
+  return {
+    v: 3, dinheiro, recorde, vendidos, cristais, renascimentos, mudo, descobertos,
+    conquistas: conquistasFeitas, missoes, nivelMissao, estat, quando: Date.now(),
+    ups: TODOS.filter(u => u.qtd).map(u => [u.id, u.qtd]),
+  };
+}
+function salvar() {
+  try { localStorage.setItem(CHAVE, JSON.stringify(pacote())); } catch (e) {}
+}
+function aplicar(d) {
+  if (!d) return;
+  dinheiro = d.dinheiro || 0; recorde = d.recorde || 0; vendidos = d.vendidos || 0;
+  cristais = d.cristais || 0; renascimentos = d.renascimentos || 0; mudo = !!d.mudo;
+  descobertos = Array.isArray(d.descobertos) ? d.descobertos : [];
+  conquistasFeitas = Array.isArray(d.conquistas) ? d.conquistas : [];
+  missoes = Array.isArray(d.missoes) ? d.missoes.filter(m => m && m.tipo) : [];
+  nivelMissao = d.nivelMissao || 0;
+  if (d.estat) for (const k in estat) if (k in d.estat) estat[k] = d.estat[k];
+  TODOS.forEach(u => u.qtd = 0);
+  (d.ups || []).forEach(([id, q]) => { const u = TODOS.find(x => x.id === id); if (u) u.qtd = q; });
+  if (mudo) el("btSom").textContent = "🔇";
+}
+function carregar() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
+  if (!d) { try { d = JSON.parse(localStorage.getItem(CHAVE_ANTIGA) || "null"); } catch (e) {} }
+  if (!d) return null;
+  aplicar(d);
+  return d;
+}
+function exportarSave() {
+  const txt = btoa(unescape(encodeURIComponent(JSON.stringify(pacote()))));
+  const copiar = t => navigator.clipboard && navigator.clipboard.writeText
+    ? navigator.clipboard.writeText(t) : Promise.reject();
+  copiar(txt).then(() => avisar("📤 código copiado! guarda num lugar seguro"))
+             .catch(() => { prompt("Copia esse código do jogo:", txt); });
+}
+function importarSave() {
+  const txt = prompt("Cola aqui o código do jogo (isso substitui o save atual):");
+  if (!txt) return;
+  try {
+    const d = JSON.parse(decodeURIComponent(escape(atob(txt.trim()))));
+    if (!d || typeof d.dinheiro !== "number") throw 0;
+    aplicar(d);
+    bolas = []; deposito = 0; depositoValor = 0; buffs = []; combo = 0;
+    sortearMissoes(); montarFamilias(); montarLista(); render(); salvar();
+    avisar("📥 jogo carregado!");
+  } catch (e) { avisar("❌ esse código não serve"); }
+}
+setInterval(salvar, 5000);
+window.addEventListener("beforeunload", salvar);
+
+/* ---------- começo ---------- */
+const salvo = carregar();
+ajustar();
+sortearMissoes();
+montarFamilias(); montarLista();
+checarConquistas(); checarMissoes();
+render();
+if (salvo) ganhosOffline(salvo.quando);
+el("rodape").innerHTML =
+  "Clique <b>dentro da caixa</b> pra fabricar. Os emojis caem, quicam e empilham de verdade.<br>" +
+  "<b>120 raridades</b> · <b>" + (TIPOS.length + SECRETOS.length) + " emojis</b> (" + SECRETOS.length + " secretos) · <b>" +
+  TODOS.length + " upgrades</b> · <b>" + CONQUISTAS.length + " conquistas</b> · missões, combos, críticos, estrelas de bônus e renda offline.<br>" +
+  "Espaço também fabrica. As setas (ou a inclinação do celular) viram a gravidade.";
+quadro();
+</script>
+</body>
+</html>
