@@ -90,7 +90,7 @@
     border-radius:var(--r); padding:12px; display:flex; flex-direction:column; gap:10px;
   }
   .abasTopo { display:flex; gap:5px; flex-wrap:wrap; }
-  .abaT { flex:1 1 auto; min-width:78px; }
+  .abaT { flex:1 1 auto; min-width:64px; padding-left:2px; padding-right:2px; }
   .abaT {
     flex:1; padding:9px 4px; border-radius:10px; cursor:pointer; border:1px solid var(--linha);
     background:#ffffff08; color:var(--dim); font-family:var(--mono); font-size:.68rem; font-weight:700;
@@ -179,6 +179,39 @@
   }
   .btMissao:disabled { background:#ffffff10; color:#ffffff40; cursor:not-allowed; }
 
+  /* tela de início e modos */
+  .modoCard {
+    width:100%; display:flex; gap:11px; align-items:flex-start; text-align:left; cursor:pointer;
+    padding:12px; border-radius:13px; margin-bottom:8px; font-family:inherit; color:inherit;
+    border:1px solid var(--linha); background:linear-gradient(180deg,var(--painel2),var(--painel));
+    transition:border-color .12s, transform .08s;
+  }
+  .modoCard:hover { border-color:var(--ouro); transform:translateY(-1px); }
+  .modoCard .mi { font-size:1.6rem; line-height:1; }
+  .modoCard .mn { font-weight:800; font-size:.95rem; }
+  .modoCard .md { font-size:.74rem; color:var(--dim); margin-top:3px; line-height:1.45; }
+  .modoCard .mp { font-family:var(--mono); font-size:.66rem; color:var(--verde); margin-top:5px; }
+  .modoCard .mp.novo { color:var(--dim); }
+  .selo {
+    font-family:var(--mono); font-size:.58rem; letter-spacing:.14em; text-transform:uppercase;
+    padding:3px 8px; border-radius:99px; border:1px solid var(--linha); color:var(--dim); margin-left:auto;
+  }
+
+  /* fundir repetidos */
+  .fus {
+    display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center;
+    padding:9px; border-radius:11px; border:1px solid var(--linha);
+    background:linear-gradient(180deg,var(--painel2),var(--painel));
+  }
+  .fus .fe { font-size:1.15rem; }
+  .fus .fn { font-size:.8rem; font-weight:700; }
+  .fus .fd { font-size:.66rem; color:var(--dim); margin-top:2px; }
+  .btFus {
+    padding:8px 12px; border-radius:9px; border:none; cursor:pointer; font-family:var(--mono);
+    font-weight:800; font-size:.72rem; background:linear-gradient(180deg,#d7b3ff,#b47aff); color:#1b0b2e;
+  }
+  .btFus:disabled { background:#ffffff10; color:#ffffff40; cursor:not-allowed; }
+
   /* temas da caixa */
   .temaGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:7px; }
   .tema {
@@ -198,8 +231,9 @@
   .rodape { font-size:.71rem; color:var(--dim); text-align:center; max-width:560px; line-height:1.6; }
 
   /* ---------- janelas ---------- */
-  #indice, #adm, #volta { position:fixed; inset:0; z-index:60; display:none; background:#04020ae0; backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:16px; }
-  #indice.on, #adm.on, #volta.on { display:flex; }
+  #indice, #adm, #volta, #inicio { position:fixed; inset:0; z-index:60; display:none; background:#04020ae0; backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:16px; }
+  #indice.on, #adm.on, #volta.on, #inicio.on { display:flex; }
+  #inicio { z-index:80; }
   .janela {
     width:min(680px,100%); max-height:88vh; overflow-y:auto; padding:16px; border-radius:var(--r);
     background:linear-gradient(180deg,var(--painel2),#0b0713); border:1px solid var(--ouro); box-shadow:0 30px 60px #000;
@@ -264,6 +298,13 @@
   <div class="paginas" id="paginas"></div>
   <div id="faixas"></div>
   <button class="btFechar" onclick="document.getElementById('indice').classList.remove('on')">FECHAR</button>
+</div></div>
+
+<div id="inicio" class="on"><div class="janela" style="max-width:560px">
+  <h3>🏭 Fábrica de Emojis</h3>
+  <p class="sub">Escolhe como você quer jogar. Cada modo tem o save dele — um não estraga o outro.</p>
+  <div id="modoLista"></div>
+  <p class="sub" style="margin:12px 0 0">Depois dá pra trocar de modo no 🎮 em cima da caixa.</p>
 </div></div>
 
 <div id="volta"><div class="janela" style="max-width:420px">
@@ -385,6 +426,8 @@
         <button class="pilula" id="btSom">🔊</button>
         <button class="pilula" id="btGiro" title="inclinar o celular">📱</button>
         <button class="pilula" id="btAdm" title="modo adm">🔒</button>
+        <button class="pilula" id="btModo" title="trocar de modo">🎮</button>
+        <div class="pilula" id="pilulaDia" style="cursor:default"></div>
         <div class="pilula info" id="contadorPilha">vazia</div>
       </div>
       <div class="flutuando fInf" id="faixaBuffs"></div>
@@ -402,6 +445,7 @@
       <button class="abaT" data-p="miss">📜 MISSÕES<span class="aviso" id="avisoMiss" hidden></span></button>
       <button class="abaT" data-p="stat">📊 STATS</button>
       <button class="abaT" data-p="tema">🎨 CAIXA</button>
+      <button class="abaT" data-p="fusao" id="abaFusao" hidden>🧬 FUNDIR</button>
     </div>
 
     <div id="pLoja" style="display:flex;flex-direction:column;gap:10px">
@@ -423,6 +467,11 @@
     <div id="pMiss" style="display:none;flex-direction:column;gap:10px">
       <div class="cabecinha" id="missTopo"></div>
       <div id="missLista" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <div id="pFusao" style="display:none;flex-direction:column;gap:10px">
+      <div class="cabecinha" id="fusTopo"></div>
+      <div id="fusLista" style="display:flex;flex-direction:column;gap:7px"></div>
     </div>
 
     <div id="pTema" style="display:none;flex-direction:column;gap:10px">
@@ -558,10 +607,25 @@ function sortearSecreto() {
   }
   return null;
 }
+/* ---------- emoji do dia: um sorteado por dia que vale 10x ----------
+   O sorteio usa a data como semente, então é o mesmo pra todo mundo. */
+const MULT_DIA = 10;
+let tipoDoDia = null;
+function atualizarDia() {
+  const d = new Date();
+  const chave = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  let semente = 0;
+  for (let i = 0; i < chave.length; i++) semente = (semente * 31 + chave.charCodeAt(i)) % 1e9;
+  const total = Math.max(POR_RARIDADE, raridadesLiberadas().length * POR_RARIDADE);
+  tipoDoDia = TIPOS[semente % total];
+  const pil = el("pilulaDia");
+  if (pil) pil.innerHTML = "☀️ hoje " + tipoDoDia.e + " vale " + MULT_DIA + "x";
+}
 function valorDe(tipo) {
-  if (!tipo.secreto) return tipo.valor;
+  const dia = (tipo === tipoDoDia) ? MULT_DIA : 1;
+  if (!tipo.secreto) return tipo.valor * dia;
   const lib = raridadesLiberadas();
-  return lib[lib.length - 1].base * tipo.fator;
+  return lib[lib.length - 1].base * tipo.fator * dia;
 }
 
 /* ==========================================================================
@@ -631,8 +695,8 @@ const LOJA = gerar(FAM_DINHEIRO, "dinheiro");
 const CRISTALOJA = gerar(FAM_CRISTAL, "cristal");
 const TODOS = LOJA.concat(CRISTALOJA);
 const preco = u => u.moeda === "cristal"
-  ? Math.ceil(u.base * Math.pow(1.55, u.qtd))
-  : Math.ceil(u.base * Math.pow(1.19, u.qtd));
+  ? Math.ceil(u.base * Math.pow(1.55, u.qtd) * precoX())
+  : Math.ceil(u.base * Math.pow(1.19, u.qtd) * precoX());
 
 // soma de um efeito em todas as lojas
 function somaEfeito(tipo) {
@@ -640,6 +704,29 @@ function somaEfeito(tipo) {
   for (let i = 0; i < TODOS.length; i++) if (TODOS[i].tipo === tipo) s += TODOS[i].qtd * TODOS[i].val;
   return s;
 }
+
+/* ==========================================================================
+   3b. MODOS DE JOGO — escolhidos na tela de início, cada um com o save dele
+   ========================================================================== */
+const MODOS = [
+  { id:"normal",  ic:"🏭", nome:"Normal",
+    desc:"O jogo completo, do jeito que ele foi feito pra ser jogado." },
+  { id:"dificil", ic:"🔥", nome:"Difícil",
+    desc:"Tudo custa 4x mais caro, mas cada venda vale 3x. Pra quem já sabe jogar.",
+    precoX:4, vendaX:3 },
+  { id:"fusao",   ic:"🧬", nome:"Fusão",
+    desc:"Igual ao Normal, e ainda dá pra fundir 5 emojis repetidos em 1 da raridade de cima.",
+    fusao:true },
+  { id:"livre",   ic:"🧪", nome:"Livre",
+    desc:"Dinheiro que não acaba e as 120 raridades abertas desde o começo. É o modo de bagunçar.",
+    livre:true },
+];
+let modoAtual = null;
+const modoObj = () => MODOS.find(m => m.id === modoAtual) || MODOS[0];
+const modoLivre = () => !!modoObj().livre;
+const precoX = () => modoObj().precoX || 1;
+const vendaX = () => modoObj().vendaX || 1;
+const chaveDoModo = id => "fabricaEmojis_v5_" + id;
 
 /* ==========================================================================
    4. ESTADO
@@ -654,8 +741,9 @@ let temas = ["padrao"], temaAtual = "padrao";
 const estat = {
   cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
   ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
-  encheu:false, inclinou:false, admUsado:false,
+  encheu:false, inclinou:false, admUsado:false, doDia:0, fusoes:0, vendaMinima:0,
 };
+let cliquesRapidos = [];
 const el = id => document.getElementById(id);
 
 function fmt(n) {
@@ -714,7 +802,7 @@ const limite         = () => Math.round(90 + somaEfeito("espaco"));
 const bonusCristais  = () => 1 + cristais * .35;
 const multValor      = () => (1 + somaEfeito("valor")) * (1 + somaEfeito("venda"))
                            * (1 + somaEfeito("mult")) * bonusCristais()
-                           * bonusConquistas() * bonusColecao() * multBuff("tudo");
+                           * bonusConquistas() * bonusColecao() * multBuff("tudo") * vendaX();
 const encolhe        = () => Math.max(.35, 1 - somaEfeito("prensa"));
 const chanceDourado  = () => Math.min(.6, somaEfeito("dourado"));
 const forcaIma       = () => somaEfeito("ima");
@@ -727,7 +815,7 @@ const chanceFusao    = () => Math.min(.8, somaEfeito("fusao"));
 const fatorOffline   = () => Math.min(.85, somaEfeito("offline"));
 const multSecreto    = () => 1 + somaEfeito("radar");
 
-const raridadesLiberadas = () => RARIDADES.filter(r => recorde >= r.desbloqueio);
+const raridadesLiberadas = () => modoLivre() ? RARIDADES : RARIDADES.filter(r => recorde >= r.desbloqueio);
 const tiposLiberados = () => TIPOS.filter(t => recorde >= t.desbloqueio);
 
 // quanto vale, em média, um emoji que sai agora (sem os multiplicadores de venda)
@@ -767,6 +855,7 @@ function sortearTipo() {
 }
 function marcar(t) {
   contagem[t.chave] = (contagem[t.chave] || 0) + 1;
+  if (t === tipoDoDia) estat.doDia++;
   if (!vistos.has(t.chave)) {
     vistos.add(t.chave); descobertos.push(t.chave);
     if (t.rIndex >= 3) avisar("✨ " + t.e + " " + RARIDADES[t.rIndex].nome + " — R$ " + fmt(t.valor));
@@ -780,7 +869,7 @@ function marcar(t) {
    ========================================================================== */
 const ROMANOS = ["I","II","III","IV","V","VI","VII","VIII"];
 const CONQUISTAS = [];
-function conq(id, ic, nome, desc, teste) { CONQUISTAS.push({ id, ic, nome, desc, teste }); }
+function conq(id, ic, nome, desc, teste, secreta) { CONQUISTAS.push({ id, ic, nome, desc, teste, secreta }); }
 function marcos(pref, ic, nome, valores, desc, valor) {
   valores.forEach((v, i) => conq(pref + i, ic, nome + " " + ROMANOS[i], desc(v), () => valor() >= v));
 }
@@ -820,6 +909,24 @@ conq("giro",  "📱", "Cabeça pra Baixo", "Use a inclinação do celular", () =
 conq("trapa", "🔓", "Trapaceiro", "Entre no modo administrador", () => estat.admUsado);
 conq("miss",  "📜", "Cumpridor", "Complete 10 missões", () => nivelMissao >= 10);
 conq("rico",  "🤑", "Um Só Golpe", "Faça uma venda de R$ 1B", () => estat.maiorVenda >= 1e9);
+
+/* as secretas só aparecem no painel depois de destravadas */
+conq("coruja",  "🦉", "Coruja",        "Jogar entre meia-noite e 5 da manhã",
+  () => { const h = new Date().getHours(); return h >= 0 && h < 5; }, true);
+conq("veloz",   "⚡", "Dedo Elétrico", "20 cliques em menos de 3 segundos",
+  () => cliquesRapidos.length >= 20, true);
+conq("soUm",    "🥲", "Venda Vazia",   "Vender a caixa com um emoji só",
+  () => estat.vendaMinima === 1, true);
+conq("quebrou", "📉", "Quebrou",       "Ficar com menos de R$ 10 depois de já ter tido 1 milhão",
+  () => recorde >= 1e6 && dinheiro < 10, true);
+conq("maratona","🌙", "Maratona",      "1 hora de fábrica no mesmo save",
+  () => estat.tempo >= 3600000, true);
+conq("doDia",   "☀️", "Filho do Sol",  "Fabricar 50 emojis do dia",
+  () => estat.doDia >= 50, true);
+conq("fundidor","🧬", "Fundidor",      "Fazer 100 fusões no modo Fusão",
+  () => estat.fusoes >= 100, true);
+conq("modos",   "🎮", "Explorador",    "Jogar nos 4 modos do jogo",
+  () => modosJogados.length >= MODOS.length, true);
 
 function checarConquistas() {
   let novas = 0;
@@ -1182,6 +1289,8 @@ function clicar(x) {
   }
   ultimoClique = agora;
   estat.cliques++;
+  cliquesRapidos.push(agora);
+  while (cliquesRapidos.length && agora - cliquesRapidos[0] > 3000) cliquesRapidos.shift();
   let n = porClique();
   if (Math.random() < chanceCritico()) {
     n *= 10; estat.criticos++;
@@ -1222,7 +1331,79 @@ function pegarEstrela() {
 }
 
 /* ==========================================================================
-   7b. TEMAS DA CAIXA — comprados com cristais, só pra deixar bonito
+   7b. FUNDIR REPETIDOS — só no modo Fusão.
+   5 repetidos de uma raridade viram 1 emoji da raridade de cima. O último
+   de cada emoji nunca é gasto, pra ninguém perder figurinha do álbum.
+   ========================================================================== */
+const CUSTO_FUSAO = 5;
+function repetidosDe(ri) {
+  let n = 0;
+  for (let i = 0; i < POR_RARIDADE; i++) {
+    const c = contagem[TIPOS[ri * POR_RARIDADE + i].chave] || 0;
+    if (c > 1) n += c - 1;
+  }
+  return n;
+}
+function fundir(ri, vezes) {
+  if (!modoObj().fusao || ri >= RARIDADES.length - 1) return 0;
+  let feitas = 0;
+  for (let v = 0; v < vezes; v++) {
+    if (repetidosDe(ri) < CUSTO_FUSAO) break;
+    if (bolas.length + deposito >= limite()) { avisar("📦 a caixa está cheia — vende primeiro"); break; }
+    let falta = CUSTO_FUSAO;
+    for (let i = 0; i < POR_RARIDADE && falta > 0; i++) {
+      const ch = TIPOS[ri * POR_RARIDADE + i].chave, c = contagem[ch] || 0;
+      const tira = Math.min(falta, Math.max(0, c - 1));
+      if (tira > 0) { contagem[ch] = c - tira; falta -= tira; }
+    }
+    const novo = TIPOS[(ri + 1) * POR_RARIDADE + Math.floor(Math.random() * POR_RARIDADE)];
+    marcar(novo); nascer(novo);
+    feitas++; estat.fusoes++;
+  }
+  if (feitas) {
+    avisar("🧬 " + feitas + (feitas > 1 ? " fusões" : " fusão") + " · " + RARIDADES[ri + 1].nome + "!");
+    [740, 988, 1318].forEach((f, i) => setTimeout(() => bip(f, .13), i * 80));
+    sujo = true; montarFusao(); salvar();
+  }
+  return feitas;
+}
+/* até onde a lista vai: as raridades abertas e também as que só existem na
+   sua caixa porque saíram de uma fusão anterior */
+function ultimaComEmoji() {
+  const abertas = Math.max(0, raridadesLiberadas().length - 1);
+  for (let ri = RARIDADES.length - 1; ri > abertas; ri--) {
+    for (let i = 0; i < POR_RARIDADE; i++) if (contagem[TIPOS[ri * POR_RARIDADE + i].chave]) return ri;
+  }
+  return abertas;
+}
+function fundirTudo() {
+  let total = 0;
+  for (let ri = Math.min(ultimaComEmoji(), RARIDADES.length - 2); ri >= 0; ri--) total += fundir(ri, 999);
+  if (!total) { avisar("🧬 nenhuma raridade tem 5 repetidos ainda"); bip(200); }
+}
+function montarFusao() {
+  const topo = Math.min(ultimaComEmoji(), RARIDADES.length - 2);
+  const linhas = [];
+  for (let ri = 0; ri <= topo; ri++) {
+    const rep = repetidosDe(ri), r = RARIDADES[ri], pode = rep >= CUSTO_FUSAO;
+    if (!rep && ri < topo - 5) continue;             // esconde as raridades vazias antigas
+    linhas.push('<div class="fus">' +
+      '<div class="fe">' + TIPOS[ri * POR_RARIDADE].e + '</div>' +
+      '<div><div class="fn" style="color:' + r.cor + '">' + (ri + 1) + ". " + r.nome + '</div>' +
+      '<div class="fd">' + rep + ' repetidos · ' + CUSTO_FUSAO + ' viram 1 ' + RARIDADES[ri + 1].nome + '</div></div>' +
+      '<button class="btFus" data-r="' + ri + '"' + (pode ? "" : " disabled") + '>FUNDIR</button></div>');
+  }
+  el("fusTopo").innerHTML = '<b>Fundir repetidos</b> · ' + CUSTO_FUSAO +
+    ' repetidos de uma raridade viram 1 da raridade de cima. O último de cada emoji nunca é gasto.' +
+    '<br><button class="bt" style="margin-top:7px" onclick="fundirTudo()">🧬 FUNDIR TUDO QUE DER</button>' +
+    ' <span style="font-family:var(--mono);font-size:.65rem">' + fmt(estat.fusoes) + ' fusões feitas</span>';
+  el("fusLista").innerHTML = linhas.join("") ||
+    '<div class="cabecinha">Ainda não tem emoji repetido. Fabrica mais um pouco!</div>';
+  [...el("fusLista").querySelectorAll(".btFus")].forEach(b => b.onclick = () => fundir(+b.dataset.r, 1));
+}
+
+/* ==========================================================================
+   7c. TEMAS DA CAIXA — comprados com cristais, só pra deixar bonito
    ========================================================================== */
 const TEMAS = [
   { id:"padrao",   nome:"Fábrica",       ic:"🏭", custo:0,  fundo:["#120c1e","#0a0713"], borda:"#33254a", chao:"#ffffff08" },
@@ -1270,7 +1451,9 @@ function montarTemas() {
 let vendendo = 0;
 function vender() {
   if ((!bolas.length && !deposito) || fundoAberto) return;
-  vendendo = valorPilha(); vendidos += bolas.length + deposito;
+  const quantos = bolas.length + deposito;
+  if (!estat.vendaMinima || quantos < estat.vendaMinima) estat.vendaMinima = quantos;
+  vendendo = valorPilha(); vendidos += quantos;
   estat.vendas++;
   if (vendendo > estat.maiorVenda) estat.maiorVenda = vendendo;
   ultimaVendaAuto = Date.now();          // vender na mão também reinicia o relógio
@@ -1344,13 +1527,14 @@ function ganhosOffline(quando) {
    ========================================================================== */
 function mostrarPainel(p) {
   painelAtual = p;
-  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"],["tema","pTema"]].forEach(([k, id]) =>
+  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"],["tema","pTema"],["fusao","pFusao"]].forEach(([k, id]) =>
     el(id).style.display = (k === p ? "flex" : "none"));
   [...document.querySelectorAll(".abaT")].forEach(b => b.classList.toggle("sel", b.dataset.p === p));
   if (p === "conq") montarConquistas();
   if (p === "miss") montarMissoes();
   if (p === "stat") montarStats();
   if (p === "tema") montarTemas();
+  if (p === "fusao") montarFusao();
   bip(700);
 }
 [...document.querySelectorAll(".abaT")].forEach(b => b.onclick = () => mostrarPainel(b.dataset.p));
@@ -1392,7 +1576,8 @@ function montarLista() {
 }
 function comprar(u) {
   const p = preco(u);
-  if (u.moeda === "cristal") { if (cristais < p) return; cristais -= p; }
+  if (modoLivre()) { /* no modo Livre nada custa nada */ }
+  else if (u.moeda === "cristal") { if (cristais < p) return; cristais -= p; }
   else { if (dinheiro < p) return; dinheiro -= p; }
   u.qtd++; estat.ups++; bip(u.moeda === "cristal" ? 1200 : 900);
   sujo = true; atualizarLista(); salvar();
@@ -1429,9 +1614,11 @@ function montarConquistas() {
     Math.round((bonusConquistas() - 1) * 100) + "%</b>";
   el("conqGrid").innerHTML = CONQUISTAS.map(c => {
     const tem = conquistasFeitas.includes(c.id);
+    const escondida = c.secreta && !tem;
     return '<div class="conq ' + (tem ? "feita" : "nao") + '">' +
-      '<div class="ci">' + (tem ? c.ic : "🔒") + '</div>' +
-      '<div><div class="cn">' + c.nome + '</div><div class="cd">' + c.desc + '</div></div></div>';
+      '<div class="ci">' + (tem ? c.ic : escondida ? "❔" : "🔒") + '</div>' +
+      '<div><div class="cn">' + (escondida ? "???" : c.nome) + '</div>' +
+      '<div class="cd">' + (escondida ? "conquista secreta" : c.desc) + '</div></div></div>';
   }).join("");
   el("ptConq").textContent = feitas;
 }
@@ -1453,6 +1640,8 @@ function montarMissoes() {
 
 function montarStats() {
   const linhas = [
+    ["🎮 Modo", modoObj().ic + " " + modoObj().nome],
+    ["☀️ Emoji do dia", (tipoDoDia ? tipoDoDia.e : "—") + " · " + fmt(estat.doDia) + " fabricados"],
     ["⏱️ Tempo de fábrica", tempoCurto(estat.tempo)],
     ["👆 Cliques", fmt(estat.cliques)],
     ["🎯 Cliques críticos", fmt(estat.criticos)],
@@ -1468,6 +1657,7 @@ function montarStats() {
     ["📜 Missões cumpridas", fmt(nivelMissao)],
     ["🗂️ Coleções completas", colecoesCompletas() + " · +" + Math.round((bonusColecao() - 1) * 100) + "%"],
     ["🎨 Temas da caixa", temas.length + "/" + TEMAS.length + " · " + temaObj().nome],
+    ["🧬 Fusões feitas", fmt(estat.fusoes)],
     ["♻️ Renascimentos", fmt(renascimentos)],
     ["📖 Índice", descobertos.length + "/" + (TIPOS.length + SECRETOS.length)],
     ["🌈 Raridades abertas", raridadesLiberadas().length + "/120"],
@@ -1574,13 +1764,16 @@ el("admEntrar").onclick = tentarSenha;
 el("admSenha").addEventListener("keydown", e => { if (e.key === "Enter") tentarSenha(); });
 el("btAdm").onclick = e => { e.stopPropagation(); abrirAdm(); };
 el("btGiro").onclick = e => { e.stopPropagation(); ligarInclinacao(); bip(760); };
+el("btModo").onclick = e => { e.stopPropagation(); abrirInicio(); };
 el("adm").onclick = e => { if (e.target === el("adm")) fecharAdm(); };
 
 document.addEventListener("keydown", e => {
   if (e.ctrlKey && e.shiftKey && e.key.toUpperCase() === "A") { e.preventDefault(); abrirAdm(); return; }
   if (e.key === "Escape") { fecharAdm(); el("indice").classList.remove("on"); el("volta").classList.remove("on"); }
   if (e.target.tagName === "INPUT") return;
+  if (el("inicio").classList.contains("on")) return;      // na tela de início o teclado não fabrica
   if (e.key === " ") { e.preventDefault(); clicar(); return; }
+  if (e.key.toUpperCase() === "V") { vender(); return; }
   if (e.key.length === 1) {
     segredo = (segredo + e.key.toUpperCase()).slice(-5);
     if (segredo === "ADMIN") { segredo = ""; abrirAdm(); }
@@ -1637,18 +1830,22 @@ function descobrirTudo() {
 function darConquistas() { conquistasFeitas = CONQUISTAS.map(c => c.id); puxarAdm(); }
 function darTemas() { temas = TEMAS.map(t => t.id); montarTemas(); puxarAdm(); }
 function completarMissoes() { missoes.forEach(m => m.feita = true); checarMissoes(); puxarAdm(); }
-function resetTotal() {
+function limparEstado() {
   dinheiro = 0; recorde = 0; cristais = 0; renascimentos = 0; vendidos = 0;
   bolas = []; deposito = 0; depositoValor = 0; descobertos = []; contagem = {};
   conquistasFeitas = []; missoes = []; nivelMissao = 0; buffs = []; combo = 0;
   temas = ["padrao"]; temaAtual = "padrao";
-  sincronizarVistos(); aplicarTema();
+  chuvaAcum = 0; vendendo = 0; fundoAberto = false; estrela = null; cliquesRapidos = [];
   Object.assign(estat, {
     cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
     ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
-    encheu:false, inclinou:false, admUsado:false,
+    encheu:false, inclinou:false, admUsado:false, doDia:0, fusoes:0, vendaMinima:0,
   });
   TODOS.forEach(u => u.qtd = 0);
+  sincronizarVistos(); aplicarTema();
+}
+function resetTotal() {
+  limparEstado();
   sortearMissoes(true);
   puxarAdm(); salvar();
 }
@@ -1665,6 +1862,7 @@ function puxarAdm() {
     "índice.......: " + descobertos.length + "/" + (TIPOS.length + SECRETOS.length) +
       "  (" + colecoesCompletas() + " coleções)\n" +
     "temas........: " + temas.length + "/" + TEMAS.length + "  (" + temaObj().nome + ")\n" +
+    "modo.........: " + modoObj().nome + "   fusões: " + estat.fusoes + "\n" +
     "conquistas...: " + conquistasFeitas.length + "/" + CONQUISTAS.length + "\n" +
     "missões......: " + nivelMissao + " cumpridas\n" +
     "na caixa.....: " + bolas.length + " físicos + " + fmt(deposito) + " no depósito\n" +
@@ -1783,7 +1981,7 @@ function desenharBuffs() {
 /* ---------- venda automática ---------- */
 setInterval(() => {
   const vel = somaEfeito("auto");
-  if (!vel || fundoAberto) return;
+  if (!modoAtual || !vel || fundoAberto) return;
   const total = bolas.length + deposito;
   if (!total) { ultimaVendaAuto = Date.now(); return; }
   const cheia = total >= limite();
@@ -1794,7 +1992,7 @@ setInterval(() => {
 /* ---------- chuva de emojis ---------- */
 setInterval(() => {
   const porSeg = porSegundoChuva();
-  if (!porSeg || fundoAberto) return;
+  if (!modoAtual || !porSeg || fundoAberto) return;
   chuvaAcum += porSeg / 10;
   const lim = limite();
   let n = 0;
@@ -1809,7 +2007,9 @@ setInterval(() => {
 
 /* ---------- estrela de bônus, conquistas e missões ---------- */
 setInterval(() => {
+  if (!modoAtual) return;                 // ainda na tela de início
   estat.tempo += 500;
+  atualizarDia();
   checarConquistas();
   checarMissoes();
   if (!estrela && recorde >= 3000 && Date.now() > proximaEstrela && !document.hidden) {
@@ -1860,17 +2060,26 @@ function render() {
 /* ==========================================================================
    12. SAVE
    ========================================================================== */
-const CHAVE = "fabricaEmojis_v4", ANTIGAS = ["fabricaEmojis_v3", "fabricaEmojis_v2"];
+const ANTIGAS = ["fabricaEmojis_v4", "fabricaEmojis_v3", "fabricaEmojis_v2"];
+const CHAVE_MODOS = "fabricaEmojis_modosJogados";
+let modosJogados = [];
+try { modosJogados = JSON.parse(localStorage.getItem(CHAVE_MODOS) || "[]") || []; } catch (e) {}
+function marcarModoJogado(id) {
+  if (modosJogados.includes(id)) return;
+  modosJogados.push(id);
+  try { localStorage.setItem(CHAVE_MODOS, JSON.stringify(modosJogados)); } catch (e) {}
+}
 function pacote() {
   return {
-    v: 4, dinheiro, recorde, vendidos, cristais, renascimentos, mudo, descobertos,
+    v: 5, modo: modoAtual, dinheiro, recorde, vendidos, cristais, renascimentos, mudo, descobertos,
     conquistas: conquistasFeitas, missoes, nivelMissao, estat, quando: Date.now(),
     contagem, temas, temaAtual,
     ups: TODOS.filter(u => u.qtd).map(u => [u.id, u.qtd]),
   };
 }
 function salvar() {
-  try { localStorage.setItem(CHAVE, JSON.stringify(pacote())); } catch (e) {}
+  if (!modoAtual) return;                    // ninguém escolheu modo ainda: não sobrescreve nada
+  try { localStorage.setItem(chaveDoModo(modoAtual), JSON.stringify(pacote())); } catch (e) {}
 }
 function aplicar(d) {
   if (!d) return;
@@ -1896,13 +2105,62 @@ function aplicar(d) {
 }
 function carregar() {
   let d = null;
-  try { d = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
-  for (let i = 0; !d && i < ANTIGAS.length; i++) {
-    try { d = JSON.parse(localStorage.getItem(ANTIGAS[i]) || "null"); } catch (e) {}
+  try { d = JSON.parse(localStorage.getItem(chaveDoModo(modoAtual)) || "null"); } catch (e) {}
+  // quem já jogava antes dos modos continua de onde parou, no Normal
+  if (!d && modoAtual === "normal") {
+    for (let i = 0; !d && i < ANTIGAS.length; i++) {
+      try { d = JSON.parse(localStorage.getItem(ANTIGAS[i]) || "null"); } catch (e) {}
+    }
   }
   if (!d) return null;
   aplicar(d);
   return d;
+}
+
+/* ---------- tela de início: escolher o modo ---------- */
+function montarInicio() {
+  el("modoLista").innerHTML = MODOS.map(m => {
+    let progresso = "novo — começa do zero", classe = " novo";
+    try {
+      let d = JSON.parse(localStorage.getItem(chaveDoModo(m.id)) || "null");
+      if (!d && m.id === "normal") {
+        for (let i = 0; !d && i < ANTIGAS.length; i++) d = JSON.parse(localStorage.getItem(ANTIGAS[i]) || "null");
+      }
+      if (d) {
+        progresso = "recorde R$ " + fmt(d.recorde || 0) + " · " + (d.descobertos || []).length +
+          " emojis · " + (d.conquistas || []).length + " conquistas";
+        classe = "";
+      }
+    } catch (e) {}
+    return '<button class="modoCard" data-m="' + m.id + '">' +
+      '<div class="mi">' + m.ic + '</div>' +
+      '<div style="flex:1"><div class="mn">' + m.nome +
+        (m.id === modoAtual ? '<span class="selo">jogando</span>' : "") + '</div>' +
+      '<div class="md">' + m.desc + '</div>' +
+      '<div class="mp' + classe + '">' + progresso + '</div></div></button>';
+  }).join("");
+  [...el("modoLista").children].forEach(b => b.onclick = () => escolherModo(b.dataset.m));
+}
+function abrirInicio() { salvar(); montarInicio(); el("inicio").classList.add("on"); }
+function escolherModo(id) {
+  salvar();                                   // guarda o modo anterior antes de trocar
+  modoAtual = id;
+  limparEstado();
+  const d = carregar();
+  if (modoLivre()) {                          // no Livre já começa com tudo na mão
+    dinheiro = Math.max(dinheiro, 1e30);
+    cristais = Math.max(cristais, 1000);
+  }
+  el("abaFusao").hidden = !modoObj().fusao;
+  if (!modoObj().fusao && painelAtual === "fusao") mostrarPainel("loja");
+  el("inicio").classList.remove("on");
+  el("btModo").textContent = modoObj().ic;
+  el("btModo").title = "modo " + modoObj().nome + " — clique pra trocar";
+  marcarModoJogado(id);
+  sortearMissoes(); atualizarDia(); montarFamilias(); montarLista();
+  checarConquistas(); checarMissoes(); render(); salvar();
+  bip(880); setTimeout(() => bip(1174, .12), 90);
+  if (d) ganhosOffline(d.quando);
 }
 function exportarSave() {
   const txt = btoa(unescape(encodeURIComponent(JSON.stringify(pacote()))));
@@ -1926,21 +2184,20 @@ function importarSave() {
 setInterval(salvar, 5000);
 window.addEventListener("beforeunload", salvar);
 
-/* ---------- começo ---------- */
-const salvo = carregar();
+/* ---------- começo: a tela de início escolhe o modo, e o modo carrega o save ---------- */
 ajustar();
 aplicarTema();
 sortearMissoes();
 montarFamilias(); montarLista();
-checarConquistas(); checarMissoes();
+atualizarDia();
 render();
-if (salvo) ganhosOffline(salvo.quando);
+montarInicio();
 el("rodape").innerHTML =
   "Clique <b>dentro da caixa</b> pra fabricar. Os emojis caem, quicam e empilham de verdade.<br>" +
   "<b>120 raridades</b> · <b>" + (TIPOS.length + SECRETOS.length) + " emojis</b> (" + SECRETOS.length + " secretos) · <b>" +
   TODOS.length + " upgrades</b> · <b>" + CONQUISTAS.length + " conquistas</b> · <b>" + TEMAS.length + " temas</b><br>" +
-  "Missões, coleções, combos, críticos, estrelas de bônus e renda offline.<br>" +
-  "Espaço também fabrica. As setas (ou a inclinação do celular) viram a gravidade.";
+  "<b>" + MODOS.length + " modos</b> de jogo, missões, coleções, combos, críticos, emoji do dia e renda offline.<br>" +
+  "No teclado: <b>espaço</b> fabrica, <b>V</b> vende e as <b>setas</b> viram a gravidade da caixa.";
 quadro();
 </script>
 </body>
