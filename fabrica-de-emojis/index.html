@@ -197,21 +197,6 @@
     padding:3px 8px; border-radius:99px; border:1px solid var(--linha); color:var(--dim); margin-left:auto;
   }
 
-  /* fundir repetidos */
-  .fus {
-    display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center;
-    padding:9px; border-radius:11px; border:1px solid var(--linha);
-    background:linear-gradient(180deg,var(--painel2),var(--painel));
-  }
-  .fus .fe { font-size:1.15rem; }
-  .fus .fn { font-size:.8rem; font-weight:700; }
-  .fus .fd { font-size:.66rem; color:var(--dim); margin-top:2px; }
-  .btFus {
-    padding:8px 12px; border-radius:9px; border:none; cursor:pointer; font-family:var(--mono);
-    font-weight:800; font-size:.72rem; background:linear-gradient(180deg,#d7b3ff,#b47aff); color:#1b0b2e;
-  }
-  .btFus:disabled { background:#ffffff10; color:#ffffff40; cursor:not-allowed; }
-
   /* temas da caixa */
   .temaGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:7px; }
   .tema {
@@ -445,7 +430,6 @@
       <button class="abaT" data-p="miss">📜 MISSÕES<span class="aviso" id="avisoMiss" hidden></span></button>
       <button class="abaT" data-p="stat">📊 STATS</button>
       <button class="abaT" data-p="tema">🎨 CAIXA</button>
-      <button class="abaT" data-p="fusao" id="abaFusao" hidden>🧬 FUNDIR</button>
     </div>
 
     <div id="pLoja" style="display:flex;flex-direction:column;gap:10px">
@@ -467,11 +451,6 @@
     <div id="pMiss" style="display:none;flex-direction:column;gap:10px">
       <div class="cabecinha" id="missTopo"></div>
       <div id="missLista" style="display:flex;flex-direction:column;gap:8px"></div>
-    </div>
-
-    <div id="pFusao" style="display:none;flex-direction:column;gap:10px">
-      <div class="cabecinha" id="fusTopo"></div>
-      <div id="fusLista" style="display:flex;flex-direction:column;gap:7px"></div>
     </div>
 
     <div id="pTema" style="display:none;flex-direction:column;gap:10px">
@@ -715,7 +694,7 @@ const MODOS = [
     desc:"Tudo custa 4x mais caro, mas cada venda vale 3x. Pra quem já sabe jogar.",
     precoX:4, vendaX:3 },
   { id:"fusao",   ic:"🧬", nome:"Fusão",
-    desc:"Igual ao Normal, e ainda dá pra fundir 5 emojis repetidos em 1 da raridade de cima.",
+    desc:"Igual ao Normal, mas 5 emojis da mesma raridade se juntam sozinhos na caixa e viram 1 melhor.",
     fusao:true },
   { id:"livre",   ic:"🧪", nome:"Livre",
     desc:"Dinheiro que não acaba e as 120 raridades abertas desde o começo. É o modo de bagunçar.",
@@ -1115,10 +1094,19 @@ class Bola {
     this.r = Math.max(6, tipo.tam * encolhe());
     this.giro = (Math.random() - .5) * .25; this.ang = Math.random() * 6.28;
     this.quieto = 0; this.dormindo = false;
+    this.fundindo = null; this.nascendo = 0;
     this.sprite = sprite(tipo, this.r, this.dourado);
   }
   acordar() { this.dormindo = false; this.quieto = 0; }
   passo(gIma) {
+    if (this.fundindo) {                    // puxado feito ímã pro meio do grupo
+      const g = this.fundindo;
+      this.x += (g.x - this.x) * .075;      // devagar, pra dar pra ver o ímã puxando
+      this.y += (g.y - this.y) * .075;
+      this.vx = 0; this.vy = 0;
+      this.ang += .28;
+      return;
+    }
     if (this.dormindo) return;
     this.vx += gx; this.vy += gy;
     if (gIma) this.vx += (L / 2 - this.x) * gIma;
@@ -1174,6 +1162,7 @@ function colidir() {
       for (let n = 0; n < l.length; n++) {
         const j = l[n]; if (j <= i) continue;
         const b = bolas[j];
+        if (a.fundindo || b.fundindo) continue;
         if (a.dormindo && b.dormindo) continue;
         const dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy, min = a.r + b.r;
         if (d2 > min * min || d2 === 0) continue;
@@ -1331,75 +1320,95 @@ function pegarEstrela() {
 }
 
 /* ==========================================================================
-   7b. FUNDIR REPETIDOS — só no modo Fusão.
-   5 repetidos de uma raridade viram 1 emoji da raridade de cima. O último
-   de cada emoji nunca é gasto, pra ninguém perder figurinha do álbum.
+   7b. FUSÃO AUTOMÁTICA — só no modo Fusão.
+   Quando 5 emojis da mesma raridade estão soltos na caixa, eles se puxam
+   feito ímã, se juntam no meio e viram 1 emoji da raridade de cima.
    ========================================================================== */
 const CUSTO_FUSAO = 5;
-function repetidosDe(ri) {
-  let n = 0;
-  for (let i = 0; i < POR_RARIDADE; i++) {
-    const c = contagem[TIPOS[ri * POR_RARIDADE + i].chave] || 0;
-    if (c > 1) n += c - 1;
+const MAX_FUSOES_JUNTAS = 10;      // quantos grupos podem estar se juntando ao mesmo tempo
+let fusoesAtivas = [], flashes = [];
+
+function procurarFusoes() {
+  if (!modoObj().fusao || fundoAberto) return;
+  if (fusoesAtivas.length >= MAX_FUSOES_JUNTAS) return;
+  const porRaridade = new Map();
+  for (let i = 0; i < bolas.length; i++) {
+    const b = bolas[i];
+    if (b.fundindo || b.tipo.secreto || b.tipo.rIndex >= RARIDADES.length - 1) continue;
+    if (!b.dormindo && b.quieto < 10) continue;   // só funde quem já pousou na pilha
+    let l = porRaridade.get(b.tipo.rIndex);
+    if (!l) porRaridade.set(b.tipo.rIndex, l = []);
+    l.push(b);
   }
-  return n;
-}
-function fundir(ri, vezes) {
-  if (!modoObj().fusao || ri >= RARIDADES.length - 1) return 0;
-  let feitas = 0;
-  for (let v = 0; v < vezes; v++) {
-    if (repetidosDe(ri) < CUSTO_FUSAO) break;
-    if (bolas.length + deposito >= limite()) { avisar("📦 a caixa está cheia — vende primeiro"); break; }
-    let falta = CUSTO_FUSAO;
-    for (let i = 0; i < POR_RARIDADE && falta > 0; i++) {
-      const ch = TIPOS[ri * POR_RARIDADE + i].chave, c = contagem[ch] || 0;
-      const tira = Math.min(falta, Math.max(0, c - 1));
-      if (tira > 0) { contagem[ch] = c - tira; falta -= tira; }
+  porRaridade.forEach((lista, ri) => {
+    while (lista.length >= CUSTO_FUSAO && fusoesAtivas.length < MAX_FUSOES_JUNTAS) {
+      // junta a que estiver mais embaixo com as 4 vizinhas mais próximas dela
+      let base = lista[0];
+      for (let i = 1; i < lista.length; i++) if (lista[i].y > base.y) base = lista[i];
+      lista.sort((a, b) => ((a.x - base.x) ** 2 + (a.y - base.y) ** 2) - ((b.x - base.x) ** 2 + (b.y - base.y) ** 2));
+      comecarFusao(lista.splice(0, CUSTO_FUSAO), ri);
     }
-    const novo = TIPOS[(ri + 1) * POR_RARIDADE + Math.floor(Math.random() * POR_RARIDADE)];
-    marcar(novo); nascer(novo);
-    feitas++; estat.fusoes++;
-  }
-  if (feitas) {
-    avisar("🧬 " + feitas + (feitas > 1 ? " fusões" : " fusão") + " · " + RARIDADES[ri + 1].nome + "!");
-    [740, 988, 1318].forEach((f, i) => setTimeout(() => bip(f, .13), i * 80));
-    sujo = true; montarFusao(); salvar();
-  }
-  return feitas;
+  });
 }
-/* até onde a lista vai: as raridades abertas e também as que só existem na
-   sua caixa porque saíram de uma fusão anterior */
-function ultimaComEmoji() {
-  const abertas = Math.max(0, raridadesLiberadas().length - 1);
-  for (let ri = RARIDADES.length - 1; ri > abertas; ri--) {
-    for (let i = 0; i < POR_RARIDADE; i++) if (contagem[TIPOS[ri * POR_RARIDADE + i].chave]) return ri;
-  }
-  return abertas;
+function comecarFusao(membros, ri) {
+  let x = 0, y = 0;
+  for (const b of membros) { x += b.x; y += b.y; }
+  const g = { membros, ri, x: x / membros.length, y: y / membros.length, t: 0, cor: RARIDADES[ri].cor };
+  membros.forEach(b => { b.fundindo = g; b.acordar(); });
+  fusoesAtivas.push(g);
+  bip(330 + ri * 12, .09, "sine", .035);
 }
-function fundirTudo() {
-  let total = 0;
-  for (let ri = Math.min(ultimaComEmoji(), RARIDADES.length - 2); ri >= 0; ri--) total += fundir(ri, 999);
-  if (!total) { avisar("🧬 nenhuma raridade tem 5 repetidos ainda"); bip(200); }
-}
-function montarFusao() {
-  const topo = Math.min(ultimaComEmoji(), RARIDADES.length - 2);
-  const linhas = [];
-  for (let ri = 0; ri <= topo; ri++) {
-    const rep = repetidosDe(ri), r = RARIDADES[ri], pode = rep >= CUSTO_FUSAO;
-    if (!rep && ri < topo - 5) continue;             // esconde as raridades vazias antigas
-    linhas.push('<div class="fus">' +
-      '<div class="fe">' + TIPOS[ri * POR_RARIDADE].e + '</div>' +
-      '<div><div class="fn" style="color:' + r.cor + '">' + (ri + 1) + ". " + r.nome + '</div>' +
-      '<div class="fd">' + rep + ' repetidos · ' + CUSTO_FUSAO + ' viram 1 ' + RARIDADES[ri + 1].nome + '</div></div>' +
-      '<button class="btFus" data-r="' + ri + '"' + (pode ? "" : " disabled") + '>FUNDIR</button></div>');
+function passoFusoes() {
+  for (let i = fusoesAtivas.length - 1; i >= 0; i--) {
+    const g = fusoesAtivas[i];
+    g.t++;
+    g.membros = g.membros.filter(b => bolas.indexOf(b) >= 0);   // vendeu no meio da fusão? deixa pra lá
+    if (g.membros.length < CUSTO_FUSAO) {
+      g.membros.forEach(b => b.fundindo = null);
+      fusoesAtivas.splice(i, 1);
+      continue;
+    }
+    let longe = false;
+    for (const b of g.membros) if ((b.x - g.x) ** 2 + (b.y - g.y) ** 2 > 16) longe = true;
+    if ((!longe && g.t > 26) || g.t > 100) { terminarFusao(g); fusoesAtivas.splice(i, 1); }
   }
-  el("fusTopo").innerHTML = '<b>Fundir repetidos</b> · ' + CUSTO_FUSAO +
-    ' repetidos de uma raridade viram 1 da raridade de cima. O último de cada emoji nunca é gasto.' +
-    '<br><button class="bt" style="margin-top:7px" onclick="fundirTudo()">🧬 FUNDIR TUDO QUE DER</button>' +
-    ' <span style="font-family:var(--mono);font-size:.65rem">' + fmt(estat.fusoes) + ' fusões feitas</span>';
-  el("fusLista").innerHTML = linhas.join("") ||
-    '<div class="cabecinha">Ainda não tem emoji repetido. Fabrica mais um pouco!</div>';
-  [...el("fusLista").querySelectorAll(".btFus")].forEach(b => b.onclick = () => fundir(+b.dataset.r, 1));
+}
+function terminarFusao(g) {
+  const dentro = new Set(g.membros);
+  bolas = bolas.filter(b => !dentro.has(b));
+  const novo = TIPOS[(g.ri + 1) * POR_RARIDADE + Math.floor(Math.random() * POR_RARIDADE)];
+  marcar(novo);
+  const nova = new Bola(g.x, g.y, novo);
+  nova.vy = -2.4 - Math.random() * 1.6; nova.vx = (Math.random() - .5) * 2;
+  nova.nascendo = 1;                                    // cresce do zero na animação
+  bolas.push(nova);
+  estat.fusoes++;
+  flashes.push({ x: g.x, y: g.y, t: 0, cor: RARIDADES[g.ri + 1].cor });
+  bip(880 + Math.min(g.ri, 20) * 30, .12);
+  setTimeout(() => bip(1318 + Math.min(g.ri, 20) * 30, .1), 70);
+  sujo = true;
+}
+function cancelarFusoes() {
+  fusoesAtivas.forEach(g => g.membros.forEach(b => b.fundindo = null));
+  fusoesAtivas = [];
+}
+function desenharFlashes(ctx) {
+  for (let i = flashes.length - 1; i >= 0; i--) {
+    const f = flashes[i];
+    f.t++;
+    if (f.t > 34) { flashes.splice(i, 1); continue; }
+    const p = f.t / 34, raio = 8 + p * 62;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.globalAlpha = 1 - p;
+    ctx.strokeStyle = f.cor; ctx.lineWidth = 3 * (1 - p) + .6;
+    ctx.beginPath(); ctx.arc(f.x, f.y, raio, 0, 6.2832); ctx.stroke();
+    ctx.fillStyle = f.cor;
+    for (let k = 0; k < 6; k++) {                        // faíscas saindo do meio
+      const a = k * 1.047 + p * 2, d = raio * .8;
+      ctx.beginPath(); ctx.arc(f.x + Math.cos(a) * d, f.y + Math.sin(a) * d, 2.4 * (1 - p), 0, 6.2832); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
 }
 
 /* ==========================================================================
@@ -1460,6 +1469,7 @@ function vender() {
   deposito = 0; depositoValor = 0;
   if (!bolas.length) { terminarVenda(); return; }   // só tinha depósito
   fundoAberto = true;
+  cancelarFusoes();
   bolas.forEach(b => { b.acordar(); b.vy += 3 + Math.random() * 3; b.vx += (Math.random() - .5) * 4; });
   bip(660); setTimeout(() => bip(880), 90); setTimeout(() => bip(1100), 180);
   avisar("💸 vendendo por R$ " + fmt(vendendo));
@@ -1527,14 +1537,13 @@ function ganhosOffline(quando) {
    ========================================================================== */
 function mostrarPainel(p) {
   painelAtual = p;
-  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"],["tema","pTema"],["fusao","pFusao"]].forEach(([k, id]) =>
+  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"],["tema","pTema"]].forEach(([k, id]) =>
     el(id).style.display = (k === p ? "flex" : "none"));
   [...document.querySelectorAll(".abaT")].forEach(b => b.classList.toggle("sel", b.dataset.p === p));
   if (p === "conq") montarConquistas();
   if (p === "miss") montarMissoes();
   if (p === "stat") montarStats();
   if (p === "tema") montarTemas();
-  if (p === "fusao") montarFusao();
   bip(700);
 }
 [...document.querySelectorAll(".abaT")].forEach(b => b.onclick = () => mostrarPainel(b.dataset.p));
@@ -1879,6 +1888,8 @@ function quadro() {
   const gIma = forcaIma();
   for (let i = 0; i < bolas.length; i++) bolas[i].passo(gIma);
   colidir();
+  if (fusoesAtivas.length) passoFusoes();
+  if (contaQuadros % 15 === 0) procurarFusoes();
 
   /* A colisão empurra os emojis pra sair da sobreposição e isso pode
      espremer um pra fora da parede — inclusive os que estão dormindo,
@@ -1899,7 +1910,7 @@ function quadro() {
   } else {
     for (let i = 0; i < bolas.length; i++) {
       const b = bolas[i];
-      if (b.dormindo) continue;
+      if (b.dormindo || b.fundindo) continue;
       const dx = b.x - b.ux, dy = b.y - b.uy;
       if (dx * dx + dy * dy < .09) { if (++b.quieto > 22) { b.dormindo = true; b.vx = 0; b.vy = 0; } }
       else b.quieto = 0;
@@ -1925,10 +1936,22 @@ function quadro() {
   ctx.fillRect(0, A - 4, L, 4);
   for (let i = 0; i < bolas.length; i++) {
     const b = bolas[i], s = b.sprite, m = s.meio;
+    let esc = 1;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (b.fundindo) {                            // encolhe e brilha enquanto se junta
+      esc = Math.max(.28, 1 - b.fundindo.t / 130);
+      ctx.shadowColor = b.fundindo.cor; ctx.shadowBlur = 10 + b.fundindo.t * .5;
+    } else if (b.nascendo > 0) {                 // nasce grandão e volta ao tamanho
+      esc = 1 + b.nascendo * .7;
+      b.nascendo = Math.max(0, b.nascendo - .08);
+      ctx.shadowColor = b.tipo.cor; ctx.shadowBlur = 18 * b.nascendo;
+    }
     ctx.translate(b.x, b.y); ctx.rotate(b.ang);
+    if (esc !== 1) ctx.scale(esc, esc);
     ctx.drawImage(s.cv, -m, -m, m * 2, m * 2);
+    if (ctx.shadowBlur) ctx.shadowBlur = 0;
   }
+  desenharFlashes(ctx);
 
   // a estrela de bônus fica por cima de tudo, com um anel mostrando o tempo
   if (estrela) {
@@ -2151,8 +2174,6 @@ function escolherModo(id) {
     dinheiro = Math.max(dinheiro, 1e30);
     cristais = Math.max(cristais, 1000);
   }
-  el("abaFusao").hidden = !modoObj().fusao;
-  if (!modoObj().fusao && painelAtual === "fusao") mostrarPainel("loja");
   el("inicio").classList.remove("on");
   el("btModo").textContent = modoObj().ic;
   el("btModo").title = "modo " + modoObj().nome + " — clique pra trocar";
