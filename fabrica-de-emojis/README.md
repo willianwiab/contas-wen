@@ -27,10 +27,16 @@ instalação, funciona offline no celular e no computador.
 | Raridades | 120, da Comum à Absoluta |
 | Emojis no índice | 730, sendo 10 secretos |
 | Upgrades | 330 (16 famílias de dinheiro + 17 de cristal, 10 níveis cada) |
-| Conquistas | 62, cada uma dá +1,5% em tudo pra sempre |
+| Conquistas | 72, cada uma dá +1,5% em tudo pra sempre |
+| Temas da caixa | 8, comprados com cristais |
 
 Além disso:
 
+- **Coleções** — juntar os 6 emojis de uma raridade fecha a coleção e dá
+  +2% em tudo, pra sempre. O índice mostra quantos de cada você já achou.
+- **Encomendas** — de tempos em tempos um cliente aparece pedindo uma
+  quantidade de emojis de certa raridade dentro de 2 minutos. Entregar paga
+  muito bem e ainda rende cristais.
 - **Combo** — cliques em sequência aumentam o multiplicador.
 - **Crítico** — chance de um clique valer 10x.
 - **Gêmeo / Fusão** — o emoji pode sair dobrado ou subir uma raridade ao nascer.
@@ -44,6 +50,8 @@ Além disso:
 - **Renascer** — a partir de R$ 1B de recorde, troque tudo por cristais
   permanentes (+35% cada). Índice, conquistas e loja de cristais não se perdem.
 - **Estatísticas** com exportar/importar o save em código de texto.
+- **Temas da caixa** — Espaço, Floresta, Doceria, Vulcão, Geleira, Cofre de
+  Ouro e Arco-íris, cada um mudando o visual da caixa.
 
 ## Modo administrador
 
@@ -54,7 +62,7 @@ recomeçar do zero.
 
 ## Detalhes técnicos
 
-- O save fica no `localStorage` (`fabricaEmojis_v3`) e migra sozinho do save antigo (`_v2`).
+- O save fica no `localStorage` (`fabricaEmojis_v4`) e migra sozinho dos saves antigos (`_v3` e `_v2`).
 - A física simula até 550 emojis na tela; o que passa disso vai pro **depósito**,
   que continua contando no valor e no índice — é o que segura o FPS no celular.
 - A ordem dos emojis é embaralhada com semente fixa, então o índice é igual
