@@ -179,20 +179,6 @@
   }
   .btMissao:disabled { background:#ffffff10; color:#ffffff40; cursor:not-allowed; }
 
-  /* encomendas */
-  #encomenda {
-    margin-top:9px; padding:9px 11px; border-radius:12px; display:none; gap:9px; align-items:center;
-    border:1px solid var(--rosa); background:linear-gradient(135deg,#3a0f24,#1a0f2a);
-  }
-  #encomenda.on { display:flex; }
-  #encomenda .eIc { font-size:1.3rem; }
-  #encomenda .eTxt { flex:1; min-width:0; }
-  #encomenda .eNome { font-size:.78rem; font-weight:700; }
-  #encomenda .eSub { font-family:var(--mono); font-size:.63rem; color:var(--dim); margin-top:2px; }
-  #encomenda .eTrilho { height:6px; border-radius:99px; background:#ffffff14; overflow:hidden; margin-top:5px; }
-  #encomenda .eTrilho i { display:block; height:100%; background:linear-gradient(90deg,var(--rosa),var(--ouro)); }
-  #encomenda .eTempo { font-family:var(--mono); font-weight:800; font-size:.9rem; color:var(--rosa); }
-
   /* temas da caixa */
   .temaGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:7px; }
   .tema {
@@ -344,10 +330,7 @@
 
     <div class="grupo"><div class="lab">Bônus e turbos</div><div class="btns" id="admBonus"></div></div>
 
-    <div class="grupo"><div class="lab">Encomendas e temas</div><div class="btns">
-      <button class="bt" onclick="nascerEncomenda()">NOVA ENCOMENDA</button>
-      <button class="bt" onclick="if(encomenda)entregarEncomenda()">ENTREGAR AGORA</button>
-      <button class="bt perigo" onclick="encomenda=null;desenharEncomenda();puxarAdm()">CANCELAR</button>
+    <div class="grupo"><div class="lab">Temas da caixa</div><div class="btns">
       <button class="bt" onclick="darTemas()">LIBERAR TODOS OS TEMAS</button>
     </div></div>
 
@@ -409,15 +392,6 @@
     <div class="botoes">
       <button class="grandao" id="btFazer">FAZER EMOJI</button>
       <button class="grandao vender" id="btVender">VENDER</button>
-    </div>
-    <div id="encomenda">
-      <div class="eIc" id="encIc">📦</div>
-      <div class="eTxt">
-        <div class="eNome" id="encNome"></div>
-        <div class="eSub" id="encSub"></div>
-        <div class="eTrilho"><i id="encBarra"></i></div>
-      </div>
-      <div class="eTempo" id="encTempo"></div>
     </div>
   </div>
 
@@ -676,12 +650,11 @@ let abaAtual = "dinheiro", famAtual = "clique", pagIndice = 0, painelAtual = "lo
 let conquistasFeitas = [], missoes = [], nivelMissao = 0;
 let buffs = [], combo = 0, ultimoClique = 0;
 let contagem = {}, vistos = new Set();            // quantos de cada emoji já saíram
-let encomenda = null, proximaEncomenda = Date.now() + 150000;
 let temas = ["padrao"], temaAtual = "padrao";
 const estat = {
   cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
   ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
-  encheu:false, inclinou:false, admUsado:false, encomendas:0, perdidas:0,
+  encheu:false, inclinou:false, admUsado:false,
 };
 const el = id => document.getElementById(id);
 
@@ -773,7 +746,6 @@ function sortearTipo() {
   const s = sortearSecreto();
   if (s) {
     contagem[s.chave] = (contagem[s.chave] || 0) + 1;
-    contarEncomenda(s);
     if (!vistos.has(s.chave)) { vistos.add(s.chave); descobertos.push(s.chave); }
     avisar("🌈 SECRETO!! " + s.e + " " + s.nome + " — R$ " + fmt(valorDe(s)));
     [880, 1046, 1318, 1568, 2093].forEach((f, i) => setTimeout(() => bip(f, .2), i * 110));
@@ -795,7 +767,6 @@ function sortearTipo() {
 }
 function marcar(t) {
   contagem[t.chave] = (contagem[t.chave] || 0) + 1;
-  contarEncomenda(t);
   if (!vistos.has(t.chave)) {
     vistos.add(t.chave); descobertos.push(t.chave);
     if (t.rIndex >= 3) avisar("✨ " + t.e + " " + RARIDADES[t.rIndex].nome + " — R$ " + fmt(t.valor));
@@ -843,8 +814,6 @@ marcos("cru", "🎯", "Na Mosca", [50, 2000],
   v => "Acerte " + fmt(v) + " cliques críticos", () => estat.criticos);
 marcos("col", "🗂️", "Álbum", [1, 5, 20, 60, 120],
   v => "Complete " + v + " coleções de raridade", () => colecoesCompletas());
-marcos("enc", "🚚", "Entregador", [1, 10, 50, 200],
-  v => "Entregue " + v + " encomendas", () => estat.encomendas);
 conq("temas", "🎨", "Decorador", "Compre todos os temas da caixa", () => temas.length >= TEMAS.length);
 conq("cheia", "📦", "Transbordou", "Encha a caixa até o limite", () => estat.encheu);
 conq("giro",  "📱", "Cabeça pra Baixo", "Use a inclinação do celular", () => estat.inclinou);
@@ -1253,77 +1222,7 @@ function pegarEstrela() {
 }
 
 /* ==========================================================================
-   7b. ENCOMENDAS — de tempos em tempos um cliente aparece pedindo uma
-   quantidade de emojis de uma certa raridade pra cima, dentro de um prazo.
-   Entregar paga muito bem; deixar vencer não tira nada, só a vergonha.
-   ========================================================================== */
-const CLIENTES = ["🧑‍🍳 Dona Rita","🕵️ Seu Bigode","👩‍🚀 Capitã Lu","🧙 Mestre Zé","🤖 Robô 3000",
-                  "👵 Vó Marta","🦸 Super Nino","🧛 Conde Vlad","👨‍🌾 Tio Chico","🐙 Polvo Chef"];
-const PRAZO_ENCOMENDA = 120;
-
-// escolhe uma raridade que realmente dá pra farmar: nem a mais comum, nem uma impossível
-function raridadeDeEncomenda() {
-  const lib = raridadesLiberadas().length, q = Math.min(.92, multSorte() / 4.2);
-  let ri = 0;
-  while (ri + 1 < lib && Math.pow(q, ri + 1) >= .02) ri++;
-  return ri;
-}
-function nascerEncomenda() {
-  const ri = raridadeDeEncomenda();
-  const alvo = 5 + Math.floor(Math.random() * 11);
-  encomenda = {
-    ri, alvo, feitos: 0, ate: Date.now() + PRAZO_ENCOMENDA * 1000,
-    cliente: CLIENTES[Math.floor(Math.random() * CLIENTES.length)],
-    premio: Math.max(6000, recorde * .6),
-    cristais: 1 + Math.floor(estat.encomendas / 12),
-  };
-  avisar("📦 encomenda nova! " + encomenda.cliente.split(" ")[1] + " quer " + alvo + " " + RARIDADES[ri].nome);
-  bip(523, .16); setTimeout(() => bip(698, .16), 130);
-  desenharEncomenda();
-}
-function contarEncomenda(tipo) {
-  if (!encomenda) return;
-  if (tipo.secreto || tipo.rIndex >= encomenda.ri) {
-    encomenda.feitos++;
-    if (encomenda.feitos >= encomenda.alvo) entregarEncomenda();
-  }
-}
-function entregarEncomenda() {
-  const e = encomenda; encomenda = null;
-  dinheiro += e.premio; estat.ganhoTotal += e.premio;
-  recorde = Math.max(recorde, dinheiro);
-  cristais += e.cristais; estat.encomendas++;
-  avisar("✅ encomenda entregue! +R$ " + fmt(e.premio) + " e 💠 " + e.cristais);
-  [660, 880, 1100, 1320, 1568].forEach((f, i) => setTimeout(() => bip(f, .14), i * 90));
-  cv.classList.add("festa"); setTimeout(() => cv.classList.remove("festa"), 900);
-  proximaEncomenda = Date.now() + 150000 + Math.random() * 120000;
-  desenharEncomenda(); sujo = true; salvar();
-}
-function desenharEncomenda() {
-  const cx = el("encomenda");
-  if (!encomenda) { cx.classList.remove("on"); return; }
-  const falta = Math.max(0, Math.ceil((encomenda.ate - Date.now()) / 1000));
-  cx.classList.add("on");
-  el("encIc").textContent = encomenda.cliente.split(" ")[0];
-  el("encNome").textContent = encomenda.cliente.split(" ").slice(1).join(" ") + " quer " +
-    encomenda.alvo + " emojis " + RARIDADES[encomenda.ri].nome + " ou melhor";
-  el("encSub").textContent = encomenda.feitos + "/" + encomenda.alvo +
-    " · paga R$ " + fmt(encomenda.premio) + " + 💠 " + encomenda.cristais;
-  el("encBarra").style.width = Math.min(100, encomenda.feitos / encomenda.alvo * 100) + "%";
-  el("encTempo").textContent = falta + "s";
-}
-function checarEncomenda() {
-  if (encomenda && Date.now() > encomenda.ate) {
-    encomenda = null; estat.perdidas++;
-    avisar("⌛ a encomenda venceu… o cliente foi embora");
-    bip(200, .2); desenharEncomenda();
-    proximaEncomenda = Date.now() + 90000 + Math.random() * 90000;
-  }
-  if (!encomenda && recorde >= 20000 && Date.now() > proximaEncomenda && !document.hidden) nascerEncomenda();
-}
-
-/* ==========================================================================
-   7c. TEMAS DA CAIXA — comprados com cristais, só pra deixar bonito
+   7b. TEMAS DA CAIXA — comprados com cristais, só pra deixar bonito
    ========================================================================== */
 const TEMAS = [
   { id:"padrao",   nome:"Fábrica",       ic:"🏭", custo:0,  fundo:["#120c1e","#0a0713"], borda:"#33254a", chao:"#ffffff08" },
@@ -1567,7 +1466,6 @@ function montarStats() {
     ["⭐ Estrelas de bônus", fmt(estat.bonusPegos)],
     ["🛒 Upgrades comprados", fmt(estat.ups)],
     ["📜 Missões cumpridas", fmt(nivelMissao)],
-    ["🚚 Encomendas entregues", fmt(estat.encomendas) + (estat.perdidas ? " (" + fmt(estat.perdidas) + " perdidas)" : "")],
     ["🗂️ Coleções completas", colecoesCompletas() + " · +" + Math.round((bonusColecao() - 1) * 100) + "%"],
     ["🎨 Temas da caixa", temas.length + "/" + TEMAS.length + " · " + temaObj().nome],
     ["♻️ Renascimentos", fmt(renascimentos)],
@@ -1743,8 +1641,8 @@ function resetTotal() {
   dinheiro = 0; recorde = 0; cristais = 0; renascimentos = 0; vendidos = 0;
   bolas = []; deposito = 0; depositoValor = 0; descobertos = []; contagem = {};
   conquistasFeitas = []; missoes = []; nivelMissao = 0; buffs = []; combo = 0;
-  encomenda = null; temas = ["padrao"]; temaAtual = "padrao";
-  sincronizarVistos(); aplicarTema(); desenharEncomenda();
+  temas = ["padrao"]; temaAtual = "padrao";
+  sincronizarVistos(); aplicarTema();
   Object.assign(estat, {
     cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
     ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
@@ -1766,7 +1664,6 @@ function puxarAdm() {
       (raridadesLiberadas().slice(-1)[0] || RARIDADES[0]).nome + ")\n" +
     "índice.......: " + descobertos.length + "/" + (TIPOS.length + SECRETOS.length) +
       "  (" + colecoesCompletas() + " coleções)\n" +
-    "encomendas...: " + estat.encomendas + " entregues, " + estat.perdidas + " perdidas\n" +
     "temas........: " + temas.length + "/" + TEMAS.length + "  (" + temaObj().nome + ")\n" +
     "conquistas...: " + conquistasFeitas.length + "/" + CONQUISTAS.length + "\n" +
     "missões......: " + nivelMissao + " cumpridas\n" +
@@ -1869,7 +1766,6 @@ function quadro() {
     }
     el("btVender").textContent = txt;
     desenharBuffs();
-    if (encomenda) desenharEncomenda();
   }
   requestAnimationFrame(quadro);
 }
@@ -1916,7 +1812,6 @@ setInterval(() => {
   estat.tempo += 500;
   checarConquistas();
   checarMissoes();
-  checarEncomenda();
   if (!estrela && recorde >= 3000 && Date.now() > proximaEstrela && !document.hidden) {
     nasceEstrela();
     proximaEstrela = Date.now() + 70000 + Math.random() * 90000;
@@ -1982,7 +1877,9 @@ function aplicar(d) {
   dinheiro = d.dinheiro || 0; recorde = d.recorde || 0; vendidos = d.vendidos || 0;
   cristais = d.cristais || 0; renascimentos = d.renascimentos || 0; mudo = !!d.mudo;
   descobertos = Array.isArray(d.descobertos) ? d.descobertos : [];
-  conquistasFeitas = Array.isArray(d.conquistas) ? d.conquistas : [];
+  conquistasFeitas = Array.isArray(d.conquistas)
+    ? d.conquistas.filter(id => CONQUISTAS.some(c => c.id === id))   // ignora conquistas que saíram do jogo
+    : [];
   missoes = Array.isArray(d.missoes) ? d.missoes.filter(m => m && m.tipo) : [];
   nivelMissao = d.nivelMissao || 0;
   if (d.estat) for (const k in estat) if (k in d.estat) estat[k] = d.estat[k];
@@ -2021,8 +1918,8 @@ function importarSave() {
     const d = JSON.parse(decodeURIComponent(escape(atob(txt.trim()))));
     if (!d || typeof d.dinheiro !== "number") throw 0;
     aplicar(d);
-    bolas = []; deposito = 0; depositoValor = 0; buffs = []; combo = 0; encomenda = null;
-    sortearMissoes(); montarFamilias(); montarLista(); aplicarTema(); desenharEncomenda(); render(); salvar();
+    bolas = []; deposito = 0; depositoValor = 0; buffs = []; combo = 0;
+    sortearMissoes(); montarFamilias(); montarLista(); aplicarTema(); render(); salvar();
     avisar("📥 jogo carregado!");
   } catch (e) { avisar("❌ esse código não serve"); }
 }
@@ -2042,7 +1939,7 @@ el("rodape").innerHTML =
   "Clique <b>dentro da caixa</b> pra fabricar. Os emojis caem, quicam e empilham de verdade.<br>" +
   "<b>120 raridades</b> · <b>" + (TIPOS.length + SECRETOS.length) + " emojis</b> (" + SECRETOS.length + " secretos) · <b>" +
   TODOS.length + " upgrades</b> · <b>" + CONQUISTAS.length + " conquistas</b> · <b>" + TEMAS.length + " temas</b><br>" +
-  "Missões, encomendas com prazo, coleções, combos, críticos, estrelas de bônus e renda offline.<br>" +
+  "Missões, coleções, combos, críticos, estrelas de bônus e renda offline.<br>" +
   "Espaço também fabrica. As setas (ou a inclinação do celular) viram a gravidade.";
 quadro();
 </script>
