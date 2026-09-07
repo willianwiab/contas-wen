@@ -89,7 +89,8 @@
     background:linear-gradient(180deg,#ffffff0a,#ffffff03); border:1px solid var(--linha);
     border-radius:var(--r); padding:12px; display:flex; flex-direction:column; gap:10px;
   }
-  .abasTopo { display:flex; gap:5px; }
+  .abasTopo { display:flex; gap:5px; flex-wrap:wrap; }
+  .abaT { flex:1 1 auto; min-width:78px; }
   .abaT {
     flex:1; padding:9px 4px; border-radius:10px; cursor:pointer; border:1px solid var(--linha);
     background:#ffffff08; color:var(--dim); font-family:var(--mono); font-size:.68rem; font-weight:700;
@@ -178,6 +179,33 @@
   }
   .btMissao:disabled { background:#ffffff10; color:#ffffff40; cursor:not-allowed; }
 
+  /* encomendas */
+  #encomenda {
+    margin-top:9px; padding:9px 11px; border-radius:12px; display:none; gap:9px; align-items:center;
+    border:1px solid var(--rosa); background:linear-gradient(135deg,#3a0f24,#1a0f2a);
+  }
+  #encomenda.on { display:flex; }
+  #encomenda .eIc { font-size:1.3rem; }
+  #encomenda .eTxt { flex:1; min-width:0; }
+  #encomenda .eNome { font-size:.78rem; font-weight:700; }
+  #encomenda .eSub { font-family:var(--mono); font-size:.63rem; color:var(--dim); margin-top:2px; }
+  #encomenda .eTrilho { height:6px; border-radius:99px; background:#ffffff14; overflow:hidden; margin-top:5px; }
+  #encomenda .eTrilho i { display:block; height:100%; background:linear-gradient(90deg,var(--rosa),var(--ouro)); }
+  #encomenda .eTempo { font-family:var(--mono); font-weight:800; font-size:.9rem; color:var(--rosa); }
+
+  /* temas da caixa */
+  .temaGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:7px; }
+  .tema {
+    border:1px solid var(--linha); border-radius:12px; padding:9px; cursor:pointer; text-align:left;
+    font-family:inherit; color:inherit; background:#ffffff08; display:flex; flex-direction:column; gap:4px;
+  }
+  .tema .amostra { height:34px; border-radius:8px; border:1px solid var(--linha); }
+  .tema .tn { font-size:.76rem; font-weight:700; }
+  .tema .tc { font-family:var(--mono); font-size:.65rem; color:var(--cristal); }
+  .tema.usando { border-color:var(--ouro); background:#ffc85718; }
+  .tema.usando .tc { color:var(--ouro); }
+  .tema.caro { opacity:.45; cursor:not-allowed; }
+
   .linhaStat { display:flex; gap:10px; padding:6px 2px; border-bottom:1px dashed #ffffff12; font-size:.76rem; }
   .linhaStat b { margin-left:auto; font-family:var(--mono); color:var(--ouro); font-weight:700; }
 
@@ -201,10 +229,12 @@
   .pastilha { font-family:var(--mono); font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; padding:3px 9px; border-radius:99px; font-weight:700; }
   .faixaInfo { font-family:var(--mono); font-size:.63rem; color:var(--dim); margin-left:auto; }
   .fileira { display:grid; grid-template-columns:repeat(auto-fill,minmax(62px,1fr)); gap:5px; }
-  .ficha { aspect-ratio:1/1.18; border-radius:9px; display:flex; flex-direction:column; align-items:center;
+  .ficha { position:relative; aspect-ratio:1/1.18; border-radius:9px; display:flex; flex-direction:column; align-items:center;
            justify-content:center; gap:2px; border:1px solid var(--linha); background:#ffffff08; font-size:1.25rem; }
   .ficha.nao { color:#ffffff20; }
   .ficha small { font-family:var(--mono); font-size:.5rem; color:var(--dim); }
+  .ficha .qtdF { position:absolute; top:2px; right:4px; font-family:var(--mono); font-size:.46rem;
+                 font-weight:700; color:var(--ouro); opacity:.9; }
   .btFechar { padding:9px 16px; border-radius:10px; cursor:pointer; font-family:var(--mono); font-weight:700;
               font-size:.75rem; color:var(--ink); background:#ffffff10; border:1px solid var(--linha); }
 
@@ -314,6 +344,13 @@
 
     <div class="grupo"><div class="lab">Bônus e turbos</div><div class="btns" id="admBonus"></div></div>
 
+    <div class="grupo"><div class="lab">Encomendas e temas</div><div class="btns">
+      <button class="bt" onclick="nascerEncomenda()">NOVA ENCOMENDA</button>
+      <button class="bt" onclick="if(encomenda)entregarEncomenda()">ENTREGAR AGORA</button>
+      <button class="bt perigo" onclick="encomenda=null;desenharEncomenda();puxarAdm()">CANCELAR</button>
+      <button class="bt" onclick="darTemas()">LIBERAR TODOS OS TEMAS</button>
+    </div></div>
+
     <div class="grupo"><div class="lab">Conquistas e missões</div><div class="btns">
       <button class="bt" onclick="darConquistas()">DESTRAVAR TODAS</button>
       <button class="bt perigo" onclick="conquistasFeitas=[];puxarAdm()">APAGAR CONQUISTAS</button>
@@ -373,6 +410,15 @@
       <button class="grandao" id="btFazer">FAZER EMOJI</button>
       <button class="grandao vender" id="btVender">VENDER</button>
     </div>
+    <div id="encomenda">
+      <div class="eIc" id="encIc">📦</div>
+      <div class="eTxt">
+        <div class="eNome" id="encNome"></div>
+        <div class="eSub" id="encSub"></div>
+        <div class="eTrilho"><i id="encBarra"></i></div>
+      </div>
+      <div class="eTempo" id="encTempo"></div>
+    </div>
   </div>
 
   <div id="painel">
@@ -381,6 +427,7 @@
       <button class="abaT" data-p="conq">🏆 <span id="ptConq">0</span></button>
       <button class="abaT" data-p="miss">📜 MISSÕES<span class="aviso" id="avisoMiss" hidden></span></button>
       <button class="abaT" data-p="stat">📊 STATS</button>
+      <button class="abaT" data-p="tema">🎨 CAIXA</button>
     </div>
 
     <div id="pLoja" style="display:flex;flex-direction:column;gap:10px">
@@ -402,6 +449,11 @@
     <div id="pMiss" style="display:none;flex-direction:column;gap:10px">
       <div class="cabecinha" id="missTopo"></div>
       <div id="missLista" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <div id="pTema" style="display:none;flex-direction:column;gap:10px">
+      <div class="cabecinha" id="temaTopo"></div>
+      <div class="temaGrid" id="temaGrid"></div>
     </div>
 
     <div id="pStat" style="display:none;flex-direction:column;gap:10px">
@@ -623,10 +675,13 @@ let cristais = 0, renascimentos = 0, descobertos = [], mudo = false;
 let abaAtual = "dinheiro", famAtual = "clique", pagIndice = 0, painelAtual = "loja";
 let conquistasFeitas = [], missoes = [], nivelMissao = 0;
 let buffs = [], combo = 0, ultimoClique = 0;
+let contagem = {}, vistos = new Set();            // quantos de cada emoji já saíram
+let encomenda = null, proximaEncomenda = Date.now() + 150000;
+let temas = ["padrao"], temaAtual = "padrao";
 const estat = {
   cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
   ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
-  encheu:false, inclinou:false, admUsado:false,
+  encheu:false, inclinou:false, admUsado:false, encomendas:0, perdidas:0,
 };
 const el = id => document.getElementById(id);
 
@@ -662,13 +717,31 @@ function addBuff(tipo, mult, seg, nome) {
 
 /* ---------- contas do jogo ---------- */
 const bonusConquistas = () => 1 + conquistasFeitas.length * .015;
+
+/* ---------- coleções: juntar os 6 emojis de uma raridade dá +2% pra sempre.
+   A conta só é refeita quando o índice cresce, senão pesaria a cada quadro. */
+let _colN = 0, _colLen = -1;
+function colecoesCompletas() {
+  if (_colLen === descobertos.length) return _colN;
+  let n = 0;
+  for (let ri = 0; ri < RARIDADES.length; ri++) if (colecaoCompleta(ri)) n++;
+  if (SECRETOS.every(x => vistos.has(x.chave))) n += 5;   // a coleção secreta vale por 5
+  _colLen = descobertos.length; _colN = n;
+  return n;
+}
+function colecaoCompleta(ri) {
+  for (let i = 0; i < POR_RARIDADE; i++) if (!vistos.has(TIPOS[ri * POR_RARIDADE + i].chave)) return false;
+  return true;
+}
+function sincronizarVistos() { vistos = new Set(descobertos); _colLen = -1; }
+const bonusColecao = () => 1 + colecoesCompletas() * .02;
 const porClique      = () => Math.max(1, (1 + somaEfeito("clique")) * multCombo()) * multBuff("clique");
 const porSegundoChuva= () => somaEfeito("chuva") * multBuff("chuva");
 const limite         = () => Math.round(90 + somaEfeito("espaco"));
 const bonusCristais  = () => 1 + cristais * .35;
 const multValor      = () => (1 + somaEfeito("valor")) * (1 + somaEfeito("venda"))
                            * (1 + somaEfeito("mult")) * bonusCristais()
-                           * bonusConquistas() * multBuff("tudo");
+                           * bonusConquistas() * bonusColecao() * multBuff("tudo");
 const encolhe        = () => Math.max(.35, 1 - somaEfeito("prensa"));
 const chanceDourado  = () => Math.min(.6, somaEfeito("dourado"));
 const forcaIma       = () => somaEfeito("ima");
@@ -699,7 +772,9 @@ const rendaPorSegundo = () => porSegundoChuva() * valorEsperado() * multValor();
 function sortearTipo() {
   const s = sortearSecreto();
   if (s) {
-    if (!descobertos.includes(s.chave)) descobertos.push(s.chave);
+    contagem[s.chave] = (contagem[s.chave] || 0) + 1;
+    contarEncomenda(s);
+    if (!vistos.has(s.chave)) { vistos.add(s.chave); descobertos.push(s.chave); }
     avisar("🌈 SECRETO!! " + s.e + " " + s.nome + " — R$ " + fmt(valorDe(s)));
     [880, 1046, 1318, 1568, 2093].forEach((f, i) => setTimeout(() => bip(f, .2), i * 110));
     sujo = true;
@@ -719,8 +794,10 @@ function sortearTipo() {
   return marcar(TIPOS[ri * POR_RARIDADE + dentro]);
 }
 function marcar(t) {
-  if (!descobertos.includes(t.chave)) {
-    descobertos.push(t.chave);
+  contagem[t.chave] = (contagem[t.chave] || 0) + 1;
+  contarEncomenda(t);
+  if (!vistos.has(t.chave)) {
+    vistos.add(t.chave); descobertos.push(t.chave);
     if (t.rIndex >= 3) avisar("✨ " + t.e + " " + RARIDADES[t.rIndex].nome + " — R$ " + fmt(t.valor));
     sujo = true;
   }
@@ -764,6 +841,11 @@ marcos("bon", "⭐", "Sortudo", [1, 25, 200],
   v => "Pegue " + v + " estrelas de bônus", () => estat.bonusPegos);
 marcos("cru", "🎯", "Na Mosca", [50, 2000],
   v => "Acerte " + fmt(v) + " cliques críticos", () => estat.criticos);
+marcos("col", "🗂️", "Álbum", [1, 5, 20, 60, 120],
+  v => "Complete " + v + " coleções de raridade", () => colecoesCompletas());
+marcos("enc", "🚚", "Entregador", [1, 10, 50, 200],
+  v => "Entregue " + v + " encomendas", () => estat.encomendas);
+conq("temas", "🎨", "Decorador", "Compre todos os temas da caixa", () => temas.length >= TEMAS.length);
 conq("cheia", "📦", "Transbordou", "Encha a caixa até o limite", () => estat.encheu);
 conq("giro",  "📱", "Cabeça pra Baixo", "Use a inclinação do celular", () => estat.inclinou);
 conq("trapa", "🔓", "Trapaceiro", "Entre no modo administrador", () => estat.admUsado);
@@ -1170,6 +1252,122 @@ function pegarEstrela() {
   sujo = true; salvar();
 }
 
+/* ==========================================================================
+   7b. ENCOMENDAS — de tempos em tempos um cliente aparece pedindo uma
+   quantidade de emojis de uma certa raridade pra cima, dentro de um prazo.
+   Entregar paga muito bem; deixar vencer não tira nada, só a vergonha.
+   ========================================================================== */
+const CLIENTES = ["🧑‍🍳 Dona Rita","🕵️ Seu Bigode","👩‍🚀 Capitã Lu","🧙 Mestre Zé","🤖 Robô 3000",
+                  "👵 Vó Marta","🦸 Super Nino","🧛 Conde Vlad","👨‍🌾 Tio Chico","🐙 Polvo Chef"];
+const PRAZO_ENCOMENDA = 120;
+
+// escolhe uma raridade que realmente dá pra farmar: nem a mais comum, nem uma impossível
+function raridadeDeEncomenda() {
+  const lib = raridadesLiberadas().length, q = Math.min(.92, multSorte() / 4.2);
+  let ri = 0;
+  while (ri + 1 < lib && Math.pow(q, ri + 1) >= .02) ri++;
+  return ri;
+}
+function nascerEncomenda() {
+  const ri = raridadeDeEncomenda();
+  const alvo = 5 + Math.floor(Math.random() * 11);
+  encomenda = {
+    ri, alvo, feitos: 0, ate: Date.now() + PRAZO_ENCOMENDA * 1000,
+    cliente: CLIENTES[Math.floor(Math.random() * CLIENTES.length)],
+    premio: Math.max(6000, recorde * .6),
+    cristais: 1 + Math.floor(estat.encomendas / 12),
+  };
+  avisar("📦 encomenda nova! " + encomenda.cliente.split(" ")[1] + " quer " + alvo + " " + RARIDADES[ri].nome);
+  bip(523, .16); setTimeout(() => bip(698, .16), 130);
+  desenharEncomenda();
+}
+function contarEncomenda(tipo) {
+  if (!encomenda) return;
+  if (tipo.secreto || tipo.rIndex >= encomenda.ri) {
+    encomenda.feitos++;
+    if (encomenda.feitos >= encomenda.alvo) entregarEncomenda();
+  }
+}
+function entregarEncomenda() {
+  const e = encomenda; encomenda = null;
+  dinheiro += e.premio; estat.ganhoTotal += e.premio;
+  recorde = Math.max(recorde, dinheiro);
+  cristais += e.cristais; estat.encomendas++;
+  avisar("✅ encomenda entregue! +R$ " + fmt(e.premio) + " e 💠 " + e.cristais);
+  [660, 880, 1100, 1320, 1568].forEach((f, i) => setTimeout(() => bip(f, .14), i * 90));
+  cv.classList.add("festa"); setTimeout(() => cv.classList.remove("festa"), 900);
+  proximaEncomenda = Date.now() + 150000 + Math.random() * 120000;
+  desenharEncomenda(); sujo = true; salvar();
+}
+function desenharEncomenda() {
+  const cx = el("encomenda");
+  if (!encomenda) { cx.classList.remove("on"); return; }
+  const falta = Math.max(0, Math.ceil((encomenda.ate - Date.now()) / 1000));
+  cx.classList.add("on");
+  el("encIc").textContent = encomenda.cliente.split(" ")[0];
+  el("encNome").textContent = encomenda.cliente.split(" ").slice(1).join(" ") + " quer " +
+    encomenda.alvo + " emojis " + RARIDADES[encomenda.ri].nome + " ou melhor";
+  el("encSub").textContent = encomenda.feitos + "/" + encomenda.alvo +
+    " · paga R$ " + fmt(encomenda.premio) + " + 💠 " + encomenda.cristais;
+  el("encBarra").style.width = Math.min(100, encomenda.feitos / encomenda.alvo * 100) + "%";
+  el("encTempo").textContent = falta + "s";
+}
+function checarEncomenda() {
+  if (encomenda && Date.now() > encomenda.ate) {
+    encomenda = null; estat.perdidas++;
+    avisar("⌛ a encomenda venceu… o cliente foi embora");
+    bip(200, .2); desenharEncomenda();
+    proximaEncomenda = Date.now() + 90000 + Math.random() * 90000;
+  }
+  if (!encomenda && recorde >= 20000 && Date.now() > proximaEncomenda && !document.hidden) nascerEncomenda();
+}
+
+/* ==========================================================================
+   7c. TEMAS DA CAIXA — comprados com cristais, só pra deixar bonito
+   ========================================================================== */
+const TEMAS = [
+  { id:"padrao",   nome:"Fábrica",       ic:"🏭", custo:0,  fundo:["#120c1e","#0a0713"], borda:"#33254a", chao:"#ffffff08" },
+  { id:"espaco",   nome:"Espaço",        ic:"🚀", custo:2,  fundo:["#0b1030","#04060f"], borda:"#3a4a8a", chao:"#7ac9ff2e", estrelas:true },
+  { id:"floresta", nome:"Floresta",      ic:"🌳", custo:4,  fundo:["#0c2418","#04120b"], borda:"#2f6b46", chao:"#6ee7a02e" },
+  { id:"doce",     nome:"Doceria",       ic:"🍭", custo:7,  fundo:["#2e1030","#160719"], borda:"#a34a86", chao:"#ff6b9d2e" },
+  { id:"lava",     nome:"Vulcão",        ic:"🌋", custo:11, fundo:["#2a0c08","#140503"], borda:"#8a3418", chao:"#ff8a3c3a" },
+  { id:"gelo",     nome:"Geleira",       ic:"🧊", custo:16, fundo:["#0a1e2a","#040c12"], borda:"#2f6f8a", chao:"#5ce1e62e" },
+  { id:"ouro",     nome:"Cofre de Ouro", ic:"🏆", custo:24, fundo:["#2a2008","#120d02"], borda:"#8a6a18", chao:"#ffc8573a" },
+  { id:"arcoiris", nome:"Arco-íris",     ic:"🌈", custo:40, fundo:["#1b0f33","#2a0c28"], borda:"#ff6b9d", chao:"#ffffff20", arco:true },
+];
+const temaObj = () => TEMAS.find(t => t.id === temaAtual) || TEMAS[0];
+function aplicarTema() {
+  const t = temaObj();
+  cv.style.background = "linear-gradient(180deg," + t.fundo[0] + "," + t.fundo[1] + ")";
+  cv.style.borderColor = t.borda;
+  sujo = true;
+}
+function comprarTema(id) {
+  const t = TEMAS.find(x => x.id === id); if (!t) return;
+  if (!temas.includes(id)) {
+    if (cristais < t.custo) { avisar("💠 faltam " + fmt(t.custo - cristais) + " cristais"); bip(180); return; }
+    cristais -= t.custo; temas.push(id);
+    avisar("🎨 tema " + t.nome + " comprado!");
+    [880, 1100, 1320].forEach((f, i) => setTimeout(() => bip(f, .13), i * 80));
+  } else bip(760);
+  temaAtual = id; aplicarTema(); montarTemas(); salvar();
+}
+function montarTemas() {
+  el("temaTopo").innerHTML = "<b>" + temas.length + " de " + TEMAS.length +
+    "</b> temas · muda a cara da caixa · pago em 💠 cristais (você tem <b>" + fmt(cristais) + "</b>)";
+  el("temaGrid").innerHTML = TEMAS.map(t => {
+    const meu = temas.includes(t.id), usando = temaAtual === t.id;
+    return '<button class="tema' + (usando ? " usando" : "") + (!meu && cristais < t.custo ? " caro" : "") +
+      '" data-t="' + t.id + '">' +
+      '<div class="amostra" style="background:linear-gradient(180deg,' + t.fundo[0] + ',' + t.fundo[1] +
+        ');border-color:' + t.borda + '"></div>' +
+      '<div class="tn">' + t.ic + " " + t.nome + '</div>' +
+      '<div class="tc">' + (usando ? "em uso" : meu ? "usar" : t.custo === 0 ? "grátis" : "💠 " + t.custo) + '</div>' +
+      '</button>';
+  }).join("");
+  [...el("temaGrid").children].forEach(b => b.onclick = () => comprarTema(b.dataset.t));
+}
+
 let vendendo = 0;
 function vender() {
   if ((!bolas.length && !deposito) || fundoAberto) return;
@@ -1247,12 +1445,13 @@ function ganhosOffline(quando) {
    ========================================================================== */
 function mostrarPainel(p) {
   painelAtual = p;
-  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"]].forEach(([k, id]) =>
+  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"],["tema","pTema"]].forEach(([k, id]) =>
     el(id).style.display = (k === p ? "flex" : "none"));
   [...document.querySelectorAll(".abaT")].forEach(b => b.classList.toggle("sel", b.dataset.p === p));
   if (p === "conq") montarConquistas();
   if (p === "miss") montarMissoes();
   if (p === "stat") montarStats();
+  if (p === "tema") montarTemas();
   bip(700);
 }
 [...document.querySelectorAll(".abaT")].forEach(b => b.onclick = () => mostrarPainel(b.dataset.p));
@@ -1368,6 +1567,9 @@ function montarStats() {
     ["⭐ Estrelas de bônus", fmt(estat.bonusPegos)],
     ["🛒 Upgrades comprados", fmt(estat.ups)],
     ["📜 Missões cumpridas", fmt(nivelMissao)],
+    ["🚚 Encomendas entregues", fmt(estat.encomendas) + (estat.perdidas ? " (" + fmt(estat.perdidas) + " perdidas)" : "")],
+    ["🗂️ Coleções completas", colecoesCompletas() + " · +" + Math.round((bonusColecao() - 1) * 100) + "%"],
+    ["🎨 Temas da caixa", temas.length + "/" + TEMAS.length + " · " + temaObj().nome],
     ["♻️ Renascimentos", fmt(renascimentos)],
     ["📖 Índice", descobertos.length + "/" + (TIPOS.length + SECRETOS.length)],
     ["🌈 Raridades abertas", raridadesLiberadas().length + "/120"],
@@ -1397,7 +1599,9 @@ function montarIndice() {
     '<span class="faixaInfo">' + achadosS + "/" + SECRETOS.length + ' · caem em qualquer fase</span></div>' +
     '<div class="fileira">' + SECRETOS.map(s => {
       const tem = descobertos.includes(s.chave);
+      const n = contagem[s.chave] || 0;
       return '<div class="ficha' + (tem ? "" : " nao") + '" style="' + (tem ? "border-color:#ffffff88" : "") + '">' +
+        (n > 1 ? '<b class="qtdF">x' + fmt(n) + '</b>' : "") +
         (tem ? s.e : "❔") + '<small>' + (tem ? "1 em " + fmt(Math.round(1 / s.chance)) : "???") + '</small></div>';
     }).join("") + '</div></div>';
 
@@ -1407,19 +1611,22 @@ function montarIndice() {
     const achados = desta.filter(t => descobertos.includes(t.chave)).length;
     const liberada = recorde >= r.desbloqueio;
     const fichas = desta.map(t => {
-      const tem = descobertos.includes(t.chave);
+      const tem = descobertos.includes(t.chave), n = contagem[t.chave] || 0;
       return '<div class="ficha' + (tem ? "" : " nao") + '" style="' + (tem ? "border-color:" + r.cor + "55" : "") + '">' +
+        (n > 1 ? '<b class="qtdF">x' + fmt(n) + '</b>' : "") +
         (tem ? t.e : "❔") + '<small>' + (tem ? "R$ " + fmt(t.valor) : "???") + '</small></div>';
     }).join("");
     return '<div class="faixa" style="' + (liberada ? "" : "opacity:.42") + '">' +
       '<div class="faixaTop"><span class="pastilha" style="background:' + r.cor + '22;color:' + r.cor +
       ';border:1px solid ' + r.cor + '55">' + (r.indice + 1) + '. ' + r.nome + '</span>' +
-      '<span class="faixaInfo">' + (liberada ? achados + "/" + desta.length + " · R$ " + fmt(r.base)
+      '<span class="faixaInfo">' + (liberada
+        ? achados + "/" + desta.length + (achados === desta.length ? " ✅ completa +2%" : "") + " · R$ " + fmt(r.base)
         : "🔒 R$ " + fmt(r.desbloqueio)) + '</span></div>' +
       '<div class="fileira">' + fichas + '</div></div>';
   }).join("");
   el("indiceSub").textContent = descobertos.length + " de " + (TIPOS.length + SECRETOS.length) + " emojis · " +
-    raridadesLiberadas().length + " de " + RARIDADES.length + " raridades abertas";
+    raridadesLiberadas().length + " de " + RARIDADES.length + " raridades abertas · " +
+    colecoesCompletas() + " coleções completas (+" + Math.round((bonusColecao() - 1) * 100) + "% em tudo)";
 }
 
 /* ==========================================================================
@@ -1491,7 +1698,8 @@ SECRETOS.forEach((s, i) => {
 });
 function soltarSecreto(i) {
   const s = SECRETOS[i];
-  if (!descobertos.includes(s.chave)) descobertos.push(s.chave);
+  contagem[s.chave] = (contagem[s.chave] || 0) + 1;
+  if (!vistos.has(s.chave)) { vistos.add(s.chave); descobertos.push(s.chave); _colLen = -1; }
   if (bolas.length < MAX_FISICOS) bolas.push(new Bola(L / 2, -20, s));
   else guardar(s);
   avisar("🌈 " + s.e + " " + s.nome + " — R$ " + fmt(valorDe(s)));
@@ -1525,14 +1733,18 @@ function liberarAte(n) { recorde = Math.max(recorde, RARIDADES[Math.min(n, 120) 
 function mudarFisicos(d) { MAX_FISICOS = Math.max(100, Math.min(3000, MAX_FISICOS + d)); puxarAdm(); }
 function descobrirTudo() {
   descobertos = TIPOS.map(t => t.chave).concat(SECRETOS.map(s => s.chave));
-  puxarAdm();
+  descobertos.forEach(c => { if (!contagem[c]) contagem[c] = 1; });
+  sincronizarVistos(); puxarAdm();
 }
 function darConquistas() { conquistasFeitas = CONQUISTAS.map(c => c.id); puxarAdm(); }
+function darTemas() { temas = TEMAS.map(t => t.id); montarTemas(); puxarAdm(); }
 function completarMissoes() { missoes.forEach(m => m.feita = true); checarMissoes(); puxarAdm(); }
 function resetTotal() {
   dinheiro = 0; recorde = 0; cristais = 0; renascimentos = 0; vendidos = 0;
-  bolas = []; deposito = 0; depositoValor = 0; descobertos = [];
+  bolas = []; deposito = 0; depositoValor = 0; descobertos = []; contagem = {};
   conquistasFeitas = []; missoes = []; nivelMissao = 0; buffs = []; combo = 0;
+  encomenda = null; temas = ["padrao"]; temaAtual = "padrao";
+  sincronizarVistos(); aplicarTema(); desenharEncomenda();
   Object.assign(estat, {
     cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
     ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
@@ -1552,7 +1764,10 @@ function puxarAdm() {
     "renascimentos: " + renascimentos + "\n" +
     "raridades....: " + raridadesLiberadas().length + "/120  (" +
       (raridadesLiberadas().slice(-1)[0] || RARIDADES[0]).nome + ")\n" +
-    "índice.......: " + descobertos.length + "/" + (TIPOS.length + SECRETOS.length) + "\n" +
+    "índice.......: " + descobertos.length + "/" + (TIPOS.length + SECRETOS.length) +
+      "  (" + colecoesCompletas() + " coleções)\n" +
+    "encomendas...: " + estat.encomendas + " entregues, " + estat.perdidas + " perdidas\n" +
+    "temas........: " + temas.length + "/" + TEMAS.length + "  (" + temaObj().nome + ")\n" +
     "conquistas...: " + conquistasFeitas.length + "/" + CONQUISTAS.length + "\n" +
     "missões......: " + nivelMissao + " cumpridas\n" +
     "na caixa.....: " + bolas.length + " físicos + " + fmt(deposito) + " no depósito\n" +
@@ -1599,7 +1814,19 @@ function quadro() {
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, L, A);
-  ctx.fillStyle = fundoAberto ? "#ff6b9d22" : "#ffffff08";
+  const tema = temaObj();
+  if (tema.estrelas) {                      // Espaço: pontinhos parados no fundo
+    ctx.fillStyle = "#ffffff26";
+    for (let i = 0; i < 40; i++) {
+      const ex = (i * 97 % 101) / 101 * L, ey = (i * 53 % 89) / 89 * A;
+      ctx.fillRect(ex, ey, 1.6, 1.6);
+    }
+  }
+  if (tema.arco) {                          // Arco-íris: faixas suaves atrás dos emojis
+    const cores = ["#ff4d6d18","#ffc85718","#6ee7a018","#5ce1e618","#b47aff18"];
+    for (let i = 0; i < cores.length; i++) { ctx.fillStyle = cores[i]; ctx.fillRect(0, A * i / 5, L, A / 5); }
+  }
+  ctx.fillStyle = fundoAberto ? "#ff6b9d22" : tema.chao;
   ctx.fillRect(0, A - 4, L, 4);
   for (let i = 0; i < bolas.length; i++) {
     const b = bolas[i], s = b.sprite, m = s.meio;
@@ -1642,6 +1869,7 @@ function quadro() {
     }
     el("btVender").textContent = txt;
     desenharBuffs();
+    if (encomenda) desenharEncomenda();
   }
   requestAnimationFrame(quadro);
 }
@@ -1688,6 +1916,7 @@ setInterval(() => {
   estat.tempo += 500;
   checarConquistas();
   checarMissoes();
+  checarEncomenda();
   if (!estrela && recorde >= 3000 && Date.now() > proximaEstrela && !document.hidden) {
     nasceEstrela();
     proximaEstrela = Date.now() + 70000 + Math.random() * 90000;
@@ -1736,11 +1965,12 @@ function render() {
 /* ==========================================================================
    12. SAVE
    ========================================================================== */
-const CHAVE = "fabricaEmojis_v3", CHAVE_ANTIGA = "fabricaEmojis_v2";
+const CHAVE = "fabricaEmojis_v4", ANTIGAS = ["fabricaEmojis_v3", "fabricaEmojis_v2"];
 function pacote() {
   return {
-    v: 3, dinheiro, recorde, vendidos, cristais, renascimentos, mudo, descobertos,
+    v: 4, dinheiro, recorde, vendidos, cristais, renascimentos, mudo, descobertos,
     conquistas: conquistasFeitas, missoes, nivelMissao, estat, quando: Date.now(),
+    contagem, temas, temaAtual,
     ups: TODOS.filter(u => u.qtd).map(u => [u.id, u.qtd]),
   };
 }
@@ -1756,6 +1986,13 @@ function aplicar(d) {
   missoes = Array.isArray(d.missoes) ? d.missoes.filter(m => m && m.tipo) : [];
   nivelMissao = d.nivelMissao || 0;
   if (d.estat) for (const k in estat) if (k in d.estat) estat[k] = d.estat[k];
+  contagem = (d.contagem && typeof d.contagem === "object") ? d.contagem : {};
+  // save antigo não tinha contagem: quem já descobriu, começa com 1 de cada
+  descobertos.forEach(c => { if (!contagem[c]) contagem[c] = 1; });
+  temas = Array.isArray(d.temas) && d.temas.length ? d.temas : ["padrao"];
+  if (!temas.includes("padrao")) temas.unshift("padrao");
+  temaAtual = temas.includes(d.temaAtual) ? d.temaAtual : "padrao";
+  sincronizarVistos();
   TODOS.forEach(u => u.qtd = 0);
   (d.ups || []).forEach(([id, q]) => { const u = TODOS.find(x => x.id === id); if (u) u.qtd = q; });
   if (mudo) el("btSom").textContent = "🔇";
@@ -1763,7 +2000,9 @@ function aplicar(d) {
 function carregar() {
   let d = null;
   try { d = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
-  if (!d) { try { d = JSON.parse(localStorage.getItem(CHAVE_ANTIGA) || "null"); } catch (e) {} }
+  for (let i = 0; !d && i < ANTIGAS.length; i++) {
+    try { d = JSON.parse(localStorage.getItem(ANTIGAS[i]) || "null"); } catch (e) {}
+  }
   if (!d) return null;
   aplicar(d);
   return d;
@@ -1782,8 +2021,8 @@ function importarSave() {
     const d = JSON.parse(decodeURIComponent(escape(atob(txt.trim()))));
     if (!d || typeof d.dinheiro !== "number") throw 0;
     aplicar(d);
-    bolas = []; deposito = 0; depositoValor = 0; buffs = []; combo = 0;
-    sortearMissoes(); montarFamilias(); montarLista(); render(); salvar();
+    bolas = []; deposito = 0; depositoValor = 0; buffs = []; combo = 0; encomenda = null;
+    sortearMissoes(); montarFamilias(); montarLista(); aplicarTema(); desenharEncomenda(); render(); salvar();
     avisar("📥 jogo carregado!");
   } catch (e) { avisar("❌ esse código não serve"); }
 }
@@ -1793,6 +2032,7 @@ window.addEventListener("beforeunload", salvar);
 /* ---------- começo ---------- */
 const salvo = carregar();
 ajustar();
+aplicarTema();
 sortearMissoes();
 montarFamilias(); montarLista();
 checarConquistas(); checarMissoes();
@@ -1801,7 +2041,8 @@ if (salvo) ganhosOffline(salvo.quando);
 el("rodape").innerHTML =
   "Clique <b>dentro da caixa</b> pra fabricar. Os emojis caem, quicam e empilham de verdade.<br>" +
   "<b>120 raridades</b> · <b>" + (TIPOS.length + SECRETOS.length) + " emojis</b> (" + SECRETOS.length + " secretos) · <b>" +
-  TODOS.length + " upgrades</b> · <b>" + CONQUISTAS.length + " conquistas</b> · missões, combos, críticos, estrelas de bônus e renda offline.<br>" +
+  TODOS.length + " upgrades</b> · <b>" + CONQUISTAS.length + " conquistas</b> · <b>" + TEMAS.length + " temas</b><br>" +
+  "Missões, encomendas com prazo, coleções, combos, críticos, estrelas de bônus e renda offline.<br>" +
   "Espaço também fabrica. As setas (ou a inclinação do celular) viram a gravidade.";
 quadro();
 </script>
