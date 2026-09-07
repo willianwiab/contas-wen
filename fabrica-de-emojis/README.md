@@ -27,16 +27,13 @@ instalação, funciona offline no celular e no computador.
 | Raridades | 120, da Comum à Absoluta |
 | Emojis no índice | 730, sendo 10 secretos |
 | Upgrades | 330 (16 famílias de dinheiro + 17 de cristal, 10 níveis cada) |
-| Conquistas | 72, cada uma dá +1,5% em tudo pra sempre |
+| Conquistas | 68, cada uma dá +1,5% em tudo pra sempre |
 | Temas da caixa | 8, comprados com cristais |
 
 Além disso:
 
 - **Coleções** — juntar os 6 emojis de uma raridade fecha a coleção e dá
   +2% em tudo, pra sempre. O índice mostra quantos de cada você já achou.
-- **Encomendas** — de tempos em tempos um cliente aparece pedindo uma
-  quantidade de emojis de certa raridade dentro de 2 minutos. Entregar paga
-  muito bem e ainda rende cristais.
 - **Combo** — cliques em sequência aumentam o multiplicador.
 - **Crítico** — chance de um clique valer 10x.
 - **Gêmeo / Fusão** — o emoji pode sair dobrado ou subir uma raridade ao nascer.
