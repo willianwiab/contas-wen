@@ -23,7 +23,7 @@ da caixa.
 | --- | --- |
 | 🏭 **Normal** | O jogo completo, como foi feito pra ser jogado. |
 | 🔥 **Difícil** | Tudo custa 4x mais, mas cada venda vale 3x. |
-| 🧬 **Fusão** | Libera o painel de fundir: 5 repetidos de uma raridade viram 1 da raridade de cima. |
+| 🧬 **Fusão** | Quando 5 emojis da mesma raridade estão parados na caixa, eles se puxam feito ímã, se juntam e viram 1 emoji da raridade de cima — dá reação em cadeia. |
 | 🧪 **Livre** | Dinheiro que não acaba, compras de graça e as 120 raridades abertas. É o modo de bagunçar. |
 
 ## Como se joga

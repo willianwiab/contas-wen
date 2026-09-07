@@ -476,7 +476,7 @@
         "4 modos de jogo (Normal, Difícil, Fusão e Livre), com save separado",
         "76 conquistas, 8 delas secretas, cada uma valendo +1,5% em tudo pra sempre",
         "Emoji do dia: um sorteado a cada dia que vale 10x",
-        "Fundir 5 emojis repetidos em 1 da raridade de cima (no modo Fusão)",
+        "No modo Fusão, 5 emojis iguais na caixa se atraem, se juntam e viram 1 melhor",
         "Coleções: juntar os 6 emojis de uma raridade dá +2% pra sempre",
         "8 temas pra caixa, comprados com cristais",
         "Combo por cliques em sequência e clique crítico de 10x",
@@ -526,7 +526,8 @@
         { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: física dos emojis, 120 raridades, 730 emojis no índice, 220 upgrades, renascimento com cristais e modo administrador." },
         { "versao": "2.0", "data": "2026", "mudancas": "Upgrades novos (crítico, combo, gêmeo, fusão, radar e turno da noite), 62 conquistas, missões, estrela de bônus, turbo, renda offline, painel de estatísticas e 2 emojis secretos a mais." },
         { "versao": "3.0", "data": "2026", "mudancas": "Coleções com bônus permanente, 8 temas pra caixa e 6 conquistas novas." },
-        { "versao": "4.0", "data": "2026", "mudancas": "Tela de início com 4 modos de jogo e save separado, fusão de repetidos no modo Fusão, emoji do dia valendo 10x e 8 conquistas secretas." }
+        { "versao": "4.0", "data": "2026", "mudancas": "Tela de início com 4 modos de jogo e save separado, fusão de repetidos no modo Fusão, emoji do dia valendo 10x e 8 conquistas secretas." },
+        { "versao": "4.1", "data": "2026", "mudancas": "A fusão saiu do botão e foi pra dentro da caixa: 5 emojis da mesma raridade que estejam parados se atraem feito ímã, se juntam no meio e explodem num emoji melhor, com reação em cadeia." }
       ],
       "ranking": []
     }
