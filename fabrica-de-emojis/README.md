@@ -13,6 +13,19 @@ instalação, funciona offline no celular e no computador.
   `jogos-do-jojo/assets/images/fabrica-de-emojis.svg` (cartão) e
   `...-banner.svg` (topo da página).
 
+## Os modos
+
+Ao abrir, o jogo pergunta como você quer jogar. Cada modo guarda o progresso
+dele em separado, então um nunca estraga o outro. Dá pra trocar no 🎮 em cima
+da caixa.
+
+| Modo | O que muda |
+| --- | --- |
+| 🏭 **Normal** | O jogo completo, como foi feito pra ser jogado. |
+| 🔥 **Difícil** | Tudo custa 4x mais, mas cada venda vale 3x. |
+| 🧬 **Fusão** | Libera o painel de fundir: 5 repetidos de uma raridade viram 1 da raridade de cima. |
+| 🧪 **Livre** | Dinheiro que não acaba, compras de graça e as 120 raridades abertas. É o modo de bagunçar. |
+
 ## Como se joga
 
 - Clique **dentro da caixa** (ou no botão `FAZER EMOJI`, ou na barra de espaço) pra fabricar.
@@ -27,11 +40,14 @@ instalação, funciona offline no celular e no computador.
 | Raridades | 120, da Comum à Absoluta |
 | Emojis no índice | 730, sendo 10 secretos |
 | Upgrades | 330 (16 famílias de dinheiro + 17 de cristal, 10 níveis cada) |
-| Conquistas | 68, cada uma dá +1,5% em tudo pra sempre |
+| Conquistas | 76, sendo 8 secretas — cada uma dá +1,5% em tudo pra sempre |
+| Modos de jogo | 4: Normal, Difícil, Fusão e Livre (save separado em cada um) |
 | Temas da caixa | 8, comprados com cristais |
 
 Além disso:
 
+- **Emoji do dia** — todo dia um emoji é sorteado (pela data, igual pra todo
+  mundo) e vale **10x** enquanto o dia durar.
 - **Coleções** — juntar os 6 emojis de uma raridade fecha a coleção e dá
   +2% em tudo, pra sempre. O índice mostra quantos de cada você já achou.
 - **Combo** — cliques em sequência aumentam o multiplicador.
@@ -59,7 +75,7 @@ recomeçar do zero.
 
 ## Detalhes técnicos
 
-- O save fica no `localStorage` (`fabricaEmojis_v4`) e migra sozinho dos saves antigos (`_v3` e `_v2`).
+- Cada modo tem seu save no `localStorage` (`fabricaEmojis_v5_<modo>`); o save antigo (`_v4`, `_v3`, `_v2`) vira o do modo Normal.
 - A física simula até 550 emojis na tela; o que passa disso vai pro **depósito**,
   que continua contando no valor e no índice — é o que segura o FPS no celular.
 - A ordem dos emojis é embaralhada com semente fixa, então o índice é igual

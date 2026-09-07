@@ -465,15 +465,18 @@
     {
       "slug": "fabrica-de-emojis",
       "nome": "Fábrica de Emojis",
-      "descricao": "Um clicker com física de verdade: os emojis caem dentro da caixa, quicam, empilham e você vende a pilha inteira. São 120 raridades, 730 emojis pra descobrir, 330 upgrades, 68 conquistas e coleções pra fechar.",
+      "descricao": "Um clicker com física de verdade: os emojis caem dentro da caixa, quicam, empilham e você vende a pilha inteira. São 4 modos de jogo, 120 raridades, 730 emojis pra descobrir, 330 upgrades e 76 conquistas.",
       "comoFunciona": "Cada clique dentro da caixa fabrica emojis, que caem e se empilham de verdade — com gravidade, colisão e quique. Quando a caixa enche (ou quando você quiser), o fundo abre, tudo despenca e vira dinheiro. Com o dinheiro você compra upgrades, que fabricam mais emojis, que dão mais dinheiro.",
-      "objetivo": "Descobrir os 730 emojis do índice, fechar as 120 coleções, abrir todas as raridades e destravar as 68 conquistas — renascendo quantas vezes for preciso pra ficar cada vez mais forte.",
+      "objetivo": "Descobrir os 730 emojis do índice, fechar as 120 coleções, abrir todas as raridades e destravar as 76 conquistas — renascendo quantas vezes for preciso pra ficar cada vez mais forte.",
       "mecanicas": [
         "Física real: os emojis caem, quicam e empilham na caixa",
         "120 raridades, da Comum à Absoluta",
         "730 emojis no índice, sendo 10 secretos raríssimos",
         "330 upgrades em 33 famílias, entre dinheiro e cristais",
-        "68 conquistas, cada uma valendo +1,5% em tudo pra sempre",
+        "4 modos de jogo (Normal, Difícil, Fusão e Livre), com save separado",
+        "76 conquistas, 8 delas secretas, cada uma valendo +1,5% em tudo pra sempre",
+        "Emoji do dia: um sorteado a cada dia que vale 10x",
+        "Fundir 5 emojis repetidos em 1 da raridade de cima (no modo Fusão)",
         "Coleções: juntar os 6 emojis de uma raridade dá +2% pra sempre",
         "8 temas pra caixa, comprados com cristais",
         "Combo por cliques em sequência e clique crítico de 10x",
@@ -504,6 +507,7 @@
         { "tecla": "Clique", "acao": "Fabricar emojis dentro da caixa" },
         { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
         { "tecla": "Espaço", "acao": "Fabricar sem tirar a mão do teclado" },
+        { "tecla": "V", "acao": "Vender a caixa" },
         { "tecla": "Setas", "acao": "Virar a gravidade da caixa" },
         { "tecla": "📱", "acao": "Usar a inclinação do celular como gravidade" },
         { "tecla": "📖", "acao": "Abrir o índice de emojis descobertos" },
@@ -521,7 +525,8 @@
       "changelog": [
         { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: física dos emojis, 120 raridades, 730 emojis no índice, 220 upgrades, renascimento com cristais e modo administrador." },
         { "versao": "2.0", "data": "2026", "mudancas": "Upgrades novos (crítico, combo, gêmeo, fusão, radar e turno da noite), 62 conquistas, missões, estrela de bônus, turbo, renda offline, painel de estatísticas e 2 emojis secretos a mais." },
-        { "versao": "3.0", "data": "2026", "mudancas": "Coleções com bônus permanente, 8 temas pra caixa e 6 conquistas novas." }
+        { "versao": "3.0", "data": "2026", "mudancas": "Coleções com bônus permanente, 8 temas pra caixa e 6 conquistas novas." },
+        { "versao": "4.0", "data": "2026", "mudancas": "Tela de início com 4 modos de jogo e save separado, fusão de repetidos no modo Fusão, emoji do dia valendo 10x e 8 conquistas secretas." }
       ],
       "ranking": []
     }
