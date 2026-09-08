@@ -61,7 +61,7 @@ export class Clipe {
     this.balaoAte = 0;
     /* Os efeitos dos segredos. Cada um guarda ATÉ QUANDO vale (em
        milissegundos do relógio), pra sobreviver a recarregar a página. */
-    this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0 };
+    this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0 };
     this.dpr = 1;
     this.ajustar();
     addEventListener("resize", () => this.ajustar());
@@ -98,7 +98,7 @@ export class Clipe {
     this.efeitos[qual] = Math.max(this.efeitos[qual] || 0, Date.now() + minutos * 60000);
   }
   temEfeito(qual) { return (this.efeitos[qual] || 0) > Date.now(); }
-  curar() { this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0 }; }
+  curar() { this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0 }; }
   faltaPara(qual) {
     const ms = (this.efeitos[qual] || 0) - Date.now();
     if (ms <= 0) return "";
@@ -160,6 +160,13 @@ export class Clipe {
       gira = suave(gt) * .5; sobe = suave(gt) * A * .05;
     }
 
+    /* fantasma: ele boia devagar em vez de pisar no chão */
+    const assombrado = this.temEfeito("fantasma");
+    if (assombrado) {
+      sobe -= A * .05 + Math.sin(t * .9) * A * .035;
+      entorta += Math.sin(t * .6) * .06;
+    }
+
     /* respiração: ninguém fica totalmente parado */
     const resp = Math.sin(t * 1.7) * .012;
     esticaY *= 1 + resp; esticaX *= 1 - resp * .6;
@@ -169,8 +176,9 @@ export class Clipe {
     const escala = Math.min(L / 2.5, A / 2.9);
 
     /* ---- a sombra no chão: fica na tela mesmo, sem girar junto ---- */
+    /* fantasma não faz sombra. É o detalhe que entrega tudo. */
     ctx.save();
-    ctx.globalAlpha = .16;
+    ctx.globalAlpha = assombrado ? 0 : .16;
     ctx.fillStyle = "#000";
     ctx.beginPath();
     ctx.ellipse(L / 2, A * .55 + escala * 1.2, escala * (.5 + sobe / A * .5), escala * .09, 0, 0, 6.2832);
@@ -178,6 +186,7 @@ export class Clipe {
     ctx.restore();
 
     ctx.save();
+    if (assombrado) ctx.globalAlpha = .42 + Math.sin(t * 1.7) * .08;
     ctx.translate(L / 2, A * .55 + sobe);
     ctx.rotate(gira);
     ctx.transform(esticaX, 0, entorta, esticaY, 0, 0);
@@ -191,7 +200,12 @@ export class Clipe {
     ctx.save(); ctx.translate(.012, .022); caminhoDoClipe(ctx); ctx.stroke(); ctx.restore();
 
     const brilho = ctx.createLinearGradient(-1, -1, 1, 1);
-    if (this.temEfeito("arcoiris")) {
+    if (assombrado) {
+      /* de fantasma o metal fica azulado e frio, quase apagado */
+      brilho.addColorStop(0, "#eaf6ff");
+      brilho.addColorStop(.5, "#a8c8e8");
+      brilho.addColorStop(1, "#cfe4f6");
+    } else if (this.temEfeito("arcoiris")) {
       /* o arame vira arco-íris girando: é a cara de quem viu coisa demais */
       const g = t * 90;
       for (let i = 0; i <= 6; i++)

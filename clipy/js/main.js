@@ -26,6 +26,7 @@ let ultimoTamanho = 0, teclasNoMinuto = [], apagadosRecentes = [], ultimaTecla =
 let dicaAberta = null;              // a regra que está no balão agora
 let censurados = 0;                 // quantos palavrões ele já barrou
 const segredosVistos = new Set();   // pra não repetir o mesmo segredo sem parar
+const segredosContados = {};        // os que contam quantas vezes você escreveu
 let cutucadas = [];                 // cinco seguidas curam o Clipy
 const abertura = Date.now() / 1000;
 
@@ -99,6 +100,20 @@ function passarOCensor() {
 function procurarSegredo(texto) {
   const s = acharSegredo(texto);
   if (!s) return false;
+
+  /* o segredo que CONTA: fica mais nervoso a cada vez que o nome aparece */
+  if (s.conta) {
+    s.conta.lastIndex = 0;
+    const n = (texto.match(s.conta) || []).length;
+    if (!n || n === segredosContados[s.id]) return false;
+    segredosContados[s.id] = n;
+    segredosVistos.add(s.id); montarOvos(); salvar();
+    const i = Math.min(n, s.falas.length) - 1;
+    dizerSegredo({ fala:s.falas[i], efeitos:null });
+    clipe.sentir(s.humores[i]); clipe.fazer(s.gestos[i]);
+    if (n >= s.falas.length && s.apagaALuz) apagarALuz(s.apagaALuz, () => dizer(s.depois));
+    return true;
+  }
   if (segredosVistos.has(s.id) && !s.efeitos) return false;
   if (segredosVistos.has(s.id) && s.efeitos && clipe.temEfeito(Object.keys(s.efeitos)[0])) return false;
   segredosVistos.add(s.id);
@@ -147,6 +162,23 @@ function dizerSegredo(s) {
   dicaAberta = null;
 }
 
+/* apaga a luz da página por uns segundos. É só um pano preto por cima. */
+function apagarALuz(segundos, aoAcender) {
+  let p = $("apagaLuz");
+  if (!p) {
+    p = document.createElement("div");
+    p.id = "apagaLuz";
+    document.body.appendChild(p);
+  }
+  p.classList.add("on");
+  clipe.mostrarBalao("!", segundos);
+  setTimeout(() => {
+    p.classList.remove("on");
+    clipe.sentir("triste"); clipe.fazer("encolher");
+    if (aoAcender) aoAcender();
+  }, segundos * 1000);
+}
+
 /* a barrinha que mostra o estrago e conta o tempo */
 function atualizarEfeitos() {
   const c = $("efeitos");
@@ -155,6 +187,7 @@ function atualizarEfeitos() {
   if (clipe.temEfeito("burro")) partes.push("🫠 olho de burro " + clipe.faltaPara("burro"));
   if (clipe.temEfeito("mudo")) partes.push("🤐 mudo " + clipe.faltaPara("mudo"));
   if (clipe.temEfeito("ben")) partes.push("🥼 modo BEN " + clipe.faltaPara("ben"));
+  if (clipe.temEfeito("fantasma")) partes.push("👻 fantasma " + clipe.faltaPara("fantasma"));
   c.hidden = !partes.length;
   if (partes.length) c.innerHTML = partes.join(" · ") +
     ' <button id="btCurar">🔧 consertar</button>';
@@ -162,7 +195,7 @@ function atualizarEfeitos() {
 }
 function curarClipy() {
   const tinha = clipe.temEfeito("arcoiris") || clipe.temEfeito("burro") ||
-                clipe.temEfeito("mudo") || clipe.temEfeito("ben");
+                clipe.temEfeito("mudo") || clipe.temEfeito("ben") || clipe.temEfeito("fantasma");
   clipe.curar(); salvar(); atualizarEfeitos();
   if (tinha) {
     dizer("Ufa. Voltei. Não me mostre mais aquilo.");
@@ -396,7 +429,7 @@ $("btCutucar").onclick = () => {
   cutucadas.push(agora);
   if (cutucadas.length >= 5 &&
       (clipe.temEfeito("arcoiris") || clipe.temEfeito("burro") ||
-       clipe.temEfeito("mudo") || clipe.temEfeito("ben"))) {
+       clipe.temEfeito("mudo") || clipe.temEfeito("ben") || clipe.temEfeito("fantasma"))) {
     cutucadas = []; curarClipy(); return;
   }
   if (clipe.temEfeito("mudo")) {
@@ -728,6 +761,7 @@ const NOME_SEGREDO = {
   videoDoido:"o vídeo das cores", videoIdiota:"o vídeo do idiota",
   videoQueimando:"o vídeo que queima o cérebro", videoKittyCity:"o vídeo que virou jogo",
   videoWhatsUp:"o vídeo pra cantar junto", videoBen:"o vídeo do Ben",
+  videoFantasma:"o vídeo assombrado", shania:"escrever aquele nome três vezes",
   rickroll:"never gonna…",
   quarentaEDois:"o número 42", sudo:"sudo", helloWorld:"hello, world",
   konami:"o código secreto", gatos:"gatos", jojo:"o JoJo",
@@ -778,6 +812,7 @@ function salvar() {
       caladas: [...cerebro.desligadas],
       prancheta: prancheta.paraSalvar(),
       efeitos: clipe.efeitos, censurados, segredos:[...segredosVistos],
+      contados: segredosContados,
     }));
   } catch (e) {}
 }
@@ -793,10 +828,11 @@ function carregar() {
   }
   if (Array.isArray(d.caladas)) for (const id of d.caladas) cerebro.desligadas.add(id);
   if (d.prancheta) prancheta.carregarDe(d.prancheta);
-  if (d.efeitos) for (const k of ["arcoiris", "burro", "mudo", "ben"])
+  if (d.efeitos) for (const k of ["arcoiris", "burro", "mudo", "ben", "fantasma"])
     if (typeof d.efeitos[k] === "number") clipe.efeitos[k] = d.efeitos[k];
   if (typeof d.censurados === "number") censurados = d.censurados;
   if (Array.isArray(d.segredos)) for (const id of d.segredos) segredosVistos.add(id);
+  if (d.contados) Object.assign(segredosContados, d.contados);
   $("limiteHist").value = prancheta.limite;
 }
 
