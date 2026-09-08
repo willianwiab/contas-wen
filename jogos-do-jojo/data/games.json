@@ -601,6 +601,67 @@
       "ranking": []
     },
     {
+      "slug": "fabrica-de-emojis-china",
+      "nome": "中國表情符號工廠 — Fábrica da China",
+      "descricao": "A fábrica mudou de país. As primeiras raridades são a mesa chinesa e os 12 animais do zodíaco, os tesouros escondidos são selos chineses de verdade e as temporadas são os festivais: Ano Novo Chinês, Lanternas, Barcos-Dragão, Meio-Outono, Dia dos Solteiros e mais.",
+      "comoFunciona": "O motor é o mesmo da Fábrica de Emojis: cada clique fabrica emojis que caem e se empilham de verdade dentro da caixa, e quando ela enche o fundo abre e tudo vira dinheiro. O que muda é o que sai da máquina: as cinco primeiras raridades são a China de propósito, o índice inteiro está numa ordem diferente e o calendário do jogo segue a lua.",
+      "objetivo": "Abrir as 120 raridades chinesas, de 普通 Comum até 無極 Sem-Limite, achar os 10 tesouros e descobrir os 800 emojis do índice.",
+      "mecanicas": [
+        "As 5 primeiras raridades são a China: a mesa posta, o chá, os 12 animais do zodíaco e os símbolos",
+        "120 raridades com nome em chinês e em português: 竹 Bambu, 瓷 Porcelana, 玉 Jade, 龍 Dragão, 玉皇 Imperador...",
+        "10 tesouros escondidos, e os mais raros são selos chineses de verdade: 得, 祝, 秘, 有, 無, 禁, 指",
+        "10 temporadas de festivais chineses, com as datas lunares vindo de uma tabela ano a ano",
+        "雙十一 Dia dos Solteiros: a temporada mais rara do jogo, dura um dia só",
+        "Temas da caixa chineses: 竹林 Bambuzal, 青花瓷 Porcelana, 火龍 Dragão de Fogo, 錦 Brocado",
+        "Física real: os emojis caem, quicam e empilham na caixa",
+        "340 upgrades em 34 famílias, 80 conquistas e 18 skins",
+        "4 modos de jogo: 普通 Normal, 困難 Difícil, 融合 Fusão e 自由 Livre",
+        "Renascer, missões, renda offline e emoji do dia valendo 10x",
+        "Índice numa ordem própria: o que é raro aqui não é o mesmo que é raro nas outras fábricas",
+        "Dá pra instalar como aplicativo e jogar sem internet",
+        "Caderneta de saves só dela: as três fábricas não se misturam"
+      ],
+      "categoria": "Clicker",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "Cada emoji vale conforme a raridade dele: 普通 Comum vale R$ 1 e cada raridade seguinte vale 8,5 vezes mais. O total da pilha ainda é multiplicado pelos upgrades, pelos cristais, pelas conquistas e pelos bônus ativos.",
+      "popularidade": 96,
+      "imagem": "assets/images/fabrica-de-emojis-china.svg",
+      "banner": "assets/images/fabrica-de-emojis-china-banner.svg",
+      "trailer": "",
+      "url": "../fabrica-de-emojis-china/index.html",
+      "galeria": [],
+      "historia": "Dizem que a fábrica foi levada de navio e montada de novo do outro lado do mundo. As máquinas são as mesmas, mas o que sai delas não é: primeiro vieram as lanternas e os envelopes vermelhos, depois os doze animais do zodíaco, e lá no fundo do estoque apareceram uns selos quadradinhos que ninguém sabe explicar.",
+      "comoJogar": "Clique dentro da caixa (ou no botão FAZER EMOJI, ou na barra de espaço) pra fabricar, e aperte VENDER quando encher. Gaste na loja, cumpra as missões e fique de olho no calendário: os festivais chineses abrem e fecham em datas que mudam todo ano, porque seguem a lua.",
+      "controles": [
+        { "tecla": "Clique", "acao": "Fabricar emojis dentro da caixa" },
+        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
+        { "tecla": "Espaço", "acao": "Fabricar sem tirar a mão do teclado" },
+        { "tecla": "V", "acao": "Vender a caixa" },
+        { "tecla": "Setas", "acao": "Virar a gravidade da caixa" },
+        { "tecla": "📱", "acao": "Usar a inclinação do celular como gravidade" },
+        { "tecla": "📖", "acao": "Abrir o índice de emojis descobertos" },
+        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+      ],
+      "curiosidades": [
+        "Os 12 animais do zodíaco chinês estão todos lá, nas raridades 瓷 Porcelana e 玉 Jade: 🐀🐂🐅🐇🐉🐍🐎🐐🐒🐓🐕🐖.",
+        "Os tesouros mais raros são selos chineses de verdade, e o nome de cada um no jogo é o que o caractere quer dizer: 🉐 得 é o achado, ㊙️ 秘 é o segredo, 🈚 無 é o nada e 🈲 禁 é o proibido.",
+        "Os festivais chineses seguem o calendário lunar, que não dá pra calcular com uma continha curta. Então as datas vêm de uma tabela ano a ano, de 2024 a 2035 — o Ano Novo Chinês cai em 17/02 em 2026 e em 06/02 em 2027.",
+        "A temporada mais rara do jogo é o 雙十一, o Dia dos Solteiros: 11 de novembro, um dia só.",
+        "O índice foi embaralhado com outra semente, então o que é raro aqui não é o mesmo que é raro nas outras duas fábricas."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        { "versao": "1.0", "data": "2026", "mudancas": "A fábrica virou chinesa: 120 raridades rebatizadas em chinês, baralho começando pela mesa e pelos 12 animais do zodíaco, 10 tesouros com selos chineses, 10 temporadas de festivais com calendário lunar, temas e modos com nome chinês, e ícone e cores próprios." }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "mina-de-emojis",
       "secreto": true,
       "nome": "Mina de Emojis",
