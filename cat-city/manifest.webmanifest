@@ -1,0 +1,22 @@
+{
+  "id": "/contas-wen/cat-city/",
+  "name": "Cat City",
+  "short_name": "Cat City",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#0e0c12",
+  "theme_color": "#0e0c12",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["games", "entertainment"],
+  "description": "Uma cidade normal onde os gatos estão errados. Vire gato-bola, gato-larva, gato-carro, gato-árvore, gato de perna gigante — e no fim a MEGA LARVA.",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

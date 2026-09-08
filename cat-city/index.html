@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0e0c12">
+<meta name="description" content="CAT CITY: uma cidade normal onde os gatos estão errados. Vire gato-bola, gato-larva, gato-carro, gato-árvore, gato de perna gigante e, no fim, a MEGA LARVA.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cat City">
+<title>CAT CITY</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="tela"></canvas>
+
+<!-- ---------------- HUD ---------------- -->
+<div id="hud">
+  <div id="hudTopo">
+    <div class="caixa" id="hudForma">
+      <div class="rot">Forma atual</div>
+      <div class="val" id="formaNome">Gato Normal</div>
+      <div class="hab" id="formaHab"><b>SHIFT</b> — andar de gato</div>
+    </div>
+    <div class="caixa" id="hudDir">
+      <div id="nomeFase">Fase 1 · Cidade Normal</div>
+      <div id="barraFase"><i></i></div>
+      <div class="linha">🐈 formas <b id="contFormas">1 / 13</b></div>
+      <div class="linha">🐟 <b id="contPeixes">0</b> · 🐾 <b id="contPegadas">0</b> · ⭐ <b id="contEstrelas">0</b></div>
+      <div class="linha">😼 gatos na cidade <b id="contGatos">0</b></div>
+    </div>
+  </div>
+
+  <div id="hudBaixo">
+    <div class="caixa"><div id="formasBarra"></div></div>
+    <div id="dica">Ande com <b>WASD</b>, pule no <b>espaço</b>, use a habilidade no <b>SHIFT</b>
+      e aperte <b>E</b> perto das coisas. <b>ESC</b> abre o menu.</div>
+  </div>
+</div>
+
+<div id="recado"></div>
+<div id="faixaEvento"><div class="t" id="eventoT"></div><div class="s" id="eventoS"></div></div>
+
+<!-- ---------------- controle de toque (celular) ---------------- -->
+<div id="toque">
+  <div id="anelBase"></div><div id="anelDedo"></div>
+  <button class="botaoToque" id="btPular">PULO</button>
+  <button class="botaoToque" id="btPoder">PODER</button>
+  <button class="botaoToque" id="btUsar">E</button>
+</div>
+
+<!-- ---------------- telas ---------------- -->
+<div class="tela on" id="telaMenu"><div class="cartao">
+  <h1>CAT&nbsp;CITY</h1>
+  <p class="sub">Uma cidade normal. Ruas, prédios, semáforos, gente indo trabalhar.<br>
+  E gatos. <b>Os gatos estão errados.</b></p>
+  <button class="botao" id="btJogar">JOGAR</button>
+  <div class="linhaBotoes">
+    <button class="botao secundario" id="btFormas">🐈 FORMAS</button>
+    <button class="botao secundario" id="btOpcoes">⚙ OPÇÕES</button>
+  </div>
+  <button class="botao secundario" id="btComoJogar">🎮 COMO JOGAR</button>
+  <p class="sub" style="margin-bottom:0;font-size:.74rem">Feito pelo JoJo. Cuidado com a larva.</p>
+</div></div>
+
+<div class="tela" id="telaComo"><div class="cartao">
+  <h2>COMO JOGAR</h2>
+  <div class="controles">
+    <kbd>W A S D</kbd><span>andar pela cidade (ou as setas)</span>
+    <kbd>ESPAÇO</kbd><span>pular</span>
+    <kbd>SHIFT</kbd><span>a habilidade da forma em que você está</span>
+    <kbd>E</kbd><span>usar / pegar / entrar</span>
+    <kbd>Q</kbd><span>trocar pra forma anterior</span>
+    <kbd>1…9 0 - =</kbd><span>escolher uma forma direto</span>
+    <kbd>ESC</kbd><span>pausar</span>
+    <kbd>🎮</kbd><span>controle: analógico anda, A pula, X poder, B usa</span>
+    <kbd>📱</kbd><span>celular: arraste do lado esquerdo, botões do lado direito</span>
+  </div>
+  <p class="sub">Cada forma joga diferente: a bola quebra coisas, a larva passa por buracos,
+  o carro corre, a árvore vira plataforma, a perna gigante alcança o que ninguém alcança.
+  <b>Ache os gatos escondidos</b> pra desbloquear formas novas.</p>
+  <button class="botao" id="btVoltaComo">VOLTAR</button>
+</div></div>
+
+<div class="tela" id="telaFormas"><div class="cartao">
+  <h2>AS 13 FORMAS</h2>
+  <p class="sub">Você começa como gato normal. As outras aparecem pela cidade —
+  algumas estão escondidas de propósito.</p>
+  <div class="grade" id="gradeFormas"></div>
+  <button class="botao" id="btVoltaFormas">VOLTAR</button>
+</div></div>
+
+<div class="tela" id="telaOpcoes"><div class="cartao">
+  <h2>OPÇÕES</h2>
+  <div class="opcao"><span>🔊 Som</span><input type="range" id="opVolume" min="0" max="100" value="70"></div>
+  <div class="opcao"><span>🌀 Surto de gatos</span><input type="range" id="opCaos" min="0" max="100" value="100"></div>
+  <div class="opcao"><span>🐈 Gatos na cidade (quanto mais, mais pesado)</span><input type="range" id="opGatos" min="60" max="900" step="20" value="320"></div>
+  <div class="opcao"><span>📷 Tremer a câmera</span><input type="range" id="opTremor" min="0" max="100" value="100"></div>
+  <div class="opcao"><span>📱 Botões na tela</span><button id="opToque">AUTOMÁTICO</button></div>
+  <div class="opcao"><span>💾 Progresso</span><button id="opApagar">APAGAR TUDO</button></div>
+  <button class="botao" id="btVoltaOpcoes">VOLTAR</button>
+</div></div>
+
+<div class="tela" id="telaPausa"><div class="cartao">
+  <h2>PAUSADO</h2>
+  <p class="sub" id="pausaResumo"></p>
+  <button class="botao" id="btContinuar">CONTINUAR</button>
+  <div class="linhaBotoes">
+    <button class="botao secundario" id="btPausaFormas">🐈 FORMAS</button>
+    <button class="botao secundario" id="btPausaOpcoes">⚙ OPÇÕES</button>
+  </div>
+  <button class="botao secundario" id="btReiniciar">🔄 RECOMEÇAR A CIDADE</button>
+  <button class="botao secundario" id="btSair">🏠 MENU</button>
+</div></div>
+
+<div class="tela" id="telaVitoria"><div class="cartao">
+  <h1>MEGA LARVA</h1>
+  <p class="sub" id="vitoriaTexto"></p>
+  <button class="botao" id="btVitoriaSeguir">CONTINUAR BRINCANDO</button>
+  <button class="botao secundario" id="btVitoriaMenu">MENU</button>
+</div></div>
+
+<div class="tela" id="telaFim"><div class="cartao">
+  <h2>😿 ATROPELADO</h2>
+  <p class="sub" id="fimTexto"></p>
+  <button class="botao" id="btFimVoltar">LEVANTAR E CONTINUAR</button>
+  <button class="botao secundario" id="btFimMenu">MENU</button>
+</div></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
