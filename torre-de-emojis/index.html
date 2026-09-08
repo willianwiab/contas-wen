@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#08060f">
-<meta name="description" content="Torre de Emojis: solte os emojis na jarra, junte dois iguais e faça o maior de todos sem transbordar.">
+<meta name="description" content="Torre de Emojis: empilhe emojis da Terra até o NADA, ganhe dinheiro por bloco e compre 136 melhorias.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icone.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icone-180.png">
@@ -19,94 +19,147 @@
     --ink:#f7f0ff; --dim:#a294bd;
     --ouro:#ffc857; --verde:#6ee7a0; --rosa:#ff6b9d; --azul:#7ac9ff; --cristal:#6ef0c8;
     --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
-    --r: 16px;
+    --r: 18px;
   }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body {
-    margin:0; padding:14px 12px 24px; color:var(--ink);
+    margin:0; padding:14px 12px 26px; color:var(--ink);
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     background:
       radial-gradient(900px 460px at 50% -10%, #3d2160 0%, transparent 60%),
       radial-gradient(620px 400px at 92% 105%, #5c2418 0%, transparent 55%),
       radial-gradient(500px 340px at 5% 60%, #142a4a 0%, transparent 60%), var(--bg);
     background-attachment: fixed;
-    display:flex; flex-direction:column; align-items:center; gap:12px;
+    display:flex; flex-direction:column; align-items:center; gap:13px;
   }
-  header { text-align:center; width:min(920px,100%); }
+
+  /* ---------- topo ---------- */
+  header { text-align:center; width:min(980px,100%); }
   .marca { font-family:var(--mono); font-size:.62rem; letter-spacing:.4em; color:var(--dim); text-transform:uppercase; }
   .marca b { color:var(--ouro); }
   .linhaMoedas {
-    display:flex; align-items:center; justify-content:center; gap:9px; margin-top:5px;
-    font-size:clamp(1.7rem,6.5vw,2.7rem); line-height:1.05;
+    display:flex; align-items:center; justify-content:center; gap:10px; margin-top:4px;
+    font-size:clamp(1.7rem,6.5vw,2.6rem); line-height:1.05;
   }
-  #pontos {
+  #moedas {
     font-family:var(--mono); font-variant-numeric:tabular-nums; font-weight:700;
-    background:linear-gradient(180deg,#fff 8%,var(--ouro) 92%);
+    background:linear-gradient(180deg,#fff 10%,var(--ouro) 92%);
     -webkit-background-clip:text; background-clip:text; color:transparent;
   }
-  .stats { display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; justify-content:center; }
+  .stats { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; justify-content:center; }
   .stat {
-    background:linear-gradient(180deg,#ffffff0e,#ffffff05); border:1px solid var(--linha);
-    border-radius:12px; padding:6px 12px; min-width:84px;
+    background:linear-gradient(180deg,#ffffff10,#ffffff05); border:1px solid var(--linha);
+    border-radius:13px; padding:6px 13px; min-width:80px; backdrop-filter:blur(4px);
   }
-  .stat .k { font-size:.54rem; letter-spacing:.16em; color:var(--dim); text-transform:uppercase; }
-  .stat .v { font-family:var(--mono); font-weight:700; font-size:.92rem; margin-top:2px; }
+  .stat .k { font-size:.53rem; letter-spacing:.16em; color:var(--dim); text-transform:uppercase; }
+  .stat .v { font-family:var(--mono); font-weight:700; font-size:.95rem; margin-top:2px; }
 
-  #jogo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.8fr); gap:13px; width:min(920px,100%); align-items:start; }
-  @media (max-width:820px){ #jogo { grid-template-columns:1fr; } }
+  #jogo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.92fr); gap:14px; width:min(980px,100%); align-items:start; }
+  @media (max-width:860px){ #jogo { grid-template-columns:1fr; } }
 
+  /* ---------- a torre ---------- */
   #tela { position:relative; line-height:0; }
   #jarra {
     width:100%; aspect-ratio:3/4; display:block; border-radius:var(--r);
-    background:linear-gradient(180deg,#120c1e,#0a0713);
-    border:1px solid var(--linha); box-shadow:inset 0 2px 24px #000a, 0 18px 40px #000a;
-    cursor:crosshair; touch-action:none;
+    background:#0a0713; border:1px solid var(--linha);
+    box-shadow:inset 0 2px 30px #0009, 0 20px 44px #000a;
+    cursor:pointer; touch-action:none;
   }
   .flutuando { position:absolute; z-index:3; display:flex; gap:6px; flex-wrap:wrap; }
-  .fSup { top:9px; left:9px; right:9px; align-items:center; }
+  .fSup { top:10px; left:10px; right:10px; align-items:center; }
   .pilula {
-    background:#0a0713cc; border:1px solid var(--linha); border-radius:99px; color:var(--dim);
-    font-family:var(--mono); font-size:.66rem; padding:5px 11px; line-height:1;
+    background:#0a0713d0; border:1px solid var(--linha); border-radius:99px; color:var(--dim);
+    font-family:var(--mono); font-size:.66rem; padding:6px 12px; line-height:1;
     display:flex; align-items:center; gap:5px; cursor:pointer; white-space:nowrap;
+    backdrop-filter:blur(4px);
   }
   .pilula:hover { border-color:var(--ouro); color:var(--ouro); }
-  .pilula.info { cursor:default; color:var(--ink); margin-left:auto; font-size:.8rem; }
+  .pilula.info { cursor:default; color:var(--ink); margin-left:auto; font-weight:700; }
+
+  /* barra de progresso da camada */
+  #barraCamada {
+    margin-top:9px; border:1px solid var(--linha); border-radius:13px; padding:9px 12px;
+    background:linear-gradient(180deg,#ffffff0c,#ffffff04); display:flex; flex-direction:column; gap:7px;
+  }
+  .bcTopo { display:flex; align-items:center; gap:8px; font-size:.8rem; }
+  .bcTopo .ic { font-size:1.3rem; }
+  .bcTopo .nome { font-weight:800; }
+  .bcTopo .falta { margin-left:auto; font-family:var(--mono); font-size:.66rem; color:var(--dim); }
+  .trilho { height:8px; border-radius:99px; background:#ffffff12; overflow:hidden; }
+  .trilho i { display:block; height:100%; border-radius:99px; transition:width .25s; }
+
   #fim {
-    position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:18px;
-    background:#04020ad9; backdrop-filter:blur(5px); border-radius:var(--r); text-align:center; z-index:5;
+    position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:20px;
+    background:#04020ae0; backdrop-filter:blur(6px); border-radius:var(--r); text-align:center; z-index:5;
   }
   #fim.on { display:flex; }
-  #fim h2 { margin:0 0 6px; font-family:var(--mono); font-size:1.05rem; color:var(--rosa); letter-spacing:.1em; }
-  #fim p { margin:0 0 14px; font-size:.82rem; color:var(--dim); line-height:1.7; }
+  #fim .ic { font-size:2.6rem; }
+  #fim h2 { margin:4px 0 8px; font-family:var(--mono); font-size:1rem; color:var(--rosa); letter-spacing:.12em; }
+  #fim p { margin:0 0 16px; font-size:.83rem; color:var(--dim); line-height:1.8; }
   #fim b { color:var(--ouro); font-family:var(--mono); }
   .grandao {
-    padding:13px 20px; border:none; border-radius:12px; cursor:pointer; width:100%;
-    font-family:var(--mono); font-weight:800; font-size:.9rem; letter-spacing:.06em;
+    padding:14px 22px; border:none; border-radius:13px; cursor:pointer; width:100%;
+    font-family:var(--mono); font-weight:800; font-size:.92rem; letter-spacing:.06em;
     background:linear-gradient(180deg,#ffe08a,var(--ouro)); color:#2a1c02;
     box-shadow:0 5px 0 #a8741a; transition:.08s;
   }
   .grandao:active { transform:translateY(5px); box-shadow:none; }
-  .grandao.fantasma { background:#ffffff12; color:var(--ink); box-shadow:none; border:1px solid var(--linha); margin-top:8px; }
 
+  /* ---------- painel ---------- */
   #painel {
     background:linear-gradient(180deg,#ffffff0a,#ffffff03); border:1px solid var(--linha);
-    border-radius:var(--r); padding:12px; display:flex; flex-direction:column; gap:11px;
+    border-radius:var(--r); padding:13px; display:flex; flex-direction:column; gap:11px;
   }
-  .cabecinha { font-family:var(--mono); font-size:.67rem; color:var(--dim); line-height:1.5; }
+  .abas { display:flex; gap:5px; }
+  .aba {
+    flex:1; padding:9px 4px; border-radius:11px; cursor:pointer; border:1px solid var(--linha);
+    background:#ffffff08; color:var(--dim); font-family:var(--mono); font-size:.68rem; font-weight:700;
+  }
+  .aba.sel { background:#ffffff1a; color:var(--ink); border-color:var(--ouro); }
+  .familias { display:grid; grid-template-columns:repeat(9,1fr); gap:4px; }
+  .fam {
+    aspect-ratio:1; border-radius:10px; border:1px solid var(--linha); background:#ffffff08;
+    cursor:pointer; font-size:1rem; display:grid; place-items:center; position:relative; padding:0;
+  }
+  .fam.sel { border-color:var(--ouro); background:#ffc85722; }
+  .fam .pt { position:absolute; bottom:1px; right:3px; font-family:var(--mono); font-size:.48rem; color:var(--ouro); }
+  .fam.pode::after { content:""; position:absolute; top:3px; right:3px; width:5px; height:5px; border-radius:50%; background:var(--verde); }
+  .lista { display:flex; flex-direction:column; gap:6px; min-height:300px; }
+  .item {
+    display:grid; grid-template-columns:34px 1fr auto; gap:10px; align-items:center;
+    padding:9px; border-radius:11px; cursor:pointer; text-align:left; width:100%;
+    font-family:inherit; color:inherit; position:relative; overflow:hidden;
+    background:linear-gradient(180deg,var(--painel2),var(--painel)); border:1px solid var(--linha);
+    transition:border-color .12s, transform .08s;
+  }
+  .item .barra { position:absolute; left:0; bottom:0; height:2px; background:var(--ouro); opacity:.5; }
+  .item.ok { border-color:#ffc85766; }
+  .item.ok:hover { transform:translateY(-1px); border-color:var(--ouro); }
+  .item.bloq { opacity:.4; cursor:not-allowed; }
+  .item .ic { width:34px; height:34px; border-radius:9px; display:grid; place-items:center; font-size:1rem; background:#ffffff0d; border:1px solid var(--linha); }
+  .item .nome { font-weight:700; font-size:.84rem; }
+  .item .desc { font-size:.67rem; color:var(--dim); margin-top:1px; }
+  .item .preco { font-family:var(--mono); font-weight:700; font-size:.79rem; color:var(--ouro); text-align:right; }
+  .item .qtd { font-family:var(--mono); font-size:.61rem; color:var(--dim); text-align:right; margin-top:2px; }
+
+  .cabecinha { font-family:var(--mono); font-size:.67rem; color:var(--dim); line-height:1.55; }
   .cabecinha b { color:var(--ouro); }
-  .escada { display:flex; gap:5px; flex-wrap:wrap; }
-  .deg {
-    width:42px; height:42px; border-radius:50%; display:grid; place-items:center; font-size:1.1rem;
-    border:2px solid var(--linha); position:relative; background:#ffffff08;
+  .mapa { display:flex; flex-direction:column-reverse; gap:5px; max-height:430px; overflow-y:auto; padding-right:2px; }
+  .andar {
+    display:grid; grid-template-columns:34px 1fr auto; gap:10px; align-items:center;
+    padding:8px 9px; border-radius:11px; border:1px solid var(--linha); background:#ffffff06;
   }
-  .deg.nao { color:#ffffff20; }
-  .deg small {
-    position:absolute; bottom:-3px; right:-3px; font-family:var(--mono); font-size:.44rem;
-    color:var(--ouro); background:#0a0713; border-radius:99px; padding:1px 3px;
-  }
+  .andar.feito { border-color:#ffc85766; background:linear-gradient(90deg,#ffc85718,transparent); }
+  .andar.agora { border-color:var(--verde); background:#6ee7a018; }
+  .andar .ic { font-size:1.2rem; text-align:center; }
+  .andar .an { font-weight:700; font-size:.8rem; }
+  .andar .ad { font-size:.64rem; color:var(--dim); margin-top:1px; }
+  .andar .aq { font-family:var(--mono); font-size:.63rem; color:var(--dim); text-align:right; }
+  .andar.nao .an, .andar.nao .ad { color:#ffffff44; }
+
   .cestas { display:flex; flex-direction:column; gap:6px; }
   .cesta {
-    display:grid; grid-template-columns:36px 1fr auto; gap:10px; align-items:center;
+    display:grid; grid-template-columns:34px 1fr auto; gap:10px; align-items:center;
     padding:9px; border-radius:11px; cursor:pointer; text-align:left; width:100%;
     font-family:inherit; color:inherit; border:1px solid var(--linha);
     background:linear-gradient(180deg,var(--painel2),var(--painel));
@@ -114,15 +167,16 @@
   .cesta:hover { border-color:var(--ouro); }
   .cesta.usando { border-color:var(--ouro); background:#ffc85718; }
   .cesta.trancada { opacity:.45; cursor:not-allowed; }
-  .cesta .ic { font-size:1.3rem; text-align:center; }
-  .cesta .cn { font-weight:700; font-size:.85rem; }
-  .cesta .cd { font-size:.66rem; color:var(--dim); margin-top:1px; }
-  .cesta .cq { font-family:var(--mono); font-size:.66rem; color:var(--verde); }
-  .rodape { font-size:.7rem; color:var(--dim); text-align:center; max-width:540px; line-height:1.6; }
+  .cesta .ic { font-size:1.25rem; text-align:center; }
+  .cesta .cn { font-weight:700; font-size:.83rem; }
+  .cesta .cd { font-size:.65rem; color:var(--dim); margin-top:1px; }
+  .cesta .cq { font-family:var(--mono); font-size:.65rem; color:var(--verde); text-align:right; }
+
+  .rodape { font-size:.7rem; color:var(--dim); text-align:center; max-width:560px; line-height:1.6; }
   #aviso {
     position:fixed; top:12px; left:50%; transform:translate(-50%,-24px); z-index:70;
-    padding:9px 16px; border-radius:99px; background:var(--painel2); border:1px solid var(--ouro);
-    font-family:var(--mono); font-size:.74rem; font-weight:700; color:var(--ouro);
+    padding:10px 18px; border-radius:99px; background:var(--painel2); border:1px solid var(--ouro);
+    font-family:var(--mono); font-size:.76rem; font-weight:700; color:var(--ouro);
     opacity:0; transition:.18s; pointer-events:none; max-width:92vw; text-align:center;
   }
   #aviso.on { opacity:1; transform:translate(-50%,0); }
@@ -133,13 +187,14 @@
 
 <header>
   <div class="marca">TORRE DE <b>EMOJIS</b></div>
-  <div class="linhaMoedas"><span>🪙</span><span id="pontos">0</span></div>
+  <div class="linhaMoedas"><span>🪙</span><span id="moedas">0</span></div>
   <div class="stats">
     <div class="stat"><div class="k">Altura</div><div class="v" id="vAltura" style="color:var(--azul)">0</div></div>
+    <div class="stat"><div class="k">Camada</div><div class="v" id="vCamada" style="color:var(--verde)">🌱 Terra</div></div>
     <div class="stat"><div class="k">Recorde</div><div class="v" id="vRecorde">0</div></div>
     <div class="stat"><div class="k">Vidas</div><div class="v" id="vVidas" style="color:var(--rosa)">❤️❤️❤️</div></div>
+    <div class="stat"><div class="k">Combo</div><div class="v" id="vCombo" style="color:var(--ouro)">0</div></div>
     <div class="stat"><div class="k">Nesta rodada</div><div class="v" id="vRodada" style="color:var(--verde)">🪙 0</div></div>
-    <div class="stat"><div class="k">Álbum</div><div class="v" id="vAlbum" style="color:var(--ouro)">0</div></div>
   </div>
 </header>
 
@@ -155,19 +210,42 @@
       </div>
       <div id="fim">
         <div>
-          <h2>TRANSBORDOU!</h2>
+          <div class="ic" id="fimIc">🧱</div>
+          <h2 id="fimTitulo">A TORRE CAIU!</h2>
           <p id="fimTxt"></p>
           <button class="grandao" id="btJogarDeNovo">JOGAR DE NOVO</button>
         </div>
       </div>
     </div>
+    <div id="barraCamada">
+      <div class="bcTopo">
+        <span class="ic" id="bcIc">🌱</span>
+        <span class="nome" id="bcNome">Terra</span>
+        <span class="falta" id="bcFalta"></span>
+      </div>
+      <div class="trilho"><i id="bcBarra" style="width:0%"></i></div>
+    </div>
   </div>
 
   <div id="painel">
-    <div class="cabecinha" id="lojaTopo"></div>
-    <div class="cestas" id="loja"></div>
-    <div class="cabecinha" style="margin-top:4px">🧺 <b>Cestas</b> — troque os emojis da torre</div>
-    <div class="cestas" id="cestas"></div>
+    <div class="abas">
+      <button class="aba sel" data-p="loja">🛒 LOJA</button>
+      <button class="aba" data-p="mapa">🗺️ CAMADAS</button>
+      <button class="aba" data-p="cestas">🧺 CESTAS</button>
+    </div>
+    <div id="pLoja" style="display:flex;flex-direction:column;gap:9px">
+      <div class="cabecinha" id="lojaTopo"></div>
+      <div class="familias" id="familias"></div>
+      <div class="lista" id="lista"></div>
+    </div>
+    <div id="pMapa" style="display:none;flex-direction:column;gap:9px">
+      <div class="cabecinha" id="mapaTopo"></div>
+      <div class="mapa" id="mapa"></div>
+    </div>
+    <div id="pCestas" style="display:none;flex-direction:column;gap:9px">
+      <div class="cabecinha">🧺 <b>Cestas</b> — trocam os emojis dos blocos. Abrem conforme o seu recorde de altura.</div>
+      <div class="cestas" id="cestas"></div>
+    </div>
   </div>
 </div>
 
@@ -175,10 +253,42 @@
 <script>
 /* ==========================================================================
    TORRE DE EMOJIS
-   O bloco vai e volta lá em cima; você solta e ele empilha. Quanto mais alta
-   a torre, mais dinheiro cada bloco vale. Errar demais entorta a torre — e
-   torre torta cai.
+   Empilhe os blocos e suba: Terra, Troposfera, Estratosfera... até o NADA.
+   Quanto mais alto, mais cada bloco paga — e mais vento tem pra atrapalhar.
    ========================================================================== */
+
+/* ---------- as camadas do céu ---------- */
+const CAMADAS = [
+  { nome:"Terra",          ic:"🌱", de:0,   ceu:["#4a7ab5","#8fc4e8"], solo:true,  vento:0,    paga:1,
+    conta:"Chão firme. Aqui é só empilhar." },
+  { nome:"Troposfera",     ic:"☁️", de:10,  ceu:["#3a68a8","#a8d4f0"], nuvens:true, vento:.15, paga:1.6,
+    conta:"Onde moram as nuvens e o vento começa a soprar." },
+  { nome:"Estratosfera",   ic:"🎈", de:25,  ceu:["#26518f","#6fa8d8"], nuvens:true, vento:.3,  paga:2.6,
+    conta:"Altura de balão meteorológico. O céu escurece." },
+  { nome:"Mesosfera",      ic:"☄️", de:45,  ceu:["#152f68","#3a6bb0"], meteoros:true, vento:.5, paga:4.2,
+    conta:"É aqui que os meteoros pegam fogo." },
+  { nome:"Termosfera",     ic:"🛰️", de:70,  ceu:["#0d1a40","#25407a"], aurora:true, vento:.7,  paga:7,
+    conta:"Satélites, aurora e um frio absurdo." },
+  { nome:"Exosfera",       ic:"🌌", de:100, ceu:["#070d24","#141f4a"], estrelas:true, vento:.55, paga:12,
+    conta:"O último fiapo de ar antes do vazio." },
+  { nome:"Espaço",         ic:"🚀", de:140, ceu:["#040614","#0a0f2a"], estrelas:true, planetas:true, vento:.3, paga:22,
+    conta:"Acabou o ar. Agora é só silêncio." },
+  { nome:"Universo",       ic:"🪐", de:190, ceu:["#0a0418","#1a0a30"], estrelas:true, galaxias:true, vento:.25, paga:45,
+    conta:"Galáxias passando do lado da sua torre." },
+  { nome:"Fim do Espaço",  ic:"🕳️", de:250, ceu:["#0a0010","#2a0620"], buracos:true, vento:.4, paga:95,
+    conta:"Daqui pra frente nem os mapas sabem." },
+  { nome:"Fim do Mundo",   ic:"🌑", de:320, ceu:["#12000c","#30000a"], caos:true,   vento:.6,  paga:200,
+    conta:"A borda de tudo. A torre range." },
+  { nome:"o NADA",         ic:"⬛", de:400, ceu:["#000000","#050008"], nada:true,   vento:.2,  paga:500,
+    conta:"Não tem mais nada aqui. Só você e os blocos." },
+];
+const camadaDe = h => {
+  let c = CAMADAS[0];
+  for (const x of CAMADAS) if (h >= x.de) c = x;
+  return c;
+};
+const indiceCamada = h => CAMADAS.indexOf(camadaDe(h));
+const proximaCamada = h => CAMADAS[Math.min(indiceCamada(h) + 1, CAMADAS.length - 1)];
 
 /* ---------- as cestas de emoji ---------- */
 const CESTAS = [
@@ -190,58 +300,104 @@ const CESTAS = [
     emojis:["🍕","🍔","🌭","🍟","🥐","🍩","🍪","🍰","🍦","🍫","🍇","🍉"] },
   { id:"espaco", nome:"Espaço",   ic:"🚀", abre:120,
     emojis:["🚀","🛸","🪐","🌟","☄️","🌙","👽","🌍","🔭","⭐","🌌","🛰️"] },
+  { id:"magia",  nome:"Magia",    ic:"🔮", abre:200,
+    emojis:["🔮","🪄","🧙","🧚","🐉","⚗️","📜","🗝️","💎","🕯️","🧿","☄️"] },
+  { id:"nada",   nome:"o NADA",   ic:"⬛", abre:400,
+    emojis:["⬛","🕳️","🌑","◾","⚫","🔲","🌚","🖤","♟️","🎱","🔳","▪️"] },
 ];
 const CORES = ["#7ac9ff","#6ee7a0","#ffe66d","#ff8a3c","#ff6b9d","#b47aff",
                "#6ef0c8","#ff4d6d","#ffc857","#c8c8da","#8ab4ff","#fff3b0"];
 
-/* ---------- a loja ---------- */
-const QUALIDADES = ["I","II","III","IV","V","VI"];
+/* ==========================================================================
+   AS 136 MELHORIAS — 17 famílias de 8 níveis
+   ========================================================================== */
+const QUALIDADES = ["I","II","III","IV","V","VI","VII","VIII"];
 const FAMILIAS = [
-  { id:"valor", ic:"💰", nome:"Contrato", tipo:"valor", base:80,  val:.35,
+  { id:"valor",   ic:"💰", nome:"Contrato",  tipo:"valor",   base:80,    val:.35,
     txt:v => "cada bloco vale +" + Math.round(v * 100) + "%" },
-  { id:"cola",  ic:"🧲", nome:"Cola",     tipo:"cola",  base:150, val:.18,
-    txt:v => "a torre entorta " + Math.round(Math.min(.8, v) * 100) + "% menos" },
-  { id:"freio", ic:"🐢", nome:"Freio",    tipo:"freio", base:220, val:.14,
-    txt:v => "o bloco anda " + Math.round(Math.min(.7, v) * 100) + "% mais devagar" },
-  { id:"vida",  ic:"❤️", nome:"Capacete", tipo:"vida",  base:500, val:1,
-    txt:v => "+" + v + " vida(s) em cada rodada" },
-  { id:"largo", ic:"📏", nome:"Bloco",    tipo:"largo", base:400, val:.06,
-    txt:v => "blocos " + Math.round(Math.min(.5, v) * 100) + "% mais largos" },
-  { id:"andaime",ic:"🪜", nome:"Andaime", tipo:"andaime", base:900, val:2,
-    txt:v => "começa a rodada com " + Math.round(v) + " bloco(s) prontos" },
+  { id:"cola",    ic:"🧲", nome:"Cola",      tipo:"cola",    base:150,   val:.14,
+    txt:v => "a torre entorta " + pct(v, .85) + " menos" },
+  { id:"freio",   ic:"🐢", nome:"Freio",     tipo:"freio",   base:220,   val:.11,
+    txt:v => "o bloco anda " + pct(v, .75) + " mais devagar" },
+  { id:"vida",    ic:"❤️", nome:"Capacete",  tipo:"vida",    base:500,   val:1,
+    txt:v => "+" + Math.round(v) + " vida(s) por rodada" },
+  { id:"largo",   ic:"📏", nome:"Bloco",     tipo:"largo",   base:400,   val:.05,
+    txt:v => "blocos " + pct(v, .6) + " mais largos" },
+  { id:"andaime", ic:"🪜", nome:"Andaime",   tipo:"andaime", base:900,   val:2,
+    txt:v => "começa com " + Math.round(v) + " bloco(s) prontos" },
+  { id:"mira",    ic:"🎯", nome:"Mira",      tipo:"mira",    base:600,   val:.12,
+    txt:v => "a zona do PERFEITO fica " + pct(v, 1.6) + " maior" },
+  { id:"guindaste",ic:"🪝",nome:"Guindaste", tipo:"guindaste",base:750,  val:.08,
+    txt:v => "o bloco balança " + pct(v, .7) + " menos longe" },
+  { id:"dourado", ic:"💎", nome:"Bloco de Ouro", tipo:"dourado", base:1200, val:.02,
+    txt:v => (v * 100).toFixed(1) + "% de chance de bloco dourado (paga 10x)" },
+  { id:"prumo",   ic:"⚖️", nome:"Prumo",     tipo:"prumo",   base:1600,  val:.05,
+    txt:v => "a torre se endireita " + pct(v, .5) + " sozinha a cada bloco" },
+  { id:"vento",   ic:"🌬️", nome:"Para-vento",tipo:"vento",   base:2000,  val:.13,
+    txt:v => "o vento lá em cima atrapalha " + pct(v, .9) + " menos" },
+  { id:"combo",   ic:"📈", nome:"Sequência", tipo:"combo",   base:2500,  val:.1,
+    txt:v => "cada PERFEITO seguido soma +" + Math.round(v * 100) + "% no pagamento" },
+  { id:"imã",     ic:"🍀", nome:"Sorte",     tipo:"sorte",   base:3200,  val:.015,
+    txt:v => (v * 100).toFixed(1) + "% de chance do bloco encaixar sozinho no meio" },
+  { id:"juros",   ic:"🏦", nome:"Poupança",  tipo:"juros",   base:5000,  val:3,
+    txt:v => "rende 🪙 " + fmt(v) + " por segundo, mesmo parado" },
+  { id:"fama",    ic:"🏅", nome:"Fama",      tipo:"fama",    base:8000,  val:.25,
+    txt:v => "+" + Math.round(v * 100) + "% por camada que você já alcançou" },
+  { id:"foguete", ic:"🚀", nome:"Foguete",   tipo:"foguete", base:15000, val:1,
+    txt:v => "começa a rodada " + Math.round(v) + " bloco(s) mais alto por camada aberta" },
+  { id:"nucleo",  ic:"⚡", nome:"Núcleo",    tipo:"nucleo",  base:50000, val:.4,
+    txt:v => "multiplica TUDO por " + (1 + v).toFixed(2) },
 ];
 const LOJA = [];
 FAMILIAS.forEach(f => {
-  for (let t = 0; t < 6; t++) {
+  for (let t = 0; t < 8; t++) {
     LOJA.push({ id:f.id + t, fam:f.id, ic:f.ic, tipo:f.tipo, nivel:t,
-      nome:f.nome + " " + QUALIDADES[t], val:f.val * Math.pow(1.9, t),
-      base:f.base * Math.pow(9, t), txt:f.txt, qtd:0 });
+      nome:f.nome + " " + QUALIDADES[t], val:f.val * Math.pow(1.85, t),
+      base:f.base * Math.pow(7.5, t), txt:f.txt, qtd:0 });
   }
 });
-const preco = u => Math.ceil(u.base * Math.pow(1.25, u.qtd));
+const preco = u => Math.ceil(u.base * Math.pow(1.24, u.qtd));
 function soma(tipo) {
   let s = 0;
   for (const u of LOJA) if (u.tipo === tipo) s += u.qtd * u.val;
   return s;
 }
-const multValor  = () => 1 + soma("valor");
-const forcaCola  = () => Math.min(.8, soma("cola"));
-const freio      = () => Math.min(.7, soma("freio"));
-const vidasMax   = () => 3 + Math.floor(soma("vida"));
-const largoExtra = () => Math.min(.5, soma("largo"));
-const andaime    = () => Math.floor(soma("andaime"));
+// as melhorias que "encostam" num teto usam esta curva: nunca chegam a 100%
+const teto = (v, max) => max * (1 - 1 / (1 + v / max));
+const pct = (v, max) => Math.round(teto(v, max) * 100) + "%";
 
-/* ---------- estado ---------- */
-const CHAVE = "torreEmojis_v1";
-let moedas = 0, recorde = 0, album = [], cestaAtual = "caras", mudo = false;
-let estat = { rodadas:0, blocos:0, perfeitos:0, quedas:0, melhorRodada:0 };
+const multValor  = () => (1 + soma("valor")) * (1 + soma("nucleo")) *
+                         (1 + soma("fama") * indiceCamada(recorde));
+const forcaCola  = () => teto(soma("cola"), .85);
+const freio      = () => teto(soma("freio"), .75);
+const vidasMax   = () => 3 + Math.floor(soma("vida"));
+const largoExtra = () => teto(soma("largo"), .6);
+const andaime    = () => Math.floor(soma("andaime"));
+const zonaMira   = () => 1 + teto(soma("mira"), 1.6);
+const alcance    = () => 1 - teto(soma("guindaste"), .7);
+const chanceOuro = () => Math.min(.5, soma("dourado"));
+const forcaPrumo = () => teto(soma("prumo"), .5);
+const escudoVento= () => teto(soma("vento"), .9);
+const bonusCombo = () => soma("combo");
+const chanceIma  = () => Math.min(.6, soma("sorte"));
+const jurosPorSeg= () => soma("juros");
+const foguete    = () => Math.floor(soma("foguete"));
+
+/* ==========================================================================
+   ESTADO
+   ========================================================================== */
+const CHAVE = "torreEmojis_v2", CHAVE_ANTIGA = "torreEmojis_v1";
+let moedas = 0, recorde = 0, album = [], camadasVistas = [], cestaAtual = "caras", mudo = false;
+let painelAtual = "loja", famAtual = "valor";
+let estat = { rodadas:0, blocos:0, perfeitos:0, quedas:0, dourados:0, melhorCombo:0, melhorRodada:0 };
 const el = id => document.getElementById(id);
 const cestaObj = () => CESTAS.find(c => c.id === cestaAtual) || CESTAS[0];
 const cestaAberta = c => recorde >= c.abre;
 
 function fmt(n) {
-  if (n < 1000) return String(Math.floor(n));
-  const u = ["","K","M","B","T"];
+  if (!isFinite(n)) return "∞";
+  if (n < 1000) return String(Math.floor(n * 10) / 10).replace(".", ",");
+  const u = ["","K","M","B","T","Qa","Qi"];
   let i = 0, x = n;
   while (x >= 1000 && i < u.length - 1) { x /= 1000; i++; }
   return x.toFixed(1).replace(".", ",") + u[i];
@@ -249,7 +405,7 @@ function fmt(n) {
 let tAviso = null;
 function avisar(t) {
   el("aviso").textContent = t; el("aviso").classList.add("on");
-  clearTimeout(tAviso); tAviso = setTimeout(() => el("aviso").classList.remove("on"), 1600);
+  clearTimeout(tAviso); tAviso = setTimeout(() => el("aviso").classList.remove("on"), 1700);
 }
 
 /* ---------- som ---------- */
@@ -270,8 +426,8 @@ function tunc(forte) {
     ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
     const t = ctxAudio.currentTime, o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
     o.type = "sine";
-    o.frequency.setValueAtTime(forte ? 260 : 190, t);
-    o.frequency.exponentialRampToValueAtTime(80, t + .09);
+    o.frequency.setValueAtTime(forte ? 250 : 180, t);
+    o.frequency.exponentialRampToValueAtTime(75, t + .09);
     g.gain.setValueAtTime(forte ? .06 : .04, t);
     g.gain.exponentialRampToValueAtTime(.0004, t + .12);
     o.connect(g); g.connect(ctxAudio.destination); o.start(t); o.stop(t + .13);
@@ -283,87 +439,143 @@ function tunc(forte) {
    ========================================================================== */
 const cv = el("jarra"), ctx = cv.getContext("2d");
 let L = 0, A = 0, dpr = 1, larg = 90, alt = 56;
-let torre = [], caindo = null, vidas = 3, rodada = 0, acabou = false;
-let desvio = 0, camY = 0, camAlvo = 0, quadros = 0, avisos = [], caindoFora = [];
-let balanco = 0, dir = 1, proximoEmoji = 0;
+let torre = [], caindo = null, vidas = 3, rodada = 0, acabou = false, combo = 0;
+let desvio = 0, camY = 0, camAlvo = 0, quadros = 0, avisos = [], caindoFora = [], faiscas = [];
+let balanco = 0, proximoEmoji = 0, proximoOuro = false, ventoAtual = 0;
+let estrelas = [], nuvens = [];
 
 function ajustar() {
   const r = cv.getBoundingClientRect();
   dpr = Math.min(window.devicePixelRatio || 1, 2);
   L = r.width; A = r.height;
   cv.width = Math.round(L * dpr); cv.height = Math.round(A * dpr);
-  larg = L * (.24 + largoExtra() * .24);
-  alt = larg * .62;
+  larg = L * (.23 + largoExtra() * .2);
+  alt = larg * .6;
+  estrelas = Array.from({ length: 70 }, (_, i) => ({
+    x: (i * 137.5) % 100 / 100, y: (i * 61.8) % 100 / 100, t: (i % 5) + 1 }));
+  nuvens = Array.from({ length: 14 }, (_, i) => ({
+    x: (i * 71) % 100 / 100, y: i * 47 % 100 / 100, e: i % 3 }));
 }
 window.addEventListener("resize", ajustar);
 
 const alturaDaTorre = () => torre.length;
-const topoY = () => A - 10 - torre.length * alt;      // onde o próximo bloco encosta
-const velBalanco = () => (1.2 + torre.length * .045) * (1 - freio());
+const topoY = () => A - 12 - torre.length * alt;
+const velBalanco = () => (1.15 + torre.length * .04) * (1 - freio());
+const ventoDaCamada = () => camadaDe(alturaDaTorre()).vento * (1 - escudoVento());
 
 function novoBloco() {
-  const c = cestaObj();
-  proximoEmoji = Math.floor(Math.random() * c.emojis.length);
-  el("proximo").textContent = "🧱 " + alturaDaTorre();
+  proximoEmoji = Math.floor(Math.random() * cestaObj().emojis.length);
+  proximoOuro = Math.random() < chanceOuro();
+  el("proximo").textContent = (proximoOuro ? "💎 " : "🧱 ") + alturaDaTorre();
 }
 function comecarRodada() {
-  torre = []; caindo = null; caindoFora = []; avisos = [];
-  desvio = 0; acabou = false; rodada = 0; quadros = 0;
-  vidas = vidasMax();
   ajustar();
-  const base = 1 + andaime();
+  torre = []; caindo = null; caindoFora = []; avisos = []; faiscas = [];
+  desvio = 0; acabou = false; rodada = 0; quadros = 0; combo = 0; ventoAtual = 0;
+  vidas = vidasMax();
+  const base = 1 + andaime() + foguete() * camadasVistas.length;
   for (let i = 0; i < base; i++) {
     torre.push({ x: L / 2, emoji: Math.floor(Math.random() * cestaObj().emojis.length),
-                 cor: CORES[i % CORES.length], perfeito: false });
+                 cor: CORES[i % CORES.length], perfeito: false, ouro: false });
   }
   novoBloco();
   el("fim").classList.remove("on");
-  camY = camAlvo = 0;
-  atualizarTopo(); montarLoja(); montarCestas();
+  camY = camAlvo = Math.max(0, torre.length * alt - A * .55);
+  atualizarTopo(); montarLoja(); montarMapa();
 }
 
+function xDoBalanco() {
+  const amp = (L / 2 - larg / 2 - 8) * alcance();
+  return L / 2 + Math.sin(balanco) * amp + ventoAtual * 40;
+}
 function soltar() {
   if (acabou || caindo) return;
-  const x = L / 2 + Math.sin(balanco) * (L / 2 - larg / 2 - 6);
+  let x = xDoBalanco();
+  const topo = torre[torre.length - 1];
+  if (Math.random() < chanceIma()) {
+    x = xNaTela(torre.length - 1);            // encaixe automático: mira no topo de verdade
+    faiscas.push({ x, y: topoY(), t:0, cor:"#6ee7a0", n:10 });
+  }
   caindo = { x, y: topoY() - alt * 4, vy: 0, emoji: proximoEmoji,
-             cor: CORES[torre.length % CORES.length] };
+             cor: CORES[torre.length % CORES.length], ouro: proximoOuro };
   bip(520, .05);
+}
+
+/* A torre é desenhada inclinada. Se a conta do encaixe usar a posição "reta",
+   o jogo cobra uma coisa e a tela mostra outra — e quanto mais torta a torre,
+   maior a mentira. Então a mira é convertida pro espaço da torre antes. */
+/* Quanto mais alta a torre, menos ela pode girar: um anguinho de nada já
+   jogaria o topo de uma torre de 200 blocos pra fora da tela. O limite é
+   calculado pra o topo nunca sair mais que um quinto da largura. */
+function inclinacao() {
+  const altura = Math.max(1, torre.length) * alt;
+  const limite = Math.min(.17, (L * .2) / altura);
+  return Math.max(-limite, Math.min(limite, desvio / (larg * 8)));
+}
+function paraTorre(xTela, indice) {
+  const th = inclinacao(), dy = -(indice * alt + alt / 2);
+  return L / 2 + ((xTela - L / 2) + dy * Math.sin(th)) / Math.cos(th);
+}
+function xNaTela(i) {
+  const th = inclinacao(), dy = -(i * alt + alt / 2);
+  return L / 2 + (torre[i].x - L / 2) * Math.cos(th) - dy * Math.sin(th);
 }
 
 function encaixar() {
   const topo = torre[torre.length - 1];
-  const dx = caindo.x - topo.x;
-  const tolerancia = larg * (.06 + forcaCola() * .12);
-  if (Math.abs(dx) > larg) {                      // não pegou nada: o bloco despenca
+  const xTorre = paraTorre(caindo.x, torre.length);
+  const dx = xTorre - topo.x;
+  const tolerancia = larg * .07 * zonaMira();
+  if (Math.abs(dx) > larg) {
     caindoFora.push({ x:caindo.x, y:caindo.y, vy:2, vx:dx > 0 ? 3 : -3, ang:0,
-                      vang:(dx > 0 ? .12 : -.12), emoji:caindo.emoji, cor:caindo.cor });
-    caindo = null;
-    vidas--; estat.quedas++;
-    tunc(false); avisar(vidas > 0 ? "😬 caiu fora! restam " + vidas + " vida(s)" : "💥 acabou!");
+                      vang:(dx > 0 ? .12 : -.12), emoji:caindo.emoji, cor:caindo.cor, ouro:caindo.ouro });
+    caindo = null; vidas--; estat.quedas++; combo = 0;
+    tunc(false);
+    avisar(vidas > 0 ? "😬 caiu fora! restam " + vidas + " vida(s)" : "💥 acabou!");
     if (vidas <= 0) perder("os blocos caíram demais");
     novoBloco(); atualizarTopo();
     return;
   }
   const perfeito = Math.abs(dx) <= tolerancia;
-  torre.push({ x: caindo.x, emoji: caindo.emoji, cor: caindo.cor, perfeito });
+  torre.push({ x: xTorre, emoji: caindo.emoji, cor: caindo.cor, perfeito, ouro: caindo.ouro });
   estat.blocos++;
-  // o que ficou pra fora entorta a torre; a cola segura uma parte
   desvio += dx * (1 - forcaCola());
-  if (perfeito) { desvio *= .55; estat.perfeitos++; }
+  desvio *= (1 - forcaPrumo());
+  if (perfeito) { desvio *= .5; estat.perfeitos++; combo++; if (combo > estat.melhorCombo) estat.melhorCombo = combo; }
+  else combo = 0;
 
-  const ganho = Math.round((2 + alturaDaTorre() * 1.4) * multValor() * (perfeito ? 3 : 1));
+  const cam = camadaDe(alturaDaTorre());
+  let ganho = (2 + alturaDaTorre() * 1.4) * cam.paga * multValor();
+  if (perfeito) ganho *= 3 * (1 + combo * bonusCombo());
+  if (caindo.ouro) { ganho *= 10; estat.dourados++; }
+  ganho = Math.round(ganho);
   moedas += ganho; rodada += ganho;
   avisos.push({ x:caindo.x, y:topoY() + alt, t:0,
-                txt:(perfeito ? "PERFEITO! +" : "+") + fmt(ganho), cor:perfeito ? "#ffc857" : "#ffffffcc" });
+    txt:(caindo.ouro ? "💎 " : "") + (perfeito ? "PERFEITO" + (combo > 1 ? " x" + combo : "") + "! +" : "+") + fmt(ganho),
+    cor:caindo.ouro ? "#fff3b0" : perfeito ? "#ffc857" : "#ffffffcc", grande:perfeito || caindo.ouro });
+  if (perfeito) faiscas.push({ x:caindo.x, y:topoY() + alt / 2, t:0, cor:"#ffc857", n:14 });
   guardarNoAlbum(caindo.emoji);
   caindo = null;
   tunc(perfeito);
-  if (perfeito) { bip(880, .09); setTimeout(() => bip(1174, .09), 70); }
+  if (perfeito) { bip(760 + Math.min(combo, 8) * 60, .09); setTimeout(() => bip(1040 + Math.min(combo, 8) * 60, .09), 65); }
   if (alturaDaTorre() > recorde) recorde = alturaDaTorre();
+  verCamada();
   if (Math.abs(desvio) > larg * 1.15) perder("a torre entortou demais");
-  novoBloco(); atualizarTopo(); montarCestas();
+  novoBloco(); atualizarTopo();
 }
 
+let camadaAntes = 0;
+function verCamada() {
+  const i = indiceCamada(alturaDaTorre());
+  if (i > camadaAntes) {
+    camadaAntes = i;
+    const c = CAMADAS[i];
+    if (!camadasVistas.includes(c.nome)) { camadasVistas.push(c.nome); montarMapa(); salvar(); }
+    avisar(c.ic + " CHEGOU NA " + c.nome.toUpperCase() + "!");
+    [523, 659, 784, 1047].forEach((f, k) => setTimeout(() => bip(f, .15), k * 110));
+    faiscas.push({ x:L / 2, y:topoY(), t:0, cor:"#ffc857", n:30, forte:true });
+  }
+}
 function guardarNoAlbum(i) {
   const c = cestaAtual + "|" + i;
   if (!album.includes(c)) { album.push(c); salvar(); }
@@ -372,135 +584,291 @@ function perder(motivo) {
   if (acabou) return;
   acabou = true; estat.rodadas++;
   if (rodada > estat.melhorRodada) estat.melhorRodada = rodada;
-  el("fimTxt").innerHTML = motivo.charAt(0).toUpperCase() + motivo.slice(1) + ".<br>" +
-    "Altura: <b>" + alturaDaTorre() + "</b> blocos" +
+  const c = camadaDe(alturaDaTorre());
+  el("fimIc").textContent = c.ic;
+  el("fimTitulo").textContent = motivo === "os blocos caíram demais" ? "SEM VIDAS!" : "A TORRE CAIU!";
+  el("fimTxt").innerHTML =
+    "Você parou na camada <b>" + c.nome + "</b>, com <b>" + alturaDaTorre() + "</b> blocos" +
     (alturaDaTorre() >= recorde ? " — <b>recorde!</b> 🎉" : " (recorde: <b>" + recorde + "</b>)") +
-    "<br>Você ganhou <b>🪙 " + fmt(rodada) + "</b> nesta rodada";
+    "<br>Ganhou <b>🪙 " + fmt(rodada) + "</b> nesta rodada";
   el("fim").classList.add("on");
   [392, 330, 262].forEach((f, i) => setTimeout(() => bip(f, .2), i * 150));
-  atualizarTopo(); montarLoja(); montarCestas(); salvar();
+  atualizarTopo(); montarLoja(); montarMapa(); salvar();
 }
 
 /* ==========================================================================
    DESENHO
    ========================================================================== */
-function desenharBloco(x, y, emoji, cor, inclina) {
+function misturaCor(a, b, t) {
+  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  const r = Math.round(((pa >> 16) & 255) * (1 - t) + ((pb >> 16) & 255) * t);
+  const g = Math.round(((pa >> 8) & 255) * (1 - t) + ((pb >> 8) & 255) * t);
+  const c = Math.round((pa & 255) * (1 - t) + (pb & 255) * t);
+  return "rgb(" + r + "," + g + "," + c + ")";
+}
+/* o céu vai trocando de cor conforme a torre sobe, sem corte seco */
+function coresDoCeu() {
+  const h = alturaDaTorre();
+  const i = indiceCamada(h), c = CAMADAS[i], prox = CAMADAS[Math.min(i + 1, CAMADAS.length - 1)];
+  const faixa = Math.max(1, prox.de - c.de);
+  const t = Math.max(0, Math.min(1, (h - c.de) / faixa));
+  return [misturaCor(c.ceu[0], prox.ceu[0], t * .85), misturaCor(c.ceu[1], prox.ceu[1], t * .85), c];
+}
+
+function desenharFundo() {
+  const [cimaCor, baixoCor, cam] = coresDoCeu();
+  const g = ctx.createLinearGradient(0, 0, 0, A);
+  g.addColorStop(0, cimaCor); g.addColorStop(1, baixoCor);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, L, A);
+
+  const h = alturaDaTorre(), i = indiceCamada(h);
+  // estrelas aparecem aos poucos a partir da mesosfera
+  const brilhoEstrela = Math.max(0, Math.min(1, (i - 2) / 3));
+  if (brilhoEstrela > 0) {
+    for (const e of estrelas) {
+      const y = ((e.y * A * 2 - camY * .25) % (A * 2) + A * 2) % (A * 2) - A * .5;
+      if (y < -10 || y > A + 10) continue;
+      const pisca = .55 + Math.sin(quadros * .04 + e.x * 30) * .35;
+      ctx.globalAlpha = brilhoEstrela * pisca;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(e.x * L, y, e.t * .8, e.t * .8);
+    }
+    ctx.globalAlpha = 1;
+  }
+  if (cam.nuvens || i <= 3) {                       // nuvens só embaixo
+    const opac = Math.max(0, 1 - Math.max(0, i - 1) / 3);
+    ctx.globalAlpha = .5 * opac;
+    ctx.font = (L * .17) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    ctx.textAlign = "center";
+    for (const n of nuvens) {
+      const y = ((n.y * A * 2 - camY * .35) % (A * 2) + A * 2) % (A * 2) - A * .3;
+      if (y < -60 || y > A + 60) continue;
+      ctx.fillText("☁️", n.x * L + Math.sin(quadros * .004 + n.y * 9) * 18, y);
+    }
+    ctx.globalAlpha = 1;
+  }
+  if (cam.aurora) {                                  // termosfera: faixa de aurora
+    const ga = ctx.createLinearGradient(0, A * .1, 0, A * .6);
+    ga.addColorStop(0, "#6ee7a000"); ga.addColorStop(.5, "#6ee7a033"); ga.addColorStop(1, "#7ac9ff00");
+    ctx.fillStyle = ga; ctx.fillRect(0, 0, L, A);
+  }
+  if (cam.meteoros && quadros % 140 < 40) {          // mesosfera: meteoro passando
+    const t = (quadros % 140) / 40;
+    ctx.globalAlpha = Math.sin(t * Math.PI);
+    ctx.font = (L * .1) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    ctx.fillText("☄️", L * (1.1 - t * 1.3), A * (.1 + t * .5));
+    ctx.globalAlpha = 1;
+  }
+  if (cam.planetas || cam.galaxias) {
+    ctx.globalAlpha = .8;
+    ctx.font = (L * .16) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    const ys = ((A * .5 - camY * .12) % (A * 1.6) + A * 1.6) % (A * 1.6) - A * .3;
+    ctx.fillText(cam.galaxias ? "🌌" : "🪐", L * .8, ys);
+    ctx.fillText(cam.galaxias ? "🪐" : "🌎", L * .18, ys + A * .8);
+    ctx.globalAlpha = 1;
+  }
+  if (cam.buracos) {                                 // fim do espaço: buraco negro girando
+    const cx = L * .78, cy = A * .28 - (camY * .1) % 60;
+    for (let k = 5; k > 0; k--) {
+      ctx.globalAlpha = .12;
+      ctx.beginPath();
+      ctx.arc(cx, cy, k * L * .045 + Math.sin(quadros * .02 + k) * 3, 0, 6.2832);
+      ctx.fillStyle = k % 2 ? "#ff6b9d" : "#000000"; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  if (cam.caos) {                                    // fim do mundo: rachaduras
+    ctx.globalAlpha = .25 + Math.sin(quadros * .08) * .1;
+    ctx.strokeStyle = "#ff4d4d"; ctx.lineWidth = 2;
+    for (let k = 0; k < 5; k++) {
+      const x = ((k * 137) % L);
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x + Math.sin(k + quadros * .01) * 40, A);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  if (cam.nada) {                                    // o NADA: só um vazio que respira
+    ctx.globalAlpha = .06 + Math.sin(quadros * .02) * .03;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, L, A);
+    ctx.globalAlpha = 1;
+  }
+  if (cam.solo) {                                    // chão de terra na primeira camada
+    const y = A - 12 + camY;
+    if (y < A + 40) {
+      ctx.fillStyle = "#3f6b34"; ctx.fillRect(0, y, L, 14);
+      ctx.fillStyle = "#5a3a1c"; ctx.fillRect(0, y + 14, L, A);
+    }
+  }
+}
+
+function desenharBloco(x, y, emoji, cor, inclina, ouro) {
   ctx.save();
   ctx.translate(x, y);
   if (inclina) ctx.rotate(inclina);
-  const r = Math.min(10, alt * .25);
+  const r = Math.min(11, alt * .26);
   ctx.beginPath();
   ctx.roundRect(-larg / 2, -alt / 2, larg, alt, r);
   const g = ctx.createLinearGradient(0, -alt / 2, 0, alt / 2);
-  g.addColorStop(0, "#ffffff35"); g.addColorStop(.35, cor); g.addColorStop(1, "#00000033");
+  if (ouro) { g.addColorStop(0, "#fff8d0"); g.addColorStop(.4, "#ffc857"); g.addColorStop(1, "#a8741a"); }
+  else { g.addColorStop(0, "#ffffff55"); g.addColorStop(.22, cor); g.addColorStop(.8, cor); g.addColorStop(1, "#00000055"); }
   ctx.fillStyle = g; ctx.fill();
-  ctx.lineWidth = 2; ctx.strokeStyle = "#00000044"; ctx.stroke();
+  ctx.lineWidth = 2; ctx.strokeStyle = ouro ? "#fff3b0" : "#00000044"; ctx.stroke();
+  ctx.beginPath();                                   // brilhinho em cima
+  ctx.roundRect(-larg / 2 + 5, -alt / 2 + 4, larg - 10, alt * .22, 5);
+  ctx.fillStyle = "#ffffff22"; ctx.fill();
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.font = (alt * .72) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+  ctx.font = (alt * .68) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
   ctx.fillText(cestaObj().emojis[emoji], 0, alt * .04);
   ctx.restore();
 }
 
 function quadro() {
   quadros++;
-  if (!acabou) balanco += velBalanco() * .012;
-
+  if (!acabou) {
+    balanco += velBalanco() * .012;
+    const v = ventoDaCamada();
+    ventoAtual = v ? Math.sin(quadros * .011) * v + Math.sin(quadros * .027) * v * .5 : 0;
+  }
   if (caindo) {
-    caindo.vy += .9;
+    caindo.vy += .95;
     caindo.y += caindo.vy;
     if (caindo.y >= topoY() - alt / 2) { caindo.y = topoY() - alt / 2; encaixar(); }
   }
   for (let i = caindoFora.length - 1; i >= 0; i--) {
     const b = caindoFora[i];
-    b.vy += .9; b.y += b.vy; b.x += b.vx; b.ang += b.vang;
+    b.vy += .95; b.y += b.vy; b.x += b.vx; b.ang += b.vang;
     if (b.y > A + camY + alt * 3) caindoFora.splice(i, 1);
   }
-
   camAlvo = Math.max(0, torre.length * alt - A * .55);
   camY += (camAlvo - camY) * .12;
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, L, A);
+  desenharFundo();
 
-  // chão
-  ctx.fillStyle = "#ffffff10";
-  ctx.fillRect(0, A - 10 + camY, L, 10);
-
-  // a torre inteira inclina conforme o desvio
-  const inclinaTorre = Math.max(-.16, Math.min(.16, desvio / (larg * 8)));
+  const inclinaTorre = inclinacao();
   ctx.save();
-  ctx.translate(L / 2, A - 10 + camY);
+  ctx.translate(L / 2, A - 12 + camY);
   ctx.rotate(inclinaTorre);
-  ctx.translate(-L / 2, -(A - 10 + camY));
+  ctx.translate(-L / 2, -(A - 12 + camY));
   for (let i = 0; i < torre.length; i++) {
     const b = torre[i];
-    const y = A - 10 - i * alt - alt / 2 + camY;
+    const y = A - 12 - i * alt - alt / 2 + camY;
     if (y < -alt || y > A + alt) continue;
-    desenharBloco(b.x, y, b.emoji, b.cor, 0);
+    desenharBloco(b.x, y, b.emoji, b.cor, 0, b.ouro);
     if (b.perfeito) {
-      ctx.strokeStyle = "#ffc85788"; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.roundRect(b.x - larg / 2 - 2, y - alt / 2 - 2, larg + 4, alt + 4, 11); ctx.stroke();
+      ctx.strokeStyle = "#ffc85780"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(b.x - larg / 2 - 3, y - alt / 2 - 3, larg + 6, alt + 6, 12); ctx.stroke();
     }
   }
   ctx.restore();
 
-  // blocos que caíram fora
-  for (const b of caindoFora) desenharBloco(b.x, b.y + camY, b.emoji, b.cor, b.ang);
+  for (const b of caindoFora) desenharBloco(b.x, b.y + camY, b.emoji, b.cor, b.ang, b.ouro);
+  if (caindo) desenharBloco(caindo.x, caindo.y + camY, caindo.emoji, caindo.cor, 0, caindo.ouro);
 
-  // o bloco que está caindo
-  if (caindo) desenharBloco(caindo.x, caindo.y + camY, caindo.emoji, caindo.cor, 0);
-
-  // o bloco balançando lá em cima + a linha de mira
   if (!acabou && !caindo) {
-    const x = L / 2 + Math.sin(balanco) * (L / 2 - larg / 2 - 6);
-    const y = topoY() - alt * 4 + camY;
-    ctx.globalAlpha = .35;
-    ctx.strokeStyle = "#ffc857"; ctx.lineWidth = 1.5;
-    ctx.setLineDash([5, 6]);
+    const x = xDoBalanco(), y = topoY() - alt * 4 + camY;
+    ctx.globalAlpha = .4;
+    ctx.strokeStyle = proximoOuro ? "#ffc857" : "#ffffff"; ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 7]);
     ctx.beginPath(); ctx.moveTo(x, y + alt / 2); ctx.lineTo(x, topoY() + camY); ctx.stroke();
     ctx.setLineDash([]);
+    // marca embaixo mostrando onde é o meio do bloco de cima (que anda quando a torre entorta)
+    const xt = xNaTela(torre.length - 1);
+    ctx.globalAlpha = .75;
+    ctx.strokeStyle = Math.abs(x - xt) <= larg * .07 * zonaMira() ? "#6ee7a0" : "#ffffff88";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(xt - 9, topoY() + camY - 3); ctx.lineTo(xt, topoY() + camY + 4); ctx.lineTo(xt + 9, topoY() + camY - 3);
+    ctx.stroke();
     ctx.globalAlpha = 1;
-    desenharBloco(x, y, proximoEmoji, CORES[torre.length % CORES.length], 0);
+    desenharBloco(x, y, proximoEmoji, CORES[torre.length % CORES.length], 0, proximoOuro);
   }
 
-  // os "+moedas"
+  for (let i = faiscas.length - 1; i >= 0; i--) {
+    const f = faiscas[i]; f.t++;
+    if (f.t > 24) { faiscas.splice(i, 1); continue; }
+    ctx.globalAlpha = 1 - f.t / 24;
+    ctx.fillStyle = f.cor;
+    for (let k = 0; k < f.n; k++) {
+      const a = k / f.n * 6.2832, d = f.t * (f.forte ? 4 : 2.2);
+      ctx.fillRect(f.x + Math.cos(a) * d - 2, f.y + camY + Math.sin(a) * d - 2, 4, 4);
+    }
+    ctx.globalAlpha = 1;
+  }
   for (let i = avisos.length - 1; i >= 0; i--) {
     const a = avisos[i]; a.t++;
-    if (a.t > 50) { avisos.splice(i, 1); continue; }
-    ctx.globalAlpha = Math.min(1, (50 - a.t) / 18);
+    if (a.t > 55) { avisos.splice(i, 1); continue; }
+    ctx.globalAlpha = Math.min(1, (55 - a.t) / 20);
     ctx.fillStyle = a.cor;
-    ctx.font = '700 ' + Math.max(12, alt * .34) + 'px ' + getComputedStyle(document.body).fontFamily;
+    ctx.font = '800 ' + Math.max(12, alt * (a.grande ? .42 : .32)) + 'px ' + getComputedStyle(document.body).fontFamily;
     ctx.textAlign = "center";
-    ctx.fillText(a.txt, a.x, a.y + camY - a.t * 1.1);
+    ctx.fillText(a.txt, a.x, a.y + camY - a.t * 1.2);
     ctx.globalAlpha = 1;
   }
-
-  // marca da altura
-  ctx.fillStyle = "#ffffff33";
-  ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
-  ctx.textAlign = "left";
-  ctx.fillText(alturaDaTorre() + " blocos", 8, 20);
+  // vento desenhado como riscos passando
+  if (Math.abs(ventoAtual) > .08 && !acabou) {
+    ctx.globalAlpha = Math.min(.35, Math.abs(ventoAtual));
+    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5;
+    for (let k = 0; k < 6; k++) {
+      const y = (k * A / 6 + quadros * ventoAtual * 6) % A;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(L * .3 * Math.abs(ventoAtual) * 3, y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
   requestAnimationFrame(quadro);
 }
 
 /* ==========================================================================
    PAINEL
    ========================================================================== */
-function montarLoja() {
-  const itens = FAMILIAS.map(f => {
-    const meus = LOJA.filter(u => u.fam === f.id);
-    return meus.find(u => u.qtd === 0) || meus[meus.length - 1];
+function mostrarPainel(p) {
+  painelAtual = p;
+  el("pLoja").style.display = p === "loja" ? "flex" : "none";
+  el("pMapa").style.display = p === "mapa" ? "flex" : "none";
+  el("pCestas").style.display = p === "cestas" ? "flex" : "none";
+  [...document.querySelectorAll(".aba")].forEach(b => b.classList.toggle("sel", b.dataset.p === p));
+  if (p === "loja") montarLoja();
+  if (p === "mapa") montarMapa();
+  if (p === "cestas") montarCestas();
+  bip(700);
+}
+[...document.querySelectorAll(".aba")].forEach(b => b.onclick = () => mostrarPainel(b.dataset.p));
+
+function montarFamilias() {
+  el("familias").innerHTML = FAMILIAS.map(f =>
+    '<button class="fam" data-f="' + f.id + '" title="' + f.nome + '">' + f.ic +
+    '<span class="pt" id="pt-' + f.id + '"></span></button>').join("");
+  [...el("familias").children].forEach(b => {
+    b.classList.toggle("sel", b.dataset.f === famAtual);
+    b.onclick = () => { famAtual = b.dataset.f; montarFamilias(); montarLoja(); bip(620); };
   });
-  el("lojaTopo").innerHTML = "🛒 <b>Loja</b> — o dinheiro fica guardado entre uma rodada e outra";
-  el("loja").innerHTML = itens.map(u => {
+}
+function montarLoja() {
+  if (painelAtual !== "loja") return;
+  if (!el("familias").children.length) montarFamilias();
+  el("lojaTopo").innerHTML = "🛒 <b>" + LOJA.length + " melhorias</b> em " + FAMILIAS.length +
+    " famílias — o dinheiro fica guardado entre as rodadas";
+  const itens = LOJA.filter(u => u.fam === famAtual);
+  el("lista").innerHTML = itens.map(u => {
     const p = preco(u), pode = moedas >= p;
-    const total = LOJA.filter(x => x.fam === u.fam).reduce((s, x) => s + x.qtd, 0);
-    return '<button class="cesta' + (pode ? "" : " trancada") + '" data-id="' + u.id + '">' +
+    return '<button class="item ' + (pode ? "ok" : "bloq") + '" data-id="' + u.id + '">' +
       '<div class="ic">' + u.ic + '</div>' +
-      '<div><div class="cn">' + u.nome + '</div><div class="cd">' + u.txt(u.val) + '</div></div>' +
-      '<div class="cq">🪙 ' + fmt(p) + (total ? '<br>x' + total : "") + '</div></button>';
+      '<div><div class="nome">' + u.nome + '</div><div class="desc">' + u.txt(u.val) + '</div></div>' +
+      '<div><div class="preco">🪙 ' + fmt(p) + '</div>' +
+      '<div class="qtd">' + (u.qtd ? "x" + u.qtd : "—") + '</div></div>' +
+      '<div class="barra" style="width:' + Math.min(100, moedas / p * 100) + '%"></div></button>';
   }).join("");
-  [...el("loja").children].forEach(b => b.onclick = () => comprar(b.dataset.id));
+  [...el("lista").children].forEach(b => b.onclick = () => comprar(b.dataset.id));
+  FAMILIAS.forEach(f => {
+    const pt = el("pt-" + f.id); if (!pt) return;
+    const meus = LOJA.filter(u => u.fam === f.id);
+    const total = meus.reduce((s, u) => s + u.qtd, 0);
+    pt.textContent = total || "";
+    pt.parentElement.classList.toggle("pode", meus.some(u => moedas >= preco(u)));
+  });
 }
 function comprar(id) {
   const u = LOJA.find(x => x.id === id); if (!u) return;
@@ -508,10 +876,26 @@ function comprar(id) {
   if (moedas < p) { bip(170); avisar("🪙 faltam " + fmt(p - moedas)); return; }
   moedas -= p; u.qtd++;
   bip(880, .1); setTimeout(() => bip(1174, .09), 70);
-  avisar(u.ic + " " + u.nome + " comprado!");
-  if (u.tipo === "largo") { ajustar(); }
-  if (u.tipo === "vida" && !acabou) { vidas = Math.min(vidasMax(), vidas + 1); }
+  avisar(u.ic + " " + u.nome + "!");
+  if (u.tipo === "largo") ajustar();
+  if (u.tipo === "vida" && !acabou) vidas = Math.min(vidasMax(), vidas + 1);
   atualizarTopo(); montarLoja(); salvar();
+}
+
+function montarMapa() {
+  if (painelAtual !== "mapa") return;
+  const agora = indiceCamada(alturaDaTorre());
+  el("mapaTopo").innerHTML = "🗺️ <b>" + camadasVistas.length + " de " + CAMADAS.length +
+    "</b> camadas alcançadas · cada uma paga mais que a de baixo";
+  el("mapa").innerHTML = CAMADAS.map((c, i) => {
+    const visto = camadasVistas.includes(c.nome);
+    const classe = i === agora ? "agora" : visto ? "feito" : "nao";
+    return '<div class="andar ' + classe + '">' +
+      '<div class="ic">' + (visto || i === agora ? c.ic : "🔒") + '</div>' +
+      '<div><div class="an">' + c.nome + '</div>' +
+      '<div class="ad">' + (visto || i === agora ? c.conta : "chegue a " + c.de + " blocos") + '</div></div>' +
+      '<div class="aq">' + c.de + ' blocos<br>paga x' + c.paga + '</div></div>';
+  }).join("");
 }
 function montarCestas() {
   el("cestas").innerHTML = CESTAS.map(c => {
@@ -527,19 +911,30 @@ function montarCestas() {
   }).join("");
   [...el("cestas").children].forEach(b => b.onclick = () => {
     const c = CESTAS.find(x => x.id === b.dataset.c);
-    if (!c || !cestaAberta(c)) { bip(170); avisar("🔒 faça uma torre de " + c.abre + " blocos"); return; }
-    cestaAtual = c.id; bip(760);
-    montarCestas(); atualizarTopo(); salvar();
+    if (!c) return;
+    if (!cestaAberta(c)) { bip(170); avisar("🔒 faça uma torre de " + c.abre + " blocos"); return; }
+    cestaAtual = c.id; bip(760); montarCestas(); novoBloco(); salvar();
   });
 }
+
 function atualizarTopo() {
-  el("pontos").textContent = fmt(moedas);
+  el("moedas").textContent = fmt(moedas);
   el("vAltura").textContent = alturaDaTorre();
   el("vRecorde").textContent = recorde;
-  el("vVidas").textContent = acabou ? "—" : "❤️".repeat(Math.max(0, vidas)) || "—";
+  el("vVidas").textContent = acabou ? "—" : ("❤️".repeat(Math.max(0, Math.min(vidas, 6))) || "—");
   el("vRodada").textContent = "🪙 " + fmt(rodada);
-  const totalAlbum = CESTAS.reduce((s, c) => s + c.emojis.length, 0);
-  el("vAlbum").textContent = album.length + "/" + totalAlbum;
+  el("vCombo").textContent = combo > 1 ? "🔥 " + combo : combo;
+  const c = camadaDe(alturaDaTorre()), prox = proximaCamada(alturaDaTorre());
+  el("vCamada").textContent = c.ic + " " + c.nome;
+  el("bcIc").textContent = c.ic;
+  el("bcNome").textContent = c.nome;
+  const noTopo = c === prox;
+  const faixa = Math.max(1, prox.de - c.de);
+  const feito = Math.max(0, Math.min(1, (alturaDaTorre() - c.de) / faixa));
+  el("bcFalta").textContent = noTopo ? "o fim de tudo · paga x" + c.paga
+    : "faltam " + Math.max(0, prox.de - alturaDaTorre()) + " pra " + prox.nome + " · paga x" + c.paga;
+  el("bcBarra").style.width = (noTopo ? 100 : feito * 100) + "%";
+  el("bcBarra").style.background = "linear-gradient(90deg," + c.ceu[1] + "," + prox.ceu[0] + ")";
 }
 
 /* ==========================================================================
@@ -560,18 +955,26 @@ el("btSom").onclick = e => {
   salvar();
 };
 
+/* a Poupança rende sozinha */
+setInterval(() => {
+  const j = jurosPorSeg();
+  if (j) { moedas += j / 2; atualizarTopo(); if (painelAtual === "loja") montarLoja(); }
+}, 500);
+
 function salvar() {
   try {
-    localStorage.setItem(CHAVE, JSON.stringify({ v:1, moedas, recorde, album, cestaAtual, mudo, estat,
-      ups: LOJA.filter(u => u.qtd).map(u => [u.id, u.qtd]) }));
+    localStorage.setItem(CHAVE, JSON.stringify({ v:2, moedas, recorde, album, camadasVistas,
+      cestaAtual, mudo, estat, ups: LOJA.filter(u => u.qtd).map(u => [u.id, u.qtd]) }));
   } catch (e) {}
 }
 function carregar() {
   let d = null;
   try { d = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
+  if (!d) { try { d = JSON.parse(localStorage.getItem(CHAVE_ANTIGA) || "null"); } catch (e) {} }
   if (!d) return;
   moedas = d.moedas || 0; recorde = d.recorde || 0;
   album = Array.isArray(d.album) ? d.album : [];
+  camadasVistas = Array.isArray(d.camadasVistas) ? d.camadasVistas : [];
   mudo = !!d.mudo;
   if (d.estat) for (const k in estat) if (k in d.estat) estat[k] = d.estat[k];
   (d.ups || []).forEach(([id, q]) => { const u = LOJA.find(x => x.id === id); if (u) u.qtd = q; });
@@ -601,12 +1004,14 @@ window.addEventListener("appinstalled", () => { el("btInstalar").hidden = true; 
 
 /* ---------- começo ---------- */
 carregar();
+montarFamilias();
 comecarRodada();
+montarCestas();
 el("rodape").innerHTML =
-  "Clique na tela (ou aperte <b>espaço</b>) pra soltar o bloco. Quanto mais alta a torre, " +
-  "mais <b>🪙 dinheiro</b> cada bloco vale — e acertar no meio paga <b>3x</b>.<br>" +
-  "Bloco que cai fora custa uma vida. Se a torre entortar demais, ela desaba.<br>" +
-  "<b>" + LOJA.length + " melhorias</b> na loja · <b>" + CESTAS.length + " cestas</b> de emoji pra desbloquear.";
+  "Clique na tela (ou aperte <b>espaço</b>) pra soltar o bloco. A setinha embaixo mostra onde é o meio do bloco de cima.<br>" +
+  "<b>" + CAMADAS.length + " camadas</b>, da Terra até <b>o NADA</b> · <b>" + LOJA.length + " melhorias</b> · <b>" +
+  CESTAS.length + " cestas</b> de emoji.<br>" +
+  "Cada camada paga mais que a de baixo — mas tem mais vento pra atrapalhar.";
 quadro();
 </script>
 </body>

@@ -52,7 +52,7 @@ const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:'')
   r = await p.evaluate(() => ({ titulo: document.title, jogo: typeof LOJA !== 'undefined' && LOJA.length,
     torre: typeof torre !== "undefined" ? torre.length : -1,
     temTorre: !!document.getElementById("jarra") }));
-  conf('abre sem internet, com o jogo salvo intacto', r.titulo==='TORRE DE EMOJIS' && r.jogo===36 && r.torre>0, JSON.stringify(r));
+  conf('abre sem internet, com o jogo salvo intacto', r.titulo==='TORRE DE EMOJIS' && r.jogo===136 && r.torre>0, JSON.stringify(r));
   await p.screenshot({ path: print('offline.png') });
   await ctx.setOffline(false);
 
