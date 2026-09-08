@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="f" cx="50%" cy="18%" r="95%">
+      <stop offset="0" stop-color="#4a2870"/><stop offset="55%" stop-color="#1b0f33"/><stop offset="1" stop-color="#08060f"/>
+    </radialGradient>
+    <linearGradient id="b1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff40"/><stop offset="0.35" stop-color="#7ac9ff"/><stop offset="1" stop-color="#00000033"/></linearGradient>
+    <linearGradient id="b2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff40"/><stop offset="0.35" stop-color="#6ee7a0"/><stop offset="1" stop-color="#00000033"/></linearGradient>
+    <linearGradient id="b3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff40"/><stop offset="0.35" stop-color="#ff6b9d"/><stop offset="1" stop-color="#00000033"/></linearGradient>
+    <linearGradient id="b4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff40"/><stop offset="0.35" stop-color="#ffc857"/><stop offset="1" stop-color="#00000033"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#f)"/>
+  <g opacity="0.13" stroke="#ffc857" stroke-width="2">
+    <path d="M0 128 H512 M0 256 H512 M0 384 H512 M128 0 V512 M256 0 V512 M384 0 V512"/>
+  </g>
+  <g transform="rotate(-4 256 400)">
+    <rect x="140" y="392" width="232" height="76" rx="16" fill="url(#b1)" stroke="#00000044" stroke-width="3"/>
+    <text x="256" y="434" font-size="52" text-anchor="middle">😀</text>
+    <rect x="158" y="310" width="232" height="76" rx="16" fill="url(#b2)" stroke="#00000044" stroke-width="3"/>
+    <text x="274" y="352" font-size="52" text-anchor="middle">🐯</text>
+    <rect x="128" y="228" width="232" height="76" rx="16" fill="url(#b3)" stroke="#00000044" stroke-width="3"/>
+    <text x="244" y="270" font-size="52" text-anchor="middle">🍕</text>
+  </g>
+  <g transform="rotate(6 256 120)">
+    <rect x="150" y="86" width="232" height="76" rx="16" fill="url(#b4)" stroke="#00000044" stroke-width="3"/>
+    <text x="266" y="128" font-size="52" text-anchor="middle">🚀</text>
+  </g>
+  <path d="M266 174 V212" stroke="#ffc857" stroke-width="5" stroke-linecap="round" stroke-dasharray="8 10" opacity="0.7"/>
+</svg>
