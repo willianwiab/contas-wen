@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#150d12">
+<meta name="description" content="Evolução dos Gatos: cace bichinhos com a patada, encha a barra e evolua o seu gato 31 vezes, do gatinho até o Gato do NADA. Cuidado com o pepino.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gatos">
+<title>EVOLUÇÃO DOS GATOS</title>
+<style>
+  :root {
+    --bg:#150d12; --painel:#241620; --painel2:#2e1c28; --linha:#4b2f3f;
+    --ink:#fff2ea; --dim:#c5a2ae;
+    --ouro:#ffc857; --verde:#7ee0a0; --rosa:#ff8fb1; --azul:#8fc9ff; --roxo:#c79bff;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --r: 18px;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    margin:0; padding:14px 12px 26px; color:var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(900px 460px at 50% -10%, #6a2f46 0%, transparent 62%),
+      radial-gradient(620px 420px at 92% 105%, #7a4a1c 0%, transparent 58%),
+      radial-gradient(520px 360px at 5% 60%, #3a1526 0%, transparent 62%), var(--bg);
+    background-attachment: fixed;
+    display:flex; flex-direction:column; align-items:center; gap:13px;
+  }
+
+  /* ---------- topo ---------- */
+  header { text-align:center; width:min(1000px,100%); }
+  .marca { font-family:var(--mono); font-size:.62rem; letter-spacing:.4em; color:var(--dim); text-transform:uppercase; }
+  .marca b { color:var(--ouro); }
+  .linhaNome {
+    display:flex; align-items:center; justify-content:center; gap:10px; margin-top:5px;
+    font-size:clamp(1.4rem,5.4vw,2.1rem); line-height:1.05; font-weight:800;
+  }
+  #nomeGato { background:linear-gradient(180deg,#fff 10%,var(--ouro) 92%);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .stats { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; justify-content:center; }
+  .stat {
+    background:linear-gradient(180deg,#ffffff10,#ffffff05); border:1px solid var(--linha);
+    border-radius:13px; padding:6px 13px; min-width:78px; backdrop-filter:blur(4px);
+  }
+  .stat .k { font-size:.53rem; letter-spacing:.16em; color:var(--dim); text-transform:uppercase; }
+  .stat .v { font-family:var(--mono); font-weight:700; font-size:.95rem; margin-top:2px; }
+
+  #jogo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.94fr); gap:14px; width:min(1000px,100%); align-items:start; }
+  @media (max-width:880px){ #jogo { grid-template-columns:1fr; } }
+
+  /* ---------- a sala do gato ---------- */
+  #tela { position:relative; line-height:0; }
+  #sala {
+    width:100%; aspect-ratio:1/1; display:block; border-radius:var(--r);
+    background:#1a1017; border:1px solid var(--linha);
+    box-shadow:inset 0 2px 30px #0009, 0 20px 44px #000a;
+    cursor:pointer; touch-action:manipulation; user-select:none;
+  }
+  .flutuando { position:absolute; z-index:3; display:flex; gap:6px; flex-wrap:wrap; }
+  .fSup { top:10px; left:10px; right:10px; align-items:center; }
+  .pilula {
+    background:#150d12d0; border:1px solid var(--linha); border-radius:99px; color:var(--dim);
+    font-family:var(--mono); font-size:.66rem; padding:6px 12px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; gap:5px; white-space:nowrap; backdrop-filter:blur(4px);
+  }
+  .pilula:hover { border-color:var(--ouro); color:var(--ouro); }
+  .pilula.info { cursor:default; color:var(--ink); margin-left:auto; font-weight:700; }
+  .pilula[hidden] { display:none; }
+
+  /* barra de nível */
+  #barraNivel {
+    margin-top:9px; border:1px solid var(--linha); border-radius:13px; padding:9px 12px;
+    background:linear-gradient(180deg,#ffffff0c,#ffffff04); display:flex; flex-direction:column; gap:7px;
+  }
+  .bnTopo { display:flex; align-items:center; gap:8px; font-size:.8rem; }
+  .bnTopo .ic { font-size:1.3rem; }
+  .bnTopo .nome { font-weight:800; }
+  .bnTopo .falta { margin-left:auto; font-family:var(--mono); font-size:.66rem; color:var(--dim); }
+  .trilho { height:9px; border-radius:99px; background:#ffffff14; overflow:hidden; }
+  .trilho i { display:block; height:100%; border-radius:99px; transition:width .2s; }
+
+  .botoes { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:10px; }
+  .grandao {
+    padding:15px 12px; border:none; border-radius:14px; cursor:pointer; width:100%;
+    font-family:var(--mono); font-weight:800; font-size:.9rem; letter-spacing:.04em;
+    background:linear-gradient(180deg,#ffe08a,var(--ouro)); color:#2f1d02;
+    box-shadow:0 5px 0 #a8741a; transition:.08s;
+  }
+  .grandao:active { transform:translateY(5px); box-shadow:none; }
+  .grandao.peixe { background:linear-gradient(180deg,#bfe6ff,var(--azul)); color:#06263d; box-shadow:0 5px 0 #2f6c99; }
+  .grandao:disabled { opacity:.45; cursor:not-allowed; box-shadow:none; transform:none; }
+
+  /* ---------- painel ---------- */
+  #painel {
+    background:linear-gradient(180deg,#ffffff0a,#ffffff03); border:1px solid var(--linha);
+    border-radius:var(--r); padding:13px; display:flex; flex-direction:column; gap:11px;
+  }
+  .abas { display:flex; gap:5px; flex-wrap:wrap; }
+  .aba {
+    flex:1; min-width:64px; padding:9px 4px; border-radius:11px; cursor:pointer; border:1px solid var(--linha);
+    background:#ffffff08; color:var(--dim); font-family:var(--mono); font-size:.66rem; font-weight:700;
+    position:relative;
+  }
+  .aba.sel { background:#ffffff1a; color:var(--ink); border-color:var(--ouro); }
+  .aba .bolinha { position:absolute; top:5px; right:6px; width:6px; height:6px; border-radius:50%; background:var(--verde); }
+
+  .familias { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
+  .fam {
+    aspect-ratio:1; border-radius:10px; border:1px solid var(--linha); background:#ffffff08;
+    cursor:pointer; font-size:1rem; display:grid; place-items:center; position:relative; padding:0;
+  }
+  .fam.sel { border-color:var(--ouro); background:#ffc85722; }
+  .fam .pt { position:absolute; bottom:1px; right:3px; font-family:var(--mono); font-size:.48rem; color:var(--ouro); }
+  .fam.pode::after { content:""; position:absolute; top:3px; right:3px; width:5px; height:5px; border-radius:50%; background:var(--verde); }
+
+  .lista { display:flex; flex-direction:column; gap:6px; min-height:280px; }
+  .item {
+    display:grid; grid-template-columns:34px 1fr auto; gap:10px; align-items:center;
+    padding:9px; border-radius:11px; cursor:pointer; text-align:left; width:100%;
+    font-family:inherit; color:inherit; position:relative; overflow:hidden;
+    background:linear-gradient(180deg,var(--painel2),var(--painel)); border:1px solid var(--linha);
+    transition:border-color .12s, transform .08s;
+  }
+  .item .barra { position:absolute; left:0; bottom:0; height:2px; background:var(--ouro); opacity:.5; }
+  .item.ok { border-color:#ffc85766; }
+  .item.ok:hover { transform:translateY(-1px); border-color:var(--ouro); }
+  .item.bloq { opacity:.42; cursor:not-allowed; }
+  .item .ic { width:34px; height:34px; border-radius:9px; display:grid; place-items:center; font-size:1.05rem; background:#ffffff0d; border:1px solid var(--linha); }
+  .item .nome { font-weight:700; font-size:.83rem; }
+  .item .desc { font-size:.66rem; color:var(--dim); margin-top:1px; line-height:1.35; }
+  .item .preco { font-family:var(--mono); font-weight:700; font-size:.78rem; color:var(--azul); text-align:right; }
+  .item .qtd { font-family:var(--mono); font-size:.6rem; color:var(--dim); text-align:right; margin-top:2px; }
+
+  .cabecinha { font-family:var(--mono); font-size:.67rem; color:var(--dim); line-height:1.6; }
+  .cabecinha b { color:var(--ouro); }
+
+  /* comidas */
+  .comidas { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .comida {
+    border-radius:11px; border:1px solid var(--linha); background:linear-gradient(180deg,var(--painel2),var(--painel));
+    padding:8px 5px; cursor:pointer; text-align:center; color:inherit; font-family:inherit;
+  }
+  .comida:hover { border-color:var(--rosa); }
+  .comida.caro { opacity:.4; cursor:not-allowed; }
+  .comida .ce { font-size:1.35rem; }
+  .comida .cn { font-size:.66rem; font-weight:700; margin-top:2px; }
+  .comida .cp { font-family:var(--mono); font-size:.61rem; color:var(--azul); margin-top:2px; }
+
+  /* álbum */
+  .album { display:grid; grid-template-columns:repeat(auto-fill,minmax(66px,1fr)); gap:6px; max-height:440px; overflow-y:auto; padding-right:2px; }
+  .cartao {
+    position:relative; aspect-ratio:1/1.2; border-radius:11px; border:1px solid var(--linha);
+    background:#ffffff08; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    font-size:1.5rem;
+  }
+  .cartao.nao { color:#ffffff1c; }
+  .cartao.agora { border-color:var(--ouro); background:#ffc85718; }
+  .cartao small { font-family:var(--mono); font-size:.48rem; color:var(--dim); }
+  .cartao .nv { position:absolute; top:2px; left:4px; font-family:var(--mono); font-size:.46rem; color:var(--dim); }
+
+  /* conquistas */
+  .conqGrid { display:flex; flex-direction:column; gap:5px; max-height:440px; overflow-y:auto; }
+  .conq { display:grid; grid-template-columns:30px 1fr; gap:8px; align-items:center;
+          padding:7px 8px; border-radius:10px; border:1px solid var(--linha); background:#ffffff06; }
+  .conq.feita { border-color:#ffc85766; background:linear-gradient(90deg,#ffc85714,transparent); }
+  .conq.nao { opacity:.45; }
+  .conq .ci { font-size:1.15rem; text-align:center; }
+  .conq .cn { font-weight:700; font-size:.76rem; }
+  .conq .cd { font-size:.63rem; color:var(--dim); margin-top:1px; }
+
+  /* renascer */
+  #renascer {
+    width:100%; padding:13px; border-radius:13px; cursor:pointer; text-align:left;
+    font-family:inherit; color:inherit; border:1px solid #ff8fb166; font-size:.87rem; font-weight:800;
+    background:linear-gradient(135deg,#3d1424,#1b0f18);
+  }
+  #renascer:not(.on) { opacity:.45; cursor:not-allowed; }
+  #renascer b { color:var(--rosa); font-family:var(--mono); }
+  #renascer span { display:block; font-size:.7rem; color:var(--dim); margin-top:5px; line-height:1.55; font-weight:400; }
+  #infoPata {
+    font-family:var(--mono); font-size:.69rem; color:var(--verde); background:#0d0710;
+    border:1px solid var(--linha); border-radius:11px; padding:10px; line-height:1.75; white-space:pre-wrap;
+  }
+  .vidas { font-size:1.1rem; letter-spacing:2px; }
+
+  .rodape { font-size:.7rem; color:var(--dim); text-align:center; max-width:600px; line-height:1.65; }
+  #aviso {
+    position:fixed; top:12px; left:50%; transform:translate(-50%,-24px); z-index:70;
+    padding:10px 18px; border-radius:99px; background:var(--painel2); border:1px solid var(--ouro);
+    font-family:var(--mono); font-size:.76rem; font-weight:700; color:var(--ouro);
+    opacity:0; transition:.18s; pointer-events:none; max-width:92vw; text-align:center;
+  }
+  #aviso.on { opacity:1; transform:translate(-50%,0); }
+
+  /* janela da evolução */
+  #evo { position:fixed; inset:0; z-index:60; display:none; background:#0b0510e8; backdrop-filter:blur(6px);
+         align-items:center; justify-content:center; padding:18px; }
+  #evo.on { display:flex; }
+  #evo .cartaoEvo {
+    width:min(400px,100%); padding:22px; border-radius:20px; text-align:center;
+    background:linear-gradient(180deg,var(--painel2),#140b12); border:1px solid var(--ouro);
+    box-shadow:0 30px 60px #000, 0 0 60px #ffc85733;
+  }
+  #evo .de { font-size:2.2rem; opacity:.5; }
+  #evo .seta { font-size:1.2rem; color:var(--dim); margin:2px 0; }
+  #evo .para { font-size:4.2rem; line-height:1.1; }
+  #evo h2 { margin:6px 0 2px; font-family:var(--mono); font-size:1rem; letter-spacing:.14em; color:var(--ouro); }
+  #evo .conta { font-size:.78rem; color:var(--dim); line-height:1.6; margin:8px 0 16px; }
+  #evo .btFechar {
+    padding:12px 20px; border-radius:12px; cursor:pointer; width:100%; border:none;
+    font-family:var(--mono); font-weight:800; font-size:.85rem;
+    background:linear-gradient(180deg,#ffe08a,var(--ouro)); color:#2f1d02;
+  }
+</style>
+</head>
+<body>
+<div id="aviso"></div>
+
+<div id="evo"><div class="cartaoEvo">
+  <div class="de" id="evoDe">🐱</div>
+  <div class="seta">▼</div>
+  <div class="para" id="evoPara">🐈</div>
+  <h2 id="evoNome">EVOLUIU!</h2>
+  <div class="conta" id="evoConta"></div>
+  <button class="btFechar" id="evoOk">MIAU!</button>
+</div></div>
+
+<header>
+  <div class="marca">EVOLUÇÃO DOS <b>GATOS</b></div>
+  <div class="linhaNome"><span id="gatoIc">🐱</span><span id="nomeGato">Gatinho</span></div>
+  <div class="stats">
+    <div class="stat"><div class="k">Nível</div><div class="v" id="vNivel" style="color:var(--ouro)">1</div></div>
+    <div class="stat"><div class="k">Peixes</div><div class="v" id="vPeixes" style="color:var(--azul)">0</div></div>
+    <div class="stat"><div class="k">Por presa</div><div class="v" id="vCarinho" style="color:var(--rosa)">1</div></div>
+    <div class="stat"><div class="k">XP por seg</div><div class="v" id="vXps" style="color:var(--verde)">0</div></div>
+    <div class="stat"><div class="k">Colônia</div><div class="v" id="vColonia">0</div></div>
+    <div class="stat"><div class="k">Patas</div><div class="v" id="vPatas" style="color:var(--roxo)">0</div></div>
+    <div class="stat"><div class="k">Vidas</div><div class="v vidas" id="vVidas">🐾</div></div>
+  </div>
+</header>
+
+<div id="jogo">
+  <div>
+    <div id="tela">
+      <canvas id="sala"></canvas>
+      <div class="flutuando fSup">
+        <button class="pilula" id="btSom">🔊</button>
+        <button class="pilula" id="btAlbum">📖 <span id="contAlbum">1</span></button>
+        <button class="pilula" id="btSurreal" title="o quanto a sala fica estranha">🌀 AUTO</button>
+        <button class="pilula" id="btInstalar" hidden>📲 INSTALAR</button>
+        <div class="pilula info" id="pilulaXp">0 XP</div>
+      </div>
+    </div>
+    <div id="barraNivel">
+      <div class="bnTopo">
+        <span class="ic" id="bnIc">🐱</span>
+        <span class="nome" id="bnNome">Gatinho</span>
+        <span class="falta" id="bnFalta"></span>
+      </div>
+      <div class="trilho"><i id="bnBarra" style="width:0%"></i></div>
+    </div>
+    <div class="botoes">
+      <button class="grandao" id="btChamar">🐭 CHAMAR BICHINHOS</button>
+      <button class="grandao peixe" id="btLambida">👅 LAMBIDA GERAL</button>
+    </div>
+  </div>
+
+  <div id="painel">
+    <div class="abas">
+      <button class="aba sel" data-p="loja">🧶 BRINQUEDOS</button>
+      <button class="aba" data-p="gatos">🐾 GATOS</button>
+      <button class="aba" data-p="comida">🍽️ COMIDA</button>
+      <button class="aba" data-p="album">📖 ÁLBUM</button>
+      <button class="aba" data-p="conq">🏆 <span id="ptConq">0</span></button>
+      <button class="aba" data-p="vidas">💗 VIDAS</button>
+    </div>
+
+    <div id="pLoja" style="display:flex;flex-direction:column;gap:9px">
+      <div class="cabecinha" id="lojaTopo"></div>
+      <div class="familias" id="familias"></div>
+      <div class="lista" id="lista"></div>
+    </div>
+
+    <div id="pGatos" style="display:none;flex-direction:column;gap:9px">
+      <div class="cabecinha" id="gatosTopo"></div>
+      <div class="lista" id="listaGatos"></div>
+    </div>
+
+    <div id="pComida" style="display:none;flex-direction:column;gap:9px">
+      <div class="cabecinha" id="comidaTopo"></div>
+      <div class="comidas" id="comidas"></div>
+      <div class="cabecinha" id="comidaInfo"></div>
+    </div>
+
+    <div id="pAlbum" style="display:none;flex-direction:column;gap:9px">
+      <div class="cabecinha" id="albumTopo"></div>
+      <div class="album" id="album"></div>
+    </div>
+
+    <div id="pConq" style="display:none;flex-direction:column;gap:9px">
+      <div class="cabecinha" id="conqTopo"></div>
+      <div class="conqGrid" id="conqGrid"></div>
+    </div>
+
+    <div id="pVidas" style="display:none;flex-direction:column;gap:10px">
+      <div class="cabecinha">💗 <b>As 9 vidas</b> — todo gato tem nove. Gastar uma zera o nível e os
+        brinquedos, mas te dá <b>🐾 patas</b>, que valem pra sempre. Quando as nove acabam, elas voltam
+        (e o próximo renascimento fica mais caro).</div>
+      <button id="renascer"></button>
+      <div id="infoPata"></div>
+    </div>
+  </div>
+</div>
+
+<div class="rodape" id="rodape"></div>
+<script>
+/* ==========================================================================
+   EVOLUÇÃO DOS GATOS
+   Faça carinho, ganhe XP, suba de nível e veja o gato virar outro bicho —
+   31 formas, do Gatinho até o Gato do NADA. Peixes compram brinquedos,
+   comida e novos gatos pra colônia. E todo gato tem nove vidas.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. AS EVOLUÇÕES — o coração do jogo
+   Cada uma abre num nível quadrado (4, 9, 16, 25...): dá pra sentir que a
+   próxima está sempre um pouco mais longe, sem precisar de uma tabela.
+   ========================================================================== */
+const EVOLUCOES = [
+  { nv:1,    e:"🐱", nome:"Gatinho",          cor:"#ffd9a0", conta:"Acabou de chegar. Cabe na mão." },
+  { nv:4,    e:"🐈", nome:"Gato",             cor:"#ffc857", conta:"Cresceu. Agora anda pela casa como se fosse dono." },
+  { nv:9,    e:"😺", nome:"Gato Feliz",       cor:"#ffe66d", conta:"Descobriu o sol da janela." },
+  { nv:16,   e:"😼", nome:"Gato Esperto",     cor:"#e8c07d", conta:"Já sabe abrir o armário da ração." },
+  { nv:25,   e:"🐈‍⬛", nome:"Gato Preto",       cor:"#b9a8c9", conta:"Some no escuro e reaparece do seu lado." },
+  { nv:36,   e:"😻", nome:"Gato Apaixonado",  cor:"#ff8fb1", conta:"Ronrona tão forte que treme o sofá." },
+  { nv:49,   e:"🙀", nome:"Gato Assustado",   cor:"#ffb4a2", conta:"Viu um pepino uma vez e nunca mais foi o mesmo." },
+  { nv:64,   e:"😽", nome:"Gato Beijoqueiro", cor:"#ff9ecd", conta:"Lambe a sua mão até a mão desistir." },
+  { nv:81,   e:"🦝", nome:"Gato Guaxinim",    cor:"#c0b8a8", conta:"Passou tempo demais perto da lata de lixo." },
+  { nv:100,  e:"🐅", nome:"Gato Tigrado",     cor:"#ffa64d", conta:"As listras apareceram do nada, numa noite só." },
+  { nv:121,  e:"🐆", nome:"Gato Onça",        cor:"#ffcf5c", conta:"Anda no telhado sem fazer barulho nenhum." },
+  { nv:144,  e:"🦁", nome:"Gato Leão",        cor:"#ffb347", conta:"A juba cresceu. O miado virou outra coisa." },
+  { nv:169,  e:"🐯", nome:"Gato Tigre",       cor:"#ff8a3c", conta:"Não cabe mais na caixa de papelão. Ele tenta." },
+  { nv:196,  e:"🐺", nome:"Gato Lobo",        cor:"#a8b6d8", conta:"Uiva pra lua e depois finge que não foi ele." },
+  { nv:225,  e:"🦊", nome:"Gato Raposa",      cor:"#ff7a3c", conta:"Aprendeu a dar respostas em vez de miados." },
+  { nv:256,  e:"🐲", nome:"Gato Dragãozinho", cor:"#7ee0a0", conta:"Espirrou e saiu fumaça." },
+  { nv:289,  e:"🦄", nome:"Gato Unicórnio",   cor:"#e6b3ff", conta:"Ninguém sabe de onde veio o chifre." },
+  { nv:324,  e:"🐉", nome:"Gato Dragão",      cor:"#6ee7a0", conta:"Agora a fumaça é fogo, e o sofá que se cuide." },
+  { nv:361,  e:"👹", nome:"Gato Oni",         cor:"#ff5f6d", conta:"Ficou bravo uma vez e não voltou mais." },
+  { nv:400,  e:"🧙", nome:"Gato Mago",        cor:"#9b8cff", conta:"Faz o petisco aparecer sozinho. Ninguém pergunta como." },
+  { nv:441,  e:"🥷", nome:"Gato Ninja",       cor:"#8f9db8", conta:"Você nunca vê ele chegar. Só vê a tigela vazia." },
+  { nv:484,  e:"🤖", nome:"Gato Robô",        cor:"#9fd6ff", conta:"Ronrona em código binário." },
+  { nv:529,  e:"👽", nome:"Gato Alien",       cor:"#8affc1", conta:"Voltou da viagem falando de outro planeta." },
+  { nv:576,  e:"👻", nome:"Gato Fantasma",    cor:"#d8dbff", conta:"Atravessa a porta fechada. Ainda quer comida." },
+  { nv:625,  e:"🧊", nome:"Gato de Gelo",     cor:"#a8e8ff", conta:"O pote de água congela sozinho." },
+  { nv:676,  e:"🔥", nome:"Gato de Fogo",     cor:"#ff7a3c", conta:"Dorme e a casa fica quentinha." },
+  { nv:729,  e:"⚡", nome:"Gato Trovão",      cor:"#ffe66d", conta:"Corre tão rápido que acende a lâmpada." },
+  { nv:784,  e:"🌈", nome:"Gato Arco-íris",   cor:"#ff9ecd", conta:"Deixa um rastro colorido pela casa." },
+  { nv:841,  e:"👑", nome:"Rei dos Gatos",    cor:"#ffd700", conta:"Todos os gatos do bairro vieram fazer reverência." },
+  { nv:900,  e:"🌌", nome:"Gato Cósmico",     cor:"#b39dff", conta:"Cabe uma galáxia dentro dele. Ainda dorme 16h por dia." },
+  { nv:1000, e:"⬛", nome:"Gato do NADA",     cor:"#e6e6f0", conta:"Não tem mais pra onde evoluir. Só você e ele." },
+];
+const evoDoNivel = n => {
+  let e = EVOLUCOES[0];
+  for (const x of EVOLUCOES) if (n >= x.nv) e = x;
+  return e;
+};
+const indiceEvo = n => EVOLUCOES.indexOf(evoDoNivel(n));
+const proximaEvo = n => EVOLUCOES[Math.min(indiceEvo(n) + 1, EVOLUCOES.length - 1)];
+
+/* ==========================================================================
+   2. OS BRINQUEDOS — 12 famílias de 8 níveis = 96 melhorias
+   ========================================================================== */
+const QUALIDADES = ["I","II","III","IV","V","VI","VII","VIII"];
+const FAMILIAS = [
+  { id:"lingua", ic:"👅", nome:"Língua",     tipo:"presa",   base:15,    val:1,
+    txt:v => "+" + fmt(v) + " XP por bichinho comido" },
+  { id:"rapido", ic:"⚡", nome:"Reflexo",    tipo:"rapido",  base:120,   val:.12,
+    txt:v => "a patada volta " + Math.round(teto(v, .8) * 100) + "% mais rápido" },
+  { id:"mira",   ic:"🎯", nome:"Mira",       tipo:"mira",    base:200,   val:.14,
+    txt:v => "pega de " + Math.round(teto(v, 1.8) * 100) + "% mais longe" },
+  { id:"faro",   ic:"👃", nome:"Faro",       tipo:"peixe",   base:90,    val:1,
+    txt:v => "+" + fmt(v) + " peixes por bichinho" },
+  { id:"chama",  ic:"🐭", nome:"Chamariz",   tipo:"quantos", base:600,   val:.3,
+    txt:v => "+" + (v).toFixed(1) + " bichinhos na sala ao mesmo tempo" },
+  { id:"pena",   ic:"🪶", nome:"Peninha",    tipo:"critico", base:800,   val:.02,
+    txt:v => (v * 100).toFixed(1) + "% de bichinho dourado (paga 10x)" },
+  { id:"bigode", ic:"🐱", nome:"Bigode",     tipo:"escudo",  base:1500,  val:.09,
+    txt:v => "o perigo assusta " + Math.round(teto(v, .9) * 100) + "% menos" },
+  { id:"caixa",  ic:"📦", nome:"Caixa",      tipo:"combo",   base:3000,  val:3,
+    txt:v => "combo até " + Math.round(v) + " (+4% de XP por bichinho seguido)" },
+  { id:"tigela", ic:"🍽️", nome:"Tigela",     tipo:"comida",  base:6000,  val:.3,
+    txt:v => "a comida rende +" + Math.round(v * 100) + "%" },
+  { id:"sofa",   ic:"🛋️", nome:"Sofá",       tipo:"amigos",  base:1.2e4, val:.25,
+    txt:v => "cada gato da colônia caça +" + Math.round(v * 100) + "% mais rápido" },
+  { id:"sono",   ic:"💤", nome:"Soneca",     tipo:"offline", base:2.5e4, val:.06,
+    txt:v => "a colônia caça " + Math.round(v * 100) + "% com o jogo fechado" },
+  { id:"catnip", ic:"🌿", nome:"Catnip",     tipo:"tudo",    base:2e5,   val:.35,
+    txt:v => "multiplica TUDO por " + (1 + v).toFixed(2) },
+];
+const LOJA = [];
+FAMILIAS.forEach(f => {
+  for (let t = 0; t < 8; t++) {
+    LOJA.push({ id:f.id + t, fam:f.id, ic:f.ic, tipo:f.tipo, nivel:t,
+      nome:f.nome + " " + QUALIDADES[t], val:f.val * Math.pow(1.9, t),
+      base:f.base * Math.pow(8.5, t), txt:f.txt, qtd:0 });
+  }
+});
+const preco = u => Math.ceil(u.base * Math.pow(1.22, u.qtd));
+function soma(tipo) {
+  let s = 0;
+  for (const u of LOJA) if (u.tipo === tipo) s += u.qtd * u.val;
+  return s;
+}
+// as melhorias que "encostam" num teto usam esta curva: nunca chegam a 100%
+const teto = (v, max) => max * (1 - 1 / (1 + v / max));
+
+/* ==========================================================================
+   3. A COLÔNIA — 12 gatos pra adotar, cada um trabalha sozinho
+   ========================================================================== */
+const AMIGOS = [
+  { id:"mimi",   e:"🐈",  nome:"Mimi",    base:150,    cacadas:.25, conta:"Dorme o dia todo, mas de vez em quando dá o bote." },
+  { id:"sombra", e:"🐈‍⬛", nome:"Sombra",  base:900,    cacadas:.5,  conta:"Só aparece na hora de comer." },
+  { id:"bolinha",e:"😸",  nome:"Bolinha", base:5e3,    cacadas:1,   conta:"Redondinho, mas rápido." },
+  { id:"rajado", e:"🐅",  nome:"Rajado",  base:3e4,    cacadas:2,   conta:"Caça as moscas da cozinha." },
+  { id:"ruivo",  e:"🦊",  nome:"Ruivo",   base:1.8e5,  cacadas:4,   conta:"Não é raposa. Ele jura." },
+  { id:"palhaco",e:"😹",  nome:"Palhaço", base:1.1e6,  cacadas:8,   conta:"Cai da estante e come no caminho." },
+  { id:"pintado",e:"🐆",  nome:"Pintado", base:7e6,    cacadas:16,  conta:"Sobe onde ninguém sobe." },
+  { id:"juba",   e:"🦁",  nome:"Juba",    base:4.5e7,  cacadas:32,  conta:"Ruge baixinho pra não assustar a presa." },
+  { id:"uivo",   e:"🐺",  nome:"Uivo",    base:3e8,    cacadas:64,  conta:"Chegou com o resto da matilha." },
+  { id:"listras",e:"🐯",  nome:"Listras", base:2e9,    cacadas:128, conta:"Come por dez, caça por cem." },
+  { id:"estrela",e:"🦄",  nome:"Estrela", base:1.4e10, cacadas:256, conta:"Cospe purpurina e engole o bichinho inteiro." },
+  { id:"draco",  e:"🐉",  nome:"Draco",   base:1e11,   cacadas:512, conta:"O último da colônia. Quase não cabe na sala." },
+];
+const precoAmigo = a => Math.ceil(a.base * Math.pow(1.16, quantosAmigos[a.id] || 0));
+
+/* ==========================================================================
+   3b. OS BICHINHOS — o que voa e corre pela sala
+   Cada um só aparece a partir de uma certa evolução, então a caçada muda de
+   cara junto com o gato: começa em borboleta e termina em galáxia.
+   ========================================================================== */
+const PRESAS = [
+  { e:"🦋", nome:"borboleta", de:0,  vale:1,     vel:1.5, tam:1 },
+  { e:"🐛", nome:"lagarta",   de:0,  vale:1.4,   vel:.6,  tam:1 },
+  { e:"🪰", nome:"mosca",     de:0,  vale:.8,    vel:2.2, tam:.85 },
+  { e:"🐭", nome:"ratinho",   de:1,  vale:2.4,   vel:1.2, tam:1.05 },
+  { e:"🧶", nome:"novelo",    de:1,  vale:3,     vel:.7,  tam:1.1 },
+  { e:"🐟", nome:"peixinho",  de:2,  vale:4.5,   vel:1.1, tam:1.05 },
+  { e:"🦗", nome:"grilo",     de:3,  vale:6,     vel:1.9, tam:.9 },
+  { e:"🐦", nome:"passarinho",de:4,  vale:9,     vel:1.8, tam:1 },
+  { e:"🐝", nome:"abelha",    de:5,  vale:13,    vel:2.4, tam:.85 },
+  { e:"🐌", nome:"caracol",   de:6,  vale:22,    vel:.35, tam:1.05 },
+  { e:"🦎", nome:"lagartixa", de:7,  vale:34,    vel:1.6, tam:1 },
+  { e:"🐸", nome:"sapo",      de:8,  vale:52,    vel:1.1, tam:1.15 },
+  { e:"🐰", nome:"coelho",    de:9,  vale:80,    vel:1.7, tam:1.15 },
+  { e:"🦆", nome:"pato",      de:11, vale:130,   vel:1.2, tam:1.2 },
+  { e:"🐍", nome:"cobra",     de:12, vale:210,   vel:1.4, tam:1.15 },
+  { e:"🐙", nome:"polvo",     de:14, vale:340,   vel:.9,  tam:1.25 },
+  { e:"🦈", nome:"tubarão",   de:16, vale:560,   vel:1.5, tam:1.35 },
+  { e:"🦅", nome:"águia",     de:18, vale:900,   vel:2.1, tam:1.25 },
+  { e:"🐧", nome:"pinguim",   de:19, vale:1500,  vel:.8,  tam:1.2 },
+  { e:"🦖", nome:"dino",      de:21, vale:2400,  vel:1.3, tam:1.4 },
+  { e:"🐲", nome:"dragãozinho",de:23,vale:4000,  vel:1.6, tam:1.3 },
+  { e:"👾", nome:"alien",     de:25, vale:6500,  vel:2.3, tam:1.1 },
+  { e:"⭐", nome:"estrela",   de:26, vale:11000, vel:1.4, tam:1.15 },
+  { e:"🪐", nome:"planeta",   de:28, vale:18000, vel:.9,  tam:1.4 },
+  { e:"🌌", nome:"galáxia",   de:30, vale:30000, vel:1.1, tam:1.5 },
+];
+/* o que NÃO é pra comer. O pepino existe porque gato tem medo de pepino. */
+const PERIGOS = [
+  { e:"🥒", nome:"pepino",   conta:"todo gato tem medo" },
+  { e:"💣", nome:"bomba",    conta:"não é comida" },
+  { e:"🌵", nome:"cacto",    conta:"espeta a língua" },
+  { e:"🚿", nome:"chuveiro", conta:"água!" },
+  { e:"🧨", nome:"foguete",  conta:"faz barulho" },
+];
+const presasAbertas = () => PRESAS.filter(p => p.de <= indiceEvo(nivel));
+
+/* ==========================================================================
+   4. A COMIDA — dá um monte de XP de uma vez e deixa um bônus ligado
+   ========================================================================== */
+const COMIDAS = [
+  { id:"leite",  e:"🥛", nome:"Leite",     custo:60,    xp:20,    mult:1.5, seg:20,  conta:"XP x1,5 por 20s" },
+  { id:"peixe",  e:"🐟", nome:"Peixinho",  custo:400,   xp:150,   mult:2,   seg:30,  conta:"XP x2 por 30s" },
+  { id:"racao",  e:"🍖", nome:"Carninha",  custo:3e3,   xp:1200,  mult:3,   seg:40,  conta:"XP x3 por 40s" },
+  { id:"sushi",  e:"🍣", nome:"Sushi",     custo:3e4,   xp:1.4e4, mult:5,   seg:50,  conta:"XP x5 por 50s" },
+  { id:"bolo",   e:"🎂", nome:"Bolo",      custo:4e5,   xp:2e5,   mult:8,   seg:60,  conta:"XP x8 por 1 min" },
+  { id:"catnip", e:"🌿", nome:"Catnip",    custo:6e6,   xp:3.5e6, mult:15,  seg:90,  conta:"XP x15 por 1min30" },
+];
+
+/* ==========================================================================
+   5. ESTADO
+   ========================================================================== */
+const CHAVE = "gatos_v1";
+let xp = 0, nivel = 1, peixes = 0, patas = 0, vidasUsadas = 0, renascimentos = 0;
+let quantosAmigos = {}, album = [], conquistasFeitas = [], mudo = false;
+let painelAtual = "loja", famAtual = "lingua";
+let buffs = [], combo = 0, ultimoCarinho = 0, quando = 0;
+let estat = { carinhos:0, pescarias:0, xpTotal:0, peixesTotal:0, criticos:0, comidas:0,
+              evolucoes:0, maiorCombo:0, tempo:0, maiorNivel:1, sustos:0 };
+const el = id => document.getElementById(id);
+
+function fmt(n) {
+  if (!isFinite(n)) return "∞";
+  if (n < 1000) return String(Math.floor(n * 10) / 10).replace(".", ",");
+  const u = ["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"];
+  let i = 0, x = n;
+  while (x >= 1000 && i < u.length - 1) { x /= 1000; i++; }
+  return x.toFixed(1).replace(".", ",") + u[i];
+}
+function tempoCurto(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+  if (d) return d + (d > 1 ? " dias" : " dia") + (h ? " e " + h + "h" : "");
+  if (h) return h + "h" + String(m).padStart(2, "0");
+  return m + " min";
+}
+let tAviso = null;
+function avisar(t) {
+  el("aviso").textContent = t; el("aviso").classList.add("on");
+  clearTimeout(tAviso); tAviso = setTimeout(() => el("aviso").classList.remove("on"), 1800);
+}
+
+/* ---------- som: tudo feito na hora pelo navegador ---------- */
+let ctxAudio = null;
+function bip(f, dur = .07, tipo = "triangle", vol = .05) {
+  if (mudo) return;
+  try {
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctxAudio.currentTime, o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
+    o.type = tipo; o.frequency.value = f;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0005, t + dur);
+    o.connect(g); g.connect(ctxAudio.destination); o.start(t); o.stop(t + dur);
+  } catch (e) {}
+}
+/* o miado é um "iiii-áu": sobe e desce */
+function miar(agudo) {
+  if (mudo) return;
+  try {
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctxAudio.currentTime, o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
+    const b = (agudo ? 620 : 430) + Math.random() * 60;
+    o.type = "sawtooth";
+    o.frequency.setValueAtTime(b, t);
+    o.frequency.exponentialRampToValueAtTime(b * 1.5, t + .07);
+    o.frequency.exponentialRampToValueAtTime(b * .72, t + .3);
+    g.gain.setValueAtTime(.001, t);
+    g.gain.exponentialRampToValueAtTime(.05, t + .04);
+    g.gain.exponentialRampToValueAtTime(.0004, t + .34);
+    const filtro = ctxAudio.createBiquadFilter();
+    filtro.type = "lowpass"; filtro.frequency.value = 1600;
+    o.connect(filtro); filtro.connect(g); g.connect(ctxAudio.destination);
+    o.start(t); o.stop(t + .35);
+  } catch (e) {}
+}
+/* o ronronar: um zumbido baixinho e tremido */
+function ronronar() {
+  if (mudo) return;
+  try {
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctxAudio.currentTime, o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
+    const lfo = ctxAudio.createOscillator(), lg = ctxAudio.createGain();
+    o.type = "triangle"; o.frequency.value = 42;
+    lfo.type = "sine"; lfo.frequency.value = 22; lg.gain.value = 14;
+    lfo.connect(lg); lg.connect(o.frequency);
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(.07, t + .1);
+    g.gain.exponentialRampToValueAtTime(.0002, t + .9);
+    o.connect(g); g.connect(ctxAudio.destination);
+    o.start(t); lfo.start(t); o.stop(t + .95); lfo.stop(t + .95);
+  } catch (e) {}
+}
+
+/* ==========================================================================
+   6. AS CONTAS
+   ========================================================================== */
+const multBuff = () => {
+  let m = 1, agora = Date.now();
+  buffs = buffs.filter(b => b.fim > agora);
+  for (const b of buffs) m *= b.mult;
+  return m;
+};
+const bonusPatas    = () => 1 + patas * .25;
+const bonusAlbum    = () => 1 + album.length * .03;
+const multTudo      = () => (1 + soma("tudo")) * bonusPatas() * bonusAlbum();
+const tetoCombo     = () => Math.floor(soma("combo"));
+const multCombo     = () => 1 + Math.min(combo, tetoCombo()) * .04;
+const chanceDourada = () => Math.min(.6, soma("critico"));
+const multComida    = () => 1 + soma("comida");
+const multAmigos    = () => 1 + soma("amigos");
+const fatorOffline  = () => teto(soma("offline"), .8);
+const escudo        = () => teto(soma("escudo"), .9);
+/* quanto tempo a patada demora pra voltar, e de quão longe ela alcança */
+const tempoPatada   = () => Math.max(90, 380 * (1 - teto(soma("rapido"), .8)));
+const raioCaptura   = () => A * .07 * (1 + teto(soma("mira"), 1.8));
+const quantasPresas = () => Math.round(4 + indiceEvo(nivel) * .35 + soma("quantos"));
+
+/* o valor de um bichinho: o que ele vale, vezes tudo que você comprou */
+const xpDaPresa    = p => Math.max(1, (1 + soma("presa")) * p.vale) * multCombo() * multTudo() * multBuff();
+const peixesDaPresa= p => Math.max(1, (1 + soma("peixe")) * Math.pow(p.vale, .8)) * multTudo();
+/* a colônia caça sozinha: cada gato dá tantas bocadas por segundo */
+const cacadasPorSeg = () => {
+  let s = 0;
+  for (const a of AMIGOS) s += (quantosAmigos[a.id] || 0) * a.cacadas;
+  return s * multAmigos();
+};
+/* pra mostrar no topo: quanto a colônia rende por segundo, em média */
+const presaMedia = () => {
+  const abertas = presasAbertas();
+  return abertas.reduce((s, p) => s + p.vale, 0) / abertas.length;
+};
+const xpPorSegundo = () => cacadasPorSeg() * xpDaPresa({ vale: presaMedia() });
+const peixesPorSegundo = () => cacadasPorSeg() * peixesDaPresa({ vale: presaMedia() });
+
+/* Quanto XP falta pro próximo nível. Cresce rápido, mas não explode: é o que
+   deixa as 31 evoluções caberem numa vida de criança. */
+const xpDoNivel = n => Math.floor(12 * Math.pow(n, 1.62) + 8 * n);
+const totalAmigos = () => AMIGOS.reduce((s, a) => s + (quantosAmigos[a.id] || 0), 0);
+
+/* ==========================================================================
+   7. O JOGO
+   ========================================================================== */
+const cv = el("sala"), ctx = cv.getContext("2d");
+let L = 0, A = 0, dpr = 1, quadros = 0;
+let flutuantes = [], particulas = [], gatinhos = [], estrelinhas = [];
+let squash = 0, balanco = 0, brilhoEvo = 0;
+let ecos = [], chuvaGatos = [];
+
+/* ==========================================================================
+   O SURREAL
+   A sala não fica igual: conforme o gato evolui, ela vai sendo tomada por
+   gatos que se repetem, se encaixam e giram, até a realidade não fechar mais.
+   Começa numa sala normal e termina num troço que não devia existir.
+   Tudo é desenhado com o próprio emoji do gato — nada de imagem de fora.
+   ========================================================================== */
+let modoSurreal = "auto";                 // auto · max · off
+const nivelSurreal = () => modoSurreal === "off" ? 0
+  : modoSurreal === "max" ? 1
+  : Math.min(1, indiceEvo(nivel) / 22);
+/* a tela de rascunho, pra poder deformar o quadro inteiro depois de pronto */
+const buf = document.createElement("canvas"), bctx = buf.getContext("2d");
+
+/* ---------- desenhar emoji sai caro; desenhar figurinha pronta, não ----------
+   Numa sala cheia de gatos que se repetem são mais de cem emojis por quadro.
+   Cada emoji é desenhado UMA vez num quadradinho guardado e depois só copiado.
+   O tamanho é arredondado de 2 em 2 pra a gaveta não encher de quase-iguais. */
+const FONTE_EMOJI = 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+const gaveta = new Map();
+function figurinha(e, px) {
+  px = Math.max(6, Math.round(px / 2) * 2);
+  const chave = e + "|" + px;
+  let c = gaveta.get(chave);
+  if (c) return c;
+  const lado = Math.ceil(px * 1.4);
+  c = document.createElement("canvas");
+  c.width = c.height = Math.max(4, Math.round(lado * dpr));
+  const g = c.getContext("2d");
+  g.scale(dpr, dpr);
+  g.textAlign = "center"; g.textBaseline = "middle";
+  g.font = px + FONTE_EMOJI;
+  g.fillText(e, lado / 2, lado / 2);
+  c.lado = lado;
+  if (gaveta.size > 500) gaveta.clear();
+  gaveta.set(chave, c);
+  return c;
+}
+/* desenha a figurinha centrada em (x,y) — o mesmo que fillText, só que barato */
+function porEmoji(e, px, x, y) {
+  const c = figurinha(e, px);
+  ctx.drawImage(c, x - c.lado / 2, y - c.lado / 2, c.lado, c.lado);
+}
+/* quando a tela muda de tamanho as figurinhas velhas não servem mais */
+function limparGaveta() { gaveta.clear(); }
+
+function ajustar() {
+  const r = cv.getBoundingClientRect();
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  L = r.width; A = r.height;
+  cv.width = Math.round(L * dpr); cv.height = Math.round(A * dpr);
+  estrelinhas = Array.from({ length: 40 }, (_, i) => ({
+    x: (i * 137.5) % 100 / 100, y: (i * 61.8) % 100 / 100, t: (i % 4) + 1 }));
+  buf.width = cv.width; buf.height = cv.height;
+  limparGaveta();
+  chuvaGatos = Array.from({ length: 26 }, (_, i) => ({
+    x: (i * 61.8) % 100 / 100, y: (i * 137.5) % 100 / 100,
+    v: .0018 + (i % 5) * .0009, giro: (i % 7 - 3) * .02, tam: .5 + (i % 4) * .22 }));
+}
+window.addEventListener("resize", () => { ajustar(); arrumarGatinhos(); });
+
+/* os gatos da colônia andando pela sala */
+function arrumarGatinhos() {
+  const total = Math.min(28, totalAmigos());
+  while (gatinhos.length > total) gatinhos.pop();
+  while (gatinhos.length < total) {
+    const i = gatinhos.length;
+    const tipo = AMIGOS[Math.min(AMIGOS.length - 1, Math.floor(Math.random() * Math.max(1, AMIGOS.filter(a => quantosAmigos[a.id]).length)))];
+    gatinhos.push({ x: Math.random(), y: .62 + Math.random() * .3, vx: (Math.random() < .5 ? -1 : 1) * (.0006 + Math.random() * .0014),
+      e: tipo.e, tam: .7 + Math.random() * .5, fase: Math.random() * 6.28, dorme: Math.random() < .25 });
+  }
+}
+
+function ganharXp(n, deOnde) {
+  xp += n; estat.xpTotal += n;
+  let subiu = 0;
+  while (xp >= xpDoNivel(nivel)) { xp -= xpDoNivel(nivel); nivel++; subiu++; }
+  if (subiu) subirDeNivel(subiu, deOnde);
+}
+function subirDeNivel(quantos, deOnde) {
+  const antes = evoDoNivel(nivel - quantos);
+  const agora = evoDoNivel(nivel);
+  if (nivel > estat.maiorNivel) estat.maiorNivel = nivel;
+  bip(660 + Math.min(quantos, 6) * 40, .09);
+  setTimeout(() => bip(880, .1), 70);
+  if (agora !== antes) mostrarEvolucao(antes, agora);
+  else if (deOnde !== "silencio") avisar("⬆️ nível " + nivel + "!");
+  guardarNoAlbum(agora);
+  atualizarTopo(); montarLoja(); montarGatos(); checarConquistas(); salvar();
+}
+function mostrarEvolucao(de, para) {
+  estat.evolucoes++;
+  brilhoEvo = 1;
+  el("evoDe").textContent = de.e;
+  el("evoPara").textContent = para.e;
+  el("evoNome").textContent = para.nome.toUpperCase() + "!";
+  el("evoConta").innerHTML = para.conta + "<br><br>Nível <b>" + para.nv + "</b> · evolução <b>" +
+    (indiceEvo(nivel) + 1) + " de " + EVOLUCOES.length + "</b>";
+  el("evo").classList.add("on");
+  particulas.push({ x:.5, y:.52, t:0, n:44, cor:para.cor, forte:true });
+  [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => bip(f, .16), i * 110));
+  setTimeout(() => miar(true), 620);
+}
+function guardarNoAlbum(evo) {
+  if (!album.includes(evo.nome)) { album.push(evo.nome); montarAlbum(); }
+}
+
+/* ---------- os bichinhos ---------- */
+let presas = [], patada = null, proximaPatada = 0, assustado = 0;
+function nascerPresa(perigo) {
+  const abertas = presasAbertas();
+  const ehPerigo = perigo === true || (perigo === undefined && Math.random() < .1);
+  const tipo = ehPerigo ? PERIGOS[Math.floor(Math.random() * PERIGOS.length)]
+                        : abertas[Math.floor(Math.random() * abertas.length)];
+  const deCima = Math.random() < .35;
+  const lado = Math.random() < .5 ? -1 : 1;
+  const vel = (ehPerigo ? 1 : tipo.vel) * (.0022 + Math.random() * .0016);
+  presas.push({
+    tipo, perigo: ehPerigo,
+    x: deCima ? .1 + Math.random() * .8 : (lado < 0 ? -.08 : 1.08),
+    y: deCima ? -.08 : .15 + Math.random() * .55,
+    vx: deCima ? (Math.random() - .5) * vel : lado * -vel,
+    vy: deCima ? vel * .8 : (Math.random() - .5) * vel * .6,
+    fase: Math.random() * 6.28,
+    dourada: !ehPerigo && Math.random() < chanceDourada(),
+    t: 0,
+  });
+}
+function comer(p, deQuem) {
+  const i = presas.indexOf(p);
+  if (i >= 0) presas.splice(i, 1);
+  if (p.perigo) return;
+  combo = Math.min(combo + 1, Math.max(0, tetoCombo()));
+  if (combo > estat.maiorCombo) estat.maiorCombo = combo;
+  ultimoCarinho = Date.now();
+  let g = xpDaPresa(p.tipo), pz = peixesDaPresa(p.tipo);
+  if (p.dourada) { g *= 10; pz *= 10; estat.criticos++; }
+  g = Math.round(g); pz = Math.round(pz);
+  estat.carinhos++;
+  peixes += pz; estat.peixesTotal += pz;
+  ganharXp(g);
+  flutuantes.push({ x:p.x, y:p.y, t:0, txt:(p.dourada ? "✨ " : "") + "+" + fmt(g),
+    cor:p.dourada ? "#ffc857" : "#ffffffcc", grande:!!p.dourada });
+  particulas.push({ x:p.x, y:p.y, t:0, n:p.dourada ? 16 : 8, cor:p.dourada ? "#ffc857" : "#ff8fb1" });
+  squash = 1;
+  if (!deQuem) {
+    if (p.dourada) { miar(true); }
+    else if (estat.carinhos % 7 === 0) ronronar();
+    else bip(480 + Math.random() * 260, .05, "sine", .035);
+  }
+  atualizarTopo();
+}
+function machucar(p) {
+  const i = presas.indexOf(p);
+  if (i >= 0) presas.splice(i, 1);
+  const escapou = Math.random() < escudo();
+  combo = 0;
+  if (escapou) {
+    flutuantes.push({ x:p.x, y:p.y, t:0, txt:"🐱 desviou!", cor:"#7ee0a0" });
+    bip(700, .06); return;
+  }
+  estat.sustos++;
+  assustado = 1;
+  const perde = Math.min(xp, Math.round(xpDoNivel(nivel) * .12));
+  xp -= perde;
+  flutuantes.push({ x:p.x, y:p.y, t:0, txt:"🙀 " + p.tipo.nome + "! −" + fmt(perde), cor:"#ff5f6d", grande:true });
+  particulas.push({ x:p.x, y:p.y, t:0, n:18, cor:"#ff5f6d", forte:true });
+  bip(200, .16, "sawtooth", .05); setTimeout(() => bip(140, .2, "sawtooth", .05), 90);
+  atualizarTopo();
+}
+/* a patada: procura o bichinho mais perto do dedo e vai nele */
+function patear(x, y) {
+  const agora = Date.now();
+  if (agora < proximaPatada) return;
+  const px = x / L, py = y / A, raio = raioCaptura();
+  let melhor = null, dist = Infinity;
+  for (const p of presas) {
+    const d = Math.hypot((p.x - px) * L, (p.y - py) * A);
+    if (d < raio && d < dist) { dist = d; melhor = p; }
+  }
+  proximaPatada = agora + tempoPatada();
+  patada = { x: px, y: py, t: 0, acertou: !!melhor };
+  if (!melhor) { bip(260, .04, "sine", .02); return; }
+  if (melhor.perigo) machucar(melhor); else comer(melhor);
+}
+/* botões: chamar bichinhos e a lambida geral */
+let proximoChamado = 0;
+function chamar() {
+  const agora = Date.now();
+  if (agora < proximoChamado) { bip(160); avisar("🐭 espera " + Math.ceil((proximoChamado - agora) / 1000) + "s"); return; }
+  proximoChamado = agora + 8000;
+  for (let i = 0; i < 6; i++) setTimeout(() => nascerPresa(false), i * 90);
+  avisar("🐭 vem cá, bichinhos!");
+  miar(false);
+}
+const custoLambida = () => Math.max(50, Math.round(peixesDaPresa({ vale: presaMedia() }) * 26));
+function lambida() {
+  const c = custoLambida();
+  if (peixes < c) { bip(160); avisar("🐟 faltam " + fmt(c - peixes)); return; }
+  const comiveis = presas.filter(p => !p.perigo);
+  if (!comiveis.length) { bip(160); avisar("👅 não tem nada pra comer"); return; }
+  peixes -= c;
+  comiveis.forEach((p, i) => setTimeout(() => comer(p, true), i * 45));
+  bip(520, .1); setTimeout(() => miar(true), 200);
+  avisar("👅 LAMBIDA GERAL! " + comiveis.length + " bichinhos");
+}
+
+function comprar(id) {
+  const u = LOJA.find(x => x.id === id); if (!u) return;
+  const p = preco(u);
+  if (peixes < p) { bip(160); avisar("🐟 faltam " + fmt(p - peixes)); return; }
+  peixes -= p; u.qtd++;
+  bip(880, .09); setTimeout(() => bip(1174, .08), 65);
+  avisar(u.ic + " " + u.nome + "!");
+  atualizarTopo(); montarLoja(); checarConquistas(); salvar();
+}
+function adotar(id) {
+  const a = AMIGOS.find(x => x.id === id); if (!a) return;
+  const p = precoAmigo(a);
+  if (peixes < p) { bip(160); avisar("🐟 faltam " + fmt(p - peixes)); return; }
+  peixes -= p;
+  quantosAmigos[a.id] = (quantosAmigos[a.id] || 0) + 1;
+  avisar(a.e + " " + a.nome + " veio morar com você!");
+  miar(false);
+  arrumarGatinhos();
+  atualizarTopo(); montarGatos(); checarConquistas(); salvar();
+}
+function darComida(id) {
+  const c = COMIDAS.find(x => x.id === id); if (!c) return;
+  if (peixes < c.custo) { bip(160); avisar("🐟 faltam " + fmt(c.custo - peixes)); return; }
+  peixes -= c.custo; estat.comidas++;
+  const g = Math.round(c.xp * multComida() * multTudo());
+  ganharXp(g);
+  buffs = buffs.filter(b => b.id !== c.id);
+  buffs.push({ id:c.id, mult:c.mult, fim: Date.now() + c.seg * 1000, e:c.e });
+  avisar(c.e + " +" + fmt(g) + " XP · " + c.conta);
+  flutuantes.push({ x:.5, y:.42, t:0, txt:c.e, cor:"#fff", emoji:true, grande:true });
+  particulas.push({ x:.5, y:.5, t:0, n:14, cor:"#ff8fb1" });
+  ronronar(); setTimeout(() => miar(false), 260);
+  atualizarTopo(); montarComidas(); checarConquistas(); salvar();
+}
+
+/* ---------- as 9 vidas ---------- */
+const NIVEL_RENASCER = 100;
+const patasAGanhar = () => nivel < NIVEL_RENASCER ? 0
+  : Math.max(1, Math.floor(Math.pow(nivel / NIVEL_RENASCER, .7) * 2) + indiceEvo(nivel));
+function renascer() {
+  const g = patasAGanhar();
+  if (!g) { bip(160); avisar("💗 chegue ao nível " + NIVEL_RENASCER + " primeiro"); return; }
+  patas += g; renascimentos++;
+  vidasUsadas = (vidasUsadas + 1) % 9;
+  nivel = 1; xp = 0; peixes = 0; combo = 0; buffs = [];
+  LOJA.forEach(u => u.qtd = 0);
+  quantosAmigos = {};
+  arrumarGatinhos();
+  avisar("💗 usou uma vida! +" + g + " 🐾 patas");
+  [440, 554, 659, 880, 1108].forEach((f, i) => setTimeout(() => bip(f, .15), i * 120));
+  setTimeout(() => miar(true), 500);
+  atualizarTopo(); montarLoja(); montarGatos(); montarVidas(); checarConquistas(); salvar();
+}
+
+/* ==========================================================================
+   8. CONQUISTAS
+   ========================================================================== */
+const ROMANOS = ["I","II","III","IV","V","VI"];
+const CONQUISTAS = [];
+function conq(id, ic, nome, desc, teste) { CONQUISTAS.push({ id, ic, nome, desc, teste }); }
+function marcos(pref, ic, nome, valores, desc, valor) {
+  valores.forEach((v, i) => conq(pref + i, ic, nome + " " + ROMANOS[i], desc(v), () => valor() >= v));
+}
+marcos("nv",  "⬆️", "Crescendo",   [5, 25, 100, 300, 600, 1000],
+  v => "Chegue ao nível " + v, () => nivel);
+marcos("evo", "✨", "Evoluidor",   [2, 6, 12, 20, 26, 31],
+  v => "Alcance " + v + " evoluções diferentes", () => album.length);
+marcos("car", "👅", "Caçador",     [100, 2e3, 2e4, 2e5],
+  v => "Coma " + fmt(v) + " bichinhos", () => estat.carinhos);
+marcos("pei", "🐟", "Pescador",    [1e3, 1e5, 1e8, 1e12],
+  v => "Junte " + fmt(v) + " peixes na vida", () => estat.peixesTotal);
+marcos("col", "🐾", "Colônia",     [1, 10, 50, 200],
+  v => "Adote " + v + " gato(s)", () => totalAmigos());
+marcos("brq", "🧶", "Brincalhão",  [10, 60, 200, 500],
+  v => "Compre " + v + " brinquedos", () => LOJA.reduce((s, u) => s + u.qtd, 0));
+marcos("cmd", "🍽️", "Cozinheiro",  [5, 50, 300],
+  v => "Dê comida " + v + " vezes", () => estat.comidas);
+marcos("pat", "💗", "Nove Vidas",  [1, 3, 9],
+  v => "Use " + v + " vida(s)", () => renascimentos);
+conq("crit", "✨", "Olho de Ouro", "Coma 100 bichinhos dourados", () => estat.criticos >= 100);
+conq("comb", "🔥", "Sem Errar",   "Faça um combo de 20", () => estat.maiorCombo >= 20);
+conq("pep",  "🥒", "Medo de Pepino", "Tome um susto (todo mundo toma)", () => estat.sustos >= 1);
+conq("limpo","🛡️", "Bigode de Aço", "Coma 500 bichinhos com 3 ou menos sustos",
+  () => estat.carinhos >= 500 && estat.sustos <= 3);
+conq("todos","🏆", "Álbum Cheio", "Complete o álbum com as 31 evoluções", () => album.length >= EVOLUCOES.length);
+conq("draco","🐉", "Amigo do Draco", "Adote o Draco", () => (quantosAmigos.draco || 0) > 0);
+conq("nada", "⬛", "O NADA",      "Chegue ao Gato do NADA", () => nivel >= 1000);
+conq("surreal","🌀", "Isso Não Devia Existir", "Chegue numa evolução em que a sala já derreteu",
+  () => indiceEvo(nivel) >= 16);
+conq("maquina","⚙️", "Máquina de Gatos", "Ter 100 gatos na colônia ao mesmo tempo",
+  () => totalAmigos() >= 100);
+conq("tempo","⏱️", "Companheiro", "1 hora de gato", () => estat.tempo >= 3600000);
+
+function checarConquistas() {
+  let novas = 0;
+  for (const c of CONQUISTAS) {
+    if (conquistasFeitas.includes(c.id)) continue;
+    let ok = false;
+    try { ok = !!c.teste(); } catch (e) {}
+    if (ok) {
+      conquistasFeitas.push(c.id); novas++;
+      avisar("🏆 " + c.ic + " " + c.nome);
+      [784, 988, 1175].forEach((f, k) => setTimeout(() => bip(f, .12), k * 85));
+    }
+  }
+  if (novas) { el("ptConq").textContent = conquistasFeitas.length; if (painelAtual === "conq") montarConquistas(); }
+}
+
+/* ==========================================================================
+   9. DESENHO
+   ========================================================================== */
+function misturaCor(a, b, t) {
+  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  const r = Math.round(((pa >> 16) & 255) * (1 - t) + ((pb >> 16) & 255) * t);
+  const g = Math.round(((pa >> 8) & 255) * (1 - t) + ((pb >> 8) & 255) * t);
+  const c = Math.round((pa & 255) * (1 - t) + (pb & 255) * t);
+  return "rgb(" + r + "," + g + "," + c + ")";
+}
+function desenhar() {
+  desenharCena();
+  const s = nivelSurreal();
+  if (s > .5) deformarQuadro(s);
+  quadros++;
+  requestAnimationFrame(desenhar);
+}
+
+/* ---------- 1. a cena, do jeito que ela é ---------- */
+function desenharCena() {
+  const evo = evoDoNivel(nivel), i = indiceEvo(nivel), s = nivelSurreal();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, L, A);
+
+  /* a sala vai ficando mais mágica conforme o gato evolui */
+  const g = ctx.createLinearGradient(0, 0, 0, A);
+  const escuro = misturaCor("#1e1219", "#2a0f2e", Math.min(1, i / 20));
+  g.addColorStop(0, misturaCor(escuro, evo.cor, .12));
+  g.addColorStop(1, "#120a10");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, L, A);
+
+  if (i >= 12) {                                   // a partir do Leão a sala tem estrelinhas
+    const brilho = Math.min(1, (i - 11) / 8);
+    for (const e of estrelinhas) {
+      const pisca = .5 + Math.sin(quadros * .05 + e.x * 30) * .4;
+      ctx.globalAlpha = brilho * pisca * .8;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(e.x * L, e.y * A * .72, e.t * .9, e.t * .9);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* o chão e o tapete */
+  const chao = A * .78;
+  ctx.fillStyle = "#00000044"; ctx.fillRect(0, chao, L, A - chao);
+  ctx.globalAlpha = .5;
+  ctx.fillStyle = evo.cor;
+  ctx.beginPath(); ctx.ellipse(L / 2, chao + (A - chao) * .55, L * .38, (A - chao) * .38, 0, 0, 6.2832);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  /* a aura do gato */
+  const cx = L / 2, cy = chao - A * .17;
+  const pulso = 1 + Math.sin(quadros * .05) * .03;
+  const raio = A * (.15 + Math.min(i, 24) * .0045) * pulso;
+  const aura = ctx.createRadialGradient(cx, cy, raio * .3, cx, cy, raio * 2.1);
+  aura.addColorStop(0, evo.cor + "55");
+  aura.addColorStop(1, evo.cor + "00");
+  ctx.fillStyle = aura;
+  ctx.beginPath(); ctx.arc(cx, cy, raio * 2.1, 0, 6.2832); ctx.fill();
+
+  /* o clarão da evolução */
+  if (brilhoEvo > .01) {
+    ctx.globalAlpha = brilhoEvo * .8;
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, L, A);
+    ctx.globalAlpha = 1;
+    brilhoEvo *= .9;
+  }
+
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+
+  /* ---- a mandala: um gato feito de gatos, girando atrás de tudo ---- */
+  if (s > .85) {
+    const g = (s - .85) / .15;
+    ctx.save();
+    ctx.translate(L / 2, A * .46);
+    ctx.rotate(quadros * .0022);
+    ctx.globalAlpha = .1 + g * .2;
+    for (let anel = 1; anel <= 3; anel++) {
+      const n = 8 + anel * 5, r = A * (.16 + anel * .13);
+      for (let k = 0; k < n; k++) {
+        const a = k / n * 6.2832 + anel * .3;
+        ctx.save();
+        ctx.translate(Math.cos(a) * r, Math.sin(a) * r);
+        ctx.rotate(a + 1.5708);
+        porEmoji(evo.e, A * .09 / anel + A * .04, 0, 0);
+        ctx.restore();
+      }
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---- a chuva de gatos: eles caem do teto e não param nunca ---- */
+  if (s > .45) {
+    const g = Math.min(1, (s - .45) / .3);
+    ctx.globalAlpha = .18 + g * .3;
+    for (const c of chuvaGatos) {
+      c.y += c.v * (1 + g);
+      if (c.y > 1.15) { c.y = -.15; c.x = Math.random(); }
+      ctx.save();
+      ctx.translate(c.x * L, c.y * A);
+      ctx.rotate(quadros * c.giro);
+      porEmoji(evo.e, A * .05 * c.tam, 0, 0);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* os gatos da colônia andando */
+  for (const m of gatinhos) {
+    if (!m.dorme) {
+      m.x += m.vx;
+      if (m.x < .05) { m.x = .05; m.vx = Math.abs(m.vx); }
+      if (m.x > .95) { m.x = .95; m.vx = -Math.abs(m.vx); }
+    }
+    const t = A * .055 * m.tam;
+    const pulo = m.dorme ? 0 : Math.abs(Math.sin(quadros * .09 + m.fase)) * t * .12;
+    ctx.save();
+    ctx.translate(m.x * L, m.y * A - pulo);
+    if (m.vx < 0) ctx.scale(-1, 1);
+    ctx.globalAlpha = m.dorme ? .75 : 1;
+    porEmoji(m.e, t, 0, 0);
+    ctx.restore();
+    if (m.dorme && quadros % 90 < 45) {
+      ctx.globalAlpha = .5;
+      porEmoji("💤", t * .4, m.x * L + t * .5, m.y * A - t * .6);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* os bichinhos passeando pela sala */
+  for (let k = presas.length - 1; k >= 0; k--) {
+    const p = presas[k];
+    p.t++;
+    p.x += p.vx; p.y += p.vy + Math.sin(p.t * .07 + p.fase) * .0007;
+    if (p.x < -.2 || p.x > 1.2 || p.y < -.2 || p.y > 1.15) { presas.splice(k, 1); continue; }
+    const t = A * .062 * (p.perigo ? 1 : p.tipo.tam);
+    ctx.save();
+    ctx.translate(p.x * L, p.y * A + Math.sin(p.t * .1 + p.fase) * A * .008);
+    if (p.vx > 0) ctx.scale(-1, 1);
+    if (p.dourada) {                                  // o dourado brilha e gira devagar
+      ctx.rotate(Math.sin(p.t * .06) * .25);
+      ctx.shadowColor = "#ffc857"; ctx.shadowBlur = 18;
+    }
+    if (p.perigo) {                                   // o perigo pulsa em vermelho
+      const b = .5 + Math.sin(p.t * .18) * .5;
+      ctx.shadowColor = "#ff3b3b"; ctx.shadowBlur = 8 + b * 16;
+    }
+    porEmoji(p.tipo.e, t, 0, 0);
+    ctx.restore();
+  }
+
+  /* a patada: um risco da boca do gato até onde você tocou */
+  if (patada) {
+    patada.t++;
+    if (patada.t > 10) patada = null;
+    else {
+      const k = patada.t / 10, ida = k < .5 ? k * 2 : (1 - k) * 2;
+      const bx = cx, by = cy + A * .04;
+      const ax = bx + (patada.x * L - bx) * ida, ay = by + (patada.y * A - by) * ida;
+      ctx.strokeStyle = patada.acertou ? "#ff8fb1" : "#ffffff55";
+      ctx.lineWidth = A * .012; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(ax, ay); ctx.stroke();
+      porEmoji("🐾", A * .05, ax, ay);
+    }
+  }
+
+  /* ---- o anel: os gatos viram peça de máquina e giram em volta ---- */
+  if (s > .2) {
+    const g = Math.min(1, (s - .2) / .5);
+    const n = Math.round(4 + g * 14), r = A * (.19 + g * .06);
+    ctx.globalAlpha = .55 + g * .35;
+    for (let k = 0; k < n; k++) {
+      const a = k / n * 6.2832 + quadros * (.006 + g * .008);
+      ctx.save();
+      ctx.translate(cx + Math.cos(a) * r, cy + Math.sin(a) * r * .78);
+      ctx.rotate(a + 1.5708 + Math.sin(quadros * .04 + k) * .2 * g);
+      const t = A * (.045 + g * .03) * (1 + Math.sin(quadros * .05 + k) * .12);
+      porEmoji(evo.e, t, 0, 0);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---- as patas que brotam: o corpo repete pedaços que não deviam repetir ---- */
+  if (s > .35) {
+    const g = Math.min(1, (s - .35) / .45);
+    const n = Math.round(3 + g * 9);
+    ctx.globalAlpha = .5 + g * .4;
+    for (let k = 0; k < n; k++) {
+      const a = -2.6 + (k / Math.max(1, n - 1)) * 5.2;
+      const r = A * (.13 + Math.sin(quadros * .06 + k * .9) * .035 * g);
+      ctx.save();
+      ctx.translate(cx + Math.cos(a) * r * 1.15, cy + Math.sin(a) * r);
+      ctx.rotate(a + 1.5708);
+      porEmoji("🐾", A * .05, 0, 0);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---- os ecos: o gato deixa cópias dele mesmo pra trás ---- */
+  if (s > .1) {
+    const g = Math.min(1, (s - .1) / .6);
+    const n = Math.round(1 + g * 6);
+    for (let k = n; k >= 1; k--) {
+      ctx.globalAlpha = .1 + .16 * (1 - k / (n + 1));
+      ctx.save();
+      ctx.translate(cx + Math.sin(balanco * .7 - k * .35) * A * .05 * g,
+                    cy + Math.cos(balanco * .5 - k * .3) * A * .035 * g);
+      ctx.scale(1 + k * .07 * g, 1 + k * .07 * g);
+      porEmoji(evo.e, A * (.2 + Math.min(i, 24) * .004), 0, 0);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* o gato principal: respira, balança e amassa quando pega alguma coisa */
+  balanco += .03;
+  const respira = 1 + Math.sin(balanco) * .035;
+  const ex = 1 + squash * .22, ey = 1 - squash * .18;
+  squash *= .86;
+  ctx.save();
+  ctx.translate(cx + (assustado > .02 ? (Math.random() - .5) * A * .05 * assustado : 0),
+                cy + Math.sin(balanco * .7) * A * .012);
+  ctx.rotate(Math.sin(balanco * .5) * .04);
+  ctx.scale(ex * respira, ey * respira);
+  ctx.font = (A * (.2 + Math.min(i, 24) * .004)) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+  ctx.fillText(assustado > .02 ? "🙀" : evo.e, 0, 0);
+  ctx.restore();
+  if (assustado > .02) assustado *= .93; else assustado = 0;
+
+  /* o círculo da mira, pra dar pra ver de onde a patada alcança */
+  if (presas.length) {
+    ctx.globalAlpha = .1;
+    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1;
+    ctx.setLineDash([4, 6]);
+    ctx.beginPath(); ctx.arc(cx, cy, raioCaptura() * 2.4, 0, 6.2832); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+  }
+
+  /* partículas e textos que sobem */
+  for (let k = particulas.length - 1; k >= 0; k--) {
+    const p = particulas[k]; p.t++;
+    if (p.t > 30) { particulas.splice(k, 1); continue; }
+    ctx.globalAlpha = 1 - p.t / 30;
+    ctx.fillStyle = p.cor;
+    for (let n = 0; n < p.n; n++) {
+      const a = n / p.n * 6.2832, d = p.t * (p.forte ? 6 : 3);
+      ctx.fillRect(p.x * L + Math.cos(a) * d - 2, p.y * A + Math.sin(a) * d - 2, 4, 4);
+    }
+    ctx.globalAlpha = 1;
+  }
+  for (let k = flutuantes.length - 1; k >= 0; k--) {
+    const f = flutuantes[k]; f.t++;
+    if (f.t > 58) { flutuantes.splice(k, 1); continue; }
+    ctx.globalAlpha = Math.min(1, (58 - f.t) / 22);
+    ctx.fillStyle = f.cor;
+    const tam = A * (f.grande ? .075 : f.emoji ? .05 : .04);
+    ctx.font = f.emoji ? tam + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'
+                       : '800 ' + tam + 'px ' + getComputedStyle(document.body).fontFamily;
+    ctx.fillText(f.txt, f.x * L + Math.sin(f.t * .1 + f.x * 10) * 6, f.y * A - f.t * 1.5);
+    ctx.globalAlpha = 1;
+  }
+
+  /* os buffs da comida, num cantinho */
+  if (buffs.length) {
+    const agora = Date.now();
+    ctx.textAlign = "left";
+    buffs.forEach((b, n) => {
+      const falta = Math.ceil((b.fim - agora) / 1000);
+      ctx.globalAlpha = .95;
+      porEmoji(b.e, A * .04, 10 + A * .02, A - 16 - n * A * .055);
+      ctx.fillStyle = "#ffffffcc";
+      ctx.font = '700 ' + (A * .028) + 'px ' + getComputedStyle(document.body).fontFamily;
+      ctx.fillText("x" + b.mult + " · " + falta + "s", 10 + A * .05, A - 16 - n * A * .055);
+    });
+    ctx.globalAlpha = 1;
+    ctx.textAlign = "center";
+  }
+}
+
+/* ---------- 2. e depois a realidade não fecha mais ----------
+   O quadro pronto é copiado, apagado e redesenhado em fatias que ondulam,
+   com um espelho por cima e a cor girando. É o que dá a sensação de que a
+   sala inteira está derretendo junto com o gato. */
+function deformarQuadro(s) {
+  const onda = Math.min(1, (s - .5) / .3);
+  const espelho = Math.max(0, Math.min(1, (s - .65) / .25));
+  const cor = Math.max(0, Math.min(1, (s - .75) / .25));
+  bctx.setTransform(1, 0, 0, 1, 0, 0);
+  bctx.clearRect(0, 0, buf.width, buf.height);
+  bctx.drawImage(cv, 0, 0);
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, L, A);
+  /* as fatias que ondulam. Sem ctx.filter aqui: filtro por fatia derruba o
+     FPS pra menos de 10 no celular — a cor entra depois, de uma vez só. */
+  const n = 20, alt = A / n;
+  for (let k = 0; k < n; k++) {
+    const dx = Math.sin(quadros * .035 + k * .42) * A * .022 * onda;
+    ctx.drawImage(buf, 0, Math.round(k * alt * dpr), buf.width, Math.ceil(alt * dpr) + 1,
+                  dx, k * alt, L, alt + 1);
+  }
+  if (espelho > 0) {
+    ctx.globalAlpha = espelho * .3;
+    ctx.save(); ctx.translate(L, 0); ctx.scale(-1, 1);
+    ctx.drawImage(buf, 0, 0, L, A);
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+  if (cor > 0) {                       // a cor girando, numa camada só
+    const h = (quadros * .6) % 360;
+    ctx.globalCompositeOperation = "overlay";
+    ctx.globalAlpha = cor * .3;
+    ctx.fillStyle = "hsl(" + h + " 90% 55%)";
+    ctx.fillRect(0, 0, L, A);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+  }
+}
+
+/* ==========================================================================
+   10. PAINEL
+   ========================================================================== */
+function mostrarPainel(p) {
+  painelAtual = p;
+  [["loja","pLoja"],["gatos","pGatos"],["comida","pComida"],
+   ["album","pAlbum"],["conq","pConq"],["vidas","pVidas"]].forEach(([k, id]) =>
+    el(id).style.display = (k === p ? "flex" : "none"));
+  [...document.querySelectorAll(".aba")].forEach(b => b.classList.toggle("sel", b.dataset.p === p));
+  if (p === "loja") montarLoja();
+  if (p === "gatos") montarGatos();
+  if (p === "comida") montarComidas();
+  if (p === "album") montarAlbum();
+  if (p === "conq") montarConquistas();
+  if (p === "vidas") montarVidas();
+  bip(700, .05);
+}
+[...document.querySelectorAll(".aba")].forEach(b => b.onclick = () => mostrarPainel(b.dataset.p));
+
+function montarFamilias() {
+  el("familias").innerHTML = FAMILIAS.map(f =>
+    '<button class="fam" data-f="' + f.id + '" title="' + f.nome + '">' + f.ic +
+    '<span class="pt" id="pt-' + f.id + '"></span></button>').join("");
+  [...el("familias").children].forEach(b => {
+    b.classList.toggle("sel", b.dataset.f === famAtual);
+    b.onclick = () => { famAtual = b.dataset.f; montarFamilias(); montarLoja(); bip(620, .05); };
+  });
+}
+function montarLoja() {
+  if (painelAtual !== "loja") return;
+  // se a família aberta sumiu do jogo, volta pra primeira em vez de mostrar nada
+  if (!FAMILIAS.some(f => f.id === famAtual)) { famAtual = FAMILIAS[0].id; montarFamilias(); }
+  if (!el("familias").children.length) montarFamilias();
+  el("lojaTopo").innerHTML = "🧶 <b>" + LOJA.length + " brinquedos</b> em " + FAMILIAS.length +
+    " famílias · pagos em <b>🐟 peixes</b> · você tem <b>" + fmt(peixes) + "</b>";
+  const itens = LOJA.filter(u => u.fam === famAtual);
+  el("lista").innerHTML = itens.map(u => {
+    const p = preco(u), pode = peixes >= p;
+    return '<button class="item ' + (pode ? "ok" : "bloq") + '" data-id="' + u.id + '">' +
+      '<div class="ic">' + u.ic + '</div>' +
+      '<div><div class="nome">' + u.nome + '</div><div class="desc">' + u.txt(u.val) + '</div></div>' +
+      '<div><div class="preco">🐟 ' + fmt(p) + '</div>' +
+      '<div class="qtd">' + (u.qtd ? "x" + u.qtd : "—") + '</div></div>' +
+      '<div class="barra" style="width:' + Math.min(100, peixes / p * 100) + '%"></div></button>';
+  }).join("");
+  [...el("lista").children].forEach(b => b.onclick = () => comprar(b.dataset.id));
+  FAMILIAS.forEach(f => {
+    const pt = el("pt-" + f.id); if (!pt) return;
+    const meus = LOJA.filter(u => u.fam === f.id);
+    pt.textContent = meus.reduce((s, u) => s + u.qtd, 0) || "";
+    pt.parentElement.classList.toggle("pode", meus.some(u => peixes >= preco(u)));
+  });
+}
+function montarGatos() {
+  if (painelAtual !== "gatos") return;
+  el("gatosTopo").innerHTML = "🐾 <b>" + totalAmigos() + " gatos</b> na colônia · juntos dão <b>" +
+    fmt(cacadasPorSeg()) + " bocadas por segundo</b> (<b>" + fmt(xpPorSegundo()) + " XP</b> e <b>🐟 " +
+    fmt(peixesPorSegundo()) + "</b>)";
+  el("listaGatos").innerHTML = AMIGOS.map(a => {
+    const p = precoAmigo(a), pode = peixes >= p, tem = quantosAmigos[a.id] || 0;
+    return '<button class="item ' + (pode ? "ok" : "bloq") + '" data-a="' + a.id + '">' +
+      '<div class="ic">' + a.e + '</div>' +
+      '<div><div class="nome">' + a.nome + '</div><div class="desc">' + a.conta + '<br>come ' +
+        fmt(a.cacadas * multAmigos()) + ' bichinho(s) por segundo</div></div>' +
+      '<div><div class="preco">🐟 ' + fmt(p) + '</div>' +
+      '<div class="qtd">' + (tem ? "x" + tem : "—") + '</div></div>' +
+      '<div class="barra" style="width:' + Math.min(100, peixes / p * 100) + '%"></div></button>';
+  }).join("");
+  [...el("listaGatos").children].forEach(b => b.onclick = () => adotar(b.dataset.a));
+}
+function montarComidas() {
+  if (painelAtual !== "comida") return;
+  el("comidaTopo").innerHTML = "🍽️ <b>Comida</b> — dá um monte de XP de uma vez e deixa um bônus ligado. " +
+    "A <b>Tigela</b> faz a comida render mais.";
+  el("comidas").innerHTML = COMIDAS.map(c => {
+    const pode = peixes >= c.custo;
+    return '<button class="comida' + (pode ? "" : " caro") + '" data-c="' + c.id + '">' +
+      '<div class="ce">' + c.e + '</div><div class="cn">' + c.nome + '</div>' +
+      '<div class="cp">🐟 ' + fmt(c.custo) + '</div>' +
+      '<div class="cp" style="color:var(--verde)">+' + fmt(c.xp * multComida() * multTudo()) + ' XP</div>' +
+      '<div class="cp" style="color:var(--dim)">' + c.conta + '</div></button>';
+  }).join("");
+  [...el("comidas").children].forEach(b => b.onclick = () => darComida(b.dataset.c));
+  el("comidaInfo").innerHTML = buffs.length
+    ? "Agora: " + buffs.map(b => b.e + " x" + b.mult + " (" + Math.ceil((b.fim - Date.now()) / 1000) + "s)").join(" · ")
+    : "Nenhum bônus de comida ligado.";
+}
+function montarAlbum() {
+  if (painelAtual !== "album") return;
+  const agora = evoDoNivel(nivel);
+  el("albumTopo").innerHTML = "📖 <b>" + album.length + " de " + EVOLUCOES.length +
+    "</b> evoluções no álbum · cada uma dá <b>+3%</b> em tudo, pra sempre";
+  el("album").innerHTML = EVOLUCOES.map(e => {
+    const tem = album.includes(e.nome), eAgora = e === agora;
+    return '<div class="cartao' + (tem ? "" : " nao") + (eAgora ? " agora" : "") + '" title="' +
+      e.nome + " — " + e.conta + '">' +
+      '<span class="nv">' + e.nv + '</span>' + (tem ? e.e : "❔") +
+      '<small>' + (tem ? e.nome : "???") + '</small></div>';
+  }).join("");
+  el("contAlbum").textContent = album.length;
+}
+function montarConquistas() {
+  if (painelAtual !== "conq") return;
+  el("conqTopo").innerHTML = "🏆 <b>" + conquistasFeitas.length + " de " + CONQUISTAS.length +
+    "</b> conquistas";
+  el("conqGrid").innerHTML = CONQUISTAS.map(c => {
+    const tem = conquistasFeitas.includes(c.id);
+    return '<div class="conq ' + (tem ? "feita" : "nao") + '">' +
+      '<div class="ci">' + (tem ? c.ic : "🔒") + '</div>' +
+      '<div><div class="cn">' + c.nome + '</div><div class="cd">' + c.desc + '</div></div></div>';
+  }).join("");
+}
+function montarVidas() {
+  if (painelAtual !== "vidas") return;
+  const g = patasAGanhar(), b = el("renascer");
+  b.classList.toggle("on", g > 0);
+  b.innerHTML = g > 0
+    ? "💗 USAR UMA VIDA e ganhar <b>" + g + " 🐾 pata" + (g > 1 ? "s" : "") + "</b>" +
+      "<span>Zera o nível, os brinquedos e a colônia. Ficam com você: as patas, o álbum e as conquistas. " +
+      "Cada pata dá <b>+25% em tudo</b>, pra sempre.</span>"
+    : "🔒 USAR UMA VIDA — falta chegar ao <b>nível " + NIVEL_RENASCER + "</b>" +
+      "<span>Você está no nível " + nivel + ". O gato precisa crescer antes de recomeçar.</span>";
+  el("infoPata").textContent =
+    "patas..........: " + patas + " 🐾  (tudo x" + bonusPatas().toFixed(2) + ")\n" +
+    "vidas usadas...: " + vidasUsadas + "/9\n" +
+    "renascimentos..: " + renascimentos + "\n" +
+    "nível agora....: " + nivel + "   maior: " + estat.maiorNivel + "\n" +
+    "álbum..........: " + album.length + "/" + EVOLUCOES.length + "  (tudo x" + bonusAlbum().toFixed(2) + ")\n" +
+    "multiplicador..: x" + fmt(multTudo()) + "\n" +
+    "por bichinho...: " + fmt(xpDaPresa({ vale: presaMedia() })) + " XP\n" +
+    "por segundo....: " + fmt(xpPorSegundo()) + " XP   🐟 " + fmt(peixesPorSegundo()) + "\n" +
+    "bichinhos......: " + fmt(estat.carinhos) + "   dourados: " + fmt(estat.criticos) + "\n" +
+    "sustos.........: " + fmt(estat.sustos) + "   bocadas/s: " + fmt(cacadasPorSeg()) + "\n" +
+    "comidas........: " + fmt(estat.comidas) + "   evoluções: " + fmt(estat.evolucoes) + "\n" +
+    "tempo de gato..: " + tempoCurto(estat.tempo);
+}
+el("renascer").onclick = renascer;
+
+function atualizarTopo() {
+  const evo = evoDoNivel(nivel), prox = proximaEvo(nivel);
+  el("gatoIc").textContent = evo.e;
+  el("nomeGato").textContent = evo.nome;
+  el("vNivel").textContent = nivel;
+  el("vPeixes").textContent = fmt(peixes);
+  el("vCarinho").textContent = fmt(xpDaPresa({ vale: presaMedia() }));
+  el("vXps").textContent = fmt(xpPorSegundo());
+  el("vColonia").textContent = totalAmigos();
+  el("vPatas").textContent = patas;
+  el("vVidas").textContent = "🐾".repeat(9 - vidasUsadas) || "—";
+  el("pilulaXp").textContent = fmt(xp) + " / " + fmt(xpDoNivel(nivel)) + " XP" +
+    (combo > 1 ? " · 🔥" + combo : "");
+  const c = custoLambida();
+  el("btLambida").textContent = "👅 LAMBIDA · 🐟 " + fmt(c);
+  el("btLambida").disabled = peixes < c;
+  el("bnIc").textContent = evo.e;
+  el("bnNome").textContent = evo.nome + " · nível " + nivel;
+  const noTopo = evo === prox;
+  el("bnFalta").textContent = noTopo ? "a última evolução"
+    : "faltam " + (prox.nv - nivel) + " níveis pra " + prox.nome;
+  el("bnBarra").style.width = Math.min(100, xp / xpDoNivel(nivel) * 100) + "%";
+  el("bnBarra").style.background = "linear-gradient(90deg," + evo.cor + "," + prox.cor + ")";
+  el("contAlbum").textContent = album.length;
+  el("ptConq").textContent = conquistasFeitas.length;
+}
+
+/* ==========================================================================
+   11. ENTRADA, LOOPS E SAVE
+   ========================================================================== */
+cv.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  const r = cv.getBoundingClientRect();
+  patear(e.clientX - r.left, e.clientY - r.top);
+});
+el("btChamar").onclick = chamar;
+el("btLambida").onclick = lambida;
+el("btAlbum").onclick = () => mostrarPainel("album");
+el("evoOk").onclick = () => { el("evo").classList.remove("on"); bip(880, .1); };
+el("evo").onclick = e => { if (e.target === el("evo")) el("evo").classList.remove("on"); };
+el("btSurreal").onclick = () => {
+  modoSurreal = modoSurreal === "auto" ? "max" : modoSurreal === "max" ? "off" : "auto";
+  el("btSurreal").textContent = "🌀 " + (modoSurreal === "auto" ? "AUTO" : modoSurreal === "max" ? "MÁX" : "OFF");
+  avisar(modoSurreal === "auto" ? "🌀 a sala fica estranha conforme o gato evolui"
+       : modoSurreal === "max" ? "🌀 estranho no máximo!" : "🌀 sala normal");
+  bip(660, .08); salvar();
+};
+el("btSom").onclick = () => {
+  mudo = !mudo; el("btSom").textContent = mudo ? "🔇" : "🔊";
+  if (!mudo) miar(true);
+  salvar();
+};
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if (e.key === " ") { e.preventDefault(); chamar(); }
+  if (e.key.toUpperCase() === "L") lambida();
+  if (e.key === "Escape") el("evo").classList.remove("on");
+});
+
+/* o tempo passando: bichinhos nascendo, colônia caçando, 10 vezes por segundo */
+let ultimoTique = Date.now(), sobraCacada = 0;
+setInterval(() => {
+  const agora = Date.now(), dt = Math.min(1, (agora - ultimoTique) / 1000);
+  ultimoTique = agora;
+  estat.tempo += dt * 1000;
+
+  /* a sala se enche sozinha até o limite do Chamariz */
+  if (presas.length < quantasPresas() && Math.random() < .35) nascerPresa();
+
+  /* a colônia caça: cada bocada come um bichinho da tela, ou um "de fora"
+     quando a tela está vazia — assim os gatos rendem mesmo parados */
+  sobraCacada += cacadasPorSeg() * dt;
+  let bocadas = Math.floor(sobraCacada);
+  sobraCacada -= bocadas;
+  bocadas = Math.min(bocadas, 400);            // segura o FPS quando a colônia é enorme
+  for (let i = 0; i < bocadas; i++) {
+    const naTela = presas.filter(p => !p.perigo);
+    if (naTela.length && Math.random() < .5) comer(naTela[Math.floor(Math.random() * naTela.length)], true);
+    else {
+      const abertas = presasAbertas();
+      const p = abertas[Math.floor(Math.random() * abertas.length)];
+      peixes += peixesDaPresa(p); estat.peixesTotal += peixesDaPresa(p);
+      ganharXp(xpDaPresa(p), "silencio");
+    }
+  }
+  if (agora - ultimoCarinho > 1400) combo = 0;
+  atualizarTopo();
+  if (painelAtual === "loja") montarLoja();
+  if (painelAtual === "gatos") montarGatos();
+  if (painelAtual === "comida") montarComidas();
+  if (painelAtual === "vidas") montarVidas();
+}, 100);
+setInterval(() => { checarConquistas(); salvar(); }, 4000);
+
+function salvar() {
+  try {
+    localStorage.setItem(CHAVE, JSON.stringify({ v:1, xp, nivel, peixes, patas, vidasUsadas,
+      renascimentos, amigos: quantosAmigos, album, conquistas: conquistasFeitas, mudo, estat, modoSurreal,
+      quando: Date.now(), ups: LOJA.filter(u => u.qtd).map(u => [u.id, u.qtd]) }));
+  } catch (e) {}
+}
+function carregar() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
+  if (!d) return null;
+  xp = d.xp || 0; nivel = Math.max(1, d.nivel || 1); peixes = d.peixes || 0;
+  patas = d.patas || 0; vidasUsadas = d.vidasUsadas || 0; renascimentos = d.renascimentos || 0;
+  quantosAmigos = (d.amigos && typeof d.amigos === "object") ? d.amigos : {};
+  album = Array.isArray(d.album) ? d.album.filter(n => EVOLUCOES.some(e => e.nome === n)) : [];
+  conquistasFeitas = Array.isArray(d.conquistas)
+    ? d.conquistas.filter(id => CONQUISTAS.some(c => c.id === id)) : [];
+  mudo = !!d.mudo;
+  if (["auto", "max", "off"].includes(d.modoSurreal)) modoSurreal = d.modoSurreal;
+  el("btSurreal").textContent = "🌀 " + (modoSurreal === "auto" ? "AUTO" : modoSurreal === "max" ? "MÁX" : "OFF");
+  if (d.estat) for (const k in estat) if (k in d.estat) estat[k] = d.estat[k];
+  (d.ups || []).forEach(([id, q]) => { const u = LOJA.find(x => x.id === id); if (u) u.qtd = q; });
+  if (mudo) el("btSom").textContent = "🔇";
+  return d.quando || 0;
+}
+/* o que a colônia rendeu enquanto o jogo estava fechado */
+function ganhosOffline(quando) {
+  const fator = fatorOffline();
+  if (!fator || !quando) return;
+  const seg = Math.min((Date.now() - quando) / 1000, 8 * 3600);
+  if (seg < 120) return;
+  const gx = xpPorSegundo() * seg * fator, gp = peixesPorSegundo() * seg * fator;
+  if (gx < 1 && gp < 1) return;
+  peixes += gp; estat.peixesTotal += gp;
+  ganharXp(gx, "silencio");
+  setTimeout(() => avisar("💤 os gatos trabalharam " + tempoCurto(seg * 1000) +
+    ": +" + fmt(gx) + " XP e 🐟 " + fmt(gp)), 700);
+}
+window.addEventListener("beforeunload", salvar);
+
+/* ---------- aplicativo ---------- */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+let convite = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault(); convite = e; el("btInstalar").hidden = false;
+});
+el("btInstalar").onclick = async () => {
+  if (!convite) return;
+  el("btInstalar").hidden = true;
+  convite.prompt();
+  try { await convite.userChoice; } catch (err) {}
+  convite = null;
+};
+window.addEventListener("appinstalled", () => { el("btInstalar").hidden = true; avisar("📲 gato instalado!"); });
+
+/* ---------- começo ---------- */
+ajustar();
+quando = carregar();
+guardarNoAlbum(evoDoNivel(nivel));
+arrumarGatinhos();
+montarFamilias();
+atualizarTopo();
+montarLoja();
+ganhosOffline(quando);
+for (let i = 0; i < 5; i++) nascerPresa(false);
+checarConquistas();
+el("rodape").innerHTML =
+  "<b>Clique nos bichinhos</b> que passam pela sala: o gato dá a patada e come. Cada um enche a barra de XP.<br>" +
+  "Não clique no <b>🥒 pepino</b>, na <b>💣 bomba</b>, no <b>🌵 cacto</b>, no <b>🚿 chuveiro</b> nem no <b>🧨 foguete</b> — o gato toma um susto e perde XP.<br>" +
+  "<b>" + EVOLUCOES.length + " evoluções</b>, do 🐱 Gatinho até o ⬛ Gato do NADA · <b>" + PRESAS.length +
+  " bichinhos</b> que vão aparecendo conforme você evolui · <b>" + LOJA.length + " brinquedos</b> · <b>" +
+  AMIGOS.length + " gatos</b> pra adotar (eles caçam sozinhos) · <b>" + COMIDAS.length + " comidas</b> · <b>" +
+  CONQUISTAS.length + " conquistas</b>.<br>" +
+  "No teclado: <b>espaço</b> chama bichinhos, <b>L</b> dá a lambida geral.<br>" +
+  "Todo gato tem <b>9 vidas</b>: gastar uma zera o nível mas dá 🐾 patas, que valem pra sempre.<br>" +
+  "🌀 Quanto mais o gato evolui, mais a sala <b>se enche de gatos que se repetem</b> e começa a derreter. " +
+  "O botão <b>🌀</b> lá em cima escolhe: AUTO, MÁX ou OFF.";
+desenhar();
+</script>
+</body>
+</html>

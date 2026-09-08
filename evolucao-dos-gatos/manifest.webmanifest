@@ -1,0 +1,22 @@
+{
+  "id": "/contas-wen/evolucao-dos-gatos/",
+  "name": "Evolução dos Gatos",
+  "short_name": "Gatos",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#150d12",
+  "theme_color": "#150d12",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["games", "entertainment"],
+  "description": "Cace bichinhos com a patada, encha a barra e evolua o seu gato 31 vezes, do gatinho até o Gato do NADA. Quanto mais ele evolui, mais a sala se enche de gatos que se repetem — e começa a derreter.",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
