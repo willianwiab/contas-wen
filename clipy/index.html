@@ -21,6 +21,7 @@
   <div class="marca"><span class="logo" aria-hidden="true">📎</span> <b>CLIPY</b></div>
   <nav id="abas">
     <button class="aba sel" data-aba="mesa">📝 A mesa</button>
+    <button class="aba" data-aba="prancheta">📋 Área de transferência</button>
     <button class="aba" data-aba="conversa">💬 Conversar</button>
     <button class="aba" data-aba="regras">🧠 Como ele pensa</button>
     <button class="aba" data-aba="historia">📜 Quem é o Clipy</button>
@@ -36,6 +37,8 @@
 </header>
 
 <main>
+<div id="areaTrabalho">
+<div id="paginas">
 
 <!-- ======================= A MESA ======================= -->
 <section class="pagina on" id="pgMesa">
@@ -56,19 +59,46 @@
       placeholder="Escreva aqui.&#10;&#10;Experimente começar com &quot;Prezado&quot;, fazer uma lista com traços, escrever uma conta com R$, ou ESCREVER TUDO EM MAIÚSCULA. O Clipy está lendo."></textarea>
   </div>
 
-  <aside class="ladoClipy">
-    <div class="balao" id="balao" hidden>
-      <p id="balaoTexto"></p>
-      <div class="balaoBotoes" id="balaoBotoes"></div>
-      <button class="naoMostrar" id="btNaoMostrar">Não mostrar mais esta dica</button>
+</section>
+
+<!-- ======================= ÁREA DE TRANSFERÊNCIA ======================= -->
+<section class="pagina" id="pgPrancheta">
+  <div class="janela">
+    <div class="tituloJanela"><span>📋 Histórico da área de transferência</span>
+      <span class="botoesJanela"><i>_</i><i>▫</i><i>✕</i></span></div>
+
+    <div class="avisoCaixa">
+      <b>Por que tem um botão em vez de capturar sozinho?</b>
+      Um programa de computador fica olhando o que você copia o tempo todo, em segundo plano.
+      Uma <b>página da internet não pode</b> — e ainda bem: senão qualquer site aberto leria a sua
+      senha na hora em que você copiasse. Aqui a captura só acontece quando <b>você manda</b>:
+      colando na página (<kbd>Ctrl</kbd>+<kbd>V</kbd>) ou apertando o botão.
+      Tudo fica só no seu aparelho.
     </div>
-    <div class="palco" id="palco">
-      <canvas id="telaClipy"></canvas>
+
+    <div class="barraFerramentas">
+      <button id="btCapturar">📋 Capturar o que está copiado</button>
+      <input id="colarAqui" placeholder="…ou cole aqui com Ctrl+V" autocomplete="off">
+      <button id="btLimparHist">🗑 limpar</button>
+      <span class="contador" id="contHist">0 itens</span>
     </div>
-    <div class="rodapeClipy">
-      <button id="btCutucar">👉 Cutucar</button>
-      <button id="btAjuda">💡 Me ajuda</button>
+    <div class="barraFerramentas">
+      <input id="buscaHist" type="search" placeholder="procurar no histórico…" autocomplete="off">
+      <label class="limiteCaixa">guardar até
+        <input type="number" id="limiteHist" min="5" max="500" step="5" value="60"> itens</label>
     </div>
+
+    <div class="listaHist" id="listaHist"></div>
+  </div>
+
+  <aside class="janela colunaAtalhos">
+    <div class="tituloJanela"><span>✂️ Atalhos de texto</span>
+      <span class="botoesJanela"><i>_</i><i>▫</i><i>✕</i></span></div>
+    <div class="barraFerramentas">
+      <button id="btNovaPasta">📁 nova pasta</button>
+      <span class="contador" id="contAtalhos">0 atalhos</span>
+    </div>
+    <div class="listaAtalhos" id="listaAtalhos"></div>
   </aside>
 </section>
 
@@ -135,11 +165,37 @@
       à mão — por isso conseguem responder coisas que ninguém previu. Mas o problema mais difícil
       continua sendo o mesmo do clipe: <b>saber a hora de falar e a hora de ficar quieto.</b></p>
 
+      <h3>Tem outro Clipy — e ele é um programa de verdade</h3>
+      <p>O nome <b>Clipy</b> também é de outra coisa: um <b>gerenciador de área de transferência</b>
+      para Mac, aberto e de graça (licença MIT). Ele guarda tudo o que você copia, num histórico, pra
+      você poder colar de novo depois — e guarda também <b>atalhos de texto</b> (frases prontas,
+      organizadas em pastas) pra colar com um clique.</p>
+      <p>Ele nasceu como continuação de um programa mais antigo, o <b>ClipMenu</b>, feito pelo
+      desenvolvedor <b>@naotaka</b>, que virou código aberto. O Clipy pegou essa ideia e seguiu em
+      frente. Ficou anos parado e voltou depois pelas mãos da própria comunidade que usava ele.</p>
+      <p>Duas coisas nele são interessantes: os dados <b>ficam todos no seu computador</b> (não tem
+      nuvem, não tem conta, não sincroniza com nada), e pra funcionar ele precisa da <b>permissão de
+      acessibilidade</b> do Mac — porque ficar de olho no que você copia é justamente o tipo de
+      poder que um sistema operacional não entrega de graça.</p>
+
+      <h3>Foi assim que os dois Clipys se encontraram aqui</h3>
+      <p>A aba <b>📋 Área de transferência</b> deste site é essa segunda ideia, feita aqui dentro do
+      navegador: histórico do que você copia, atalhos em pastas, busca, limite de itens e um filtro
+      que joga fora o que parece senha.</p>
+      <p>E aí as duas viram uma coisa só: <b>a cada item capturado, as regras do bichinho olham o
+      conteúdo e ele reage</b> — vê um link, um e-mail, um telefone, um código, um valor em dinheiro —
+      e comenta. É o ajudante dos anos 90 morando dentro do gerenciador moderno.</p>
+      <p><b>Uma diferença importante, e ela é de propósito:</b> o programa de Mac fica olhando a área
+      de transferência sozinho, o tempo todo. Uma página da internet <b>não pode fazer isso</b>, e
+      ainda bem — senão qualquer site aberto leria a sua senha na hora em que você a copiasse. Por
+      isso, aqui, a captura só acontece quando <b>você manda</b>.</p>
+
       <h3>Este Clipy aqui</h3>
-      <p>Este é o <b>Clipy do JoJo</b>. O desenho é feito por código — um arame dobrado, dois olhos e duas
-      sobrancelhas, num canvas — e não é o personagem de nenhuma empresa: é um clipe novo, com a mesma
-      ideia. As <b>30 regras</b> foram escritas do zero, em português, e você pode ver todas elas na aba
-      <b>🧠 Como ele pensa</b>, inclusive quais estão disparando agora.</p>
+      <p>Este é o <b>Clipy do JoJo</b>: os dois de uma vez. O desenho é feito por código — um arame
+      dobrado, dois olhos e duas sobrancelhas, num canvas — e não é o personagem de nenhuma empresa
+      nem o programa de Mac: é um clipe novo, com as mesmas ideias. As <b>30 regras</b> foram escritas
+      do zero, em português, e você pode ver todas elas na aba <b>🧠 Como ele pensa</b>, inclusive
+      quais estão disparando agora.</p>
       <p class="assinatura">📎 Feito pelo JoJo. O Clipy manda um oi. E outro. E mais um.</p>
     </div>
   </div>
@@ -158,6 +214,22 @@
   </div>
 </section>
 
+</div>
+  <aside class="ladoClipy" id="ladoClipy">
+    <div class="balao" id="balao" hidden>
+      <p id="balaoTexto"></p>
+      <div class="balaoBotoes" id="balaoBotoes"></div>
+      <button class="naoMostrar" id="btNaoMostrar">Não mostrar mais esta dica</button>
+    </div>
+    <div class="palco" id="palco">
+      <canvas id="telaClipy"></canvas>
+    </div>
+    <div class="rodapeClipy">
+      <button id="btCutucar">👉 Cutucar</button>
+      <button id="btAjuda">💡 Me ajuda</button>
+    </div>
+  </aside>
+</div>
 </main>
 
 <footer id="rodape">

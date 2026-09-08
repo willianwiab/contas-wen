@@ -22,9 +22,34 @@ O site tem quatro partes:
 | aba | o que é |
 | --- | --- |
 | 📝 **A mesa** | um papel pra escrever, com o Clipy do lado lendo tudo |
+| 📋 **Área de transferência** | histórico do que você copia + atalhos de texto em pastas — a outra ideia que também se chama Clipy |
 | 💬 **Conversar** | dá pra fazer perguntas; ele responde com o que tem escrito dentro dele |
 | 🧠 **Como ele pensa** | as 30 regras, uma por uma, e **acendendo em verde** quando estão batendo com o que você acabou de escrever |
 | 📜 **Quem é o Clipy** | a história dos ajudantes animados, por que sumiram, e o que eles ensinam sobre as IAs de hoje |
+
+## Tem dois Clipys, e o site é os dois
+
+O nome **Clipy** é de duas coisas. Uma é o ajudante de clipe dos anos 90 — o
+bichinho que fica na tela. A outra é um **gerenciador de área de transferência
+para Mac**, aberto e de graça (MIT), que guarda tudo o que você copia e tem
+atalhos de texto em pastas; ele nasceu como continuação do **ClipMenu**, do
+desenvolvedor **@naotaka**, ficou anos parado e voltou pelas mãos da comunidade.
+Os dados dele ficam todos no computador, sem nuvem e sem conta.
+
+A aba **📋 Área de transferência** deste site é essa segunda ideia, feita dentro
+do navegador: histórico, atalhos em pastas, busca, limite de itens, itens
+fixados que nunca somem, e um filtro que recusa o que parece senha ou cartão.
+
+E é aí que as duas viram uma coisa só: **cada item capturado passa pelas regras
+do bichinho**, que olha o tipo (link, e-mail, telefone, dinheiro, código, cor,
+texto longo) e comenta. É o ajudante dos anos 90 morando dentro do gerenciador.
+
+> **Uma diferença de propósito.** O programa de Mac fica olhando a área de
+> transferência sozinho, o tempo todo, em segundo plano. Uma página da internet
+> **não pode fazer isso** — e ainda bem: senão qualquer site aberto leria a sua
+> senha na hora em que você a copiasse. Por isso, aqui, a captura só acontece
+> quando **você manda**: colando na página (Ctrl+V) ou apertando o botão. É menos
+> prático e é muito mais seguro, e o site explica isso na própria tela.
 
 ## As 30 regras
 
@@ -84,6 +109,7 @@ clipy/
   index.html · style.css
   js/clipy.js       o desenho e as animações do clipe
   js/cerebro.js     as 30 regras, a conversa e o vigia
+  js/prancheta.js   o histórico da área de transferência e os atalhos
   js/main.js        o papel, o balão, as abas, o save
   js/instalar.js    service worker + instalar como aplicativo
 ```
@@ -106,7 +132,7 @@ npm i playwright-core
 node teste-clipy.js
 ```
 
-**29 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
+**42 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
 dispara a carta e o botão **monta a carta de verdade**; três traços viram lista
 e o botão numera 1. 2. 3.; R$ 10,50 + R$ 4 + R$ 25 dá **39,5**; MAIÚSCULA vira
 minúscula; "senha" dispara o aviso; apagar 60 letras dispara o comentário; "não
@@ -115,3 +141,11 @@ pra 6 segundos; a tabela acende a regra certa; a conversa responde, **admite
 quando não sabe** e faz conta; cutucar mexe o clipe; o desenho é canvas puro,
 sem nenhuma `<img>`; tudo fica salvo; e — desligando a internet de verdade — o
 site abre inteiro e o Clipy continua reagindo.
+
+Da aba da área de transferência: as 3 pastas de fábrica nascem com id próprio;
+ele reconhece link, e-mail, telefone, dinheiro, código e cor; capturar guarda **e**
+faz o Clipy comentar; **senha e número de cartão são recusados** e não entram no
+histórico; copiar a mesma coisa não duplica (sobe pro topo e conta as vezes); o
+limite corta o histórico mas nunca joga fora o que está fixado 📌; a busca
+filtra; Ctrl+V na caixinha captura; "no papel" cola o atalho e troca de aba; e
+tudo fica salvo.
