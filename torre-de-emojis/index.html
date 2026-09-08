@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08060f">
+<meta name="description" content="Torre de Emojis: solte os emojis na jarra, junte dois iguais e faça o maior de todos sem transbordar.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Torre">
+<title>TORRE DE EMOJIS</title>
+<style>
+  :root {
+    --bg:#08060f; --painel:#150f22; --painel2:#1d1530; --linha:#33254a;
+    --ink:#f7f0ff; --dim:#a294bd;
+    --ouro:#ffc857; --verde:#6ee7a0; --rosa:#ff6b9d; --azul:#7ac9ff; --cristal:#6ef0c8;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --r: 16px;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    margin:0; padding:14px 12px 24px; color:var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(900px 460px at 50% -10%, #3d2160 0%, transparent 60%),
+      radial-gradient(620px 400px at 92% 105%, #5c2418 0%, transparent 55%),
+      radial-gradient(500px 340px at 5% 60%, #142a4a 0%, transparent 60%), var(--bg);
+    background-attachment: fixed;
+    display:flex; flex-direction:column; align-items:center; gap:12px;
+  }
+  header { text-align:center; width:min(920px,100%); }
+  .marca { font-family:var(--mono); font-size:.62rem; letter-spacing:.4em; color:var(--dim); text-transform:uppercase; }
+  .marca b { color:var(--ouro); }
+  .linhaMoedas {
+    display:flex; align-items:center; justify-content:center; gap:9px; margin-top:5px;
+    font-size:clamp(1.7rem,6.5vw,2.7rem); line-height:1.05;
+  }
+  #pontos {
+    font-family:var(--mono); font-variant-numeric:tabular-nums; font-weight:700;
+    background:linear-gradient(180deg,#fff 8%,var(--ouro) 92%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .stats { display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; justify-content:center; }
+  .stat {
+    background:linear-gradient(180deg,#ffffff0e,#ffffff05); border:1px solid var(--linha);
+    border-radius:12px; padding:6px 12px; min-width:84px;
+  }
+  .stat .k { font-size:.54rem; letter-spacing:.16em; color:var(--dim); text-transform:uppercase; }
+  .stat .v { font-family:var(--mono); font-weight:700; font-size:.92rem; margin-top:2px; }
+
+  #jogo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.8fr); gap:13px; width:min(920px,100%); align-items:start; }
+  @media (max-width:820px){ #jogo { grid-template-columns:1fr; } }
+
+  #tela { position:relative; line-height:0; }
+  #jarra {
+    width:100%; aspect-ratio:3/4; display:block; border-radius:var(--r);
+    background:linear-gradient(180deg,#120c1e,#0a0713);
+    border:1px solid var(--linha); box-shadow:inset 0 2px 24px #000a, 0 18px 40px #000a;
+    cursor:crosshair; touch-action:none;
+  }
+  .flutuando { position:absolute; z-index:3; display:flex; gap:6px; flex-wrap:wrap; }
+  .fSup { top:9px; left:9px; right:9px; align-items:center; }
+  .pilula {
+    background:#0a0713cc; border:1px solid var(--linha); border-radius:99px; color:var(--dim);
+    font-family:var(--mono); font-size:.66rem; padding:5px 11px; line-height:1;
+    display:flex; align-items:center; gap:5px; cursor:pointer; white-space:nowrap;
+  }
+  .pilula:hover { border-color:var(--ouro); color:var(--ouro); }
+  .pilula.info { cursor:default; color:var(--ink); margin-left:auto; font-size:.8rem; }
+  #fim {
+    position:absolute; inset:0; display:none; align-items:center; justify-content:center; padding:18px;
+    background:#04020ad9; backdrop-filter:blur(5px); border-radius:var(--r); text-align:center; z-index:5;
+  }
+  #fim.on { display:flex; }
+  #fim h2 { margin:0 0 6px; font-family:var(--mono); font-size:1.05rem; color:var(--rosa); letter-spacing:.1em; }
+  #fim p { margin:0 0 14px; font-size:.82rem; color:var(--dim); line-height:1.7; }
+  #fim b { color:var(--ouro); font-family:var(--mono); }
+  .grandao {
+    padding:13px 20px; border:none; border-radius:12px; cursor:pointer; width:100%;
+    font-family:var(--mono); font-weight:800; font-size:.9rem; letter-spacing:.06em;
+    background:linear-gradient(180deg,#ffe08a,var(--ouro)); color:#2a1c02;
+    box-shadow:0 5px 0 #a8741a; transition:.08s;
+  }
+  .grandao:active { transform:translateY(5px); box-shadow:none; }
+  .grandao.fantasma { background:#ffffff12; color:var(--ink); box-shadow:none; border:1px solid var(--linha); margin-top:8px; }
+
+  #painel {
+    background:linear-gradient(180deg,#ffffff0a,#ffffff03); border:1px solid var(--linha);
+    border-radius:var(--r); padding:12px; display:flex; flex-direction:column; gap:11px;
+  }
+  .cabecinha { font-family:var(--mono); font-size:.67rem; color:var(--dim); line-height:1.5; }
+  .cabecinha b { color:var(--ouro); }
+  .escada { display:flex; gap:5px; flex-wrap:wrap; }
+  .deg {
+    width:42px; height:42px; border-radius:50%; display:grid; place-items:center; font-size:1.1rem;
+    border:2px solid var(--linha); position:relative; background:#ffffff08;
+  }
+  .deg.nao { color:#ffffff20; }
+  .deg small {
+    position:absolute; bottom:-3px; right:-3px; font-family:var(--mono); font-size:.44rem;
+    color:var(--ouro); background:#0a0713; border-radius:99px; padding:1px 3px;
+  }
+  .cestas { display:flex; flex-direction:column; gap:6px; }
+  .cesta {
+    display:grid; grid-template-columns:36px 1fr auto; gap:10px; align-items:center;
+    padding:9px; border-radius:11px; cursor:pointer; text-align:left; width:100%;
+    font-family:inherit; color:inherit; border:1px solid var(--linha);
+    background:linear-gradient(180deg,var(--painel2),var(--painel));
+  }
+  .cesta:hover { border-color:var(--ouro); }
+  .cesta.usando { border-color:var(--ouro); background:#ffc85718; }
+  .cesta.trancada { opacity:.45; cursor:not-allowed; }
+  .cesta .ic { font-size:1.3rem; text-align:center; }
+  .cesta .cn { font-weight:700; font-size:.85rem; }
+  .cesta .cd { font-size:.66rem; color:var(--dim); margin-top:1px; }
+  .cesta .cq { font-family:var(--mono); font-size:.66rem; color:var(--verde); }
+  .rodape { font-size:.7rem; color:var(--dim); text-align:center; max-width:540px; line-height:1.6; }
+  #aviso {
+    position:fixed; top:12px; left:50%; transform:translate(-50%,-24px); z-index:70;
+    padding:9px 16px; border-radius:99px; background:var(--painel2); border:1px solid var(--ouro);
+    font-family:var(--mono); font-size:.74rem; font-weight:700; color:var(--ouro);
+    opacity:0; transition:.18s; pointer-events:none; max-width:92vw; text-align:center;
+  }
+  #aviso.on { opacity:1; transform:translate(-50%,0); }
+</style>
+</head>
+<body>
+<div id="aviso"></div>
+
+<header>
+  <div class="marca">TORRE DE <b>EMOJIS</b></div>
+  <div class="linhaMoedas"><span>🪙</span><span id="pontos">0</span></div>
+  <div class="stats">
+    <div class="stat"><div class="k">Altura</div><div class="v" id="vAltura" style="color:var(--azul)">0</div></div>
+    <div class="stat"><div class="k">Recorde</div><div class="v" id="vRecorde">0</div></div>
+    <div class="stat"><div class="k">Vidas</div><div class="v" id="vVidas" style="color:var(--rosa)">❤️❤️❤️</div></div>
+    <div class="stat"><div class="k">Nesta rodada</div><div class="v" id="vRodada" style="color:var(--verde)">🪙 0</div></div>
+    <div class="stat"><div class="k">Álbum</div><div class="v" id="vAlbum" style="color:var(--ouro)">0</div></div>
+  </div>
+</header>
+
+<div id="jogo">
+  <div>
+    <div id="tela">
+      <canvas id="jarra"></canvas>
+      <div class="flutuando fSup">
+        <button class="pilula" id="btSom">🔊</button>
+        <button class="pilula" id="btDeNovo">🔄 de novo</button>
+        <button class="pilula" id="btInstalar" hidden>📲 INSTALAR</button>
+        <div class="pilula info" id="proximo">🧱 0</div>
+      </div>
+      <div id="fim">
+        <div>
+          <h2>TRANSBORDOU!</h2>
+          <p id="fimTxt"></p>
+          <button class="grandao" id="btJogarDeNovo">JOGAR DE NOVO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="painel">
+    <div class="cabecinha" id="lojaTopo"></div>
+    <div class="cestas" id="loja"></div>
+    <div class="cabecinha" style="margin-top:4px">🧺 <b>Cestas</b> — troque os emojis da torre</div>
+    <div class="cestas" id="cestas"></div>
+  </div>
+</div>
+
+<div class="rodape" id="rodape"></div>
+<script>
+/* ==========================================================================
+   TORRE DE EMOJIS
+   O bloco vai e volta lá em cima; você solta e ele empilha. Quanto mais alta
+   a torre, mais dinheiro cada bloco vale. Errar demais entorta a torre — e
+   torre torta cai.
+   ========================================================================== */
+
+/* ---------- as cestas de emoji ---------- */
+const CESTAS = [
+  { id:"caras",  nome:"Carinhas", ic:"😀", abre:0,
+    emojis:["😀","😎","🥳","🤩","😂","🙂","😇","🤠","🥰","😜","🤓","😺"] },
+  { id:"bichos", nome:"Bichos",   ic:"🐯", abre:25,
+    emojis:["🐶","🐱","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸"] },
+  { id:"comida", nome:"Comida",   ic:"🍕", abre:60,
+    emojis:["🍕","🍔","🌭","🍟","🥐","🍩","🍪","🍰","🍦","🍫","🍇","🍉"] },
+  { id:"espaco", nome:"Espaço",   ic:"🚀", abre:120,
+    emojis:["🚀","🛸","🪐","🌟","☄️","🌙","👽","🌍","🔭","⭐","🌌","🛰️"] },
+];
+const CORES = ["#7ac9ff","#6ee7a0","#ffe66d","#ff8a3c","#ff6b9d","#b47aff",
+               "#6ef0c8","#ff4d6d","#ffc857","#c8c8da","#8ab4ff","#fff3b0"];
+
+/* ---------- a loja ---------- */
+const QUALIDADES = ["I","II","III","IV","V","VI"];
+const FAMILIAS = [
+  { id:"valor", ic:"💰", nome:"Contrato", tipo:"valor", base:80,  val:.35,
+    txt:v => "cada bloco vale +" + Math.round(v * 100) + "%" },
+  { id:"cola",  ic:"🧲", nome:"Cola",     tipo:"cola",  base:150, val:.18,
+    txt:v => "a torre entorta " + Math.round(Math.min(.8, v) * 100) + "% menos" },
+  { id:"freio", ic:"🐢", nome:"Freio",    tipo:"freio", base:220, val:.14,
+    txt:v => "o bloco anda " + Math.round(Math.min(.7, v) * 100) + "% mais devagar" },
+  { id:"vida",  ic:"❤️", nome:"Capacete", tipo:"vida",  base:500, val:1,
+    txt:v => "+" + v + " vida(s) em cada rodada" },
+  { id:"largo", ic:"📏", nome:"Bloco",    tipo:"largo", base:400, val:.06,
+    txt:v => "blocos " + Math.round(Math.min(.5, v) * 100) + "% mais largos" },
+  { id:"andaime",ic:"🪜", nome:"Andaime", tipo:"andaime", base:900, val:2,
+    txt:v => "começa a rodada com " + Math.round(v) + " bloco(s) prontos" },
+];
+const LOJA = [];
+FAMILIAS.forEach(f => {
+  for (let t = 0; t < 6; t++) {
+    LOJA.push({ id:f.id + t, fam:f.id, ic:f.ic, tipo:f.tipo, nivel:t,
+      nome:f.nome + " " + QUALIDADES[t], val:f.val * Math.pow(1.9, t),
+      base:f.base * Math.pow(9, t), txt:f.txt, qtd:0 });
+  }
+});
+const preco = u => Math.ceil(u.base * Math.pow(1.25, u.qtd));
+function soma(tipo) {
+  let s = 0;
+  for (const u of LOJA) if (u.tipo === tipo) s += u.qtd * u.val;
+  return s;
+}
+const multValor  = () => 1 + soma("valor");
+const forcaCola  = () => Math.min(.8, soma("cola"));
+const freio      = () => Math.min(.7, soma("freio"));
+const vidasMax   = () => 3 + Math.floor(soma("vida"));
+const largoExtra = () => Math.min(.5, soma("largo"));
+const andaime    = () => Math.floor(soma("andaime"));
+
+/* ---------- estado ---------- */
+const CHAVE = "torreEmojis_v1";
+let moedas = 0, recorde = 0, album = [], cestaAtual = "caras", mudo = false;
+let estat = { rodadas:0, blocos:0, perfeitos:0, quedas:0, melhorRodada:0 };
+const el = id => document.getElementById(id);
+const cestaObj = () => CESTAS.find(c => c.id === cestaAtual) || CESTAS[0];
+const cestaAberta = c => recorde >= c.abre;
+
+function fmt(n) {
+  if (n < 1000) return String(Math.floor(n));
+  const u = ["","K","M","B","T"];
+  let i = 0, x = n;
+  while (x >= 1000 && i < u.length - 1) { x /= 1000; i++; }
+  return x.toFixed(1).replace(".", ",") + u[i];
+}
+let tAviso = null;
+function avisar(t) {
+  el("aviso").textContent = t; el("aviso").classList.add("on");
+  clearTimeout(tAviso); tAviso = setTimeout(() => el("aviso").classList.remove("on"), 1600);
+}
+
+/* ---------- som ---------- */
+let ctxAudio = null;
+function bip(f, dur = .07, tipo = "triangle", vol = .05) {
+  if (mudo) return;
+  try {
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctxAudio.currentTime, o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
+    o.type = tipo; o.frequency.value = f;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0005, t + dur);
+    o.connect(g); g.connect(ctxAudio.destination); o.start(t); o.stop(t + dur);
+  } catch (e) {}
+}
+function tunc(forte) {
+  if (mudo) return;
+  try {
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctxAudio.currentTime, o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(forte ? 260 : 190, t);
+    o.frequency.exponentialRampToValueAtTime(80, t + .09);
+    g.gain.setValueAtTime(forte ? .06 : .04, t);
+    g.gain.exponentialRampToValueAtTime(.0004, t + .12);
+    o.connect(g); g.connect(ctxAudio.destination); o.start(t); o.stop(t + .13);
+  } catch (e) {}
+}
+
+/* ==========================================================================
+   O JOGO
+   ========================================================================== */
+const cv = el("jarra"), ctx = cv.getContext("2d");
+let L = 0, A = 0, dpr = 1, larg = 90, alt = 56;
+let torre = [], caindo = null, vidas = 3, rodada = 0, acabou = false;
+let desvio = 0, camY = 0, camAlvo = 0, quadros = 0, avisos = [], caindoFora = [];
+let balanco = 0, dir = 1, proximoEmoji = 0;
+
+function ajustar() {
+  const r = cv.getBoundingClientRect();
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  L = r.width; A = r.height;
+  cv.width = Math.round(L * dpr); cv.height = Math.round(A * dpr);
+  larg = L * (.24 + largoExtra() * .24);
+  alt = larg * .62;
+}
+window.addEventListener("resize", ajustar);
+
+const alturaDaTorre = () => torre.length;
+const topoY = () => A - 10 - torre.length * alt;      // onde o próximo bloco encosta
+const velBalanco = () => (1.2 + torre.length * .045) * (1 - freio());
+
+function novoBloco() {
+  const c = cestaObj();
+  proximoEmoji = Math.floor(Math.random() * c.emojis.length);
+  el("proximo").textContent = "🧱 " + alturaDaTorre();
+}
+function comecarRodada() {
+  torre = []; caindo = null; caindoFora = []; avisos = [];
+  desvio = 0; acabou = false; rodada = 0; quadros = 0;
+  vidas = vidasMax();
+  ajustar();
+  const base = 1 + andaime();
+  for (let i = 0; i < base; i++) {
+    torre.push({ x: L / 2, emoji: Math.floor(Math.random() * cestaObj().emojis.length),
+                 cor: CORES[i % CORES.length], perfeito: false });
+  }
+  novoBloco();
+  el("fim").classList.remove("on");
+  camY = camAlvo = 0;
+  atualizarTopo(); montarLoja(); montarCestas();
+}
+
+function soltar() {
+  if (acabou || caindo) return;
+  const x = L / 2 + Math.sin(balanco) * (L / 2 - larg / 2 - 6);
+  caindo = { x, y: topoY() - alt * 4, vy: 0, emoji: proximoEmoji,
+             cor: CORES[torre.length % CORES.length] };
+  bip(520, .05);
+}
+
+function encaixar() {
+  const topo = torre[torre.length - 1];
+  const dx = caindo.x - topo.x;
+  const tolerancia = larg * (.06 + forcaCola() * .12);
+  if (Math.abs(dx) > larg) {                      // não pegou nada: o bloco despenca
+    caindoFora.push({ x:caindo.x, y:caindo.y, vy:2, vx:dx > 0 ? 3 : -3, ang:0,
+                      vang:(dx > 0 ? .12 : -.12), emoji:caindo.emoji, cor:caindo.cor });
+    caindo = null;
+    vidas--; estat.quedas++;
+    tunc(false); avisar(vidas > 0 ? "😬 caiu fora! restam " + vidas + " vida(s)" : "💥 acabou!");
+    if (vidas <= 0) perder("os blocos caíram demais");
+    novoBloco(); atualizarTopo();
+    return;
+  }
+  const perfeito = Math.abs(dx) <= tolerancia;
+  torre.push({ x: caindo.x, emoji: caindo.emoji, cor: caindo.cor, perfeito });
+  estat.blocos++;
+  // o que ficou pra fora entorta a torre; a cola segura uma parte
+  desvio += dx * (1 - forcaCola());
+  if (perfeito) { desvio *= .55; estat.perfeitos++; }
+
+  const ganho = Math.round((2 + alturaDaTorre() * 1.4) * multValor() * (perfeito ? 3 : 1));
+  moedas += ganho; rodada += ganho;
+  avisos.push({ x:caindo.x, y:topoY() + alt, t:0,
+                txt:(perfeito ? "PERFEITO! +" : "+") + fmt(ganho), cor:perfeito ? "#ffc857" : "#ffffffcc" });
+  guardarNoAlbum(caindo.emoji);
+  caindo = null;
+  tunc(perfeito);
+  if (perfeito) { bip(880, .09); setTimeout(() => bip(1174, .09), 70); }
+  if (alturaDaTorre() > recorde) recorde = alturaDaTorre();
+  if (Math.abs(desvio) > larg * 1.15) perder("a torre entortou demais");
+  novoBloco(); atualizarTopo(); montarCestas();
+}
+
+function guardarNoAlbum(i) {
+  const c = cestaAtual + "|" + i;
+  if (!album.includes(c)) { album.push(c); salvar(); }
+}
+function perder(motivo) {
+  if (acabou) return;
+  acabou = true; estat.rodadas++;
+  if (rodada > estat.melhorRodada) estat.melhorRodada = rodada;
+  el("fimTxt").innerHTML = motivo.charAt(0).toUpperCase() + motivo.slice(1) + ".<br>" +
+    "Altura: <b>" + alturaDaTorre() + "</b> blocos" +
+    (alturaDaTorre() >= recorde ? " — <b>recorde!</b> 🎉" : " (recorde: <b>" + recorde + "</b>)") +
+    "<br>Você ganhou <b>🪙 " + fmt(rodada) + "</b> nesta rodada";
+  el("fim").classList.add("on");
+  [392, 330, 262].forEach((f, i) => setTimeout(() => bip(f, .2), i * 150));
+  atualizarTopo(); montarLoja(); montarCestas(); salvar();
+}
+
+/* ==========================================================================
+   DESENHO
+   ========================================================================== */
+function desenharBloco(x, y, emoji, cor, inclina) {
+  ctx.save();
+  ctx.translate(x, y);
+  if (inclina) ctx.rotate(inclina);
+  const r = Math.min(10, alt * .25);
+  ctx.beginPath();
+  ctx.roundRect(-larg / 2, -alt / 2, larg, alt, r);
+  const g = ctx.createLinearGradient(0, -alt / 2, 0, alt / 2);
+  g.addColorStop(0, "#ffffff35"); g.addColorStop(.35, cor); g.addColorStop(1, "#00000033");
+  ctx.fillStyle = g; ctx.fill();
+  ctx.lineWidth = 2; ctx.strokeStyle = "#00000044"; ctx.stroke();
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.font = (alt * .72) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+  ctx.fillText(cestaObj().emojis[emoji], 0, alt * .04);
+  ctx.restore();
+}
+
+function quadro() {
+  quadros++;
+  if (!acabou) balanco += velBalanco() * .012;
+
+  if (caindo) {
+    caindo.vy += .9;
+    caindo.y += caindo.vy;
+    if (caindo.y >= topoY() - alt / 2) { caindo.y = topoY() - alt / 2; encaixar(); }
+  }
+  for (let i = caindoFora.length - 1; i >= 0; i--) {
+    const b = caindoFora[i];
+    b.vy += .9; b.y += b.vy; b.x += b.vx; b.ang += b.vang;
+    if (b.y > A + camY + alt * 3) caindoFora.splice(i, 1);
+  }
+
+  camAlvo = Math.max(0, torre.length * alt - A * .55);
+  camY += (camAlvo - camY) * .12;
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, L, A);
+
+  // chão
+  ctx.fillStyle = "#ffffff10";
+  ctx.fillRect(0, A - 10 + camY, L, 10);
+
+  // a torre inteira inclina conforme o desvio
+  const inclinaTorre = Math.max(-.16, Math.min(.16, desvio / (larg * 8)));
+  ctx.save();
+  ctx.translate(L / 2, A - 10 + camY);
+  ctx.rotate(inclinaTorre);
+  ctx.translate(-L / 2, -(A - 10 + camY));
+  for (let i = 0; i < torre.length; i++) {
+    const b = torre[i];
+    const y = A - 10 - i * alt - alt / 2 + camY;
+    if (y < -alt || y > A + alt) continue;
+    desenharBloco(b.x, y, b.emoji, b.cor, 0);
+    if (b.perfeito) {
+      ctx.strokeStyle = "#ffc85788"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(b.x - larg / 2 - 2, y - alt / 2 - 2, larg + 4, alt + 4, 11); ctx.stroke();
+    }
+  }
+  ctx.restore();
+
+  // blocos que caíram fora
+  for (const b of caindoFora) desenharBloco(b.x, b.y + camY, b.emoji, b.cor, b.ang);
+
+  // o bloco que está caindo
+  if (caindo) desenharBloco(caindo.x, caindo.y + camY, caindo.emoji, caindo.cor, 0);
+
+  // o bloco balançando lá em cima + a linha de mira
+  if (!acabou && !caindo) {
+    const x = L / 2 + Math.sin(balanco) * (L / 2 - larg / 2 - 6);
+    const y = topoY() - alt * 4 + camY;
+    ctx.globalAlpha = .35;
+    ctx.strokeStyle = "#ffc857"; ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 6]);
+    ctx.beginPath(); ctx.moveTo(x, y + alt / 2); ctx.lineTo(x, topoY() + camY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    desenharBloco(x, y, proximoEmoji, CORES[torre.length % CORES.length], 0);
+  }
+
+  // os "+moedas"
+  for (let i = avisos.length - 1; i >= 0; i--) {
+    const a = avisos[i]; a.t++;
+    if (a.t > 50) { avisos.splice(i, 1); continue; }
+    ctx.globalAlpha = Math.min(1, (50 - a.t) / 18);
+    ctx.fillStyle = a.cor;
+    ctx.font = '700 ' + Math.max(12, alt * .34) + 'px ' + getComputedStyle(document.body).fontFamily;
+    ctx.textAlign = "center";
+    ctx.fillText(a.txt, a.x, a.y + camY - a.t * 1.1);
+    ctx.globalAlpha = 1;
+  }
+
+  // marca da altura
+  ctx.fillStyle = "#ffffff33";
+  ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
+  ctx.textAlign = "left";
+  ctx.fillText(alturaDaTorre() + " blocos", 8, 20);
+  requestAnimationFrame(quadro);
+}
+
+/* ==========================================================================
+   PAINEL
+   ========================================================================== */
+function montarLoja() {
+  const itens = FAMILIAS.map(f => {
+    const meus = LOJA.filter(u => u.fam === f.id);
+    return meus.find(u => u.qtd === 0) || meus[meus.length - 1];
+  });
+  el("lojaTopo").innerHTML = "🛒 <b>Loja</b> — o dinheiro fica guardado entre uma rodada e outra";
+  el("loja").innerHTML = itens.map(u => {
+    const p = preco(u), pode = moedas >= p;
+    const total = LOJA.filter(x => x.fam === u.fam).reduce((s, x) => s + x.qtd, 0);
+    return '<button class="cesta' + (pode ? "" : " trancada") + '" data-id="' + u.id + '">' +
+      '<div class="ic">' + u.ic + '</div>' +
+      '<div><div class="cn">' + u.nome + '</div><div class="cd">' + u.txt(u.val) + '</div></div>' +
+      '<div class="cq">🪙 ' + fmt(p) + (total ? '<br>x' + total : "") + '</div></button>';
+  }).join("");
+  [...el("loja").children].forEach(b => b.onclick = () => comprar(b.dataset.id));
+}
+function comprar(id) {
+  const u = LOJA.find(x => x.id === id); if (!u) return;
+  const p = preco(u);
+  if (moedas < p) { bip(170); avisar("🪙 faltam " + fmt(p - moedas)); return; }
+  moedas -= p; u.qtd++;
+  bip(880, .1); setTimeout(() => bip(1174, .09), 70);
+  avisar(u.ic + " " + u.nome + " comprado!");
+  if (u.tipo === "largo") { ajustar(); }
+  if (u.tipo === "vida" && !acabou) { vidas = Math.min(vidasMax(), vidas + 1); }
+  atualizarTopo(); montarLoja(); salvar();
+}
+function montarCestas() {
+  el("cestas").innerHTML = CESTAS.map(c => {
+    const aberta = cestaAberta(c), usando = cestaAtual === c.id;
+    const quantos = c.emojis.filter((e, i) => album.includes(c.id + "|" + i)).length;
+    return '<button class="cesta' + (usando ? " usando" : "") + (aberta ? "" : " trancada") +
+      '" data-c="' + c.id + '">' +
+      '<div class="ic">' + c.ic + '</div>' +
+      '<div><div class="cn">' + c.nome + '</div>' +
+      '<div class="cd">' + (aberta ? quantos + "/" + c.emojis.length + " no álbum"
+        : "🔒 faça uma torre de " + c.abre + " blocos") + '</div></div>' +
+      '<div class="cq">' + (usando ? "em uso" : aberta ? "usar" : "") + '</div></button>';
+  }).join("");
+  [...el("cestas").children].forEach(b => b.onclick = () => {
+    const c = CESTAS.find(x => x.id === b.dataset.c);
+    if (!c || !cestaAberta(c)) { bip(170); avisar("🔒 faça uma torre de " + c.abre + " blocos"); return; }
+    cestaAtual = c.id; bip(760);
+    montarCestas(); atualizarTopo(); salvar();
+  });
+}
+function atualizarTopo() {
+  el("pontos").textContent = fmt(moedas);
+  el("vAltura").textContent = alturaDaTorre();
+  el("vRecorde").textContent = recorde;
+  el("vVidas").textContent = acabou ? "—" : "❤️".repeat(Math.max(0, vidas)) || "—";
+  el("vRodada").textContent = "🪙 " + fmt(rodada);
+  const totalAlbum = CESTAS.reduce((s, c) => s + c.emojis.length, 0);
+  el("vAlbum").textContent = album.length + "/" + totalAlbum;
+}
+
+/* ==========================================================================
+   ENTRADA, SAVE E COMEÇO
+   ========================================================================== */
+cv.addEventListener("pointerdown", e => { e.preventDefault(); soltar(); });
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if (e.key === " " || e.key === "ArrowDown") { e.preventDefault(); soltar(); }
+  if (e.key.toUpperCase() === "R") comecarRodada();
+});
+el("btDeNovo").onclick = e => { e.stopPropagation(); comecarRodada(); };
+el("btJogarDeNovo").onclick = comecarRodada;
+el("btSom").onclick = e => {
+  e.stopPropagation(); mudo = !mudo;
+  el("btSom").textContent = mudo ? "🔇" : "🔊";
+  if (!mudo) bip(880);
+  salvar();
+};
+
+function salvar() {
+  try {
+    localStorage.setItem(CHAVE, JSON.stringify({ v:1, moedas, recorde, album, cestaAtual, mudo, estat,
+      ups: LOJA.filter(u => u.qtd).map(u => [u.id, u.qtd]) }));
+  } catch (e) {}
+}
+function carregar() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
+  if (!d) return;
+  moedas = d.moedas || 0; recorde = d.recorde || 0;
+  album = Array.isArray(d.album) ? d.album : [];
+  mudo = !!d.mudo;
+  if (d.estat) for (const k in estat) if (k in d.estat) estat[k] = d.estat[k];
+  (d.ups || []).forEach(([id, q]) => { const u = LOJA.find(x => x.id === id); if (u) u.qtd = q; });
+  const c = CESTAS.find(x => x.id === d.cestaAtual);
+  if (c && cestaAberta(c)) cestaAtual = c.id;
+  if (mudo) el("btSom").textContent = "🔇";
+}
+setInterval(salvar, 5000);
+window.addEventListener("beforeunload", salvar);
+
+/* ---------- aplicativo ---------- */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+let convite = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault(); convite = e; el("btInstalar").hidden = false;
+});
+el("btInstalar").onclick = async () => {
+  if (!convite) return;
+  el("btInstalar").hidden = true;
+  convite.prompt();
+  try { await convite.userChoice; } catch (err) {}
+  convite = null;
+};
+window.addEventListener("appinstalled", () => { el("btInstalar").hidden = true; avisar("📲 torre instalada!"); });
+
+/* ---------- começo ---------- */
+carregar();
+comecarRodada();
+el("rodape").innerHTML =
+  "Clique na tela (ou aperte <b>espaço</b>) pra soltar o bloco. Quanto mais alta a torre, " +
+  "mais <b>🪙 dinheiro</b> cada bloco vale — e acertar no meio paga <b>3x</b>.<br>" +
+  "Bloco que cai fora custa uma vida. Se a torre entortar demais, ela desaba.<br>" +
+  "<b>" + LOJA.length + " melhorias</b> na loja · <b>" + CESTAS.length + " cestas</b> de emoji pra desbloquear.";
+quadro();
+</script>
+</body>
+</html>

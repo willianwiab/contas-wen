@@ -595,6 +595,57 @@
         { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: 8 camadas, 56 emojis escondidos, 48 melhorias, robôs, dinamite, lanterna e o jogo já instalável como aplicativo." }
       ],
       "ranking": []
+    },
+    {
+      "slug": "torre-de-emojis",
+      "nome": "Torre de Emojis",
+      "descricao": "O bloco vai e volta lá em cima; você solta e ele empilha. Quanto mais alta a torre, mais dinheiro cada bloco vale — e acertar bem no meio paga 3x.",
+      "comoFunciona": "Um bloco com um emoji fica indo e voltando no alto da tela. Você clica pra soltar e ele cai em cima do que já está empilhado. Acertar no meio é PERFEITO e paga o triplo; errar entorta a torre, e errar muito faz o bloco cair fora e custar uma vida.",
+      "objetivo": "Fazer a torre mais alta que você conseguir, juntar dinheiro e comprar as melhorias que deixam tudo mais fácil — até desbloquear as quatro cestas de emoji.",
+      "mecanicas": [
+        "Empilhar com o bloco andando de um lado pro outro, cada vez mais rápido",
+        "PERFEITO: acertar no meio paga 3x e endireita a torre",
+        "A torre entorta conforme os erros e desaba se passar do limite",
+        "Vidas: bloco que cai fora custa uma",
+        "36 melhorias em 6 famílias, o dinheiro fica guardado entre as rodadas",
+        "4 cestas de emoji que abrem conforme o recorde de altura",
+        "Dá pra instalar como aplicativo e jogar sem internet",
+        "Salvamento automático"
+      ],
+      "categoria": "Arcade",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Média",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "Cada bloco paga 2 + 1,4 por andar da torre, multiplicado pelas melhorias de Contrato. Bloco PERFEITO paga 3 vezes isso.",
+      "popularidade": 98,
+      "imagem": "assets/images/torre-de-emojis.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../torre-de-emojis/index.html",
+      "galeria": [],
+      "historia": "Ninguém pediu uma torre de emojis. Mas alguém pagou por ela — e paga mais a cada andar que sobe.",
+      "comoJogar": "Clique na tela (ou aperte espaço) pra soltar o bloco. Tente soltar bem em cima do bloco de baixo: no meio é PERFEITO e paga 3x. Se errar demais, o bloco cai fora e você perde uma vida. Com o dinheiro, compre o Freio (o bloco anda mais devagar) e a Cola (a torre entorta menos) — são as duas que mais ajudam no começo.",
+      "controles": [
+        { "tecla": "Clique", "acao": "Soltar o bloco" },
+        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
+        { "tecla": "Espaço", "acao": "Soltar o bloco" },
+        { "tecla": "R", "acao": "Começar outra rodada" },
+        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+      ],
+      "curiosidades": [
+        "Os blocos não giram: o que decide tudo é a distância entre o centro do bloco novo e o de baixo. É isso que deixa a pilha firme em vez de tremendo.",
+        "O quanto a torre está torta é a soma de todos os errinhos — ou seja, o quanto o topo saiu de cima da base. Por isso um PERFEITO no meio da rodada endireita tudo um pouco.",
+        "O bloco anda mais rápido a cada andar, então uma torre alta fica difícil sozinha, mesmo com as melhorias."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: empilhar com PERFEITO, vidas, torre que entorta e desaba, 36 melhorias, 4 cestas de emoji e o jogo já instalável como aplicativo." }
+      ],
+      "ranking": []
     }
   ]
 }
