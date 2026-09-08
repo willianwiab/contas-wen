@@ -4,13 +4,13 @@
    nova; sem internet, vem a última que ficou guardada.
    Ao mudar o jogo, suba a VERSAO.
    ============================================================ */
-const VERSAO = 'cat-city-v4';
+const VERSAO = 'cat-city-v5';
 const CACHE = VERSAO;
 const ARQUIVOS = [
   './', './index.html', './style.css', './manifest.webmanifest',
   './js/main.js', './js/sprites.js', './js/formas.js', './js/city.js', './js/player.js',
   './js/cats.js', './js/physics.js', './js/camera.js', './js/events.js', './js/ui.js',
-  './js/audio.js', './js/input.js', './js/adm.js', './js/formario.js',
+  './js/audio.js', './js/input.js', './js/adm.js', './js/formario.js', './js/instalar.js',
   './icone.svg', './icone-192.png', './icone-512.png', './icone-180.png', './icone-mascara.png',
 ];
 self.addEventListener('install', ev => {

@@ -22,6 +22,7 @@ import { entrada, direcaoTeclado, lerControle, fecharQuadro, ligarToque, ligarBo
 import * as sfx from "./audio.js";
 import * as ui from "./ui.js";
 import { ligarAdm } from "./adm.js";
+import { ligarInstalar } from "./instalar.js";
 
 const cv = document.getElementById("tela"), ctx = cv.getContext("2d", { alpha:false });
 let L = 0, A = 0, dpr = 1;
@@ -770,6 +771,7 @@ quandoMenu(() => { if (jogo.rodando && !ui.telaAberta()) pausar(); else if (jogo
 ui.botao("btJogar", () => comecar(true));
 ui.botao("btComoJogar", () => ui.tela("telaComo"));
 ui.botao("btVoltaComo", () => ui.tela("telaMenu"));
+ui.botao("btVoltaInstalar", () => ui.tela("telaMenu"));
 ui.botao("btFormas", () => { ui.montarGradeFormas(jogador.desbloqueadas, true); ui.tela("telaFormas"); });
 ui.botao("btVoltaFormas", () => ui.tela(jogo.rodando ? "telaPausa" : "telaMenu"));
 ui.botao("btOpcoes", () => ui.tela("telaOpcoes"));
@@ -815,6 +817,7 @@ novaCidade();
 refazerParedes();
 recomecar(true);
 ligarBotoesDeToque();
+ligarInstalar(ui.tela, ui.recado);
 ui.ligarCatalogo(() => jogador.desbloqueadas);
 aplicarToque();
 opVol.value = Math.round(sfx.som.volume * 100);

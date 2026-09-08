@@ -104,6 +104,22 @@ body {
 }
 .botao:active { transform:translateY(5px); box-shadow:none; }
 .botao.secundario { background:#ffffff12; color:var(--ink); box-shadow:0 5px 0 #ffffff10; border:1px solid var(--linha); }
+/* .botao é display:block e ganharia do [hidden] do navegador — sem esta linha
+   o botão de instalar aparecia mesmo escondido */
+.botao[hidden] { display:none; }
+
+/* ---------------- passo a passo de instalar ---------------- */
+.passos { text-align:left; margin:14px 0 18px; display:flex; flex-direction:column; gap:9px; }
+.passos .p {
+  display:flex; gap:11px; align-items:flex-start; padding:11px 13px;
+  border:1px solid var(--linha); border-radius:13px; background:#ffffff08; font-size:.83rem; line-height:1.6;
+}
+.passos .p b { color:var(--ouro); }
+.passos .p .num {
+  flex:none; width:24px; height:24px; border-radius:50%; display:grid; place-items:center;
+  background:var(--ouro); color:#2f1d02; font-family:var(--mono); font-size:.72rem; font-weight:800;
+}
+.passos .obs { color:var(--dim); font-size:.78rem; line-height:1.6; padding:0 4px; }
 .linhaBotoes { display:flex; gap:8px; }
 .linhaBotoes .botao { margin:8px 0 0; }
 .controles { display:grid; grid-template-columns:auto 1fr; gap:5px 12px; text-align:left; font-size:.8rem; margin:14px 0; }
