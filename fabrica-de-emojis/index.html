@@ -192,6 +192,26 @@
   .modoCard .md { font-size:.74rem; color:var(--dim); margin-top:3px; line-height:1.45; }
   .modoCard .mp { font-family:var(--mono); font-size:.66rem; color:var(--verde); margin-top:5px; }
   .modoCard .mp.novo { color:var(--dim); }
+  .jogoCard { display:flex; gap:6px; align-items:stretch; margin-bottom:8px; }
+  .jogoAbrir {
+    flex:1; display:flex; gap:11px; align-items:flex-start; text-align:left; cursor:pointer;
+    padding:11px; border-radius:13px; font-family:inherit; color:inherit; min-width:0;
+    border:1px solid var(--linha); background:linear-gradient(180deg,var(--painel2),var(--painel));
+    transition:border-color .12s, transform .08s;
+  }
+  .jogoAbrir:hover { border-color:var(--ouro); transform:translateY(-1px); }
+  .jogoCard.aberto .jogoAbrir { border-color:var(--ouro); }
+  .jogoBt {
+    width:38px; border-radius:11px; cursor:pointer; font-size:.95rem;
+    border:1px solid var(--linha); background:#ffffff08; color:var(--ink);
+  }
+  .jogoBt:hover { background:#ffffff18; border-color:var(--ouro); }
+  .jogoBt.apagar:hover { background:#ff6b6b22; border-color:#ff6b6b; }
+  .divisor {
+    font-family:var(--mono); font-size:.6rem; letter-spacing:.2em; color:var(--dim);
+    text-transform:uppercase; margin:14px 0 8px; display:flex; align-items:center; gap:8px;
+  }
+  .divisor::after { content:""; flex:1; height:1px; background:var(--linha); }
   .selo {
     font-family:var(--mono); font-size:.58rem; letter-spacing:.14em; text-transform:uppercase;
     padding:3px 8px; border-radius:99px; border:1px solid var(--linha); color:var(--dim); margin-left:auto;
@@ -317,9 +337,13 @@
 
 <div id="inicio" class="on"><div class="janela" style="max-width:560px">
   <h3>🏭 Fábrica de Emojis</h3>
-  <p class="sub">Escolhe como você quer jogar. Cada modo tem o save dele — um não estraga o outro.</p>
+  <p class="sub">Seus jogos salvos. Dá pra ter vários ao mesmo tempo — um nunca apaga o outro.</p>
+  <div class="divisor">💾 Continuar</div>
+  <div id="jogoLista"></div>
+  <div class="divisor">✨ Começar um jogo novo</div>
   <div id="modoLista"></div>
-  <p class="sub" style="margin:12px 0 0">Depois dá pra trocar de modo no 🎮 em cima da caixa.</p>
+  <p class="sub" style="margin:12px 0 0">O jogo salva sozinho, mas tem o botão 💾 em cima da caixa pra salvar na hora.
+  No 🎮 você volta pra esta tela.</p>
 </div></div>
 
 <div id="volta"><div class="janela" style="max-width:420px">
@@ -450,7 +474,8 @@
         <button class="pilula" id="btSom">🔊</button>
         <button class="pilula" id="btGiro" title="inclinar o celular">📱</button>
         <button class="pilula" id="btAdm" title="modo adm">🔒</button>
-        <button class="pilula" id="btModo" title="trocar de modo">🎮</button>
+        <button class="pilula" id="btModo" title="trocar de jogo">🎮</button>
+        <button class="pilula" id="btSalvar" title="salvar agora">💾</button>
         <div class="pilula" id="pilulaDia" style="cursor:default"></div>
         <div class="pilula info" id="contadorPilha">vazia</div>
       </div>
@@ -881,7 +906,9 @@ const MODOS = [
     desc:"Dinheiro que não acaba e as 120 raridades abertas desde o começo. É o modo de bagunçar.",
     livre:true },
 ];
-let modoAtual = null;
+let modoAtual = null, jogoAtual = null, jogos = [];
+const CHAVE_INDICE = "fabricaEmojis_jogos", MAX_JOGOS = 12;
+const chaveDoJogo = id => "fabricaEmojis_jogo_" + id;
 const modoObj = () => MODOS.find(m => m.id === modoAtual) || MODOS[0];
 const modoLivre = () => !!modoObj().livre;
 const precoX = () => modoObj().precoX || 1;
@@ -2218,6 +2245,7 @@ el("admSenha").addEventListener("keydown", e => { if (e.key === "Enter") tentarS
 el("btAdm").onclick = e => { e.stopPropagation(); abrirAdm(); };
 el("btGiro").onclick = e => { e.stopPropagation(); ligarInclinacao(); bip(760); };
 el("btModo").onclick = e => { e.stopPropagation(); abrirInicio(); };
+el("btSalvar").onclick = e => { e.stopPropagation(); salvarNaMao(); };
 el("adm").onclick = e => { if (e.target === el("adm")) fecharAdm(); };
 
 document.addEventListener("keydown", e => {
@@ -2563,8 +2591,89 @@ function pacote() {
   };
 }
 function salvar() {
-  if (!modoAtual) return;                    // ninguém escolheu modo ainda: não sobrescreve nada
-  try { localStorage.setItem(chaveDoModo(modoAtual), JSON.stringify(pacote())); } catch (e) {}
+  if (!jogoAtual) return;                    // ninguém abriu um jogo ainda: não sobrescreve nada
+  try {
+    localStorage.setItem(chaveDoJogo(jogoAtual.id), JSON.stringify(pacote()));
+    jogoAtual.quando = Date.now();
+    jogoAtual.resumo = { recorde, emojis: descobertos.length, conquistas: conquistasFeitas.length,
+                         tempo: estat.tempo };
+    salvarIndice();
+  } catch (e) {}
+}
+function salvarIndice() {
+  try { localStorage.setItem(CHAVE_INDICE, JSON.stringify(jogos)); } catch (e) {}
+}
+function salvarNaMao() {
+  if (!jogoAtual) return;
+  salvar();
+  avisar("💾 jogo salvo!");
+  bip(1046, .12); setTimeout(() => bip(1318, .1), 80);
+}
+
+/* Lê a lista de jogos salvos. Quem já jogava antes dos slots tinha um save
+   por modo — cada um daqueles vira um jogo salvo, sem perder nada. */
+function carregarIndice() {
+  try { jogos = JSON.parse(localStorage.getItem(CHAVE_INDICE) || "null") || []; } catch (e) { jogos = []; }
+  if (!Array.isArray(jogos)) jogos = [];
+  if (jogos.length) return;
+  MODOS.forEach(m => {
+    const antigo = localStorage.getItem(chaveDoModo(m.id));
+    if (!antigo) return;
+    const id = novoIdDeJogo();
+    try { localStorage.setItem(chaveDoJogo(id), antigo); } catch (e) { return; }
+    jogos.push({ id, modo: m.id, nome: m.nome, quando: Date.now(), resumo: resumoDoTexto(antigo) });
+  });
+  if (!jogos.length) {                        // save de antes até dos modos
+    for (const k of ANTIGAS) {
+      const antigo = localStorage.getItem(k);
+      if (!antigo) continue;
+      const id = novoIdDeJogo();
+      try { localStorage.setItem(chaveDoJogo(id), antigo); } catch (e) { break; }
+      jogos.push({ id, modo:"normal", nome:"Meu jogo", quando: Date.now(), resumo: resumoDoTexto(antigo) });
+      break;
+    }
+  }
+  if (jogos.length) salvarIndice();
+}
+function resumoDoTexto(txt) {
+  try { const d = JSON.parse(txt);
+    return { recorde: d.recorde || 0, emojis: (d.descobertos||[]).length,
+             conquistas: (d.conquistas||[]).length, tempo: (d.estat && d.estat.tempo) || 0 };
+  } catch (e) { return { recorde:0, emojis:0, conquistas:0, tempo:0 }; }
+}
+const novoIdDeJogo = () => "j" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+
+function novoJogo(modo) {
+  if (jogos.length >= MAX_JOGOS) { avisar("💾 já são " + MAX_JOGOS + " jogos salvos — apague um antes"); bip(180); return; }
+  salvar();
+  const m = MODOS.find(x => x.id === modo) || MODOS[0];
+  const quantos = jogos.filter(j => j.modo === modo).length;
+  const jogo = { id: novoIdDeJogo(), modo, nome: m.nome + (quantos ? " " + (quantos + 1) : ""),
+                 quando: Date.now(), resumo: { recorde:0, emojis:0, conquistas:0, tempo:0 } };
+  jogos.push(jogo); salvarIndice();
+  entrarNoJogo(jogo, true);
+}
+function abrirJogo(id) {
+  const j = jogos.find(x => x.id === id); if (!j) return;
+  salvar();
+  entrarNoJogo(j, false);
+}
+function apagarJogo(id) {
+  const j = jogos.find(x => x.id === id); if (!j) return;
+  if (!confirm('Apagar o jogo "' + j.nome + '" pra sempre?\n\nIsso não dá pra desfazer.')) return;
+  try { localStorage.removeItem(chaveDoJogo(id)); } catch (e) {}
+  jogos = jogos.filter(x => x.id !== id); salvarIndice();
+  if (jogoAtual && jogoAtual.id === id) {     // apagou o que estava aberto: volta pro início
+    jogoAtual = null; modoAtual = null; limparEstado(); render();
+    el("inicio").classList.add("on");
+  }
+  avisar("🗑️ jogo apagado"); bip(200, .18);
+  montarInicio();
+}
+function renomearJogo(id) {
+  const j = jogos.find(x => x.id === id); if (!j) return;
+  const n = prompt("Nome desse jogo:", j.nome);
+  if (n && n.trim()) { j.nome = n.trim().slice(0, 22); salvarIndice(); montarInicio(); }
 }
 function aplicar(d) {
   if (!d) return;
@@ -2595,49 +2704,59 @@ function aplicar(d) {
   if (mudo) el("btSom").textContent = "🔇";
 }
 function carregar() {
+  if (!jogoAtual) return null;
   let d = null;
-  try { d = JSON.parse(localStorage.getItem(chaveDoModo(modoAtual)) || "null"); } catch (e) {}
-  // quem já jogava antes dos modos continua de onde parou, no Normal
-  if (!d && modoAtual === "normal") {
-    for (let i = 0; !d && i < ANTIGAS.length; i++) {
-      try { d = JSON.parse(localStorage.getItem(ANTIGAS[i]) || "null"); } catch (e) {}
-    }
-  }
+  try { d = JSON.parse(localStorage.getItem(chaveDoJogo(jogoAtual.id)) || "null"); } catch (e) {}
   if (!d) return null;
   aplicar(d);
   return d;
 }
 
 /* ---------- tela de início: escolher o modo ---------- */
+const escapaHtml = t => String(t).replace(/[&<>"']/g, c =>
+  ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
 function montarInicio() {
-  el("modoLista").innerHTML = MODOS.map(m => {
-    let progresso = "novo — começa do zero", classe = " novo";
-    try {
-      let d = JSON.parse(localStorage.getItem(chaveDoModo(m.id)) || "null");
-      if (!d && m.id === "normal") {
-        for (let i = 0; !d && i < ANTIGAS.length; i++) d = JSON.parse(localStorage.getItem(ANTIGAS[i]) || "null");
-      }
-      if (d) {
-        progresso = "recorde R$ " + fmt(d.recorde || 0) + " · " + (d.descobertos || []).length +
-          " emojis · " + (d.conquistas || []).length + " conquistas";
-        classe = "";
-      }
-    } catch (e) {}
-    return '<button class="modoCard" data-m="' + m.id + '">' +
+  const lista = jogos.slice().sort((a, b) => (b.quando || 0) - (a.quando || 0));
+  el("jogoLista").innerHTML = lista.length ? lista.map(j => {
+    const m = MODOS.find(x => x.id === j.modo) || MODOS[0];
+    const r = j.resumo || {}, aberto = jogoAtual && jogoAtual.id === j.id;
+    return '<div class="jogoCard' + (aberto ? " aberto" : "") + '">' +
+      '<button class="jogoAbrir" data-j="' + j.id + '">' +
+        '<div class="mi">' + m.ic + '</div>' +
+        '<div style="flex:1;min-width:0"><div class="mn">' + escapaHtml(j.nome) +
+          (aberto ? '<span class="selo">jogando</span>' : "") + '</div>' +
+        '<div class="mp">recorde R$ ' + fmt(r.recorde || 0) + ' · ' + (r.emojis || 0) +
+          ' emojis · ' + (r.conquistas || 0) + ' conquistas</div>' +
+        '<div class="md">modo ' + m.nome + ' · ' + tempoCurto(r.tempo || 0) + ' de fábrica</div></div></button>' +
+      '<button class="jogoBt" data-ren="' + j.id + '" title="mudar o nome">✏️</button>' +
+      '<button class="jogoBt apagar" data-del="' + j.id + '" title="apagar este jogo">🗑️</button></div>';
+  }).join("") :
+    '<div class="cabecinha">Nenhum jogo salvo ainda — escolhe um modo aí embaixo pra começar o primeiro.</div>';
+
+  el("jogoLista").querySelectorAll("[data-j]").forEach(b => b.onclick = () => abrirJogo(b.dataset.j));
+  el("jogoLista").querySelectorAll("[data-ren]").forEach(b => b.onclick = () => renomearJogo(b.dataset.ren));
+  el("jogoLista").querySelectorAll("[data-del]").forEach(b => b.onclick = () => apagarJogo(b.dataset.del));
+
+  el("modoLista").innerHTML = MODOS.map(m =>
+    '<button class="modoCard" data-m="' + m.id + '">' +
       '<div class="mi">' + m.ic + '</div>' +
-      '<div style="flex:1"><div class="mn">' + m.nome +
-        (m.id === modoAtual ? '<span class="selo">jogando</span>' : "") + '</div>' +
+      '<div style="flex:1"><div class="mn">' + m.nome + '</div>' +
       '<div class="md">' + m.desc + '</div>' +
-      '<div class="mp' + classe + '">' + progresso + '</div></div></button>';
-  }).join("");
-  [...el("modoLista").children].forEach(b => b.onclick = () => escolherModo(b.dataset.m));
+      '<div class="mp novo">' + (jogos.filter(j => j.modo === m.id).length || "nenhum") +
+        ' jogo(s) salvo(s) nesse modo</div></div></button>').join("");
+  [...el("modoLista").children].forEach(b => b.onclick = () => novoJogo(b.dataset.m));
 }
 function abrirInicio() { salvar(); montarInicio(); el("inicio").classList.add("on"); }
-function escolherModo(id) {
-  salvar();                                   // guarda o modo anterior antes de trocar
-  modoAtual = id;
+function escolherModo(id) {                   // atalho: abre o jogo mais recente daquele modo, ou cria um
+  const meu = jogos.filter(j => j.modo === id).sort((a, b) => b.quando - a.quando)[0];
+  if (meu) abrirJogo(meu.id); else novoJogo(id);
+}
+function entrarNoJogo(jogo, novo) {
+  jogoAtual = jogo;
+  modoAtual = jogo.modo;
   limparEstado();
-  const d = carregar();
+  const d = novo ? null : carregar();
   if (!primeiroDia) primeiroDia = Date.now();     // começa a temporada de Estreia
   if (modoLivre()) {                          // no Livre já começa com tudo na mão
     dinheiro = Math.max(dinheiro, 1e30);
@@ -2645,8 +2764,8 @@ function escolherModo(id) {
   }
   el("inicio").classList.remove("on");
   el("btModo").textContent = modoObj().ic;
-  el("btModo").title = "modo " + modoObj().nome + " — clique pra trocar";
-  marcarModoJogado(id);
+  el("btModo").title = jogo.nome + " (" + modoObj().nome + ") — clique pra trocar de jogo";
+  marcarModoJogado(jogo.modo);
   sortearMissoes(); atualizarDia(); arrumarFamilia(); montarFamilias(); montarLista();
   checarConquistas(); checarMissoes(); render(); salvar();
   bip(880); setTimeout(() => bip(1174, .12), 90);
@@ -2677,6 +2796,7 @@ window.addEventListener("beforeunload", salvar);
 /* ---------- começo: a tela de início escolhe o modo, e o modo carrega o save ---------- */
 ajustar();
 aplicarTema();
+carregarIndice();
 sortearMissoes();
 montarFamilias(); montarLista();
 atualizarDia();
