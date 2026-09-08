@@ -61,7 +61,9 @@ export class Clipe {
     this.balaoAte = 0;
     /* Os efeitos dos segredos. Cada um guarda ATÉ QUANDO vale (em
        milissegundos do relógio), pra sobreviver a recarregar a página. */
-    this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0 };
+    this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0, vermelho:0 };
+    /* ele indo embora: 0 é aqui, 1 é fora da tela */
+    this.saindo = 0; this.indoEmbora = false; this.fora = false;
     this.dpr = 1;
     this.ajustar();
     addEventListener("resize", () => this.ajustar());
@@ -98,7 +100,10 @@ export class Clipe {
     this.efeitos[qual] = Math.max(this.efeitos[qual] || 0, Date.now() + minutos * 60000);
   }
   temEfeito(qual) { return (this.efeitos[qual] || 0) > Date.now(); }
-  curar() { this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0 }; }
+  curar() {
+    this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0, vermelho:0 };
+    this.voltar();
+  }
   faltaPara(qual) {
     const ms = (this.efeitos[qual] || 0) - Date.now();
     if (ms <= 0) return "";
@@ -107,9 +112,22 @@ export class Clipe {
     return Math.floor(min / 60) + "h" + String(min % 60).padStart(2, "0");
   }
 
+  /* ---- ele vai embora (e volta) ---- */
+  irEmbora() { this.indoEmbora = true; this.fora = false; }
+  voltar() { this.indoEmbora = false; this.fora = false; }
+  foiEmbora() { return this.fora; }
+
   /* ---- o quadro ---- */
   passo(dt) {
     this.t += dt;
+    /* a saída: ele escorrega pro lado até sumir. A volta é mais devagar,
+       porque voltar é sempre mais constrangedor do que sair batendo a porta. */
+    if (this.indoEmbora) {
+      this.saindo = Math.min(1, this.saindo + dt * .85);
+      if (this.saindo >= 1) this.fora = true;
+    } else if (this.saindo > 0) {
+      this.saindo = Math.max(0, this.saindo - dt * .55);
+    }
     this.trocaHumor = Math.min(1, this.trocaHumor + dt * 5);
     if (this.gesto) {
       this.gestoT += dt;
@@ -174,6 +192,12 @@ export class Clipe {
     if (H.dorme) { entorta += Math.sin(t * 1.1) * .07; sobe += Math.sin(t * 1.1) * 3; }
 
     const escala = Math.min(L / 2.5, A / 2.9);
+    /* já saiu de cena: não desenha nada */
+    if (this.fora && this.saindo >= 1) return;
+    /* indo embora: escorrega pra direita, gira e encolhe */
+    const fugaX = this.saindo * L * .95;
+    const fugaGiro = this.saindo * 1.4;
+    const fugaEsc = 1 - this.saindo * .35;
 
     /* ---- a sombra no chão: fica na tela mesmo, sem girar junto ---- */
     /* fantasma não faz sombra. É o detalhe que entrega tudo. */
@@ -181,14 +205,16 @@ export class Clipe {
     ctx.globalAlpha = assombrado ? 0 : .16;
     ctx.fillStyle = "#000";
     ctx.beginPath();
-    ctx.ellipse(L / 2, A * .55 + escala * 1.2, escala * (.5 + sobe / A * .5), escala * .09, 0, 0, 6.2832);
+    ctx.ellipse(L / 2 + fugaX, A * .55 + escala * 1.2,
+      escala * (.5 + sobe / A * .5) * fugaEsc, escala * .09, 0, 0, 6.2832);
     ctx.fill();
     ctx.restore();
 
     ctx.save();
     if (assombrado) ctx.globalAlpha = .42 + Math.sin(t * 1.7) * .08;
-    ctx.translate(L / 2, A * .55 + sobe);
-    ctx.rotate(gira);
+    ctx.translate(L / 2 + fugaX, A * .55 + sobe - this.saindo * A * .05);
+    ctx.rotate(gira + fugaGiro);
+    ctx.scale(fugaEsc, fugaEsc);
     ctx.transform(esticaX, 0, entorta, esticaY, 0, 0);
     ctx.scale(escala, escala);
 
@@ -200,7 +226,14 @@ export class Clipe {
     ctx.save(); ctx.translate(.012, .022); caminhoDoClipe(ctx); ctx.stroke(); ctx.restore();
 
     const brilho = ctx.createLinearGradient(-1, -1, 1, 1);
-    if (assombrado) {
+    if (this.temEfeito("vermelho")) {
+      /* vermelho de raiva: 100 cutucadas fazem isso com qualquer um */
+      const p = .5 + Math.sin(t * 9) * .5;
+      brilho.addColorStop(0, "#ffb4b4");
+      brilho.addColorStop(.4, "#e02a2a");
+      brilho.addColorStop(.7, p > .5 ? "#ff5252" : "#b81414");
+      brilho.addColorStop(1, "#8e0f0f");
+    } else if (assombrado) {
       /* de fantasma o metal fica azulado e frio, quase apagado */
       brilho.addColorStop(0, "#eaf6ff");
       brilho.addColorStop(.5, "#a8c8e8");

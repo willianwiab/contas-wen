@@ -4,7 +4,7 @@
    nova; sem internet, vem a última que ficou guardada.
    Ao mudar o site, suba a VERSAO.
    ============================================================ */
-const VERSAO = 'clipy-v8';
+const VERSAO = 'clipy-v9';
 const CACHE = VERSAO;
 const ARQUIVOS = [
   './', './index.html', './style.css', './manifest.webmanifest',

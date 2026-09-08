@@ -170,6 +170,14 @@ export const SEGREDOS = [
            "Era eu tremendo e batendo na mesa. Desculpa. Sou um clipe muito nervoso.",
   },
 
+  /* Este não tem palavra nenhuma: é o único que se acha cutucando. Está aqui
+     só pra aparecer na lista de ovinhos depois de achado. */
+  {
+    id:"cemCutucadas", olho:/(?!)/, semPalavra:true,
+    fala:"CEM CUTUCADAS. CHEGA.",
+    humor:"bravo", gesto:"tremer",
+  },
+
   /* ---------- os outros ---------- */
   {
     id:"rickroll", olho:/never gonna give you up|rickroll|dQw4w9WgXcQ/i,

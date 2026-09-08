@@ -1035,7 +1035,7 @@
     {
       "slug": "clipy",
       "nome": "Clipy",
-      "descricao": "Um ajudante de clipe de papel que fica num canto da tela, lê o que você escreve e aparece sozinho pra atrapalhar — igual aos assistentes que vinham nos programas de escritório dos anos 90. São 33 regras e 22 segredos rodando dentro do navegador, sem internet nenhuma — e três delas respondem de verdade: escreva 1+1= no papel e ele responde 2.",
+      "descricao": "Um ajudante de clipe de papel que fica num canto da tela, lê o que você escreve e aparece sozinho pra atrapalhar — igual aos assistentes que vinham nos programas de escritório dos anos 90. São 33 regras e 23 segredos rodando dentro do navegador, sem internet nenhuma — e três delas respondem de verdade: escreva 1+1= no papel e ele responde 2.",
       "comoFunciona": "São duas coisas no mesmo site. Na aba do papel você escreve e o Clipy vai lendo. Cada uma das 33 regras dele sabe reconhecer uma coisa: 'começa com Prezado' é carta, 'três linhas com traço' é lista, 'tudo em maiúscula' é gritar. Quando uma regra bate, ele pula na sua frente com uma sugestão e dois botões. E os botões fazem coisa de verdade: montam a carta, numeram a lista, somam os números, abaixam as maiúsculas. Três regras vão além e RESPONDEM: escreva uma conta e ele resolve.",
       "objetivo": "Não tem objetivo — é um brinquedo e uma aula. Dá pra descobrir as 33 regras escrevendo coisas diferentes e ver cada uma acender na aba 🧠, que mostra exatamente o que ele está pensando.",
       "mecanicas": [
@@ -1044,8 +1044,8 @@
         "A calculadora é feita do zero, com um analisador de verdade, e NÃO usa eval: código escrito no papel não executa nada",
         "Pedir a resposta fura a fila da chatice: mesmo com ela no zero, conta ele responde na hora",
         "CENSURADOR: palavrão escrito no papel some na hora, trocado por #@$%!",
-        "22 segredos escondidos, e cinco deles DEIXAM MARCA: um vídeo deixa o Clipy arco-íris, de olho de burro e mudo por 30 minutos; outro queima o cérebro dele e são 24 horas de olho de burro; outro faz ele virar o BEN, de jaleco e orelhas, só respondendo com grunhido; outro deixa ele fantasma, transparente e sem sombra; e escrever um certo nome três vezes APAGA A LUZ da página. O estrago sobrevive a fechar a página — e cinco cutucadas curam",
-        "A aba 🧠 mostra a lista dos 22 ovinhos, revelando só os que você já achou",
+        "23 segredos escondidos, e seis deles DEIXAM MARCA: um vídeo deixa o Clipy arco-íris, de olho de burro e mudo por 30 minutos; outro queima o cérebro dele e são 24 horas de olho de burro; outro faz ele virar o BEN, de jaleco e orelhas, só respondendo com grunhido; outro deixa ele fantasma, transparente e sem sombra; escrever um certo nome três vezes APAGA A LUZ da página; e cutucar ele cem vezes deixa ele vermelho de raiva e ele SAI DA TELA (com botão pra chamar de volta). O estrago sobrevive a fechar a página — e cinco cutucadas curam",
+        "A aba 🧠 mostra a lista dos 23 ovinhos, revelando só os que você já achou",
         "Os botões do balão fazem coisa de verdade: montar carta com data e despedida, numerar lista, somar tudo em R$, abaixar maiúsculas, data por extenso, arrumar telefone, tirar palavra repetida",
         "Controle de CHATICE de 0 a 100: decide se ele espera 42 segundos ou 6 segundos entre uma fala e outra (no zero ele fica quieto de vez)",
         "Botão 'não mostrar mais esta dica' que cala aquela regra pra sempre — o botão que todo mundo queria ter nos anos 90",

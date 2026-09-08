@@ -28,6 +28,7 @@ let censurados = 0;                 // quantos palavrões ele já barrou
 const segredosVistos = new Set();   // pra não repetir o mesmo segredo sem parar
 const segredosContados = {};        // os que contam quantas vezes você escreveu
 let cutucadas = [];                 // cinco seguidas curam o Clipy
+let cutucadasTotal = 0;             // a paciência dele tem número: 100
 const abertura = Date.now() / 1000;
 
 function lerPapel() {
@@ -188,6 +189,14 @@ function atualizarEfeitos() {
   if (clipe.temEfeito("mudo")) partes.push("🤐 mudo " + clipe.faltaPara("mudo"));
   if (clipe.temEfeito("ben")) partes.push("🥼 modo BEN " + clipe.faltaPara("ben"));
   if (clipe.temEfeito("fantasma")) partes.push("👻 fantasma " + clipe.faltaPara("fantasma"));
+  if (clipe.temEfeito("vermelho")) partes.push("🟥 furioso");
+  if (clipe.foiEmbora()) {
+    c.hidden = false;
+    c.innerHTML = "🚪 ele saiu da tela (foram 100 cutucadas) " +
+      '<button id="btVoltar">🔔 chamar de volta</button>';
+    $("btVoltar").onclick = chamarDeVolta;
+    return;
+  }
   c.hidden = !partes.length;
   if (partes.length) c.innerHTML = partes.join(" · ") +
     ' <button id="btCurar">🔧 consertar</button>';
@@ -195,7 +204,9 @@ function atualizarEfeitos() {
 }
 function curarClipy() {
   const tinha = clipe.temEfeito("arcoiris") || clipe.temEfeito("burro") ||
-                clipe.temEfeito("mudo") || clipe.temEfeito("ben") || clipe.temEfeito("fantasma");
+                clipe.temEfeito("mudo") || clipe.temEfeito("ben") ||
+                clipe.temEfeito("fantasma") || clipe.foiEmbora();
+  cutucadasTotal = 0;
   clipe.curar(); salvar(); atualizarEfeitos();
   if (tinha) {
     dizer("Ufa. Voltei. Não me mostre mais aquilo.", true);
@@ -225,7 +236,10 @@ let ultimaResposta = "";
 function responderAgora() {
   const r = cerebro.pensar(estado, true);
   if (!r) return false;
-  const chave = r.id + "|" + estado.linha;
+  /* o jeito de responder muda com o estado dele, então ele entra na conta:
+     de BEN a resposta vem com grunhido, mudo vem com bilhete */
+  const chave = r.id + "|" + estado.linha + "|" +
+    (clipe.temEfeito("ben") ? "ben" : clipe.temEfeito("mudo") ? "mudo" : "");
   if (chave === ultimaResposta) return false;    // não repete a mesma resposta
   ultimaResposta = chave;
   mostrarDica(r);
@@ -272,6 +286,9 @@ function mostrarDica(regra) {
 }
 function fecharBalao() {
   $("balao").hidden = true; dicaAberta = null;
+  /* fechou o balão? então a mesma conta pode ser respondida de novo. Sem isso
+     ele respondia uma vez e ficava calado até você mexer na linha. */
+  ultimaResposta = "";
   clipe.sentir("parado");
 }
 $("btNaoMostrar").onclick = () => {
@@ -440,6 +457,49 @@ for (const b of document.querySelectorAll(".barraFerramentas button")) {
     fazer(f);
   };
 }
+/* ==========================================================================
+   A PACIÊNCIA DO CLIPY
+   Ele aguenta 100 cutucadas. Vai reclamando pelo caminho, fica vermelho no
+   fim e sai da tela. Dá pra chamar de volta — ele volta emburrado.
+   ========================================================================== */
+const TETO_CUTUCADA = 100;
+const RECLAMACOES = [
+  [10, "Tá. Já entendi que eu existo."],
+  [25, "Vinte e cinco. Eu estou contando, sabia?"],
+  [40, "Quarenta! Você não tem mais nada pra fazer?"],
+  [55, "Para. Por favor. Eu sou feito de metal, mas mesmo assim."],
+  [70, "SETENTA. Eu tenho um limite e ele é cem. Estou avisando."],
+  [85, "OITENTA E CINCO. Faltam quinze pra eu ir embora. Não teste."],
+  [95, "NOVENTA E CINCO. Cinco. FALTAM CINCO."],
+  [97, "TRÊS."], [98, "DUAS."], [99, "UMA. A ÚLTIMA. NÃO."],
+];
+function reclamarDaCutucada() {
+  const r = RECLAMACOES.find(x => x[0] === cutucadasTotal);
+  if (r) { dizer(r[1], true); clipe.sentir("bravo"); clipe.fazer("tremer"); return true; }
+  return false;
+}
+function irEmbora() {
+  clipe.ligarEfeito("vermelho", 60);
+  clipe.sentir("bravo"); clipe.fazer("tremer");
+  dizer("CEM. CEM CUTUCADAS. CHEGA. EU VOU EMBORA. 😡", true);
+  segredosVistos.add("cemCutucadas"); montarOvos();
+  atualizarEfeitos();
+  setTimeout(() => {
+    clipe.irEmbora();
+    fecharBalao();
+    atualizarEfeitos();
+    salvar();
+  }, 1400);
+}
+function chamarDeVolta() {
+  cutucadasTotal = 0;
+  clipe.voltar();
+  clipe.efeitos.vermelho = 0;
+  clipe.sentir("triste"); clipe.fazer("acenar");
+  atualizarEfeitos(); salvar();
+  setTimeout(() => dizer("…tá bom. Eu voltei. Mas era sério, viu.", true), 700);
+}
+
 $("btCutucar").onclick = () => {
   /* cinco cutucadas seguidas acordam ele de qualquer efeito — é a saída
      de emergência de quem clicou naquele vídeo sem querer */
@@ -451,6 +511,13 @@ $("btCutucar").onclick = () => {
        clipe.temEfeito("mudo") || clipe.temEfeito("ben") || clipe.temEfeito("fantasma"))) {
     cutucadas = []; curarClipy(); return;
   }
+  if (clipe.foiEmbora()) { chamarDeVolta(); return; }
+
+  cutucadasTotal++;
+  salvar();
+  if (cutucadasTotal >= TETO_CUTUCADA) { irEmbora(); return; }
+  if (reclamarDaCutucada()) return;
+
   if (clipe.temEfeito("mudo")) {
     clipe.fazer("tremer"); clipe.mostrarBalao("…", 1.2);
     return;
@@ -814,6 +881,7 @@ const NOME_SEGREDO = {
   videoQueimando:"o vídeo que queima o cérebro", videoKittyCity:"o vídeo que virou jogo",
   videoWhatsUp:"o vídeo pra cantar junto", videoBen:"o vídeo do Ben",
   videoFantasma:"o vídeo assombrado", shania:"escrever aquele nome três vezes",
+  cemCutucadas:"cutucar ele cem vezes",
   rickroll:"never gonna…",
   quarentaEDois:"o número 42", sudo:"sudo", helloWorld:"hello, world",
   konami:"o código secreto", gatos:"gatos", jojo:"o JoJo",
@@ -864,7 +932,7 @@ function salvar() {
       caladas: [...cerebro.desligadas],
       prancheta: prancheta.paraSalvar(),
       efeitos: clipe.efeitos, censurados, segredos:[...segredosVistos],
-      contados: segredosContados,
+      contados: segredosContados, cutucadas: cutucadasTotal, saiu: clipe.indoEmbora,
     }));
   } catch (e) {}
 }
@@ -880,11 +948,13 @@ function carregar() {
   }
   if (Array.isArray(d.caladas)) for (const id of d.caladas) cerebro.desligadas.add(id);
   if (d.prancheta) prancheta.carregarDe(d.prancheta);
-  if (d.efeitos) for (const k of ["arcoiris", "burro", "mudo", "ben", "fantasma"])
+  if (d.efeitos) for (const k of ["arcoiris", "burro", "mudo", "ben", "fantasma", "vermelho"])
     if (typeof d.efeitos[k] === "number") clipe.efeitos[k] = d.efeitos[k];
   if (typeof d.censurados === "number") censurados = d.censurados;
   if (Array.isArray(d.segredos)) for (const id of d.segredos) segredosVistos.add(id);
   if (d.contados) Object.assign(segredosContados, d.contados);
+  if (typeof d.cutucadas === "number") cutucadasTotal = d.cutucadas;
+  if (d.saiu) { clipe.irEmbora(); clipe.saindo = 1; clipe.fora = true; }
   $("limiteHist").value = prancheta.limite;
 }
 
@@ -945,6 +1015,7 @@ window.Clipy = { clipe, cerebro, prancheta, estado, REGRAS, lerPapel, mostrarDic
   calcular, somarColuna, responderAgora, censurar, acharSegredo, SEGREDOS,
   passarOCensor, procurarSegredo, curarClipy, atualizarEfeitos,
   censurados:() => censurados, segredosVistos, montarOvos, irPara, irPeloEndereco,
+  cutucadasTotal:() => cutucadasTotal, irEmbora, chamarDeVolta, TETO_CUTUCADA,
   capturar, montarHistorico, montarAtalhos, tipoDoTexto, virarAtalho,
   zerarApagados:() => { apagadosRecentes = []; estado.apagados = 0; },
   fazer, ACOES, responder, somarDoTexto, irPara, atualizarTabela, salvar, carregar, CHAVE,
