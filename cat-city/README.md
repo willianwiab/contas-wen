@@ -100,8 +100,34 @@ que precisa de 9 formas pra abrir. Achar segredo desbloqueia forma.
 | **E** | usar / pegar / entrar |
 | **Q** | forma anterior · **1…9 0 - =** forma direta |
 | **ESC** | pausar |
+| **Ctrl + Shift + A** | modo adm |
 | 🎮 | controle: analógico anda, A pula, X poder, B usa, Y troca de forma |
 | 📱 | celular: arraste do lado esquerdo, botões do lado direito |
+
+## Modo adm
+
+**Senha: 1234.** Abre pelo cadeadinho 🔒 no rodapé do menu, com **Ctrl+Shift+A**,
+ou escrevendo **ADMIN** com o jogo rodando — igual à Torre de Emojis.
+
+Os botões de número são os mesmos que o Jojo pediu lá:
+**1, 10, 15, 25, 100, 200, 300, 400, 500 e 1000**.
+
+| grupo | o que faz |
+| --- | --- |
+| 🐈 gatos | fazem nascer N gatos em volta de você; multiplicar (1x e 3x), espalhar 100 pela cidade, colocar um gato GIGANTE do seu lado, limpar todos |
+| teto | 60 a **3000** gatos ao mesmo tempo (as opções normais param em 900) |
+| 🐾 formas | as 13 numa grade: clicar destranca **e** vira aquilo na hora; destrancar as 13 ou trancar tudo de novo |
+| 🐟 🐾 ⭐ | somar peixes, pegadas e estrelas |
+| 🗝 segredos | te leva até cada um dos 5 e abre; ou abre os 5 de uma vez |
+| 🌀 eventos | força qualquer um dos 9 agora |
+| ✨ truques | atravessar parede, voar, não morrer; velocidade x1…x10, pulo x1…x5, tamanho x0,4…x8 |
+| 🏁 fim | ganhar o jogo, cidade nova, apagar tudo |
+
+Os truques mexem no jogo de verdade, não só no desenho: o tamanho muda o raio de
+colisão, a altura e a massa (a câmera afasta junto), e o fantasma desliga a
+colisão inteira. Eles **não** ficam salvos: recarregar a página devolve tudo ao
+normal, e a senha é pedida de novo. O que o adm destranca (formas, segredos,
+peixes) fica salvo como qualquer progresso.
 
 ## Por que Canvas 2D e não Three.js
 
@@ -149,6 +175,7 @@ cat-city/
   js/events.js      os 9 eventos surreais
   js/ui.js          HUD, fases e telas
   js/audio.js       todos os sons, gerados na hora
+  js/adm.js         o painel de administrador (senha 1234)
   assets/cats/      ← as fotos entram aqui
 ```
 
@@ -160,6 +187,7 @@ Precisa de http (o jogo usa módulos ES):
 python3 -m http.server 8822    # na raiz do repositório
 npm i playwright-core
 node teste-catcity.js
+node teste-adm.js
 ```
 
 **21 checagens**: a cidade nasce inteira, o menu começa a partida, WASD anda
@@ -169,6 +197,12 @@ gatos-perna e cabeças, o SHIFT dá o impulso, a multiplicação faz 1→2→4 s
 estourar o pool, o evento do gato gigante acontece, os segredos desbloqueiam
 formas, o portal vira MEGA LARVA e ganha, e o progresso sobrevive ao recarregar.
 Uma delas mede o **FPS com a cidade cheia**.
+
+`teste-adm.js` tem mais **27 checagens** só do modo adm: senha errada não entra,
+cada grupo de botões faz o que promete, e — o que importa — os truques mudam o
+jogo e não só o botão: com "atravessar parede" ligado o gato fica *dentro* do
+prédio, com "não morrer" o gato gigante não derruba, o tamanho x8 muda o raio de
+colisão, e com o painel aberto as teclas não vazam pro gato lá atrás.
 
 ## O que ainda dá pra fazer
 

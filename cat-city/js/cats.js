@@ -32,7 +32,7 @@ export function criarPool(quantos = TETO_PADRAO) {
   proximo = 0;
 }
 export function mudarTeto(n) {
-  teto = Math.max(20, Math.min(1200, n | 0));
+  teto = Math.max(20, Math.min(3000, n | 0));   // 3000 é território do modo adm
   while (gatos.length < teto) gatos.push(novoVazio());
   if (gatos.length > teto) {
     for (let i = teto; i < gatos.length; i++) gatos[i].vivo = false;

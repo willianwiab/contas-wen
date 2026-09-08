@@ -13,13 +13,15 @@ import { gato, cabeca, carregarFotos } from "./sprites.js";
 import { FORMAS, porId, indiceDe, desenharForma } from "./formas.js";
 import { cidade, gerarCidade, paredes, corromper, TAM, RUA } from "./city.js";
 import { camera, seguir, sacudir, paraTela, naTela, APERTO_Y } from "./camera.js";
-import { jogador, aplicarForma, formaAtual, desbloquear, usarPoder, atualizarJogador } from "./player.js";
+import { jogador, aplicarForma, formaAtual, desbloquear, usarPoder, atualizarJogador,
+         truques, zerarTruques } from "./player.js";
 import { gatos, criarPool, mudarTeto, nascerGato, multiplicar, espalharPelaCidade,
-         pensarGatos, esbarrarGatos, quantosVivos, limparGatos, TETO_PADRAO } from "./cats.js";
-import { pensarEventos, forcarEvento, estadoEventos } from "./events.js";
+         pensarGatos, esbarrarGatos, quantosVivos, limparGatos, tetoAtual, TETO_PADRAO } from "./cats.js";
+import { pensarEventos, forcarEvento, estadoEventos, EVENTOS } from "./events.js";
 import { entrada, direcaoTeclado, lerControle, fecharQuadro, ligarToque, ligarBotoesDeToque, quandoMenu } from "./input.js";
 import * as sfx from "./audio.js";
 import * as ui from "./ui.js";
+import { ligarAdm } from "./adm.js";
 
 const cv = document.getElementById("tela"), ctx = cv.getContext("2d", { alpha:false });
 let L = 0, A = 0, dpr = 1;
@@ -489,11 +491,11 @@ function desenharMundo(fase) {
 const VISUAL = 2.4;
 function desenharJogador() {
   const f = formaAtual();
-  sombra(jogador.x, jogador.y, f.raio * 1.1, .34);
+  sombra(jogador.x, jogador.y, jogador.raio * 1.1, .34);
   const [sx, sy] = paraTela(jogador.x, jogador.y, jogador.z, L, A);
   ctx.save();
   ctx.translate(sx, sy);
-  desenharForma(ctx, f, camera.zoom * VISUAL, jogo.t, jogador.andando, jogador.olhandoDir, 0);
+  desenharForma(ctx, f, camera.zoom * VISUAL * truques.gigante, jogo.t, jogador.andando, jogador.olhandoDir, 0);
   ctx.restore();
 }
 
@@ -580,8 +582,8 @@ function trocarPara(id) {
   sfx.transformar(indiceDe(id));
   return true;
 }
-function vencer() {
-  if (jogo.vencido) return;
+function vencer(forcar) {
+  if (jogo.vencido && !forcar) return;      // o adm pode pedir a festa de novo
   jogo.vencido = true; jogo.quandoVenceu = jogo.t;
   document.getElementById("vitoriaTexto").innerHTML =
     "Você virou a <b>MEGA LARVA</b>.<br>A cidade continua exatamente onde estava. Você é que não." +
@@ -592,6 +594,7 @@ function vencer() {
   salvar();
 }
 function amassado() {
+  if (truques.imortal) return;
   if (jogo.t < (jogador.invencivelAte || 0)) return;
   jogador.invencivelAte = jogo.t + 4;
   document.getElementById("fimTexto").innerHTML =
@@ -650,7 +653,7 @@ function passo(agora) {
   sfx.ambienteCidade(Math.min(1, quantosVivos() / 220) * (jogo.caos / 100));
 
   camera.forcaTremor = jogo.tremor / 100;
-  seguir(jogador, dt, formaAtual().alto, A);
+  seguir(jogador, dt, jogador.alto, A);
   desenharMundo(fase.n);
 
   /* ---- HUD ---- */
@@ -786,7 +789,56 @@ ui.atualizarHud({ forma:jogador.forma, desbloqueadas:jogador.desbloqueadas, peix
 carregarFotos().then(achou => { if (achou) ui.recado("🐈 usando as fotos de assets/cats/"); });
 requestAnimationFrame(passo);
 
+/* ---------------------------------------------------------------- adm */
+/* Tudo que o painel de administrador precisa mexer, num lugar só. O adm.js
+   não sabe nada do jogo por dentro: ele só chama estas funções. */
+const API = {
+  jogo, jogador, gatos, cidade, camera, truques, zerarTruques,
+  FORMAS, porId, EVENTOS, FASES:ui.FASES, aplicarForma,
+  trocarPara, desbloquear, faseAgora, vencer, amassado, recomecar, comecar, pausar,
+  nascerGato, multiplicar, espalharPelaCidade, limparGatos, quantosVivos, tetoAtual,
+  forcarEvento:id => forcarEvento(id, jogo.t, jogador, ui.faixa),
+  abrirSegredo:p => abrirSegredo(p, jogo.t),
+  paredes:() => paredesLista,
+  refazerParedes:() => { paredesLista = paredes(); },
+  ui, sfx, salvar, CHAVE,
+  /* nascer gatos perto de você, que é onde dá pra ver a bagunça acontecer */
+  gatosPerto(n) {
+    let fez = 0;
+    for (let i = 0; i < n; i++) {
+      if (quantosVivos() >= tetoAtual()) break;
+      const a = Math.random() * 6.2832, r = 1.5 + Math.random() * 14;
+      nascerGato(jogador.x + Math.cos(a) * r, jogador.y + Math.sin(a) * r, jogo.t,
+        { vz: 2 + Math.random() * 4 });
+      fez++;
+    }
+    return fez;
+  },
+  mudarTeto(n) {
+    opTeto = Math.max(60, Math.min(3000, Math.round(n)));
+    mudarTeto(opTeto);                       // cresce o pool sem matar quem já está vivo
+    const s = document.getElementById("opGatos");
+    if (opTeto <= +s.max) s.value = opTeto;
+    salvar();
+    return opTeto;
+  },
+  levarPara(x, y) {
+    jogador.x = x; jogador.y = y; jogador.z = 1.2;
+    jogador.vx = jogador.vy = jogador.vz = 0;
+    camera.x = x; camera.y = y;
+  },
+  desbloquearTudo() { for (const f of FORMAS) desbloquear(f.id); ui.montarBarraFormas(jogador.desbloqueadas, jogador.forma); salvar(); },
+  trancarTudo() {
+    jogador.desbloqueadas = ["normal"]; jogo.segredos = 0; jogo.vencido = false;
+    for (const p of jogo.portais) p.achado = false;
+    trocarPara("normal"); ui.montarBarraFormas(jogador.desbloqueadas, jogador.forma); salvar();
+  },
+  apagarTudo() {
+    try { localStorage.removeItem(CHAVE); } catch (e) {}
+    location.reload();
+  },
+};
+ligarAdm(API);
+
 /* deixa o teste (e a curiosidade) alcançarem o jogo por fora */
-window.CatCity = { jogo, jogador, gatos, cidade, camera, FORMAS, porId, trocarPara, desbloquear,
-  nascerGato, multiplicar, quantosVivos, forcarEvento, comecar, pausar, abrirSegredo, recomecar,
-  paredes:() => paredesLista, ui, sfx, faseAgora, vencer, amassado };
+window.CatCity = Object.assign({}, API, { paredes:() => paredesLista });

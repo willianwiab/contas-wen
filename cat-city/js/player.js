@@ -3,9 +3,21 @@
    O gato que você controla — e as habilidades de cada forma.
    ========================================================================== */
 import { FORMAS, porId, indiceDe } from "./formas.js";
-import { cair, atrito, tirarDaCaixa } from "./physics.js";
+import { cair, atrito, tirarDaCaixa, GRAVIDADE } from "./physics.js";
 import { cidade } from "./city.js";
 import * as sfx from "./audio.js";
+
+/* Os truques do modo adm. Fora do adm todos ficam neutros e o jogo é o
+   jogo normal — nada aqui muda uma vírgula enquanto ninguém liga. */
+export const truques = {
+  turbo:1, pulo:1, gigante:1,
+  fantasma:false, voar:false, imortal:false,
+};
+export const zerarTruques = () => {
+  truques.turbo = truques.pulo = truques.gigante = 1;
+  truques.fantasma = truques.voar = truques.imortal = false;
+  aplicarForma(jogador.forma);
+};
 
 export const jogador = {
   x:0, y:0, z:0, vx:0, vy:0, vz:0,
@@ -19,7 +31,8 @@ export const jogador = {
 export function aplicarForma(id) {
   const f = porId(id);
   jogador.forma = f.id;
-  jogador.raio = f.raio; jogador.massa = f.massa; jogador.alto = f.alto;
+  const g = truques.gigante;
+  jogador.raio = f.raio * g; jogador.massa = f.massa * g; jogador.alto = f.alto * g;
   jogador.quica = !!f.quica;
   jogador.enraizado = false;
   return f;
@@ -53,7 +66,7 @@ export function usarPoder(agora) {
       if (p.tipo === "buzinar") sfx.buzina(); else if (p.tipo !== "passo") sfx.motor(1);
       return { tipo:p.tipo, forca:p.forca, alcance:p.alcance || 0 };
     }
-    case "esgueirar": jogador.raio = f.raio * .45; sfx.miar(.8); return { tipo:"esgueirar" };
+    case "esgueirar": jogador.raio = f.raio * truques.gigante * .45; sfx.miar(.8); return { tipo:"esgueirar" };
     case "enraizar":
       jogador.enraizado = !jogador.enraizado;
       jogador.vx = jogador.vy = 0;
@@ -71,14 +84,15 @@ export function atualizarJogador(dt, dir, querPular, agora, paredesLista) {
   jogador.vivo = true;
 
   /* o esgueirar volta ao tamanho normal quando acaba */
-  if (agora > jogador.poderAte && jogador.raio !== f.raio && !jogador.enraizado) jogador.raio = f.raio;
+  const raioCerto = f.raio * truques.gigante;
+  if (agora > jogador.poderAte && jogador.raio !== raioCerto && !jogador.enraizado) jogador.raio = raioCerto;
 
   /* Enquanto o poder está ligado, o limite de velocidade sobe. Sem isso o
      impulso do rolar/acelerar/passo era cortado no mesmo quadro em que
      acontecia — o dash não dashava. */
   const emPoder = agora < jogador.poderAte;
   const acelerando = emPoder && f.poder.tipo === "acelerar";
-  const vel = f.vel * (acelerando ? 1.9 : emPoder ? 3.2 : 1) * (jogador.enraizado ? 0 : 1);
+  const vel = f.vel * (acelerando ? 1.9 : emPoder ? 3.2 : 1) * (jogador.enraizado ? 0 : 1) * truques.turbo;
   const forca = f.veiculo ? 26 : 40;
 
   const d = Math.hypot(dir.x, dir.y);
@@ -96,17 +110,22 @@ export function atualizarJogador(dt, dir, querPular, agora, paredesLista) {
   const v = Math.hypot(jogador.vx, jogador.vy);
   if (v > vel) { jogador.vx = jogador.vx / v * vel; jogador.vy = jogador.vy / v * vel; }
 
-  if (querPular && jogador.noChao && f.pulo > 0 && !jogador.enraizado) {
-    jogador.vz = f.pulo; sfx.passo(f.massa > 4);
+  if (querPular && (jogador.noChao || truques.voar) && (f.pulo > 0 || truques.voar) && !jogador.enraizado) {
+    jogador.vz = Math.max(f.pulo, truques.voar ? 9 : 0) * truques.pulo; sfx.passo(f.massa > 4);
   }
 
   jogador.x += jogador.vx * dt; jogador.y += jogador.vy * dt;
   const bateu = cair(jogador, dt);
   if (bateu > 6) { sfx.pancada(Math.min(1, bateu / 14)); }
+  /* voar do adm: quase toda a gravidade é devolvida, então o gato boia
+     e desce devagarinho em vez de despencar. */
+  if (truques.voar && jogador.z > 0) jogador.vz += GRAVIDADE * dt * .96;
 
   /* paredes. A larva fina passa por vão estreito; a mega larva passa por cima. */
   let quebrou = null;
-  if (!f.mega) {
+  if (truques.fantasma) {
+    /* atravessa tudo: nem colisão, nem quebra */
+  } else if (!f.mega) {
     for (const p of paredesLista) {
       if (Math.abs(p.x + p.l / 2 - jogador.x) > p.l + jogador.raio + 3) continue;
       if (Math.abs(p.y + p.f / 2 - jogador.y) > p.f + jogador.raio + 3) continue;
