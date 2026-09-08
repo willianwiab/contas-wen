@@ -22,9 +22,9 @@ const conf = (nome, cond, extra='') => (cond ? ok : falhas).push(nome + (extra?'
   // 1. tela de início
   let r = await p.evaluate(() => ({ inicio: document.getElementById('inicio').classList.contains('on'),
     cards: document.getElementById('modoLista').children.length, modo: modoAtual,
-    naoSalvou: !localStorage.getItem('fabricaEmojis_v5_normal') }));
+    naoSalvou: !Object.keys(localStorage).some(k => k.startsWith('fabricaEmojis_jogo_')) }));
   conf('tela de início aparece com os 4 modos', r.inicio && r.cards===4 && r.modo===null);
-  conf('não salva antes de escolher o modo', r.naoSalvou);
+  conf('não salva antes de abrir um jogo', r.naoSalvou);
 
   // 2. modo normal + números gerais
   await p.click('.modoCard[data-m="normal"]'); await p.waitForTimeout(400);
@@ -105,10 +105,12 @@ const conf = (nome, cond, extra='') => (cond ? ok : falhas).push(nome + (extra?'
 
   // 10. save separado + recarregar
   await p.evaluate(() => salvar());
-  r = await p.evaluate(() => MODOS.every(m => !!localStorage.getItem('fabricaEmojis_v5_'+m.id)));
-  conf('cada modo tem o save dele', r);
+  r = await p.evaluate(() => ({ jogos: jogos.length,
+    chaves: Object.keys(localStorage).filter(k=>k.startsWith('fabricaEmojis_jogo_')).length }));
+  conf('cada jogo salvo tem o arquivo dele', r.jogos>=4 && r.chaves===r.jogos, JSON.stringify(r));
   await p.reload(); await p.waitForTimeout(600);
-  await p.click('.modoCard[data-m="normal"]'); await p.waitForTimeout(500);
+  await p.evaluate(() => escolherModo('normal'));   // reabre o jogo salvo, não cria outro
+  await p.waitForTimeout(500);
   r = await p.evaluate(() => ({ inicio: modoAtual==='normal', pontos: fichaTemporada('estreia').pontos,
     skins: skins.length, skin: skinAtual, conq: conquistasFeitas.length,
     secretasEscondidas: [...document.querySelectorAll('.conq .cn')].length }));

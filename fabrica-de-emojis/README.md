@@ -13,9 +13,22 @@ instalação, funciona offline no celular e no computador.
   `jogos-do-jojo/assets/images/fabrica-de-emojis.svg` (cartão) e
   `...-banner.svg` (topo da página).
 
+## Jogos salvos
+
+Ao abrir, aparece a lista dos seus jogos. Dá pra ter **até 12 salvos ao mesmo
+tempo** — começar um novo nunca apaga os outros.
+
+- **💾 Continuar** — clica no jogo pra voltar de onde parou. Cada linha mostra
+  recorde, emojis descobertos, conquistas e tempo de fábrica.
+- **✏️** — muda o nome do jogo.
+- **🗑️** — apaga aquele jogo (pergunta antes; não dá pra desfazer).
+- **✨ Começar um jogo novo** — escolhe o modo e cria mais um save.
+- Dentro do jogo, o **💾** em cima da caixa salva na hora (ele também salva
+  sozinho a cada 5 segundos e ao fechar a página), e o **🎮** volta pra esta tela.
+
 ## Os modos
 
-Ao abrir, o jogo pergunta como você quer jogar. Cada modo guarda o progresso
+Cada jogo salvo é de um modo. Cada modo guarda o progresso
 dele em separado, então um nunca estraga o outro. Dá pra trocar no 🎮 em cima
 da caixa.
 
@@ -85,14 +98,17 @@ recomeçar do zero.
 
 ## Testando
 
-`teste-regressao.js` abre o jogo num Chromium e confere as 20 coisas
-principais (modos, saves separados, temporadas, passe, fusão, skins, venda,
-emoji do dia, conquistas secretas). Rode com `npm i playwright-core && node
-teste-regressao.js`.
+Dois arquivos abrem o jogo num Chromium de verdade e conferem se está tudo
+funcionando. Rode com `npm i playwright-core` e depois:
+
+- `node teste-regressao.js` — 20 checagens: modos, temporadas, passe, fusão
+  automática, skins, venda, emoji do dia, conquistas secretas.
+- `node teste-jogos-salvos.js` — 9 checagens: criar, abrir, salvar na mão,
+  renomear e apagar jogo, e a migração do save antigo.
 
 ## Detalhes técnicos
 
-- Cada modo tem seu save no `localStorage` (`fabricaEmojis_v5_<modo>`, formato v6); o save antigo (`_v4`, `_v3`, `_v2`) vira o do modo Normal.
+- Cada jogo salvo fica no `localStorage` em `fabricaEmojis_jogo_<id>`, com a lista em `fabricaEmojis_jogos` (formato v6). Saves antigos (`_v5_<modo>`, `_v4`, `_v3`, `_v2`) viram jogos salvos sozinhos, sem perder nada; o save antigo (`_v4`, `_v3`, `_v2`) vira o do modo Normal.
 - A física simula até 550 emojis na tela; o que passa disso vai pro **depósito**,
   que continua contando no valor e no índice — é o que segura o FPS no celular.
 - A ordem dos emojis é embaralhada com semente fixa, então o índice é igual
