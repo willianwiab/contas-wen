@@ -84,12 +84,12 @@ async function escrever(p, txt) {
 
   /* ---------- lista → numerar ---------- */
   await p.evaluate(() => Clipy.fecharBalao());
-  r = await escrever(p, '- comprar pão\n- lavar a louça\n- dar comida pro gato');
+  r = await escrever(p, '- comprar pão\n- lavar a louça\n- passar roupa');
   conf('três traços viram uma lista e ele se oferece pra numerar', r && /lista/i.test(r), JSON.stringify(r));
   await p.click('#balaoBotoes button:nth-child(1)');
   r = await p.evaluate(() => document.getElementById('papel').value);
   conf('e numerar numera mesmo: 1. 2. 3.',
-    /^1\. comprar/m.test(r) && /^2\. lavar/m.test(r) && /^3\. dar/m.test(r), JSON.stringify(r));
+    /^1\. comprar/m.test(r) && /^2\. lavar/m.test(r) && /^3\. passar/m.test(r), JSON.stringify(r));
 
   /* ---------- conta → somar ---------- */
   await p.evaluate(() => Clipy.fecharBalao());
@@ -382,6 +382,169 @@ async function escrever(p, txt) {
     const s = document.getElementById('chatice'); s.value = 55; s.dispatchEvent(new Event('input'));
   });
 
+
+  /* ========== O CENSURADOR ========== */
+  await p.click('.aba[data-aba="mesa"]');
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });
+
+  await p.fill('#papel', 'esse jogo é uma merda mesmo');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.passarOCensor(); });
+  await p.waitForTimeout(300);
+  r = await p.evaluate(() => ({ papel: document.getElementById('papel').value,
+    balao: document.getElementById('balaoTexto').textContent }));
+  conf('palavrão escrito no papel é CENSURADO na hora e trocado por símbolos',
+    /#|@|\$|%/.test(r.papel) && !/merda/i.test(r.papel) && r.balao.length > 5, JSON.stringify(r));
+
+  r = await p.evaluate(() => {
+    const casos = ['que desgraçado', 'ele é um babaca', 'that is shit'];
+    return casos.map(x => Clipy.censurar(x).quantos);
+  });
+  conf('o censurador pega com acento, sem acento e em inglês',
+    r.every(x => x >= 1), JSON.stringify(r));
+
+  r = await p.evaluate(() => {
+    const inocentes = ['um texto normal e educado', 'a bicharada do sítio',
+      'assobio', 'Prezado João', 'o pintor pintou a casa'];
+    return inocentes.filter(x => Clipy.censurar(x).quantos > 0);
+  });
+  conf('e não censura palavra inocente que só parece', r.length === 0, JSON.stringify(r));
+
+  /* ========== OS SEGREDOS ========== */
+  r = await p.evaluate(() => ({ quantos: Clipy.SEGREDOS.length,
+    ids: new Set(Clipy.SEGREDOS.map(x => x.id)).size,
+    completos: Clipy.SEGREDOS.filter(x => !x.fala || !x.olho || !x.humor).length }));
+  conf('são 20 segredos, todos com nome próprio, fala e jeito de achar',
+    r.quantos === 20 && r.ids === 20 && r.completos === 0, JSON.stringify(r));
+
+  /* o vídeo que deixa ele doido */
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); Clipy.segredosVistos.clear(); });
+  await p.fill('#papel', 'https://www.youtube.com/watch?v=k85mRPqvMbE&list=RDk85mRPqvMbE&start_radio=1');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(400);
+  r = await p.evaluate(() => ({ balao: document.getElementById('balaoTexto').textContent,
+    arcoiris: Clipy.clipe.faltaPara('arcoiris'), burro: Clipy.clipe.faltaPara('burro'),
+    mudo: Clipy.clipe.faltaPara('mudo'), barra: !document.getElementById('efeitos').hidden }));
+  conf('o primeiro vídeo deixa ele DOIDO: colorido, olho de burro e mudo por 30 minutos',
+    /CORES/.test(r.balao) && r.arcoiris === '30 min' && r.burro === '30 min' &&
+    r.mudo === '30 min' && r.barra, JSON.stringify(r));
+
+  /* mudo é mudo mesmo */
+  await p.evaluate(() => Clipy.fecharBalao());
+  await p.fill('#papel', 'Prezado João, tudo bem com você?');
+  await p.evaluate(() => { Clipy.cerebro.proximaChance = 0; Clipy.cerebro.ultimaVez = {}; Clipy.lerPapel(); });
+  await p.waitForTimeout(1400);
+  r = await p.evaluate(() => document.getElementById('balao').hidden);
+  conf('e mudo é mudo: nem a regra da carta faz ele abrir a boca', r === true, String(r));
+
+  /* e sobrevive a recarregar */
+  await p.evaluate(() => Clipy.salvar());
+  await p.reload();
+  await p.waitForFunction(() => !!window.Clipy, null, { timeout: 15000 });
+  r = await p.evaluate(() => ({ arcoiris: Clipy.clipe.temEfeito('arcoiris'),
+    burro: Clipy.clipe.temEfeito('burro'), barra: !document.getElementById('efeitos').hidden }));
+  conf('o estrago continua depois de fechar e abrir a página de novo',
+    r.arcoiris && r.burro && r.barra, JSON.stringify(r));
+
+  /* cinco cutucadas curam */
+  for (let i = 0; i < 5; i++) await p.click('#btCutucar');
+  await p.waitForTimeout(200);
+  r = await p.evaluate(() => ({ arcoiris: Clipy.clipe.temEfeito('arcoiris'),
+    burro: Clipy.clipe.temEfeito('burro'), mudo: Clipy.clipe.temEfeito('mudo'),
+    balao: document.getElementById('balaoTexto').textContent }));
+  conf('cutucar cinco vezes seguidas cura ele de tudo (a saída de emergência)',
+    !r.arcoiris && !r.burro && !r.mudo && /Voltei/.test(r.balao), JSON.stringify(r));
+
+  /* o vídeo que queima o cérebro: 24 horas de olho de burro */
+  await p.evaluate(() => { Clipy.fecharBalao(); Clipy.segredosVistos.clear(); });
+  await p.fill('#papel', 'https://www.youtube.com/watch?v=T_NKi5KHUdI&list=RDT_NKi5KHUdI&start_radio=1');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(300);
+  r = await p.evaluate(() => ({ balao: document.getElementById('balaoTexto').textContent,
+    burro: Clipy.clipe.faltaPara('burro'), mudo: Clipy.clipe.temEfeito('mudo') }));
+  conf('o terceiro vídeo: "meu cérebro está queimando" e 24 horas de olho de burro',
+    /queimando/.test(r.balao) && r.burro === '24h00' && !r.mudo, JSON.stringify(r));
+
+  /* o vídeo do idiota */
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); Clipy.segredosVistos.clear(); });
+  await p.fill('#papel', 'https://www.youtube.com/watch?v=hiRacdl02w4');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(300);
+  r = await p.evaluate(() => document.getElementById('balaoTexto').textContent);
+  conf('o segundo vídeo: ele diz quem é o idiota', /idiota/.test(r) && /você/i.test(r), r.slice(0, 70));
+
+  /* o vídeo que virou jogo */
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); Clipy.segredosVistos.clear(); });
+  await p.fill('#papel', 'https://www.youtube.com/watch?v=jX3iLfcMDCw&list=RDjX3iLfcMDCw');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(400);
+  r = await p.evaluate(() => ({ balao: document.getElementById('balaoTexto').textContent,
+    papel: document.getElementById('papel').value,
+    botao: document.querySelector('#balaoBotoes button').textContent }));
+  conf('o vídeo do Cyriak: ele conta que virou jogo, ESCREVE o link no papel e dá um botão',
+    /virou um jogo/.test(r.balao) && /contas-wen\/cat-city/.test(r.papel) &&
+    /CAT CITY/.test(r.botao), JSON.stringify({ botao:r.botao }));
+
+  /* o vídeo pra cantar junto */
+  await p.evaluate(() => { Clipy.fecharBalao(); Clipy.segredosVistos.clear();
+    document.getElementById('papel').value = ''; Clipy.lerPapel(); });
+  await p.fill('#papel', 'https://www.youtube.com/watch?v=ZZ5LpwO-An4');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(400);
+  r = await p.evaluate(() => ({ balao: document.getElementById('balaoTexto').textContent,
+    papel: document.getElementById('papel').value }));
+  conf('o vídeo de cantar: ele solta o berro do refrão e escreve no papel',
+    /HEEEEY/.test(r.balao) && /HEEEEY/.test(r.papel) && /eco/.test(r.papel), '');
+
+  /* o modo BEN */
+  await p.evaluate(() => { Clipy.fecharBalao(); Clipy.segredosVistos.clear();
+    document.getElementById('papel').value = ''; Clipy.lerPapel(); });
+  await p.fill('#papel', 'https://www.youtube.com/watch?v=MORrNaEaz3o&list=RD');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(400);
+  r = await p.evaluate(() => ({ ben: Clipy.clipe.faltaPara('ben'),
+    barra: document.getElementById('efeitos').textContent }));
+  conf('o vídeo do Ben: o Clipy vira o BEN por 10 minutos, de jaleco e orelhas',
+    r.ben === '10 min' && /BEN/.test(r.barra), JSON.stringify(r));
+
+  await p.evaluate(() => Clipy.fecharBalao());
+  await p.click('#btAjuda');
+  await p.waitForTimeout(250);
+  r = await p.evaluate(() => document.getElementById('balaoTexto').textContent);
+  conf('e de BEN ele SÓ GRUNHE: some a fala normal', /hm|HEHE|ugh|HÃ|mmm/i.test(r) && r.length < 20, r);
+
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });
+
+  /* os outros segredos */
+  r = await p.evaluate(() => {
+    const casos = { 'toc toc':'tocToc', 'sudo rm tudo':'sudo', '42':'quarentaEDois',
+      'hello world':'helloWorld', 'miau':'gatos', 'feito pelo jojo':'jojo',
+      'quero um café':'cafe', 'o chatgpt disse':'chatgpt', 'ypilc':'deCabecaPraBaixo' };
+    const errados = [];
+    for (const [txt, esperado] of Object.entries(casos)) {
+      const s = Clipy.acharSegredo(txt);
+      if (!s || s.id !== esperado) errados.push(txt + ' → ' + (s ? s.id : 'nenhum'));
+    }
+    return errados;
+  });
+  conf('os outros segredos aparecem com a palavra certa (toc toc, sudo, 42, gato, café…)',
+    r.length === 0, JSON.stringify(r));
+
+  r = await p.evaluate(() =>
+    ['um texto qualquer', 'Prezado senhor', 'lista de compras', 'dar comida pro gato',
+     'a fatura é 42 reais', 'meu amigo joão chegou'].filter(x => Clipy.acharSegredo(x)));
+  conf('e texto comum não dispara segredo: "dar comida pro gato" é frase, não segredo',
+    r.length === 0, JSON.stringify(r));
+
+  /* a lista de ovinhos */
+  await p.click('.aba[data-aba="regras"]');
+  await p.waitForTimeout(200);
+  r = await p.evaluate(() => ({ total: document.querySelectorAll('#ovos .ovo').length,
+    achados: document.querySelectorAll('#ovos .ovo.achado').length,
+    escondidos: document.querySelectorAll('#ovos .ovo.nao').length }));
+  conf('a aba 🧠 mostra os 20 ovinhos, revelando só os que você já achou',
+    r.total === 20 && r.achados >= 1 && r.escondidos === 20 - r.achados, JSON.stringify(r));
+
+  await p.evaluate(() => Clipy.curarClipy());
 
   /* ========== A ÁREA DE TRANSFERÊNCIA ========== */
   await p.click('.aba[data-aba="prancheta"]');

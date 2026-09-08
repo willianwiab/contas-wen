@@ -9,7 +9,7 @@ nos programas de escritório dos anos 90.
 ## O que ele é (e o que não é)
 
 O Clipy **não é** uma dessas inteligências artificiais de hoje. Ele é do tipo
-antigo: **33 regras escritas na mão**, cada uma sabendo reconhecer uma coisa no
+antigo: **33 regras escritas na mão** (e 20 segredos), cada uma sabendo reconhecer uma coisa no
 texto e com uma frase pronta pra soltar. Nada sai do navegador — sem internet,
 sem servidor, sem conta, sem nada sendo enviado pra lugar nenhum.
 
@@ -26,6 +26,38 @@ O site tem quatro partes:
 | 💬 **Conversar** | dá pra fazer perguntas; ele responde com o que tem escrito dentro dele |
 | 🧠 **Como ele pensa** | as 30 regras, uma por uma, e **acendendo em verde** quando estão batendo com o que você acabou de escrever |
 | 📜 **Quem é o Clipy** | a história dos ajudantes animados, por que sumiram, e o que eles ensinam sobre as IAs de hoje |
+
+## O censurador
+
+Palavrão escrito no papel **some na hora**, trocado por `#@$%!`. Pega com
+acento e sem acento, e em inglês também — e não censura palavra inocente que só
+parece. Isso não é segredo, é regra da casa.
+
+## Os 20 segredos
+
+Palavras (ou links) que fazem alguma coisa acontecer. Três deles **deixam
+marca**: o Clipy fica esquisito por um tempo, e continua esquisito mesmo se você
+fechar a página e voltar depois — o tempo fica guardado no aparelho.
+
+| segredo | o que acontece |
+| --- | --- |
+| um certo vídeo de cores | ele enlouquece: fica **arco-íris**, com **olho de burro** e **mudo por 30 minutos** |
+| outro vídeo | *"meu cérebro está queimando"* — **olho de burro por 24 horas** |
+| outro | ele avisa quem é o idiota (é você) |
+| o vídeo do Cyriak | ele conta que aquilo virou jogo, **escreve o link do Cat City no papel** e dá um botão pra abrir |
+| um vídeo pra cantar junto | ele solta o berro do refrão e escreve no papel |
+| o vídeo do Ben | ele **vira o BEN por 10 minutos**: jaleco, orelhas caídas, focinho — e só responde com grunhido |
+
+E mais catorze escondidos: `toc toc`, `sudo`, `42`, `hello world`, `konami`,
+`miau`, `jojo`, `café`, `ypilc`, ameaçar o Clipy, dizer que gosta dele, falar
+das IAs de hoje, aniversário, e um clássico da internet.
+
+> **Saída de emergência:** cutuque o Clipy **cinco vezes seguidas** e ele volta
+> ao normal na hora. Também tem um botão 🔧 consertar na barrinha que aparece
+> enquanto ele está estragado, com a contagem do tempo que falta.
+
+A aba 🧠 tem a lista dos 20 ovinhos, mostrando **só os que você já achou** — os
+outros ficam como 🥚 ???.
 
 ## Ele responde de verdade
 
@@ -170,7 +202,7 @@ npm i playwright-core
 node teste-clipy.js
 ```
 
-**54 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
+**71 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
 dispara a carta e o botão **monta a carta de verdade**; três traços viram lista
 e o botão numera 1. 2. 3.; R$ 10,50 + R$ 4 + R$ 25 dá **39,5**; MAIÚSCULA vira
 minúscula; "senha" dispara o aviso; apagar 60 letras dispara o comentário; "não
@@ -186,6 +218,14 @@ acima batem; texto que não é conta não vira conta; dividir por zero avisa;
 **escrever código no papel não executa nada** (a prova de que não tem `eval`); a
 lista de preços é somada com o total escrito no papel; com a chatice no zero ele
 ainda responde; e na conversa também.
+
+Do censurador e dos segredos: palavrão é trocado por símbolos no papel; pega com
+acento, sem acento e em inglês, e não censura palavra inocente; os 20 segredos
+estão completos; o vídeo das cores deixa ele arco-íris, burro e mudo por 30
+minutos; **mudo é mudo mesmo** (nem a regra da carta o faz falar); **o estrago
+sobrevive a recarregar a página**; cinco cutucadas curam; o vídeo do Cyriak
+escreve o link do Cat City no papel; o modo BEN faz ele só grunhir; e frase
+comum como "dar comida pro gato" **não** dispara segredo.
 
 Da aba da área de transferência: as 3 pastas de fábrica nascem com id próprio;
 ele reconhece link, e-mail, telefone, dinheiro, código e cor; capturar guarda **e**

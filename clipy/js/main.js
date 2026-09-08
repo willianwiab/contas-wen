@@ -7,6 +7,7 @@ import { Clipe } from "./clipy.js";
 import { REGRAS, Cerebro, responder, somarDoTexto, calcular, somarColuna } from "./cerebro.js";
 import { ligarInstalar } from "./instalar.js";
 import { Prancheta, tipoDoTexto, comentarioSobre, ATALHOS_DE_FABRICA } from "./prancheta.js";
+import { censurar, acharSegredo, BRONCAS, SEGREDOS } from "./segredos.js";
 
 const $ = id => document.getElementById(id);
 const CHAVE = "clipy_v1";
@@ -23,6 +24,9 @@ const estado = {
 };
 let ultimoTamanho = 0, teclasNoMinuto = [], apagadosRecentes = [], ultimaTecla = 0;
 let dicaAberta = null;              // a regra que está no balão agora
+let censurados = 0;                 // quantos palavrões ele já barrou
+const segredosVistos = new Set();   // pra não repetir o mesmo segredo sem parar
+let cutucadas = [];                 // cinco seguidas curam o Clipy
 const abertura = Date.now() / 1000;
 
 function lerPapel() {
@@ -62,6 +66,110 @@ function lerPapel() {
    esperar a vez e mesmo com a chatice no zero. */
 const pediuResposta = () => /[=?]\s*$/.test(estado.linha);
 
+/* ==========================================================================
+   O CENSURADOR
+   Palavrão escrito no papel some na hora. A troca acontece aqui, no seu
+   navegador, e o cursor volta pro lugar certo pra você continuar digitando.
+   ========================================================================== */
+function passarOCensor() {
+  const antes = $("papel").value;
+  const r = censurar(antes);
+  if (!r.quantos) return false;
+  const cursor = $("papel").selectionStart;
+  const diferenca = r.texto.length - antes.length;
+  $("papel").value = r.texto;
+  ultimoTamanho = r.texto.length;
+  try { $("papel").setSelectionRange(cursor + diferenca, cursor + diferenca); } catch (e) {}
+  censurados += r.quantos;
+  lerPapel(); salvar();
+  if (!clipe.temEfeito("mudo")) {
+    dizer(BRONCAS[Math.floor(Math.random() * BRONCAS.length)] +
+      (censurados > 1 ? " (já são " + censurados + ")" : ""));
+    clipe.sentir(censurados > 3 ? "bravo" : "assustado");
+    clipe.fazer("tremer");
+  }
+  return true;
+}
+
+/* ==========================================================================
+   OS SEGREDOS
+   Alguns deixam marca: o Clipy fica esquisito por um tempo, e continua
+   esquisito mesmo se você fechar a página e voltar depois.
+   ========================================================================== */
+function procurarSegredo(texto) {
+  const s = acharSegredo(texto);
+  if (!s) return false;
+  if (segredosVistos.has(s.id) && !s.efeitos) return false;
+  if (segredosVistos.has(s.id) && s.efeitos && clipe.temEfeito(Object.keys(s.efeitos)[0])) return false;
+  segredosVistos.add(s.id);
+  montarOvos();
+
+  if (s.efeitos) {
+    for (const [qual, minutos] of Object.entries(s.efeitos)) clipe.ligarEfeito(qual, minutos);
+    salvar();
+  }
+  /* alguns segredos escrevem no papel — e o do Cat City ainda dá o link */
+  if (s.escreve) {
+    const t = papel().value;
+    trocarPapel(t.replace(/\s*$/, t.trim() ? "\n\n" : "") + s.escreve + "\n");
+  }
+  /* mudo é mudo: nem o próprio segredo fala depois que ele começa */
+  const jaEraMudo = clipe.temEfeito("mudo") && !(s.efeitos && s.efeitos.mudo);
+  if (!jaEraMudo) {
+    dizerSegredo(s);
+  }
+  clipe.sentir(s.humor || "assustado");
+  if (s.gesto) clipe.fazer(s.gesto);
+  atualizarEfeitos();
+  return true;
+}
+function dizerSegredo(s) {
+  $("balaoTexto").textContent = s.fala;
+  const caixa = $("balaoBotoes"); caixa.innerHTML = "";
+  if (s.aviso) {
+    const p = document.createElement("p");
+    p.className = "avisoSegredo"; p.textContent = s.aviso;
+    caixa.appendChild(p);
+  }
+  if (s.link) {
+    const a = document.createElement("button");
+    a.textContent = s.link.texto;
+    a.onclick = () => { window.open(s.link.url, "_blank", "noopener"); fecharBalao(); };
+    caixa.appendChild(a);
+  }
+  const b = document.createElement("button");
+  b.textContent = s.efeitos ? "…o que eu fiz" : "Ok";
+  b.onclick = fecharBalao;
+  caixa.appendChild(b);
+  $("balao").hidden = false;
+  $("balao").classList.remove("resposta");
+  $("btNaoMostrar").hidden = true;
+  dicaAberta = null;
+}
+
+/* a barrinha que mostra o estrago e conta o tempo */
+function atualizarEfeitos() {
+  const c = $("efeitos");
+  const partes = [];
+  if (clipe.temEfeito("arcoiris")) partes.push("🌈 colorido " + clipe.faltaPara("arcoiris"));
+  if (clipe.temEfeito("burro")) partes.push("🫠 olho de burro " + clipe.faltaPara("burro"));
+  if (clipe.temEfeito("mudo")) partes.push("🤐 mudo " + clipe.faltaPara("mudo"));
+  if (clipe.temEfeito("ben")) partes.push("🥼 modo BEN " + clipe.faltaPara("ben"));
+  c.hidden = !partes.length;
+  if (partes.length) c.innerHTML = partes.join(" · ") +
+    ' <button id="btCurar">🔧 consertar</button>';
+  if (partes.length) $("btCurar").onclick = curarClipy;
+}
+function curarClipy() {
+  const tinha = clipe.temEfeito("arcoiris") || clipe.temEfeito("burro") ||
+                clipe.temEfeito("mudo") || clipe.temEfeito("ben");
+  clipe.curar(); salvar(); atualizarEfeitos();
+  if (tinha) {
+    dizer("Ufa. Voltei. Não me mostre mais aquilo.");
+    clipe.sentir("feliz"); clipe.fazer("pular");
+  }
+}
+
 $("papel").addEventListener("input", () => {
   const t = $("papel").value;
   if (t.length < ultimoTamanho) apagadosRecentes.push({ q:Date.now(), n:ultimoTamanho - t.length });
@@ -70,6 +178,9 @@ $("papel").addEventListener("input", () => {
   ultimaTecla = Date.now();
   lerPapel();
   salvar();
+  if (passarOCensor()) return;                 // palavrão vem antes de tudo
+  if (procurarSegredo(estado.texto)) return;   // segredo vem antes das regras
+  if (clipe.temEfeito("mudo")) return;         // mudo é mudo
   if (dicaAberta && dicaAberta.responde && !estado.conta) fecharBalao();
   if (pediuResposta() || (dicaAberta && dicaAberta.responde)) responderAgora();
 });
@@ -90,7 +201,8 @@ function responderAgora() {
 /* ---------------------------------------------------------------- o balão */
 function mostrarDica(regra) {
   dicaAberta = regra;
-  const fala = regra.falaDinamica ? regra.falaDinamica(estado) : regra.fala;
+  const fala = clipe.temEfeito("ben") ? grunhir()
+    : regra.falaDinamica ? regra.falaDinamica(estado) : regra.fala;
   $("balaoTexto").textContent = fala;
   $("balao").classList.toggle("resposta", !!regra.responde && !estado.conta?.erro);
   const caixa = $("balaoBotoes"); caixa.innerHTML = "";
@@ -246,8 +358,13 @@ const ACOES = {
 };
 function fazer(acao) { (ACOES[acao] || (() => {}))(); }
 
+/* MODO BEN: enquanto ele está de jaleco, sai só grunhido */
+const GRUNHIDOS = ["hmm?", "HEHEHE.", "hmmmmm…", "ugh.", "…hm.", "HÃ?", "hehe. hehe.", "mmmm."];
+const grunhir = () => GRUNHIDOS[Math.floor(Math.random() * GRUNHIDOS.length)];
+
 /* uma fala rápida do Clipy, sem botões */
 function dizer(txt) {
+  if (clipe.temEfeito("ben")) txt = grunhir();
   $("balaoTexto").textContent = txt;
   const caixa = $("balaoBotoes"); caixa.innerHTML = "";
   const b = document.createElement("button");
@@ -272,6 +389,20 @@ for (const b of document.querySelectorAll(".barraFerramentas button")) {
   };
 }
 $("btCutucar").onclick = () => {
+  /* cinco cutucadas seguidas acordam ele de qualquer efeito — é a saída
+     de emergência de quem clicou naquele vídeo sem querer */
+  const agora = Date.now();
+  cutucadas = cutucadas.filter(x => agora - x < 3000);
+  cutucadas.push(agora);
+  if (cutucadas.length >= 5 &&
+      (clipe.temEfeito("arcoiris") || clipe.temEfeito("burro") ||
+       clipe.temEfeito("mudo") || clipe.temEfeito("ben"))) {
+    cutucadas = []; curarClipy(); return;
+  }
+  if (clipe.temEfeito("mudo")) {
+    clipe.fazer("tremer"); clipe.mostrarBalao("…", 1.2);
+    return;
+  }
   const r = ["Ai!", "Oi!", "Presente!", "Tô aqui.", "De novo não."];
   clipe.mostrarBalao("!", 1);
   clipe.fazer(Math.random() < .5 ? "pular" : "girar");
@@ -298,7 +429,7 @@ function irPara(nome) {
   const id = { mesa:"pgMesa", prancheta:"pgPrancheta", conversa:"pgConversa", regras:"pgRegras",
                historia:"pgHistoria", instalar:"pgInstalar" }[nome];
   $(id).classList.add("on");
-  if (nome === "regras") atualizarTabela();
+  if (nome === "regras") { atualizarTabela(); montarOvos(); }
   if (nome === "conversa") $("campoConversa").focus();
   if (nome === "prancheta") { montarHistorico(); montarAtalhos(); }
   /* o Clipy só faz sentido nas abas em que tem o que reagir */
@@ -322,10 +453,20 @@ $("formConversa").onsubmit = e => {
   if (!t) return;
   falarNaConversa("voce", t);
   $("campoConversa").value = "";
+  const seg = acharSegredo(t);
+  if (seg) {
+    if (seg.efeitos) { for (const [q, m] of Object.entries(seg.efeitos)) clipe.ligarEfeito(q, m);
+      salvar(); atualizarEfeitos(); }
+    setTimeout(() => {
+      falarNaConversa("clipy", seg.fala + (seg.aviso ? "\n\n(" + seg.aviso + ")" : ""));
+      clipe.sentir(seg.humor || "assustado"); if (seg.gesto) clipe.fazer(seg.gesto);
+    }, 420);
+    return;
+  }
   clipe.sentir("pensando");
   setTimeout(() => {
     const r = responder(t);
-    falarNaConversa("clipy", r.texto);
+    falarNaConversa("clipy", clipe.temEfeito("ben") ? grunhir() : r.texto);
     clipe.sentir(r.humor); if (r.gesto) clipe.fazer(r.gesto);
     setTimeout(() => clipe.sentir("parado"), 2600);
   }, 420 + Math.random() * 500);
@@ -583,6 +724,29 @@ const COMO = {
   ingles:"aparecem 4 ou mais palavrinhas em inglês",
   dormiu:"45 segundos sem ninguém digitar nada",
 };
+const NOME_SEGREDO = {
+  videoDoido:"o vídeo das cores", videoIdiota:"o vídeo do idiota",
+  videoQueimando:"o vídeo que queima o cérebro", videoKittyCity:"o vídeo que virou jogo",
+  videoWhatsUp:"o vídeo pra cantar junto", videoBen:"o vídeo do Ben",
+  rickroll:"never gonna…",
+  quarentaEDois:"o número 42", sudo:"sudo", helloWorld:"hello, world",
+  konami:"o código secreto", gatos:"gatos", jojo:"o JoJo",
+  parabens:"aniversário", tocToc:"toc toc", deCabecaPraBaixo:"ao contrário",
+  cafe:"café", matar:"ameaçar o Clipy", amigo:"dizer que gosta dele",
+  chatgpt:"as IAs de hoje",
+};
+function montarOvos() {
+  const caixa = $("ovos");
+  if (!caixa) return;
+  $("qtdSegredos").textContent = SEGREDOS.length;
+  caixa.innerHTML = SEGREDOS.map(s => {
+    if (!segredosVistos.has(s.id))
+      return '<div class="ovo nao">🥚 ???</div>';
+    return '<div class="ovo achado"><span class="n">🥚 ' + (NOME_SEGREDO[s.id] || s.id) + '</span>' +
+      '<span class="marca">' + (s.efeitos ? "deixa marca no Clipy" : "achado") + '</span></div>';
+  }).join("");
+}
+
 function atualizarTabela() {
   if (!$("pgRegras").classList.contains("on")) return;
   const corpo = $("corpoRegras");
@@ -613,6 +777,7 @@ function salvar() {
       texto: $("papel").value, chatice: cerebro.chatice,
       caladas: [...cerebro.desligadas],
       prancheta: prancheta.paraSalvar(),
+      efeitos: clipe.efeitos, censurados, segredos:[...segredosVistos],
     }));
   } catch (e) {}
 }
@@ -628,6 +793,10 @@ function carregar() {
   }
   if (Array.isArray(d.caladas)) for (const id of d.caladas) cerebro.desligadas.add(id);
   if (d.prancheta) prancheta.carregarDe(d.prancheta);
+  if (d.efeitos) for (const k of ["arcoiris", "burro", "mudo", "ben"])
+    if (typeof d.efeitos[k] === "number") clipe.efeitos[k] = d.efeitos[k];
+  if (typeof d.censurados === "number") censurados = d.censurados;
+  if (Array.isArray(d.segredos)) for (const id of d.segredos) segredosVistos.add(id);
   $("limiteHist").value = prancheta.limite;
 }
 
@@ -642,6 +811,8 @@ function quadro(agora) {
 setInterval(() => {
   lerPapel();
   atualizarTabela();
+  atualizarEfeitos();
+  if (clipe.temEfeito("mudo")) { if (!$("balao").hidden && !dicaAberta) fecharBalao(); return; }
   /* A resposta acompanha a linha: se a conta mudou, o balão muda junto; se
      você apagou a conta, ele some. Deixar uma resposta velha na tela era
      pior do que não responder. */
@@ -668,8 +839,9 @@ if (!prancheta.pastas.length) {
   }
   salvar();
 }
-montarHistorico(); montarAtalhos();
+montarHistorico(); montarAtalhos(); atualizarEfeitos();
 lerPapel();
+passarOCensor();
 ultimaTecla = Date.now();
 ligarInstalar(() => irPara("instalar"), dizer);
 requestAnimationFrame(quadro);
@@ -678,7 +850,9 @@ setTimeout(() => { clipe.fazer("acenar"); clipe.sentir("feliz");
 
 /* pro teste (e pra curiosidade) alcançarem o Clipy por fora */
 window.Clipy = { clipe, cerebro, prancheta, estado, REGRAS, lerPapel, mostrarDica, fecharBalao,
-  calcular, somarColuna, responderAgora,
+  calcular, somarColuna, responderAgora, censurar, acharSegredo, SEGREDOS,
+  passarOCensor, procurarSegredo, curarClipy, atualizarEfeitos,
+  censurados:() => censurados, segredosVistos, montarOvos,
   capturar, montarHistorico, montarAtalhos, tipoDoTexto, virarAtalho,
   zerarApagados:() => { apagadosRecentes = []; estado.apagados = 0; },
   fazer, ACOES, responder, somarDoTexto, irPara, atualizarTabela, salvar, carregar, CHAVE,

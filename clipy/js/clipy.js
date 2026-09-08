@@ -40,6 +40,8 @@ export const HUMORES = {
   assustado: { cenho:-.4, sobeSobrancelha:.45, abertura:1.5, boca:.35 },
   dormindo:  { cenho:0,   sobeSobrancelha:-.1, abertura:0,  boca:0, dorme:1 },
   confuso:   { cenho:.3,  sobeSobrancelha:.28, abertura:1.05, boca:-.15, torto:1 },
+  /* o olho de burro: cada olho olhando pra um lado, boca aberta, cara de nada */
+  burro:     { cenho:-.15, sobeSobrancelha:.1, abertura:1.25, boca:.2, burro:1, torto:.4 },
 };
 
 const suave = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -57,6 +59,9 @@ export class Clipe {
     this.alvoOlhoX = 0; this.alvoOlhoY = 0;
     this.balao = null;                          // "!" ou "?" ou "z"
     this.balaoAte = 0;
+    /* Os efeitos dos segredos. Cada um guarda ATÉ QUANDO vale (em
+       milissegundos do relógio), pra sobreviver a recarregar a página. */
+    this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0 };
     this.dpr = 1;
     this.ajustar();
     addEventListener("resize", () => this.ajustar());
@@ -88,6 +93,20 @@ export class Clipe {
     this.alvoOlhoY = Math.max(-1, Math.min(1, (y - cy) / 220));
   }
 
+  /* ---- os efeitos ---- */
+  ligarEfeito(qual, minutos) {
+    this.efeitos[qual] = Math.max(this.efeitos[qual] || 0, Date.now() + minutos * 60000);
+  }
+  temEfeito(qual) { return (this.efeitos[qual] || 0) > Date.now(); }
+  curar() { this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0 }; }
+  faltaPara(qual) {
+    const ms = (this.efeitos[qual] || 0) - Date.now();
+    if (ms <= 0) return "";
+    const min = Math.ceil(ms / 60000);
+    if (min < 60) return min + " min";
+    return Math.floor(min / 60) + "h" + String(min % 60).padStart(2, "0");
+  }
+
   /* ---- o quadro ---- */
   passo(dt) {
     this.t += dt;
@@ -110,9 +129,14 @@ export class Clipe {
     const { ctx, L, A, t } = this;
     ctx.clearRect(0, 0, L, A);
 
-    const h0 = HUMORES[this.humorAntes], h1 = HUMORES[this.humor], k = suave(this.trocaHumor);
+    /* o olho de burro manda em qualquer humor: é o preço de ter visto aquilo */
+    const burrice = this.temEfeito("burro");
+    const nomeAgora = burrice ? "burro" : this.humor;
+    const nomeAntes = burrice ? "burro" : this.humorAntes;
+    const h0 = HUMORES[nomeAntes], h1 = HUMORES[nomeAgora], k = suave(this.trocaHumor);
     const H = {};
-    for (const c of ["cenho", "sobeSobrancelha", "abertura", "boca", "sorriso", "olhaCima", "dorme", "torto"])
+    for (const c of ["cenho", "sobeSobrancelha", "abertura", "boca", "sorriso",
+                     "olhaCima", "dorme", "torto", "burro"])
       H[c] = mistura(h0[c] || 0, h1[c] || 0, k);
 
     /* ---- o gesto do momento vira posição ---- */
@@ -167,11 +191,18 @@ export class Clipe {
     ctx.save(); ctx.translate(.012, .022); caminhoDoClipe(ctx); ctx.stroke(); ctx.restore();
 
     const brilho = ctx.createLinearGradient(-1, -1, 1, 1);
-    brilho.addColorStop(0, "#e8eef6");
-    brilho.addColorStop(.35, "#aebccd");
-    brilho.addColorStop(.55, "#dfe8f2");
-    brilho.addColorStop(.8, "#8fa0b4");
-    brilho.addColorStop(1, "#cfdae6");
+    if (this.temEfeito("arcoiris")) {
+      /* o arame vira arco-íris girando: é a cara de quem viu coisa demais */
+      const g = t * 90;
+      for (let i = 0; i <= 6; i++)
+        brilho.addColorStop(i / 6, "hsl(" + ((g + i * 60) % 360) + " 95% 62%)");
+    } else {
+      brilho.addColorStop(0, "#e8eef6");
+      brilho.addColorStop(.35, "#aebccd");
+      brilho.addColorStop(.55, "#dfe8f2");
+      brilho.addColorStop(.8, "#8fa0b4");
+      brilho.addColorStop(1, "#cfdae6");
+    }
     ctx.strokeStyle = brilho;
     ctx.lineWidth = .16;
     caminhoDoClipe(ctx);
@@ -183,6 +214,7 @@ export class Clipe {
 
     /* ---- a cara ---- */
     this.desenharCara(H);
+    if (this.temEfeito("ben")) this.desenharJaleco();
     ctx.restore();
 
     /* ---- o balãozinho de "!" ---- */
@@ -202,6 +234,39 @@ export class Clipe {
     }
   }
 
+  /* MODO BEN: orelhas caídas, focinho e jaleco de cientista. Continua sendo o
+     nosso clipe — é só um clipe fantasiado de cachorro de laboratório. */
+  desenharJaleco() {
+    const ctx = this.ctx;
+    /* orelhas caídas, uma de cada lado da cabeça */
+    ctx.fillStyle = "#8a6242"; ctx.strokeStyle = "#5d4028"; ctx.lineWidth = .035;
+    for (const lado of [-1, 1]) {
+      ctx.save();
+      ctx.translate(lado * .52, -.92);
+      ctx.rotate(lado * (.35 + Math.sin(this.t * 2.2 + lado) * .07));
+      ctx.beginPath(); ctx.ellipse(0, .16, .13, .28, 0, 0, 6.2832);
+      ctx.fill(); ctx.stroke();
+      ctx.restore();
+    }
+    /* focinho no meio da cara */
+    ctx.fillStyle = "#c9a180";
+    ctx.beginPath(); ctx.ellipse(-.13, -.47, .17, .12, 0, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = "#5d4028"; ctx.lineWidth = .028;
+    ctx.beginPath(); ctx.ellipse(-.13, -.47, .17, .12, 0, 0, 6.2832); ctx.stroke();
+    ctx.fillStyle = "#2b1c14";
+    ctx.beginPath(); ctx.ellipse(-.13, -.53, .058, .042, 0, 0, 6.2832); ctx.fill();
+    /* jaleco branco na parte de baixo do arame */
+    ctx.fillStyle = "#f4f6f8"; ctx.strokeStyle = "#b9c2cc"; ctx.lineWidth = .03;
+    ctx.beginPath();
+    ctx.moveTo(-.60, -.16); ctx.lineTo(.60, -.16);
+    ctx.lineTo(.52, .74); ctx.quadraticCurveTo(0, 1.02, -.52, .74);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = "#d3dae2"; ctx.lineWidth = .025;
+    ctx.beginPath(); ctx.moveTo(-.02, -.16); ctx.lineTo(-.05, .82); ctx.stroke();
+    ctx.fillStyle = "#5fb0e8";
+    ctx.beginPath(); ctx.rect(.16, .1, .17, .2); ctx.fill();      // o bolso
+  }
+
   desenharCara(H) {
     const ctx = this.ctx;
     const olhos = [[-.31, -.70], [.06, -.70]];
@@ -211,17 +276,25 @@ export class Clipe {
 
     for (let i = 0; i < 2; i++) {
       const [ox, oy] = olhos[i];
+      /* olho de burro: um olho grande e um pequeno, cada um pra um lado */
+      const bx = H.burro * (i === 0 ? -.055 : .05);
+      const by = H.burro * (i === 0 ? .02 : -.03);
+      const bEsc = 1 + H.burro * (i === 0 ? .3 : -.14);
       /* o branco do olho */
       ctx.save();
-      ctx.translate(ox, oy + H.olhaCima * -.02);
-      ctx.scale(ax, ay);
+      ctx.translate(ox + bx, oy + by + H.olhaCima * -.02);
+      ctx.scale(ax * bEsc, ay * bEsc);
       ctx.fillStyle = "#ffffff";
       ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.2832); ctx.fill();
       ctx.restore();
       /* a bolinha preta, que corre atrás de onde ele está olhando */
       if (ay > .2) {
-        const px = ox + this.olhoX * r * .42;
-        const py = oy + (this.olhoY - H.olhaCima * .5) * r * .38;
+        /* de burro, cada pupila vai pra um canto e não segue mais nada */
+        const solto = H.burro;
+        const px = ox + bx + mistura(this.olhoX * r * .42,
+          (i === 0 ? -.42 : .40) * r + Math.sin(this.t * 1.3 + i) * r * .12, solto);
+        const py = oy + by + mistura((this.olhoY - H.olhaCima * .5) * r * .38,
+          (i === 0 ? .30 : -.26) * r + Math.cos(this.t * 1.1 + i * 2) * r * .1, solto);
         ctx.fillStyle = "#15181d";
         ctx.beginPath(); ctx.arc(px, py, r * .46, 0, 6.2832); ctx.fill();
         ctx.fillStyle = "#ffffffdd";
@@ -229,8 +302,8 @@ export class Clipe {
       }
       /* o contorno */
       ctx.save();
-      ctx.translate(ox, oy + H.olhaCima * -.02);
-      ctx.scale(ax, Math.max(.05, ay));
+      ctx.translate(ox + bx, oy + by + H.olhaCima * -.02);
+      ctx.scale(ax * bEsc, Math.max(.05, ay * bEsc));
       ctx.strokeStyle = "#2a3038"; ctx.lineWidth = .028 / Math.max(.05, ay);
       ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.2832); ctx.stroke();
       ctx.restore();
@@ -253,6 +326,16 @@ export class Clipe {
     if (H.dorme) {
       ctx.lineWidth = .05;
       ctx.beginPath(); ctx.arc(-.12, -.42, .07, 0, Math.PI); ctx.stroke();
+    } else if (H.burro > .5) {
+      /* boca aberta e língua de fora: o retrato de quem não entendeu nada */
+      ctx.fillStyle = "#3a2028";
+      ctx.beginPath(); ctx.ellipse(-.12, -.37, .11, .075, 0, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = "#ff8fb1";
+      ctx.beginPath();
+      ctx.ellipse(-.09, -.32 + Math.sin(this.t * 2.4) * .012, .055, .045, .3, 0, 6.2832);
+      ctx.fill();
+      ctx.strokeStyle = "#2a3038"; ctx.lineWidth = .03;
+      ctx.beginPath(); ctx.ellipse(-.12, -.37, .11, .075, 0, 0, 6.2832); ctx.stroke();
     } else {
       ctx.lineWidth = .055;
       ctx.beginPath();
