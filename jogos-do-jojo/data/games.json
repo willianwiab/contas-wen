@@ -603,10 +603,13 @@
     {
       "slug": "fabrica-de-emojis-china",
       "nome": "中國表情符號工廠 — Fábrica da China",
-      "descricao": "A fábrica mudou de país. As primeiras raridades são a mesa chinesa e os 12 animais do zodíaco, os tesouros escondidos são selos chineses de verdade e as temporadas são os festivais: Ano Novo Chinês, Lanternas, Barcos-Dragão, Meio-Outono, Dia dos Solteiros e mais.",
+      "descricao": "Tudo em chinês. A fábrica mudou de país. As primeiras raridades são a mesa chinesa e os 12 animais do zodíaco, os tesouros escondidos são selos chineses de verdade e as temporadas são os festivais: Ano Novo Chinês, Lanternas, Barcos-Dragão, Meio-Outono, Dia dos Solteiros e mais.",
       "comoFunciona": "O motor é o mesmo da Fábrica de Emojis: cada clique fabrica emojis que caem e se empilham de verdade dentro da caixa, e quando ela enche o fundo abre e tudo vira dinheiro. O que muda é o que sai da máquina: as cinco primeiras raridades são a China de propósito, o índice inteiro está numa ordem diferente e o calendário do jogo segue a lua.",
       "objetivo": "Abrir as 120 raridades chinesas, de 普通 Comum até 無極 Sem-Limite, achar os 10 tesouros e descobrir os 800 emojis do índice.",
       "mecanicas": [
+        "O jogo inteiro em chinês — com um botão 中/A que traz tudo de volta pro português na hora",
+        "🎡 Roleta da sorte: 12 prémios, um giro grátis a cada 10 minutos e o JACKPOT do dragão",
+        "🎤 Grito: você berra no microfone, a caixa treme, os emojis pulam — e depois te imitam, tocando o seu grito de volta mais agudo",
         "As 5 primeiras raridades são a China: a mesa posta, o chá, os 12 animais do zodíaco e os símbolos",
         "120 raridades com nome em chinês e em português: 竹 Bambu, 瓷 Porcelana, 玉 Jade, 龍 Dragão, 玉皇 Imperador...",
         "10 tesouros escondidos, e os mais raros são selos chineses de verdade: 得, 祝, 秘, 有, 無, 禁, 指",
@@ -645,9 +648,13 @@
         { "tecla": "Setas", "acao": "Virar a gravidade da caixa" },
         { "tecla": "📱", "acao": "Usar a inclinação do celular como gravidade" },
         { "tecla": "📖", "acao": "Abrir o índice de emojis descobertos" },
+        { "tecla": "中 / A", "acao": "Trocar entre chinês e português" },
+        { "tecla": "🎤", "acao": "Ligar o microfone e gritar" },
         { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
       ],
       "curiosidades": [
+        "O microfone do grito só liga quando você aperta o botão, e o som não sai do aparelho: nada é enviado pra lugar nenhum e nada fica salvo. O jogo guarda cerca de um segundo de som só pra tocar de volta na hora, e depois joga fora.",
+        "Na roleta o prémio é sorteado antes da animação, e a roda gira até parar exatamente em cima dele — assim o que a tela mostra é sempre o que o jogo deu.",
         "Os 12 animais do zodíaco chinês estão todos lá, nas raridades 瓷 Porcelana e 玉 Jade: 🐀🐂🐅🐇🐉🐍🐎🐐🐒🐓🐕🐖.",
         "Os tesouros mais raros são selos chineses de verdade, e o nome de cada um no jogo é o que o caractere quer dizer: 🉐 得 é o achado, ㊙️ 秘 é o segredo, 🈚 無 é o nada e 🈲 禁 é o proibido.",
         "Os festivais chineses seguem o calendário lunar, que não dá pra calcular com uma continha curta. Então as datas vêm de uma tabela ano a ano, de 2024 a 2035 — o Ano Novo Chinês cai em 17/02 em 2026 e em 06/02 em 2027.",
@@ -657,7 +664,8 @@
       "creditos": "Criado por Jojo com o Claude.",
       "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2026", "mudancas": "A fábrica virou chinesa: 120 raridades rebatizadas em chinês, baralho começando pela mesa e pelos 12 animais do zodíaco, 10 tesouros com selos chineses, 10 temporadas de festivais com calendário lunar, temas e modos com nome chinês, e ícone e cores próprios." }
+        { "versao": "1.0", "data": "2026", "mudancas": "A fábrica virou chinesa: 120 raridades rebatizadas em chinês, baralho começando pela mesa e pelos 12 animais do zodíaco, 10 tesouros com selos chineses, 10 temporadas de festivais com calendário lunar, temas e modos com nome chinês, e ícone e cores próprios." },
+        { "versao": "2.0", "data": "2026", "mudancas": "O jogo inteiro em chinês, com botão 中/A pra voltar pro português e a escolha ficando salva. Mais a 🎡 roleta da sorte, com 12 prémios e um giro grátis a cada 10 minutos, e o 🎤 grito: você berra no microfone, a caixa treme, os emojis pulam e depois te imitam. Duas conquistas novas." }
       ],
       "ranking": []
     },

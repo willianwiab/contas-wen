@@ -330,6 +330,15 @@
   #btAdm { opacity:.3; }
   #btAdm:hover { opacity:1; }
 
+  /* ---------- 轉盤 a roleta e 大喊 o grito ---------- */
+  #roda { width:100%; max-width:340px; margin:0 auto; display:block; touch-action:manipulation; }
+  #pRoleta .grandao { margin-top:2px; }
+  #pRoleta .grandao:disabled { opacity:.45; cursor:not-allowed; box-shadow:none; transform:none; }
+  #trilhoMic { height:10px; border-radius:99px; background:#ffffff14; overflow:hidden; }
+  #trilhoMic i { display:block; height:100%; border-radius:99px; transition:width .12s linear; }
+  #btIdioma { font-family:var(--mono); font-weight:800; }
+  #gritoInfo, #rolInfo { line-height:1.7; }
+
   #toast {
     position:fixed; top:12px; left:50%; transform:translate(-50%,-24px); z-index:70;
     padding:9px 16px; border-radius:99px; background:var(--painel2); border:1px solid var(--ouro);
@@ -344,141 +353,140 @@
 <div id="toast"></div>
 
 <div id="indice"><div class="janela">
-  <h3>📖 Índice de emojis</h3>
+  <h3 data-i18n="indiceTit">📖 Índice de emojis</h3>
   <p class="sub" id="indiceSub"></p>
   <div class="paginas" id="paginas"></div>
   <div id="faixas"></div>
-  <button class="btFechar" onclick="document.getElementById('indice').classList.remove('on')">FECHAR</button>
+  <button class="btFechar" data-i18n="fechar" onclick="document.getElementById('indice').classList.remove('on')">FECHAR</button>
 </div></div>
 
 <div id="inicio" class="on"><div class="janela" style="max-width:560px">
-  <h3>🏭 Fábrica de Emojis</h3>
-  <p class="sub">Seus jogos salvos. Dá pra ter vários ao mesmo tempo — um nunca apaga o outro.</p>
-  <div class="divisor">💾 Continuar</div>
+  <h3 data-i18n="inicioTit">🏭 Fábrica de Emojis</h3>
+  <p class="sub" data-i18n="inicioSub"></p>
+  <div class="divisor" data-i18n="divContinuar"></div>
   <div id="jogoLista"></div>
-  <div class="divisor">✨ Começar um jogo novo</div>
+  <div class="divisor" data-i18n="divNovo"></div>
   <div id="modoLista"></div>
-  <p class="sub" style="margin:12px 0 0">O jogo salva sozinho, mas tem o botão 💾 em cima da caixa pra salvar na hora.
-  No 🎮 você volta pra esta tela.</p>
+  <p class="sub" style="margin:12px 0 0" data-i18n="inicioDica"></p>
 </div></div>
 
 <div id="volta"><div class="janela" style="max-width:420px">
-  <h3>🌙 Bem-vindo de volta</h3>
+  <h3 data-i18n="voltaTit"></h3>
   <p class="sub" id="voltaSub"></p>
   <div id="voltaInfo" style="font-family:var(--mono);font-size:.82rem;line-height:1.9;color:var(--verde);background:#05030b;border:1px solid var(--linha);border-radius:10px;padding:12px;margin-bottom:12px;white-space:pre-wrap"></div>
-  <button class="btFechar" onclick="document.getElementById('volta').classList.remove('on')">BELEZA!</button>
+  <button class="btFechar" data-i18n="voltaBeleza" onclick="document.getElementById('volta').classList.remove('on')">OK</button>
 </div></div>
 
 <div id="adm"><div class="janela">
   <div id="admLogin">
-    <h3>🔒 Acesso restrito</h3>
-    <p class="sub">Modo administrador da fábrica. Digite a senha.</p>
+    <h3 data-i18n="admTrancado"></h3>
+    <p class="sub" data-i18n="admSenhaSub"></p>
     <div class="btns">
-      <input class="campo" id="admSenha" type="password" placeholder="senha" autocomplete="off">
-      <button class="bt" id="admEntrar">ENTRAR</button>
-      <button class="bt" onclick="fecharAdm()">SAIR</button>
+      <input class="campo" id="admSenha" type="password" data-i18n-p="admSenha" autocomplete="off">
+      <button class="bt" id="admEntrar" data-i18n="admEntrar"></button>
+      <button class="bt" data-i18n="admSair" onclick="fecharAdm()"></button>
     </div>
     <div id="admErro"></div>
   </div>
 
   <div id="admPainel" style="display:none">
-    <h3>⚙ Modo administrador</h3>
-    <p class="sub">A fábrica é sua. Quebra à vontade.</p>
+    <h3 data-i18n="admTit"></h3>
+    <p class="sub" data-i18n="admSub"></p>
     <div id="admInfo"></div>
 
-    <div class="grupo"><div class="lab">Dinheiro</div><div class="btns">
+    <div class="grupo"><div class="lab" data-i18n="admDinheiro"></div><div class="btns">
       <button class="bt" onclick="darDinheiro(1e6)">+1M</button>
       <button class="bt" onclick="darDinheiro(1e9)">+1B</button>
       <button class="bt" onclick="darDinheiro(1e12)">+1T</button>
       <button class="bt" onclick="darDinheiro(1e18)">+1Qi</button>
-      <button class="bt" onclick="darDinheiro(1e30)">+1 absurdo</button>
-      <button class="bt perigo" onclick="dinheiro=0;puxarAdm()">ZERAR</button>
+      <button class="bt" data-i18n="admAbsurdo" onclick="darDinheiro(1e30)"></button>
+      <button class="bt perigo" data-i18n="admZerar" onclick="dinheiro=0;puxarAdm()"></button>
     </div></div>
 
-    <div class="grupo"><div class="lab">Quantidade exata</div><div class="btns">
+    <div class="grupo"><div class="lab" data-i18n="admExato"></div><div class="btns">
       <input class="campo" id="admQtd" type="number" placeholder="ex: 5000000">
-      <button class="bt" onclick="definirDinheiro()">DEFINIR</button>
+      <button class="bt" data-i18n="admDefinir" onclick="definirDinheiro()"></button>
     </div></div>
 
-    <div class="grupo"><div class="lab">Cristais</div><div class="btns">
+    <div class="grupo"><div class="lab" data-i18n="admCristais"></div><div class="btns">
       <button class="bt" onclick="cristais+=10;puxarAdm()">+10</button>
       <button class="bt" onclick="cristais+=1000;puxarAdm()">+1000</button>
-      <button class="bt" onclick="cristais+=1e6;puxarAdm()">+1 milhão</button>
-      <button class="bt perigo" onclick="cristais=0;puxarAdm()">ZERAR</button>
+      <button class="bt" data-i18n="admMilhao" onclick="cristais+=1e6;puxarAdm()"></button>
+      <button class="bt perigo" data-i18n="admZerar" onclick="cristais=0;puxarAdm()"></button>
     </div></div>
 
-    <div class="grupo"><div class="lab">Upgrades</div><div class="btns">
-      <button class="bt" onclick="darUpgrades('dinheiro',1)">+1 em cada (dinheiro)</button>
-      <button class="bt" onclick="darUpgrades('dinheiro',10)">+10 em cada</button>
-      <button class="bt" onclick="darUpgrades('cristal',1)">+1 em cada (cristal)</button>
-      <button class="bt perigo" onclick="TODOS.forEach(u=>u.qtd=0);puxarAdm()">ZERAR TODOS</button>
+    <div class="grupo"><div class="lab" data-i18n="admUpgrades"></div><div class="btns">
+      <button class="bt" data-i18n="admCada1d" onclick="darUpgrades('dinheiro',1)"></button>
+      <button class="bt" data-i18n="admCada10" onclick="darUpgrades('dinheiro',10)"></button>
+      <button class="bt" data-i18n="admCada1c" onclick="darUpgrades('cristal',1)"></button>
+      <button class="bt perigo" data-i18n="admZerarTodos" onclick="TODOS.forEach(u=>u.qtd=0);puxarAdm()"></button>
     </div></div>
 
-    <div class="grupo"><div class="lab">Raridades — <b id="admRar">1</b> de 120 abertas</div><div class="btns">
-      <button class="bt" onclick="liberarAte(20)">até a 20</button>
-      <button class="bt" onclick="liberarAte(60)">até a 60</button>
-      <button class="bt" onclick="liberarAte(100)">até a 100</button>
-      <button class="bt" onclick="liberarAte(120)">TODAS as 120</button>
-      <button class="bt perigo" onclick="recorde=0;puxarAdm()">TRANCAR TUDO</button>
+    <div class="grupo"><div class="lab" data-i18n="admRaridades"></div><div class="btns">
+      <button class="bt" data-i18n-a="admAte|20" onclick="liberarAte(20)"></button>
+      <button class="bt" data-i18n-a="admAte|60" onclick="liberarAte(60)"></button>
+      <button class="bt" data-i18n-a="admAte|100" onclick="liberarAte(100)"></button>
+      <button class="bt" data-i18n="admTodas120" onclick="liberarAte(120)"></button>
+      <button class="bt perigo" data-i18n="admTrancarTudo" onclick="recorde=0;puxarAdm()"></button>
     </div></div>
 
-    <div class="grupo"><div class="lab">Emojis secretos</div><div class="btns" id="admSecretos"></div></div>
+    <div class="grupo"><div class="lab" data-i18n="admSecretos"></div><div class="btns" id="admSecretos"></div></div>
 
-    <div class="grupo"><div class="lab">Bônus e turbos</div><div class="btns" id="admBonus"></div></div>
+    <div class="grupo"><div class="lab" data-i18n="admBonus"></div><div class="btns" id="admBonus"></div></div>
 
-    <div class="grupo"><div class="lab">Temas da caixa</div><div class="btns">
-      <button class="bt" onclick="darTemas()">LIBERAR TODOS OS TEMAS</button>
-      <button class="bt" onclick="skins=SKINS.map(k=>k.id);montarTemas();puxarAdm()">LIBERAR TODAS AS SKINS</button>
+    <div class="grupo"><div class="lab" data-i18n="admTemas"></div><div class="btns">
+      <button class="bt" data-i18n="admLibTemas" onclick="darTemas()"></button>
+      <button class="bt" data-i18n="admLibSkins" onclick="skins=SKINS.map(k=>k.id);montarTemas();puxarAdm()"></button>
     </div></div>
 
-    <div class="grupo"><div class="lab">Temporadas</div><div class="btns" id="admTemp"></div></div>
-    <div class="grupo"><div class="lab">Pontos de temporada</div><div class="btns">
+    <div class="grupo"><div class="lab" data-i18n="admTemporadas"></div><div class="btns" id="admTemp"></div></div>
+    <div class="grupo"><div class="lab" data-i18n="admPontos"></div><div class="btns">
       <button class="bt" onclick="ganharPontos(100);puxarAdm()">+100 🎟️</button>
       <button class="bt" onclick="ganharPontos(1000);puxarAdm()">+1000 🎟️</button>
-      <button class="bt perigo" onclick="temporadas={};puxarAdm()">ZERAR TEMPORADAS</button>
+      <button class="bt perigo" data-i18n="admZerarTemp" onclick="temporadas={};puxarAdm()"></button>
     </div></div>
 
-    <div class="grupo"><div class="lab">Conquistas e missões</div><div class="btns">
-      <button class="bt" onclick="darConquistas()">DESTRAVAR TODAS</button>
-      <button class="bt perigo" onclick="conquistasFeitas=[];puxarAdm()">APAGAR CONQUISTAS</button>
-      <button class="bt" onclick="completarMissoes()">COMPLETAR MISSÕES</button>
-      <button class="bt" onclick="sortearMissoes(true)">TROCAR MISSÕES</button>
+    <div class="grupo"><div class="lab" data-i18n="admConqMiss"></div><div class="btns">
+      <button class="bt" data-i18n="admDestravar" onclick="darConquistas()"></button>
+      <button class="bt perigo" data-i18n="admApagarConq" onclick="conquistasFeitas=[];puxarAdm()"></button>
+      <button class="bt" data-i18n="admCompletar" onclick="completarMissoes()"></button>
+      <button class="bt" data-i18n="admTrocarMiss" onclick="sortearMissoes(true)"></button>
     </div></div>
 
-    <div class="grupo"><div class="lab">Caixa</div><div class="btns">
-      <button class="bt" onclick="fabricar(100)">+100 emojis</button>
-      <button class="bt" onclick="fabricar(500)">+500 emojis</button>
-      <button class="bt" onclick="bolas=[];deposito=0;depositoValor=0;puxarAdm()">ESVAZIAR</button>
-      <button class="bt" onclick="mudarFisicos(-150)">− física</button>
-      <button class="bt" onclick="mudarFisicos(150)">+ física</button>
+    <div class="grupo"><div class="lab" data-i18n="admCaixa"></div><div class="btns">
+      <button class="bt" data-i18n="admMais100" onclick="fabricar(100)"></button>
+      <button class="bt" data-i18n="admMais500" onclick="fabricar(500)"></button>
+      <button class="bt" data-i18n="admEsvaziar" onclick="bolas=[];deposito=0;depositoValor=0;puxarAdm()"></button>
+      <button class="bt" data-i18n="admMenosFis" onclick="mudarFisicos(-150)"></button>
+      <button class="bt" data-i18n="admMaisFis" onclick="mudarFisicos(150)"></button>
       <span class="bt" style="cursor:default" id="admFis">550</span>
     </div></div>
 
-    <div class="grupo"><div class="lab">Índice</div><div class="btns">
-      <button class="bt" onclick="descobrirTudo()">DESCOBRIR TUDO</button>
-      <button class="bt perigo" onclick="descobertos=[];puxarAdm()">APAGAR ÍNDICE</button>
+    <div class="grupo"><div class="lab" data-i18n="admIndice"></div><div class="btns">
+      <button class="bt" data-i18n="admDescobrirTudo" onclick="descobrirTudo()"></button>
+      <button class="bt perigo" data-i18n="admApagarInd" onclick="descobertos=[];puxarAdm()"></button>
     </div></div>
 
-    <div class="grupo"><div class="lab">Sair</div><div class="btns">
-      <button class="bt perigo" onclick="resetTotal()">RECOMEÇAR DO ZERO</button>
-      <button class="bt" onclick="fecharAdm()">FECHAR</button>
+    <div class="grupo"><div class="lab" data-i18n="admSairG"></div><div class="btns">
+      <button class="bt perigo" data-i18n="admRecomecar" onclick="resetTotal()"></button>
+      <button class="bt" data-i18n="admFechar" onclick="fecharAdm()"></button>
     </div></div>
   </div>
 </div></div>
 
 <header>
   <div class="marca cn">中國<b>表情符號</b>工廠</div>
-  <div class="marca br">Fábrica de Emojis da China</div>
+  <div class="marca br" data-i18n="marcaBr"></div>
   <div id="dinheiro">R$ 0</div>
   <div class="stats">
-    <div class="stat"><div class="k">Por clique</div><div class="v" id="vClique" style="color:var(--ouro)">1</div></div>
-    <div class="stat"><div class="k">Por segundo</div><div class="v" id="vChuva" style="color:var(--rosa)">0</div></div>
-    <div class="stat"><div class="k">Raridade</div><div class="v" id="vRar">Comum</div></div>
-    <div class="stat"><div class="k">Recorde</div><div class="v" id="vRec">R$ 0</div></div>
-    <div class="stat"><div class="k">Cristais</div><div class="v" id="vCris" style="color:var(--cristal)">0</div></div>
-    <div class="stat"><div class="k">Índice</div><div class="v" id="vInd" style="color:var(--azul)">0</div></div>
-    <div class="stat"><div class="k">Conquistas</div><div class="v" id="vConq" style="color:var(--verde)">0</div></div>
-    <div class="stat"><div class="k">Temporada</div><div class="v" id="vTemp" style="color:var(--rosa)">—</div></div>
+    <div class="stat"><div class="k" data-i18n="stClique"></div><div class="v" id="vClique" style="color:var(--ouro)">1</div></div>
+    <div class="stat"><div class="k" data-i18n="stSeg"></div><div class="v" id="vChuva" style="color:var(--rosa)">0</div></div>
+    <div class="stat"><div class="k" data-i18n="stRar"></div><div class="v" id="vRar">Comum</div></div>
+    <div class="stat"><div class="k" data-i18n="stRec"></div><div class="v" id="vRec">R$ 0</div></div>
+    <div class="stat"><div class="k" data-i18n="stCris"></div><div class="v" id="vCris" style="color:var(--cristal)">0</div></div>
+    <div class="stat"><div class="k" data-i18n="stInd"></div><div class="v" id="vInd" style="color:var(--azul)">0</div></div>
+    <div class="stat"><div class="k" data-i18n="stConq"></div><div class="v" id="vConq" style="color:var(--verde)">0</div></div>
+    <div class="stat"><div class="k" data-i18n="stTemp"></div><div class="v" id="vTemp" style="color:var(--rosa)">—</div></div>
   </div>
 </header>
 
@@ -489,36 +497,39 @@
       <div class="flutuando fSup">
         <button class="pilula" id="btIndice">📖 <span id="contIndice">0</span></button>
         <button class="pilula" id="btSom">🔊</button>
-        <button class="pilula" id="btGiro" title="inclinar o celular">📱</button>
-        <button class="pilula" id="btAdm" title="modo adm">🔒</button>
-        <button class="pilula" id="btModo" title="trocar de jogo">🎮</button>
-        <button class="pilula" id="btSalvar" title="salvar agora">💾</button>
-        <button class="pilula" id="btInstalar" title="instalar o jogo no aparelho" hidden>📲 INSTALAR</button>
+        <button class="pilula" id="btGiro" data-i18n-t="ttGiro">📱</button>
+        <button class="pilula" id="btAdm" data-i18n-t="ttAdm">🔒</button>
+        <button class="pilula" id="btModo" data-i18n-t="ttModo">🎮</button>
+        <button class="pilula" id="btSalvar" data-i18n-t="ttSalvar">💾</button>
+        <button class="pilula" id="btGritar" data-i18n-t="ttGritar">🎤</button>
+        <button class="pilula" id="btIdioma" data-i18n-t="ttIdioma">中</button>
+        <button class="pilula" id="btInstalar" data-i18n="btInstalar" data-i18n-t="ttInstalar" hidden></button>
         <div class="pilula" id="pilulaDia" style="cursor:default"></div>
-        <div class="pilula info" id="contadorPilha">vazia</div>
+        <div class="pilula info" id="contadorPilha"></div>
       </div>
       <div class="flutuando fInf" id="faixaBuffs"></div>
     </div>
     <div class="botoes">
-      <button class="grandao" id="btFazer">FAZER EMOJI</button>
-      <button class="grandao vender" id="btVender">VENDER</button>
+      <button class="grandao" id="btFazer" data-i18n="btFazer"></button>
+      <button class="grandao vender" id="btVender" data-i18n="btVender"></button>
     </div>
   </div>
 
   <div id="painel">
     <div class="abasTopo">
-      <button class="abaT sel" data-p="loja">🛒 LOJA</button>
+      <button class="abaT sel" data-p="loja" data-i18n="abLoja"></button>
       <button class="abaT" data-p="conq">🏆 <span id="ptConq">0</span></button>
-      <button class="abaT" data-p="miss">📜 MISSÕES<span class="aviso" id="avisoMiss" hidden></span></button>
-      <button class="abaT" data-p="stat">📊 STATS</button>
-      <button class="abaT" data-p="tema">🎨 CAIXA</button>
-      <button class="abaT" data-p="temp">🎟️ EVENTO<span class="aviso" id="avisoTemp" hidden></span></button>
+      <button class="abaT" data-p="miss"><span data-i18n="abMiss"></span><span class="aviso" id="avisoMiss" hidden></span></button>
+      <button class="abaT" data-p="stat" data-i18n="abStat"></button>
+      <button class="abaT" data-p="tema" data-i18n="abTema"></button>
+      <button class="abaT" data-p="temp"><span data-i18n="abTemp"></span><span class="aviso" id="avisoTemp" hidden></span></button>
+      <button class="abaT" data-p="roleta" data-i18n="abRoleta"></button>
     </div>
 
     <div id="pLoja" style="display:flex;flex-direction:column;gap:10px">
       <div class="abas">
-        <button class="aba sel" id="abaDin" onclick="trocarAba('dinheiro')">💵 DINHEIRO</button>
-        <button class="aba cri" id="abaCri" onclick="trocarAba('cristal')">💠 CRISTAIS</button>
+        <button class="aba sel" id="abaDin" data-i18n="abDin" onclick="trocarAba('dinheiro')"></button>
+        <button class="aba cri" id="abaCri" data-i18n="abCri" onclick="trocarAba('cristal')"></button>
       </div>
       <div class="familias" id="familias"></div>
       <div class="lista" id="lista"></div>
@@ -548,12 +559,24 @@
       <div class="temaGrid" id="skinGrid"></div>
     </div>
 
+    <div id="pRoleta" style="display:none;flex-direction:column;gap:10px">
+      <div class="cabecinha" id="rolTopo"></div>
+      <canvas id="roda"></canvas>
+      <button class="grandao" id="btGirar"></button>
+      <div class="btns"><button class="bt" id="btComprarGiro"></button></div>
+      <div class="cabecinha" id="rolInfo"></div>
+      <div class="cabecinha" id="gritoTopo"></div>
+      <div class="btns"><button class="bt" id="btMic"></button></div>
+      <div class="trilho" id="trilhoMic"><i id="barraMic" style="width:0%;background:linear-gradient(90deg,#6ee7a0,#ff4d4d)"></i></div>
+      <div class="cabecinha" id="gritoInfo"></div>
+    </div>
+
     <div id="pStat" style="display:none;flex-direction:column;gap:10px">
-      <div class="cabecinha">Tudo que a fábrica já viveu.</div>
+      <div class="cabecinha" data-i18n="statSub"></div>
       <div id="statLista"></div>
       <div class="btns">
-        <button class="bt" onclick="exportarSave()">📤 COPIAR CÓDIGO DO JOGO</button>
-        <button class="bt" onclick="importarSave()">📥 COLAR CÓDIGO</button>
+        <button class="bt" data-i18n="btCopiar" onclick="exportarSave()"></button>
+        <button class="bt" data-i18n="btColar" onclick="importarSave()"></button>
       </div>
     </div>
   </div>
@@ -563,31 +586,457 @@
 
 <script>
 /* ==========================================================================
+   0. 語言 IDIOMA — 中文 / Português
+   O jogo nasceu em português e o Jojo pediu tudo em chinês. Então ele fala
+   os dois: o botão 中/A troca na hora e a escolha fica salva no aparelho.
+   Toda frase que o jogador lê passa por tr(). Os textos com número usam
+   %1, %2... no lugar dos pedaços que mudam.
+   ========================================================================== */
+const CHAVE_IDIOMA = "fabricaChina_idioma";
+let idioma = "zh";
+try { if (localStorage.getItem(CHAVE_IDIOMA) === "pt") idioma = "pt"; } catch (e) {}
+const zh = () => idioma === "zh";
+/* nome de duas línguas: "普通 Comum" vira só 普通 em chinês */
+const dois = (a, b) => zh() ? a : a + " " + b;
+
+const DIC = {
+  /* ---------- topo ---------- */
+  marcaBr:   ["點擊 · 堆疊 · 賣掉", "Fábrica de Emojis da China"],
+  stClique:  ["每次點擊", "Por clique"],
+  stSeg:     ["每秒", "Por segundo"],
+  stRar:     ["稀有度", "Raridade"],
+  stRec:     ["紀錄", "Recorde"],
+  stCris:    ["水晶", "Cristais"],
+  stInd:     ["圖鑑", "Índice"],
+  stConq:    ["成就", "Conquistas"],
+  stTemp:    ["節日", "Temporada"],
+  btFazer:   ["做表情符號", "FAZER EMOJI"],
+  btVender:  ["賣掉", "VENDER"],
+  vazia:     ["空的", "vazia"],
+  moeda:     ["¥", "R$"],
+
+  /* ---------- abas ---------- */
+  abLoja:    ["🛒 商店", "🛒 LOJA"],
+  abMiss:    ["📜 任務", "📜 MISSÕES"],
+  abStat:    ["📊 數據", "📊 STATS"],
+  abTema:    ["🎨 盒子", "🎨 CAIXA"],
+  abTemp:    ["🎟️ 節日", "🎟️ EVENTO"],
+  abRoleta:  ["🎡 轉盤", "🎡 ROLETA"],
+  abDin:     ["💵 錢", "💵 DINHEIRO"],
+  abCri:     ["💠 水晶", "💠 CRISTAIS"],
+
+  /* ---------- pílulas em cima da caixa ---------- */
+  ttIndice:  ["打開圖鑑", "abrir o índice"],
+  ttSom:     ["開關聲音", "ligar ou desligar o som"],
+  ttGiro:    ["用手機的傾斜", "inclinar o celular"],
+  ttAdm:     ["管理員模式", "modo adm"],
+  ttModo:    ["換遊戲", "trocar de jogo"],
+  ttSalvar:  ["立刻存檔", "salvar agora"],
+  ttInstalar:["把遊戲裝到手機上", "instalar o jogo no aparelho"],
+  ttIdioma:  ["中文 / Português", "中文 / Português"],
+  ttGritar:  ["對著麥克風大喊", "gritar no microfone"],
+  btInstalar:["📲 安裝", "📲 INSTALAR"],
+
+  /* ---------- índice ---------- */
+  indiceTit: ["📖 表情符號圖鑑", "📖 Índice de emojis"],
+  fechar:    ["關閉", "FECHAR"],
+  indiceSub: ["%3 個表情符號中的 %1 個 · %4 個稀有度中的 %2 個已開 · %5 套已收齊（全部 +%6%）",
+              "%1 de %3 emojis · %2 de %4 raridades abertas · %5 coleções completas (+%6% em tudo)"],
+  fxSecretos:["🌈 寶藏", "🌈 Secretos"],
+  fxSecretosInfo: ["%1/%2 · 任何時候都可能出現", "%1/%2 · caem em qualquer fase"],
+  umEm:      ["%1 分之 1", "1 em %1"],
+  completa:  [" ✅ 收齊 +2%", " ✅ completa +2%"],
+  fxEvento:  ["節日", "evento"],
+  fxSecreto: ["秘密", "secreto"],
+
+  /* ---------- tela de início ---------- */
+  inicioTit: ["🏭 中國表情符號工廠", "🏭 Fábrica de Emojis da China"],
+  inicioSub: ["你的存檔。可以有好幾個，一個永遠不會蓋掉另一個。",
+              "Seus jogos salvos. Dá pra ter vários ao mesmo tempo — um nunca apaga o outro."],
+  divContinuar: ["💾 繼續", "💾 Continuar"],
+  divNovo:   ["✨ 開始新遊戲", "✨ Começar um jogo novo"],
+  inicioDica:["遊戲會自己存檔，但盒子上面的 💾 可以馬上存。按 🎮 回到這個畫面。",
+              "O jogo salva sozinho, mas tem o botão 💾 em cima da caixa pra salvar na hora. No 🎮 você volta pra esta tela."],
+  semJogos:  ["還沒有存檔 — 在下面選一個模式開始第一個。",
+              "Nenhum jogo salvo ainda — escolhe um modo aí embaixo pra começar o primeiro."],
+  jogando:   ["進行中", "jogando"],
+  cardResumo:["紀錄 %1 · %2 個表情符號 · %3 個成就", "recorde %1 · %2 emojis · %3 conquistas"],
+  cardModo:  ["%1 模式 · 玩了 %2", "modo %1 · %2 de fábrica"],
+  ttRenomear:["改名字", "mudar o nome"],
+  ttApagar:  ["刪掉這個存檔", "apagar este jogo"],
+  modoSalvos:["這個模式有 %1 個存檔", "%1 jogo(s) salvo(s) nesse modo"],
+  nenhum:    ["0", "nenhum"],
+
+  /* ---------- volta ---------- */
+  voltaTit:  ["🌙 歡迎回來", "🌙 Bem-vindo de volta"],
+  voltaBeleza:["好！", "BELEZA!"],
+  voltaSub:  ["工廠自己待了 %1，不過夜班有在做事。",
+              "A fábrica ficou %1 sozinha, mas o turno da noite trabalhou."],
+
+  /* ---------- loja ---------- */
+  turbo:     ["<b>⚡ 加速 — 💠 %1</b><span>一分鐘內全部 <b>5 倍</b>。你有 %2 個水晶。</span>",
+              "<b>⚡ TURBO — 💠 %1</b><span>Tudo vale <b>5x</b> por 1 minuto. Você tem %2 cristais.</span>"],
+  renascerOk:["<b>💠 重生</b><span>錢、錢的升級和稀有度全部歸零 — 你拿到 <b style=\"color:var(--cristal)\">%1 個水晶</b>（每個永久 +35%）。圖鑑、成就和水晶商店<b>不會</b>不見。</span>",
+              "<b>💠 RENASCER</b><span>Zera dinheiro, upgrades de dinheiro e raridades — você ganha <b style=\"color:var(--cristal)\">%1 cristais</b> (+35% cada, pra sempre). Índice, conquistas e loja de cristais <b>não</b> se perdem.</span>"],
+  renascerNao:["<b>💠 重生</b><span>還鎖著。紀錄要到 %1。（%2 / %1）</span>",
+              "<b>💠 RENASCER</b><span>Trancado. Chegue a %1 de recorde. (%2 / %1)</span>"],
+
+  /* ---------- conquistas / missões / stats ---------- */
+  conqTopo:  ["%2 個成就中的 <b>%1</b> 個 · 每個永久 +1.5% · 現在的加成：<b>+%3%</b>",
+              "<b>%1 de %2</b> conquistas · cada uma dá +1,5% em tudo · bônus atual: <b>+%3%</b>"],
+  conqSecreta:["秘密成就", "conquista secreta"],
+  missTopo:  ["已完成 <b>%1</b> 個任務 · 越往後越難，獎勵也越多",
+              "<b>%1</b> missões cumpridas · elas ficam mais difíceis (e pagam mais) conforme você avança"],
+  missPremio:["獎勵：%1", "prêmio: %1"],
+  missPegar: ["領獎勵", "PEGAR PRÊMIO"],
+  missAndando:["進行中", "EM ANDAMENTO"],
+  statSub:   ["這座工廠的一切。", "Tudo que a fábrica já viveu."],
+  btCopiar:  ["📤 複製存檔代碼", "📤 COPIAR CÓDIGO DO JOGO"],
+  btColar:   ["📥 貼上代碼", "📥 COLAR CÓDIGO"],
+
+  /* ---------- temas e skins ---------- */
+  temaTopo:  ["%2 個主題中的 <b>%1</b> 個 · 換盒子的樣子 · 用 💠 水晶買（你有 <b>%3</b>）",
+              "<b>%1 de %2</b> temas · muda a cara da caixa · pago em 💠 cristais (você tem <b>%3</b>)"],
+  skinTopo:  ["%2 個外觀中的 <b>%1</b> 個 · 裝飾盒子裡的<b>每個表情符號</b> · 節日的要從通行證拿",
+              "<b>%1 de %2</b> skins · enfeitam <b>cada emoji</b> da caixa · as de evento saem no passe da temporada"],
+  emUso:     ["使用中", "em uso"],
+  usar:      ["使用", "usar"],
+  doPasse:   ["🎟️ 通行證", "🎟️ do passe"],
+  gratis:    ["免費", "grátis"],
+
+  /* ---------- temporada ---------- */
+  semTemp:   ["現在沒有節日", "Nenhuma temporada rolando"],
+  proxTemp:  ["下一個是 <b>%1 %2</b>，還有 <b>%3</b>。", "A próxima é <b>%1 %2</b>, daqui a <b>%3</b>."],
+  volteOutroDia:["改天再來看看！", "Volte outro dia!"],
+  tempExplica:["每個節日都有自己的表情符號、一個秘密的和一個外觀。",
+              " Cada temporada traz emojis próprios, um secreto e uma skin."],
+  calendario:["一年的行事曆：", "O calendário do ano:"],
+  premios:   ["%1/%2 個獎勵", "%1/%2 prêmios"],
+  aindaNao:  ["還沒玩過", "ainda não jogada"],
+  tempPontos:["🎟️ <b>%1 點</b> · %2 後結束", "🎟️ <b>%1 pontos</b> · acaba em %2"],
+  tempAdm:   [" · <b>（管理員模式）</b>", " · <b>(modo adm)</b>"],
+  tempComoGanhar:["做出節日的表情符號來拿 🎟️ 點數：%1 — 秘密的值 %2 點。",
+              "Fabrique os emojis da temporada pra ganhar 🎟️ pontos: %1 — e o secreto vale %2."],
+  passoPontos:["%1/%2 點", "%1/%2 pontos"],
+  pego:      ["已領", "PEGO"],
+  pegar:     ["領取", "PEGAR"],
+
+  /* ---------- avisos ---------- */
+  avSecreto: ["🌈 寶藏！！%1 %2 — %3", "🌈 SECRETO!! %1 %2 — %3"],
+  avSecretoTemp:["🎟️🌈 節日的秘密表情符號！%1 %2", "🎟️🌈 SECRETO DA TEMPORADA! %1 %2"],
+  avRaro:    ["✨ %1 %2 — %3", "✨ %1 %2 — %3"],
+  avEmojiTemp:["🎟️ %1 — %2 的表情符號！", "🎟️ %1 — emoji de %2!"],
+  avDinheiro:["💵 +%1", "💵 +%1"],
+  avCristais:["💠 +%1 個水晶", "💠 +%1 cristais"],
+  avTurbo:   ["⚡ 兩分鐘內全部 5 倍！", "⚡ tudo x5 por 2 minutos!"],
+  avTemaLib: ["🎨 %1 的主題和外觀開了！", "🎨 tema e skin de %1 liberados!"],
+  avEntrouInd:["🎟️ %1 進圖鑑了！", "🎟️ %1 entrou no índice!"],
+  avConquista:["🏆 成就：%1 %2", "🏆 CONQUISTA: %1 %2"],
+  avMissao:  ["📜 任務完成！去領獎勵", "📜 missão cumprida! passa lá pegar o prêmio"],
+  avGiroOn:  ["📱 把手機轉一轉，表情符號會倒向那邊！", "📱 inclina o celular que os emojis caem pro lado!"],
+  avGiroNeg: ["📱 沒有給權限", "📱 permissão negada"],
+  avGiroErro:["📱 沒辦法開感應器", "📱 não deu pra ligar o sensor"],
+  avSemSensor:["📱 這台機器沒有感應器 — 用鍵盤的方向鍵", "📱 esse aparelho não tem sensor — use as setas do teclado"],
+  avCheia:   ["📦 盒子滿了！賣掉或買空間", "📦 caixa cheia! vende ou compra espaço"],
+  avCritico: ["🎯 暴擊！10 倍", "🎯 CRÍTICO! x10"],
+  avEstrela: ["⭐ 盒子裡出現一顆星星 — 點它！", "⭐ apareceu uma estrela na caixa — clica nela!"],
+  avSkinPasse:["🎟️ 這個外觀是 %1 節日通行證的獎勵", "🎟️ essa skin é prêmio do passe da temporada %1"],
+  avFaltamCris:["💠 還差 %1 個水晶", "💠 faltam %1 cristais"],
+  avTemaComprado:["🎨 買了主題 %1！", "🎨 tema %1 comprado!"],
+  avSkinComprada:["✨ 買了外觀 %1！", "✨ skin %1 comprada!"],
+  avVendendo:["💸 賣了 %1", "💸 vendendo por %1"],
+  avNovaRar: ["🎉 新的稀有度：%1！", "🎉 nova raridade: %1!"],
+  avPrecisaCris:["💠 需要 %1 個水晶", "💠 precisa de %1 cristais"],
+  avTurboJa: ["⚡ 加速！一分鐘內全部 5 倍", "⚡ TURBO! tudo vale 5x por 1 minuto"],
+  avRenasceu:["💠 重生了！+%1 個水晶", "💠 renasceu! +%1 cristais"],
+  avSalvo:   ["💾 存好了！", "💾 jogo salvo!"],
+  avMuitosJogos:["💾 已經有 %1 個存檔了 — 先刪一個", "💾 já são %1 jogos salvos — apague um antes"],
+  avApagado: ["🗑️ 存檔刪掉了", "🗑️ jogo apagado"],
+  avCopiado: ["📤 代碼複製好了！收在安全的地方", "📤 código copiado! guarda num lugar seguro"],
+  avCarregado:["📥 存檔載入了！", "📥 jogo carregado!"],
+  avCodigoRuim:["❌ 這個代碼不行", "❌ esse código não serve"],
+  avInstalado:["📲 裝好了！現在它有自己的圖示", "📲 jogo instalado! agora ele tem ícone próprio"],
+  doDia:     ["☀️ 今天 %1 值 %2 倍", "☀️ hoje %1 vale %2x"],
+
+  /* ---------- perguntas ---------- */
+  perguntaNome:["這個存檔要叫什麼名字？", "Que nome esse jogo vai ter?"],
+  perguntaApagar:["真的要刪掉「%1」嗎？刪掉就回不來了。", "Apagar “%1” mesmo? Não dá pra voltar atrás."],
+  perguntaCodigo:["把存檔代碼貼在這裡：", "Cole aqui o código do jogo:"],
+
+  /* ---------- rodapé ---------- */
+  rodape:    ["點<b>盒子裡面</b>做表情符號。它們會真的掉下來、彈起來、疊起來。<br>" +
+              "<b>120 個稀有度</b> · <b>%1 個表情符號</b>（%2 個寶藏） · <b>%3 個升級</b> · <b>%4 個成就</b> · <b>%5 個主題</b>和<b>%6 個外觀</b><br>" +
+              "<b>%7 個節日</b>，各有通行證和秘密表情符號 · <b>%8 種模式</b> · 任務、收藏、連擊、暴擊、每日表情符號和離線收入。<br>" +
+              "還有 🎡 <b>幸運轉盤</b>和 🎤 <b>大喊</b>：對著麥克風叫，表情符號會跳起來 — 然後學你叫回去。<br>" +
+              "鍵盤：<b>空白鍵</b>做表情符號，<b>V</b> 賣掉，<b>方向鍵</b>換盒子的重力。",
+              "Clique <b>dentro da caixa</b> pra fabricar. Os emojis caem, quicam e empilham de verdade.<br>" +
+              "<b>120 raridades</b> · <b>%1 emojis</b> (%2 secretos) · <b>%3 upgrades</b> · <b>%4 conquistas</b> · <b>%5 temas</b> e <b>%6 skins</b><br>" +
+              "<b>%7 temporadas</b> com passe e emoji secreto próprio · <b>%8 modos</b> de jogo · missões, coleções, combos, críticos, emoji do dia e renda offline.<br>" +
+              "Tem também a 🎡 <b>roleta da sorte</b> e o 🎤 <b>grito</b>: berra no microfone que os emojis pulam — e depois te imitam.<br>" +
+              "No teclado: <b>espaço</b> fabrica, <b>V</b> vende e as <b>setas</b> viram a gravidade da caixa."],
+};
+
+function tr(k) {
+  const v = DIC[k];
+  if (!v) return k;
+  let s = v[zh() ? 0 : 1];
+  for (let i = 1; i < arguments.length; i++) s = s.split("%" + i).join(arguments[i]);
+  return s;
+}
+/* o dinheiro do jogo: R$ em português, ¥ em chinês */
+const din = n => tr("moeda") + " " + fmt(n);
+
+/* ---------- 2. as palavras do conteúdo: upgrades, conquistas, missões... ---------- */
+Object.assign(DIC, {
+  /* upgrades de dinheiro */
+  uClique:   ["每次點擊 +%1 個表情符號", "+%1 emojis por clique"],
+  uChuva:    ["每秒 +%1 個表情符號", "+%1 emojis por segundo"],
+  uValor:    ["每個表情符號的價值 +%1%", "+%1% no valor de cada emoji"],
+  uEspaco:   ["盒子空間 +%1", "+%1 de espaço na caixa"],
+  uSorte:    ["稀有的機率 +%1%", "+%1% de chance de raro"],
+  uVenda:    ["賣出多 +%1%", "venda vale +%1%"],
+  uPrensa:   ["表情符號小 %1%", "emojis %1% menores"],
+  uIma:      ["把表情符號吸向中間", "puxa os emojis pro centro"],
+  uDourado:  ["金色的機率 +%1%", "+%1% de chance de dourado"],
+  uNucleo:   ["全部乘以 %1", "multiplica TUDO por %1"],
+  uVendedor: ["滿了會自己賣，而且每 %1 秒賣一次", "vende sozinho quando encher, e a cada %1s"],
+  uCritico:  ["暴擊機率 +%1%（10 倍）", "+%1% de clique crítico (x10)"],
+  uCombo:    ["連擊最多 %1（每段 +5%）", "combo até %1 (+5% por passo)"],
+  uGemeo:    ["一次出兩個的機率 +%1%", "+%1% de sair 2 emojis de uma vez"],
+  uFusao:    ["表情符號一出生就高一級的機率 +%1%", "+%1% do emoji nascer 1 raridade acima"],
+  uNoite:    ["遊戲關著的時候賺 %1%", "rende %1% enquanto o jogo tá fechado"],
+  uTurbofus: ["融合快 %1%", "a fusão acontece %1% mais rápido"],
+  /* upgrades de cristal */
+  uHeranca:  ["每次點擊 +%1，永久", "+%1 por clique, pra sempre"],
+  uDiluvio:  ["每秒 +%1，永久", "+%1 por segundo, pra sempre"],
+  uEterno:   ["價值 +%1%，永久", "+%1% de valor, pra sempre"],
+  uCofre:    ["空間 +%1，永久", "+%1 de espaço, pra sempre"],
+  uTrevo:    ["稀有 +%1%，永久", "+%1% de raro, pra sempre"],
+  uMercado:  ["賣出 +%1%，永久", "venda +%1%, pra sempre"],
+  uGravidade:["永久吸向中間", "atração permanente pro centro"],
+  uEstrela:  ["金色 +%1%", "+%1% de dourado"],
+  uLeiloeiro:["每 %1 秒自動賣一次，永久", "venda automática a cada %1s, pra sempre"],
+  uMira:     ["暴擊 +%1%，永久", "+%1% de crítico, pra sempre"],
+  uFogueira: ["連擊上限再 +%1", "combo até %1 a mais"],
+  uClone:    ["表情符號加倍 +%1%", "+%1% de emoji dobrado"],
+  uAlquimia: ["升一個稀有度 +%1%", "+%1% de subir de raridade"],
+  uSonho:    ["離線收入 +%1%", "+%1% de renda offline"],
+  uRadar:    ["寶藏機率 x%1", "chance de secreto x%1"],
+
+  /* nomes das famílias */
+  fClique:["點擊","Clique"], fChuva:["落雨","Chuva"], fValor:["價值","Valor"], fEspaco:["空間","Espaço"],
+  fSorte:["幸運","Sorte"], fVenda:["販賣","Venda"], fPrensa:["壓縮機","Prensa"], fIma:["磁鐵","Ímã"],
+  fDourado:["金色","Dourado"], fNucleo:["核心","Núcleo"], fVendedor:["售貨員","Vendedor"],
+  fCritico:["暴擊","Crítico"], fCombo:["連擊","Combo"], fGemeo:["雙胞胎","Gêmeo"], fFusao:["融合","Fusão"],
+  fNoite:["夜班","Turno da Noite"], fTurbofus:["融合加速","Turbo da Fusão"],
+  fHeranca:["傳承","Herança"], fDiluvio:["大雨","Dilúvio"], fEterno:["永恆","Eterno"], fCofre:["金庫","Cofre"],
+  fTrevo:["幸運草","Trevo"], fMercado:["市場","Mercado"], fCompact:["壓縮器","Compressor"],
+  fGravidade:["重力","Gravidade"], fEstrela:["星星","Estrela"], fLeiloeiro:["拍賣官","Leiloeiro"],
+  fMira:["準心","Mira"], fFogueira:["火堆","Fogueira"], fClone:["分身","Clone"], fAlquimia:["煉金","Alquimia"],
+  fSonho:["夢","Sonho"], fRadar:["雷達","Radar"],
+
+  /* conquistas */
+  cDin:["企業家","Empresário"],        dDin:["紀錄達到 %1","Chegue a %1 de recorde"],
+  cCli:["鐵手指","Dedo de Ferro"],     dCli:["點 %1 下","Dê %1 cliques"],
+  cFez:["生產線","Linha de Produção"], dFez:["做出 %1 個表情符號","Fabrique %1 emojis"],
+  cVen:["商人","Comerciante"],         dVen:["賣掉盒子 %1 次","Venda a caixa %1 vezes"],
+  cInd:["收藏家","Colecionador"],      dInd:["發現 %1 個不同的表情符號","Descubra %1 emojis diferentes"],
+  cUpg:["常客","Cliente Fiel"],        dUpg:["買 %1 個升級","Compre %1 upgrades"],
+  cRar:["攀登者","Escalador"],         dRar:["開 %1 個稀有度","Abra %1 raridades"],
+  cCri:["水晶匠","Cristaleiro"],       dCri:["擁有 %1 個水晶","Tenha %1 cristais"],
+  cRen:["重生者","Renascido"],         dRen:["重生 %1 次","Renasça %1 vezes"],
+  cDou:["淘金者","Caçador de Ouro"],   dDou:["找到 %1 個金色表情符號","Ache %1 emojis dourados"],
+  cSec:["都市傳說","Lenda Urbana"],    dSec:["找到 %1 個寶藏","Ache %1 emojis secretos"],
+  cCom:["火熱","Em Chamas"],           dCom:["做出 %1 連擊","Faça um combo de %1"],
+  cBon:["幸運兒","Sortudo"],           dBon:["撿 %1 顆獎勵星星","Pegue %1 estrelas de bônus"],
+  cCru:["正中紅心","Na Mosca"],        dCru:["打中 %1 次暴擊","Acerte %1 cliques críticos"],
+  cCol:["相簿","Álbum"],               dCol:["收齊 %1 套稀有度","Complete %1 coleções de raridade"],
+  cTmp:["節日","Temporada"],           dTmp:["領 %1 個節日通行證獎勵","Pegue %1 prêmios de passe de temporada"],
+  cPasse:["全通行證","Passe Completo"], dPasse:["領完同一個節日的 12 個獎勵","Pegar os 12 prêmios de uma temporada só"],
+  cTemas:["裝潢師","Decorador"],       dTemas:["買下盒子的所有主題","Compre todos os temas da caixa"],
+  cCheia:["滿出來了","Transbordou"],   dCheia:["把盒子裝到滿","Encha a caixa até o limite"],
+  cGiro:["倒過來","Cabeça pra Baixo"], dGiro:["用手機的傾斜","Use a inclinação do celular"],
+  cTrapa:["作弊者","Trapaceiro"],      dTrapa:["進入管理員模式","Entre no modo administrador"],
+  cMiss:["任務達人","Cumpridor"],      dMiss:["完成 10 個任務","Complete 10 missões"],
+  cRico:["一擊致富","Um Só Golpe"],    dRico:["一次賣出 %1","Faça uma venda de %1"],
+  cCoruja:["貓頭鷹","Coruja"],         dCoruja:["半夜 12 點到早上 5 點之間玩","Jogar entre meia-noite e 5 da manhã"],
+  cVeloz:["閃電手指","Dedo Elétrico"], dVeloz:["3 秒內點 20 下","20 cliques em menos de 3 segundos"],
+  cSoUm:["空賣","Venda Vazia"],        dSoUm:["盒子裡只有一個表情符號的時候賣掉","Vender a caixa com um emoji só"],
+  cQuebrou:["破產","Quebrou"],         dQuebrou:["有過一百萬之後，剩不到 %1","Ficar com menos de %1 depois de já ter tido 1 milhão"],
+  cMaratona:["馬拉松","Maratona"],     dMaratona:["同一個存檔玩滿 1 小時","1 hora de fábrica no mesmo save"],
+  cDoDia:["太陽之子","Filho do Sol"],  dDoDia:["做出 50 個當日表情符號","Fabricar 50 emojis do dia"],
+  cFundidor:["融合師","Fundidor"],     dFundidor:["在融合模式做 100 次融合","Fazer 100 fusões no modo Fusão"],
+  cModos:["探險家","Explorador"],      dModos:["四種模式都玩過","Jogar nos 4 modos do jogo"],
+  cRoleta:["轉盤之王","Rei da Roleta"], dRoleta:["轉 25 次幸運轉盤","Gire a roleta 25 vezes"],
+  cGrito:["大嗓門","Gritador"],        dGrito:["對著麥克風大喊 10 次","Grite no microfone 10 vezes"],
+
+  /* missões */
+  mFabricar: ["做出 %1 個表情符號", "Fabrique %1 emojis"],
+  mVender:   ["賣掉盒子 %1 次", "Venda a caixa %1 vezes"],
+  mDescobrir:["發現 %1 個新的表情符號", "Descubra %1 emojis novos"],
+  mComprar:  ["買 %1 個升級", "Compre %1 upgrades"],
+  mClicar:   ["點 %1 下", "Dê %1 cliques"],
+  mDourado:  ["找到 %1 個金色表情符號", "Ache %1 emojis dourados"],
+  mBonus:    ["撿 %1 顆獎勵星星", "Pegue %1 estrelas de bônus"],
+
+  /* estrela de bônus */
+  bFrenesi:["狂熱","FRENESI"],     avFrenesi:["🌟 狂熱！20 秒內全部 7 倍","🌟 FRENESI! tudo vale 7x por 20s"],
+  bDedo:["黃金手指","DEDO DE OURO"], avDedo:["👆 黃金手指！15 秒內點擊 25 倍","👆 DEDO DE OURO! clique x25 por 15s"],
+  bDiluvio:["大雨","DILÚVIO"],     avDiluvio:["⛈️ 大雨！25 秒內落雨 10 倍","⛈️ DILÚVIO! chuva x10 por 25s"],
+  bTrevao:["大幸運","TREVÃO"],     avTrevao:["🍀 大幸運！30 秒內幸運 3 倍","🍀 TREVÃO! sorte x3 por 30s"],
+  bCofre:["金庫","COFRE"],         avCofreB:["💰 金庫！+%1","💰 COFRE! +%1"],
+  bPresente:["禮物","PRESENTE"],   avPresente:["🎁 禮物！+%1 個表情符號","🎁 PRESENTE! +%1 emojis"],
+  buffTurbo:["⚡ 加速 5倍","⚡ Turbo x5"], buffFrenesi:["🌟 狂熱 7倍","🌟 Frenesi x7"],
+  buffDedo:["👆 手指 25倍","👆 Dedo x25"], buffDiluvio:["⛈️ 大雨 10倍","⛈️ Dilúvio x10"],
+  buffTrevao:["🍀 大幸運 3倍","🍀 Trevão x3"],
+
+  /* skins compradas com cristal */
+  kNenhuma:["沒有裝飾","Sem enfeite"], kAro:["白圈","Aro Branco"], kSombra:["外框","Contorno"],
+  kNeon:["霓虹","Neon"], kPontos:["小點","Bolinhas"], kOuro:["金框","Moldura de Ouro"],
+  kGelo:["水晶","Cristal"], kArco:["彩虹","Arco-íris"],
+
+  /* modos */
+  mdNormal:["完整的遊戲，本來就該這樣玩。","O jogo completo, do jeito que ele foi feito pra ser jogado."],
+  mdDificil:["什麼都貴 4 倍，但每次賣出值 3 倍。給已經會玩的人。","Tudo custa 4x mais caro, mas cada venda vale 3x. Pra quem já sabe jogar."],
+  mdFusao:["跟普通一樣，但盒子裡 5 個同稀有度的表情符號會自己黏起來，變成 1 個更好的。","Igual ao Normal, mas 5 emojis da mesma raridade se juntam sozinhos na caixa e viram 1 melhor."],
+  mdLivre:["錢用不完，120 個稀有度一開始就全開。這是亂玩模式。","Dinheiro que não acaba e as 120 raridades abertas desde o começo. É o modo de bagunçar."],
+
+  /* temporadas — a conta de cada festival */
+  tpEstreia:["你在工廠的頭 14 天。只會發生一次。","Os seus 14 primeiros dias de fábrica. Só acontece uma vez."],
+  tpChunjie:["一年最大的節日：從除夕到一週後。日子每年都不一樣，因為跟著月亮走。","A maior festa do ano: da véspera até uma semana depois. A data muda todo ano, porque segue a lua."],
+  tpYuanxiao:["過年後十五天，天上都是燈籠。","Quinze dias depois do Ano Novo, quando o céu enche de lanterna."],
+  tpQingming:["4 月 4 到 6 日 — 掃墓，也踏青。","4 a 6 de abril — o dia de visitar quem já foi e de sair pro campo."],
+  tpDuanwu:["龍頭船比賽的日子。也跟著月亮走。","A corrida dos barcos com cabeça de dragão. Também segue a lua."],
+  tpQixi:["中國的情人節：兩顆星星在銀河相遇的夜晚。","O dia dos namorados chinês: a noite em que as duas estrelas se encontram na Via Láctea."],
+  tpZhongqiu:["滿月的節日，有月餅和茶。當然，也跟著月亮。","A festa da lua cheia, com bolo da lua e chá. Segue a lua, claro."],
+  tpGuoqing:["10 月 1 到 7 日 — 黃金週，七天連假。","1 a 7 de outubro — a Semana Dourada, sete dias de feriado."],
+  tpShuang11:["11 月 11 日，全世界最大的購物日。最稀有的：只有一天。","11 de novembro, o maior dia de compras do mundo. A mais rara: dura um dia só."],
+  tpDongzhi:["12 月 21 和 22 日，最長的夜。北方要吃餃子，不然耳朵會凍掉。","21 e 22 de dezembro, a noite mais longa. No norte se come guioza pra não congelar a orelha."],
+
+  /* estatísticas */
+  sModo:["🎮 模式","🎮 Modo"], sDoDia:["☀️ 每日表情符號","☀️ Emoji do dia"],
+  sDoDiaV:["%1 · 做了 %2 個","%1 · %2 fabricados"],
+  sTempo:["⏱️ 工廠時間","⏱️ Tempo de fábrica"], sCliques:["👆 點擊","👆 Cliques"],
+  sCriticos:["🎯 暴擊","🎯 Cliques críticos"], sCombo:["🔥 最大連擊","🔥 Maior combo"],
+  sFeitos:["🏭 做出的表情符號","🏭 Emojis fabricados"], sVendidos:["📦 賣掉的表情符號","📦 Emojis vendidos"],
+  sVendas:["💰 賣出次數","💰 Vendas feitas"], sMaiorVenda:["🏆 最大一筆","🏆 Maior venda"],
+  sGanho:["💵 一生賺到的錢","💵 Dinheiro ganho na vida"], sDourados:["🌟 找到的金色","🌟 Dourados achados"],
+  sBonus:["⭐ 獎勵星星","⭐ Estrelas de bônus"], sUps:["🛒 買的升級","🛒 Upgrades comprados"],
+  sMissoes:["📜 完成的任務","📜 Missões cumpridas"], sColecoes:["🗂️ 收齊的套組","🗂️ Coleções completas"],
+  sTemas:["🎨 盒子主題","🎨 Temas da caixa"], sSkins:["✨ 表情符號外觀","✨ Skins dos emojis"],
+  sFusoes:["🧬 融合次數","🧬 Fusões feitas"], sRenasc:["♻️ 重生","♻️ Renascimentos"],
+  sIndice:["📖 圖鑑","📖 Índice"], sRaridades:["🌈 開的稀有度","🌈 Raridades abertas"],
+  sRenda:["📈 估計收入","📈 Renda estimada"], sOffline:["🌙 離線收入","🌙 Renda offline"],
+  sSecreto:["🔮 寶藏機率","🔮 Chance de secreto"], sRoleta:["🎡 轉盤次數","🎡 Giros na roleta"],
+  sGritos:["🎤 大喊次數","🎤 Gritos"], sIma:[" · 磁鐵 x%1"," · ímã x%1"],
+
+  /* modo administrador */
+  admTrancado:["🔒 禁止進入","🔒 Acesso restrito"],
+  admSenhaSub:["工廠的管理員模式。輸入密碼。","Modo administrador da fábrica. Digite a senha."],
+  admSenha:["密碼","senha"], admEntrar:["進入","ENTRAR"], admSair:["離開","SAIR"],
+  admErrada:["密碼錯了！","Senha errada!"],
+  admTit:["⚙ 管理員模式","⚙ Modo administrador"],
+  admSub:["工廠是你的。隨便弄壞。","A fábrica é sua. Quebra à vontade."],
+  admDinheiro:["錢","Dinheiro"], admAbsurdo:["+1 誇張","+1 absurdo"], admZerar:["歸零","ZERAR"],
+  admExato:["準確的數量","Quantidade exata"], admDefinir:["設定","DEFINIR"],
+  admCristais:["水晶","Cristais"], admMilhao:["+100萬","+1 milhão"],
+  admUpgrades:["升級","Upgrades"], admCada1d:["每個 +1（錢）","+1 em cada (dinheiro)"],
+  admCada10:["每個 +10","+10 em cada"], admCada1c:["每個 +1（水晶）","+1 em cada (cristal)"],
+  admZerarTodos:["全部歸零","ZERAR TODOS"],
+  admRaridades:["稀有度 — 120 個中開了 <b id=\"admRar\">1</b> 個","Raridades — <b id=\"admRar\">1</b> de 120 abertas"],
+  admAte:["開到第 %1","até a %1"], admTodas120:["全部 120 個","TODAS as 120"],
+  admTrancarTudo:["全部鎖起來","TRANCAR TUDO"],
+  admSecretos:["寶藏","Emojis secretos"], admBonus:["獎勵和加速","Bônus e turbos"],
+  admTemas:["盒子主題","Temas da caixa"], admLibTemas:["開放所有主題","LIBERAR TODOS OS TEMAS"],
+  admLibSkins:["開放所有外觀","LIBERAR TODAS AS SKINS"],
+  admTemporadas:["節日","Temporadas"], admPontos:["節日點數","Pontos de temporada"],
+  admZerarTemp:["節日歸零","ZERAR TEMPORADAS"],
+  admConqMiss:["成就和任務","Conquistas e missões"], admDestravar:["全部解鎖","DESTRAVAR TODAS"],
+  admApagarConq:["刪掉成就","APAGAR CONQUISTAS"], admCompletar:["完成任務","COMPLETAR MISSÕES"],
+  admTrocarMiss:["換任務","TROCAR MISSÕES"],
+  admCaixa:["盒子","Caixa"], admMais100:["+100 個表情符號","+100 emojis"],
+  admMais500:["+500 個表情符號","+500 emojis"], admEsvaziar:["清空","ESVAZIAR"],
+  admMenosFis:["− 物理","− física"], admMaisFis:["+ 物理","+ física"],
+  admIndice:["圖鑑","Índice"], admDescobrirTudo:["全部發現","DESCOBRIR TUDO"],
+  admApagarInd:["刪掉圖鑑","APAGAR ÍNDICE"],
+  admSairG:["離開","Sair"], admRecomecar:["從頭開始","RECOMEÇAR DO ZERO"], admFechar:["關閉","FECHAR"],
+  admSoltarEstrela:["⭐ 放一顆星星","⭐ SOLTAR ESTRELA"], admLimparBonus:["清掉加成","LIMPAR BÔNUS"],
+  admRoleta:["轉盤","Roleta"], admGiros:["+10 次轉盤","+10 giros"],
+});
+
+/* ---------- 3. as palavras da roleta e do grito ---------- */
+Object.assign(DIC, {
+  /* roleta 幸運轉盤 */
+  rolTopo:   ["🎡 <b>幸運轉盤</b> — 每 %1 分鐘一次免費，也可以用 💠 水晶買。",
+              "🎡 <b>Roleta da sorte</b> — um giro grátis a cada %1 minutos, e dá pra comprar mais com 💠 cristais."],
+  rolGiros:  ["你有 <b>%1</b> 次", "Você tem <b>%1</b> giro(s)"],
+  rolGratisEm:["下一次免費：<b>%1</b>", "Próximo grátis: <b>%1</b>"],
+  rolGratisJa:["有一次免費的等你！", "Tem um giro grátis te esperando!"],
+  rolGirar:  ["轉！", "GIRAR!"],
+  rolGirando:["轉轉轉…", "girando..."],
+  rolSemGiros:["🎡 沒有次數了 — 等免費的或用水晶買", "🎡 acabaram os giros — espera o grátis ou compra com cristais"],
+  rolComprar:["買 1 次 · 💠 %1", "Comprar 1 giro · 💠 %1"],
+  rolComprou:["🎡 +1 次！", "🎡 +1 giro!"],
+  rolTotal:  ["已經轉了 %1 次", "%1 giros dados até agora"],
+  rolCaiu:   ["🎡 %1", "🎡 %1"],
+  rolPremios:["轉盤上的獎：", "O que tem na roleta:"],
+  rolJa:     ["現在", "agora"],
+  /* os prémios */
+  pxDinP:["小錢","Trocado"], pxDinM:["一疊錢","Bolada"], pxDinG:["金庫","Cofre"],
+  pxCris1:["1 個水晶","1 cristal"], pxCris3:["3 個水晶","3 cristais"],
+  pxEmojis:["一堆表情符號","Chuva de emojis"], pxFrenesi:["狂熱","Frenesi"],
+  pxDedo:["黃金手指","Dedo de ouro"], pxEstrela:["獎勵星星","Estrela de bônus"],
+  pxPontos:["節日點數","Pontos de temporada"], pxGiros:["+2 次","+2 giros"],
+  pxJackpot:["龍的大獎","JACKPOT do dragão"],
+  avJackpot:["🐉 龍的大獎！！+%1 和 5 個水晶","🐉 JACKPOT DO DRAGÃO!! +%1 e 5 cristais"],
+  avGirosMais:["🎡 +2 次轉盤！","🎡 +2 giros na roleta!"],
+
+  /* grito 大喊 */
+  gritoTopo: ["🎤 <b>大喊</b> — 對著麥克風叫，盒子會抖，表情符號會跳起來 — 然後<b>學你叫回去</b>。",
+              "🎤 <b>Grito</b> — berra no microfone que a caixa treme, os emojis pulam — e depois <b>te imitam</b>."],
+  gritoPriv: ["聲音只留在你的機器裡：不會傳到任何地方，也不會被存起來。",
+              "O som fica só no seu aparelho: não vai pra lugar nenhum e não é guardado."],
+  gritoLigar:["🎤 開麥克風", "🎤 LIGAR O MICROFONE"],
+  gritoDesligar:["🎤 關麥克風", "🎤 DESLIGAR O MICROFONE"],
+  gritoOn:   ["🎤 麥克風開了 — 大喊看看！", "🎤 microfone ligado — grita aí!"],
+  gritoOff:  ["🎤 麥克風關了", "🎤 microfone desligado"],
+  gritoNao:  ["🎤 沒辦法開麥克風（要給權限，而且網址要是 https）",
+              "🎤 não deu pra ligar o microfone (precisa dar permissão, e o site tem que ser https)"],
+  gritoAviso:["😱 啊啊啊！+%1 個表情符號", "😱 AAAAH! +%1 emojis"],
+  gritoEco:  ["🔁 表情符號在學你…", "🔁 os emojis estão te imitando..."],
+  gritoQtd:  ["已經喊了 %1 次", "%1 gritos até agora"],
+  gritoNivel:["音量", "Volume"],
+});
+
+
+/* ==========================================================================
    1. RARIDADES — 20 com nome próprio + 100 geradas
    ========================================================================== */
 const NOMEADAS = [
-  ["普通 Comum","#c8c8da"],   ["竹 Bambu","#8fd694"],      ["瓷 Porcelana","#7ac9ff"],   ["玉 Jade","#6ef0c8"],
-  ["絲綢 Seda","#ff9ecd"],    ["銅 Bronze","#c98a4b"],     ["銀 Prata","#dcdce8"],       ["金 Ouro","#ffcf5c"],
-  ["硃砂 Vermelhão","#ff4d4d"],["蓮花 Lótus","#ffb4d8"],    ["燈籠 Lanterna","#ff6b4d"],  ["長城 Muralha","#c9a227"],
-  ["麒麟 Qilin","#b47aff"],   ["鳳凰 Fênix","#ff7a3c"],    ["龍 Dragão","#ff2e2e"],      ["天宮 Palácio Celeste","#8ab4ff"],
-  ["玉皇 Imperador","#fff3b0"],["仙 Imortal","#7dffb8"],    ["永恆 Eterno","#b8c6ff"],    ["無極 Sem-Limite","#ff2e6b"],
+  ["普通","Comum","#c8c8da"],  ["竹","Bambu","#8fd694"],   ["瓷","Porcelana","#7ac9ff"], ["玉","Jade","#6ef0c8"],
+  ["絲綢","Seda","#ff9ecd"],   ["銅","Bronze","#c98a4b"],  ["銀","Prata","#dcdce8"],     ["金","Ouro","#ffcf5c"],
+  ["硃砂","Vermelhão","#ff4d4d"],["蓮花","Lótus","#ffb4d8"],["燈籠","Lanterna","#ff6b4d"],["長城","Muralha","#c9a227"],
+  ["麒麟","Qilin","#b47aff"],  ["鳳凰","Fênix","#ff7a3c"], ["龍","Dragão","#ff2e2e"],    ["天宮","Palácio Celeste","#8ab4ff"],
+  ["玉皇","Imperador","#fff3b0"],["仙","Imortal","#7dffb8"],["永恆","Eterno","#b8c6ff"],  ["無極","Sem-Limite","#ff2e6b"],
 ];
-const PREFIXOS = ["朱雀 Ave","青龍 Dragão","白虎 Tigre","玄武 Tartaruga","太極 Taiji","八卦 Bagua","九天 Céus",
-                  "崑崙 Kunlun","蓬萊 Penglai","天河 Rio","雷 Trovão","風 Vento","山 Montanha","水 Água",
-                  "火 Fogo","雲 Nuvem","雪 Neve","星 Estrela","月 Lua","日 Sol"];
-const NUCLEOS  = ["Menor","Maior","Ancestral","Supremo","Primordial"];
+const PREFIXOS = [["朱雀","Ave"],["青龍","Dragão"],["白虎","Tigre"],["玄武","Tartaruga"],["太極","Taiji"],
+                  ["八卦","Bagua"],["九天","Céus"],["崑崙","Kunlun"],["蓬萊","Penglai"],["天河","Rio"],
+                  ["雷","Trovão"],["風","Vento"],["山","Montanha"],["水","Água"],["火","Fogo"],
+                  ["雲","Nuvem"],["雪","Neve"],["星","Estrela"],["月","Lua"],["日","Sol"]];
+const NUCLEOS  = [["小","Menor"],["大","Maior"],["古","Ancestral"],["至尊","Supremo"],["太初","Primordial"]];
 
 const RARIDADES = [];
 for (let i = 0; i < 120; i++) {
-  let nome, cor;
-  if (i < NOMEADAS.length) { nome = NOMEADAS[i][0]; cor = NOMEADAS[i][1]; }
+  let zhN, ptN, cor;
+  if (i < NOMEADAS.length) { zhN = NOMEADAS[i][0]; ptN = NOMEADAS[i][1]; cor = NOMEADAS[i][2]; }
   else {
     const g = i - NOMEADAS.length;
-    nome = PREFIXOS[g % PREFIXOS.length] + " " + NUCLEOS[Math.floor(g / PREFIXOS.length)];
+    const p = PREFIXOS[g % PREFIXOS.length], n = NUCLEOS[Math.floor(g / PREFIXOS.length)];
+    zhN = n[0] + p[0]; ptN = p[1] + " " + n[1];   // em chinês o tamanho vem antes: 小雷, 太初雷
     cor = "hsl(" + ((g * 47) % 360) + " 85% 68%)";
   }
   RARIDADES.push({
-    id: "r" + i, nome, cor, indice: i,
+    id: "r" + i, zh: zhN, pt: ptN, nome: dois(zhN, ptN), cor, indice: i,
     base: Math.pow(8.5, i),
     desbloqueio: i === 0 ? 0 : 200 * Math.pow(8, i - 1),
   });
@@ -674,16 +1123,16 @@ RARIDADES.forEach((r, ri) => {
    um é um caractere dentro de um quadradinho, e o nome deles aqui é o que o
    caractere quer dizer. */
 const SECRETOS = [
-  { e:"🥠", nome:"O Biscoito da Sorte 幸運餅", chance:1/20000,   fator:20 },
-  { e:"🪈", nome:"A Flauta de Bambu 竹笛",     chance:1/60000,   fator:60 },
-  { e:"🪭", nome:"O Leque de Seda 摺扇",       chance:1/150000,  fator:150 },
-  { e:"🉐", nome:"O Achado 得",                chance:1/400000,  fator:400 },
-  { e:"㊗️", nome:"A Bênção 祝",               chance:1/1000000, fator:1200 },
-  { e:"㊙️", nome:"O Segredo 秘",              chance:1/3000000, fator:4000 },
-  { e:"🈶", nome:"O Que Tem 有",               chance:1/9000000, fator:15000 },
-  { e:"🈚", nome:"O Nada 無",                  chance:1/3e7,     fator:60000 },
-  { e:"🈲", nome:"O Proibido 禁",              chance:1/8e7,     fator:25e4 },
-  { e:"🈯", nome:"O Reservado 指",             chance:1/25e7,    fator:1e6 },
+  { e:"🥠", zh:"幸運餅", pt:"O Biscoito da Sorte", chance:1/20000,   fator:20 },
+  { e:"🪈", zh:"竹笛",   pt:"A Flauta de Bambu",   chance:1/60000,   fator:60 },
+  { e:"🪭", zh:"摺扇",   pt:"O Leque de Seda",     chance:1/150000,  fator:150 },
+  { e:"🉐", zh:"得",     pt:"O Achado",            chance:1/400000,  fator:400 },
+  { e:"㊗️", zh:"祝",    pt:"A Bênção",            chance:1/1000000, fator:1200 },
+  { e:"㊙️", zh:"秘",    pt:"O Segredo",           chance:1/3000000, fator:4000 },
+  { e:"🈶", zh:"有",     pt:"O Que Tem",           chance:1/9000000, fator:15000 },
+  { e:"🈚", zh:"無",     pt:"O Nada",              chance:1/3e7,     fator:60000 },
+  { e:"🈲", zh:"禁",     pt:"O Proibido",          chance:1/8e7,     fator:25e4 },
+  { e:"🈯", zh:"指",     pt:"O Reservado",         chance:1/25e7,    fator:1e6 },
 ];
 SECRETOS.forEach((s, i) => {
   s.secreto = true; s.rIndex = -1; s.chave = "S|" + s.e;
@@ -708,7 +1157,7 @@ function atualizarDia() {
   const total = Math.max(POR_RARIDADE, raridadesLiberadas().length * POR_RARIDADE);
   tipoDoDia = TIPOS[semente % total];
   const pil = el("pilulaDia");
-  if (pil) pil.innerHTML = "☀️ hoje " + tipoDoDia.e + " vale " + MULT_DIA + "x";
+  if (pil) pil.innerHTML = tr("doDia", tipoDoDia.e, MULT_DIA);
 }
 function valorDe(tipo) {
   const dia = (tipo === tipoDoDia) ? MULT_DIA : 1;
@@ -722,48 +1171,50 @@ function valorDe(tipo) {
 /* ==========================================================================
    3. UPGRADES — 16 famílias de dinheiro + 17 de cristal, 10 níveis cada
    ========================================================================== */
-const QUALIDADES = ["de Bronze","de Prata","de Ouro","de Platina","de Diamante",
-                    "de Rubi","de Safira","de Esmeralda","de Obsidiana","Cósmico"];
+const QUAL_ZH = ["青銅","白銀","黃金","白金","鑽石","紅寶石","藍寶石","翡翠","黑曜石","宇宙"];
+const QUAL_PT = ["de Bronze","de Prata","de Ouro","de Platina","de Diamante",
+                 "de Rubi","de Safira","de Esmeralda","de Obsidiana","Cósmico"];
+const nomeUp = (k, nivel) => zh() ? QUAL_ZH[nivel] + tr(k) : tr(k) + " " + QUAL_PT[nivel];
 
 const FAM_DINHEIRO = [
-  { id:"clique",  ic:"👆", nome:"Clique",  tipo:"clique",  base:20,   val:1,    txt:v => "+" + fmt(v) + " emojis por clique" },
-  { id:"chuva",   ic:"🌧️", nome:"Chuva",   tipo:"chuva",   base:300,  val:1,    txt:v => "+" + fmt(v) + " emojis por segundo" },
-  { id:"valor",   ic:"💠", nome:"Valor",   tipo:"valor",   base:150,  val:.2,   txt:v => "+" + Math.round(v * 100) + "% no valor de cada emoji" },
-  { id:"espaco",  ic:"📦", nome:"Espaço",  tipo:"espaco",  base:900,  val:25,   txt:v => "+" + fmt(v) + " de espaço na caixa" },
-  { id:"sorte",   ic:"🍀", nome:"Sorte",   tipo:"sorte",   base:700,  val:.04,  txt:v => "+" + Math.round(v * 100) + "% de chance de raro" },
-  { id:"venda",   ic:"💰", nome:"Venda",   tipo:"venda",   base:8000, val:.1,   txt:v => "venda vale +" + Math.round(v * 100) + "%" },
-  { id:"prensa",  ic:"🏗️", nome:"Prensa",  tipo:"prensa",  base:2e4,  val:.02,  txt:v => "emojis " + Math.round(v * 100) + "% menores" },
-  { id:"ima",     ic:"🧲", nome:"Ímã",     tipo:"ima",     base:1e4,  val:.0004,txt:() => "puxa os emojis pro centro" },
-  { id:"dourado", ic:"🌟", nome:"Dourado", tipo:"dourado", base:5e4,  val:.01,  txt:v => "+" + (v * 100).toFixed(1) + "% de chance de dourado" },
-  { id:"nucleo",  ic:"⚡", nome:"Núcleo",  tipo:"mult",    base:2e6,  val:.06,  txt:v => "multiplica TUDO por " + (1 + v).toFixed(2) },
-  { id:"vendedor",ic:"🤝", nome:"Vendedor",tipo:"auto",    base:4e4,  val:1,    txt:v => "vende sozinho quando encher, e a cada " + segundosAuto(v) + "s" },
-  { id:"critico", ic:"🎯", nome:"Crítico", tipo:"critico", base:1.2e5,val:.015, txt:v => "+" + (v * 100).toFixed(1) + "% de clique crítico (x10)" },
-  { id:"combo",   ic:"🔥", nome:"Combo",   tipo:"combo",   base:6e4,  val:2,    txt:v => "combo até " + Math.round(v) + " (+5% por passo)" },
-  { id:"gemeo",   ic:"♊", nome:"Gêmeo",   tipo:"duplo",   base:3e5,  val:.01,  txt:v => "+" + (v * 100).toFixed(1) + "% de sair 2 emojis de uma vez" },
-  { id:"fusao",   ic:"🧬", nome:"Fusão",   tipo:"fusao",   base:1.5e6,val:.006, txt:v => "+" + (v * 100).toFixed(1) + "% do emoji nascer 1 raridade acima" },
-  { id:"noite",   ic:"🌙", nome:"Turno da Noite", tipo:"offline", base:5e5, val:.05, txt:v => "rende " + Math.round(v * 100) + "% enquanto o jogo tá fechado" },
+  { id:"clique",  ic:"👆", k:"fClique",  tipo:"clique",  base:20,   val:1,    txt:v => tr("uClique", fmt(v)) },
+  { id:"chuva",   ic:"🌧️", k:"fChuva",   tipo:"chuva",   base:300,  val:1,    txt:v => tr("uChuva", fmt(v)) },
+  { id:"valor",   ic:"💠", k:"fValor",   tipo:"valor",   base:150,  val:.2,   txt:v => tr("uValor", Math.round(v * 100)) },
+  { id:"espaco",  ic:"📦", k:"fEspaco",  tipo:"espaco",  base:900,  val:25,   txt:v => tr("uEspaco", fmt(v)) },
+  { id:"sorte",   ic:"🍀", k:"fSorte",   tipo:"sorte",   base:700,  val:.04,  txt:v => tr("uSorte", Math.round(v * 100)) },
+  { id:"venda",   ic:"💰", k:"fVenda",   tipo:"venda",   base:8000, val:.1,   txt:v => tr("uVenda", Math.round(v * 100)) },
+  { id:"prensa",  ic:"🏗️", k:"fPrensa",  tipo:"prensa",  base:2e4,  val:.02,  txt:v => tr("uPrensa", Math.round(v * 100)) },
+  { id:"ima",     ic:"🧲", k:"fIma",     tipo:"ima",     base:1e4,  val:.0004,txt:() => tr("uIma") },
+  { id:"dourado", ic:"🌟", k:"fDourado", tipo:"dourado", base:5e4,  val:.01,  txt:v => tr("uDourado", (v * 100).toFixed(1)) },
+  { id:"nucleo",  ic:"⚡", k:"fNucleo",  tipo:"mult",    base:2e6,  val:.06,  txt:v => tr("uNucleo", (1 + v).toFixed(2)) },
+  { id:"vendedor",ic:"🤝", k:"fVendedor",tipo:"auto",    base:4e4,  val:1,    txt:v => tr("uVendedor", segundosAuto(v)) },
+  { id:"critico", ic:"🎯", k:"fCritico", tipo:"critico", base:1.2e5,val:.015, txt:v => tr("uCritico", (v * 100).toFixed(1)) },
+  { id:"combo",   ic:"🔥", k:"fCombo",   tipo:"combo",   base:6e4,  val:2,    txt:v => tr("uCombo", Math.round(v)) },
+  { id:"gemeo",   ic:"♊", k:"fGemeo",   tipo:"duplo",   base:3e5,  val:.01,  txt:v => tr("uGemeo", (v * 100).toFixed(1)) },
+  { id:"fusao",   ic:"🧬", k:"fFusao",   tipo:"fusao",   base:1.5e6,val:.006, txt:v => tr("uFusao", (v * 100).toFixed(1)) },
+  { id:"noite",   ic:"🌙", k:"fNoite", tipo:"offline", base:5e5, val:.05, txt:v => tr("uNoite", Math.round(v * 100)) },
   // só aparece no modo Fusão
-  { id:"turbofus",ic:"🌀", nome:"Turbo da Fusão", tipo:"fusaoVel", base:1500, val:.25,
-    txt:v => "a fusão acontece " + Math.round(v * 100) + "% mais rápido", soFusao:true },
+  { id:"turbofus",ic:"🌀", k:"fTurbofus", tipo:"fusaoVel", base:1500, val:.25,
+    txt:v => tr("uTurbofus", Math.round(v * 100)), soFusao:true },
 ];
 const FAM_CRISTAL = [
-  { id:"heranca", ic:"👐", nome:"Herança",  tipo:"clique",  base:2, val:3,    txt:v => "+" + fmt(v) + " por clique, pra sempre" },
-  { id:"diluvio", ic:"⛈️", nome:"Dilúvio",  tipo:"chuva",   base:2, val:3,    txt:v => "+" + fmt(v) + " por segundo, pra sempre" },
-  { id:"eterno",  ic:"♾️", nome:"Eterno",   tipo:"valor",   base:3, val:.5,   txt:v => "+" + Math.round(v * 100) + "% de valor, pra sempre" },
-  { id:"cofre",   ic:"🗄️", nome:"Cofre",    tipo:"espaco",  base:2, val:60,   txt:v => "+" + fmt(v) + " de espaço, pra sempre" },
-  { id:"trevo",   ic:"🍀", nome:"Trevo",    tipo:"sorte",   base:4, val:.08,  txt:v => "+" + Math.round(v * 100) + "% de raro, pra sempre" },
-  { id:"mercado", ic:"🏦", nome:"Mercado",  tipo:"venda",   base:3, val:.25,  txt:v => "venda +" + Math.round(v * 100) + "%, pra sempre" },
-  { id:"compact", ic:"🧊", nome:"Compressor",tipo:"prensa", base:5, val:.03,  txt:v => "emojis " + Math.round(v * 100) + "% menores" },
-  { id:"gravidade",ic:"🌌",nome:"Gravidade",tipo:"ima",     base:4, val:.0006,txt:() => "atração permanente pro centro" },
-  { id:"estrela", ic:"✨", nome:"Estrela",  tipo:"dourado", base:6, val:.02,  txt:v => "+" + (v * 100).toFixed(1) + "% de dourado" },
-  { id:"nucleoC", ic:"🔆", nome:"Núcleo",   tipo:"mult",    base:8, val:.15,  txt:v => "multiplica TUDO por " + (1 + v).toFixed(2) },
-  { id:"leiloeiro",ic:"🏷️",nome:"Leiloeiro",tipo:"auto",    base:5, val:4,    txt:v => "venda automática a cada " + segundosAuto(v) + "s, pra sempre" },
-  { id:"mira",    ic:"🎯", nome:"Mira",     tipo:"critico", base:6, val:.05,  txt:v => "+" + (v * 100).toFixed(1) + "% de crítico, pra sempre" },
-  { id:"fogueira",ic:"🔥", nome:"Fogueira", tipo:"combo",   base:5, val:5,    txt:v => "combo até " + Math.round(v) + " a mais" },
-  { id:"clone",   ic:"👯", nome:"Clone",    tipo:"duplo",   base:7, val:.03,  txt:v => "+" + (v * 100).toFixed(1) + "% de emoji dobrado" },
-  { id:"alquimia",ic:"⚗️", nome:"Alquimia", tipo:"fusao",   base:9, val:.02,  txt:v => "+" + (v * 100).toFixed(1) + "% de subir de raridade" },
-  { id:"sonho",   ic:"🌛", nome:"Sonho",    tipo:"offline", base:6, val:.12,  txt:v => "+" + Math.round(v * 100) + "% de renda offline" },
-  { id:"radar",   ic:"📡", nome:"Radar",    tipo:"radar",   base:12,val:.6,   txt:v => "chance de secreto x" + (1 + v).toFixed(1) },
+  { id:"heranca", ic:"👐", k:"fHeranca",  tipo:"clique",  base:2, val:3,    txt:v => tr("uHeranca", fmt(v)) },
+  { id:"diluvio", ic:"⛈️", k:"fDiluvio",  tipo:"chuva",   base:2, val:3,    txt:v => tr("uDiluvio", fmt(v)) },
+  { id:"eterno",  ic:"♾️", k:"fEterno",   tipo:"valor",   base:3, val:.5,   txt:v => tr("uEterno", Math.round(v * 100)) },
+  { id:"cofre",   ic:"🗄️", k:"fCofre",    tipo:"espaco",  base:2, val:60,   txt:v => tr("uCofre", fmt(v)) },
+  { id:"trevo",   ic:"🍀", k:"fTrevo",    tipo:"sorte",   base:4, val:.08,  txt:v => tr("uTrevo", Math.round(v * 100)) },
+  { id:"mercado", ic:"🏦", k:"fMercado",  tipo:"venda",   base:3, val:.25,  txt:v => tr("uMercado", Math.round(v * 100)) },
+  { id:"compact", ic:"🧊", k:"fCompact",tipo:"prensa", base:5, val:.03,  txt:v => tr("uPrensa", Math.round(v * 100)) },
+  { id:"gravidade",ic:"🌌",k:"fGravidade",tipo:"ima",     base:4, val:.0006,txt:() => tr("uGravidade") },
+  { id:"estrela", ic:"✨", k:"fEstrela",  tipo:"dourado", base:6, val:.02,  txt:v => tr("uEstrela", (v * 100).toFixed(1)) },
+  { id:"nucleoC", ic:"🔆", k:"fNucleo",   tipo:"mult",    base:8, val:.15,  txt:v => tr("uNucleo", (1 + v).toFixed(2)) },
+  { id:"leiloeiro",ic:"🏷️",k:"fLeiloeiro",tipo:"auto",    base:5, val:4,    txt:v => tr("uLeiloeiro", segundosAuto(v)) },
+  { id:"mira",    ic:"🎯", k:"fMira",     tipo:"critico", base:6, val:.05,  txt:v => tr("uMira", (v * 100).toFixed(1)) },
+  { id:"fogueira",ic:"🔥", k:"fFogueira", tipo:"combo",   base:5, val:5,    txt:v => tr("uFogueira", Math.round(v)) },
+  { id:"clone",   ic:"👯", k:"fClone",    tipo:"duplo",   base:7, val:.03,  txt:v => tr("uClone", (v * 100).toFixed(1)) },
+  { id:"alquimia",ic:"⚗️", k:"fAlquimia", tipo:"fusao",   base:9, val:.02,  txt:v => tr("uAlquimia", (v * 100).toFixed(1)) },
+  { id:"sonho",   ic:"🌛", k:"fSonho",    tipo:"offline", base:6, val:.12,  txt:v => tr("uSonho", Math.round(v * 100)) },
+  { id:"radar",   ic:"📡", k:"fRadar",    tipo:"radar",   base:12,val:.6,   txt:v => tr("uRadar", (1 + v).toFixed(1)) },
 ];
 // quanto mais "velocidade de venda" você tem, menor o intervalo (nunca menos de 2s)
 const segundosAuto = v => Math.max(2, Math.round(20 / Math.max(v, .001)));
@@ -774,8 +1225,8 @@ function gerar(familias, moeda) {
     for (let t = 0; t < 10; t++) {
       const forca = Math.pow(2, t);
       out.push({
-        id: f.id + t, fam: f.id, famNome: f.nome, ic: f.ic, tipo: f.tipo, moeda, soFusao: !!f.soFusao,
-        nome: f.nome + " " + QUALIDADES[t],
+        id: f.id + t, fam: f.id, k: f.k, famNome: tr(f.k), ic: f.ic, tipo: f.tipo, moeda, soFusao: !!f.soFusao,
+        nome: nomeUp(f.k, t),
         val: f.val * forca,
         txt: f.txt,
         base: moeda === "cristal" ? f.base * Math.pow(3.4, t) : f.base * Math.pow(28, t),
@@ -785,6 +1236,8 @@ function gerar(familias, moeda) {
   });
   return out;
 }
+const FAMILIAS_TODAS = FAM_DINHEIRO.concat(FAM_CRISTAL);
+FAMILIAS_TODAS.forEach(f => f.nome = tr(f.k));
 const LOJA = gerar(FAM_DINHEIRO, "dinheiro");
 const CRISTALOJA = gerar(FAM_CRISTAL, "cristal");
 const TODOS = LOJA.concat(CRISTALOJA);
@@ -840,65 +1293,65 @@ const janelaLunar = (ano, qual, antes, depois) => {
 };
 
 const TEMPORADAS = [
-  { id:"estreia", nome:"開業 Estreia da Fábrica", ic:"🎉", cor:"#ffcf5c",
-    conta:"Os seus 14 primeiros dias de fábrica. Só acontece uma vez.",
+  { id:"estreia", zh:"開業", pt:"Estreia da Fábrica", nome:dois("開業","Estreia da Fábrica"), ic:"🎉", cor:"#ffcf5c",
+    kConta:"tpEstreia", conta:tr("tpEstreia"),
     emojis:["🎊","🎈","🎁","🪅","🎀","🥳"], secreto:{ e:"🉑", nome:"O Aprovado 可" },
-    tema:{ id:"tEstreia", nome:"開業 Inauguração", ic:"🎉", fundo:["#3a1220","#160810"], borda:"#ffcf5c", chao:"#ffcf5c33" },
+    tema:{ id:"tEstreia", zh:"開業", pt:"Inauguração", nome:dois("開業","Inauguração"), ic:"🎉", fundo:["#3a1220","#160810"], borda:"#ffcf5c", chao:"#ffcf5c33" },
     estreia:14 },
 
-  { id:"chunjie", nome:"春節 Ano Novo Chinês", ic:"🧧", cor:"#ff3b3b",
-    conta:"A maior festa do ano: da véspera até uma semana depois. A data muda todo ano, porque segue a lua.",
+  { id:"chunjie", zh:"春節", pt:"Ano Novo Chinês", nome:dois("春節","Ano Novo Chinês"), ic:"🧧", cor:"#ff3b3b",
+    kConta:"tpChunjie", conta:tr("tpChunjie"),
     emojis:["🧨","🎆","🐉","🍊","🧧","🥟"], secreto:{ e:"🦁", nome:"O Leão de Ouro 金獅" },
-    tema:{ id:"tChunjie", nome:"春節 Ano Novo", ic:"🧧", fundo:["#3d0810","#180207"], borda:"#ff3b3b", chao:"#ff3b3b3a" },
+    tema:{ id:"tChunjie", zh:"春節", pt:"Ano Novo", nome:dois("春節","Ano Novo"), ic:"🧧", fundo:["#3d0810","#180207"], borda:"#ff3b3b", chao:"#ff3b3b3a" },
     janelas: ano => [janelaLunar(ano, CNY, 1, 7), janelaLunar(ano + 1, CNY, 1, 7)] },
 
-  { id:"yuanxiao", nome:"元宵節 Festival das Lanternas", ic:"🏮", cor:"#ff8a3c",
-    conta:"Quinze dias depois do Ano Novo, quando o céu enche de lanterna.",
+  { id:"yuanxiao", zh:"元宵節", pt:"Festival das Lanternas", nome:dois("元宵節","Festival das Lanternas"), ic:"🏮", cor:"#ff8a3c",
+    kConta:"tpYuanxiao", conta:tr("tpYuanxiao"),
     emojis:["🏮","🌕","🍡","🪔","🕯️","🎇"], secreto:{ e:"🈵", nome:"A Lua Cheia 滿" },
-    tema:{ id:"tYuanxiao", nome:"元宵 Lanternas", ic:"🏮", fundo:["#33140a","#170804"], borda:"#ff8a3c", chao:"#ff8a3c3a" },
+    tema:{ id:"tYuanxiao", zh:"元宵", pt:"Lanternas", nome:dois("元宵","Lanternas"), ic:"🏮", fundo:["#33140a","#170804"], borda:"#ff8a3c", chao:"#ff8a3c3a" },
     janelas: ano => [[new Date(festival(ano, CNY).getTime() + 13 * DIA),
                       new Date(festival(ano, CNY).getTime() + 16 * DIA - 1000)]] },
 
-  { id:"qingming", nome:"清明節 Qingming", ic:"🌿", cor:"#6ee7a0",
-    conta:"4 a 6 de abril — o dia de visitar quem já foi e de sair pro campo.",
+  { id:"qingming", zh:"清明節", pt:"Qingming", nome:dois("清明節","Qingming"), ic:"🌿", cor:"#6ee7a0",
+    kConta:"tpQingming", conta:tr("tpQingming"),
     emojis:["🌿","🌦️","🕊️","🍃","🌱","🍵"], secreto:{ e:"🪷", nome:"A Flor de Lótus 蓮" },
-    tema:{ id:"tQingming", nome:"清明 Campo", ic:"🌿", fundo:["#0f2a18","#06130c"], borda:"#6ee7a0", chao:"#6ee7a03a" },
+    tema:{ id:"tQingming", zh:"清明", pt:"Campo", nome:dois("清明","Campo"), ic:"🌿", fundo:["#0f2a18","#06130c"], borda:"#6ee7a0", chao:"#6ee7a03a" },
     janelas: ano => [[diaIni(ano, 4, 4), diaFim(ano, 4, 6)]] },
 
-  { id:"duanwu", nome:"端午節 Barcos-Dragão", ic:"🛶", cor:"#5ce1e6",
-    conta:"A corrida dos barcos com cabeça de dragão. Também segue a lua.",
+  { id:"duanwu", zh:"端午節", pt:"Barcos-Dragão", nome:dois("端午節","Barcos-Dragão"), ic:"🛶", cor:"#5ce1e6",
+    kConta:"tpDuanwu", conta:tr("tpDuanwu"),
     emojis:["🛶","🐲","🌊","🥢","🌾","🥇"], secreto:{ e:"🚣", nome:"O Remador de Ouro 金槳" },
-    tema:{ id:"tDuanwu", nome:"端午 Rio", ic:"🛶", fundo:["#06222e","#020e13"], borda:"#5ce1e6", chao:"#5ce1e63a" },
+    tema:{ id:"tDuanwu", zh:"端午", pt:"Rio", nome:dois("端午","Rio"), ic:"🛶", fundo:["#06222e","#020e13"], borda:"#5ce1e6", chao:"#5ce1e63a" },
     janelas: ano => [janelaLunar(ano, BARCOS, 1, 1)] },
 
-  { id:"qixi", nome:"七夕 Qixi", ic:"💗", cor:"#ff9ecd",
-    conta:"O dia dos namorados chinês: a noite em que as duas estrelas se encontram na Via Láctea.",
+  { id:"qixi", zh:"七夕", pt:"Qixi", nome:dois("七夕","Qixi"), ic:"💗", cor:"#ff9ecd",
+    kConta:"tpQixi", conta:tr("tpQixi"),
     emojis:["💗","🌌","🌉","🕊️","🎋","🪡"], secreto:{ e:"🌠", nome:"A Estrela Cadente 流星" },
-    tema:{ id:"tQixi", nome:"七夕 Via Láctea", ic:"💗", fundo:["#170a2e","#080413"], borda:"#ff9ecd", chao:"#ff9ecd3a", estrelas:true },
+    tema:{ id:"tQixi", zh:"七夕", pt:"Via Láctea", nome:dois("七夕","Via Láctea"), ic:"💗", fundo:["#170a2e","#080413"], borda:"#ff9ecd", chao:"#ff9ecd3a", estrelas:true },
     janelas: ano => [janelaLunar(ano, QIXI, 0, 0)] },
 
-  { id:"zhongqiu", nome:"中秋節 Meio-Outono", ic:"🥮", cor:"#ffe66d",
-    conta:"A festa da lua cheia, com bolo da lua e chá. Segue a lua, claro.",
+  { id:"zhongqiu", zh:"中秋節", pt:"Meio-Outono", nome:dois("中秋節","Meio-Outono"), ic:"🥮", cor:"#ffe66d",
+    kConta:"tpZhongqiu", conta:tr("tpZhongqiu"),
     emojis:["🥮","🌕","🐇","🍵","🏮","🌰"], secreto:{ e:"🈷️", nome:"O Selo da Lua 月" },
-    tema:{ id:"tZhongqiu", nome:"中秋 Lua Cheia", ic:"🥮", fundo:["#2b2008","#130e03"], borda:"#ffe66d", chao:"#ffe66d3a" },
+    tema:{ id:"tZhongqiu", zh:"中秋", pt:"Lua Cheia", nome:dois("中秋","Lua Cheia"), ic:"🥮", fundo:["#2b2008","#130e03"], borda:"#ffe66d", chao:"#ffe66d3a" },
     janelas: ano => [janelaLunar(ano, MEIO_OUTONO, 1, 1)] },
 
-  { id:"guoqing", nome:"國慶節 Dia Nacional", ic:"🇨🇳", cor:"#ff4d4d",
-    conta:"1 a 7 de outubro — a Semana Dourada, sete dias de feriado.",
+  { id:"guoqing", zh:"國慶節", pt:"Dia Nacional", nome:dois("國慶節","Dia Nacional"), ic:"🇨🇳", cor:"#ff4d4d",
+    kConta:"tpGuoqing", conta:tr("tpGuoqing"),
     emojis:["🇨🇳","🎉","🎊","🎆","🏮","⭐"], secreto:{ e:"🏯", nome:"O Palácio Imperial 皇宮" },
-    tema:{ id:"tGuoqing", nome:"國慶 Semana Dourada", ic:"🇨🇳", fundo:["#3a0810","#160308"], borda:"#ff4d4d", chao:"#ff4d4d3a" },
+    tema:{ id:"tGuoqing", zh:"國慶", pt:"Semana Dourada", nome:dois("國慶","Semana Dourada"), ic:"🇨🇳", fundo:["#3a0810","#160308"], borda:"#ff4d4d", chao:"#ff4d4d3a" },
     janelas: ano => [[diaIni(ano, 10, 1), diaFim(ano, 10, 7)]] },
 
-  { id:"shuang11", nome:"雙十一 Dia dos Solteiros", ic:"🛍️", cor:"#b47aff",
-    conta:"11 de novembro, o maior dia de compras do mundo. A mais rara: dura um dia só.",
+  { id:"shuang11", zh:"雙十一", pt:"Dia dos Solteiros", nome:dois("雙十一","Dia dos Solteiros"), ic:"🛍️", cor:"#b47aff",
+    kConta:"tpShuang11", conta:tr("tpShuang11"),
     emojis:["🛍️","📦","💳","🏷️","🚚","💸"], secreto:{ e:"🈹", nome:"O Desconto 割" },
-    tema:{ id:"tShuang11", nome:"雙十一 Compras", ic:"🛍️", fundo:["#1d0e33","#0c0518"], borda:"#b47aff", chao:"#b47aff3a" },
+    tema:{ id:"tShuang11", zh:"雙十一", pt:"Compras", nome:dois("雙十一","Compras"), ic:"🛍️", fundo:["#1d0e33","#0c0518"], borda:"#b47aff", chao:"#b47aff3a" },
     janelas: ano => [[diaIni(ano, 11, 11), diaFim(ano, 11, 11)]] },
 
-  { id:"dongzhi", nome:"冬至 Solstício de Inverno", ic:"🥟", cor:"#8ab4ff",
-    conta:"21 e 22 de dezembro, a noite mais longa. No norte se come guioza pra não congelar a orelha.",
+  { id:"dongzhi", zh:"冬至", pt:"Solstício de Inverno", nome:dois("冬至","Solstício de Inverno"), ic:"🥟", cor:"#8ab4ff",
+    kConta:"tpDongzhi", conta:tr("tpDongzhi"),
     emojis:["🥟","❄️","🍜","☃️","🧣","🍲"], secreto:{ e:"♨️", nome:"O Vapor 湯" },
-    tema:{ id:"tDongzhi", nome:"冬至 Inverno", ic:"🥟", fundo:["#0c1730","#050a16"], borda:"#8ab4ff", chao:"#8ab4ff3a" },
+    tema:{ id:"tDongzhi", zh:"冬至", pt:"Inverno", nome:dois("冬至","Inverno"), ic:"🥟", fundo:["#0c1730","#050a16"], borda:"#8ab4ff", chao:"#8ab4ff3a" },
     janelas: ano => [[diaIni(ano, 12, 21), diaFim(ano, 12, 22)]] },
 ];
 
@@ -938,14 +1391,14 @@ TEMPORADAS.forEach(t => {
    As compradas saem por cristais; as de evento vêm do passe da temporada.
    ========================================================================== */
 const SKINS = [
-  { id:"nenhuma", nome:"Sem enfeite", ic:"⚪", custo:0 },
-  { id:"aro",     nome:"Aro Branco",  ic:"⭕", custo:2,  aro:3,   cor:"#ffffffaa" },
-  { id:"sombra",  nome:"Contorno",    ic:"🌑", custo:4,  aro:4,   cor:"#000000cc" },
-  { id:"neon",    nome:"Neon",        ic:"💡", custo:7,  aro:2.5, cor:"tipo", brilho:12 },
-  { id:"pontos",  nome:"Bolinhas",    ic:"⚙️", custo:9,  aro:2,   cor:"#ffffff99", pontos:8 },
-  { id:"ouro",    nome:"Moldura de Ouro", ic:"🥇", custo:14, aro:3.5, grad:["#fff3b0","#ffc857","#a8741a"] },
-  { id:"gelo",    nome:"Cristal",     ic:"💎", custo:20, aro:3,   grad:["#ffffff","#9be8ff","#5ce1e6"], brilho:7 },
-  { id:"arco",    nome:"Arco-íris",   ic:"🌈", custo:32, aro:3.5, grad:["#ff4d6d","#ffc857","#6ee7a0","#5ce1e6","#b47aff"] },
+  { id:"nenhuma", k:"kNenhuma", nome:tr("kNenhuma"), ic:"⚪", custo:0 },
+  { id:"aro",     k:"kAro", nome:tr("kAro"),  ic:"⭕", custo:2,  aro:3,   cor:"#ffffffaa" },
+  { id:"sombra",  k:"kSombra", nome:tr("kSombra"),    ic:"🌑", custo:4,  aro:4,   cor:"#000000cc" },
+  { id:"neon",    k:"kNeon", nome:tr("kNeon"),        ic:"💡", custo:7,  aro:2.5, cor:"tipo", brilho:12 },
+  { id:"pontos",  k:"kPontos", nome:tr("kPontos"),    ic:"⚙️", custo:9,  aro:2,   cor:"#ffffff99", pontos:8 },
+  { id:"ouro",    k:"kOuro", nome:tr("kOuro"), ic:"🥇", custo:14, aro:3.5, grad:["#fff3b0","#ffc857","#a8741a"] },
+  { id:"gelo",    k:"kGelo", nome:tr("kGelo"),     ic:"💎", custo:20, aro:3,   grad:["#ffffff","#9be8ff","#5ce1e6"], brilho:7 },
+  { id:"arco",    k:"kArco", nome:tr("kArco"),   ic:"🌈", custo:32, aro:3.5, grad:["#ff4d6d","#ffc857","#6ee7a0","#5ce1e6","#b47aff"] },
 ];
 const skinObj = () => SKINS.find(x => x.id === skinAtual) || SKINS[0];
 
@@ -953,16 +1406,16 @@ const skinObj = () => SKINS.find(x => x.id === skinAtual) || SKINS[0];
    3b. MODOS DE JOGO — escolhidos na tela de início, cada um com o save dele
    ========================================================================== */
 const MODOS = [
-  { id:"normal",  ic:"🏭", nome:"普通 Normal",
-    desc:"O jogo completo, do jeito que ele foi feito pra ser jogado." },
-  { id:"dificil", ic:"🔥", nome:"困難 Difícil",
-    desc:"Tudo custa 4x mais caro, mas cada venda vale 3x. Pra quem já sabe jogar.",
+  { id:"normal",  ic:"🏭", zh:"普通", pt:"Normal", nome:dois("普通","Normal"),
+    kDesc:"mdNormal", desc:tr("mdNormal") },
+  { id:"dificil", ic:"🔥", zh:"困難", pt:"Difícil", nome:dois("困難","Difícil"),
+    kDesc:"mdDificil", desc:tr("mdDificil"),
     precoX:4, vendaX:3 },
-  { id:"fusao",   ic:"🧬", nome:"融合 Fusão",
-    desc:"Igual ao Normal, mas 5 emojis da mesma raridade se juntam sozinhos na caixa e viram 1 melhor.",
+  { id:"fusao",   ic:"🧬", zh:"融合", pt:"Fusão", nome:dois("融合","Fusão"),
+    kDesc:"mdFusao", desc:tr("mdFusao"),
     fusao:true },
-  { id:"livre",   ic:"🧪", nome:"自由 Livre",
-    desc:"Dinheiro que não acaba e as 120 raridades abertas desde o começo. É o modo de bagunçar.",
+  { id:"livre",   ic:"🧪", zh:"自由", pt:"Livre", nome:dois("自由","Livre"),
+    kDesc:"mdLivre", desc:tr("mdLivre"),
     livre:true },
 ];
 let modoAtual = null, jogoAtual = null, jogos = [];
@@ -990,6 +1443,7 @@ const estat = {
   cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
   ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
   encheu:false, inclinou:false, admUsado:false, doDia:0, fusoes:0, vendaMinima:0,
+  giros:0, gritos:0,
 };
 let cliquesRapidos = [];
 const el = id => document.getElementById(id);
@@ -1086,7 +1540,7 @@ function sortearTipo() {
   if (s) {
     contagem[s.chave] = (contagem[s.chave] || 0) + 1;
     if (!vistos.has(s.chave)) { vistos.add(s.chave); descobertos.push(s.chave); }
-    avisar("🌈 SECRETO!! " + s.e + " " + s.nome + " — R$ " + fmt(valorDe(s)));
+    avisar(tr("avSecreto", s.e, dois(s.zh, s.pt), din(valorDe(s))));
     [880, 1046, 1318, 1568, 2093].forEach((f, i) => setTimeout(() => bip(f, .2), i * 110));
     sujo = true;
     return s;
@@ -1096,7 +1550,7 @@ function sortearTipo() {
     const lista = TIPOS_TEMP[tp.t.id];
     if (Math.random() < multSecreto() / 8000) {
       const st = tp.t.tipoSecreto;
-      avisar("🎟️🌈 SECRETO DA TEMPORADA! " + st.e + " " + st.nome);
+      avisar(tr("avSecretoTemp", st.e, dois(st.zh, st.pt)));
       return marcar(st);
     }
     if (Math.random() < .12) return marcar(lista[Math.floor(Math.random() * lista.length)]);
@@ -1121,8 +1575,8 @@ function marcar(t) {
                                 t.secretoTemp ? "secreto" : "emoji");
   if (!vistos.has(t.chave)) {
     vistos.add(t.chave); descobertos.push(t.chave);
-    if (t.rIndex >= 3) avisar("✨ " + t.e + " " + RARIDADES[t.rIndex].nome + " — R$ " + fmt(t.valor));
-    else if (t.temporada && !t.secretoTemp) avisar("🎟️ " + t.e + " — emoji de " + t.nomeTemp + "!");
+    if (t.rIndex >= 3) avisar(tr("avRaro", t.e, RARIDADES[t.rIndex].nome, din(t.valor)));
+    else if (t.temporada && !t.secretoTemp) avisar(tr("avEmojiTemp", t.e, nomeTemp(t.temporada)));
     sujo = true;
   }
   return t;
@@ -1205,18 +1659,18 @@ function pegarPremio(nivel) {
   if (d.tipo === "dinheiro") {
     const g = Math.max(5000, recorde * d.mult);
     dinheiro += g; estat.ganhoTotal += g; recorde = Math.max(recorde, dinheiro);
-    avisar("💵 +R$ " + fmt(g));
-  } else if (d.tipo === "cristal") { cristais += d.n; avisar("💠 +" + d.n + " cristais"); }
-  else if (d.tipo === "turbo") { addBuff("tudo", 5, 120, "⚡ Turbo x5"); avisar("⚡ tudo x5 por 2 minutos!"); }
+    avisar(tr("avDinheiro", din(g)));
+  } else if (d.tipo === "cristal") { cristais += d.n; avisar(tr("avCristais", d.n)); }
+  else if (d.tipo === "turbo") { addBuff("tudo", 5, 120, tr("buffTurbo")); avisar(tr("avTurbo")); }
   else if (d.tipo === "tema") {
     if (!temas.includes(a.t.tema.id)) temas.push(a.t.tema.id);
     if (!skins.includes(a.t.skin.id)) skins.push(a.t.skin.id);
     temaAtual = a.t.tema.id; aplicarTema();
-    avisar("🎨 tema e skin de " + a.t.nome + " liberados!");
+    avisar(tr("avTemaLib", a.t.nome));
   } else {
     const tipo = TIPOS_TEMP[a.t.id][d.i];
     marcar(tipo); nascer(tipo);
-    avisar("🎟️ " + tipo.e + " entrou no índice!");
+    avisar(tr("avEntrouInd", tipo.e));
   }
   [660, 880, 1174, 1568].forEach((x, i) => setTimeout(() => bip(x, .13), i * 80));
   sujo = true; montarTemporada(); salvar();
@@ -1232,69 +1686,56 @@ function temPremioPraPegar() {
    ========================================================================== */
 const ROMANOS = ["I","II","III","IV","V","VI","VII","VIII"];
 const CONQUISTAS = [];
-function conq(id, ic, nome, desc, teste, secreta) { CONQUISTAS.push({ id, ic, nome, desc, teste, secreta }); }
-function marcos(pref, ic, nome, valores, desc, valor) {
-  valores.forEach((v, i) => conq(pref + i, ic, nome + " " + ROMANOS[i], desc(v), () => valor() >= v));
+/* kNome e kDesc são chaves do dicionário: o texto de verdade só é montado
+   em aplicarIdioma(), então trocar de língua renomeia tudo na hora. */
+function conq(id, ic, kNome, kDesc, teste, secreta, arg) {
+  CONQUISTAS.push({ id, ic, kNome, kDesc, teste, secreta, arg, nome:"", desc:"" });
 }
-marcos("din", "💵", "Empresário", [1e4, 1e6, 1e9, 1e12, 1e18, 1e30],
-  v => "Chegue a R$ " + fmt(v) + " de recorde", () => recorde);
-marcos("cli", "👆", "Dedo de Ferro", [100, 1000, 1e4, 1e5, 1e6],
-  v => "Dê " + fmt(v) + " cliques", () => estat.cliques);
-marcos("fez", "🏭", "Linha de Produção", [500, 5e3, 5e4, 5e5, 5e6],
-  v => "Fabrique " + fmt(v) + " emojis", () => estat.feitos);
-marcos("ven", "💰", "Comerciante", [10, 100, 1000, 1e4],
-  v => "Venda a caixa " + fmt(v) + " vezes", () => estat.vendas);
-marcos("ind", "📖", "Colecionador", [50, 150, 300, 500, 738],
-  v => "Descubra " + fmt(v) + " emojis diferentes", () => descobertos.length);
-marcos("upg", "🛒", "Cliente Fiel", [25, 100, 500, 2000],
-  v => "Compre " + fmt(v) + " upgrades", () => estat.ups);
-marcos("rar", "🌈", "Escalador", [5, 20, 50, 90, 120],
-  v => "Abra " + v + " raridades", () => raridadesLiberadas().length);
-marcos("cri", "💠", "Cristaleiro", [1, 25, 500, 1e4],
-  v => "Tenha " + fmt(v) + " cristais", () => cristais);
-marcos("ren", "♻️", "Renascido", [1, 5, 25, 100],
-  v => "Renasça " + v + " vezes", () => renascimentos);
-marcos("dou", "🌟", "Caçador de Ouro", [10, 200, 5000],
-  v => "Ache " + fmt(v) + " emojis dourados", () => estat.dourados);
-marcos("sec", "🔮", "Lenda Urbana", [1, 3, 6, 10],
-  v => "Ache " + v + " emojis secretos", () => SECRETOS.filter(s => descobertos.includes(s.chave)).length);
-marcos("com", "🔥", "Em Chamas", [10, 50, 200],
-  v => "Faça um combo de " + v, () => estat.comboMax);
-marcos("bon", "⭐", "Sortudo", [1, 25, 200],
-  v => "Pegue " + v + " estrelas de bônus", () => estat.bonusPegos);
-marcos("cru", "🎯", "Na Mosca", [50, 2000],
-  v => "Acerte " + fmt(v) + " cliques críticos", () => estat.criticos);
-marcos("col", "🗂️", "Álbum", [1, 5, 20, 60, 120],
-  v => "Complete " + v + " coleções de raridade", () => colecoesCompletas());
-marcos("tmp", "🎟️", "Temporada", [1, 12, 40],
-  v => "Pegue " + v + " prêmios de passe de temporada",
+function marcos(pref, ic, kNome, valores, kDesc, valor, mostrar) {
+  valores.forEach((v, i) => CONQUISTAS.push({
+    id: pref + i, ic, kNome, kDesc, romano: ROMANOS[i], nome:"", desc:"",
+    arg: () => (mostrar || fmt)(v), teste: () => valor() >= v }));
+}
+marcos("din", "💵", "cDin", [1e4, 1e6, 1e9, 1e12, 1e18, 1e30], "dDin", () => recorde, din);
+marcos("cli", "👆", "cCli", [100, 1000, 1e4, 1e5, 1e6], "dCli", () => estat.cliques);
+marcos("fez", "🏭", "cFez", [500, 5e3, 5e4, 5e5, 5e6], "dFez", () => estat.feitos);
+marcos("ven", "💰", "cVen", [10, 100, 1000, 1e4], "dVen", () => estat.vendas);
+marcos("ind", "📖", "cInd", [50, 150, 300, 500, 738], "dInd", () => descobertos.length);
+marcos("upg", "🛒", "cUpg", [25, 100, 500, 2000], "dUpg", () => estat.ups);
+marcos("rar", "🌈", "cRar", [5, 20, 50, 90, 120], "dRar", () => raridadesLiberadas().length);
+marcos("cri", "💠", "cCri", [1, 25, 500, 1e4], "dCri", () => cristais);
+marcos("ren", "♻️", "cRen", [1, 5, 25, 100], "dRen", () => renascimentos);
+marcos("dou", "🌟", "cDou", [10, 200, 5000], "dDou", () => estat.dourados);
+marcos("sec", "🔮", "cSec", [1, 3, 6, 10], "dSec",
+  () => SECRETOS.filter(s => descobertos.includes(s.chave)).length);
+marcos("com", "🔥", "cCom", [10, 50, 200], "dCom", () => estat.comboMax);
+marcos("bon", "⭐", "cBon", [1, 25, 200], "dBon", () => estat.bonusPegos);
+marcos("cru", "🎯", "cCru", [50, 2000], "dCru", () => estat.criticos);
+marcos("col", "🗂️", "cCol", [1, 5, 20, 60, 120], "dCol", () => colecoesCompletas());
+marcos("tmp", "🎟️", "cTmp", [1, 12, 40], "dTmp",
   () => Object.values(temporadas).reduce((n, f) => n + ((f && f.pegos) ? f.pegos.length : 0), 0));
-conq("passe", "🏅", "Passe Completo", "Pegar os 12 prêmios de uma temporada só",
+conq("passe", "🏅", "cPasse", "dPasse",
   () => Object.values(temporadas).some(f => f && f.pegos && f.pegos.length >= PASSE.length), true);
-conq("temas", "🎨", "Decorador", "Compre todos os temas da caixa", () => temas.length >= TEMAS.length);
-conq("cheia", "📦", "Transbordou", "Encha a caixa até o limite", () => estat.encheu);
-conq("giro",  "📱", "Cabeça pra Baixo", "Use a inclinação do celular", () => estat.inclinou);
-conq("trapa", "🔓", "Trapaceiro", "Entre no modo administrador", () => estat.admUsado);
-conq("miss",  "📜", "Cumpridor", "Complete 10 missões", () => nivelMissao >= 10);
-conq("rico",  "🤑", "Um Só Golpe", "Faça uma venda de R$ 1B", () => estat.maiorVenda >= 1e9);
+conq("temas", "🎨", "cTemas", "dTemas", () => temas.length >= TEMAS.length);
+conq("cheia", "📦", "cCheia", "dCheia", () => estat.encheu);
+conq("giro",  "📱", "cGiro", "dGiro", () => estat.inclinou);
+conq("trapa", "🔓", "cTrapa", "dTrapa", () => estat.admUsado);
+conq("miss",  "📜", "cMiss", "dMiss", () => nivelMissao >= 10);
+conq("rico",  "🤑", "cRico", "dRico", () => estat.maiorVenda >= 1e9, false, () => din(1e9));
+conq("roleta","🎡", "cRoleta", "dRoleta", () => estat.giros >= 25);
+conq("grito", "🎤", "cGrito", "dGrito", () => estat.gritos >= 10);
 
 /* as secretas só aparecem no painel depois de destravadas */
-conq("coruja",  "🦉", "Coruja",        "Jogar entre meia-noite e 5 da manhã",
+conq("coruja",  "🦉", "cCoruja", "dCoruja",
   () => { const h = new Date().getHours(); return h >= 0 && h < 5; }, true);
-conq("veloz",   "⚡", "Dedo Elétrico", "20 cliques em menos de 3 segundos",
-  () => cliquesRapidos.length >= 20, true);
-conq("soUm",    "🥲", "Venda Vazia",   "Vender a caixa com um emoji só",
-  () => estat.vendaMinima === 1, true);
-conq("quebrou", "📉", "Quebrou",       "Ficar com menos de R$ 10 depois de já ter tido 1 milhão",
-  () => recorde >= 1e6 && dinheiro < 10, true);
-conq("maratona","🌙", "Maratona",      "1 hora de fábrica no mesmo save",
-  () => estat.tempo >= 3600000, true);
-conq("doDia",   "☀️", "Filho do Sol",  "Fabricar 50 emojis do dia",
-  () => estat.doDia >= 50, true);
-conq("fundidor","🧬", "Fundidor",      "Fazer 100 fusões no modo Fusão",
-  () => estat.fusoes >= 100, true);
-conq("modos",   "🎮", "Explorador",    "Jogar nos 4 modos do jogo",
-  () => modosJogados.length >= MODOS.length, true);
+conq("veloz",   "⚡", "cVeloz", "dVeloz", () => cliquesRapidos.length >= 20, true);
+conq("soUm",    "🥲", "cSoUm", "dSoUm", () => estat.vendaMinima === 1, true);
+conq("quebrou", "📉", "cQuebrou", "dQuebrou",
+  () => recorde >= 1e6 && dinheiro < 10, true, () => din(10));
+conq("maratona","🌙", "cMaratona", "dMaratona", () => estat.tempo >= 3600000, true);
+conq("doDia",   "☀️", "cDoDia", "dDoDia", () => estat.doDia >= 50, true);
+conq("fundidor","🧬", "cFundidor", "dFundidor", () => estat.fusoes >= 100, true);
+conq("modos",   "🎮", "cModos", "dModos", () => modosJogados.length >= MODOS.length, true);
 
 function checarConquistas() {
   let novas = 0;
@@ -1305,7 +1746,7 @@ function checarConquistas() {
     try { ok = !!c.teste(); } catch (e) {}
     if (ok) {
       conquistasFeitas.push(c.id); novas++;
-      avisar("🏆 CONQUISTA: " + c.ic + " " + c.nome);
+      avisar(tr("avConquista", c.ic, c.nome));
       [784, 988, 1175].forEach((f, k) => setTimeout(() => bip(f, .13), k * 90));
     }
   }
@@ -1316,13 +1757,13 @@ function checarConquistas() {
    4c. MISSÕES — 3 por vez, sempre renovando
    ========================================================================== */
 const TIPOS_MISSAO = [
-  { id:"fabricar",  ic:"🏭", txt:n => "Fabrique " + fmt(n) + " emojis",        alvo:n => 150 * Math.pow(1.9, n), conta:() => estat.feitos },
-  { id:"vender",    ic:"💰", txt:n => "Venda a caixa " + fmt(n) + " vezes",     alvo:n => 5 + n * 4,              conta:() => estat.vendas },
-  { id:"descobrir", ic:"📖", txt:n => "Descubra " + fmt(n) + " emojis novos",   alvo:n => 5 + n * 3,              conta:() => descobertos.length },
-  { id:"comprar",   ic:"🛒", txt:n => "Compre " + fmt(n) + " upgrades",         alvo:n => 5 + n * 3,              conta:() => estat.ups },
-  { id:"clicar",    ic:"👆", txt:n => "Dê " + fmt(n) + " cliques",              alvo:n => 60 * Math.pow(1.6, n),  conta:() => estat.cliques },
-  { id:"dourado",   ic:"🌟", txt:n => "Ache " + fmt(n) + " emojis dourados",    alvo:n => 3 + n * 2,              conta:() => estat.dourados },
-  { id:"bonus",     ic:"⭐", txt:n => "Pegue " + fmt(n) + " estrelas de bônus", alvo:n => 1 + Math.floor(n / 2),  conta:() => estat.bonusPegos },
+  { id:"fabricar",  ic:"🏭", txt:n => tr("mFabricar", fmt(n)),  alvo:n => 150 * Math.pow(1.9, n), conta:() => estat.feitos },
+  { id:"vender",    ic:"💰", txt:n => tr("mVender", fmt(n)),    alvo:n => 5 + n * 4,              conta:() => estat.vendas },
+  { id:"descobrir", ic:"📖", txt:n => tr("mDescobrir", fmt(n)), alvo:n => 5 + n * 3,              conta:() => descobertos.length },
+  { id:"comprar",   ic:"🛒", txt:n => tr("mComprar", fmt(n)),   alvo:n => 5 + n * 3,              conta:() => estat.ups },
+  { id:"clicar",    ic:"👆", txt:n => tr("mClicar", fmt(n)),    alvo:n => 60 * Math.pow(1.6, n),  conta:() => estat.cliques },
+  { id:"dourado",   ic:"🌟", txt:n => tr("mDourado", fmt(n)),   alvo:n => 3 + n * 2,              conta:() => estat.dourados },
+  { id:"bonus",     ic:"⭐", txt:n => tr("mBonus", fmt(n)),     alvo:n => 1 + Math.floor(n / 2),  conta:() => estat.bonusPegos },
 ];
 function novaMissao(slot) {
   const t = TIPOS_MISSAO[Math.floor(Math.random() * TIPOS_MISSAO.length)];
@@ -1336,6 +1777,8 @@ function novaMissao(slot) {
   };
 }
 const missaoTipo = m => TIPOS_MISSAO.find(t => t.id === m.tipo) || TIPOS_MISSAO[0];
+/* o nome da temporada é montado na hora, pra seguir o idioma escolhido */
+const nomeTemp = id => { const t = TEMPORADAS.find(x => x.id === id); return t ? t.nome : id; };
 // o prêmio em dinheiro acompanha o seu recorde: missão velha não vira troco
 const premioMissao = m => m.moeda === "cristal" ? m.premio : Math.max(m.premio, recorde * .22 + 800);
 const missaoProgresso = m => Math.max(0, missaoTipo(m).conta() - m.base);
@@ -1351,14 +1794,14 @@ function checarMissoes() {
   });
   const alguma = missoes.some(m => m.feita);
   el("avisoMiss").hidden = !alguma;
-  if (mudou) { bip(1046, .16); avisar("📜 missão cumprida! passa lá pegar o prêmio"); if (painelAtual === "miss") montarMissoes(); }
+  if (mudou) { bip(1046, .16); avisar(tr("avMissao")); if (painelAtual === "miss") montarMissoes(); }
 }
 function receberMissao(slot) {
   const m = missoes[slot];
   if (!m || !m.feita) return;
   const premio = premioMissao(m);
-  if (m.moeda === "cristal") { cristais += premio; avisar("💠 +" + fmt(premio) + " cristais!"); }
-  else { dinheiro += premio; recorde = Math.max(recorde, dinheiro); avisar("💵 +R$ " + fmt(premio) + "!"); }
+  if (m.moeda === "cristal") { cristais += premio; avisar(tr("avCristais", fmt(premio))); }
+  else { dinheiro += premio; recorde = Math.max(recorde, dinheiro); avisar(tr("avDinheiro", din(premio))); }
   nivelMissao++; ganharPontos(PONTOS_MISSAO);
   missoes[slot] = novaMissao(slot);
   [660, 880, 1320].forEach((f, i) => setTimeout(() => bip(f, .14), i * 90));
@@ -1471,7 +1914,7 @@ function ligarInclinacao() {
     });
     inclinacao = true; estat.inclinou = true;
     el("btGiro").textContent = "📱 ON";
-    avisar("📱 inclina o celular que os emojis caem pro lado!");
+    avisar(tr("avGiroOn"));
   };
   if (inclinacao) {                                  // desligar
     inclinacao = false; tetoFechado = false; gx = 0; gy = GRAV;
@@ -1480,10 +1923,10 @@ function ligarInclinacao() {
   }
   const D = window.DeviceOrientationEvent;
   if (D && typeof D.requestPermission === "function") {   // iPhone pede permissão
-    D.requestPermission().then(r => { if (r === "granted") ligar(); else avisar("📱 permissão negada"); })
-                         .catch(() => avisar("📱 não deu pra ligar o sensor"));
+    D.requestPermission().then(r => { if (r === "granted") ligar(); else avisar(tr("avGiroNeg")); })
+                         .catch(() => avisar(tr("avGiroErro")));
   } else if (D) ligar();
-  else avisar("📱 esse aparelho não tem sensor — use as setas do teclado");
+  else avisar(tr("avSemSensor"));
 }
 
 // no computador: setas mudam a gravidade, pra dar pra testar
@@ -1675,7 +2118,7 @@ function fabricar(n, x) {
   if (feitos) bip(420 + Math.random() * 260);
   else {
     estat.encheu = true;
-    avisar("📦 caixa cheia! vende ou compra espaço");
+    avisar(tr("avCheia"));
     cv.classList.add("cheia"); setTimeout(() => cv.classList.remove("cheia"), 480);
   }
   if (bolas.length + deposito >= lim) estat.encheu = true;
@@ -1697,7 +2140,7 @@ function clicar(x) {
   let n = porClique();
   if (Math.random() < chanceCritico()) {
     n *= 10; estat.criticos++;
-    avisar("🎯 CRÍTICO! x10");
+    avisar(tr("avCritico"));
     bip(1568, .12); setTimeout(() => bip(2093, .1), 70);
   }
   fabricar(Math.round(n), x);
@@ -1705,12 +2148,12 @@ function clicar(x) {
 
 /* ---------- estrela de bônus que aparece na caixa ---------- */
 const BONUS = [
-  { ic:"🌟", nome:"FRENESI",      pega:() => { addBuff("tudo", 7, 20, "🌟 Frenesi x7"); avisar("🌟 FRENESI! tudo vale 7x por 20s"); } },
-  { ic:"👆", nome:"DEDO DE OURO", pega:() => { addBuff("clique", 25, 15, "👆 Dedo x25"); avisar("👆 DEDO DE OURO! clique x25 por 15s"); } },
-  { ic:"⛈️", nome:"DILÚVIO",      pega:() => { addBuff("chuva", 10, 25, "⛈️ Dilúvio x10"); avisar("⛈️ DILÚVIO! chuva x10 por 25s"); } },
-  { ic:"🍀", nome:"TREVÃO",       pega:() => { addBuff("sorte", 3, 30, "🍀 Trevão x3"); avisar("🍀 TREVÃO! sorte x3 por 30s"); } },
-  { ic:"💰", nome:"COFRE",        pega:() => { const g = Math.max(2000, recorde * .22); dinheiro += g; recorde = Math.max(recorde, dinheiro); avisar("💰 COFRE! +R$ " + fmt(g)); } },
-  { ic:"🎁", nome:"PRESENTE",     pega:() => { const q = fabricar(Math.max(20, limite())); avisar("🎁 PRESENTE! +" + fmt(q) + " emojis"); } },
+  { ic:"🌟", k:"bFrenesi",  pega:() => { addBuff("tudo", 7, 20, tr("buffFrenesi")); avisar(tr("avFrenesi")); } },
+  { ic:"👆", k:"bDedo",     pega:() => { addBuff("clique", 25, 15, tr("buffDedo")); avisar(tr("avDedo")); } },
+  { ic:"⛈️", k:"bDiluvio",  pega:() => { addBuff("chuva", 10, 25, tr("buffDiluvio")); avisar(tr("avDiluvio")); } },
+  { ic:"🍀", k:"bTrevao",   pega:() => { addBuff("sorte", 3, 30, tr("buffTrevao")); avisar(tr("avTrevao")); } },
+  { ic:"💰", k:"bCofre",    pega:() => { const g = Math.max(2000, recorde * .22); dinheiro += g; recorde = Math.max(recorde, dinheiro); avisar(tr("avCofreB", din(g))); } },
+  { ic:"🎁", k:"bPresente", pega:() => { const q = fabricar(Math.max(20, limite())); avisar(tr("avPresente", fmt(q))); } },
 ];
 let estrela = null, proximaEstrela = Date.now() + 75000;
 
@@ -1720,7 +2163,7 @@ function nasceEstrela() {
     x: r + Math.random() * (L - r * 2), y: r + Math.random() * (A - r * 2),
     r, ate: Date.now() + 11000, tipo: BONUS[Math.floor(Math.random() * BONUS.length)],
   };
-  avisar("⭐ apareceu uma estrela na caixa — clica nela!");
+  avisar(tr("avEstrela"));
   bip(1046, .18); setTimeout(() => bip(1318, .18), 130);
 }
 function pegarEstrela() {
@@ -1831,18 +2274,18 @@ function desenharFlashes(ctx) {
    7c. TEMAS DA CAIXA — comprados com cristais, só pra deixar bonito
    ========================================================================== */
 const TEMAS = [
-  { id:"padrao",   nome:"工廠 Fábrica",        ic:"🏭", custo:0,  fundo:["#22101a","#120810"], borda:"#5c2733", chao:"#ffffff08" },
-  { id:"zhulin",   nome:"竹林 Bambuzal",       ic:"🎋", custo:2,  fundo:["#0c2418","#04120b"], borda:"#2f6b46", chao:"#6ee7a02e" },
-  { id:"qinghua",  nome:"青花瓷 Porcelana",     ic:"🏺", custo:4,  fundo:["#0a1830","#040a16"], borda:"#3a5a9a", chao:"#7ac9ff2e" },
-  { id:"taohua",   nome:"桃花 Flor de Pêssego", ic:"🌸", custo:7,  fundo:["#2e1024","#160718"], borda:"#a34a7a", chao:"#ff6b9d2e" },
-  { id:"huolong",  nome:"火龍 Dragão de Fogo",  ic:"🐉", custo:11, fundo:["#2e0a06","#160403"], borda:"#a03418", chao:"#ff5a2c3a" },
-  { id:"yu",       nome:"玉 Jade",             ic:"💚", custo:16, fundo:["#08241f","#03100e"], borda:"#2f8a72", chao:"#6ef0c82e" },
-  { id:"jinku",    nome:"金庫 Cofre de Ouro",   ic:"🪙", custo:24, fundo:["#2e2208","#140e02"], borda:"#8a6a18", chao:"#ffcf5c3a" },
-  { id:"jin",      nome:"錦 Brocado",          ic:"🧵", custo:40, fundo:["#2a0812","#33140a"], borda:"#ff5f6d", chao:"#ffffff20", arco:true },
+  { id:"padrao",   zh:"工廠", pt:"Fábrica", nome:dois("工廠","Fábrica"),        ic:"🏭", custo:0,  fundo:["#22101a","#120810"], borda:"#5c2733", chao:"#ffffff08" },
+  { id:"zhulin",   zh:"竹林", pt:"Bambuzal", nome:dois("竹林","Bambuzal"),       ic:"🎋", custo:2,  fundo:["#0c2418","#04120b"], borda:"#2f6b46", chao:"#6ee7a02e" },
+  { id:"qinghua",  zh:"青花瓷", pt:"Porcelana", nome:dois("青花瓷","Porcelana"),     ic:"🏺", custo:4,  fundo:["#0a1830","#040a16"], borda:"#3a5a9a", chao:"#7ac9ff2e" },
+  { id:"taohua",   zh:"桃花", pt:"Flor de Pêssego", nome:dois("桃花","Flor de Pêssego"), ic:"🌸", custo:7,  fundo:["#2e1024","#160718"], borda:"#a34a7a", chao:"#ff6b9d2e" },
+  { id:"huolong",  zh:"火龍", pt:"Dragão de Fogo", nome:dois("火龍","Dragão de Fogo"),  ic:"🐉", custo:11, fundo:["#2e0a06","#160403"], borda:"#a03418", chao:"#ff5a2c3a" },
+  { id:"yu",       zh:"玉", pt:"Jade", nome:dois("玉","Jade"),             ic:"💚", custo:16, fundo:["#08241f","#03100e"], borda:"#2f8a72", chao:"#6ef0c82e" },
+  { id:"jinku",    zh:"金庫", pt:"Cofre de Ouro", nome:dois("金庫","Cofre de Ouro"),   ic:"🪙", custo:24, fundo:["#2e2208","#140e02"], borda:"#8a6a18", chao:"#ffcf5c3a" },
+  { id:"jin",      zh:"錦", pt:"Brocado", nome:dois("錦","Brocado"),          ic:"🧵", custo:40, fundo:["#2a0812","#33140a"], borda:"#ff5f6d", chao:"#ffffff20", arco:true },
 ];
 TEMPORADAS.forEach(t => {
   TEMAS.push(Object.assign({ custo: null, temporada: t.id }, t.tema));
-  t.skin = { id:"s" + t.id, nome:t.tema.nome, ic:t.ic, custo:null, temporada:t.id,
+  t.skin = { id:"s" + t.id, zh:t.tema.zh, pt:t.tema.pt, nome:t.tema.nome, ic:t.ic, custo:null, temporada:t.id,
              aro:3.5, cor:t.cor, brilho:8, pontos:6 };
   SKINS.push(t.skin);
 });
@@ -1856,12 +2299,12 @@ function aplicarTema() {
 function comprarTema(id) {
   const t = TEMAS.find(x => x.id === id); if (!t) return;
   if (!temas.includes(id) && t.custo === null) {
-    avisar("🎟️ essa skin é prêmio do passe da temporada " + t.nome); bip(180); return;
+    avisar(tr("avSkinPasse", t.nome)); bip(180); return;
   }
   if (!temas.includes(id)) {
-    if (cristais < t.custo) { avisar("💠 faltam " + fmt(t.custo - cristais) + " cristais"); bip(180); return; }
+    if (cristais < t.custo) { avisar(tr("avFaltamCris", fmt(t.custo - cristais))); bip(180); return; }
     cristais -= t.custo; temas.push(id);
-    avisar("🎨 tema " + t.nome + " comprado!");
+    avisar(tr("avTemaComprado", t.nome));
     [880, 1100, 1320].forEach((f, i) => setTimeout(() => bip(f, .13), i * 80));
   } else bip(760);
   temaAtual = id; aplicarTema(); montarTemas(); salvar();
@@ -1879,17 +2322,16 @@ function montarTemporada() {
   if (!a) {
     const prox = proximaTemporada();
     topo.innerHTML = '<div class="tempTopo"><div class="ti">📅</div><div>' +
-      '<div class="tn">Nenhuma temporada rolando</div>' +
-      '<div class="tc">' + (prox ? "A próxima é <b>" + prox.t.ic + " " + prox.t.nome + "</b>, daqui a <b>" +
-        tempoAte(prox.quando - Date.now()) + "</b>." : "Volte outro dia!") +
-      ' Cada temporada traz emojis próprios, um secreto e uma skin.</div></div></div>';
-    corpo.innerHTML = '<div class="cabecinha" style="margin-top:4px">O calendário do ano:</div>' +
+      '<div class="tn">' + tr("semTemp") + '</div>' +
+      '<div class="tc">' + (prox ? tr("proxTemp", prox.t.ic, prox.t.nome, tempoAte(prox.quando - Date.now()))
+        : tr("volteOutroDia")) + tr("tempExplica") + '</div></div></div>';
+    corpo.innerHTML = '<div class="cabecinha" style="margin-top:4px">' + tr("calendario") + '</div>' +
       '<div class="calend">' + TEMPORADAS.map(t => {
         const f = temporadas[t.id];
         return '<div class="calLinha"><span style="font-size:1.05rem">' + t.ic + '</span>' +
           '<span><b>' + t.nome + '</b><br><span style="color:var(--dim);font-size:.68rem">' + t.conta + '</span></span>' +
-          '<span class="cq">' + (f && f.pegos && f.pegos.length ? f.pegos.length + "/" + PASSE.length + " prêmios"
-            : "ainda não jogada") + '</span></div>';
+          '<span class="cq">' + (f && f.pegos && f.pegos.length ? tr("premios", f.pegos.length, PASSE.length)
+            : tr("aindaNao")) + '</span></div>';
       }).join("") + '</div>';
     return;
   }
@@ -1898,20 +2340,19 @@ function montarTemporada() {
     '<div class="ti">' + a.t.ic + '</div><div style="flex:1">' +
     '<div class="tn" style="color:' + a.t.cor + '">' + a.t.nome + '</div>' +
     '<div class="tc">' + a.t.conta + '</div>' +
-    '<div class="tp">🎟️ <b>' + fmt(f.pontos) + ' pontos</b> · acaba em ' + tempoAte(a.fim - Date.now()) +
-      (a.forcada ? " · <b>(modo adm)</b>" : "") + '</div></div></div>';
+    '<div class="tp">' + tr("tempPontos", fmt(f.pontos), tempoAte(a.fim - Date.now())) +
+      (a.forcada ? tr("tempAdm") : "") + '</div></div></div>';
   corpo.innerHTML =
-    '<div class="cabecinha">Fabrique os emojis da temporada pra ganhar 🎟️ pontos: ' +
-      TIPOS_TEMP[a.t.id].map(t => t.e).join(" ") + ' — e o secreto vale ' + PONTOS_SECRETO + '.</div>' +
+    '<div class="cabecinha">' + tr("tempComoGanhar", TIPOS_TEMP[a.t.id].map(t => t.e).join(" "), PONTOS_SECRETO) + '</div>' +
     PASSE.map((d, i) => {
       const pego = f.pegos.includes(i), pode = !pego && f.pontos >= d.p;
       const pr = premioDoPasse(a.t, i);
       return '<div class="passo' + (pego ? " pego" : pode ? " pronto" : "") + '">' +
         '<div class="pi">' + pr.ic + '</div>' +
         '<div><div class="pn">' + pr.txt + '</div>' +
-        '<div class="pd">' + fmt(Math.min(f.pontos, d.p)) + "/" + d.p + ' pontos</div></div>' +
+        '<div class="pd">' + tr("passoPontos", fmt(Math.min(f.pontos, d.p)), d.p) + '</div></div>' +
         '<button class="btPasse" data-n="' + i + '"' + (pode ? "" : " disabled") + '>' +
-        (pego ? "PEGO" : pode ? "PEGAR" : "🔒") + '</button></div>';
+        (pego ? tr("pego") : pode ? tr("pegar") : "🔒") + '</button></div>';
     }).join("");
   [...corpo.querySelectorAll(".btPasse")].forEach(b => b.onclick = () => pegarPremio(+b.dataset.n));
 }
@@ -1919,10 +2360,10 @@ function montarTemporada() {
 function comprarSkin(id) {
   const k = SKINS.find(x => x.id === id); if (!k) return;
   if (!skins.includes(id)) {
-    if (k.custo === null) { avisar("🎟️ essa skin é prêmio do passe da temporada " + k.nome); bip(180); return; }
-    if (cristais < k.custo) { avisar("💠 faltam " + fmt(k.custo - cristais) + " cristais"); bip(180); return; }
+    if (k.custo === null) { avisar(tr("avSkinPasse", k.nome)); bip(180); return; }
+    if (cristais < k.custo) { avisar(tr("avFaltamCris", fmt(k.custo - cristais))); bip(180); return; }
     cristais -= k.custo; skins.push(id);
-    avisar("✨ skin " + k.nome + " comprada!");
+    avisar(tr("avSkinComprada", k.nome));
     [880, 1100, 1320].forEach((f, i) => setTimeout(() => bip(f, .13), i * 80));
   } else bip(760);
   skinAtual = id;
@@ -1932,8 +2373,7 @@ function comprarSkin(id) {
 }
 
 function montarTemas() {
-  el("temaTopo").innerHTML = "<b>" + temas.length + " de " + TEMAS.length +
-    "</b> temas · muda a cara da caixa · pago em 💠 cristais (você tem <b>" + fmt(cristais) + "</b>)";
+  el("temaTopo").innerHTML = tr("temaTopo", temas.length, TEMAS.length, fmt(cristais));
   el("temaGrid").innerHTML = TEMAS.map(t => {
     const meu = temas.includes(t.id), usando = temaAtual === t.id;
     return '<button class="tema' + (usando ? " usando" : "") +
@@ -1942,14 +2382,13 @@ function montarTemas() {
       '<div class="amostra" style="background:linear-gradient(180deg,' + t.fundo[0] + ',' + t.fundo[1] +
         ');border-color:' + t.borda + '"></div>' +
       '<div class="tn">' + t.ic + " " + t.nome + '</div>' +
-      '<div class="tc">' + (usando ? "em uso" : meu ? "usar"
-        : t.custo === null ? "🎟️ do passe" : t.custo === 0 ? "grátis" : "💠 " + t.custo) + '</div>' +
+      '<div class="tc">' + (usando ? tr("emUso") : meu ? tr("usar")
+        : t.custo === null ? tr("doPasse") : t.custo === 0 ? tr("gratis") : "💠 " + t.custo) + '</div>' +
       '</button>';
   }).join("");
   [...el("temaGrid").children].forEach(b => b.onclick = () => comprarTema(b.dataset.t));
 
-  el("skinTopo").innerHTML = "<b>" + skins.length + " de " + SKINS.length +
-    "</b> skins · enfeitam <b>cada emoji</b> da caixa · as de evento saem no passe da temporada";
+  el("skinTopo").innerHTML = tr("skinTopo", skins.length, SKINS.length);
   el("skinGrid").innerHTML = SKINS.map(k => {
     const meu = skins.includes(k.id), usando = skinAtual === k.id;
     return '<button class="tema' + (usando ? " usando" : "") +
@@ -1958,8 +2397,8 @@ function montarTemas() {
         (k.grad ? k.grad[1] : k.cor === "tipo" ? "#7ac9ff" : k.cor || "var(--linha)") + '">' +
         '<span style="font-size:1.1rem">' + k.ic + '</span></div>' +
       '<div class="tn">' + k.nome + '</div>' +
-      '<div class="tc">' + (usando ? "em uso" : meu ? "usar"
-        : k.custo === null ? "🎟️ do passe" : k.custo === 0 ? "grátis" : "💠 " + k.custo) + '</div></button>';
+      '<div class="tc">' + (usando ? tr("emUso") : meu ? tr("usar")
+        : k.custo === null ? tr("doPasse") : k.custo === 0 ? tr("gratis") : "💠 " + k.custo) + '</div></button>';
   }).join("");
   [...el("skinGrid").children].forEach(b => b.onclick = () => comprarSkin(b.dataset.k));
 }
@@ -1979,7 +2418,7 @@ function vender() {
   cancelarFusoes();
   bolas.forEach(b => { b.acordar(); b.vy += 3 + Math.random() * 3; b.vx += (Math.random() - .5) * 4; });
   bip(660); setTimeout(() => bip(880), 90); setTimeout(() => bip(1100), 180);
-  avisar("💸 vendendo por R$ " + fmt(vendendo));
+  avisar(tr("avVendendo", din(vendendo)));
 }
 function terminarVenda() {
   fundoAberto = false;
@@ -1989,7 +2428,7 @@ function terminarVenda() {
   bip(1320, .18);
   const agora = raridadesLiberadas();
   if (agora.length > antes) {
-    avisar("🎉 nova raridade: " + agora[agora.length - 1].nome.toUpperCase() + "!");
+    avisar(tr("avNovaRar", agora[agora.length - 1].nome));
     ganharPontos(PONTOS_RARIDADE * (agora.length - antes));
     [660, 880, 1100, 1320].forEach((f, i) => setTimeout(() => bip(f, .12), i * 110));
   }
@@ -1999,10 +2438,10 @@ function terminarVenda() {
 /* ---------- turbo pago em cristais ---------- */
 const CUSTO_TURBO = 3;
 function comprarTurbo() {
-  if (cristais < CUSTO_TURBO) { avisar("💠 precisa de " + CUSTO_TURBO + " cristais"); return; }
+  if (cristais < CUSTO_TURBO) { avisar(tr("avPrecisaCris", CUSTO_TURBO)); return; }
   cristais -= CUSTO_TURBO;
   addBuff("tudo", 5, 60, "⚡ Turbo x5");
-  avisar("⚡ TURBO! tudo vale 5x por 1 minuto");
+  avisar(tr("avTurboJa"));
   [660, 880, 1100].forEach((f, i) => setTimeout(() => bip(f, .14), i * 90));
   sujo = true; salvar();
 }
@@ -2017,7 +2456,7 @@ function renascer() {
   dinheiro = 0; recorde = 0; vendidos = 0; bolas = []; deposito = 0; depositoValor = 0;
   LOJA.forEach(u => u.qtd = 0);
   combo = 0;
-  avisar("💠 renasceu! +" + g + " cristais");
+  avisar(tr("avRenasceu", g));
   [440, 550, 660, 880, 1100].forEach((f, i) => setTimeout(() => bip(f, .15), i * 130));
   sujo = true; salvar();
 }
@@ -2032,7 +2471,7 @@ function ganhosOffline(quando) {
   if (ganho < 1) return;
   dinheiro += ganho; estat.ganhoTotal += ganho;
   recorde = Math.max(recorde, dinheiro);
-  el("voltaSub").textContent = "A fábrica ficou " + tempoCurto(seg * 1000) + " sozinha, mas o turno da noite trabalhou.";
+  el("voltaSub").textContent = tr("voltaSub", tempoCurto(seg * 1000));
   el("voltaInfo").textContent =
     "tempo fora....: " + tempoCurto(seg * 1000) + "\n" +
     "rendimento....: " + Math.round(fator * 100) + "% da produção\n" +
@@ -2045,7 +2484,7 @@ function ganhosOffline(quando) {
    ========================================================================== */
 function mostrarPainel(p) {
   painelAtual = p;
-  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"],["tema","pTema"],["temp","pTemp"]].forEach(([k, id]) =>
+  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"],["tema","pTema"],["temp","pTemp"],["roleta","pRoleta"]].forEach(([k, id]) =>
     el(id).style.display = (k === p ? "flex" : "none"));
   [...document.querySelectorAll(".abaT")].forEach(b => b.classList.toggle("sel", b.dataset.p === p));
   if (p === "conq") montarConquistas();
@@ -2053,6 +2492,7 @@ function mostrarPainel(p) {
   if (p === "stat") montarStats();
   if (p === "tema") montarTemas();
   if (p === "temp") montarTemporada();
+  if (p === "roleta") { montarRoleta(); desenharRoda(); }
   bip(700);
 }
 [...document.querySelectorAll(".abaT")].forEach(b => b.onclick = () => mostrarPainel(b.dataset.p));
@@ -2127,36 +2567,34 @@ function atualizarLista() {
     pt.parentElement.classList.toggle("pode", podeAlgo);
   });
   const t = el("turbo");
-  t.innerHTML = '<b>⚡ TURBO — 💠 ' + CUSTO_TURBO + '</b><span>Tudo vale <b>5x</b> por 1 minuto. Você tem ' +
-    fmt(cristais) + ' cristais.</span>';
+  t.innerHTML = tr("turbo", CUSTO_TURBO, fmt(cristais));
   t.style.opacity = cristais >= CUSTO_TURBO ? 1 : .45;
 }
 
 function montarConquistas() {
   const feitas = conquistasFeitas.length;
-  el("conqTopo").innerHTML = "<b>" + feitas + " de " + CONQUISTAS.length + "</b> conquistas · cada uma dá +1,5% em tudo · bônus atual: <b>+" +
-    Math.round((bonusConquistas() - 1) * 100) + "%</b>";
+  el("conqTopo").innerHTML = tr("conqTopo", feitas, CONQUISTAS.length, Math.round((bonusConquistas() - 1) * 100));
   el("conqGrid").innerHTML = CONQUISTAS.map(c => {
     const tem = conquistasFeitas.includes(c.id);
     const escondida = c.secreta && !tem;
     return '<div class="conq ' + (tem ? "feita" : "nao") + '">' +
       '<div class="ci">' + (tem ? c.ic : escondida ? "❔" : "🔒") + '</div>' +
       '<div><div class="cn">' + (escondida ? "???" : c.nome) + '</div>' +
-      '<div class="cd">' + (escondida ? "conquista secreta" : c.desc) + '</div></div></div>';
+      '<div class="cd">' + (escondida ? tr("conqSecreta") : c.desc) + '</div></div></div>';
   }).join("");
   el("ptConq").textContent = feitas;
 }
 
 function montarMissoes() {
-  el("missTopo").innerHTML = "<b>" + nivelMissao + "</b> missões cumpridas · elas ficam mais difíceis (e pagam mais) conforme você avança";
+  el("missTopo").innerHTML = tr("missTopo", nivelMissao);
   el("missLista").innerHTML = missoes.map((m, i) => {
     const t = missaoTipo(m), p = Math.min(missaoProgresso(m), m.alvo);
     return '<div class="missao">' +
       '<div class="mt">' + t.ic + ' ' + t.txt(m.alvo) + '<span class="mp">' + fmt(p) + "/" + fmt(m.alvo) + '</span></div>' +
       '<div class="trilho"><i style="width:' + (p / m.alvo * 100) + '%"></i></div>' +
-      '<div class="mr">prêmio: ' + (m.moeda === "cristal" ? "💠 " + fmt(m.premio) + " cristais" : "R$ " + fmt(premioMissao(m))) + '</div>' +
+      '<div class="mr">' + tr("missPremio", m.moeda === "cristal" ? "💠 " + fmt(m.premio) : din(premioMissao(m))) + '</div>' +
       '<button class="btMissao" data-s="' + i + '"' + (m.feita ? "" : " disabled") + '>' +
-        (m.feita ? "PEGAR PRÊMIO" : "EM ANDAMENTO") + '</button></div>';
+        (m.feita ? tr("missPegar") : tr("missAndando")) + '</button></div>';
   }).join("");
   [...el("missLista").querySelectorAll(".btMissao")].forEach(b =>
     b.onclick = () => receberMissao(+b.dataset.s));
@@ -2164,31 +2602,33 @@ function montarMissoes() {
 
 function montarStats() {
   const linhas = [
-    ["🎮 Modo", modoObj().ic + " " + modoObj().nome],
-    ["☀️ Emoji do dia", (tipoDoDia ? tipoDoDia.e : "—") + " · " + fmt(estat.doDia) + " fabricados"],
-    ["⏱️ Tempo de fábrica", tempoCurto(estat.tempo)],
-    ["👆 Cliques", fmt(estat.cliques)],
-    ["🎯 Cliques críticos", fmt(estat.criticos)],
-    ["🔥 Maior combo", fmt(estat.comboMax)],
-    ["🏭 Emojis fabricados", fmt(estat.feitos)],
-    ["📦 Emojis vendidos", fmt(vendidos)],
-    ["💰 Vendas feitas", fmt(estat.vendas)],
-    ["🏆 Maior venda", "R$ " + fmt(estat.maiorVenda)],
-    ["💵 Dinheiro ganho na vida", "R$ " + fmt(estat.ganhoTotal)],
-    ["🌟 Dourados achados", fmt(estat.dourados)],
-    ["⭐ Estrelas de bônus", fmt(estat.bonusPegos)],
-    ["🛒 Upgrades comprados", fmt(estat.ups)],
-    ["📜 Missões cumpridas", fmt(nivelMissao)],
-    ["🗂️ Coleções completas", colecoesCompletas() + " · +" + Math.round((bonusColecao() - 1) * 100) + "%"],
-    ["🎨 Temas da caixa", temas.length + "/" + TEMAS.length + " · " + temaObj().nome],
-    ["✨ Skins dos emojis", skins.length + "/" + SKINS.length + " · " + skinObj().nome],
-    ["🧬 Fusões feitas", fmt(estat.fusoes) + (modoObj().fusao ? " · ímã x" + velFusao().toFixed(1) : "")],
-    ["♻️ Renascimentos", fmt(renascimentos)],
-    ["📖 Índice", descobertos.length + "/" + TOTAL_EMOJIS],
-    ["🌈 Raridades abertas", raridadesLiberadas().length + "/120"],
-    ["📈 Renda estimada", "R$ " + fmt(rendaPorSegundo()) + "/s"],
-    ["🌙 Renda offline", Math.round(fatorOffline() * 100) + "%"],
-    ["🔮 Chance de secreto", "x" + multSecreto().toFixed(1)],
+    [tr("sModo"), modoObj().ic + " " + modoObj().nome],
+    [tr("sDoDia"), tr("sDoDiaV", tipoDoDia ? tipoDoDia.e : "—", fmt(estat.doDia))],
+    [tr("sTempo"), tempoCurto(estat.tempo)],
+    [tr("sCliques"), fmt(estat.cliques)],
+    [tr("sCriticos"), fmt(estat.criticos)],
+    [tr("sCombo"), fmt(estat.comboMax)],
+    [tr("sFeitos"), fmt(estat.feitos)],
+    [tr("sVendidos"), fmt(vendidos)],
+    [tr("sVendas"), fmt(estat.vendas)],
+    [tr("sMaiorVenda"), din(estat.maiorVenda)],
+    [tr("sGanho"), din(estat.ganhoTotal)],
+    [tr("sDourados"), fmt(estat.dourados)],
+    [tr("sBonus"), fmt(estat.bonusPegos)],
+    [tr("sUps"), fmt(estat.ups)],
+    [tr("sMissoes"), fmt(nivelMissao)],
+    [tr("sColecoes"), colecoesCompletas() + " · +" + Math.round((bonusColecao() - 1) * 100) + "%"],
+    [tr("sTemas"), temas.length + "/" + TEMAS.length + " · " + temaObj().nome],
+    [tr("sSkins"), skins.length + "/" + SKINS.length + " · " + skinObj().nome],
+    [tr("sFusoes"), fmt(estat.fusoes) + (modoObj().fusao ? tr("sIma", velFusao().toFixed(1)) : "")],
+    [tr("sRenasc"), fmt(renascimentos)],
+    [tr("sRoleta"), fmt(estat.giros)],
+    [tr("sGritos"), fmt(estat.gritos)],
+    [tr("sIndice"), descobertos.length + "/" + TOTAL_EMOJIS],
+    [tr("sRaridades"), raridadesLiberadas().length + "/120"],
+    [tr("sRenda"), din(rendaPorSegundo()) + "/s"],
+    [tr("sOffline"), Math.round(fatorOffline() * 100) + "%"],
+    [tr("sSecreto"), "x" + multSecreto().toFixed(1)],
   ];
   el("statLista").innerHTML = linhas.map(l =>
     '<div class="linhaStat"><span>' + l[0] + '</span><b>' + l[1] + '</b></div>').join("");
@@ -2208,14 +2648,15 @@ function montarIndice() {
   const achadosS = SECRETOS.filter(s => descobertos.includes(s.chave)).length;
   const faixaSecreta =
     '<div class="faixa"><div class="faixaTop">' +
-    '<span class="pastilha" style="background:linear-gradient(90deg,#ff4d6d33,#5ce1e633);color:#fff;border:1px solid #ffffff55">🌈 Secretos</span>' +
-    '<span class="faixaInfo">' + achadosS + "/" + SECRETOS.length + ' · caem em qualquer fase</span></div>' +
+    '<span class="pastilha" style="background:linear-gradient(90deg,#ff4d6d33,#5ce1e633);color:#fff;border:1px solid #ffffff55">' +
+      tr("fxSecretos") + '</span>' +
+    '<span class="faixaInfo">' + tr("fxSecretosInfo", achadosS, SECRETOS.length) + '</span></div>' +
     '<div class="fileira">' + SECRETOS.map(s => {
       const tem = descobertos.includes(s.chave);
       const n = contagem[s.chave] || 0;
       return '<div class="ficha' + (tem ? "" : " nao") + '" style="' + (tem ? "border-color:#ffffff88" : "") + '">' +
         (n > 1 ? '<b class="qtdF">x' + fmt(n) + '</b>' : "") +
-        (tem ? s.e : "❔") + '<small>' + (tem ? "1 em " + fmt(Math.round(1 / s.chance)) : "???") + '</small></div>';
+        (tem ? s.e : "❔") + '<small>' + (tem ? tr("umEm", fmt(Math.round(1 / s.chance))) : "???") + '</small></div>';
     }).join("") + '</div></div>';
 
   const faixasTemp = pagIndice !== 0 ? "" : TEMPORADAS.map(t => {
@@ -2228,7 +2669,7 @@ function montarIndice() {
         const tem = vistos.has(x.chave), n = contagem[x.chave] || 0;
         return '<div class="ficha' + (tem ? "" : " nao") + '" style="' + (tem ? "border-color:" + t.cor + "88" : "") + '">' +
           (n > 1 ? '<b class="qtdF">x' + fmt(n) + '</b>' : "") + (tem ? x.e : "❔") +
-          '<small>' + (tem ? (x.secretoTemp ? "secreto" : "evento") : "???") + '</small></div>';
+          '<small>' + (tem ? (x.secretoTemp ? tr("fxSecreto") : tr("fxEvento")) : "???") + '</small></div>';
       }).join("") + '</div></div>';
   }).join("");
 
@@ -2241,19 +2682,18 @@ function montarIndice() {
       const tem = descobertos.includes(t.chave), n = contagem[t.chave] || 0;
       return '<div class="ficha' + (tem ? "" : " nao") + '" style="' + (tem ? "border-color:" + r.cor + "55" : "") + '">' +
         (n > 1 ? '<b class="qtdF">x' + fmt(n) + '</b>' : "") +
-        (tem ? t.e : "❔") + '<small>' + (tem ? "R$ " + fmt(t.valor) : "???") + '</small></div>';
+        (tem ? t.e : "❔") + '<small>' + (tem ? din(t.valor) : "???") + '</small></div>';
     }).join("");
     return '<div class="faixa" style="' + (liberada ? "" : "opacity:.42") + '">' +
       '<div class="faixaTop"><span class="pastilha" style="background:' + r.cor + '22;color:' + r.cor +
       ';border:1px solid ' + r.cor + '55">' + (r.indice + 1) + '. ' + r.nome + '</span>' +
       '<span class="faixaInfo">' + (liberada
-        ? achados + "/" + desta.length + (achados === desta.length ? " ✅ completa +2%" : "") + " · R$ " + fmt(r.base)
-        : "🔒 R$ " + fmt(r.desbloqueio)) + '</span></div>' +
+        ? achados + "/" + desta.length + (achados === desta.length ? tr("completa") : "") + " · " + din(r.base)
+        : "🔒 " + din(r.desbloqueio)) + '</span></div>' +
       '<div class="fileira">' + fichas + '</div></div>';
   }).join("");
-  el("indiceSub").textContent = descobertos.length + " de " + TOTAL_EMOJIS + " emojis · " +
-    raridadesLiberadas().length + " de " + RARIDADES.length + " raridades abertas · " +
-    colecoesCompletas() + " coleções completas (+" + Math.round((bonusColecao() - 1) * 100) + "% em tudo)";
+  el("indiceSub").textContent = tr("indiceSub", descobertos.length, raridadesLiberadas().length,
+    TOTAL_EMOJIS, RARIDADES.length, colecoesCompletas(), Math.round((bonusColecao() - 1) * 100));
 }
 
 /* ==========================================================================
@@ -2297,7 +2737,7 @@ function tentarSenha() {
     admLiberado = true; estat.admUsado = true;
     el("admLogin").style.display = "none"; el("admPainel").style.display = "";
     bip(900); puxarAdm();
-  } else { el("admErro").textContent = "Senha errada!"; el("admSenha").value = ""; bip(140); }
+  } else { el("admErro").textContent = tr("admErrada"); el("admSenha").value = ""; bip(140); }
 }
 el("admEntrar").onclick = tentarSenha;
 el("admSenha").addEventListener("keydown", e => { if (e.key === "Enter") tentarSenha(); });
@@ -2333,7 +2773,7 @@ function soltarSecreto(i) {
   if (!vistos.has(s.chave)) { vistos.add(s.chave); descobertos.push(s.chave); _colLen = -1; }
   if (bolas.length < MAX_FISICOS) bolas.push(new Bola(L / 2, -20, s));
   else guardar(s);
-  avisar("🌈 " + s.e + " " + s.nome + " — R$ " + fmt(valorDe(s)));
+  avisar(tr("avSecreto", s.e, dois(s.zh, s.pt), din(valorDe(s))));
   bip(1568, .2); puxarAdm();
 }
 // botões dos bônus
@@ -2345,13 +2785,17 @@ BONUS.forEach((b, i) => {
 });
 {
   const bt = document.createElement("button");
-  bt.className = "bt"; bt.textContent = "⭐ SOLTAR ESTRELA";
+  bt.className = "bt"; bt.textContent = tr("admSoltarEstrela");
   bt.onclick = () => { nasceEstrela(); fecharAdm(); };
   el("admBonus").appendChild(bt);
   const bl = document.createElement("button");
-  bl.className = "bt perigo"; bl.textContent = "LIMPAR BÔNUS";
+  bl.className = "bt perigo"; bl.textContent = tr("admLimparBonus");
   bl.onclick = () => { buffs = []; puxarAdm(); };
   el("admBonus").appendChild(bl);
+  const br = document.createElement("button");
+  br.className = "bt"; br.textContent = tr("admGiros");
+  br.onclick = () => { giros += 10; montarRoleta(); puxarAdm(); };
+  el("admBonus").appendChild(br);
 }
 
 function darDinheiro(n) { dinheiro += n; recorde = Math.max(recorde, dinheiro); puxarAdm(); }
@@ -2388,10 +2832,12 @@ function limparEstado() {
   temas = ["padrao"]; temaAtual = "padrao"; temporadas = {}; primeiroDia = 0;
   skins = ["nenhuma"]; skinAtual = "nenhuma"; sprites.clear();
   chuvaAcum = 0; vendendo = 0; fundoAberto = false; estrela = null; cliquesRapidos = [];
+  giros = 1; proxGiro = Date.now() + GIRO_GRATIS_MIN * 60000;   // o primeiro giro é de graça
   Object.assign(estat, {
     cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
     ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
     encheu:false, inclinou:false, admUsado:false, doDia:0, fusoes:0, vendaMinima:0,
+    giros:0, gritos:0,
   });
   TODOS.forEach(u => u.qtd = 0);
   sincronizarVistos(); aplicarTema();
@@ -2405,24 +2851,28 @@ function puxarAdm() {
   el("admFis").textContent = MAX_FISICOS;
   el("admRar").textContent = raridadesLiberadas().length;
   el("admInfo").textContent =
-    "dinheiro.....: R$ " + fmt(dinheiro) + "\n" +
-    "recorde......: R$ " + fmt(recorde) + "\n" +
-    "cristais.....: " + fmt(cristais) + "\n" +
-    "renascimentos: " + renascimentos + "\n" +
-    "raridades....: " + raridadesLiberadas().length + "/120  (" +
+    (zh() ? "錢.......: " : "dinheiro.....: ") + din(dinheiro) + "\n" +
+    (zh() ? "紀錄.....: " : "recorde......: ") + din(recorde) + "\n" +
+    (zh() ? "水晶.....: " : "cristais.....: ") + fmt(cristais) + "\n" +
+    (zh() ? "重生.....: " : "renascimentos: ") + renascimentos + "\n" +
+    (zh() ? "轉盤.....: " : "giros........: ") + estat.giros + "   " +
+    (zh() ? "大喊: " : "gritos: ") + estat.gritos + "\n" +
+    (zh() ? "稀有度...: " : "raridades....: ") + raridadesLiberadas().length + "/120  (" +
       (raridadesLiberadas().slice(-1)[0] || RARIDADES[0]).nome + ")\n" +
-    "índice.......: " + descobertos.length + "/" + TOTAL_EMOJIS +
-      "  (" + colecoesCompletas() + " coleções)\n" +
-    "temas........: " + temas.length + "/" + TEMAS.length + "  (" + temaObj().nome + ")\n" +
-    "skins........: " + skins.length + "/" + SKINS.length + "  (" + skinObj().nome + ")\n" +
-    "modo.........: " + modoObj().nome + "   fusões: " + estat.fusoes + "\n" +
-    "temporada....: " + (temporadaAtiva() ? temporadaAtiva().t.nome + " (" +
-      fmt(fichaTemporada(temporadaAtiva().t.id).pontos) + " 🎟️)" : "nenhuma") + "\n" +
-    "conquistas...: " + conquistasFeitas.length + "/" + CONQUISTAS.length + "\n" +
-    "missões......: " + nivelMissao + " cumpridas\n" +
-    "na caixa.....: " + bolas.length + " físicos + " + fmt(deposito) + " no depósito\n" +
-    "valor pilha..: R$ " + fmt(valorPilha()) + "\n" +
-    "por clique...: " + fmt(porClique()) + "   por segundo: " + fmt(porSegundoChuva());
+    (zh() ? "圖鑑.....: " : "índice.......: ") + descobertos.length + "/" + TOTAL_EMOJIS +
+      "  (" + colecoesCompletas() + ")\n" +
+    (zh() ? "主題.....: " : "temas........: ") + temas.length + "/" + TEMAS.length + "  (" + temaObj().nome + ")\n" +
+    (zh() ? "外觀.....: " : "skins........: ") + skins.length + "/" + SKINS.length + "  (" + skinObj().nome + ")\n" +
+    (zh() ? "模式.....: " : "modo.........: ") + modoObj().nome + "   " +
+    (zh() ? "融合: " : "fusões: ") + estat.fusoes + "\n" +
+    (zh() ? "節日.....: " : "temporada....: ") + (temporadaAtiva() ? temporadaAtiva().t.nome + " (" +
+      fmt(fichaTemporada(temporadaAtiva().t.id).pontos) + " 🎟️)" : "—") + "\n" +
+    (zh() ? "成就.....: " : "conquistas...: ") + conquistasFeitas.length + "/" + CONQUISTAS.length + "\n" +
+    (zh() ? "任務.....: " : "missões......: ") + nivelMissao + "\n" +
+    (zh() ? "盒子裡...: " : "na caixa.....: ") + bolas.length + " + " + fmt(deposito) + "\n" +
+    (zh() ? "堆的價值.: " : "valor pilha..: ") + din(valorPilha()) + "\n" +
+    (zh() ? "每次點擊.: " : "por clique...: ") + fmt(porClique()) + "   " +
+    (zh() ? "每秒: " : "por segundo: ") + fmt(porSegundoChuva());
   montarLista(); render(); salvar();
 }
 
@@ -2521,11 +2971,11 @@ function quadro() {
   if (++contaQuadros % 12 === 0) {
     const total = bolas.length + deposito;
     el("contadorPilha").textContent = total
-      ? total + "/" + fmt(limite()) + (deposito ? " (📦" + fmt(deposito) + ")" : "") + " · R$ " + fmt(valorPilha())
-      : (fundoAberto ? "caindo…" : "vazia");
+      ? total + "/" + fmt(limite()) + (deposito ? " (📦" + fmt(deposito) + ")" : "") + " · " + din(valorPilha())
+      : (fundoAberto ? "…" : tr("vazia"));
     el("btVender").disabled = !total || fundoAberto;
     const vel = somaEfeito("auto");
-    let txt = total ? "VENDER · R$ " + fmt(valorPilha()) : "VENDER";
+    let txt = total ? tr("btVender") + " · " + din(valorPilha()) : tr("btVender");
     if (vel) {
       // mostra o relógio da venda automática, pra dar pra ver que ela existe
       const falta = Math.max(0, Math.ceil((segundosAuto(vel) * 1000 - (Date.now() - ultimaVendaAuto)) / 1000));
@@ -2603,10 +3053,16 @@ setInterval(() => {
 }, 250);
 
 function render() {
-  el("dinheiro").textContent = "R$ " + fmt(dinheiro);
+  /* o grito sacode a caixa: o tremor vai morrendo sozinho a cada quadro */
+  if (tremor > .4) {
+    tremor *= .82; sujo = true;
+    cv.style.transform = "translate(" + ((Math.random() - .5) * tremor).toFixed(1) + "px," +
+                                        ((Math.random() - .5) * tremor).toFixed(1) + "px)";
+  } else if (tremor) { tremor = 0; cv.style.transform = ""; sujo = true; }
+  el("dinheiro").textContent = din(dinheiro);
   el("vClique").textContent = fmt(porClique());
   el("vChuva").textContent = fmt(porSegundoChuva()) + "/s";
-  el("vRec").textContent = "R$ " + fmt(recorde);
+  el("vRec").textContent = din(recorde);
   el("vCris").textContent = cristais + (cristais ? " +" + Math.round(cristais * 35) + "%" : "");
   el("vInd").textContent = descobertos.length + "/" + TOTAL_EMOJIS;
   el("vConq").textContent = conquistasFeitas.length + "/" + CONQUISTAS.length;
@@ -2622,11 +3078,7 @@ function render() {
 
   const g = cristaisAGanhar(), bt = el("renascer");
   bt.classList.toggle("on", g > 0);
-  bt.innerHTML = g
-    ? '<b>💠 RENASCER</b><span>Zera dinheiro, upgrades de dinheiro e raridades — você ganha <b style="color:var(--cristal)">' +
-      g + ' cristais</b> (+35% cada, pra sempre). Índice, conquistas e loja de cristais <b>não</b> se perdem.</span>'
-    : '<b>💠 RENASCER</b><span>Trancado. Chegue a R$ ' + fmt(CUSTO_RENASCER) + ' de recorde. (' +
-      fmt(recorde) + ' / ' + fmt(CUSTO_RENASCER) + ')</span>';
+  bt.innerHTML = g ? tr("renascerOk", g) : tr("renascerNao", din(CUSTO_RENASCER), din(recorde));
 }
 
 /* ==========================================================================
@@ -2645,7 +3097,7 @@ function pacote() {
   return {
     v: 6, modo: modoAtual, dinheiro, recorde, vendidos, cristais, renascimentos, mudo, descobertos,
     conquistas: conquistasFeitas, missoes, nivelMissao, estat, quando: Date.now(),
-    contagem, temas, temaAtual, temporadas, primeiroDia, skins, skinAtual,
+    contagem, temas, temaAtual, temporadas, primeiroDia, skins, skinAtual, giros, proxGiro,
     ups: TODOS.filter(u => u.qtd).map(u => [u.id, u.qtd]),
   };
 }
@@ -2665,7 +3117,7 @@ function salvarIndice() {
 function salvarNaMao() {
   if (!jogoAtual) return;
   salvar();
-  avisar("💾 jogo salvo!");
+  avisar(tr("avSalvo"));
   bip(1046, .12); setTimeout(() => bip(1318, .1), 80);
 }
 
@@ -2703,7 +3155,7 @@ function resumoDoTexto(txt) {
 const novoIdDeJogo = () => "j" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
 
 function novoJogo(modo) {
-  if (jogos.length >= MAX_JOGOS) { avisar("💾 já são " + MAX_JOGOS + " jogos salvos — apague um antes"); bip(180); return; }
+  if (jogos.length >= MAX_JOGOS) { avisar(tr("avMuitosJogos", MAX_JOGOS)); bip(180); return; }
   salvar();
   const m = MODOS.find(x => x.id === modo) || MODOS[0];
   const quantos = jogos.filter(j => j.modo === modo).length;
@@ -2719,19 +3171,19 @@ function abrirJogo(id) {
 }
 function apagarJogo(id) {
   const j = jogos.find(x => x.id === id); if (!j) return;
-  if (!confirm('Apagar o jogo "' + j.nome + '" pra sempre?\n\nIsso não dá pra desfazer.')) return;
+  if (!confirm(tr("perguntaApagar", j.nome))) return;
   try { localStorage.removeItem(chaveDoJogo(id)); } catch (e) {}
   jogos = jogos.filter(x => x.id !== id); salvarIndice();
   if (jogoAtual && jogoAtual.id === id) {     // apagou o que estava aberto: volta pro início
     jogoAtual = null; modoAtual = null; limparEstado(); render();
     el("inicio").classList.add("on");
   }
-  avisar("🗑️ jogo apagado"); bip(200, .18);
+  avisar(tr("avApagado")); bip(200, .18);
   montarInicio();
 }
 function renomearJogo(id) {
   const j = jogos.find(x => x.id === id); if (!j) return;
-  const n = prompt("Nome desse jogo:", j.nome);
+  const n = prompt(tr("perguntaNome"), j.nome);
   if (n && n.trim()) { j.nome = n.trim().slice(0, 22); salvarIndice(); montarInicio(); }
 }
 function aplicar(d) {
@@ -2757,6 +3209,7 @@ function aplicar(d) {
   sprites.clear();
   temporadas = (d.temporadas && typeof d.temporadas === "object") ? d.temporadas : {};
   primeiroDia = d.primeiroDia || 0;
+  giros = d.giros || 0; proxGiro = d.proxGiro || 0;
   sincronizarVistos();
   TODOS.forEach(u => u.qtd = 0);
   (d.ups || []).forEach(([id, q]) => { const u = TODOS.find(x => x.id === id); if (u) u.qtd = q; });
@@ -2784,14 +3237,13 @@ function montarInicio() {
       '<button class="jogoAbrir" data-j="' + j.id + '">' +
         '<div class="mi">' + m.ic + '</div>' +
         '<div style="flex:1;min-width:0"><div class="mn">' + escapaHtml(j.nome) +
-          (aberto ? '<span class="selo">jogando</span>' : "") + '</div>' +
-        '<div class="mp">recorde R$ ' + fmt(r.recorde || 0) + ' · ' + (r.emojis || 0) +
-          ' emojis · ' + (r.conquistas || 0) + ' conquistas</div>' +
-        '<div class="md">modo ' + m.nome + ' · ' + tempoCurto(r.tempo || 0) + ' de fábrica</div></div></button>' +
-      '<button class="jogoBt" data-ren="' + j.id + '" title="mudar o nome">✏️</button>' +
-      '<button class="jogoBt apagar" data-del="' + j.id + '" title="apagar este jogo">🗑️</button></div>';
+          (aberto ? '<span class="selo">' + tr("jogando") + '</span>' : "") + '</div>' +
+        '<div class="mp">' + tr("cardResumo", din(r.recorde || 0), r.emojis || 0, r.conquistas || 0) + '</div>' +
+        '<div class="md">' + tr("cardModo", m.nome, tempoCurto(r.tempo || 0)) + '</div></div></button>' +
+      '<button class="jogoBt" data-ren="' + j.id + '" title="' + tr("ttRenomear") + '">✏️</button>' +
+      '<button class="jogoBt apagar" data-del="' + j.id + '" title="' + tr("ttApagar") + '">🗑️</button></div>';
   }).join("") :
-    '<div class="cabecinha">Nenhum jogo salvo ainda — escolhe um modo aí embaixo pra começar o primeiro.</div>';
+    '<div class="cabecinha">' + tr("semJogos") + '</div>';
 
   el("jogoLista").querySelectorAll("[data-j]").forEach(b => b.onclick = () => abrirJogo(b.dataset.j));
   el("jogoLista").querySelectorAll("[data-ren]").forEach(b => b.onclick = () => renomearJogo(b.dataset.ren));
@@ -2802,8 +3254,8 @@ function montarInicio() {
       '<div class="mi">' + m.ic + '</div>' +
       '<div style="flex:1"><div class="mn">' + m.nome + '</div>' +
       '<div class="md">' + m.desc + '</div>' +
-      '<div class="mp novo">' + (jogos.filter(j => j.modo === m.id).length || "nenhum") +
-        ' jogo(s) salvo(s) nesse modo</div></div></button>').join("");
+      '<div class="mp novo">' + tr("modoSalvos", jogos.filter(j => j.modo === m.id).length || tr("nenhum")) +
+        '</div></div></button>').join("");
   [...el("modoLista").children].forEach(b => b.onclick = () => novoJogo(b.dataset.m));
 }
 function abrirInicio() { salvar(); montarInicio(); el("inicio").classList.add("on"); }
@@ -2834,11 +3286,11 @@ function exportarSave() {
   const txt = btoa(unescape(encodeURIComponent(JSON.stringify(pacote()))));
   const copiar = t => navigator.clipboard && navigator.clipboard.writeText
     ? navigator.clipboard.writeText(t) : Promise.reject();
-  copiar(txt).then(() => avisar("📤 código copiado! guarda num lugar seguro"))
-             .catch(() => { prompt("Copia esse código do jogo:", txt); });
+  copiar(txt).then(() => avisar(tr("avCopiado")))
+             .catch(() => { prompt(tr("btCopiar"), txt); });
 }
 function importarSave() {
-  const txt = prompt("Cola aqui o código do jogo (isso substitui o save atual):");
+  const txt = prompt(tr("perguntaCodigo"));
   if (!txt) return;
   try {
     const d = JSON.parse(decodeURIComponent(escape(atob(txt.trim()))));
@@ -2846,8 +3298,8 @@ function importarSave() {
     aplicar(d);
     bolas = []; deposito = 0; depositoValor = 0; buffs = []; combo = 0;
     sortearMissoes(); montarFamilias(); montarLista(); aplicarTema(); render(); salvar();
-    avisar("📥 jogo carregado!");
-  } catch (e) { avisar("❌ esse código não serve"); }
+    avisar(tr("avCarregado"));
+  } catch (e) { avisar(tr("avCodigoRuim")); }
 }
 setInterval(salvar, 5000);
 window.addEventListener("beforeunload", salvar);
@@ -2876,8 +3328,300 @@ el("btInstalar").onclick = async e => {
 };
 window.addEventListener("appinstalled", () => {
   el("btInstalar").hidden = true;
-  avisar("📲 jogo instalado! agora ele tem ícone próprio");
+  avisar(tr("avInstalado"));
 });
+
+
+/* ==========================================================================
+   14. 語言、轉盤、大喊
+   O botão de idioma, a roleta da sorte e o grito no microfone.
+   ========================================================================== */
+
+/* ---------- aplicar o idioma em tudo que já existe ---------- */
+function aplicarIdioma() {
+  document.documentElement.lang = zh() ? "zh-Hant" : "pt-BR";
+  document.querySelectorAll("[data-i18n]").forEach(e => { e.innerHTML = tr(e.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-t]").forEach(e => { e.title = tr(e.dataset.i18nT); });
+  document.querySelectorAll("[data-i18n-p]").forEach(e => { e.placeholder = tr(e.dataset.i18nP); });
+  document.querySelectorAll("[data-i18n-a]").forEach(e => {          // texto com um número dentro
+    const p = e.dataset.i18nA.split("|");
+    e.textContent = tr(p[0], p[1]);
+  });
+  RARIDADES.forEach(r => r.nome = dois(r.zh, r.pt));
+  FAMILIAS_TODAS.forEach(f => f.nome = tr(f.k));
+  TODOS.forEach(u => { u.famNome = tr(u.k); u.nome = nomeUp(u.k, u.nivel); });
+  CONQUISTAS.forEach(c => {
+    c.nome = tr(c.kNome) + (c.romano ? " " + c.romano : "");
+    c.desc = c.arg ? tr(c.kDesc, c.arg()) : tr(c.kDesc);
+  });
+  BONUS.forEach(b => b.nome = tr(b.k));
+  TEMPORADAS.forEach(t => { t.nome = dois(t.zh, t.pt); t.conta = tr(t.kConta); });
+  TEMAS.forEach(t => { if (t.zh) t.nome = dois(t.zh, t.pt); });
+  SKINS.forEach(k => { if (k.k) k.nome = tr(k.k); else if (k.zh) k.nome = dois(k.zh, k.pt); });
+  MODOS.forEach(m => { m.nome = dois(m.zh, m.pt); m.desc = tr(m.kDesc); });
+  el("btIdioma").textContent = zh() ? "中" : "A";
+  el("rodape").innerHTML = tr("rodape", TOTAL_EMOJIS, SECRETOS.length, TODOS.length,
+    CONQUISTAS.length, TEMAS.length, SKINS.length, TEMPORADAS.length, MODOS.length);
+  /* redesenha o que já estava na tela */
+  sprites.clear(); bolas.forEach(b => b.sprite = sprite(b.tipo, b.r, b.dourado));
+  atualizarDia(); montarFamilias(); montarLista(); montarInicio();
+  if (painelAtual === "conq") montarConquistas();
+  if (painelAtual === "miss") montarMissoes();
+  if (painelAtual === "stat") montarStats();
+  if (painelAtual === "tema") montarTemas();
+  if (painelAtual === "temp") montarTemporada();
+  if (painelAtual === "roleta") { montarRoleta(); desenharRoda(); }
+  if (jogoAtual) el("btModo").title = jogoAtual.nome + " (" + modoObj().nome + ")";
+  sujo = true; render();
+}
+function trocarIdioma() {
+  idioma = zh() ? "pt" : "zh";
+  try { localStorage.setItem(CHAVE_IDIOMA, idioma); } catch (e) {}
+  aplicarIdioma();
+  bip(880, .1); setTimeout(() => bip(1174, .09), 70);
+}
+el("btIdioma").onclick = e => { e.stopPropagation(); trocarIdioma(); };
+
+/* ==========================================================================
+   🎡 幸運轉盤 — a roleta da sorte
+   Um giro grátis a cada 10 minutos; os outros custam cristal. O prémio é
+   sorteado com peso ANTES da animação, e a roda é girada até parar em cima
+   dele — assim o que a tela mostra é sempre o que o jogo deu.
+   ========================================================================== */
+const GIRO_GRATIS_MIN = 10, CUSTO_GIRO = 2;
+let giros = 0, proxGiro = 0, girando = false, angRoda = 0;
+
+const PREMIOS = [
+  { k:"pxDinP",    ic:"💵", cor:"#6ee7a0", peso:16, da:() => { const g = Math.max(5000, recorde * .15); ganhar(g); return tr("avDinheiro", din(g)); } },
+  { k:"pxEmojis",  ic:"🏭", cor:"#7ac9ff", peso:14, da:() => tr("avPresente", fmt(fabricar(Math.max(30, Math.round(limite() * .6))))) },
+  { k:"pxCris1",   ic:"💠", cor:"#6ef0c8", peso:12, da:() => { cristais += 1; return tr("avCristais", 1); } },
+  { k:"pxFrenesi", ic:"🌟", cor:"#ffcf5c", peso:10, da:() => { addBuff("tudo", 7, 20, tr("buffFrenesi")); return tr("avFrenesi"); } },
+  { k:"pxDinM",    ic:"💰", cor:"#ff8a3c", peso:10, da:() => { const g = Math.max(2e4, recorde * .6); ganhar(g); return tr("avDinheiro", din(g)); } },
+  { k:"pxEstrela", ic:"⭐", cor:"#fff3b0", peso:9,  da:() => { nasceEstrela(); return tr("avEstrela"); } },
+  { k:"pxPontos",  ic:"🎟️", cor:"#ff6b9d", peso:8,  da:() => { ganharPontos(25); return "🎟️ +25"; } },
+  { k:"pxCris3",   ic:"💠", cor:"#5ce1e6", peso:7,  da:() => { cristais += 3; return tr("avCristais", 3); } },
+  { k:"pxDedo",    ic:"👆", cor:"#b47aff", peso:6,  da:() => { addBuff("clique", 25, 15, tr("buffDedo")); return tr("avDedo"); } },
+  { k:"pxGiros",   ic:"🎡", cor:"#ffb4d8", peso:5,  da:() => { giros += 2; return tr("avGirosMais"); } },
+  { k:"pxDinG",    ic:"🏦", cor:"#ff4d4d", peso:2,  da:() => { const g = Math.max(1e5, recorde * 2.5); ganhar(g); return tr("avDinheiro", din(g)); } },
+  { k:"pxJackpot", ic:"🐉", cor:"#ffcf5c", peso:1,  da:() => { const g = Math.max(1e6, recorde * 12); ganhar(g); cristais += 5;
+      [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => bip(f, .18), i * 110));
+      return tr("avJackpot", din(g)); } },
+];
+const PESO_TOTAL = PREMIOS.reduce((s, p) => s + p.peso, 0);
+function ganhar(g) { dinheiro += g; estat.ganhoTotal += g; recorde = Math.max(recorde, dinheiro); }
+function sortearPremio() {
+  let x = Math.random() * PESO_TOTAL;
+  for (let i = 0; i < PREMIOS.length; i++) { x -= PREMIOS[i].peso; if (x <= 0) return i; }
+  return 0;
+}
+function checarGiroGratis() {
+  if (!proxGiro) proxGiro = Date.now() + GIRO_GRATIS_MIN * 60000;
+  else if (Date.now() >= proxGiro) {
+    giros++; proxGiro = Date.now() + GIRO_GRATIS_MIN * 60000;
+    if (painelAtual === "roleta") montarRoleta();
+    salvar();
+  }
+}
+
+const rd = el("roda"), rctx = rd.getContext("2d");
+function desenharRoda() {
+  const lado = Math.max(160, Math.min(340, rd.clientWidth || 300));
+  const dprR = Math.min(window.devicePixelRatio || 1, 2);
+  rd.width = Math.round(lado * dprR); rd.height = Math.round(lado * dprR);
+  rd.style.height = lado + "px";
+  rctx.setTransform(dprR, 0, 0, dprR, 0, 0);
+  const c = lado / 2, raio = c - 8, passo = 6.2832 / PREMIOS.length;
+  rctx.clearRect(0, 0, lado, lado);
+  rctx.save(); rctx.translate(c, c); rctx.rotate(angRoda);
+  PREMIOS.forEach((p, i) => {
+    const a0 = i * passo - 1.5708 - passo / 2;
+    rctx.beginPath(); rctx.moveTo(0, 0); rctx.arc(0, 0, raio, a0, a0 + passo); rctx.closePath();
+    rctx.fillStyle = p.cor + "cc"; rctx.fill();
+    rctx.strokeStyle = "#12060a"; rctx.lineWidth = 2; rctx.stroke();
+    rctx.save();
+    rctx.rotate(a0 + passo / 2); rctx.translate(raio * .68, 0); rctx.rotate(1.5708);
+    rctx.textAlign = "center"; rctx.textBaseline = "middle";
+    rctx.font = (raio * .17) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    rctx.fillStyle = "#1a0810";
+    rctx.fillText(p.ic, 0, 0);
+    rctx.restore();
+  });
+  rctx.restore();
+  /* miolo e ponteiro */
+  rctx.beginPath(); rctx.arc(c, c, raio * .2, 0, 6.2832);
+  rctx.fillStyle = "#12060a"; rctx.fill();
+  rctx.strokeStyle = "#ffcf5c"; rctx.lineWidth = 3; rctx.stroke();
+  rctx.textAlign = "center"; rctx.textBaseline = "middle";
+  rctx.font = (raio * .2) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+  rctx.fillText("🎡", c, c + raio * .01);
+  rctx.beginPath();
+  rctx.moveTo(c - 11, 2); rctx.lineTo(c + 11, 2); rctx.lineTo(c, 26); rctx.closePath();
+  rctx.fillStyle = "#ffcf5c"; rctx.fill();
+  rctx.strokeStyle = "#12060a"; rctx.lineWidth = 2; rctx.stroke();
+}
+function girarRoleta() {
+  if (girando) return;
+  if (giros <= 0) { bip(170); avisar(tr("rolSemGiros")); return; }
+  giros--; girando = true; estat.giros++;
+  const i = sortearPremio();
+  const passo = 6.2832 / PREMIOS.length;
+  const alvo = 6.2832 * 6 + (6.2832 - i * passo);      // 6 voltas e para no prémio sorteado
+  const ini = angRoda % 6.2832, dur = 4200, t0 = performance.now();
+  montarRoleta();
+  let ultimoTique = -1;
+  (function passoAnim(agora) {
+    const k = Math.min(1, (agora - t0) / dur);
+    const suave = 1 - Math.pow(1 - k, 3.2);            // desacelera no fim
+    angRoda = ini + (alvo - ini) * suave;
+    const tique = Math.floor(angRoda / passo);
+    if (tique !== ultimoTique) { ultimoTique = tique; if (k < .98) bip(1200 - k * 500, .02, "square", .02); }
+    desenharRoda();
+    if (k < 1) requestAnimationFrame(passoAnim);
+    else {
+      girando = false;
+      const p = PREMIOS[i];
+      const texto = p.da();
+      avisar(tr("rolCaiu", tr(p.k) + " · " + texto));
+      [880, 1174].forEach((f, n) => setTimeout(() => bip(f, .14), n * 90));
+      checarConquistas(); montarRoleta(); atualizarLista(); render(); salvar();
+    }
+  })(t0);
+}
+function comprarGiro() {
+  if (cristais < CUSTO_GIRO) { bip(170); avisar(tr("avPrecisaCris", CUSTO_GIRO)); return; }
+  cristais -= CUSTO_GIRO; giros++;
+  avisar(tr("rolComprou")); bip(900); montarRoleta(); salvar();
+}
+function montarRoleta() {
+  if (painelAtual !== "roleta") return;
+  const falta = Math.max(0, proxGiro - Date.now());
+  el("rolTopo").innerHTML = tr("rolTopo", GIRO_GRATIS_MIN) + "<br>" + tr("rolGiros", giros) +
+    " · " + (falta > 0 ? tr("rolGratisEm", tempoAte(falta)) : tr("rolGratisJa"));
+  el("btGirar").textContent = girando ? tr("rolGirando") : tr("rolGirar");
+  el("btGirar").disabled = girando || giros <= 0;
+  el("btComprarGiro").textContent = tr("rolComprar", CUSTO_GIRO);
+  el("rolInfo").innerHTML = tr("rolTotal", estat.giros) + "<br>" + tr("rolPremios") + " " +
+    PREMIOS.map(p => p.ic + " " + tr(p.k)).join(" · ");
+  el("gritoTopo").innerHTML = tr("gritoTopo") + "<br>" + tr("gritoPriv");
+  el("btMic").textContent = micLigado ? tr("gritoDesligar") : tr("gritoLigar");
+  el("gritoInfo").textContent = tr("gritoQtd", estat.gritos);
+}
+el("btGirar").onclick = girarRoleta;
+el("btComprarGiro").onclick = comprarGiro;
+
+/* ==========================================================================
+   🎤 大喊 — o grito
+   O microfone só é ligado quando o Jojo aperta o botão, e o som NÃO sai do
+   aparelho: nada é enviado pra lugar nenhum e nada fica salvo. O que o jogo
+   faz é medir o volume (pra sacudir a caixa) e guardar mais ou menos um
+   segundo de som num pedaço de memória, só pra tocar de volta na hora,
+   mais agudo — é a parte de "os emojis repetem".
+   ========================================================================== */
+let micLigado = false, micFluxo = null, micNo = null, micFonte = null, micSilencio = null;
+let micNivel = 0, ultimoGrito = 0;
+let gravando = false, gravPedacos = [], gravFaltam = 0;
+const LIMIAR_GRITO = .18;                 // acima disso já conta como grito
+let tremor = 0;                           // a caixa treme quando você grita
+
+async function ligarMicrofone() {
+  if (micLigado) { desligarMicrofone(); return; }
+  try {
+    const fluxo = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: false, autoGainControl: false } });
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    if (ctxAudio.state === "suspended") await ctxAudio.resume();
+    micFluxo = fluxo;
+    micFonte = ctxAudio.createMediaStreamSource(fluxo);
+    micNo = ctxAudio.createScriptProcessor(2048, 1, 1);
+    micNo.onaudioprocess = ouvir;
+    micSilencio = ctxAudio.createGain(); micSilencio.gain.value = 0;   // o nó precisa de saída, mas muda
+    micFonte.connect(micNo); micNo.connect(micSilencio); micSilencio.connect(ctxAudio.destination);
+    micLigado = true;
+    avisar(tr("gritoOn")); bip(880, .1);
+    montarRoleta();
+  } catch (e) {
+    avisar(tr("gritoNao")); bip(170);
+  }
+}
+function desligarMicrofone() {
+  micLigado = false; gravando = false; micNivel = 0;
+  try { if (micNo) micNo.disconnect(); if (micFonte) micFonte.disconnect(); if (micSilencio) micSilencio.disconnect(); } catch (e) {}
+  try { if (micFluxo) micFluxo.getTracks().forEach(t => t.stop()); } catch (e) {}
+  micNo = micFonte = micSilencio = micFluxo = null;
+  el("barraMic").style.width = "0%";
+  avisar(tr("gritoOff")); montarRoleta();
+}
+function ouvir(ev) {
+  const dados = ev.inputBuffer.getChannelData(0);
+  let soma = 0;
+  for (let i = 0; i < dados.length; i++) soma += dados[i] * dados[i];
+  const nivel = Math.sqrt(soma / dados.length);
+  micNivel = micNivel * .7 + nivel * .3;                 // suaviza pra barra não piscar
+  if (gravando) {
+    gravPedacos.push(new Float32Array(dados));
+    gravFaltam -= dados.length;
+    if (gravFaltam <= 0) { gravando = false; tocarEco(); }
+  } else if (micNivel > LIMIAR_GRITO && Date.now() - ultimoGrito > 1800 && !fundoAberto) {
+    ultimoGrito = Date.now();
+    gritar(Math.min(1, micNivel / .55));
+  }
+}
+function gritar(forca) {
+  estat.gritos++;
+  tremor = 14 + forca * 16;
+  for (const b of bolas) {                                // todo mundo pula
+    b.acordar();
+    b.vx += (Math.random() - .5) * 16 * forca;
+    b.vy -= (4 + Math.random() * 12) * forca;
+  }
+  const q = fabricar(Math.round(4 + forca * 26));
+  avisar(tr("gritoAviso", fmt(q)));
+  bip(320 + forca * 300, .09, "sawtooth", .04);
+  /* e agora grava um pedacinho pra devolver o grito */
+  gravPedacos = []; gravFaltam = Math.round(ctxAudio.sampleRate * 1.1); gravando = true;
+  checarConquistas(); montarRoleta(); sujo = true;
+}
+function tocarEco() {
+  try {
+    let total = 0;
+    for (const p of gravPedacos) total += p.length;
+    if (!total) return;
+    const buf = ctxAudio.createBuffer(1, total, ctxAudio.sampleRate);
+    const canal = buf.getChannelData(0);
+    let n = 0;
+    for (const p of gravPedacos) { canal.set(p, n); n += p.length; }
+    gravPedacos = [];
+    const fonte = ctxAudio.createBufferSource();
+    fonte.buffer = buf;
+    fonte.playbackRate.value = 1.55;                      // vozinha de esquilo
+    const g = ctxAudio.createGain(); g.gain.value = mudo ? 0 : 1.7;
+    fonte.connect(g); g.connect(ctxAudio.destination);
+    fonte.start();
+    avisar(tr("gritoEco"));
+    /* os emojis "cantam junto" enquanto o eco toca */
+    let voltas = 0;
+    const balanco = setInterval(() => {
+      for (const b of bolas) { b.acordar(); b.vy -= 1.4; b.vx += (Math.random() - .5) * 3; }
+      tremor = Math.max(tremor, 6);
+      sujo = true;
+      if (++voltas > 6) clearInterval(balanco);
+    }, 110);
+  } catch (e) {}
+}
+el("btMic").onclick = ligarMicrofone;
+el("btGritar").onclick = e => { e.stopPropagation(); mostrarPainel("roleta"); ligarMicrofone(); };
+
+/* a barrinha do volume e o relógio do giro grátis */
+setInterval(() => {
+  checarGiroGratis();
+  if (painelAtual !== "roleta") return;
+  el("barraMic").style.width = Math.min(100, micNivel * 380) + "%";
+  const falta = Math.max(0, proxGiro - Date.now());
+  el("rolTopo").innerHTML = tr("rolTopo", GIRO_GRATIS_MIN) + "<br>" + tr("rolGiros", giros) +
+    " · " + (falta > 0 ? tr("rolGratisEm", tempoAte(falta)) : tr("rolGratisJa"));
+  el("btGirar").disabled = girando || giros <= 0;
+}, 500);
+window.addEventListener("resize", () => { if (painelAtual === "roleta") desenharRoda(); });
 
 /* ---------- começo: a tela de início escolhe o modo, e o modo carrega o save ---------- */
 ajustar();
@@ -2888,14 +3632,7 @@ montarFamilias(); montarLista();
 atualizarDia();
 render();
 montarInicio();
-el("rodape").innerHTML =
-  "Clique <b>dentro da caixa</b> pra fabricar. Os emojis caem, quicam e empilham de verdade.<br>" +
-  "<b>120 raridades</b> · <b>" + TOTAL_EMOJIS + " emojis</b> (" + SECRETOS.length + " secretos) · <b>" +
-  TODOS.length + " upgrades</b> · <b>" + CONQUISTAS.length + " conquistas</b> · <b>" +
-  TEMAS.length + " temas</b> e <b>" + SKINS.length + " skins</b><br>" +
-  "<b>" + TEMPORADAS.length + " temporadas</b> com passe e emoji secreto próprio · <b>" + MODOS.length +
-  " modos</b> de jogo · missões, coleções, combos, críticos, emoji do dia e renda offline.<br>" +
-  "No teclado: <b>espaço</b> fabrica, <b>V</b> vende e as <b>setas</b> viram a gravidade da caixa.";
+aplicarIdioma();
 quadro();
 </script>
 </body>

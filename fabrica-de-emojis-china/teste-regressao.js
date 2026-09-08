@@ -32,8 +32,8 @@ const print = (n) => require('path').join(PASTA_PRINT, n);
   await p.click('.modoCard[data-m="normal"]'); await p.waitForTimeout(400);
   r = await p.evaluate(() => ({ upgrades: TODOS.length, conq: CONQUISTAS.length, temas: TEMAS.length,
     skins: SKINS.length, temporadas: TEMPORADAS.length, emojis: TOTAL_EMOJIS, modo: modoAtual }));
-  conf('340 upgrades / 80 conquistas / 18 temas / 18 skins / 10 temporadas / 800 emojis',
-    r.upgrades===340 && r.conq===80 && r.temas===18 && r.skins===18 && r.temporadas===10 && r.emojis===800,
+  conf('340 upgrades / 82 conquistas / 18 temas / 18 skins / 10 temporadas / 800 emojis',
+    r.upgrades===340 && r.conq===82 && r.temas===18 && r.skins===18 && r.temporadas===10 && r.emojis===800,
     JSON.stringify(r));
 
   // 3. fabricar, vender, upgrade
@@ -48,7 +48,7 @@ const print = (n) => require('path').join(PASTA_PRINT, n);
   // 4. emoji do dia
   r = await p.evaluate(() => ({ tem: !!tipoDoDia, pil: document.getElementById('pilulaDia').textContent,
     vale: tipoDoDia ? valorDe(tipoDoDia)/tipoDoDia.valor : 0 }));
-  conf('emoji do dia sorteado e valendo 10x', r.tem && r.vale===10 && /vale 10x/.test(r.pil), JSON.stringify(r));
+  conf('emoji do dia sorteado e valendo 10x', r.tem && r.vale===10 && /10 倍|vale 10x/.test(r.pil), JSON.stringify(r));
 
   // 5. temporada de estreia
   r = await p.evaluate(() => { const a = temporadaAtiva(); darDinheiro(1e9); liberarAte(6);

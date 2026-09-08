@@ -21,6 +21,69 @@ instalação, funciona offline no celular e no computador.
 | 🎮 **Os modos** | 普通 Normal, 困難 Difícil, 融合 Fusão e 自由 Livre. |
 | 🎨 **A cara** | Vermelho e dourado no lugar do roxo, e ícone próprio (dragão com o selo 中). |
 | 💾 **O save** | Chaves `fabricaChina_*`: as três fábricas convivem sem se misturar. |
+| 中文 **A língua** | O jogo inteiro em chinês, com um botão 中/A que volta pro português. |
+| 🎡 **A roleta** | 12 prémios, um giro grátis a cada 10 minutos. |
+| 🎤 **O grito** | Você berra no microfone, os emojis pulam — e te imitam. |
+
+## 中文 — o jogo inteiro em chinês
+
+O Jojo pediu **tudo em chinês**, então é assim que o jogo abre: título, botões,
+abas, upgrades, conquistas, missões, estatísticas, avisos e até o modo
+administrador. O dinheiro vira **¥**.
+
+Como ele lê português, tem o botão **中 / A** em cima da caixa que troca a
+língua na hora — e a escolha fica salva no aparelho (`fabricaChina_idioma`).
+Em português os nomes chineses continuam do lado: `普通 Comum`, `玉 Jade`,
+`春節 Ano Novo Chinês`.
+
+Por dentro: cada frase que o jogador lê passa por `tr("chave")`, e o dicionário
+`DIC` guarda as duas línguas (`["中文", "Português"]`). Os textos com número
+usam `%1`, `%2`... no lugar dos pedaços que mudam. Os nomes que vivem nos dados
+(raridades, upgrades, conquistas, temporadas, temas, skins, modos) não são
+strings soltas: cada um guarda a chave ou o par `zh`/`pt`, e `aplicarIdioma()`
+reescreve todos de uma vez quando você aperta o botão.
+
+## 🎡 幸運轉盤 — a roleta da sorte
+
+Aba nova no painel. Um giro **grátis a cada 10 minutos** (o relógio corre mesmo
+com o jogo fechado), e dá pra comprar mais por **💠 2 cristais**. Jogo novo já
+começa com um giro na mão.
+
+São **12 prémios**, sorteados com peso — o prémio sai **antes** da animação, e
+a roda é girada até parar exatamente em cima dele, então o que a tela mostra é
+sempre o que o jogo deu:
+
+| | Prémio | Chance |
+| --- | --- | --- |
+| 💵 | 小錢 Trocado | mais comum |
+| 🏭 | 一堆表情符號 Chuva de emojis | |
+| 💠 | 1 個水晶 | |
+| 🌟 | 狂熱 Frenesi (tudo 7x por 20s) | |
+| 💰 | 一疊錢 Bolada | |
+| ⭐ | 獎勵星星 Estrela de bônus | |
+| 🎟️ | 節日點數 +25 pontos de temporada | |
+| 💠 | 3 個水晶 | |
+| 👆 | 黃金手指 Dedo de ouro (clique 25x) | |
+| 🎡 | +2 次 giros | |
+| 🏦 | 金庫 Cofre | raro |
+| 🐉 | **龍的大獎 JACKPOT do dragão** | 1 em 100 |
+
+## 🎤 大喊 — o grito
+
+Aperta o **🎤** em cima da caixa (ou o botão na aba da roleta), dá a permissão
+do microfone e **grita**. A caixa treme, todos os emojis pulam, cai um monte de
+emoji novo — e aí vem a melhor parte: o jogo **te imita**, tocando o seu grito
+de volta mais agudo, e os emojis pulam junto com o eco.
+
+**Sobre o som:** o microfone só liga quando você aperta o botão, e o som **não
+sai do aparelho** — nada é enviado pra lugar nenhum e nada fica salvo. O que o
+jogo faz é medir o volume (pra sacudir a caixa) e guardar mais ou menos um
+segundo de som num pedaço de memória, só pra tocar de volta na hora; assim que
+toca, esse pedaço é jogado fora. Desligar o botão solta o microfone de verdade.
+
+Precisa de **https** (o GitHub Pages é) e da permissão do navegador. Abrindo o
+arquivo direto do computador (`file://`) o microfone não liga — é regra do
+navegador, não do jogo.
 
 ## As temporadas — 節日
 
@@ -158,10 +221,12 @@ funcionando. Rode com `npm i playwright-core` e depois:
   automática, skins, venda, emoji do dia, conquistas secretas.
 - `node teste-jogos-salvos.js` — 9 checagens: criar, abrir, salvar na mão,
   renomear e apagar jogo, e a migração do save antigo.
-- `node teste-china.js` — 17 checagens do que é só daqui: as raridades chinesas,
+- `node teste-china.js` — 32 checagens do que é só daqui: as raridades chinesas,
   o baralho que começa pela mesa e pelo zodíaco, os 10 tesouros (e que nenhum
-  deles cai como emoji comum), as datas lunares dos 10 festivais e a separação
-  dos saves das três fábricas. Precisa de http.
+  deles cai como emoji comum), as datas lunares dos 10 festivais, a separação
+  dos saves das três fábricas, o jogo inteiro em chinês e a volta pro português,
+  a roleta (12 prémios, girar, comprar giro) e o grito — inclusive ligando o
+  microfone de verdade, com o aparelho de mentira do Chromium. Precisa de http.
 - `node teste-app.js` — 4 checagens de aplicativo: manifesto, ícones, service
   worker e abrir sem internet. Este precisa do jogo servido por http
   (`python3 -m http.server 8822` na raiz do repositório).

@@ -53,11 +53,11 @@ const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:'')
   r = await p.evaluate(() => { dinheiro = 555555; salvarNaMao();
     const g = JSON.parse(localStorage.getItem('fabricaChina_jogo_'+jogoAtual.id));
     return { salvou: g.dinheiro===555555, toast: document.getElementById('toast').textContent }; });
-  conf('botão 💾 salva na hora', r.salvou && /salvo/.test(r.toast), JSON.stringify(r));
+  conf('botão 💾 salva na hora', r.salvou && /存好了|salvo/.test(r.toast), JSON.stringify(r));
 
   // 5. renomear
   p.removeAllListeners('dialog');
-  p.on('dialog', d => d.message().includes('Nome') ? d.accept('Jogo do Jojo') : d.accept());
+  p.on('dialog', d => d.type() === 'prompt' ? d.accept('Jogo do Jojo') : d.accept());
   await p.click('#btModo'); await p.waitForTimeout(300);
   await p.click('[data-ren]'); await p.waitForTimeout(400);
   r = await p.evaluate(() => jogos.map(j=>j.nome));
