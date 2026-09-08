@@ -58,6 +58,11 @@ Sobre as músicas: quando um segredo é de uma música, o Clipy **berra o refrã
 do jeito dele** e diz que não pode copiar a letra — porque a letra é de quem
 escreveu a música.
 
+> **Pergunta sempre tem resposta.** Mudo e modo BEN calam os *palpites* dele,
+> nunca uma pergunta: mudo, ele responde a conta escrevendo num papelzinho;
+> de BEN, ele grunhe e mostra o número. Engolir a resposta fazia o site parecer
+> quebrado, e o segredo já é engraçado sem isso.
+
 > **Saída de emergência:** cutuque o Clipy **cinco vezes seguidas** e ele volta
 > ao normal na hora. Também tem um botão 🔧 consertar na barrinha que aparece
 > enquanto ele está estragado, com a contagem do tempo que falta.
@@ -219,7 +224,7 @@ npm i playwright-core
 node teste-clipy.js
 ```
 
-**83 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
+**88 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
 dispara a carta e o botão **monta a carta de verdade**; três traços viram lista
 e o botão numera 1. 2. 3.; R$ 10,50 + R$ 4 + R$ 25 dá **39,5**; MAIÚSCULA vira
 minúscula; "senha" dispara o aviso; apagar 60 letras dispara o comentário; "não
@@ -244,7 +249,9 @@ sobrevive a recarregar a página**; cinco cutucadas curam; o vídeo do Cyriak
 escreve o link do Cat City no papel; o modo BEN faz ele só grunhir; o vídeo
 assombrado deixa ele transparente; escrever aquele nome três vezes **apaga a
 luz de verdade** e ela volta sozinha; e frase comum como "dar comida pro gato"
-**não** dispara segredo. E os links diretos de cada aba abrem na aba certa.
+**não** dispara segredo. E os links diretos de cada aba abrem na aba certa. `20+20+20+7` dá 67 mesmo
+quando ele está mudo (com o aviso do papelzinho) ou de BEN (grunhindo o
+número) — mas o palpite da carta continua calado no mudo.
 
 Da aba da área de transferência: as 3 pastas de fábrica nascem com id próprio;
 ele reconhece link, e-mail, telefone, dinheiro, código e cor; capturar guarda **e**

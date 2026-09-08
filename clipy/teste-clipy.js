@@ -705,6 +705,43 @@ async function escrever(p, txt) {
   conf('e nas abas de leitura o Clipy sai da frente', r === true, String(r));
 
 
+  /* ---------- mudo e BEN não podem engolir uma PERGUNTA ---------- */
+  /* Foi um bug de verdade: depois do vídeo das cores o Clipy ficava 30 minutos
+     mudo e a conta escrita no papel não recebia resposta nenhuma. Parecia
+     quebrado. O segredo continua valendo — mas pergunta sempre tem resposta. */
+  await p.click('.aba[data-aba="mesa"]');
+  const contaSob = async (prep) => {
+    await p.evaluate(prep);
+    await p.fill('#papel', '');
+    await p.click('#papel');
+    await p.type('#papel', '20+20+20+7=', { delay: 12 });
+    await p.waitForTimeout(1300);
+    return p.evaluate(() => ({ escondido: document.getElementById('balao').hidden,
+      balao: document.getElementById('balaoTexto').textContent }));
+  };
+  r = await contaSob(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });
+  conf('20+20+20+7 dá 67 (soma com quatro parcelas, do jeito que se escreve)',
+    !r.escondido && /20\+20\+20\+7 = 67/.test(r.balao), r.balao);
+
+  r = await contaSob(() => { Clipy.curarClipy(); Clipy.clipe.ligarEfeito('mudo', 30); Clipy.fecharBalao(); });
+  conf('MUDO pelo vídeo das cores, ele ainda responde a conta (escreve num papelzinho)',
+    !r.escondido && /= 67/.test(r.balao), r.balao);
+  r = await p.evaluate(() => document.querySelector('.notaMudo') &&
+    document.querySelector('.notaMudo').textContent);
+  conf('e avisa que está mudo, em vez de simplesmente sumir', /mudo/i.test(r || ''), r);
+
+  await p.evaluate(() => { Clipy.fecharBalao(); Clipy.cerebro.ultimaVez = {}; Clipy.cerebro.proximaChance = 0; });
+  await p.fill('#papel', 'Prezado João, tudo bem com você?');
+  await p.evaluate(() => Clipy.lerPapel());
+  await p.waitForTimeout(1400);
+  r = await p.evaluate(() => document.getElementById('balao').hidden);
+  conf('mas o PALPITE continua calado no mudo: o segredo não perdeu a graça', r === true, String(r));
+
+  r = await contaSob(() => { Clipy.curarClipy(); Clipy.clipe.ligarEfeito('ben', 10); Clipy.fecharBalao(); });
+  conf('e de BEN ele grunhe E mostra o número: "hehe… 67. HEHEHE."',
+    !r.escondido && /= 67/.test(r.balao) && /hm|hehe|ugh|HÃ|mmm/i.test(r.balao), r.balao);
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });
+
   /* ---------- link direto pra cada aba ---------- */
   for (const [hash, pagina] of [['#segredos','pgRegras'], ['#mesa','pgMesa'],
        ['#conversa','pgConversa'], ['#prancheta','pgPrancheta'], ['#historia','pgHistoria']]) {

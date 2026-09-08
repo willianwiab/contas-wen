@@ -198,7 +198,7 @@ function curarClipy() {
                 clipe.temEfeito("mudo") || clipe.temEfeito("ben") || clipe.temEfeito("fantasma");
   clipe.curar(); salvar(); atualizarEfeitos();
   if (tinha) {
-    dizer("Ufa. Voltei. Não me mostre mais aquilo.");
+    dizer("Ufa. Voltei. Não me mostre mais aquilo.", true);
     clipe.sentir("feliz"); clipe.fazer("pular");
   }
 }
@@ -213,7 +213,8 @@ $("papel").addEventListener("input", () => {
   salvar();
   if (passarOCensor()) return;                 // palavrão vem antes de tudo
   if (procurarSegredo(estado.texto)) return;   // segredo vem antes das regras
-  if (clipe.temEfeito("mudo")) return;         // mudo é mudo
+  /* mudo cala o palpite, não a resposta: se tem conta na linha, ele responde */
+  if (clipe.temEfeito("mudo") && !estado.conta) return;
   if (dicaAberta && dicaAberta.responde && !estado.conta) fecharBalao();
   if (pediuResposta() || (dicaAberta && dicaAberta.responde)) responderAgora();
 });
@@ -234,16 +235,33 @@ function responderAgora() {
 /* ---------------------------------------------------------------- o balão */
 function mostrarDica(regra) {
   dicaAberta = regra;
-  const fala = clipe.temEfeito("ben") ? grunhir()
-    : regra.falaDinamica ? regra.falaDinamica(estado) : regra.fala;
+  const normal = regra.falaDinamica ? regra.falaDinamica(estado) : regra.fala;
+  /* Mudo e modo BEN calam os comentários — mas nunca uma PERGUNTA. Se você
+     escreveu uma conta, a resposta sai de um jeito ou de outro: mudo, ele
+     escreve num papelzinho; de BEN, ele grunhe e mostra o número. Engolir a
+     resposta fazia o site parecer quebrado, e o segredo já é engraçado sem
+     isso. */
+  let fala = normal, bilhete = "";
+  if (clipe.temEfeito("ben")) {
+    fala = regra.responde ? grunhir() + " …" + normal + " HEHEHE." : grunhir();
+  } else if (clipe.temEfeito("mudo")) {
+    if (!regra.responde) return;                    // comentário fica calado mesmo
+    bilhete = "🤐 (ele está mudo. escreveu num papelzinho.)";
+  }
   $("balaoTexto").textContent = fala;
   $("balao").classList.toggle("resposta", !!regra.responde && !estado.conta?.erro);
+  $("balao").classList.toggle("bilhete", !!bilhete);
   const caixa = $("balaoBotoes"); caixa.innerHTML = "";
   for (const [txt, acao] of regra.botoes || [["Ok", null]]) {
     const b = document.createElement("button");
     b.textContent = txt;
     b.onclick = () => { fecharBalao(); if (acao) fazer(acao); };
     caixa.appendChild(b);
+  }
+  if (bilhete) {
+    const p = document.createElement("p");
+    p.className = "notaMudo"; p.textContent = bilhete;
+    caixa.appendChild(p);
   }
   $("balao").hidden = false;
   $("btNaoMostrar").hidden = false;
@@ -396,7 +414,8 @@ const GRUNHIDOS = ["hmm?", "HEHEHE.", "hmmmmm…", "ugh.", "…hm.", "HÃ?", "he
 const grunhir = () => GRUNHIDOS[Math.floor(Math.random() * GRUNHIDOS.length)];
 
 /* uma fala rápida do Clipy, sem botões */
-function dizer(txt) {
+function dizer(txt, mesmoMudo) {
+  if (clipe.temEfeito("mudo") && !mesmoMudo) return;
   if (clipe.temEfeito("ben")) txt = grunhir();
   $("balaoTexto").textContent = txt;
   const caixa = $("balaoBotoes"); caixa.innerHTML = "";
@@ -881,7 +900,10 @@ setInterval(() => {
   lerPapel();
   atualizarTabela();
   atualizarEfeitos();
-  if (clipe.temEfeito("mudo")) { if (!$("balao").hidden && !dicaAberta) fecharBalao(); return; }
+  if (clipe.temEfeito("mudo") && !estado.conta) {
+    if (!$("balao").hidden && !dicaAberta) fecharBalao();
+    return;
+  }
   /* A resposta acompanha a linha: se a conta mudou, o balão muda junto; se
      você apagou a conta, ele some. Deixar uma resposta velha na tela era
      pior do que não responder. */
