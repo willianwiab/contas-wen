@@ -11,7 +11,11 @@
    Era exatamente isso que fazia ele ser engraçado e chato ao mesmo tempo:
    ele acerta o padrão e erra a intenção.
 
-   Aqui tem 30 regras. Cada uma tem:
+   Aqui tem 33 regras. As três primeiras são especiais: em vez de comentar,
+   elas RESPONDEM — resolvem a conta que você escreveu. As outras 30 são
+   comentários, do jeito antigo.
+
+   Cada uma tem:
      olho    — o que ela procura no texto (ou no que você fez)
      peso    — o quanto ela quer falar (a maior ganha)
      fala    — o que ele diz
@@ -19,12 +23,46 @@
      humor   — a cara que ele faz
      gesto   — o que o corpo dele faz
      espera  — quantos segundos ela fica quieta depois de falar
+     responde— se for verdade, ela fura a fila da chatice (perguntar não é
+               ser interrompido)
    ========================================================================== */
+
+import { calcular, somarColuna, formatar } from "./calculadora.js";
 
 const tem = (t, ...ps) => ps.some(p => t.includes(p));
 const conta = (t, re) => (t.match(re) || []).length;
 
 export const REGRAS = [
+  /* -------------------------------------------------- ele responde de verdade */
+  /* Estas duas são diferentes das outras: em vez de comentar o que você está
+     fazendo, elas CALCULAM e respondem. É a diferença entre "parece que você
+     está fazendo uma conta" e "dá 2". */
+  {
+    id:"resposta", peso:1000, espera:0, responde:true,
+    olho: c => !!c.conta && !c.conta.erro,
+    fala:"(a resposta da conta que você escreveu)",
+    falaDinamica: c => c.conta.conta.replace(/\s+/g, " ") + " = " + c.conta.texto,
+    botoes:[["📋 copiar a resposta", "copiarResposta"], ["✍️ escrever no papel", "escreverResposta"]],
+    humor:"feliz", gesto:"pular",
+  },
+  {
+    id:"contaErrada", peso:990, espera:8, responde:true,
+    olho: c => !!c.conta && !!c.conta.erro,
+    fala:"(quando a conta não dá)",
+    falaDinamica: c => "Essa eu não consigo: " + c.conta.erro + ".",
+    botoes:[["Ah", null]],
+    humor:"confuso", gesto:"girar",
+  },
+  {
+    id:"colunaSoma", peso:95, espera:25,
+    olho: c => !!c.coluna,
+    fala:"(a soma de uma coluna de números)",
+    falaDinamica: c => "Somei os " + c.coluna.quantos + " números dessa lista: dá " +
+      c.coluna.texto + ". A média é " + c.coluna.textoMedia + ".",
+    botoes:[["✍️ escrever o total", "escreverTotal"], ["📋 copiar o total", "copiarTotal"], ["Ok", null]],
+    humor:"pensando", gesto:"pular",
+  },
+
   /* ---------------------------------------------------------- a clássica */
   {
     id:"carta", peso:100, espera:120,
@@ -262,7 +300,7 @@ const RESPOSTAS = [
          "Sou um clipe. Não é uma profissão, é uma forma."],
     humor:"atento", gesto:"pular" },
   { chaves:["como você funciona", "como voce funciona", "você é uma ia", "voce e uma ia", "inteligência", "inteligencia"],
-    diz:["Eu sou 30 regras num arquivo. Cada uma procura uma coisa no que você digita. Quando uma acha, eu falo.",
+    diz:["Eu sou 33 regras num arquivo. Cada uma procura uma coisa no que você digita. Quando uma acha, eu falo. Três delas sabem fazer conta de verdade.",
          "Não sou aquelas IAs grandes de hoje. Eu sou do tipo antigo: alguém escreveu na mão tudo o que eu sei."],
     humor:"pensando" },
   { chaves:["você me espiona", "voce me espiona", "privacidade", "internet", "servidor", "manda meus dados"],
@@ -279,8 +317,8 @@ const RESPOSTAS = [
   { chaves:["obrigado", "valeu", "brigado", "você é legal", "voce e legal", "te amo", "gostei"],
     diz:["Ah! Ninguém nunca me agradeceu. Vou lembrar disso pra sempre. (Eu esqueço quando você fecha a janela.)"],
     humor:"feliz", gesto:"girar" },
-  { chaves:["quanto é", "quanto e", "calcul", "soma", "vezes", "dividido"],
-    diz:["Se tiver uma conta escrita no papel, aperta o botão de somar que eu faço. De cabeça eu erro."],
+  { chaves:["quanto é", "quanto e", "calcul", "soma", "vezes", "dividido", "conta"],
+    diz:["Escreve a conta que eu resolvo — aqui ou no papel. Tipo 1+1, ou 'quanto é dez vezes três'."],
     humor:"pensando", conta:true },
   { chaves:["piada", "engraçado", "engracado", "me faz rir"],
     diz:["Por que o clipe foi ao médico? Porque estava se sentindo dobrado.",
@@ -302,11 +340,13 @@ const RESPOSTAS = [
 const NAO_SEI = [
   "Não sei. Mas posso deixar isso em negrito, se ajudar.",
   "Não faço ideia. Eu era assim antigamente também.",
-  "Essa eu não tenho. Sou 30 regras, não sou o mundo inteiro.",
+  "Essa eu não tenho. Sou 33 regras, não sou o mundo inteiro.",
   "Hmm. Vou fingir que estou pensando… pronto, fingi. Não sei.",
   "Não sei, mas notei que você digitou isso muito bem.",
   "Sem resposta. Mas se você escrever 'Prezado' ali no papel, eu fico animado.",
 ];
+
+export { calcular, somarColuna, formatar };
 
 export function responder(pergunta) {
   const t = pergunta.toLowerCase().trim();
@@ -318,11 +358,14 @@ export function responder(pergunta) {
       if (c.length > pontos) { pontos = c.length; melhor = r; }
     }
   }
-  /* Uma conta de verdade vem antes de qualquer palavra-chave: se tem número e
-     sinal, ele CALCULA em vez de dizer "aperta o botão de somar". */
-  const c = somarDoTexto(t);
-  if (c !== null && /\d/.test(t) && /[+\-x*×\/]/.test(t)) {
-    return { texto: "Isso dá " + c + ". Essa eu sei fazer!", humor:"feliz", gesto:"pular" };
+  /* Uma conta de verdade vem antes de qualquer palavra-chave: ele CALCULA em
+     vez de dizer "aperta o botão de somar". */
+  const c = calcular(pergunta);
+  if (c) {
+    return c.erro
+      ? { texto:"Essa eu não consigo: " + c.erro + ".", humor:"confuso", gesto:"girar" }
+      : { texto: c.conta.replace(/\s+/g, " ") + " = " + c.texto + ". Essa eu sei fazer!",
+          humor:"feliz", gesto:"pular" };
   }
   if (melhor) {
     return { texto: melhor.diz[Math.floor(Math.random() * melhor.diz.length)],
@@ -363,14 +406,17 @@ export class Cerebro {
     return 42 - c * 36;         // 42s no mínimo chato, 6s no máximo
   }
 
-  pensar(estado) {
+  /* Uma pergunta direta ("1+1=" ou "1+1?") não é interrupção: é você pedindo.
+     Então as regras que RESPONDEM furam a fila da chatice — inclusive quando
+     ela está no zero. As outras continuam esperando a vez. */
+  pensar(estado, pediu) {
     const t = this.agora();
-    if (this.chatice <= 0) return null;
-    if (t < this.proximaChance) return null;
+    const soResposta = pediu || this.chatice <= 0 || t < this.proximaChance;
 
     let escolhida = null;
     for (const r of REGRAS) {
       if (this.desligadas.has(r.id)) continue;
+      if (soResposta && !r.responde) continue;
       const quando = this.ultimaVez[r.id] || -1e9;
       if (t - quando < r.espera) continue;
       let bate = false;
@@ -380,7 +426,8 @@ export class Cerebro {
     }
     if (!escolhida) return null;
     this.ultimaVez[escolhida.id] = t;
-    this.proximaChance = t + this.intervalo();
+    /* responder não gasta a paciência de quem está escrevendo */
+    if (!escolhida.responde) this.proximaChance = t + this.intervalo();
     return escolhida;
   }
 

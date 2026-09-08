@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#008080">
-<meta name="description" content="O Clipy: um ajudante de clipe de papel que olha o que você escreve e aparece pra atrapalhar, igual aos assistentes dos computadores antigos. 30 regras rodando no seu navegador, sem internet.">
+<meta name="description" content="O Clipy: um ajudante de clipe de papel que olha o que você escreve e aparece pra atrapalhar, igual aos assistentes dos computadores antigos. 33 regras rodando no seu navegador, sem internet.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icone.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icone-180.png">
@@ -56,7 +56,7 @@
       <span class="contador" id="contador">0 palavras</span>
     </div>
     <textarea id="papel" spellcheck="false"
-      placeholder="Escreva aqui.&#10;&#10;Experimente começar com &quot;Prezado&quot;, fazer uma lista com traços, escrever uma conta com R$, ou ESCREVER TUDO EM MAIÚSCULA. O Clipy está lendo."></textarea>
+      placeholder="Escreva aqui.&#10;&#10;Escreva 1+1= e ele responde. Ou &quot;quanto é dez vezes três?&quot;.&#10;Experimente também: começar com &quot;Prezado&quot;, fazer uma lista com traços, ou ESCREVER TUDO EM MAIÚSCULA. O Clipy está lendo."></textarea>
   </div>
 
 </section>
@@ -126,11 +126,17 @@
       um monte de <b>regras escritas na mão</b>. Cada regra sabe reconhecer uma coisa no que você digita e
       tem uma frase pronta. Nada sai do seu navegador — <b>não tem internet, não tem servidor, não tem conta</b>.</p>
 
+      <p class="intro">Três delas, no topo da lista, são diferentes: em vez de comentar o que você está
+      fazendo, elas <b>respondem</b>. Escreva <b>1+1</b> numa linha e ele responde <b>2</b>. Escreva
+      <b>quanto é dez vezes três?</b> e ele responde <b>30</b>. Faça uma lista de preços, um por linha,
+      e ele soma tudo. E essas três <b>furam a fila da chatice</b>: perguntar não é ser interrompido,
+      então ele responde na hora — mesmo com a chatice no zero.</p>
+
       <p class="intro">É por isso que ele acerta o padrão e erra a intenção: ele vê "Prezado" e conclui
       "carta". Não faz ideia do que você quer dizer. Era exatamente esse o problema dos ajudantes de
       verdade — e também a graça deles.</p>
 
-      <h3>As <span id="qtdRegras">30</span> regras, uma por uma</h3>
+      <h3>As <span id="qtdRegras">33</span> regras, uma por uma</h3>
       <p class="intro pequeno">A coluna do meio é <b>o que ela procura</b>, escrita em português.
       Verde = essa regra está batendo <b>agora</b>, com o que está escrito na mesa.</p>
       <table class="tabelaRegras"><thead><tr>
@@ -191,9 +197,14 @@
       isso, aqui, a captura só acontece quando <b>você manda</b>.</p>
 
       <h3>Este Clipy aqui</h3>
+      <p>A calculadora dele é escrita do zero e <b>não usa <code>eval()</code></b>: ela lê a conta
+      número por número, sinal por sinal, com um analisador de verdade — o mesmo tipo que uma linguagem
+      de programação usa pra ler código. Mandar o navegador executar texto que veio de fora é justamente
+      o que nunca se deve fazer.</p>
+
       <p>Este é o <b>Clipy do JoJo</b>: os dois de uma vez. O desenho é feito por código — um arame
       dobrado, dois olhos e duas sobrancelhas, num canvas — e não é o personagem de nenhuma empresa
-      nem o programa de Mac: é um clipe novo, com as mesmas ideias. As <b>30 regras</b> foram escritas
+      nem o programa de Mac: é um clipe novo, com as mesmas ideias. As <b>33 regras</b> foram escritas
       do zero, em português, e você pode ver todas elas na aba <b>🧠 Como ele pensa</b>, inclusive
       quais estão disparando agora.</p>
       <p class="assinatura">📎 Feito pelo JoJo. O Clipy manda um oi. E outro. E mais um.</p>
@@ -233,7 +244,7 @@
 </main>
 
 <footer id="rodape">
-  📎 <b>Clipy</b> — 30 regras rodando no seu navegador, sem internet nenhuma.
+  📎 <b>Clipy</b> — 33 regras rodando no seu navegador, sem internet nenhuma.
   Feito pelo JoJo · <a href="../jogos-do-jojo/">Jogos do JoJo</a>
 </footer>
 

@@ -13,7 +13,7 @@
    isso apaga o cache antigo e obriga o app a baixar tudo de novo.
    ============================================================ */
 
-const VERSAO = 'jojo-v12';
+const VERSAO = 'jojo-v13';
 const CACHE = `jogos-do-jojo-${VERSAO}`;
 
 /* Tudo o que o app precisa para abrir offline.
