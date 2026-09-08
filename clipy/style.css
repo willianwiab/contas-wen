@@ -337,3 +337,6 @@ main { flex:1; padding:18px 14px 26px; }
   font-family:var(--mono); font-size:.8rem; padding:1px 5px;
   background:#eceadf; border:1px solid #d4cfbe; border-radius:4px;
 }
+.notaMudo { margin:8px 0 0; font-size:.72rem; color:var(--dim); font-style:italic; }
+.balao.bilhete { background:#f2f4f7; border-style:dashed; }
+.balao.bilhete::before { border-top-color:#f2f4f7; }
