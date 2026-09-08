@@ -9,7 +9,7 @@ nos programas de escritório dos anos 90.
 ## O que ele é (e o que não é)
 
 O Clipy **não é** uma dessas inteligências artificiais de hoje. Ele é do tipo
-antigo: **33 regras escritas na mão** (e 22 segredos), cada uma sabendo reconhecer uma coisa no
+antigo: **33 regras escritas na mão** (e 23 segredos), cada uma sabendo reconhecer uma coisa no
 texto e com uma frase pronta pra soltar. Nada sai do navegador — sem internet,
 sem servidor, sem conta, sem nada sendo enviado pra lugar nenhum.
 
@@ -33,7 +33,7 @@ Palavrão escrito no papel **some na hora**, trocado por `#@$%!`. Pega com
 acento e sem acento, e em inglês também — e não censura palavra inocente que só
 parece. Isso não é segredo, é regra da casa.
 
-## Os 22 segredos
+## Os 23 segredos
 
 Palavras (ou links) que fazem alguma coisa acontecer. Três deles **deixam
 marca**: o Clipy fica esquisito por um tempo, e continua esquisito mesmo se você
@@ -49,6 +49,7 @@ fechar a página e voltar depois — o tempo fica guardado no aparelho.
 | o vídeo do Ben | ele **vira o BEN por 10 minutos**: jaleco, orelhas caídas, focinho — e só responde com grunhido |
 | um vídeo assombrado | ele **vira fantasma por 15 minutos**: transparente, boiando, e **sem sombra** |
 | um certo nome, escrito **três vezes** | ele conta e vai ficando nervoso. Na terceira, **a luz apaga**. E aí… era o vento. |
+| **cutucar ele 100 vezes** | ele vai reclamando e contando quanto falta. Na centésima fica **vermelho de raiva** e **sai da tela** — com um botão pra chamar de volta |
 
 E mais catorze escondidos: `toc toc`, `sudo`, `42`, `hello world`, `konami`,
 `miau`, `jojo`, `café`, `ypilc`, ameaçar o Clipy, dizer que gosta dele, falar
@@ -67,7 +68,7 @@ escreveu a música.
 > ao normal na hora. Também tem um botão 🔧 consertar na barrinha que aparece
 > enquanto ele está estragado, com a contagem do tempo que falta.
 
-A aba 🧠 tem a lista dos 22 ovinhos, mostrando **só os que você já achou** — os
+A aba 🧠 tem a lista dos 23 ovinhos, mostrando **só os que você já achou** — os
 outros ficam como 🥚 ???.
 
 **Link direto:** cada aba tem endereço próprio, então dá pra mandar o link já
@@ -224,7 +225,7 @@ npm i playwright-core
 node teste-clipy.js
 ```
 
-**88 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
+**95 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
 dispara a carta e o botão **monta a carta de verdade**; três traços viram lista
 e o botão numera 1. 2. 3.; R$ 10,50 + R$ 4 + R$ 25 dá **39,5**; MAIÚSCULA vira
 minúscula; "senha" dispara o aviso; apagar 60 letras dispara o comentário; "não
@@ -251,7 +252,9 @@ assombrado deixa ele transparente; escrever aquele nome três vezes **apaga a
 luz de verdade** e ela volta sozinha; e frase comum como "dar comida pro gato"
 **não** dispara segredo. E os links diretos de cada aba abrem na aba certa. `20+20+20+7` dá 67 mesmo
 quando ele está mudo (com o aviso do papelzinho) ou de BEN (grunhindo o
-número) — mas o palpite da carta continua calado no mudo.
+número) — mas o palpite da carta continua calado no mudo. E a paciência: ele reclama no
+10, 25, 70, 95 e 99, aguenta até o 99, fica vermelho e sai da tela no 100, **continua
+fora depois de recarregar** e volta emburrado quando chamado.
 
 Da aba da área de transferência: as 3 pastas de fábrica nascem com id próprio;
 ele reconhece link, e-mail, telefone, dinheiro, código e cor; capturar guarda **e**

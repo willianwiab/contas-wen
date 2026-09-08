@@ -413,8 +413,8 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => ({ quantos: Clipy.SEGREDOS.length,
     ids: new Set(Clipy.SEGREDOS.map(x => x.id)).size,
     completos: Clipy.SEGREDOS.filter(x => !x.olho || !(x.fala || x.falas)).length }));
-  conf('são 22 segredos, todos com nome próprio, fala e jeito de achar',
-    r.quantos === 22 && r.ids === 22 && r.completos === 0, JSON.stringify(r));
+  conf('são 23 segredos, todos com nome próprio, fala e jeito de achar',
+    r.quantos === 23 && r.ids === 23 && r.completos === 0, JSON.stringify(r));
 
   /* o vídeo que deixa ele doido */
   await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); Clipy.segredosVistos.clear(); });
@@ -578,8 +578,8 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => ({ total: document.querySelectorAll('#ovos .ovo').length,
     achados: document.querySelectorAll('#ovos .ovo.achado').length,
     escondidos: document.querySelectorAll('#ovos .ovo.nao').length }));
-  conf('a aba 🧠 mostra os 22 ovinhos, revelando só os que você já achou',
-    r.total === 22 && r.achados >= 1 && r.escondidos === 22 - r.achados, JSON.stringify(r));
+  conf('a aba 🧠 mostra os 23 ovinhos, revelando só os que você já achou',
+    r.total === 23 && r.achados >= 1 && r.escondidos === 23 - r.achados, JSON.stringify(r));
 
   await p.evaluate(() => Clipy.curarClipy());
 
@@ -704,6 +704,60 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => document.getElementById('ladoClipy').hidden);
   conf('e nas abas de leitura o Clipy sai da frente', r === true, String(r));
 
+
+  /* ---------- a paciência: 100 cutucadas e ele vai embora ---------- */
+  await p.click('.aba[data-aba="mesa"]');
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });
+  const avisos = {};
+  for (let i = 1; i <= 99; i++) {
+    await p.click('#btCutucar');
+    if ([10, 25, 70, 95, 99].includes(i))
+      avisos[i] = await p.evaluate(() => document.getElementById('balaoTexto').textContent);
+  }
+  conf('cutucando muito ele vai reclamando e CONTANDO quanto falta',
+    /entendi que eu existo/.test(avisos[10]) && /contando/.test(avisos[25]) &&
+    /SETENTA/.test(avisos[70]) && /FALTAM CINCO/.test(avisos[95]) && /ÚLTIMA/.test(avisos[99]),
+    JSON.stringify(avisos[99]));
+  r = await p.evaluate(() => ({ n: Clipy.cutucadasTotal(), fora: Clipy.clipe.foiEmbora() }));
+  conf('com 99 ele ainda está lá (aguentou até o fim)', r.n === 99 && !r.fora, JSON.stringify(r));
+
+  await p.click('#btCutucar');                      // a centésima
+  await p.waitForTimeout(300);
+  r = await p.evaluate(() => ({ balao: document.getElementById('balaoTexto').textContent,
+    vermelho: Clipy.clipe.temEfeito('vermelho'), barra: document.getElementById('efeitos').textContent }));
+  conf('NA CENTÉSIMA ele fica VERMELHO de raiva e avisa que vai embora',
+    /CEM CUTUCADAS/.test(r.balao) && r.vermelho && /furioso/.test(r.barra), JSON.stringify({v:r.vermelho}));
+
+  await p.waitForTimeout(3200);
+  r = await p.evaluate(() => ({ fora: Clipy.clipe.foiEmbora(),
+    barra: document.getElementById('efeitos').textContent }));
+  conf('e ele SAI DA TELA de verdade, com um botão pra chamar de volta',
+    r.fora && /saiu da tela/.test(r.barra) && /chamar de volta/.test(r.barra), JSON.stringify(r));
+
+  /* e o estrago fica salvo */
+  await p.evaluate(() => Clipy.salvar());
+  await p.reload();
+  await p.waitForFunction(() => !!window.Clipy, null, { timeout: 15000 });
+  r = await p.evaluate(() => Clipy.clipe.foiEmbora());
+  conf('ele continua fora depois de recarregar a página (ele estava falando sério)',
+    r === true, String(r));
+
+  await p.click('#btVoltar');
+  await p.waitForTimeout(1200);
+  r = await p.evaluate(() => ({ fora: Clipy.clipe.foiEmbora(),
+    balao: document.getElementById('balaoTexto').textContent,
+    n: Clipy.cutucadasTotal(), vermelho: Clipy.clipe.temEfeito('vermelho') }));
+  conf('chamar de volta traz ele emburrado, sem raiva e com a paciência zerada',
+    !r.fora && /voltei/i.test(r.balao) && r.n === 0 && !r.vermelho, JSON.stringify(r));
+
+  await p.click('.aba[data-aba="regras"]');
+  await p.waitForTimeout(250);
+  r = await p.evaluate(() => ({ guardado: Clipy.segredosVistos.has('cemCutucadas'),
+    naLista: [...document.querySelectorAll('#ovos .ovo.achado')]
+      .some(x => /cem vezes/.test(x.textContent)) }));
+  conf('e as cem cutucadas contam como um ovinho achado, e ficam salvas',
+    r.guardado && r.naLista, JSON.stringify(r));
+  await p.click('.aba[data-aba="mesa"]');
 
   /* ---------- mudo e BEN não podem engolir uma PERGUNTA ---------- */
   /* Foi um bug de verdade: depois do vídeo das cores o Clipy ficava 30 minutos
