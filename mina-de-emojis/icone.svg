@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="f" cx="50%" cy="18%" r="95%">
+      <stop offset="0" stop-color="#4a2870"/><stop offset="55%" stop-color="#1b0f33"/><stop offset="1" stop-color="#08060f"/>
+    </radialGradient>
+    <linearGradient id="terra" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8a5a33"/><stop offset="1" stop-color="#4a2c15"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#f)"/>
+  <g opacity="0.13" stroke="#ffc857" stroke-width="2">
+    <path d="M0 128 H512 M0 256 H512 M0 384 H512 M128 0 V512 M256 0 V512 M384 0 V512"/>
+  </g>
+  <!-- camadas de terra embaixo -->
+  <path d="M0 300 H512 V400 H0 Z" fill="url(#terra)" opacity="0.85"/>
+  <path d="M0 400 H512 V512 H0 Z" fill="#3a2410" opacity="0.9"/>
+  <g opacity="0.35" stroke="#00000060" stroke-width="3">
+    <path d="M0 350 H512 M0 450 H512 M128 300 V512 M256 300 V512 M384 300 V512"/>
+  </g>
+  <!-- o buraco -->
+  <rect x="210" y="300" width="92" height="212" fill="#0a0713" opacity="0.95"/>
+  <!-- emojis presos na terra -->
+  <text x="88" y="368" font-size="52" text-anchor="middle">💎</text>
+  <text x="424" y="366" font-size="48" text-anchor="middle">🦴</text>
+  <text x="120" y="474" font-size="46" text-anchor="middle">🍄</text>
+  <text x="404" y="478" font-size="44" text-anchor="middle">🪙</text>
+  <!-- a picareta -->
+  <text x="256" y="212" font-size="210" text-anchor="middle">⛏️</text>
+</svg>

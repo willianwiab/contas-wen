@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 420">
+  <defs>
+    <linearGradient id="ceu" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d2160"/><stop offset="1" stop-color="#1b0f33"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="420" fill="url(#ceu)"/>
+  <rect x="0" y="150" width="1280" height="0" fill="#7a4b2a" opacity="0.55"/>
+  <rect x="40" y="158" width="62" height="-18" fill="#00000022"/>
+  <rect x="198" y="158" width="62" height="-18" fill="#00000022"/>
+  <rect x="333" y="158" width="62" height="-18" fill="#00000022"/>
+  <rect x="488" y="158" width="62" height="-18" fill="#00000022"/>
+  <rect x="630" y="158" width="62" height="-18" fill="#00000022"/>
+  <rect x="765" y="158" width="62" height="-18" fill="#00000022"/>
+  <rect x="910" y="158" width="62" height="-18" fill="#00000022"/>
+  <rect x="1057" y="158" width="62" height="-18" fill="#00000022"/>
+  <rect x="1213" y="158" width="62" height="-18" fill="#00000022"/>
+  <text x="157" y="164" font-size="40" text-anchor="middle">🌱</text>
+  <text x="432" y="164" font-size="40" text-anchor="middle">🐛</text>
+  <text x="731" y="164" font-size="40" text-anchor="middle">🍄</text>
+  <text x="1071" y="164" font-size="40" text-anchor="middle">🪱</text>
+  <rect x="0" y="150" width="1280" height="80" fill="#8a8a96" opacity="0.55"/>
+  <rect x="42" y="158" width="62" height="62" fill="#00000022"/>
+  <rect x="186" y="158" width="62" height="62" fill="#00000022"/>
+  <rect x="336" y="158" width="62" height="62" fill="#00000022"/>
+  <rect x="480" y="158" width="62" height="62" fill="#00000022"/>
+  <rect x="631" y="158" width="62" height="62" fill="#00000022"/>
+  <rect x="756" y="158" width="62" height="62" fill="#00000022"/>
+  <rect x="899" y="158" width="62" height="62" fill="#00000022"/>
+  <rect x="1055" y="158" width="62" height="62" fill="#00000022"/>
+  <rect x="1195" y="158" width="62" height="62" fill="#00000022"/>
+  <text x="129" y="204" font-size="40" text-anchor="middle">🦴</text>
+  <text x="425" y="204" font-size="40" text-anchor="middle">🕷️</text>
+  <text x="754" y="204" font-size="40" text-anchor="middle">🗿</text>
+  <text x="1071" y="204" font-size="40" text-anchor="middle">⚙️</text>
+  <rect x="0" y="230" width="1280" height="80" fill="#5ce1e6" opacity="0.55"/>
+  <rect x="54" y="238" width="62" height="62" fill="#00000022"/>
+  <rect x="193" y="238" width="62" height="62" fill="#00000022"/>
+  <rect x="336" y="238" width="62" height="62" fill="#00000022"/>
+  <rect x="462" y="238" width="62" height="62" fill="#00000022"/>
+  <rect x="625" y="238" width="62" height="62" fill="#00000022"/>
+  <rect x="763" y="238" width="62" height="62" fill="#00000022"/>
+  <rect x="910" y="238" width="62" height="62" fill="#00000022"/>
+  <rect x="1061" y="238" width="62" height="62" fill="#00000022"/>
+  <rect x="1209" y="238" width="62" height="62" fill="#00000022"/>
+  <text x="159" y="284" font-size="40" text-anchor="middle">💎</text>
+  <text x="461" y="284" font-size="40" text-anchor="middle">🔷</text>
+  <text x="730" y="284" font-size="40" text-anchor="middle">🧊</text>
+  <text x="1059" y="284" font-size="40" text-anchor="middle">🔮</text>
+  <rect x="0" y="310" width="1280" height="80" fill="#ff6b3c" opacity="0.55"/>
+  <rect x="26" y="318" width="62" height="62" fill="#00000022"/>
+  <rect x="197" y="318" width="62" height="62" fill="#00000022"/>
+  <rect x="332" y="318" width="62" height="62" fill="#00000022"/>
+  <rect x="463" y="318" width="62" height="62" fill="#00000022"/>
+  <rect x="607" y="318" width="62" height="62" fill="#00000022"/>
+  <rect x="752" y="318" width="62" height="62" fill="#00000022"/>
+  <rect x="902" y="318" width="62" height="62" fill="#00000022"/>
+  <rect x="1069" y="318" width="62" height="62" fill="#00000022"/>
+  <rect x="1193" y="318" width="62" height="62" fill="#00000022"/>
+  <text x="158" y="364" font-size="40" text-anchor="middle">🔥</text>
+  <text x="421" y="364" font-size="40" text-anchor="middle">🌶️</text>
+  <text x="769" y="364" font-size="40" text-anchor="middle">🧨</text>
+  <text x="1049" y="364" font-size="40" text-anchor="middle">🪔</text>
+  <rect x="600" y="150" width="80" height="270" fill="#0a0713" opacity="0.92"/>
+  <text x="640" y="126" font-size="96" text-anchor="middle">⛏️</text>
+  <text x="640" y="300" font-size="52" text-anchor="middle">🧑‍🔧</text>
+</svg>

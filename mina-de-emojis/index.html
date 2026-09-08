@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08060f">
+<meta name="description" content="Mina de Emojis: cave fundo, quebre pedra e ache emojis presos em cada camada.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mina">
+<title>MINA DE EMOJIS</title>
+<style>
+  :root {
+    --bg:#08060f; --painel:#150f22; --painel2:#1d1530; --linha:#33254a;
+    --ink:#f7f0ff; --dim:#a294bd;
+    --ouro:#ffc857; --verde:#6ee7a0; --rosa:#ff6b9d; --azul:#7ac9ff; --cristal:#6ef0c8;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --r: 16px;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    margin:0; padding:14px 12px 24px; color:var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(900px 460px at 50% -10%, #3d2160 0%, transparent 60%),
+      radial-gradient(620px 400px at 92% 105%, #5c2418 0%, transparent 55%),
+      radial-gradient(500px 340px at 5% 60%, #142a4a 0%, transparent 60%), var(--bg);
+    background-attachment: fixed;
+    display:flex; flex-direction:column; align-items:center; gap:12px;
+  }
+  header { text-align:center; width:min(1060px,100%); }
+  .marca { font-family:var(--mono); font-size:.62rem; letter-spacing:.4em; color:var(--dim); text-transform:uppercase; }
+  .marca b { color:var(--ouro); }
+  .linhaMoedas {
+    display:flex; align-items:center; justify-content:center; gap:9px; margin-top:5px;
+    font-size:clamp(1.7rem,6.5vw,2.7rem); line-height:1.05;
+  }
+  #moedas {
+    font-family:var(--mono); font-variant-numeric:tabular-nums; font-weight:700;
+    background:linear-gradient(180deg,#fff 8%,var(--ouro) 92%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .stats { display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; justify-content:center; }
+  .stat {
+    background:linear-gradient(180deg,#ffffff0e,#ffffff05); border:1px solid var(--linha);
+    border-radius:12px; padding:6px 12px; min-width:84px;
+  }
+  .stat .k { font-size:.54rem; letter-spacing:.16em; color:var(--dim); text-transform:uppercase; }
+  .stat .v { font-family:var(--mono); font-weight:700; font-size:.92rem; margin-top:2px; }
+
+  #jogo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.85fr); gap:13px; width:min(1060px,100%); align-items:start; }
+  @media (max-width:880px){ #jogo { grid-template-columns:1fr; } }
+
+  /* ---------- a mina ---------- */
+  #tela { position:relative; line-height:0; }
+  #mina {
+    width:100%; aspect-ratio:1/1.15; display:block; border-radius:var(--r);
+    background:#0a0713; border:1px solid var(--linha);
+    box-shadow:inset 0 2px 24px #000a, 0 18px 40px #000a;
+    cursor:pointer; touch-action:manipulation;
+  }
+  .flutuando { position:absolute; z-index:3; display:flex; gap:6px; flex-wrap:wrap; }
+  .fSup { top:9px; left:9px; right:9px; align-items:center; }
+  .fInf { bottom:9px; left:9px; right:9px; align-items:flex-end; pointer-events:none; }
+  .pilula {
+    background:#0a0713cc; border:1px solid var(--linha); border-radius:99px; color:var(--dim);
+    font-family:var(--mono); font-size:.66rem; padding:5px 11px; line-height:1;
+    display:flex; align-items:center; gap:5px; cursor:pointer; white-space:nowrap;
+  }
+  .pilula:hover { border-color:var(--ouro); color:var(--ouro); }
+  .pilula.info { cursor:default; color:var(--ink); }
+  .pilula.camada { margin-left:auto; }
+  .botoes { display:flex; gap:8px; margin-top:9px; }
+  .grandao {
+    flex:1; padding:13px; border:none; border-radius:13px; cursor:pointer;
+    font-family:var(--mono); font-weight:800; font-size:.9rem; letter-spacing:.06em;
+    background:linear-gradient(180deg,#ffe08a,var(--ouro)); color:#2a1c02;
+    box-shadow:0 5px 0 #a8741a; transition:.08s;
+  }
+  .grandao:active { transform:translateY(5px); box-shadow:none; }
+  .grandao.roxo { background:linear-gradient(180deg,#d7b3ff,#b47aff); box-shadow:0 5px 0 #6b3fa0; color:#1b0b2e; }
+  .grandao:disabled { filter:grayscale(.75) brightness(.6); cursor:not-allowed; box-shadow:none; }
+
+  /* ---------- painel ---------- */
+  #painel {
+    background:linear-gradient(180deg,#ffffff0a,#ffffff03); border:1px solid var(--linha);
+    border-radius:var(--r); padding:12px; display:flex; flex-direction:column; gap:10px;
+  }
+  .abas { display:flex; gap:5px; flex-wrap:wrap; }
+  .aba {
+    flex:1 1 auto; min-width:72px; padding:8px 4px; border-radius:10px; cursor:pointer; border:1px solid var(--linha);
+    background:#ffffff08; color:var(--dim); font-family:var(--mono); font-size:.68rem; font-weight:700;
+  }
+  .aba.sel { background:#ffffff1a; color:var(--ink); border-color:var(--ouro); }
+  .lista { display:flex; flex-direction:column; gap:6px; min-height:320px; }
+  .item {
+    display:grid; grid-template-columns:36px 1fr auto; gap:10px; align-items:center;
+    padding:9px; border-radius:11px; cursor:pointer; text-align:left; width:100%;
+    font-family:inherit; color:inherit; position:relative; overflow:hidden;
+    background:linear-gradient(180deg,var(--painel2),var(--painel)); border:1px solid var(--linha);
+    transition:border-color .12s, transform .08s;
+  }
+  .item .barra { position:absolute; left:0; bottom:0; height:2px; background:var(--ouro); opacity:.5; }
+  .item.ok { border-color:#ffc85766; }
+  .item.ok:hover { transform:translateY(-1px); border-color:var(--ouro); }
+  .item.bloq { opacity:.4; cursor:not-allowed; }
+  .item .ic { width:36px; height:36px; border-radius:9px; display:grid; place-items:center; font-size:1.05rem; background:#ffffff0d; border:1px solid var(--linha); }
+  .item .nome { font-weight:700; font-size:.85rem; }
+  .item .desc { font-size:.68rem; color:var(--dim); margin-top:1px; }
+  .item .preco { font-family:var(--mono); font-weight:700; font-size:.8rem; color:var(--ouro); text-align:right; }
+  .item .qtd { font-family:var(--mono); font-size:.62rem; color:var(--dim); text-align:right; margin-top:2px; }
+
+  .cabecinha { font-family:var(--mono); font-size:.68rem; color:var(--dim); line-height:1.5; }
+  .cabecinha b { color:var(--ouro); }
+  .faixa { margin-bottom:11px; }
+  .faixaTop { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+  .pastilha { font-family:var(--mono); font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; padding:3px 9px; border-radius:99px; font-weight:700; }
+  .faixaInfo { font-family:var(--mono); font-size:.62rem; color:var(--dim); margin-left:auto; }
+  .fileira { display:grid; grid-template-columns:repeat(auto-fill,minmax(58px,1fr)); gap:5px; }
+  .ficha {
+    position:relative; aspect-ratio:1/1.15; border-radius:9px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:2px; border:1px solid var(--linha);
+    background:#ffffff08; font-size:1.2rem;
+  }
+  .ficha.nao { color:#ffffff20; }
+  .ficha small { font-family:var(--mono); font-size:.48rem; color:var(--dim); }
+  .ficha b { position:absolute; top:2px; right:4px; font-family:var(--mono); font-size:.44rem; color:var(--ouro); }
+  .albumRolo { max-height:430px; overflow-y:auto; padding-right:2px; }
+  .rodape { font-size:.7rem; color:var(--dim); text-align:center; max-width:540px; line-height:1.6; }
+
+  #aviso {
+    position:fixed; top:12px; left:50%; transform:translate(-50%,-24px); z-index:70;
+    padding:9px 16px; border-radius:99px; background:var(--painel2); border:1px solid var(--ouro);
+    font-family:var(--mono); font-size:.74rem; font-weight:700; color:var(--ouro);
+    opacity:0; transition:.18s; pointer-events:none; max-width:92vw; text-align:center;
+  }
+  #aviso.on { opacity:1; transform:translate(-50%,0); }
+</style>
+</head>
+<body>
+<div id="aviso"></div>
+
+<header>
+  <div class="marca">MINA DE <b>EMOJIS</b></div>
+  <div class="linhaMoedas"><span>🪙</span><span id="moedas">0</span></div>
+  <div class="stats">
+    <div class="stat"><div class="k">Fundura</div><div class="v" id="vFundo" style="color:var(--azul)">0 m</div></div>
+    <div class="stat"><div class="k">Recorde</div><div class="v" id="vRecorde">0 m</div></div>
+    <div class="stat"><div class="k">Picareta</div><div class="v" id="vPicareta" style="color:var(--ouro)">1</div></div>
+    <div class="stat"><div class="k">Álbum</div><div class="v" id="vAlbum" style="color:var(--verde)">0</div></div>
+    <div class="stat"><div class="k">Camada</div><div class="v" id="vCamada" style="color:var(--rosa)">Terra</div></div>
+  </div>
+</header>
+
+<div id="jogo">
+  <div>
+    <div id="tela">
+      <canvas id="mina"></canvas>
+      <div class="flutuando fSup">
+        <button class="pilula" id="btSom">🔊</button>
+        <button class="pilula" id="btSalvar" title="salvar agora">💾</button>
+        <button class="pilula" id="btInstalar" hidden>📲 INSTALAR</button>
+        <div class="pilula info camada" id="pilulaFundo">0 m</div>
+      </div>
+      <div class="flutuando fInf" id="faixaAvisos"></div>
+    </div>
+    <div class="botoes">
+      <button class="grandao" id="btCavar">CAVAR ⛏️</button>
+      <button class="grandao roxo" id="btDinamite">🧨 DINAMITE</button>
+    </div>
+  </div>
+
+  <div id="painel">
+    <div class="abas">
+      <button class="aba sel" data-p="loja">🛒 LOJA</button>
+      <button class="aba" data-p="album">📔 ÁLBUM</button>
+      <button class="aba" data-p="stat">📊 STATS</button>
+    </div>
+    <div id="pLoja" class="lista"></div>
+    <div id="pAlbum" style="display:none;flex-direction:column;gap:8px">
+      <div class="cabecinha" id="albumTopo"></div>
+      <div class="albumRolo" id="albumLista"></div>
+    </div>
+    <div id="pStat" style="display:none;flex-direction:column;gap:6px"></div>
+  </div>
+</div>
+
+<div class="rodape" id="rodape"></div>
+<script>
+/* ==========================================================================
+   MINA DE EMOJIS
+   Você cava pra baixo, quebra pedra e acha emoji preso lá dentro.
+   Cada camada da terra tem os emojis dela — e um raro que quase não sai.
+   ========================================================================== */
+
+/* ---------- as camadas ---------- */
+const CAMADAS = [
+  { nome:"Terra",       ic:"🟫", cor:"#7a4b2a", fundo:"#2a1a10", de:0,
+    emojis:["🌱","🐛","🪱","🥕","🍄","🪨"], raro:"🌻" },
+  { nome:"Pedra",       ic:"🪨", cor:"#8a8a96", fundo:"#1a1a22", de:12,
+    emojis:["🦴","🕷️","🐜","⚙️","🔩","🗿"], raro:"💀" },
+  { nome:"Cristal",     ic:"💎", cor:"#5ce1e6", fundo:"#0c2630", de:24,
+    emojis:["💎","🔷","🧊","❄️","🔮","🪩"], raro:"👑" },
+  { nome:"Lava",        ic:"🌋", cor:"#ff6b3c", fundo:"#2a0e06", de:36,
+    emojis:["🔥","🌶️","🧨","🫖","🪔","🜲"], raro:"🐉" },
+  { nome:"Fóssil",      ic:"🦕", cor:"#c9a227", fundo:"#241d07", de:48,
+    emojis:["🦴","🦖","🦕","🐚","🪺","🥚"], raro:"🦣" },
+  { nome:"Ouro",        ic:"🏆", cor:"#ffc857", fundo:"#2a2008", de:60,
+    emojis:["🪙","💰","👑","💍","🏆","🥇"], raro:"🧞" },
+  { nome:"Alienígena",  ic:"👽", cor:"#8bff9e", fundo:"#0a2412", de:72,
+    emojis:["👽","🛸","🧬","🦠","📡","🪐"], raro:"🛸" },
+  { nome:"Núcleo",      ic:"☄️", cor:"#ff4d6d", fundo:"#2a0614", de:84,
+    emojis:["☄️","🌟","⚡","🕳️","🔆","🧿"], raro:"🌌" },
+];
+const camadaDe = row => {
+  let c = CAMADAS[0];
+  for (const x of CAMADAS) if (row >= x.de) c = x;
+  return c;
+};
+const indiceCamada = row => CAMADAS.indexOf(camadaDe(row));
+
+/* ---------- upgrades da loja ---------- */
+const QUALIDADES = ["de Pedra","de Ferro","de Bronze","de Prata","de Ouro","de Diamante","de Estrela","Lendária"];
+const FAMILIAS = [
+  { id:"picareta", ic:"⛏️", nome:"Picareta", tipo:"dano",   base:25,   val:1,
+    txt:v => "+" + v + " de força em cada batida" },
+  { id:"valor",    ic:"💰", nome:"Balança",  tipo:"valor",  base:60,   val:.3,
+    txt:v => "tudo que você cava vale +" + Math.round(v * 100) + "%" },
+  { id:"sorte",    ic:"🍀", nome:"Faro",     tipo:"sorte",  base:120,  val:.25,
+    txt:v => "+" + Math.round(v * 100) + "% de chance de achar emoji" },
+  { id:"robo",     ic:"🤖", nome:"Robô",     tipo:"robo",   base:400,  val:1,
+    txt:v => "cava " + v.toFixed(1) + " pedra(s) por segundo sozinho" },
+  { id:"dinamite", ic:"🧨", nome:"Dinamite", tipo:"bomba",  base:800,  val:1,
+    txt:v => "explosão pega " + (1 + Math.floor(v)) + " quadradinho(s) de raio" },
+  { id:"lanterna", ic:"🔦", nome:"Lanterna", tipo:"luz",    base:250,  val:1,
+    txt:v => "mostra o que tem dentro de " + v + " pedra(s) em volta" },
+];
+const LOJA = [];
+FAMILIAS.forEach(f => {
+  for (let t = 0; t < 8; t++) {
+    LOJA.push({ id: f.id + t, fam: f.id, ic: f.ic, tipo: f.tipo, nivel: t,
+      nome: f.nome + " " + QUALIDADES[t], val: f.val * Math.pow(2, t),
+      base: f.base * Math.pow(11, t), txt: f.txt, qtd: 0 });
+  }
+});
+const preco = u => Math.ceil(u.base * Math.pow(1.22, u.qtd));
+function soma(tipo) {
+  let s = 0;
+  for (const u of LOJA) if (u.tipo === tipo) s += u.qtd * u.val;
+  return s;
+}
+const dano      = () => 1 + soma("dano");
+const multValor = () => 1 + soma("valor");
+const multSorte = () => 1 + soma("sorte");
+const velRobo   = () => soma("robo");
+const raioBomba = () => 1 + Math.floor(soma("bomba"));
+const alcanceLuz= () => Math.floor(soma("luz"));
+const temBomba  = () => soma("bomba") > 0;
+/* A dinamite tem que ser um atalho de tempo, não uma máquina de fazer moeda:
+   ela custa mais do que as pedras que derruba valem. */
+function celulasDaExplosao(raio) {
+  let n = 0;
+  for (let dc = -raio; dc <= raio; dc++) for (let dr = -raio; dr <= raio; dr++)
+    if (dc * dc + dr * dr <= raio * raio + raio) n++;
+  return n;
+}
+function valorDaPedra(row) {
+  const i = indiceCamada(row);
+  return (1 + row * 1.6 + i * i * 8) * multValor();
+}
+const custoBomba = () => Math.max(60, Math.round(celulasDaExplosao(raioBomba()) * valorDaPedra(fundura + 1) * 1.8));
+
+/* ---------- estado ---------- */
+const CHAVE = "minaEmojis_v1";
+let moedas = 0, fundura = 0, recorde = 0, album = [], contagem = {};
+let cavadas = new Set(), vidas = new Map(), topoLimpo = 0;
+let estat = { batidas:0, pedras:0, emojis:0, bombas:0, tempo:0 };
+let painelAtual = "loja", mudo = false;
+const el = id => document.getElementById(id);
+
+function fmt(n) {
+  if (!isFinite(n)) return "∞";
+  if (n < 1000) return String(Math.floor(n));
+  const u = ["","K","M","B","T","Qa","Qi"];
+  let i = 0, x = n;
+  while (x >= 1000 && i < u.length - 1) { x /= 1000; i++; }
+  return x.toFixed(1).replace(".", ",") + u[i];
+}
+let tAviso = null;
+function avisar(t) {
+  el("aviso").textContent = t; el("aviso").classList.add("on");
+  clearTimeout(tAviso); tAviso = setTimeout(() => el("aviso").classList.remove("on"), 1700);
+}
+
+/* ---------- som ---------- */
+let ctxAudio = null, sonsRecentes = [];
+function bip(f, dur = .07, tipo = "triangle", vol = .05) {
+  if (mudo) return;
+  try {
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctxAudio.currentTime, o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
+    o.type = tipo; o.frequency.value = f;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0005, t + dur);
+    o.connect(g); g.connect(ctxAudio.destination); o.start(t); o.stop(t + dur);
+  } catch (e) {}
+}
+function tunc(forte) {
+  if (mudo) return;
+  const agora = performance.now();
+  sonsRecentes = sonsRecentes.filter(t => agora - t < 1000);
+  if (sonsRecentes.length > 12) return;
+  sonsRecentes.push(agora);
+  try {
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctxAudio.currentTime, o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
+    o.type = "square";
+    o.frequency.setValueAtTime(forte ? 180 : 120, t);
+    o.frequency.exponentialRampToValueAtTime(60, t + .08);
+    g.gain.setValueAtTime(forte ? .05 : .028, t);
+    g.gain.exponentialRampToValueAtTime(.0004, t + .1);
+    o.connect(g); g.connect(ctxAudio.destination); o.start(t); o.stop(t + .11);
+  } catch (e) {}
+}
+
+/* ==========================================================================
+   O TERRENO — gerado por conta, sempre igual no mesmo lugar
+   ========================================================================== */
+const COLS = 9;
+function aleatorio(col, row, sal) {
+  let h = (col * 374761393 + row * 668265263 + sal * 2246822519) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177) | 0;
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+const chaveCel = (c, r) => c + "," + r;
+const dureza = row => 1 + Math.floor(row / 6) + Math.floor(row / 22) * 2;
+
+/* o que tem dentro daquela pedra: nada, emoji da camada ou o raro dela */
+function conteudo(col, row) {
+  if (row < 1) return null;
+  const cam = camadaDe(row), i = CAMADAS.indexOf(cam);
+  const s = aleatorio(col, row, 7);
+  const chanceRaro = .006 * multSorte();
+  const chanceEmoji = .085 * multSorte();
+  if (s < chanceRaro) return { e: cam.raro, raro: true, camada: i };
+  if (s < chanceRaro + chanceEmoji) {
+    const k = Math.floor(aleatorio(col, row, 13) * cam.emojis.length);
+    return { e: cam.emojis[k], raro: false, camada: i };
+  }
+  return null;
+}
+const foiCavada = (c, r) => r <= topoLimpo || cavadas.has(chaveCel(c, r));
+function podeCavar(c, r) {
+  if (c < 0 || c >= COLS || r < 1) return false;
+  if (foiCavada(c, r)) return false;
+  return foiCavada(c, r - 1) || foiCavada(c, r + 1) || foiCavada(c - 1, r) || foiCavada(c + 1, r);
+}
+
+/* ==========================================================================
+   CAVAR
+   ========================================================================== */
+let particulas = [], flutuantes = [];
+function bater(c, r, forcado) {
+  if (!forcado && !podeCavar(c, r)) return false;
+  if (foiCavada(c, r)) return false;
+  const k = chaveCel(c, r);
+  const total = dureza(r);
+  const jaBateu = vidas.get(k) || 0;
+  const nova = jaBateu + (forcado ? total : dano());
+  estat.batidas++;
+  if (nova < total) {
+    vidas.set(k, nova);
+    tunc(false);
+    particulas.push({ x:(c + .5), y:(r + .5), t:0, cor:camadaDe(r).cor, n:4 });
+    return true;
+  }
+  quebrar(c, r);
+  return true;
+}
+function quebrar(c, r) {
+  const k = chaveCel(c, r);
+  cavadas.add(k); vidas.delete(k);
+  estat.pedras++;
+  const cam = camadaDe(r);
+  const ganho = Math.round(valorDaPedra(r));
+  moedas += ganho;
+  const dentro = conteudo(c, r);
+  if (dentro) {
+    estat.emojis++;
+    const ch = dentro.camada + "|" + dentro.e;
+    contagem[ch] = (contagem[ch] || 0) + 1;
+    if (!album.includes(ch)) {
+      album.push(ch);
+      avisar((dentro.raro ? "🌟 RARO! " : "📔 novo! ") + dentro.e + " da camada " + cam.nome);
+      [660, 880, 1174].forEach((f, n) => setTimeout(() => bip(f, .13), n * 80));
+      if (painelAtual === "album") montarAlbum();
+    }
+    const bonus = Math.round(ganho * (dentro.raro ? 25 : 4));
+    moedas += bonus;
+    flutuantes.push({ x:c + .5, y:r + .4, t:0, txt: dentro.e + " +" + fmt(ganho + bonus), cor: dentro.raro ? "#ffc857" : "#6ee7a0" });
+  } else {
+    flutuantes.push({ x:c + .5, y:r + .4, t:0, txt:"+" + fmt(ganho), cor:"#ffffffaa" });
+  }
+  particulas.push({ x:c + .5, y:r + .5, t:0, cor:cam.cor, n:12 });
+  tunc(true);
+  if (r > fundura) {
+    const antes = indiceCamada(fundura);
+    fundura = r;
+    if (fundura > recorde) recorde = fundura;
+    if (indiceCamada(fundura) > antes) {
+      const nova = camadaDe(fundura);
+      avisar(nova.ic + " camada nova: " + nova.nome.toUpperCase() + "!");
+      [523, 659, 784, 1047].forEach((f, n) => setTimeout(() => bip(f, .14), n * 110));
+    }
+  }
+}
+
+/* cava a próxima pedra descendo pelo poço — é o que o botão CAVAR faz */
+function cavarProxima() {
+  const col = Math.max(0, Math.min(COLS - 1, colDoPoco));
+  for (let r = Math.max(1, fundura - 2); r < fundura + 40; r++) {
+    if (!foiCavada(col, r) && podeCavar(col, r)) { bater(col, r); return true; }
+  }
+  // se o poço travou, procura qualquer pedra cavável perto do fundo
+  for (let r = Math.max(1, fundura - 3); r < fundura + 6; r++)
+    for (let c = 0; c < COLS; c++)
+      if (podeCavar(c, r)) { bater(c, r); return true; }
+  return false;
+}
+let colDoPoco = Math.floor(COLS / 2);
+
+function soltarDinamite() {
+  if (!temBomba()) { avisar("🧨 compre a Dinamite na loja primeiro"); bip(180); return; }
+  const custo = custoBomba();
+  if (moedas < custo) { avisar("🪙 a dinamite custa " + fmt(custo)); bip(180); return; }
+  moedas -= custo; estat.bombas++;
+  const raio = raioBomba(), cc = colDoPoco, cr = fundura + 1;
+  for (let dc = -raio; dc <= raio; dc++) for (let dr = -raio; dr <= raio; dr++) {
+    const c = cc + dc, r = cr + dr;
+    if (c < 0 || c >= COLS || r < 1) continue;
+    if (dc * dc + dr * dr > raio * raio + raio) continue;
+    if (!foiCavada(c, r)) quebrar(c, r);
+  }
+  particulas.push({ x:cc + .5, y:cr + .5, t:0, cor:"#ff8a3c", n:40, forte:true });
+  avisar("🧨 BUUUM!");
+  [220, 160, 110].forEach((f, i) => setTimeout(() => bip(f, .22, "sawtooth", .06), i * 70));
+  atualizarTopo(); montarLoja();
+}
+
+/* ==========================================================================
+   DESENHO
+   ========================================================================== */
+const cv = el("mina"), ctx = cv.getContext("2d");
+let L = 0, A = 0, dpr = 1, cel = 40, camY = 0, camAlvo = 0;
+function ajustar() {
+  const r = cv.getBoundingClientRect();
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  L = r.width; A = r.height;
+  cv.width = Math.round(L * dpr); cv.height = Math.round(A * dpr);
+  cel = L / COLS;
+}
+window.addEventListener("resize", ajustar);
+
+function desenhar() {
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  camAlvo = Math.max(-cel * 1.2, (fundura + 1) * cel - A * .58);
+  camY += (camAlvo - camY) * .12;
+
+  const cam = camadaDe(Math.max(0, Math.floor((camY + A / 2) / cel)));
+  ctx.fillStyle = cam.fundo;
+  ctx.fillRect(0, 0, L, A);
+
+  const rIni = Math.max(0, Math.floor(camY / cel) - 1);
+  const rFim = Math.floor((camY + A) / cel) + 1;
+  const luz = alcanceLuz();
+
+  for (let r = rIni; r <= rFim; r++) {
+    const y = r * cel - camY;
+    const camadaR = camadaDe(r);
+    for (let c = 0; c < COLS; c++) {
+      const x = c * cel;
+      if (r < 1) {                                  // o céu e a gramin]ha lá de cima
+        ctx.fillStyle = "#1b1030";
+        ctx.fillRect(x, y, cel + .5, cel + .5);
+        ctx.fillStyle = "#2f6b46";
+        ctx.fillRect(x, y + cel - 6, cel + .5, 6);
+        continue;
+      }
+      if (foiCavada(c, r)) {                        // buraco já cavado
+        ctx.fillStyle = "#00000055";
+        ctx.fillRect(x, y, cel + .5, cel + .5);
+        continue;
+      }
+      const k = chaveCel(c, r);
+      const total = dureza(r), bateu = vidas.get(k) || 0;
+      const machucado = bateu / total;
+      const tom = aleatorio(c, r, 3) * .16 - .08;
+      ctx.fillStyle = mistura(camadaR.cor, tom - machucado * .3);
+      ctx.fillRect(x + .5, y + .5, cel - 1, cel - 1);
+      ctx.strokeStyle = "#00000033"; ctx.lineWidth = 1;
+      ctx.strokeRect(x + .5, y + .5, cel - 1, cel - 1);
+      if (machucado > .05) {                        // rachaduras
+        ctx.strokeStyle = "#00000066"; ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(x + cel * .25, y + cel * .2);
+        ctx.lineTo(x + cel * .5, y + cel * .55);
+        ctx.lineTo(x + cel * (.3 + machucado * .5), y + cel * .85);
+        if (machucado > .5) { ctx.moveTo(x + cel * .72, y + cel * .25); ctx.lineTo(x + cel * .5, y + cel * .55); }
+        ctx.stroke();
+      }
+      if (luz) {                                     // a lanterna mostra o que tem dentro
+        const perto = Math.abs(c - colDoPoco) + Math.abs(r - (fundura + 1));
+        if (perto <= luz) {
+          const dentro = conteudo(c, r);
+          if (dentro) {
+            ctx.globalAlpha = .55;
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.font = (cel * .5) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+            ctx.fillText(dentro.e, x + cel / 2, y + cel / 2);
+            ctx.globalAlpha = 1;
+          }
+        }
+      }
+    }
+    if (r % 5 === 0 && r > 0) {                      // marcação de metros
+      ctx.fillStyle = "#ffffff2e";
+      ctx.font = '9px ' + getComputedStyle(document.body).fontFamily;
+      ctx.textAlign = "left"; ctx.textBaseline = "top";
+      ctx.fillText(r + " m", 3, y + 2);
+    }
+  }
+
+  // o mineiro fica no fundo do poço
+  const my = (fundura + .5) * cel - camY;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.font = (cel * .62) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+  ctx.fillText("🧑‍🔧", (colDoPoco + .5) * cel, my);
+
+  // poeirinha
+  for (let i = particulas.length - 1; i >= 0; i--) {
+    const p = particulas[i]; p.t++;
+    if (p.t > 22) { particulas.splice(i, 1); continue; }
+    const a = 1 - p.t / 22;
+    ctx.globalAlpha = a;
+    ctx.fillStyle = p.cor;
+    for (let n = 0; n < p.n; n++) {
+      const ang = n / p.n * 6.2832, d = p.t * (p.forte ? 2.6 : 1.2);
+      ctx.fillRect(p.x * cel + Math.cos(ang) * d - 2, p.y * cel - camY + Math.sin(ang) * d - 2, 4, 4);
+    }
+    ctx.globalAlpha = 1;
+  }
+  // os "+moedas" subindo
+  for (let i = flutuantes.length - 1; i >= 0; i--) {
+    const f = flutuantes[i]; f.t++;
+    if (f.t > 52) { flutuantes.splice(i, 1); continue; }
+    ctx.globalAlpha = Math.min(1, (52 - f.t) / 20);
+    ctx.fillStyle = f.cor;
+    ctx.font = '700 ' + Math.max(11, cel * .3) + 'px ' + getComputedStyle(document.body).fontFamily;
+    ctx.textAlign = "center";
+    ctx.fillText(f.txt, f.x * cel, f.y * cel - camY - f.t * .8);
+    ctx.globalAlpha = 1;
+  }
+  requestAnimationFrame(desenhar);
+}
+function mistura(hex, d) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.max(0, Math.min(255, ((n >> 16) & 255) + d * 255));
+  const g = Math.max(0, Math.min(255, ((n >> 8) & 255) + d * 255));
+  const b = Math.max(0, Math.min(255, (n & 255) + d * 255));
+  return "rgb(" + (r | 0) + "," + (g | 0) + "," + (b | 0) + ")";
+}
+
+/* ==========================================================================
+   PAINEL — loja, álbum e estatísticas
+   ========================================================================== */
+function mostrarPainel(p) {
+  painelAtual = p;
+  el("pLoja").style.display = p === "loja" ? "flex" : "none";
+  el("pAlbum").style.display = p === "album" ? "flex" : "none";
+  el("pStat").style.display = p === "stat" ? "flex" : "none";
+  [...document.querySelectorAll(".aba")].forEach(b => b.classList.toggle("sel", b.dataset.p === p));
+  if (p === "loja") montarLoja();
+  if (p === "album") montarAlbum();
+  if (p === "stat") montarStats();
+  bip(700);
+}
+[...document.querySelectorAll(".aba")].forEach(b => b.onclick = () => mostrarPainel(b.dataset.p));
+
+function montarLoja() {
+  if (painelAtual !== "loja") return;
+  // mostra só o próximo nível de cada família, senão vira uma lista gigante
+  const itens = FAMILIAS.map(f => {
+    const meus = LOJA.filter(u => u.fam === f.id);
+    return meus.find(u => u.qtd === 0) || meus[meus.length - 1];
+  });
+  el("pLoja").innerHTML = itens.map(u => {
+    const p = preco(u), pode = moedas >= p;
+    const totalFam = LOJA.filter(x => x.fam === u.fam).reduce((s, x) => s + x.qtd, 0);
+    return '<button class="item ' + (pode ? "ok" : "bloq") + '" data-id="' + u.id + '">' +
+      '<div class="ic">' + u.ic + '</div>' +
+      '<div><div class="nome">' + u.nome + '</div>' +
+      '<div class="desc">' + u.txt(u.val) + '</div></div>' +
+      '<div><div class="preco">🪙 ' + fmt(p) + '</div>' +
+      '<div class="qtd">' + (totalFam ? "x" + totalFam : "—") + '</div></div>' +
+      '<div class="barra" style="width:' + Math.min(100, moedas / p * 100) + '%"></div></button>';
+  }).join("");
+  [...el("pLoja").children].forEach(b => b.onclick = () => comprar(b.dataset.id));
+}
+function comprar(id) {
+  const u = LOJA.find(x => x.id === id); if (!u) return;
+  const p = preco(u);
+  if (moedas < p) { bip(180); return; }
+  moedas -= p; u.qtd++;
+  bip(900, .1); setTimeout(() => bip(1174, .09), 70);
+  avisar(u.ic + " " + u.nome + " comprada!");
+  atualizarTopo(); montarLoja(); salvar();
+}
+
+function montarAlbum() {
+  if (painelAtual !== "album") return;
+  const total = CAMADAS.length * 7;
+  el("albumTopo").innerHTML = "<b>" + album.length + " de " + total +
+    "</b> emojis achados · cada camada tem 6 comuns e 1 raro";
+  el("albumLista").innerHTML = CAMADAS.map((c, i) => {
+    const lista = c.emojis.concat([c.raro]);
+    const achados = lista.filter(e => album.includes(i + "|" + e)).length;
+    const aberta = fundura >= c.de || recorde >= c.de;
+    return '<div class="faixa"><div class="faixaTop">' +
+      '<span class="pastilha" style="background:' + c.cor + '22;color:' + c.cor + ';border:1px solid ' + c.cor + '55">' +
+      c.ic + " " + c.nome + '</span>' +
+      '<span class="faixaInfo">' + (aberta ? achados + "/" + lista.length + " · a partir de " + c.de + " m"
+        : "🔒 cave até " + c.de + " m") + '</span></div>' +
+      '<div class="fileira">' + lista.map((e, k) => {
+        const ch = i + "|" + e, tem = album.includes(ch), n = contagem[ch] || 0;
+        const raro = k === lista.length - 1;
+        return '<div class="ficha' + (tem ? "" : " nao") + '" style="' + (tem ? "border-color:" + c.cor + "88" : "") + '">' +
+          (n > 1 ? "<b>x" + fmt(n) + "</b>" : "") + (tem ? e : "❔") +
+          '<small>' + (tem ? (raro ? "raro" : "comum") : "???") + '</small></div>';
+      }).join("") + '</div></div>';
+  }).join("");
+}
+
+function montarStats() {
+  if (painelAtual !== "stat") return;
+  const linhas = [
+    ["⛏️ Batidas de picareta", fmt(estat.batidas)],
+    ["🪨 Pedras quebradas", fmt(estat.pedras)],
+    ["📔 Emojis achados", fmt(estat.emojis)],
+    ["🧨 Dinamites usadas", fmt(estat.bombas)],
+    ["📏 Fundura agora", fundura + " m"],
+    ["🏅 Recorde de fundura", recorde + " m"],
+    ["💪 Força da picareta", fmt(dano())],
+    ["💰 Valor do que sai", "x" + multValor().toFixed(2)],
+    ["🍀 Faro pra emoji", "x" + multSorte().toFixed(2)],
+    ["🤖 Robôs", velRobo().toFixed(1) + " pedras/s"],
+    ["🔦 Lanterna", alcanceLuz() ? alcanceLuz() + " de alcance" : "sem lanterna"],
+    ["🧨 Raio da dinamite", temBomba() ? raioBomba() + " quadradinhos" : "sem dinamite"],
+    ["⏱️ Tempo de mina", Math.floor(estat.tempo / 60000) + " min"],
+  ];
+  el("pStat").innerHTML = linhas.map(l =>
+    '<div style="display:flex;gap:10px;padding:6px 2px;border-bottom:1px dashed #ffffff12;font-size:.76rem">' +
+    '<span>' + l[0] + '</span><b style="margin-left:auto;font-family:var(--mono);color:var(--ouro)">' + l[1] + '</b></div>').join("");
+}
+
+function atualizarTopo() {
+  el("moedas").textContent = fmt(moedas);
+  el("vFundo").textContent = fundura + " m";
+  el("vRecorde").textContent = recorde + " m";
+  el("vPicareta").textContent = fmt(dano());
+  el("vAlbum").textContent = album.length + "/" + (CAMADAS.length * 7);
+  const c = camadaDe(fundura);
+  el("vCamada").textContent = c.nome;
+  el("vCamada").style.color = c.cor;
+  el("pilulaFundo").textContent = c.ic + " " + fundura + " m";
+  el("btDinamite").textContent = temBomba() ? "🧨 DINAMITE 🪙" + fmt(custoBomba()) : "🧨 DINAMITE";
+  el("btDinamite").disabled = !temBomba() || moedas < custoBomba();
+}
+
+/* ==========================================================================
+   ENTRADA
+   ========================================================================== */
+cv.addEventListener("pointerdown", e => {
+  const r = cv.getBoundingClientRect();
+  const c = Math.floor((e.clientX - r.left) / cel);
+  const row = Math.floor((e.clientY - r.top + camY) / cel);
+  if (podeCavar(c, row)) { colDoPoco = c; bater(c, row); atualizarTopo(); montarLoja(); }
+  else bip(150, .05);
+});
+el("btCavar").onclick = () => { if (cavarProxima()) { atualizarTopo(); montarLoja(); } };
+el("btDinamite").onclick = soltarDinamite;
+el("btSom").onclick = () => { mudo = !mudo; el("btSom").textContent = mudo ? "🔇" : "🔊"; if (!mudo) bip(880); salvar(); };
+el("btSalvar").onclick = () => { salvar(); avisar("💾 mina salva!"); bip(1046, .12); };
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if (e.key === " ") { e.preventDefault(); if (cavarProxima()) { atualizarTopo(); montarLoja(); } }
+  if (e.key.toUpperCase() === "D") soltarDinamite();
+  if (e.key === "ArrowLeft") { colDoPoco = Math.max(0, colDoPoco - 1); }
+  if (e.key === "ArrowRight") { colDoPoco = Math.min(COLS - 1, colDoPoco + 1); }
+});
+
+/* ==========================================================================
+   LOOPS E SAVE
+   ========================================================================== */
+let acumRobo = 0;
+setInterval(() => {
+  estat.tempo += 200;
+  const v = velRobo();
+  if (v) {
+    acumRobo += v / 5;
+    let n = 0;
+    while (acumRobo >= 1 && n < 20) { acumRobo--; n++; if (!cavarProxima()) break; }
+    if (n) { atualizarTopo(); montarLoja(); }
+  }
+}, 200);
+setInterval(() => { atualizarTopo(); if (painelAtual === "stat") montarStats(); }, 400);
+setInterval(salvar, 5000);
+window.addEventListener("beforeunload", salvar);
+
+function pacote() {
+  // guarda só os buracos perto do fundo; o que ficou muito pra cima vira "tudo cavado"
+  const corte = Math.max(0, fundura - 30);
+  const perto = [...cavadas].filter(k => +k.split(",")[1] >= corte);
+  return { v:1, moedas, fundura, recorde, album, contagem, estat, mudo,
+    topoLimpo: corte, cavadas: perto, colDoPoco,
+    ups: LOJA.filter(u => u.qtd).map(u => [u.id, u.qtd]) };
+}
+function salvar() { try { localStorage.setItem(CHAVE, JSON.stringify(pacote())); } catch (e) {} }
+function carregar() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
+  if (!d) return;
+  moedas = d.moedas || 0; fundura = d.fundura || 0; recorde = d.recorde || 0;
+  album = Array.isArray(d.album) ? d.album : [];
+  contagem = d.contagem || {};
+  topoLimpo = d.topoLimpo || 0;
+  cavadas = new Set(Array.isArray(d.cavadas) ? d.cavadas : []);
+  colDoPoco = typeof d.colDoPoco === "number" ? d.colDoPoco : Math.floor(COLS / 2);
+  mudo = !!d.mudo;
+  if (d.estat) for (const k in estat) if (k in d.estat) estat[k] = d.estat[k];
+  (d.ups || []).forEach(([id, q]) => { const u = LOJA.find(x => x.id === id); if (u) u.qtd = q; });
+  if (mudo) el("btSom").textContent = "🔇";
+}
+
+/* ---------- aplicativo ---------- */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+let convite = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault(); convite = e; el("btInstalar").hidden = false;
+});
+el("btInstalar").onclick = async () => {
+  if (!convite) return;
+  el("btInstalar").hidden = true;
+  convite.prompt();
+  try { await convite.userChoice; } catch (err) {}
+  convite = null;
+};
+window.addEventListener("appinstalled", () => {
+  el("btInstalar").hidden = true; avisar("📲 mina instalada!");
+});
+
+/* ---------- começo ---------- */
+carregar();
+ajustar();
+camY = camAlvo = Math.max(-cel * 1.2, (fundura + 1) * cel - A * .58);
+atualizarTopo(); montarLoja();
+el("rodape").innerHTML =
+  "Clique numa <b>pedra encostada no buraco</b> pra cavar, ou use o botão <b>CAVAR</b> pra descer direto.<br>" +
+  "<b>" + CAMADAS.length + " camadas</b> de terra · <b>" + (CAMADAS.length * 7) + " emojis</b> escondidos · <b>" +
+  LOJA.length + " melhorias</b> · robôs que cavam sozinhos e dinamite.<br>" +
+  "No teclado: <b>espaço</b> cava, <b>D</b> solta dinamite e as <b>setas</b> movem o poço de lado.";
+desenhar();
+</script>
+</body>
+</html>

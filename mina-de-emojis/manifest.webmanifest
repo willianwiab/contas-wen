@@ -1,0 +1,22 @@
+{
+  "id": "/contas-wen/mina-de-emojis/",
+  "name": "Mina de Emojis",
+  "short_name": "Mina",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#08060f",
+  "theme_color": "#08060f",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["games", "entertainment"],
+  "description": "Cave fundo, quebre pedra e ache os emojis presos em cada camada da terra. 8 camadas, 56 emojis escondidos, robôs que cavam sozinhos e dinamite.",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
