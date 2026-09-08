@@ -731,6 +731,67 @@
       "ranking": []
     },
     {
+      "slug": "cat-city",
+      "nome": "Cat City",
+      "descricao": "Uma cidade normal — ruas, prédios, semáforos, gente indo trabalhar. E gatos. Os gatos estão errados. Você vira gato-bola, gato-larva, gato-carro, gato-árvore, gato de perna gigante (cujas pernas são outros gatos) e, se achar o portal, a MEGA LARVA.",
+      "comoFunciona": "É um jogo de andar pela cidade em terceira pessoa. Espalhados por aí existem pedestais que transformam o seu gato, e cada forma joga diferente: a bola rola e quebra coisa, a larva afina e passa por vão estreito, o carro corre o dobro, a árvore vira plataforma, a perna gigante alcança o que ninguém alcança. Achar formas e segredos faz a cidade mudar de fase — e ela vai virando gato junto.",
+      "objetivo": "Achar as 13 formas e os 5 segredos, e chegar ao portal que transforma você na MEGA LARVA.",
+      "mecanicas": [
+        "Cidade inteira: ruas, calçadas, prédios com janelas acesas, postes, semáforos que trocam de luz, placas, carros parados, parque, becos e lojas",
+        "13 formas de gato, cada uma com colisão, velocidade, pulo, massa e habilidade próprias",
+        "As formas das fotos de referência: a perna gigante tem gatos inteiros pendurados de cabeça pra baixo como pernas; a versão melhor tem duas cabeças e dez gatos-perna; a mega larva é uma cabeça enorme com o corpo feito de nacos de gato",
+        "Multiplicação: 1 → 2 → 4 → 8 → centenas de gatos, com pool fixo e teto pra não travar",
+        "9 eventos surreais que acontecem sozinhos, do gato gigante atravessando a rua à MEGA LARVA",
+        "5 fases: a cidade começa normal e vai sendo tomada — carros viram gato, árvores criam rosto, prédios ficam cobertos de gato pendurado",
+        "5 segredos escondidos, incluindo um botão que só uma perna muito grande alcança",
+        "Colecionáveis espalhados: peixe, pegada, caixa, clipe e estrela",
+        "Física de brincadeira: empurrão, quique, escorregada e dash",
+        "Teclado, controle (gamepad) e botões na tela pro celular",
+        "Todos os sons gerados pelo navegador, e o barulho da cidade vai virando miado",
+        "Dá pra instalar como aplicativo e jogar sem internet"
+      ],
+      "categoria": "Aventura",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Jogável",
+      "dificuldade": "Fácil",
+      "fases": 5,
+      "recorde": "",
+      "pontuacao": "Não tem pontuação: o que conta é quantas das 13 formas e quantos dos 5 segredos você achou. É isso que faz a cidade mudar de fase.",
+      "popularidade": 93,
+      "imagem": "assets/images/cat-city.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../cat-city/index.html",
+      "galeria": [],
+      "historia": "Ninguém na cidade parece achar estranho. O semáforo continua trocando de luz, as janelas continuam acesas, o padeiro continua abrindo às seis. É só que agora tem um gato de nove metros com pernas feitas de outros gatos atravessando a faixa de pedestre.",
+      "comoJogar": "Ande com WASD, pule no espaço, use a habilidade da forma no SHIFT e aperte E perto das coisas. Procure os pedestais brilhantes: cada um é uma forma nova. Os roxos são as formas secretas. Pra abrir o portal da MEGA LARVA você precisa de 9 formas.",
+      "controles": [
+        { "tecla": "W A S D", "acao": "Andar pela cidade" },
+        { "tecla": "Espaço", "acao": "Pular" },
+        { "tecla": "Shift", "acao": "A habilidade da forma em que você está" },
+        { "tecla": "E", "acao": "Usar, pegar e entrar" },
+        { "tecla": "Q / 1…9", "acao": "Trocar de forma" },
+        { "tecla": "Esc", "acao": "Pausar" },
+        { "tecla": "🎮", "acao": "Controle: analógico anda, A pula, X poder, B usa" },
+        { "tecla": "📱", "acao": "Celular: arraste do lado esquerdo, botões do lado direito" }
+      ],
+      "curiosidades": [
+        "O gato NÃO é emoji. Ele é desenhado por código imitando uma foto: gradiente de pelo, 1500 fiapos curtos em três tons, listras de tabby só na parte escura, máscara branca no focinho, olho com íris, pupila em fenda e brilho. Emoji só nos ícones da interface.",
+        "As 13 formas são a MESMA figura deformada — esticada, achatada, repetida e empilhada. É por isso que dá pra trocar o gato desenhado por fotos de verdade em assets/cats/ sem mexer em código nenhum: todas as formas continuam funcionando.",
+        "As pernas do gato gigante não são pernas: são gatos inteiros pendurados de cabeça pra baixo, andando — exatamente como na foto de referência.",
+        "Os gatos nunca são criados nem destruídos: existe um pool fixo que só liga e desliga. É o que deixa 320 gatos vivos rodarem a 39 FPS sem GPU boa.",
+        "Quem está a mais de 60 metros pensa 1 vez a cada 4 quadros, com o tempo multiplicado por 4. Anda igualzinho e custa um quarto.",
+        "O jogo é Canvas 2D, não 3D. A câmera é de terceira pessoa mesmo assim: a cidade é vista de cima e de trás, tudo é desenhado de trás pra frente, e a câmera afasta sozinha quando o bicho cresce."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão jogável: cidade com prédios, ruas, semáforos e parque; 13 formas de gato com habilidades próprias; multiplicação com pool; 9 eventos surreais; 5 fases; 5 segredos; colecionáveis; menus, pausa, vitória e game over; controle, teclado e toque." }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "mina-de-emojis",
       "secreto": true,
       "nome": "Mina de Emojis",
