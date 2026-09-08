@@ -456,7 +456,18 @@ $("chatice").oninput = e => {
 };
 
 /* ---------------------------------------------------------------- abas */
-function irPara(nome) {
+/* Cada aba tem endereço próprio: dá pra mandar o link direto pra uma delas.
+   #segredos abre a lista dos ovinhos já rolada até eles. */
+const ENDERECOS = {
+  mesa:"mesa", prancheta:"prancheta", conversa:"conversa",
+  regras:"regras", historia:"historia", instalar:"instalar",
+};
+const APELIDOS = {
+  segredos:"regras", ovos:"regras", easteregg:"regras", "easter-eggs":"regras",
+  papel:"mesa", clipboard:"prancheta", chat:"conversa", quemeoclipy:"historia",
+};
+
+function irPara(nome, semTrocarEndereco) {
   for (const a of document.querySelectorAll(".aba")) a.classList.toggle("sel", a.dataset.aba === nome);
   for (const p of document.querySelectorAll(".pagina")) p.classList.remove("on");
   const id = { mesa:"pgMesa", prancheta:"pgPrancheta", conversa:"pgConversa", regras:"pgRegras",
@@ -467,8 +478,30 @@ function irPara(nome) {
   if (nome === "prancheta") { montarHistorico(); montarAtalhos(); }
   /* o Clipy só faz sentido nas abas em que tem o que reagir */
   $("ladoClipy").hidden = !(nome === "mesa" || nome === "prancheta");
+  if (!semTrocarEndereco && ENDERECOS[nome]) {
+    const novo = "#" + ENDERECOS[nome];
+    if (location.hash !== novo) history.replaceState(null, "", novo);
+  }
 }
 for (const a of document.querySelectorAll(".aba")) a.onclick = () => irPara(a.dataset.aba);
+
+/* abrir o site já numa aba: .../clipy/#segredos, #mesa, #conversa… */
+function irPeloEndereco(rolar) {
+  const bruto = (location.hash || "").replace(/^#/, "").toLowerCase();
+  if (!bruto) return false;
+  const nome = ENDERECOS[bruto] || APELIDOS[bruto];
+  if (!nome) return false;
+  irPara(nome, true);
+  if (rolar && (bruto === "segredos" || bruto === "ovos" ||
+                bruto === "easteregg" || bruto === "easter-eggs")) {
+    setTimeout(() => {
+      const alvo = document.getElementById("ovos");
+      if (alvo) alvo.scrollIntoView({ behavior:"smooth", block:"center" });
+    }, 120);
+  }
+  return true;
+}
+addEventListener("hashchange", () => irPeloEndereco(true));
 $("btVoltaInstalar").onclick = () => irPara("mesa");
 
 /* ---------------------------------------------------------------- conversa */
@@ -880,6 +913,7 @@ lerPapel();
 passarOCensor();
 ultimaTecla = Date.now();
 ligarInstalar(() => irPara("instalar"), dizer);
+irPeloEndereco(true);
 requestAnimationFrame(quadro);
 setTimeout(() => { clipe.fazer("acenar"); clipe.sentir("feliz");
   setTimeout(() => clipe.sentir("parado"), 2000); }, 700);
@@ -888,7 +922,7 @@ setTimeout(() => { clipe.fazer("acenar"); clipe.sentir("feliz");
 window.Clipy = { clipe, cerebro, prancheta, estado, REGRAS, lerPapel, mostrarDica, fecharBalao,
   calcular, somarColuna, responderAgora, censurar, acharSegredo, SEGREDOS,
   passarOCensor, procurarSegredo, curarClipy, atualizarEfeitos,
-  censurados:() => censurados, segredosVistos, montarOvos,
+  censurados:() => censurados, segredosVistos, montarOvos, irPara, irPeloEndereco,
   capturar, montarHistorico, montarAtalhos, tipoDoTexto, virarAtalho,
   zerarApagados:() => { apagadosRecentes = []; estado.apagados = 0; },
   fazer, ACOES, responder, somarDoTexto, irPara, atualizarTabela, salvar, carregar, CHAVE,
