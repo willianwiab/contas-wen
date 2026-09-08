@@ -35,7 +35,7 @@ const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:'')
   conf('a cidade nasce com prédios, árvores, carros, postes, semáforos e placas',
     r.predios > 40 && r.arvores > 10 && r.carros > 20 && r.postes > 20 &&
     r.semaforos > 5 && r.placas > 3, JSON.stringify(r));
-  conf('13 formas e 5 segredos cadastrados', r.formas === 13 && r.portais === 5, JSON.stringify(r));
+  conf('1000 formas e 5 segredos cadastrados', r.formas === 1000 && r.portais === 5, JSON.stringify(r));
   conf('tem colecionável espalhado pela cidade', r.itens > 100, String(r.itens));
 
   // ---------- menu → jogo ----------
@@ -191,6 +191,21 @@ const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:'')
     segredos: CatCity.jogo.segredos, vencido: CatCity.jogo.vencido }));
   conf('o progresso fica salvo depois de recarregar',
     r.formas >= 12 && r.segredos >= 2 && r.vencido === true, JSON.stringify(r));
+
+  // ---------- o som do ESMAGO da mega larva ----------
+  r = await p.evaluate(async () => {
+    CatCity.sfx.ligarAudio();
+    const proto = (window.AudioContext || window.webkitAudioContext).prototype;
+    const antes = proto.createOscillator;
+    let n = 0;
+    proto.createOscillator = function () { n++; return antes.apply(this, arguments); };
+    for (let i = 0; i < 5; i++) CatCity.sfx.terremoto();     // cinco esmagos colados
+    await new Promise(f => setTimeout(f, 60));
+    proto.createOscillator = antes;
+    return n;
+  });
+  conf('o ESMAGO da mega larva não empilha: cinco seguidos viram um som só, sem estourar',
+    r > 0 && r <= 2, r + ' osciladores (5 esmagos seguidos)');
 
   console.log('✅ '+ok.length+' ok'); ok.forEach(t=>console.log('   · '+t));
   if (fail.length) { console.log('❌ '+fail.length); fail.forEach(t=>console.log('   · '+t)); }

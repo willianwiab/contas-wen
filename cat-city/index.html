@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#0e0c12">
-<meta name="description" content="CAT CITY: uma cidade normal onde os gatos estão errados. Vire gato-bola, gato-larva, gato-carro, gato-árvore, gato de perna gigante e, no fim, a MEGA LARVA.">
+<meta name="description" content="CAT CITY: uma cidade normal onde os gatos estão errados. MIL formas de gato — gato-bola, gato-larva, gato-carro, gato-árvore, gato de perna gigante e, no fim, a MEGA LARVA.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icone.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icone-180.png">
@@ -88,11 +88,22 @@
   <button class="botao" id="btVoltaComo">VOLTAR</button>
 </div></div>
 
-<div class="tela" id="telaFormas"><div class="cartao">
-  <h2>AS 13 FORMAS</h2>
-  <p class="sub">Você começa como gato normal. As outras aparecem pela cidade —
-  algumas estão escondidas de propósito.</p>
+<div class="tela" id="telaFormas"><div class="cartao largo">
+  <h2>AS 1000 FORMAS</h2>
+  <p class="sub" id="formasContagem">0 / 1000 achadas</p>
+  <input class="admCampo" id="formasBusca" type="search" placeholder="procurar pelo nome… (ex: dourada, larva, turbo)" autocomplete="off">
+  <div class="filtro" id="formasFiltro">
+    <button data-filtro="todas" class="sel">TODAS</button>
+    <button data-filtro="tenho">QUE EU TENHO</button>
+    <button data-filtro="falta">QUE FALTAM</button>
+    <button data-filtro="lendarias">AS 13 LENDÁRIAS</button>
+  </div>
   <div class="grade" id="gradeFormas"></div>
+  <div class="paginas">
+    <button id="formasAntes">‹</button>
+    <span id="formasPagina">1 / 1</span>
+    <button id="formasDepois">›</button>
+  </div>
   <button class="botao" id="btVoltaFormas">VOLTAR</button>
 </div></div>
 
@@ -158,9 +169,17 @@
     <div class="admGrupo"><div class="admLab">Teto de gatos na cidade (quanto mais, mais pesado)</div>
       <div class="admBts" id="admTeto"></div></div>
 
-    <div class="admGrupo"><div class="admLab">🐾 Formas — clica e vira na hora</div>
+    <div class="admGrupo"><div class="admLab">🐾 As 1000 formas — clica e vira na hora</div>
+      <input class="admCampo" id="admFormasBusca" type="search" placeholder="procurar pelo nome…" autocomplete="off" style="width:100%;margin-bottom:6px">
       <div class="admGrade" id="admFormas"></div>
-      <div class="admBts" id="admFormasExtra" style="margin-top:7px"></div></div>
+      <div class="paginas" style="margin:8px 0 0">
+        <button id="admFormasAntes">‹</button>
+        <span id="admFormasPagina">1 / 1</span>
+        <button id="admFormasDepois">›</button>
+      </div>
+      <div class="admBts" id="admFormasExtra" style="margin-top:7px"></div>
+      <div class="admLab" style="margin:9px 0 5px">Sortear formas novas</div>
+      <div class="admBts" id="admFormasSorteio"></div></div>
 
     <div class="admGrupo"><div class="admLab">🐟 Peixes</div><div class="admBts" id="admPeixes"></div></div>
     <div class="admGrupo"><div class="admLab">🐾 Pegadas</div><div class="admBts" id="admPegadas"></div></div>

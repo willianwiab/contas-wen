@@ -220,7 +220,7 @@ function desenharGato(g, pele, rnd) {
 /* --------------------------------------------------------------------------
    a figurinha pronta de cada pelagem, desenhada uma vez só
    -------------------------------------------------------------------------- */
-export function gato(qual = 0) {
+function gatoCru(qual = 0) {
   const i = ((qual % PELAGENS.length) + PELAGENS.length) % PELAGENS.length;
   if (fotos.gato && i === 0) return fotos.gato;
   if (fotos.extras[i - 1]) return fotos.extras[i - 1];
@@ -233,13 +233,60 @@ export function gato(qual = 0) {
   return c;
 }
 
+/* --------------------------------------------------------------------------
+   GATO PINTADO
+
+   As mil formas precisam parecer mil coisas diferentes, e a cor é o jeito
+   mais barato de conseguir isso: o mesmo gato com uma demão por cima já é
+   outro bicho. A demão é feita UMA vez e fica guardada — pintar a cada
+   quadro derreteria tudo.
+
+   A gaveta tem tamanho limitado (as últimas 20 usadas) porque em tese são
+   5 pelagens x 12 tintas; na prática só umas poucas aparecem na tela ao
+   mesmo tempo, então a gaveta quase nunca precisa jogar nada fora.
+   -------------------------------------------------------------------------- */
+/* São 5 pelagens x 9 tintas = 45 corpos pintados no máximo, e outros tantos
+   rostos. Duas gavetas separadas com 48 lugares cada garantem que nenhuma
+   pintura precise ser refeita durante a partida — repintar um canvas de 256px
+   no meio do quadro era o que derrubava o jogo pra 13 fps na fase 5. */
+const TETO_PINTURA = 48;
+const pintadosCorpo = new Map(), pintadosRosto = new Map();
+function pintar(fonte, cor, forca, lado) {
+  const c = document.createElement("canvas");
+  c.width = c.height = lado;
+  const g = c.getContext("2d");
+  g.drawImage(fonte, 0, 0, lado, lado);
+  g.globalCompositeOperation = "source-atop";   // só onde já tem gato
+  g.globalAlpha = forca;
+  g.fillStyle = cor; g.fillRect(0, 0, lado, lado);
+  g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
+  return c;
+}
+function daGaveta(gaveta, chave, faz) {
+  let c = gaveta.get(chave);
+  if (c) { gaveta.delete(chave); gaveta.set(chave, c); return c; }   // usada agora: vai pro fim
+  c = faz();
+  gaveta.set(chave, c);
+  if (gaveta.size > TETO_PINTURA) gaveta.delete(gaveta.keys().next().value);
+  return c;
+}
+
+export function gato(qual = 0, cor = null, forca = .42) {
+  const cru = gatoCru(qual);
+  if (!cor) return cru;
+  return daGaveta(pintadosCorpo, qual + "|" + cor + "|" + forca,
+    () => pintar(cru, cor, forca, LADO));
+}
+
 /* só a cabeça, recortada — serve pras formas que precisam do rosto grande */
 const cabecas = new Map();
-export function cabeca(qual = 0) {
+export function cabeca(qual = 0, cor = null, forca = .42) {
+  if (cor) return daGaveta(pintadosRosto, qual + "|" + cor + "|" + forca,
+    () => pintar(cabeca(qual), cor, forca, 128));
   const i = ((qual % PELAGENS.length) + PELAGENS.length) % PELAGENS.length;
   let c = cabecas.get(i);
   if (c) return c;
-  const fonte = gato(i);
+  const fonte = gatoCru(i);
   c = document.createElement("canvas");
   c.width = c.height = 128;
   const g = c.getContext("2d");
@@ -285,8 +332,8 @@ export async function carregarFotos() {
    -------------------------------------------------------------------------- */
 
 /* um gato inteiro virado de cabeça pra baixo, que é como as "pernas" aparecem */
-export function pernaGato(ctx, x, y, largura, altura, fase, qual = 0) {
-  const img = gato(qual);
+export function pernaGato(ctx, x, y, largura, altura, fase, qual = 0, cor = null) {
+  const img = gato(qual, cor);
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(Math.sin(fase) * .1);                 // o balanço do passo
@@ -296,8 +343,8 @@ export function pernaGato(ctx, x, y, largura, altura, fase, qual = 0) {
 }
 
 /* um pedaço do corpo da larva: um monte de gato apertado, visto de trás */
-export function nacoDeGatos(ctx, x, y, largura, altura, semente2, qual = 0) {
-  const img = gato(qual);
+export function nacoDeGatos(ctx, x, y, largura, altura, semente2, qual = 0, cor = null) {
+  const img = gato(qual, cor);
   ctx.save();
   ctx.translate(x, y);
   const linhas = 2, colunas = 3;

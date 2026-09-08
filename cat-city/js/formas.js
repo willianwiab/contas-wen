@@ -12,6 +12,7 @@
        empacotados em fileiras.
    ========================================================================== */
 import { gato, cabeca, pernaGato, nacoDeGatos } from "./sprites.js";
+import { gerarFormas } from "./formario.js";
 
 /* cada forma diz: como é o corpo (pro jogo), como se desenha, e o que ela faz.
    raio  — o tamanho pra colisão, em metros do mundo
@@ -21,7 +22,7 @@ import { gato, cabeca, pernaGato, nacoDeGatos } from "./sprites.js";
    massa — o quanto empurra as coisas e o quanto é empurrada
    fino  — passa por vãos estreitos
    quebra— o que ela consegue destruir: 0 nada, 1 frágil, 2 barreira, 3 tudo */
-export const FORMAS = [
+export const LENDARIAS = [
   {
     id:"normal", nome:"Gato Normal", emoji:"🐈", nivel:0,
     raio:.5, alto:1, vel:7.4, pulo:7.2, massa:1, quebra:0,
@@ -114,8 +115,20 @@ export const FORMAS = [
     poder:{ tipo:"esmagar", forca:40, tempo:1, recarga:1.4, raio:9 },
   },
 ];
-export const porId = id => FORMAS.find(f => f.id === id) || FORMAS[0];
-export const indiceDe = id => Math.max(0, FORMAS.findIndex(f => f.id === id));
+
+/* AS MIL FORMAS.
+   13 feitas à mão (as lendárias, com as três das fotos do JoJo) e 987 saídas
+   da fábrica de formas — corpo x tinta x mania. Ver js/formario.js. */
+export const GERADAS = gerarFormas(987, LENDARIAS.length);
+export const FORMAS = LENDARIAS.concat(GERADAS);
+export const TOTAL = FORMAS.length;
+
+/* Com mil formas, procurar por id varrendo a lista custaria caro — e porId()
+   é chamado a cada quadro. Um mapa resolve em uma consulta. */
+const ONDE = new Map(FORMAS.map((f, i) => [f.id, i]));
+export const porId = id => FORMAS[ONDE.has(id) ? ONDE.get(id) : 0];
+export const indiceDe = id => (ONDE.has(id) ? ONDE.get(id) : 0);
+export const existe = id => ONDE.has(id);
 
 /* ==========================================================================
    O DESENHO DE CADA FORMA
@@ -124,12 +137,18 @@ export const indiceDe = id => Math.max(0, FORMAS.findIndex(f => f.id === id));
    px — quantos pixels vale 1 metro
    ========================================================================== */
 export function desenharForma(ctx, forma, px, t, andando, olhandoPraDireita, qual = 0) {
-  const img = gato(qual);
+  /* As geradas trazem a própria pelagem e a própria tinta; as lendárias usam
+     o gato como ele nasceu. E a mania "Reversa" olha pro outro lado, porque
+     sim. */
+  if (forma.pelo !== undefined) qual = forma.pelo;
+  const cor = forma.cor || null, tinta = forma.tinta || .42;
+  if (forma.espelho) olhandoPraDireita = !olhandoPraDireita;
+  const img = gato(qual, cor, tinta);
   const prop = img.height / img.width;
   ctx.save();
   if (!olhandoPraDireita) ctx.scale(-1, 1);
 
-  switch (forma.id) {
+  switch (forma.base || forma.id) {
     case "normal": {
       const h = forma.alto * px, w = h / prop;
       const pisa = andando ? Math.abs(Math.sin(t * 9)) * h * .05 : Math.sin(t * 2) * h * .012;
@@ -147,7 +166,7 @@ export function desenharForma(ctx, forma, px, t, andando, olhandoPraDireita, qua
       ctx.drawImage(img, -d * .62, -d * .62, d * 1.24, d * 1.24);
       ctx.restore();
       /* o rosto por cima, sem girar: é o que faz a bola ainda ser um gato */
-      const c = cabeca(qual), cd = d * (forma.id === "bolaRosto" ? .92 : .66);
+      const c = cabeca(qual, cor, tinta), cd = d * ((forma.base || forma.id) === "bolaRosto" ? .92 : .66);
       ctx.drawImage(c, -cd / 2, -d / 2 - cd / 2 + d * .04, cd, cd);
       /* brilho de esfera */
       ctx.save();
@@ -169,7 +188,7 @@ export function desenharForma(ctx, forma, px, t, andando, olhandoPraDireita, qua
         const x = -i * w * (mega ? .62 : forma.veiculo ? .82 : .5);
         const y = Math.sin(t * (andando ? 7 : 2) - i * .8) * h * (mega ? .1 : .16);
         const e = mega ? 1 - k * .25 : 1 - k * .3;
-        if (mega) nacoDeGatos(ctx, x, -h * .5 + y, w * 1.5 * e, h * 1.1 * e, t * 2 + i, qual);
+        if (mega) nacoDeGatos(ctx, x, -h * .5 + y, w * 1.5 * e, h * 1.1 * e, t * 2 + i, qual, cor);
         else if (forma.veiculo) {
           ctx.save(); ctx.translate(x, y);
           ctx.drawImage(img, -w * .55 * e, -h * e, w * 1.1 * e, h * e);
@@ -181,7 +200,7 @@ export function desenharForma(ctx, forma, px, t, andando, olhandoPraDireita, qua
         }
       }
       /* a cabeça: nas fotos ela é sempre maior que o corpo, e olha pra frente */
-      const c = cabeca(qual);
+      const c = cabeca(qual, cor, tinta);
       const cd = h * (mega ? 1.5 : forma.veiculo ? 1.05 : .95);
       const bal = Math.sin(t * (andando ? 7 : 2)) * h * .06;
       ctx.drawImage(c, -cd * .42, -h * (mega ? .95 : .85) - cd * .3 + bal, cd, cd);
@@ -192,7 +211,7 @@ export function desenharForma(ctx, forma, px, t, andando, olhandoPraDireita, qua
       /* o corpo esticado na horizontal: é a deformação mais simples que existe */
       ctx.drawImage(img, -w * .5, -h * 1.25, w, h * 1.25);
       /* rodas, que são cabeças de gato girando */
-      const c = cabeca(qual), rd = h * .62;
+      const c = cabeca(qual, cor, tinta), rd = h * .62;
       for (const dx of [-w * .3, w * .3]) {
         ctx.save();
         ctx.translate(dx, -rd * .42);
@@ -223,7 +242,7 @@ export function desenharForma(ctx, forma, px, t, andando, olhandoPraDireita, qua
       ctx.beginPath(); ctx.moveTo(0, -d * .92); ctx.lineTo(d * .04, -d * 1.1); ctx.stroke();
       ctx.fillStyle = "#5aa049";
       ctx.beginPath(); ctx.ellipse(d * .16, -d * 1.08, d * .13, d * .06, -.5, 0, 6.2832); ctx.fill();
-      const c = cabeca(qual), cd = d * .74;
+      const c = cabeca(qual, cor, tinta), cd = d * .74;
       ctx.drawImage(c, -cd / 2, -d * .72 - cd * .2, cd, cd);
       break;
     }
@@ -232,7 +251,7 @@ export function desenharForma(ctx, forma, px, t, andando, olhandoPraDireita, qua
       /* tronco: o gato esticado pra cima, bem fininho */
       ctx.drawImage(img, -w * .16, -h * .78, w * .32, h * .78);
       /* copa: um monte de cabeça de gato amontoada */
-      const c = cabeca(qual), cd = h * .3;
+      const c = cabeca(qual, cor, tinta), cd = h * .3;
       for (let i = 0; i < 9; i++) {
         const a = i / 9 * 6.2832, r = h * (.16 + (i % 3) * .05);
         const bal = Math.sin(t * 1.6 + i) * h * .012;
@@ -245,7 +264,7 @@ export function desenharForma(ctx, forma, px, t, andando, olhandoPraDireita, qua
          de cabeça pra baixo, andando. Na versão "melhor" tem duas cabeças. */
       const altPerna = forma.pernaAlt * px;
       const corpoH = (forma.alto - forma.pernaAlt) * px;
-      const corpoW = corpoH / prop * (forma.id === "pernaM" ? 3.1 : 1.7);
+      const corpoW = corpoH / prop * ((forma.base || forma.id) === "pernaM" ? 3.1 : 1.7);
       const n = forma.pernas;
       const passo = andando ? t * 7 : t * 1.4;
       for (let i = 0; i < n; i++) {
@@ -255,7 +274,7 @@ export function desenharForma(ctx, forma, px, t, andando, olhandoPraDireita, qua
         const sobe = Math.max(0, Math.sin(fase)) * altPerna * .16;
         const lp = altPerna * .34;
         ctx.globalAlpha = .97;
-        pernaGato(ctx, x, -sobe, lp, altPerna, fase, qual + (i % 2));
+        pernaGato(ctx, x, -sobe, lp, altPerna, fase, qual + (i % 2), cor);
       }
       ctx.globalAlpha = 1;
       /* o corpo comprido por cima das pernas */
@@ -265,7 +284,7 @@ export function desenharForma(ctx, forma, px, t, andando, olhandoPraDireita, qua
       ctx.drawImage(img, -corpoW / 2, -corpoH * .5, corpoW, corpoH);
       ctx.restore();
       /* a(s) cabeça(s) na frente */
-      const c = cabeca(qual), cd = corpoH * 1.15;
+      const c = cabeca(qual, cor, tinta), cd = corpoH * 1.15;
       if (forma.cabecas === 2) {
         ctx.drawImage(c, corpoW * .18 - cd * .5, cy - cd * .62, cd, cd);
         ctx.drawImage(c, corpoW * .34 - cd * .5, cy - cd * .78, cd * .92, cd * .92);

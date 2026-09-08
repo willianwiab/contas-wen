@@ -62,7 +62,7 @@ async function garantirAberto(p) {
     segredos: document.querySelectorAll('#admSegredos .admBt').length,
     info: document.getElementById('admInfo').textContent.length }));
   conf('a senha 1234 abre o painel inteiro',
-    r.painel && r.formas === 13 && r.eventos >= 9 && r.segredos === 6 && r.info > 40, JSON.stringify(r));
+    r.painel && r.formas === 24 && r.eventos >= 9 && r.segredos === 6 && r.info > 40, JSON.stringify(r));
 
   const rotulos = await p.evaluate(() =>
     [...document.querySelectorAll('#admGatos .admBt')].map(x => x.textContent).join(' '));
@@ -99,11 +99,15 @@ async function garantirAberto(p) {
   conf('clicar numa forma trancada destranca E vira ela na hora',
     r.forma === 'megaLarva' && r.mega, JSON.stringify(r));
 
-  await p.click('#admFormasExtra .admBt:nth-child(1)');       // destrancar tudo
+  await p.click('#admFormasExtra .admBt:nth-child(1)');       // destrancar as lendárias
   r = await p.evaluate(() => CatCity.jogador.desbloqueadas.length);
-  conf('destrancar as 13 libera todas as formas de uma vez', r === 13, String(r));
+  conf('destrancar as 13 lendárias libera as 13 de uma vez', r === 13, String(r));
 
-  await p.click('#admFormasExtra .admBt:nth-child(2)');       // trancar
+  await p.click('#admFormasExtra .admBt:nth-child(2)');       // destrancar TODAS
+  r = await p.evaluate(() => CatCity.jogador.desbloqueadas.length);
+  conf('destrancar TODAS libera as 1000', r === 1000, String(r));
+
+  await p.click('#admFormasExtra .admBt:nth-child(4)');       // trancar
   r = await p.evaluate(() => ({ n: CatCity.jogador.desbloqueadas.length,
     forma: CatCity.jogador.forma, seg: CatCity.jogo.segredos }));
   conf('trancar tudo devolve o jogo pro começo',
@@ -210,8 +214,8 @@ async function garantirAberto(p) {
   r = await p.evaluate(() => ({ venceu: CatCity.jogo.vencido,
     tela: document.getElementById('telaVitoria').classList.contains('on'),
     formas: CatCity.jogador.desbloqueadas.length }));
-  conf('"ganhar o jogo agora" libera as 13 formas e mostra a tela de vitória',
-    r.venceu && r.tela && r.formas === 13, JSON.stringify(r));
+  conf('"ganhar o jogo agora" libera as 1000 formas e mostra a tela de vitória',
+    r.venceu && r.tela && r.formas === 1000, JSON.stringify(r));
 
   /* ---------- fechado, o jogo volta ao normal ---------- */
   await p.evaluate(() => { CatCity.comecar(false); CatCity.jogador.x = 40; CatCity.jogador.y = 40; });
@@ -226,7 +230,7 @@ async function garantirAberto(p) {
     venceu: CatCity.jogo.vencido, truques: JSON.stringify(CatCity.truques),
     pedeSenha: getComputedStyle(document.getElementById('admLogin')).display !== 'none' }));
   conf('o que o adm liberou fica salvo — mas os truques voltam ao normal ao recarregar',
-    r.formas === 13 && r.venceu &&
+    r.formas === 1000 && r.venceu &&
     r.truques === '{"turbo":1,"pulo":1,"gigante":1,"fantasma":false,"voar":false,"imortal":false}',
     JSON.stringify(r));
   conf('e a senha volta a ser pedida numa sessão nova', r.pedeSenha, String(r.pedeSenha));

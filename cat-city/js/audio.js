@@ -5,13 +5,20 @@
    que vai ficando mais caótico conforme a cidade enche de gato.
    ========================================================================== */
 let ctx = null, mestre = null, ambiente = null, ganhoAmbiente = null;
+let ultimoTerremoto = -9;
 export const som = { volume:.7, ligado:true };
 
 function acordar() {
   if (ctx) { if (ctx.state === "suspended") ctx.resume(); return ctx; }
   try {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
-    mestre = ctx.createGain(); mestre.gain.value = som.volume; mestre.connect(ctx.destination);
+    mestre = ctx.createGain(); mestre.gain.value = som.volume;
+    /* Um limitador na saída. Sem ele, dois ou três sons graves ao mesmo tempo
+       somavam e estouravam a caixinha — era o chiado feio da mega larva. */
+    const limite = ctx.createDynamicsCompressor();
+    limite.threshold.value = -10; limite.knee.value = 6;
+    limite.ratio.value = 14; limite.attack.value = .004; limite.release.value = .18;
+    mestre.connect(limite); limite.connect(ctx.destination);
   } catch (e) { ctx = null; }
   return ctx;
 }
@@ -96,9 +103,25 @@ export function buzina() {
   tom({ f:300, dur:.35, tipo:"square", vol:.12, filtro:900 });
   tom({ f:225, dur:.35, tipo:"square", vol:.1, filtro:900 });
 }
+/* O ESMAGO da mega larva.
+
+   Era um tom puro de 44 Hz caindo pra 26 Hz. Grave demais: caixinha de
+   notebook e celular não tocam essa nota — só chacoalham, e sai um ronco
+   sujo. E como o poder recarrega em 1,4 s dava pra disparar por cima do
+   anterior, somando três sub-graves e estourando tudo.
+
+   Agora é o que um baque grande é de verdade: um estalo curto em cima, um
+   corpo grave audível (90 → 50 Hz) e uma cauda de estrondo. E não empilha:
+   dois esmagos colados viram um só. */
 export function terremoto() {
-  tom({ f:44, f2:26, dur:1.1, tipo:"sine", vol:.3 });
-  ruido({ dur:.9, vol:.14, corte:220 });
+  if (!acordar() || !som.ligado) return;
+  const agora = ctx.currentTime;
+  if (agora - ultimoTerremoto < .3) return;      // nada de sobrepor
+  ultimoTerremoto = agora;
+  ruido({ dur:.09, vol:.16, corte:2600 });                       // o estalo
+  tom({ f:92, f2:50, dur:.55, tipo:"triangle", vol:.16, filtro:420 });
+  tom({ f:61, f2:38, dur:.9, tipo:"sine", vol:.1, atraso:.03, filtro:260 });
+  ruido({ dur:.8, vol:.09, corte:190, atraso:.05 });              // a cauda
 }
 export function fanfarra() {
   [523, 659, 784, 1047, 1319].forEach((f, i) =>
