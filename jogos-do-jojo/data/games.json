@@ -670,6 +670,67 @@
       "ranking": []
     },
     {
+      "slug": "evolucao-dos-gatos",
+      "nome": "Evolução dos Gatos",
+      "descricao": "Um gato pequeno numa sala normal. Você clica nos bichinhos que passam, ele dá a patada e come — e a cada tanto de XP o gato evolui. São 31 formas, do Gatinho até o Gato do NADA. E quanto mais ele evolui, mais a sala se enche de gatos que se repetem, até derreter.",
+      "comoFunciona": "Bichinhos atravessam a sala voando e correndo. Clicar num deles faz o gato dar a patada: entra XP e entram peixes. Comer sem errar faz combo. O que NÃO é comida (pepino, bomba, cacto, chuveiro, foguete) dá susto e tira XP. Os peixes compram brinquedos, comida e gatos novos — e esses gatos caçam sozinhos, então o jogo continua andando quando você sai.",
+      "objetivo": "Chegar às 31 evoluções, completar o álbum e ver a sala virar uma máquina de gatos.",
+      "mecanicas": [
+        "Caçada por clique: a patada procura o bichinho mais perto do dedo",
+        "31 evoluções, cada uma num nível quadrado (1, 4, 9, 16, 25... até 1000)",
+        "25 bichinhos que vão aparecendo conforme o gato evolui, da borboleta à galáxia",
+        "5 perigos pra não clicar — o pepino existe porque gato tem medo de pepino",
+        "Bichinho dourado que paga 10x, e combo por bichinhos seguidos",
+        "96 brinquedos em 12 famílias",
+        "12 gatos pra adotar: eles caçam sozinhos, na tela e fora dela",
+        "6 comidas que dão XP na hora e ligam um bônus com prazo",
+        "Álbum das evoluções, e cada uma dá +3% em tudo pra sempre",
+        "As 9 vidas: renascer zera o nível mas dá patas, que valem +25% cada",
+        "🌀 A sala vai sendo tomada por gatos que se repetem: ecos, anel giratório, patas brotando, chuva de gatos, ondulação, espelho, cor girando e uma mandala de gatos",
+        "Botão 🌀 com três modos: AUTO, MÁX e OFF",
+        "44 conquistas",
+        "Dá pra instalar como aplicativo e jogar sem internet",
+        "Salvamento automático, com o que a colônia caçou de madrugada"
+      ],
+      "categoria": "Clicker",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": 31,
+      "recorde": "",
+      "pontuacao": "Cada bichinho vale conforme o que ele é: a borboleta vale 1 e a galáxia vale 30 mil. Esse número é multiplicado pela Língua, pelo combo, pelas patas, pelo álbum e pelos bônus da comida.",
+      "popularidade": 94,
+      "imagem": "assets/images/evolucao-dos-gatos.svg",
+      "banner": "assets/images/evolucao-dos-gatos-banner.svg",
+      "trailer": "",
+      "url": "../evolucao-dos-gatos/index.html",
+      "galeria": [],
+      "historia": "No começo é só um gatinho numa sala com uma borboleta. Depois vem o segundo gato, e o terceiro, e uns que caem do teto. Aí o gato começa a aparecer em volta de si mesmo, girando, e as patas passam a brotar de onde não tinha pata. Ninguém explica. Continua sendo um gato.",
+      "comoJogar": "Clique nos bichinhos que passam pela sala. Não clique no 🥒 pepino, na 💣 bomba, no 🌵 cacto, no 🚿 chuveiro nem no 🧨 foguete. Compre a Mira e o Reflexo primeiro (fica bem mais fácil acertar), depois o Chamariz pra encher a sala. Quando os peixes sobrarem, adote gatos: eles caçam por você.",
+      "controles": [
+        { "tecla": "Clique", "acao": "Dar a patada no bichinho" },
+        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
+        { "tecla": "Espaço", "acao": "Chamar bichinhos" },
+        { "tecla": "L", "acao": "Lambida geral: come tudo que está na tela" },
+        { "tecla": "🌀", "acao": "Escolher o quanto a sala fica estranha" },
+        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+      ],
+      "curiosidades": [
+        "O jogo tem duas referências pedidas pelo JoJo: o Toadled, pela mecânica de comer e evoluir, e o vídeo 'Welcome to Kitty City' do Cyriak, pela ideia de pegar uma coisa comum — gato — e ir multiplicando ela até virar uma máquina absurda.",
+        "Numa sala no talo são mais de cem emojis por quadro. Desenhar todos com fillText derrubava o jogo pra 6 FPS; guardando cada emoji desenhado numa figurinha e só copiando depois, foram 41 FPS.",
+        "A cor psicodélica do fim NÃO usa filtro por fatia: filtro por fatia é justamente o que derruba o FPS. Ela entra numa camada só, por cima de tudo.",
+        "Cada evolução abre num nível quadrado (1, 4, 9, 16, 25...). É por isso que a próxima parece sempre um pouco mais longe, sem precisar de tabela nenhuma.",
+        "Os gatos da colônia caçam de verdade: primeiro os bichinhos que estão na tela, e só depois os 'de fora'. Dá pra ver eles comendo."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: caçada por clique, 31 evoluções, 25 bichinhos, 5 perigos, 96 brinquedos, 12 gatos de colônia, 6 comidas, álbum, 44 conquistas, as 9 vidas e a sala que vai derretendo em gatos repetidos." }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "mina-de-emojis",
       "secreto": true,
       "nome": "Mina de Emojis",
