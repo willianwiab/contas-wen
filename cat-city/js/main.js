@@ -11,7 +11,7 @@
    ========================================================================== */
 import { gato, cabeca, carregarFotos } from "./sprites.js";
 import { FORMAS, porId, indiceDe, desenharForma } from "./formas.js";
-import { cidade, gerarCidade, paredes, corromper, TAM, RUA } from "./city.js";
+import { cidade, gerarCidade, paredes, gradeDeParedes, corromper, TAM, RUA } from "./city.js";
 import { camera, seguir, sacudir, paraTela, naTela, APERTO_Y } from "./camera.js";
 import { jogador, aplicarForma, formaAtual, desbloquear, usarPoder, atualizarJogador,
          truques, zerarTruques } from "./player.js";
@@ -48,10 +48,15 @@ function novaCidade(semente = Math.floor(Math.random() * 9999)) {
   jogo.itens = []; jogo.portais = [];
   const r = () => Math.random();
 
-  /* colecionáveis espalhados: peixe, pegada, caixa, clipe e estrela */
+  /* Colecionáveis espalhados: peixe, pegada, caixa, clipe e estrela. A conta
+     acompanha o tamanho da cidade — numa cidade maior, mais coisa no chão,
+     senão andar dez quarteirões sem achar nada fica sem graça. */
+  const quarteiroes = cidade.colunas * cidade.linhas;
+  const porQuarteirao = q => Math.max(4, Math.round(q * quarteiroes / 49));
   const tipos = [
-    { k:"peixe", e:"🐟", n:70 }, { k:"pegada", e:"🐾", n:40 },
-    { k:"caixa", e:"📦", n:16 }, { k:"clipe", e:"📎", n:14 }, { k:"estrela", e:"⭐", n:10 },
+    { k:"peixe", e:"🐟", n:porQuarteirao(70) }, { k:"pegada", e:"🐾", n:porQuarteirao(40) },
+    { k:"caixa", e:"📦", n:porQuarteirao(16) }, { k:"clipe", e:"📎", n:porQuarteirao(14) },
+    { k:"estrela", e:"⭐", n:porQuarteirao(10) },
   ];
   for (const t of tipos) for (let i = 0; i < t.n; i++)
     jogo.itens.push({ tipo:t.k, e:t.e, x:2 + r() * (cidade.largura - 4), y:2 + r() * (cidade.altura - 4),
@@ -61,7 +66,7 @@ function novaCidade(semente = Math.floor(Math.random() * 9999)) {
   const ordem = FORMAS.slice(1);
   ordem.forEach((f, i) => {
     const ang = i / ordem.length * 6.2832;
-    const raio = 14 + (i % 4) * 13;
+    const raio = (14 + (i % 4) * 13) * (cidade.largura / 147);   // espalha junto com a cidade
     const x = cidade.largura / 2 + Math.cos(ang) * raio;
     const y = cidade.altura / 2 + Math.sin(ang) * raio * .9;
     jogo.itens.push({ tipo:"forma", forma:f.id, e:f.emoji, pego:false, fase:r() * 6.28,
@@ -88,9 +93,9 @@ function novaCidade(semente = Math.floor(Math.random() * 9999)) {
 
 function recomecar(mantendoFormas) {
   novaCidade();
-  paredesLista = paredes();          // a cidade é outra: a lista de paredes tem que ser também
+  refazerParedes();                  // a cidade é outra: as paredes têm que ser também
   limparGatos();
-  espalharPelaCidade(24, jogo.t);
+  espalharPelaCidade(Math.max(24, Math.round(tetoAtual() * .12)), jogo.t);
   jogador.x = cidade.largura / 2; jogador.y = cidade.altura / 2;
   jogador.z = 0; jogador.vx = jogador.vy = jogador.vz = 0;
   if (!mantendoFormas) { jogador.desbloqueadas = ["normal"]; jogo.segredos = 0; jogo.vencido = false; }
@@ -104,7 +109,7 @@ function recomecar(mantendoFormas) {
 function salvar() {
   try {
     localStorage.setItem(CHAVE, JSON.stringify({
-      v:1, formas:jogador.desbloqueadas, peixes:jogo.peixes, pegadas:jogo.pegadas,
+      v:2, formas:jogador.desbloqueadas, peixes:jogo.peixes, pegadas:jogo.pegadas,
       estrelas:jogo.estrelas, segredos:jogo.segredos, vencido:jogo.vencido,
       volume:sfx.som.volume, caos:jogo.caos, teto:opTeto, tremor:jogo.tremor, toque:modoToque,
     }));
@@ -121,7 +126,9 @@ function carregar() {
   if (typeof d.volume === "number") sfx.volume(d.volume);
   if (typeof d.caos === "number") jogo.caos = d.caos;
   if (typeof d.tremor === "number") jogo.tremor = d.tremor;
-  if (typeof d.teto === "number") opTeto = d.teto;
+  /* quem já jogava tinha o teto antigo (320) guardado: a cidade grande
+     merece os mil gatos, então o save velho sobe pro novo padrão */
+  if (typeof d.teto === "number") opTeto = d.v >= 2 ? d.teto : Math.max(TETO_PADRAO, d.teto);
   if (typeof d.toque === "string") modoToque = d.toque;
 }
 
@@ -500,7 +507,11 @@ function desenharJogador() {
 }
 
 /* ---------------------------------------------------------------- lógica */
-let paredesLista = [];
+let paredesLista = [], gradeParedes = gradeDeParedes([]);
+function refazerParedes() {
+  paredesLista = paredes();
+  gradeParedes = gradeDeParedes(paredesLista);
+}
 let opTeto = TETO_PADRAO, modoToque = "auto";
 
 function pegarCoisas(agora) {
@@ -634,9 +645,9 @@ function passo(agora) {
   }
 
   /* ---- mundo ---- */
-  const quebrou = atualizarJogador(dt, dir, entrada.pularAgora, jogo.t, paredesLista);
+  const quebrou = atualizarJogador(dt, dir, entrada.pularAgora, jogo.t, gradeParedes);
   if (quebrou) quebrar(quebrou);
-  pensarGatos(dt, jogador, paredesLista, jogo.t, jogo.quadro);
+  pensarGatos(dt, jogador, gradeParedes, jogo.t, jogo.quadro);
   const pertinho = esbarrarGatos(jogador);
   pegarCoisas(jogo.t);
 
@@ -699,7 +710,7 @@ function derrubarPerto(raio, forca) {
 function quebrar(p) {
   if (p.tipo === "caixa") {
     const i = cidade.caixas.indexOf(p.ref);
-    if (i >= 0) { cidade.caixas.splice(i, 1); sfx.pancada(.8); paredesLista = paredes();
+    if (i >= 0) { cidade.caixas.splice(i, 1); sfx.pancada(.8); refazerParedes();
       for (let k = 0; k < 3; k++) nascerGato(p.ref.x, p.ref.y, jogo.t); }
   } else if (p.tipo === "carro") {
     p.ref.gato = 1; sfx.vidro(); sacudir(.5);
@@ -773,7 +784,7 @@ ajustar();
 carregar();
 criarPool(opTeto);
 novaCidade();
-paredesLista = paredes();
+refazerParedes();
 recomecar(true);
 ligarBotoesDeToque();
 aplicarToque();
@@ -800,13 +811,13 @@ const API = {
   forcarEvento:id => forcarEvento(id, jogo.t, jogador, ui.faixa),
   abrirSegredo:p => abrirSegredo(p, jogo.t),
   paredes:() => paredesLista,
-  refazerParedes:() => { paredesLista = paredes(); },
+  refazerParedes,
   ui, sfx, salvar, CHAVE,
   /* nascer gatos perto de você, que é onde dá pra ver a bagunça acontecer */
   gatosPerto(n) {
-    let fez = 0;
+    let fez = 0, livres = tetoAtual() - quantosVivos();   // conta uma vez só
     for (let i = 0; i < n; i++) {
-      if (quantosVivos() >= tetoAtual()) break;
+      if (livres-- <= 0) break;
       const a = Math.random() * 6.2832, r = 1.5 + Math.random() * 14;
       nascerGato(jogador.x + Math.cos(a) * r, jogador.y + Math.sin(a) * r, jogo.t,
         { vz: 2 + Math.random() * 4 });

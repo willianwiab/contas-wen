@@ -79,7 +79,7 @@ export function usarPoder(agora) {
   return null;
 }
 
-export function atualizarJogador(dt, dir, querPular, agora, paredesLista) {
+export function atualizarJogador(dt, dir, querPular, agora, grade) {
   const f = formaAtual();
   jogador.vivo = true;
 
@@ -126,7 +126,7 @@ export function atualizarJogador(dt, dir, querPular, agora, paredesLista) {
   if (truques.fantasma) {
     /* atravessa tudo: nem colisão, nem quebra */
   } else if (!f.mega) {
-    for (const p of paredesLista) {
+    for (const p of grade.perto(jogador.x, jogador.y)) {
       if (Math.abs(p.x + p.l / 2 - jogador.x) > p.l + jogador.raio + 3) continue;
       if (Math.abs(p.y + p.f / 2 - jogador.y) > p.f + jogador.raio + 3) continue;
       if (jogador.z > (p.alt || 2)) continue;                   // passou por cima
@@ -135,7 +135,7 @@ export function atualizarJogador(dt, dir, querPular, agora, paredesLista) {
         quebrou = p;
     }
   } else {
-    for (const p of paredesLista) {
+    for (const p of grade.perto(jogador.x, jogador.y)) {
       if (Math.abs(p.x - jogador.x) > 8 || Math.abs(p.y - jogador.y) > 8) continue;
       if (p.tipo !== "predio" || p.alt < 14) quebrou = p;        // a mega larva atropela
     }

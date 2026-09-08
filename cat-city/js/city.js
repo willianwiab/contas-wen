@@ -15,7 +15,7 @@ export const RUA = 9;             // largura da rua
 const PASSO = TAM + RUA;
 
 export const cidade = {
-  colunas:7, linhas:7,
+  colunas:11, linhas:11,          // a cidade grande: 11 x 11 quarteirões
   predios:[], postes:[], arvores:[], carros:[], placas:[], semaforos:[],
   bancos:[], caixas:[], portas:[], largura:0, altura:0,
 };
@@ -35,7 +35,8 @@ export function gerarCidade(sementeN = 7) {
   for (let qy = 0; qy < c.linhas; qy++) for (let qx = 0; qx < c.colunas; qx++) {
     const x0 = qx * PASSO + RUA / 2, y0 = qy * PASSO + RUA / 2;
     const meio = qx === (c.colunas >> 1) && qy === (c.linhas >> 1);
-    const parque = (qx === 1 && qy === c.linhas - 2) || (qx === c.colunas - 2 && qy === 1);
+    /* praças espalhadas pela cidade toda, não só nas duas pontas */
+    const parque = (qx % 5 === 1 && qy % 5 === 3) || (qx % 5 === 3 && qy % 5 === 1);
 
     if (parque) {                                   // ---- parque ----
       for (let i = 0; i < 9; i++)
@@ -81,7 +82,8 @@ export function gerarCidade(sementeN = 7) {
       c.placas.push({ x:x + 2 + r() * 6, y:y - RUA * .28,
         txt:["PARE","RUA DO GATO","MIAU 50","→","SEM SAÍDA","GATOS"][Math.floor(r() * 6)] });
   }
-  for (let i = 0; i < 46; i++) {                    // carros parados nas guias
+  const quantosCarros = Math.round(c.colunas * c.linhas * .95);
+  for (let i = 0; i < quantosCarros; i++) {         // carros parados nas guias
     const naHorizontal = r() < .5;
     const qx = Math.floor(r() * c.colunas), qy = Math.floor(r() * c.linhas);
     c.carros.push({
@@ -103,6 +105,44 @@ export function paredes() {
     l:(c.ang ? 1.8 : 4.2), f:(c.ang ? 4.2 : 1.8), alt:1.5, tipo:"carro", ref:c });
   for (const cx of cidade.caixas) lista.push({ x:cx.x - .7, y:cx.y - .7, l:1.4, f:1.4, alt:1.3, tipo:"caixa", ref:cx });
   return lista;
+}
+
+/* --------------------------------------------------------------------------
+   Grade de paredes.
+
+   Com a cidade grande são umas 500 caixas de colisão. Perguntar "bati em
+   alguma?" varrendo as 500 pra cada gato, 60 vezes por segundo, é o que
+   derreteria o computador. Então as paredes entram numa grade de células:
+   cada um só olha as 9 células em volta de si — quase sempre menos de 10
+   caixas em vez de 500.
+   -------------------------------------------------------------------------- */
+export function gradeDeParedes(lista, celula = 14) {
+  const mapa = new Map();
+  for (const p of lista) {
+    const i0 = Math.floor(p.x / celula), i1 = Math.floor((p.x + p.l) / celula);
+    const j0 = Math.floor(p.y / celula), j1 = Math.floor((p.y + p.f) / celula);
+    for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
+      const k = i + "," + j;
+      let cel = mapa.get(k);
+      if (!cel) mapa.set(k, cel = []);
+      cel.push(p);
+    }
+  }
+  const balde = [];
+  return {
+    celula, lista,
+    /* devolve SEMPRE o mesmo array reaproveitado: nada de lixo por quadro */
+    perto(x, y) {
+      balde.length = 0;
+      const i = Math.floor(x / celula), j = Math.floor(y / celula);
+      for (let a = i - 1; a <= i + 1; a++) for (let b = j - 1; b <= j + 1; b++) {
+        const cel = mapa.get(a + "," + b);
+        if (!cel) continue;
+        for (const p of cel) if (balde.indexOf(p) < 0) balde.push(p);
+      }
+      return balde;
+    },
+  };
 }
 
 /* ---- a cidade virando gato: sobe conforme a fase ---- */

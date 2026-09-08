@@ -4,7 +4,7 @@
    nova; sem internet, vem a última que ficou guardada.
    Ao mudar o jogo, suba a VERSAO.
    ============================================================ */
-const VERSAO = 'cat-city-v2';
+const VERSAO = 'cat-city-v3';
 const CACHE = VERSAO;
 const ARQUIVOS = [
   './', './index.html', './style.css', './manifest.webmanifest',

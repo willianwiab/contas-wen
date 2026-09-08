@@ -15,7 +15,7 @@
 import { cidade } from "./city.js";
 import { empurrar, cair, atrito } from "./physics.js";
 
-export const TETO_PADRAO = 320;
+export const TETO_PADRAO = 1000;      // o Jojo pediu mil gatos
 export const gatos = [];
 let teto = TETO_PADRAO, proximo = 0;
 
@@ -74,14 +74,17 @@ export function nascerGato(x, y, agora, opcoes = {}) {
 /* A MULTIPLICAÇÃO: cada gato vira dois. É o coração do absurdo. */
 export function multiplicar(agora, quantasVezes = 1, limite = 999) {
   let nasceram = 0;
+  /* conta o que falta pro teto UMA vez: com mil gatos, perguntar isso a cada
+     filhote era mil x mil contas e o jogo engasgava na hora da multiplicação */
+  let livres = teto - quantosVivos();
   for (let v = 0; v < quantasVezes; v++) {
     const vivos = gatos.filter(g => g.vivo && g.tipo !== 1);
     for (const g of vivos) {
-      if (nasceram >= limite || quantosVivos() >= teto) break;
+      if (nasceram >= limite || livres <= 0) break;
       const f = nascerGato(g.x + (Math.random() - .5) * 1.6, g.y + (Math.random() - .5) * 1.6,
         agora, { escala:g.escala * .92, qual:g.qual, vz:2 + Math.random() * 3 });
       f.vx = (Math.random() - .5) * 8; f.vy = (Math.random() - .5) * 8;
-      nasceram++;
+      nasceram++; livres--;
     }
   }
   return nasceram;
@@ -96,7 +99,7 @@ export function limparGatos() { for (const g of gatos) g.vivo = false; }
 /* --------------------------------------------------------------------------
    o cérebro (bem pequeno) de cada gato
    -------------------------------------------------------------------------- */
-export function pensarGatos(dt, jogador, paredesLista, agora, quadro) {
+export function pensarGatos(dt, jogador, grade, agora, quadro) {
   for (let i = 0; i < gatos.length; i++) {
     const g = gatos[i];
     if (!g.vivo) continue;
@@ -126,7 +129,7 @@ export function pensarGatos(dt, jogador, paredesLista, agora, quadro) {
 
     /* colisão só com quem está por perto — o resto atravessa e ninguém nota */
     if (!longe) {
-      for (const p of paredesLista) {
+      for (const p of grade.perto(g.x, g.y)) {
         if (Math.abs(p.x - g.x) > 9 || Math.abs(p.y - g.y) > 9) continue;
         const px = Math.max(p.x, Math.min(g.x, p.x + p.l));
         const py = Math.max(p.y, Math.min(g.y, p.y + p.f));
