@@ -55,8 +55,8 @@ async function escrever(p, txt) {
     ids: new Set(Clipy.REGRAS.map(x => x.id)).size,
     abas: document.querySelectorAll('.aba').length,
     canvas: !!document.getElementById('telaClipy').getContext('2d') }));
-  conf('o site abre com o Clipy desenhado e as 30 regras carregadas',
-    /Clipy/.test(r.titulo) && r.regras === 30 && r.ids === 30 && r.abas === 4 && r.canvas,
+  conf('o site abre com o Clipy desenhado, as 5 abas e as 30 regras carregadas',
+    /Clipy/.test(r.titulo) && r.regras === 30 && r.ids === 30 && r.abas === 5 && r.canvas,
     JSON.stringify(r));
 
   /* ---------- toda regra tem fala, botões e um jeito de disparar ---------- */
@@ -271,6 +271,128 @@ async function escrever(p, txt) {
   r = await p2.evaluate(() => document.body.scrollWidth <= window.innerWidth + 1);
   conf('e no celular a página cabe na tela, sem rolar pro lado', r, String(r));
   await ctx2.close();
+
+
+  /* ========== A ÁREA DE TRANSFERÊNCIA ========== */
+  await p.click('.aba[data-aba="prancheta"]');
+  await p.waitForTimeout(300);
+
+  r = await p.evaluate(() => ({
+    pastas: Clipy.prancheta.pastas.length,
+    ids: new Set(Clipy.prancheta.pastas.map(x => x.id)).size,
+    atalhos: Clipy.prancheta.pastas.reduce((a, x) => a + x.itens.length, 0),
+    naTela: document.querySelectorAll('#listaAtalhos .pasta').length }));
+  conf('a caixa de atalhos já vem com 3 pastas prontas, cada uma com id próprio',
+    r.pastas === 3 && r.ids === 3 && r.atalhos === 7 && r.naTela === 3, JSON.stringify(r));
+
+  r = await p.evaluate(() => {
+    Clipy.prancheta.historico = [];
+    const t = [];
+    for (const x of ['https://exemplo.com/gato', 'jojo@exemplo.com', '(11) 91234-5678',
+                     'R$ 42,50', 'const gatos = 1000;', '#ff8fb1'])
+      t.push(Clipy.tipoDoTexto(x).id);
+    return t;
+  });
+  conf('ele reconhece o tipo do que você copia: link, e-mail, telefone, dinheiro, código e cor',
+    JSON.stringify(r) === '["link","email","telefone","dinheiro","codigo","cor"]', JSON.stringify(r));
+
+  r = await p.evaluate(() => {
+    Clipy.capturar('https://willianwiab.github.io/contas-wen/cat-city/', 'teste');
+    Clipy.montarHistorico();
+    return { itens: Clipy.prancheta.historico.length,
+      tipo: Clipy.prancheta.historico[0].tipo,
+      naTela: document.querySelectorAll('#listaHist .item').length,
+      balao: document.getElementById('balaoTexto').textContent,
+      clipyAparece: !document.getElementById('ladoClipy').hidden };
+  });
+  conf('capturar um link guarda no histórico E faz o Clipy comentar, sem sair da aba',
+    r.itens === 1 && r.tipo === 'link' && r.naTela === 1 &&
+    /link/i.test(r.balao) && r.clipyAparece, JSON.stringify(r));
+
+  /* o mais importante desta aba */
+  r = await p.evaluate(() => {
+    const antes = Clipy.prancheta.historico.length;
+    Clipy.capturar('senha: bananinha123', 'teste');
+    Clipy.capturar('4111 1111 1111 1111', 'teste');
+    return { antes, depois: Clipy.prancheta.historico.length,
+      balao: document.getElementById('balaoTexto').textContent };
+  });
+  conf('senha e número de cartão NÃO entram no histórico — ele recusa e avisa',
+    r.depois === r.antes && /senha|cart/i.test(r.balao), JSON.stringify(r));
+
+  r = await p.evaluate(() => {
+    Clipy.capturar('https://willianwiab.github.io/contas-wen/cat-city/', 'teste');
+    return { itens: Clipy.prancheta.historico.length, vezes: Clipy.prancheta.historico[0].vezes };
+  });
+  conf('copiar de novo a mesma coisa não duplica: sobe pro topo e conta as vezes',
+    r.itens === 1 && r.vezes === 2, JSON.stringify(r));
+
+  r = await p.evaluate(() => {
+    for (let i = 0; i < 12; i++) Clipy.capturar('texto número ' + i, 'teste');
+    Clipy.prancheta.fixar(Clipy.prancheta.historico[Clipy.prancheta.historico.length - 1].id);
+    Clipy.prancheta.limite = 5; Clipy.prancheta.aparar();
+    return { total: Clipy.prancheta.historico.length,
+      fixos: Clipy.prancheta.historico.filter(x => x.fixo).length };
+  });
+  conf('o limite de itens corta o histórico, mas nunca joga fora o que está fixado 📌',
+    r.total <= 6 && r.fixos === 1, JSON.stringify(r));
+
+  await p.fill('#buscaHist', 'número 7');
+  await p.waitForTimeout(200);
+  r = await p.evaluate(() => document.querySelectorAll('#listaHist .item').length);
+  conf('a busca no histórico filtra', r === 1, String(r));
+  await p.fill('#buscaHist', '');
+
+  r = await p.evaluate(() => {
+    const antes = Clipy.prancheta.historico.filter(x => !x.fixo).length;
+    Clipy.prancheta.limpar(); Clipy.montarHistorico();
+    return { antes, depois: Clipy.prancheta.historico.length };
+  });
+  conf('limpar apaga os soltos e deixa os fixados', r.antes > 0 && r.depois === 1, JSON.stringify(r));
+
+  /* colar na página captura */
+  await p.evaluate(() => { Clipy.prancheta.historico = []; Clipy.montarHistorico(); });
+  await p.focus('#colarAqui');
+  await p.evaluate(() => {
+    const dt = new DataTransfer(); dt.setData('text', 'colado com ctrl+v');
+    document.getElementById('colarAqui').dispatchEvent(
+      new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+  });
+  await p.waitForTimeout(200);
+  r = await p.evaluate(() => ({ n: Clipy.prancheta.historico.length,
+    txt: (Clipy.prancheta.historico[0] || {}).texto, caixa: document.getElementById('colarAqui').value }));
+  conf('colar com Ctrl+V na caixinha captura o texto (e a caixinha se limpa)',
+    r.n === 1 && r.txt === 'colado com ctrl+v' && r.caixa === '', JSON.stringify(r));
+
+  /* atalho vai pro papel */
+  r = await p.evaluate(() => {
+    const a = Clipy.prancheta.pastas[0].itens[0];
+    const b = [...document.querySelectorAll('#listaAtalhos .atalho')]
+      .find(x => x.dataset.id === a.id);
+    b.querySelector('button:nth-of-type(2)').click();      // "no papel"
+    return { papel: document.getElementById('papel').value,
+      aba: document.getElementById('pgMesa').classList.contains('on'), nome: a.nome };
+  });
+  conf('o botão "no papel" cola o atalho no papel e leva você pra aba da mesa',
+    r.aba && r.papel.includes('JoJo'), JSON.stringify({ aba:r.aba, nome:r.nome }));
+
+  /* e tudo isso fica salvo */
+  await p.evaluate(() => Clipy.salvar());
+  await p.reload();
+  await p.waitForFunction(() => !!window.Clipy, null, { timeout: 15000 });
+  r = await p.evaluate(() => ({ itens: Clipy.prancheta.historico.length,
+    pastas: Clipy.prancheta.pastas.length, limite: Clipy.prancheta.limite }));
+  conf('o histórico, os atalhos e o limite ficam salvos no aparelho',
+    r.itens >= 1 && r.pastas === 3 && r.limite === 5, JSON.stringify(r));
+
+  /* a página conta a história do outro Clipy */
+  await p.click('.aba[data-aba="historia"]');
+  r = await p.evaluate(() => document.getElementById('pgHistoria').textContent);
+  conf('a página da história explica que existem DOIS Clipys e o que cada um é',
+    /ClipMenu/.test(r) && /área de transferência/i.test(r) && /naotaka/i.test(r) &&
+    /não pode fazer isso/i.test(r), '');
+  r = await p.evaluate(() => document.getElementById('ladoClipy').hidden);
+  conf('e nas abas de leitura o Clipy sai da frente', r === true, String(r));
 
   console.log('✅ ' + ok.length + ' ok'); ok.forEach(t => console.log('   · ' + t));
   if (fail.length) { console.log('❌ ' + fail.length); fail.forEach(t => console.log('   · ' + t)); }

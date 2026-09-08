@@ -1036,7 +1036,7 @@
       "slug": "clipy",
       "nome": "Clipy",
       "descricao": "Um ajudante de clipe de papel que fica num canto da tela, lê o que você escreve e aparece sozinho pra atrapalhar — igual aos assistentes que vinham nos programas de escritório dos anos 90. São 30 regras rodando dentro do navegador, sem internet nenhuma.",
-      "comoFunciona": "Você escreve num papel e o Clipy vai lendo. Cada uma das 30 regras dele sabe reconhecer uma coisa: 'começa com Prezado' é carta, 'três linhas com traço' é lista, 'tudo em maiúscula' é gritar. Quando uma regra bate, ele pula na sua frente com uma sugestão e dois botões. E os botões fazem coisa de verdade: montam a carta, numeram a lista, somam os números, abaixam as maiúsculas.",
+      "comoFunciona": "São duas coisas no mesmo site. Na aba do papel você escreve e o Clipy vai lendo. Cada uma das 30 regras dele sabe reconhecer uma coisa: 'começa com Prezado' é carta, 'três linhas com traço' é lista, 'tudo em maiúscula' é gritar. Quando uma regra bate, ele pula na sua frente com uma sugestão e dois botões. E os botões fazem coisa de verdade: montam a carta, numeram a lista, somam os números, abaixam as maiúsculas.",
       "objetivo": "Não tem objetivo — é um brinquedo e uma aula. Dá pra descobrir as 30 regras escrevendo coisas diferentes e ver cada uma acender na aba 🧠, que mostra exatamente o que ele está pensando.",
       "mecanicas": [
         "30 regras escritas à mão, todas visíveis numa tabela que acende em verde quando a regra está batendo com o que você acabou de escrever",
@@ -1048,6 +1048,9 @@
         "O clipe é desenhado por código num canvas: 9 humores, 6 gestos, olhos que seguem o mouse, respiração e piscada automáticas. Nenhuma imagem na página",
         "Uma aba conta a história dos ajudantes animados, por que sumiram, e o que eles ensinam sobre as IAs de hoje",
         "Nada sai do navegador: sem internet, sem servidor, sem conta",
+        "Aba de área de transferência: histórico do que você copia e atalhos de texto em pastas — porque Clipy também é o nome de um gerenciador de área de transferência de Mac, aberto e de graça, herdeiro do ClipMenu",
+        "E é aí que os dois se encontram: cada item capturado passa pelas regras do bichinho, que reconhece link, e-mail, telefone, dinheiro, código ou cor e comenta",
+        "Senha e número de cartão são recusados: não entram nem no histórico",
         "Dá pra instalar como aplicativo e usar sem internet"
       ],
       "categoria": "Brinquedo",

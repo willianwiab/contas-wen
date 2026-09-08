@@ -6,12 +6,14 @@
 import { Clipe } from "./clipy.js";
 import { REGRAS, Cerebro, responder, somarDoTexto } from "./cerebro.js";
 import { ligarInstalar } from "./instalar.js";
+import { Prancheta, tipoDoTexto, comentarioSobre, ATALHOS_DE_FABRICA } from "./prancheta.js";
 
 const $ = id => document.getElementById(id);
 const CHAVE = "clipy_v1";
 
 const clipe = new Clipe($("telaClipy"));
 const cerebro = new Cerebro();
+const prancheta = new Prancheta();
 
 /* ---------------------------------------------------------------- estado */
 const estado = {
@@ -226,11 +228,14 @@ $("chatice").oninput = e => {
 function irPara(nome) {
   for (const a of document.querySelectorAll(".aba")) a.classList.toggle("sel", a.dataset.aba === nome);
   for (const p of document.querySelectorAll(".pagina")) p.classList.remove("on");
-  const id = { mesa:"pgMesa", conversa:"pgConversa", regras:"pgRegras",
+  const id = { mesa:"pgMesa", prancheta:"pgPrancheta", conversa:"pgConversa", regras:"pgRegras",
                historia:"pgHistoria", instalar:"pgInstalar" }[nome];
   $(id).classList.add("on");
   if (nome === "regras") atualizarTabela();
   if (nome === "conversa") $("campoConversa").focus();
+  if (nome === "prancheta") { montarHistorico(); montarAtalhos(); }
+  /* o Clipy só faz sentido nas abas em que tem o que reagir */
+  $("ladoClipy").hidden = !(nome === "mesa" || nome === "prancheta");
 }
 for (const a of document.querySelectorAll(".aba")) a.onclick = () => irPara(a.dataset.aba);
 $("btVoltaInstalar").onclick = () => irPara("mesa");
@@ -267,6 +272,213 @@ for (const p of PERGUNTAS) {
   $("sugestoes").appendChild(b);
 }
 falarNaConversa("clipy", "Oi! Eu sou o Clipy. Pergunta o que quiser — eu respondo com o que está escrito dentro de mim, que não é muita coisa.");
+
+
+/* ==========================================================================
+   A ÁREA DE TRANSFERÊNCIA
+   O histórico do que você copia e os atalhos de texto. E o gancho: cada item
+   capturado passa pelo Clipy, que olha o tipo e comenta.
+   ========================================================================== */
+const QUANDO = q => {
+  const s = Math.round((Date.now() - q) / 1000);
+  if (s < 60) return "agora";
+  if (s < 3600) return Math.floor(s / 60) + " min atrás";
+  if (s < 86400) return Math.floor(s / 3600) + " h atrás";
+  return Math.floor(s / 86400) + " dias atrás";
+};
+
+function capturar(texto, comoVeio) {
+  const r = prancheta.guardar(texto, comoVeio);
+  if (!r.ok) {
+    if (r.motivo === "segredo") {
+      dizer("Isso parecia uma senha ou um cartão. NÃO guardei — nem no histórico. É pra sua segurança.");
+      clipe.sentir("assustado"); clipe.fazer("tremer");
+      montarHistorico();
+    }
+    return r;
+  }
+  montarHistorico();
+  salvar();
+  /* o gancho: o Clipy olha o que entrou e reage */
+  const t = tipoDoTexto(r.item.texto);
+  dizer(t.e + " " + t.nome + ". " + (r.repetido
+    ? "Esse você já tinha copiado — subi ele pro topo."
+    : comentarioSobre(r.item.tipo)));
+  clipe.sentir(r.repetido ? "confuso" : "atento");
+  clipe.fazer("pular");
+  return r;
+}
+
+async function copiar(texto) {
+  try {
+    await navigator.clipboard.writeText(texto);
+    return true;
+  } catch (e) {
+    /* sem permissão: cai pro jeito antigo, que funciona em todo lugar */
+    const c = document.createElement("textarea");
+    c.value = texto; c.style.position = "fixed"; c.style.opacity = "0";
+    document.body.appendChild(c); c.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (e2) {}
+    c.remove();
+    return ok;
+  }
+}
+
+function montarHistorico() {
+  const lista = prancheta.filtrado();
+  $("contHist").textContent = prancheta.historico.length +
+    (prancheta.historico.length === 1 ? " item" : " itens");
+  const caixa = $("listaHist");
+  if (!lista.length) {
+    caixa.innerHTML = '<p class="vazio">' + (prancheta.busca
+      ? "Nada com esse texto no histórico."
+      : "Nada guardado ainda.<br>Copie alguma coisa e aperte <b>📋 Capturar</b>, ou cole aqui com <b>Ctrl+V</b>.") + "</p>";
+    return;
+  }
+  caixa.innerHTML = "";
+  for (const x of lista) {
+    const t = tipoDoTexto(x.texto);
+    const d = document.createElement("div");
+    d.className = "item" + (x.fixo ? " fixado" : "");
+    d.dataset.id = x.id;
+    const corpo = document.createElement("div"); corpo.className = "corpo";
+    const txt = document.createElement("div"); txt.className = "txt"; txt.textContent = x.texto;
+    const meta = document.createElement("div"); meta.className = "meta";
+    meta.textContent = t.nome + " · " + x.texto.length + " letras · " + QUANDO(x.quando) +
+      (x.vezes > 1 ? " · copiado " + x.vezes + "x" : "");
+    corpo.appendChild(txt); corpo.appendChild(meta);
+    const tipo = document.createElement("div"); tipo.className = "tipo"; tipo.textContent = t.e;
+    const acoes = document.createElement("div"); acoes.className = "acoes";
+    const bCopiar = document.createElement("button"); bCopiar.textContent = "copiar";
+    bCopiar.onclick = async () => {
+      const ok = await copiar(x.texto);
+      dizer(ok ? "Copiado! Agora é só colar onde você quiser." : "Não consegui copiar. Selecione e use Ctrl+C.");
+      clipe.fazer("pular"); clipe.sentir("feliz");
+    };
+    const bFixar = document.createElement("button");
+    bFixar.textContent = x.fixo ? "📌" : "📍"; bFixar.title = x.fixo ? "desafixar" : "fixar (não some)";
+    bFixar.onclick = () => { prancheta.fixar(x.id); montarHistorico(); salvar(); };
+    const bAtalho = document.createElement("button"); bAtalho.textContent = "✂️"; bAtalho.title = "virar atalho";
+    bAtalho.onclick = () => virarAtalho(x.texto);
+    const bApagar = document.createElement("button"); bApagar.textContent = "✕"; bApagar.title = "apagar";
+    bApagar.onclick = () => { prancheta.apagar(x.id); montarHistorico(); salvar(); };
+    acoes.append(bCopiar, bFixar, bAtalho, bApagar);
+    d.append(tipo, corpo, acoes);
+    caixa.appendChild(d);
+  }
+}
+
+function virarAtalho(texto) {
+  if (!prancheta.pastas.length) prancheta.novaPasta("Meus atalhos");
+  const nome = prompt("Nome do atalho:", texto.trim().slice(0, 24));
+  if (nome === null) return;
+  prancheta.novoAtalho(prancheta.pastas[0].id, nome || "Sem nome", texto);
+  salvar(); montarAtalhos(); irPara("prancheta");
+  dizer("Atalho guardado em “" + prancheta.pastas[0].nome + "”. Agora é só um clique.");
+  clipe.sentir("feliz"); clipe.fazer("acenar");
+}
+
+function montarAtalhos() {
+  const caixa = $("listaAtalhos");
+  const total = prancheta.pastas.reduce((a, p) => a + p.itens.length, 0);
+  $("contAtalhos").textContent = total + (total === 1 ? " atalho" : " atalhos");
+  if (!prancheta.pastas.length) {
+    caixa.innerHTML = '<p class="vazio">Nenhuma pasta ainda.<br>Aperte <b>📁 nova pasta</b> pra começar.</p>';
+    return;
+  }
+  caixa.innerHTML = "";
+  for (const p of prancheta.pastas) {
+    const d = document.createElement("div"); d.className = "pasta";
+    const cab = document.createElement("div"); cab.className = "cabeca";
+    const nome = document.createElement("span"); nome.className = "nome";
+    nome.textContent = "📁 " + p.nome + " (" + p.itens.length + ")";
+    const bNovo = document.createElement("button"); bNovo.textContent = "+ atalho";
+    bNovo.onclick = () => {
+      const n = prompt("Nome do atalho:"); if (n === null) return;
+      const t = prompt("O texto que ele cola:"); if (t === null) return;
+      prancheta.novoAtalho(p.id, n, t); salvar(); montarAtalhos();
+    };
+    const bApagar = document.createElement("button"); bApagar.textContent = "✕";
+    bApagar.title = "apagar a pasta inteira";
+    bApagar.onclick = () => {
+      if (!confirm("Apagar a pasta “" + p.nome + "” e os " + p.itens.length + " atalhos dela?")) return;
+      prancheta.apagarPasta(p.id); salvar(); montarAtalhos();
+    };
+    cab.append(nome, bNovo, bApagar);
+    const itens = document.createElement("div"); itens.className = "itens";
+    for (const a of p.itens) {
+      const l = document.createElement("div"); l.className = "atalho"; l.dataset.id = a.id;
+      const n = document.createElement("span"); n.className = "nome"; n.textContent = a.nome;
+      const prev = document.createElement("span"); prev.className = "prev";
+      prev.textContent = a.texto.replace(/\n/g, " ⏎ ");
+      const bc = document.createElement("button"); bc.textContent = "copiar";
+      bc.onclick = async () => {
+        const ok = await copiar(a.texto);
+        dizer(ok ? "“" + a.nome + "” copiado! Cole onde quiser." : "Não consegui copiar aqui.");
+        clipe.fazer("pular"); clipe.sentir("feliz");
+      };
+      const bp = document.createElement("button"); bp.textContent = "no papel"; bp.title = "colar no papel";
+      bp.onclick = () => {
+        trocarPapel(papel().value.replace(/\s*$/, papel().value ? "\n" : "") + a.texto);
+        irPara("mesa"); papel().focus();
+        dizer("Colei “" + a.nome + "” no papel.");
+      };
+      const bx = document.createElement("button"); bx.textContent = "✕";
+      bx.onclick = () => { prancheta.apagarAtalho(a.id); salvar(); montarAtalhos(); };
+      l.append(n, prev, bc, bp, bx);
+      itens.appendChild(l);
+    }
+    d.append(cab, itens);
+    caixa.appendChild(d);
+  }
+}
+
+/* ---- os botões da aba ---- */
+$("btCapturar").onclick = async () => {
+  let t = null;
+  try { t = await navigator.clipboard.readText(); } catch (e) {}
+  if (t === null || t === undefined || t === "") {
+    $("colarAqui").focus();
+    dizer("O navegador não me deixou ler a área de transferência sozinho. " +
+          "Clique na caixinha do lado e aperte Ctrl+V — aí eu pego.");
+    clipe.sentir("confuso");
+    return;
+  }
+  capturar(t, "botao");
+};
+$("colarAqui").addEventListener("paste", e => {
+  const t = (e.clipboardData || window.clipboardData).getData("text");
+  e.preventDefault();
+  $("colarAqui").value = "";
+  if (t) capturar(t, "colar");
+});
+/* colar em qualquer lugar da aba também captura */
+addEventListener("paste", e => {
+  if (!$("pgPrancheta").classList.contains("on")) return;
+  if (e.target === $("colarAqui")) return;
+  const t = (e.clipboardData || window.clipboardData).getData("text");
+  if (t) { e.preventDefault(); capturar(t, "colar"); }
+});
+$("btLimparHist").onclick = () => {
+  const soltos = prancheta.historico.filter(x => !x.fixo).length;
+  if (!soltos) { dizer("Não tem nada pra limpar (os fixados eu não mexo)."); return; }
+  if (!confirm("Apagar " + soltos + " item(ns) do histórico? Os fixados 📌 ficam.")) return;
+  prancheta.limpar(); montarHistorico(); salvar();
+  dizer("Histórico limpo. Os fixados eu deixei.");
+};
+$("buscaHist").oninput = e => { prancheta.busca = e.target.value; montarHistorico(); };
+$("buscaHist").onkeydown = e => e.stopPropagation();
+$("limiteHist").onchange = e => {
+  prancheta.limite = Math.max(5, Math.min(500, +e.target.value || 60));
+  e.target.value = prancheta.limite;
+  prancheta.aparar(); montarHistorico(); salvar();
+};
+$("btNovaPasta").onclick = () => {
+  const n = prompt("Nome da pasta:", "Meus atalhos");
+  if (n === null) return;
+  prancheta.novaPasta(n || "Nova pasta"); salvar(); montarAtalhos();
+};
 
 /* ---------------------------------------------------------------- tabela */
 const COMO = {
@@ -330,6 +542,7 @@ function salvar() {
     localStorage.setItem(CHAVE, JSON.stringify({
       texto: $("papel").value, chatice: cerebro.chatice,
       caladas: [...cerebro.desligadas],
+      prancheta: prancheta.paraSalvar(),
     }));
   } catch (e) {}
 }
@@ -344,6 +557,8 @@ function carregar() {
     $("chatice").value = d.chatice; $("chaticeVal").textContent = Math.round(d.chatice);
   }
   if (Array.isArray(d.caladas)) for (const id of d.caladas) cerebro.desligadas.add(id);
+  if (d.prancheta) prancheta.carregarDe(d.prancheta);
+  $("limiteHist").value = prancheta.limite;
 }
 
 /* ---------------------------------------------------------------- o laço */
@@ -367,6 +582,15 @@ setInterval(() => {
 
 /* ---------------------------------------------------------------- começo */
 carregar();
+/* na primeira vez, a caixa de atalhos já vem com alguns prontos */
+if (!prancheta.pastas.length) {
+  for (const p of ATALHOS_DE_FABRICA) {
+    const nova = prancheta.novaPasta(p.nome);
+    for (const a of p.itens) prancheta.novoAtalho(nova.id, a.nome, a.texto);
+  }
+  salvar();
+}
+montarHistorico(); montarAtalhos();
 lerPapel();
 ultimaTecla = Date.now();
 ligarInstalar(() => irPara("instalar"), dizer);
@@ -375,7 +599,8 @@ setTimeout(() => { clipe.fazer("acenar"); clipe.sentir("feliz");
   setTimeout(() => clipe.sentir("parado"), 2000); }, 700);
 
 /* pro teste (e pra curiosidade) alcançarem o Clipy por fora */
-window.Clipy = { clipe, cerebro, estado, REGRAS, lerPapel, mostrarDica, fecharBalao,
+window.Clipy = { clipe, cerebro, prancheta, estado, REGRAS, lerPapel, mostrarDica, fecharBalao,
+  capturar, montarHistorico, montarAtalhos, tipoDoTexto, virarAtalho,
   zerarApagados:() => { apagadosRecentes = []; estado.apagados = 0; },
   fazer, ACOES, responder, somarDoTexto, irPara, atualizarTabela, salvar, carregar, CHAVE,
   dicaAberta:() => dicaAberta };
