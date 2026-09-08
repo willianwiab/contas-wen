@@ -50,6 +50,8 @@
       const combinaBusca = !termo || textoBusca.includes(termo);
       const combinaCategoria = !categoria || jogo.categoria === categoria;
       const combinaStatus = !status || classeStatus(jogo.status) === classeStatus(status);
+      // Jogo secreto: fica escondido até alguém escrever o nome dele na busca.
+      if (jogo.secreto) return termo.length >= 3 && textoBusca.includes(termo);
       return combinaBusca && combinaCategoria && combinaStatus;
     });
 
@@ -63,7 +65,8 @@
 
     grid.innerHTML = resultado.map(criarCartaoJogo).join('');
     vazio.hidden = resultado.length > 0;
-    contador.textContent = `${resultado.length} de ${jogos.length} jogos`;
+    const totalVisivel = jogos.filter((j) => !j.secreto).length;
+    contador.textContent = `${resultado.length} de ${totalVisivel} jogos`;
 
     ativarReveal();
   }

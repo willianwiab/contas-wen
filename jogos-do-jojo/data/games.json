@@ -542,6 +542,7 @@
     },
     {
       "slug": "mina-de-emojis",
+      "secreto": true,
       "nome": "Mina de Emojis",
       "descricao": "Cave pra baixo, quebre pedra e ache os emojis presos em cada camada da terra. São 8 camadas, 56 emojis escondidos, robôs que cavam sozinhos e dinamite.",
       "comoFunciona": "Você clica nas pedras encostadas no buraco pra dar picaretada nelas. Cada pedra tem uma dureza que cresce conforme você desce, e algumas escondem um emoji dentro. As moedas de cada pedra compram melhorias, que deixam você cavar mais fundo e mais rápido.",
