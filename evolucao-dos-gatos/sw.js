@@ -9,7 +9,7 @@
 
    Ao mudar o jogo, suba a VERSAO: isso apaga o cache velho.
    ============================================================ */
-const VERSAO = 'gatos-v1';
+const VERSAO = 'gatos-v2';
 const CACHE = VERSAO;
 const ARQUIVOS = [
   './', './index.html', './manifest.webmanifest',

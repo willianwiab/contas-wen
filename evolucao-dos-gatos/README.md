@@ -128,7 +128,7 @@ o ⊕ na barra de endereço. Depois de abrir uma vez, funciona sem internet.
 
 Com `npm i playwright-core`:
 
-- `node teste-gatos.js` — 18 checagens: as 31 evoluções em ordem, os bichinhos
+- `node teste-gatos.js` — 22 checagens: as 31 evoluções em ordem, os bichinhos
   que abrem conforme o nível, caçar de verdade com o mouse, o susto do perigo, o
   álbum, a colônia caçando sozinha, a comida, as 9 vidas, os três modos do 🌀 e o
   save. Uma delas mede o **FPS** com a sala derretendo e 48 gatos na colônia.
@@ -137,6 +137,12 @@ Com `npm i playwright-core`:
 
 ## Detalhes técnicos
 
+- **Os painéis não se remontam sozinhos.** A loja, os gatos e a comida são
+  montados **uma vez** (quando a aba abre ou a família muda) e só *atualizados*
+  depois. Antes o loop de 100 ms refazia o `innerHTML` dez vezes por segundo, o
+  que destruía o botão no meio do clique — e comprar simplesmente não
+  funcionava. O `teste-gatos.js` clica cinco vezes seguidas pra garantir que
+  não volte.
 - **A gaveta de figurinhas.** Numa sala no talo são mais de cem emojis por
   quadro (mandala + chuva + anel + patas + ecos + colônia + bichinhos).
   Desenhar emoji com `fillText` cem vezes por quadro derrubava o jogo pra **6

@@ -60,6 +60,32 @@ const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:'')
     d.comidos === r.antes.comidos + 1 && d.xp > r.antes.xp && d.peixes > r.antes.peixes,
     JSON.stringify({ antes:r.antes, depois:d, presa:r.nome }));
 
+  // ---------- comprar de verdade, clicando (a loja já se remontou por baixo do clique) ----------
+  await p.evaluate(() => { peixes = 1e9; mostrarPainel('loja'); });
+  await p.waitForTimeout(300);
+  r = await p.evaluate(() => ({ qtd: LOJA[0].qtd }));
+  for (let i = 0; i < 5; i++) { await p.click('#lista .item'); await p.waitForTimeout(130); }
+  d = await p.evaluate(() => ({ qtd: LOJA[0].qtd }));
+  conf('clicar no brinquedo compra mesmo — cinco cliques, cinco compras',
+    d.qtd === r.qtd + 5, JSON.stringify({ antes:r.qtd, depois:d.qtd }));
+
+  await p.click('.fam[data-f="mira"]'); await p.waitForTimeout(250);
+  await p.click('#lista .item'); await p.waitForTimeout(200);
+  d = await p.evaluate(() => ({ fam: famAtual, mira: LOJA.find(u => u.id === 'mira0').qtd }));
+  conf('e trocar de família continua comprando a coisa certa',
+    d.fam === 'mira' && d.mira >= 1, JSON.stringify(d));
+
+  await p.evaluate(() => mostrarPainel('gatos')); await p.waitForTimeout(300);
+  await p.click('#listaGatos .item'); await p.waitForTimeout(200);
+  d = await p.evaluate(() => ({ mimi: quantosAmigos.mimi || 0 }));
+  conf('adotar gato pelo clique também funciona', d.mimi >= 1, JSON.stringify(d));
+
+  await p.evaluate(() => mostrarPainel('comida')); await p.waitForTimeout(300);
+  r = await p.evaluate(() => ({ comidas: estat.comidas }));
+  await p.click('#comidas .comida'); await p.waitForTimeout(200);
+  d = await p.evaluate(() => ({ comidas: estat.comidas, buffs: buffs.length }));
+  conf('e dar comida pelo clique também', d.comidas === r.comidas + 1 && d.buffs >= 1, JSON.stringify(d));
+
   // ---------- o perigo ----------
   r = await p.evaluate(() => {
     presas = []; nivel = 20; xp = 5000; LOJA.forEach(u => u.qtd = 0);

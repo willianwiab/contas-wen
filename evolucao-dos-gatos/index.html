@@ -1295,27 +1295,46 @@ function montarFamilias() {
     '<span class="pt" id="pt-' + f.id + '"></span></button>').join("");
   [...el("familias").children].forEach(b => {
     b.classList.toggle("sel", b.dataset.f === famAtual);
-    b.onclick = () => { famAtual = b.dataset.f; montarFamilias(); montarLoja(); bip(620, .05); };
+    b.onclick = () => { famAtual = b.dataset.f; montarFamilias(); montarLoja(true); bip(620, .05); };
   });
 }
-function montarLoja() {
+/* A lista é MONTADA uma vez (quando a aba abre ou a família muda) e só
+   ATUALIZADA depois. Remontar o innerHTML dez vezes por segundo destruía o
+   botão no meio do clique — e o clique simplesmente não acontecia. */
+let lojaMontadaDe = null;
+function montarLoja(forcar) {
   if (painelAtual !== "loja") return;
-  // se a família aberta sumiu do jogo, volta pra primeira em vez de mostrar nada
   if (!FAMILIAS.some(f => f.id === famAtual)) { famAtual = FAMILIAS[0].id; montarFamilias(); }
   if (!el("familias").children.length) montarFamilias();
+  if (forcar || lojaMontadaDe !== famAtual || !el("lista").children.length) {
+    lojaMontadaDe = famAtual;
+    const itens = LOJA.filter(u => u.fam === famAtual);
+    el("lista").innerHTML = itens.map(u =>
+      '<button class="item" data-id="' + u.id + '">' +
+        '<div class="ic">' + u.ic + '</div>' +
+        '<div><div class="nome">' + u.nome + '</div><div class="desc" id="d-' + u.id + '"></div></div>' +
+        '<div><div class="preco" id="p-' + u.id + '"></div><div class="qtd" id="q-' + u.id + '"></div></div>' +
+        '<div class="barra" id="b-' + u.id + '"></div>' +
+      '</button>').join("");
+    [...el("lista").children].forEach(b => b.onclick = () => comprar(b.dataset.id));
+  }
+  atualizarLoja();
+}
+function atualizarLoja() {
+  if (painelAtual !== "loja") return;
   el("lojaTopo").innerHTML = "🧶 <b>" + LOJA.length + " brinquedos</b> em " + FAMILIAS.length +
     " famílias · pagos em <b>🐟 peixes</b> · você tem <b>" + fmt(peixes) + "</b>";
-  const itens = LOJA.filter(u => u.fam === famAtual);
-  el("lista").innerHTML = itens.map(u => {
+  for (const u of LOJA) {
+    if (u.fam !== famAtual) continue;
+    const pe = el("p-" + u.id); if (!pe) continue;
     const p = preco(u), pode = peixes >= p;
-    return '<button class="item ' + (pode ? "ok" : "bloq") + '" data-id="' + u.id + '">' +
-      '<div class="ic">' + u.ic + '</div>' +
-      '<div><div class="nome">' + u.nome + '</div><div class="desc">' + u.txt(u.val) + '</div></div>' +
-      '<div><div class="preco">🐟 ' + fmt(p) + '</div>' +
-      '<div class="qtd">' + (u.qtd ? "x" + u.qtd : "—") + '</div></div>' +
-      '<div class="barra" style="width:' + Math.min(100, peixes / p * 100) + '%"></div></button>';
-  }).join("");
-  [...el("lista").children].forEach(b => b.onclick = () => comprar(b.dataset.id));
+    pe.textContent = "🐟 " + fmt(p);
+    el("d-" + u.id).textContent = u.txt(u.val);
+    el("q-" + u.id).textContent = u.qtd ? "x" + u.qtd : "—";
+    el("b-" + u.id).style.width = Math.min(100, peixes / p * 100) + "%";
+    const bt = pe.closest(".item");
+    bt.classList.toggle("ok", pode); bt.classList.toggle("bloq", !pode);
+  }
   FAMILIAS.forEach(f => {
     const pt = el("pt-" + f.id); if (!pt) return;
     const meus = LOJA.filter(u => u.fam === f.id);
@@ -1323,36 +1342,62 @@ function montarLoja() {
     pt.parentElement.classList.toggle("pode", meus.some(u => peixes >= preco(u)));
   });
 }
-function montarGatos() {
+let gatosMontados = false;
+function montarGatos(forcar) {
+  if (painelAtual !== "gatos") return;
+  if (forcar || !gatosMontados || !el("listaGatos").children.length) {
+    gatosMontados = true;
+    el("listaGatos").innerHTML = AMIGOS.map(a =>
+      '<button class="item" data-a="' + a.id + '">' +
+        '<div class="ic">' + a.e + '</div>' +
+        '<div><div class="nome">' + a.nome + '</div><div class="desc" id="da-' + a.id + '"></div></div>' +
+        '<div><div class="preco" id="pa-' + a.id + '"></div><div class="qtd" id="qa-' + a.id + '"></div></div>' +
+        '<div class="barra" id="ba-' + a.id + '"></div>' +
+      '</button>').join("");
+    [...el("listaGatos").children].forEach(b => b.onclick = () => adotar(b.dataset.a));
+  }
+  atualizarGatos();
+}
+function atualizarGatos() {
   if (painelAtual !== "gatos") return;
   el("gatosTopo").innerHTML = "🐾 <b>" + totalAmigos() + " gatos</b> na colônia · juntos dão <b>" +
     fmt(cacadasPorSeg()) + " bocadas por segundo</b> (<b>" + fmt(xpPorSegundo()) + " XP</b> e <b>🐟 " +
     fmt(peixesPorSegundo()) + "</b>)";
-  el("listaGatos").innerHTML = AMIGOS.map(a => {
+  for (const a of AMIGOS) {
+    const pe = el("pa-" + a.id); if (!pe) continue;
     const p = precoAmigo(a), pode = peixes >= p, tem = quantosAmigos[a.id] || 0;
-    return '<button class="item ' + (pode ? "ok" : "bloq") + '" data-a="' + a.id + '">' +
-      '<div class="ic">' + a.e + '</div>' +
-      '<div><div class="nome">' + a.nome + '</div><div class="desc">' + a.conta + '<br>come ' +
-        fmt(a.cacadas * multAmigos()) + ' bichinho(s) por segundo</div></div>' +
-      '<div><div class="preco">🐟 ' + fmt(p) + '</div>' +
-      '<div class="qtd">' + (tem ? "x" + tem : "—") + '</div></div>' +
-      '<div class="barra" style="width:' + Math.min(100, peixes / p * 100) + '%"></div></button>';
-  }).join("");
-  [...el("listaGatos").children].forEach(b => b.onclick = () => adotar(b.dataset.a));
+    pe.textContent = "🐟 " + fmt(p);
+    el("da-" + a.id).innerHTML = a.conta + "<br>come " + fmt(a.cacadas * multAmigos()) + " bichinho(s) por segundo";
+    el("qa-" + a.id).textContent = tem ? "x" + tem : "—";
+    el("ba-" + a.id).style.width = Math.min(100, peixes / p * 100) + "%";
+    const bt = pe.closest(".item");
+    bt.classList.toggle("ok", pode); bt.classList.toggle("bloq", !pode);
+  }
 }
-function montarComidas() {
+let comidasMontadas = false;
+function montarComidas(forcar) {
   if (painelAtual !== "comida") return;
-  el("comidaTopo").innerHTML = "🍽️ <b>Comida</b> — dá um monte de XP de uma vez e deixa um bônus ligado. " +
-    "A <b>Tigela</b> faz a comida render mais.";
-  el("comidas").innerHTML = COMIDAS.map(c => {
-    const pode = peixes >= c.custo;
-    return '<button class="comida' + (pode ? "" : " caro") + '" data-c="' + c.id + '">' +
-      '<div class="ce">' + c.e + '</div><div class="cn">' + c.nome + '</div>' +
-      '<div class="cp">🐟 ' + fmt(c.custo) + '</div>' +
-      '<div class="cp" style="color:var(--verde)">+' + fmt(c.xp * multComida() * multTudo()) + ' XP</div>' +
-      '<div class="cp" style="color:var(--dim)">' + c.conta + '</div></button>';
-  }).join("");
-  [...el("comidas").children].forEach(b => b.onclick = () => darComida(b.dataset.c));
+  if (forcar || !comidasMontadas || !el("comidas").children.length) {
+    comidasMontadas = true;
+    el("comidaTopo").innerHTML = "🍽️ <b>Comida</b> — dá um monte de XP de uma vez e deixa um bônus ligado. " +
+      "A <b>Tigela</b> faz a comida render mais.";
+    el("comidas").innerHTML = COMIDAS.map(c =>
+      '<button class="comida" data-c="' + c.id + '">' +
+        '<div class="ce">' + c.e + '</div><div class="cn">' + c.nome + '</div>' +
+        '<div class="cp">🐟 ' + fmt(c.custo) + '</div>' +
+        '<div class="cp" style="color:var(--verde)" id="cx-' + c.id + '"></div>' +
+        '<div class="cp" style="color:var(--dim)">' + c.conta + '</div></button>').join("");
+    [...el("comidas").children].forEach(b => b.onclick = () => darComida(b.dataset.c));
+  }
+  atualizarComidas();
+}
+function atualizarComidas() {
+  if (painelAtual !== "comida") return;
+  for (const c of COMIDAS) {
+    const e = el("cx-" + c.id); if (!e) continue;
+    e.textContent = "+" + fmt(c.xp * multComida() * multTudo()) + " XP";
+    e.closest(".comida").classList.toggle("caro", peixes < c.custo);
+  }
   el("comidaInfo").innerHTML = buffs.length
     ? "Agora: " + buffs.map(b => b.e + " x" + b.mult + " (" + Math.ceil((b.fim - Date.now()) / 1000) + "s)").join(" · ")
     : "Nenhum bônus de comida ligado.";
@@ -1495,9 +1540,10 @@ setInterval(() => {
   }
   if (agora - ultimoCarinho > 1400) combo = 0;
   atualizarTopo();
-  if (painelAtual === "loja") montarLoja();
-  if (painelAtual === "gatos") montarGatos();
-  if (painelAtual === "comida") montarComidas();
+  /* só ATUALIZA — remontar aqui era o que comia o clique nos botões */
+  if (painelAtual === "loja") atualizarLoja();
+  if (painelAtual === "gatos") atualizarGatos();
+  if (painelAtual === "comida") atualizarComidas();
   if (painelAtual === "vidas") montarVidas();
 }, 100);
 setInterval(() => { checarConquistas(); salvar(); }, 4000);
