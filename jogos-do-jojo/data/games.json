@@ -599,16 +599,20 @@
     {
       "slug": "torre-de-emojis",
       "nome": "Torre de Emojis",
-      "descricao": "O bloco vai e volta lá em cima; você solta e ele empilha. Quanto mais alta a torre, mais dinheiro cada bloco vale — e acertar bem no meio paga 3x.",
+      "descricao": "Empilhe os emojis da Terra até o NADA, atravessando 11 camadas do céu. Quanto mais alto, mais cada bloco paga — e mais vento tem pra atrapalhar. São 136 melhorias pra comprar.",
       "comoFunciona": "Um bloco com um emoji fica indo e voltando no alto da tela. Você clica pra soltar e ele cai em cima do que já está empilhado. Acertar no meio é PERFEITO e paga o triplo; errar entorta a torre, e errar muito faz o bloco cair fora e custar uma vida.",
-      "objetivo": "Fazer a torre mais alta que você conseguir, juntar dinheiro e comprar as melhorias que deixam tudo mais fácil — até desbloquear as quatro cestas de emoji.",
+      "objetivo": "Empilhar até chegar no NADA, a 400 blocos de altura — a última camada, onde não existe mais nada além de você e os blocos.",
       "mecanicas": [
         "Empilhar com o bloco andando de um lado pro outro, cada vez mais rápido",
         "PERFEITO: acertar no meio paga 3x e endireita a torre",
         "A torre entorta conforme os erros e desaba se passar do limite",
         "Vidas: bloco que cai fora custa uma",
-        "36 melhorias em 6 famílias, o dinheiro fica guardado entre as rodadas",
-        "4 cestas de emoji que abrem conforme o recorde de altura",
+        "11 camadas do céu: Terra, Troposfera, Estratosfera, Mesosfera, Termosfera, Exosfera, Espaço, Universo, Fim do Espaço, Fim do Mundo e o NADA",
+        "Cada camada tem visual próprio (nuvens, meteoro, aurora, buraco negro) e paga mais que a de baixo",
+        "Vento nas camadas altas, que empurra o bloco",
+        "136 melhorias em 17 famílias, o dinheiro fica guardado entre as rodadas",
+        "Blocos de ouro que pagam 10x e sequência de PERFEITOs que multiplica",
+        "6 cestas de emoji que abrem conforme o recorde de altura",
         "Dá pra instalar como aplicativo e jogar sem internet",
         "Salvamento automático"
       ],
@@ -643,7 +647,8 @@
       "creditos": "Criado por Jojo com o Claude.",
       "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: empilhar com PERFEITO, vidas, torre que entorta e desaba, 36 melhorias, 4 cestas de emoji e o jogo já instalável como aplicativo." }
+        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: empilhar com PERFEITO, vidas, torre que entorta e desaba, 36 melhorias, 4 cestas de emoji e o jogo já instalável como aplicativo." },
+        { "versao": "2.0", "data": "2026", "mudancas": "11 camadas do céu com visual próprio, da Terra até o NADA; 136 melhorias em 17 famílias; vento, blocos de ouro, sequência de PERFEITOs e poupança. E o conserto do encaixe quando a torre está torta." }
       ],
       "ranking": []
     }
