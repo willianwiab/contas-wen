@@ -241,8 +241,25 @@ cat-city/
   js/ui.js          HUD, fases e telas
   js/audio.js       todos os sons, gerados na hora
   js/adm.js         o painel de administrador (senha 1234)
+  js/instalar.js    service worker + instalar como aplicativo
   assets/cats/      ← as fotos entram aqui
 ```
+
+## Instalar como aplicativo
+
+Tem um botão **📲 INSTALAR NO APARELHO** no menu. Se o navegador oferecer
+sozinho (Chrome, Edge, Brave), ele instala na hora; se não oferecer, o botão
+abre um passo a passo do aparelho certo — no iPhone e no iPad é
+*Compartilhar ⬆️ → Adicionar à Tela de Início*, que o Safari não oferece
+sozinho. Quem já instalou não vê mais o botão.
+
+Instalado, o jogo abre pelo ícone, ocupa a tela toda e não tem barra de
+endereço. E, instalado ou não, **funciona sem internet** depois de abrir uma
+vez: o service worker guarda os arquivos e o progresso fica no aparelho.
+
+> O service worker existia desde o começo mas **ninguém o registrava** — por
+> isso o jogo nunca era oferecido pra instalar e não abria offline. Agora é
+> registrado no carregamento, e `teste-app.js` confere isso.
 
 ## Testando
 
@@ -254,6 +271,7 @@ npm i playwright-core
 node teste-catcity.js
 node teste-mil-formas.js
 node teste-adm.js
+node teste-app.js
 ```
 
 **21 checagens**: a cidade nasce inteira, o menu começa a partida, WASD anda
@@ -271,6 +289,12 @@ fábrica mistura de verdade (12 corpos, 9 poderes, 9 cores, velocidades de 2,6 a
 repetir, recomeçar sorteia outras, virar uma gerada muda o corpo, o catálogo
 pagina e a busca filtra, o adm sorteia 400 sem repetir, e as mil cabem no save
 (6,9 KB) e voltam depois de recarregar.
+
+`teste-app.js` tem **11 checagens** de aplicativo: manifesto e os 4 ícones,
+o service worker registrado e ativo, o botão de instalar visível (e sumindo de
+verdade quando escondido), o passo a passo certo no computador e no iPhone, e —
+o que importa — **desligar a internet, recarregar, e o jogo abrir inteiro com
+as 1000 formas, o progresso salvo e dando pra jogar**.
 
 `teste-adm.js` tem mais **28 checagens** só do modo adm: senha errada não entra,
 cada grupo de botões faz o que promete, e — o que importa — os truques mudam o
