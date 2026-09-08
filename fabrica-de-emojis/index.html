@@ -197,6 +197,36 @@
     padding:3px 8px; border-radius:99px; border:1px solid var(--linha); color:var(--dim); margin-left:auto;
   }
 
+  /* temporadas */
+  .tempTopo {
+    border-radius:13px; padding:12px; border:1px solid var(--linha);
+    background:linear-gradient(135deg,#ffffff10,#ffffff04); display:flex; gap:11px; align-items:center;
+  }
+  .tempTopo .ti { font-size:2rem; line-height:1; }
+  .tempTopo .tn { font-weight:800; font-size:1rem; }
+  .tempTopo .tc { font-size:.72rem; color:var(--dim); margin-top:2px; line-height:1.4; }
+  .tempTopo .tp { font-family:var(--mono); font-size:.75rem; margin-top:5px; }
+  .passo {
+    display:grid; grid-template-columns:34px 1fr auto; gap:9px; align-items:center;
+    padding:8px 9px; border-radius:10px; border:1px solid var(--linha); background:#ffffff06;
+  }
+  .passo.pronto { border-color:var(--verde); background:#6ee7a015; }
+  .passo.pego { opacity:.5; }
+  .passo .pi { font-size:1.1rem; text-align:center; }
+  .passo .pn { font-size:.78rem; font-weight:700; }
+  .passo .pd { font-family:var(--mono); font-size:.62rem; color:var(--dim); margin-top:1px; }
+  .btPasse {
+    padding:6px 10px; border-radius:8px; border:none; font-family:var(--mono); font-weight:800;
+    font-size:.68rem; cursor:pointer; background:linear-gradient(180deg,#8bf3b6,var(--verde)); color:#052014;
+  }
+  .btPasse:disabled { background:#ffffff10; color:#ffffff40; cursor:not-allowed; }
+  .calend { display:flex; flex-direction:column; gap:5px; }
+  .calLinha {
+    display:flex; gap:8px; align-items:center; padding:7px 9px; border-radius:9px;
+    border:1px solid var(--linha); background:#ffffff06; font-size:.75rem;
+  }
+  .calLinha .cq { margin-left:auto; font-family:var(--mono); font-size:.64rem; color:var(--dim); }
+
   /* temas da caixa */
   .temaGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:7px; }
   .tema {
@@ -358,6 +388,14 @@
 
     <div class="grupo"><div class="lab">Temas da caixa</div><div class="btns">
       <button class="bt" onclick="darTemas()">LIBERAR TODOS OS TEMAS</button>
+      <button class="bt" onclick="skins=SKINS.map(k=>k.id);montarTemas();puxarAdm()">LIBERAR TODAS AS SKINS</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Temporadas</div><div class="btns" id="admTemp"></div></div>
+    <div class="grupo"><div class="lab">Pontos de temporada</div><div class="btns">
+      <button class="bt" onclick="ganharPontos(100);puxarAdm()">+100 🎟️</button>
+      <button class="bt" onclick="ganharPontos(1000);puxarAdm()">+1000 🎟️</button>
+      <button class="bt perigo" onclick="temporadas={};puxarAdm()">ZERAR TEMPORADAS</button>
     </div></div>
 
     <div class="grupo"><div class="lab">Conquistas e missões</div><div class="btns">
@@ -399,6 +437,7 @@
     <div class="stat"><div class="k">Cristais</div><div class="v" id="vCris" style="color:var(--cristal)">0</div></div>
     <div class="stat"><div class="k">Índice</div><div class="v" id="vInd" style="color:var(--azul)">0</div></div>
     <div class="stat"><div class="k">Conquistas</div><div class="v" id="vConq" style="color:var(--verde)">0</div></div>
+    <div class="stat"><div class="k">Temporada</div><div class="v" id="vTemp" style="color:var(--rosa)">—</div></div>
   </div>
 </header>
 
@@ -430,6 +469,7 @@
       <button class="abaT" data-p="miss">📜 MISSÕES<span class="aviso" id="avisoMiss" hidden></span></button>
       <button class="abaT" data-p="stat">📊 STATS</button>
       <button class="abaT" data-p="tema">🎨 CAIXA</button>
+      <button class="abaT" data-p="temp">🎟️ EVENTO<span class="aviso" id="avisoTemp" hidden></span></button>
     </div>
 
     <div id="pLoja" style="display:flex;flex-direction:column;gap:10px">
@@ -453,9 +493,16 @@
       <div id="missLista" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
 
+    <div id="pTemp" style="display:none;flex-direction:column;gap:10px">
+      <div id="tempTopo"></div>
+      <div id="tempCorpo" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+
     <div id="pTema" style="display:none;flex-direction:column;gap:10px">
       <div class="cabecinha" id="temaTopo"></div>
       <div class="temaGrid" id="temaGrid"></div>
+      <div class="cabecinha" id="skinTopo" style="margin-top:6px"></div>
+      <div class="temaGrid" id="skinGrid"></div>
     </div>
 
     <div id="pStat" style="display:none;flex-direction:column;gap:10px">
@@ -602,9 +649,11 @@ function atualizarDia() {
 }
 function valorDe(tipo) {
   const dia = (tipo === tipoDoDia) ? MULT_DIA : 1;
-  if (!tipo.secreto) return tipo.valor * dia;
-  const lib = raridadesLiberadas();
-  return lib[lib.length - 1].base * tipo.fator * dia;
+  if (tipo.secreto || tipo.temporada) {        // secretos e emojis de evento acompanham a sua melhor raridade
+    const lib = raridadesLiberadas();
+    return lib[lib.length - 1].base * tipo.fator * dia;
+  }
+  return tipo.valor * dia;
 }
 
 /* ==========================================================================
@@ -688,6 +737,135 @@ function somaEfeito(tipo) {
 }
 
 /* ==========================================================================
+   3c. TEMPORADAS — eventos com data marcada, feito passe de batalha.
+   Cada uma traz 6 emojis próprios, 1 emoji secreto, uma skin de caixa e um
+   passe com 12 prêmios que você abre juntando 🎟️ pontos de temporada.
+   ========================================================================== */
+function domingoDePascoa(ano) {                       // algoritmo de Meeus/Butcher
+  const a = ano % 19, b = Math.floor(ano / 100), c = ano % 100;
+  const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const mes = Math.floor((h + l - 7 * m + 114) / 31), dia = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(ano, mes - 1, dia);
+}
+const diaIni = (ano, mes, dia) => new Date(ano, mes - 1, dia, 0, 0, 0);
+const diaFim = (ano, mes, dia) => new Date(ano, mes - 1, dia, 23, 59, 59);
+const DIA = 86400000;
+
+const TEMPORADAS = [
+  { id:"estreia", nome:"Estreia da Fábrica", ic:"🎉", cor:"#ffc857",
+    conta:"Os seus 14 primeiros dias de fábrica. Só acontece uma vez.",
+    emojis:["🎊","🥳","🎈","🎁","🪅","🎀"], secreto:{ e:"🎇", nome:"O Fogo de Artifício" },
+    tema:{ id:"tEstreia", nome:"Festa", ic:"🎉", fundo:["#2a1a3a","#120a1c"], borda:"#ffc857", chao:"#ffc85733" },
+    estreia:14 },
+
+  { id:"junina", nome:"Festa Junina", ic:"🎇", cor:"#ff8a3c",
+    conta:"12 a 29 de junho — quadrilha, fogueira e milho.",
+    emojis:["🌽","🪗","🔥","🎻","🥜","🎪"], secreto:{ e:"🎡", nome:"A Roda Gigante" },
+    tema:{ id:"tJunina", nome:"Arraiá", ic:"🎇", fundo:["#2e1608","#160903"], borda:"#ff8a3c", chao:"#ff8a3c3a" },
+    janelas: ano => [[diaIni(ano, 6, 12), diaFim(ano, 6, 29)]] },
+
+  { id:"ferias", nome:"Férias", ic:"🏖️", cor:"#5ce1e6",
+    conta:"Janeiro inteiro e julho inteiro — praia, sorvete e nada de escola.",
+    emojis:["🏖️","🍦","🏄","🕶️","🐚","☀️"], secreto:{ e:"🌈", nome:"O Arco-íris das Férias" },
+    tema:{ id:"tFerias", nome:"Praia", ic:"🏖️", fundo:["#07283a","#031017"], borda:"#5ce1e6", chao:"#5ce1e63a" },
+    janelas: ano => [[diaIni(ano, 1, 3), diaFim(ano, 1, 31)], [diaIni(ano, 7, 1), diaFim(ano, 7, 31)]] },
+
+  { id:"pascoa", nome:"Páscoa", ic:"🐣", cor:"#ff9ecd",
+    conta:"A semana que termina no domingo de Páscoa.",
+    emojis:["🐣","🐰","🥚","🍫","🧺","🌷"], secreto:{ e:"🐇", nome:"O Coelho de Ouro" },
+    tema:{ id:"tPascoa", nome:"Chocolate", ic:"🐣", fundo:["#2a1410","#140806"], borda:"#ff9ecd", chao:"#ff9ecd3a" },
+    janelas: ano => { const d = domingoDePascoa(ano);
+      return [[new Date(d.getTime() - 6 * DIA), new Date(d.getTime() + DIA - 1)]]; } },
+
+  { id:"brasil", nome:"Semana do Brasil", ic:"🇧🇷", cor:"#6ee7a0",
+    conta:"1 a 7 de setembro.",
+    emojis:["🇧🇷","⚽","🦜","🌴","🥭","🥥"], secreto:{ e:"🏆", nome:"A Taça" },
+    tema:{ id:"tBrasil", nome:"Verde-Amarelo", ic:"🇧🇷", fundo:["#0c2a12","#04140a"], borda:"#6ee7a0", chao:"#6ee7a03a" },
+    janelas: ano => [[diaIni(ano, 9, 1), diaFim(ano, 9, 7)]] },
+
+  { id:"espaco", nome:"Semana do Espaço", ic:"🚀", cor:"#7ac9ff",
+    conta:"4 a 10 de outubro, a semana mundial do espaço.",
+    emojis:["🚀","🛸","🪐","🌌","👽","🌠"], secreto:{ e:"🔭", nome:"O Telescópio" },
+    tema:{ id:"tEspaco", nome:"Foguete", ic:"🚀", fundo:["#070c26","#02040d"], borda:"#7ac9ff", chao:"#7ac9ff3a", estrelas:true },
+    janelas: ano => [[diaIni(ano, 10, 4), diaFim(ano, 10, 10)]] },
+
+  { id:"criancas", nome:"Dia das Crianças", ic:"🧸", cor:"#ff6b9d",
+    conta:"12 de outubro. Um dia só.",
+    emojis:["🧸","🪀","🎠","🍭","🚲","🎢"], secreto:{ e:"🎪", nome:"O Circo" },
+    tema:{ id:"tCriancas", nome:"Parquinho", ic:"🧸", fundo:["#2a0f22","#140611"], borda:"#ff6b9d", chao:"#ff6b9d3a" },
+    janelas: ano => [[diaIni(ano, 10, 12), diaFim(ano, 10, 12)]] },
+
+  { id:"halloween", nome:"Halloween", ic:"🎃", cor:"#ff8a3c",
+    conta:"31 de outubro. A mais rara: dura um dia só no ano inteiro.",
+    emojis:["🎃","👻","🦇","🕷️","🧟","🍬"], secreto:{ e:"🧛", nome:"O Conde" },
+    tema:{ id:"tHalloween", nome:"Assombrado", ic:"🎃", fundo:["#1a0c22","#0a0410"], borda:"#ff8a3c", chao:"#ff8a3c3a" },
+    janelas: ano => [[diaIni(ano, 10, 31), diaFim(ano, 10, 31)]] },
+
+  { id:"natal", nome:"Natal", ic:"🎄", cor:"#ff4d4d",
+    conta:"1 a 25 de dezembro.",
+    emojis:["🎄","🎅","🤶","🦌","🎁","⛄"], secreto:{ e:"🌟", nome:"A Estrela do Topo" },
+    tema:{ id:"tNatal", nome:"Natal", ic:"🎄", fundo:["#0c2418","#1a0808"], borda:"#ff4d4d", chao:"#ff4d4d3a" },
+    janelas: ano => [[diaIni(ano, 12, 1), diaFim(ano, 12, 25)]] },
+
+  { id:"anonovo", nome:"Ano Novo", ic:"🎆", cor:"#fff3b0",
+    conta:"31 de dezembro a 2 de janeiro — a virada.",
+    emojis:["🎆","🥂","🍾","🕛","✨","🪩"], secreto:{ e:"⏳", nome:"A Virada" },
+    tema:{ id:"tAnoNovo", nome:"Virada", ic:"🎆", fundo:["#1a1a2e","#0a0a14"], borda:"#fff3b0", chao:"#fff3b03a", arco:true },
+    janelas: ano => [[diaIni(ano, 12, 31), diaFim(ano + 1, 1, 2)],
+                     [diaIni(ano - 1, 12, 31), diaFim(ano, 1, 2)]] },
+];
+
+/* prêmios do passe: os mesmos degraus pra toda temporada */
+const PASSE = [
+  { p: 10,  tipo:"dinheiro", mult:.4 },
+  { p: 25,  tipo:"emoji", i:0 },
+  { p: 45,  tipo:"cristal", n:2 },
+  { p: 70,  tipo:"emoji", i:1 },
+  { p: 100, tipo:"turbo" },
+  { p: 140, tipo:"cristal", n:5 },
+  { p: 190, tipo:"emoji", i:2 },
+  { p: 250, tipo:"dinheiro", mult:2.5 },
+  { p: 320, tipo:"emoji", i:3 },
+  { p: 400, tipo:"cristal", n:15 },
+  { p: 500, tipo:"emoji", i:4 },
+  { p: 650, tipo:"tema" },
+];
+const PONTOS_EMOJI = 1, PONTOS_SECRETO = 50, PONTOS_MISSAO = 10, PONTOS_RARIDADE = 25;
+
+/* cada temporada vira uma listinha de tipos de emoji, igual aos secretos */
+const TIPOS_TEMP = {};
+TEMPORADAS.forEach(t => {
+  TIPOS_TEMP[t.id] = t.emojis.map((e, i) => ({
+    e, chave: "T|" + t.id + "|" + e, temporada: t.id, nomeTemp: t.nome,
+    rIndex: -1, cor: t.cor, tam: 15 + i * .4, valor: 0, fator: 4 + i * 4,
+  }));
+  t.tipoSecreto = {
+    e: t.secreto.e, nome: t.secreto.nome, chave: "T|" + t.id + "|" + t.secreto.e,
+    temporada: t.id, nomeTemp: t.nome, secretoTemp: true,
+    rIndex: -1, cor: "#ffffff", tam: 19, valor: 0, fator: 220,
+  };
+});
+
+/* ==========================================================================
+   3d. SKINS DOS EMOJIS — o enfeite que fica em volta de cada emoji na caixa.
+   As compradas saem por cristais; as de evento vêm do passe da temporada.
+   ========================================================================== */
+const SKINS = [
+  { id:"nenhuma", nome:"Sem enfeite", ic:"⚪", custo:0 },
+  { id:"aro",     nome:"Aro Branco",  ic:"⭕", custo:2,  aro:3,   cor:"#ffffffaa" },
+  { id:"sombra",  nome:"Contorno",    ic:"🌑", custo:4,  aro:4,   cor:"#000000cc" },
+  { id:"neon",    nome:"Neon",        ic:"💡", custo:7,  aro:2.5, cor:"tipo", brilho:12 },
+  { id:"pontos",  nome:"Bolinhas",    ic:"⚙️", custo:9,  aro:2,   cor:"#ffffff99", pontos:8 },
+  { id:"ouro",    nome:"Moldura de Ouro", ic:"🥇", custo:14, aro:3.5, grad:["#fff3b0","#ffc857","#a8741a"] },
+  { id:"gelo",    nome:"Cristal",     ic:"💎", custo:20, aro:3,   grad:["#ffffff","#9be8ff","#5ce1e6"], brilho:7 },
+  { id:"arco",    nome:"Arco-íris",   ic:"🌈", custo:32, aro:3.5, grad:["#ff4d6d","#ffc857","#6ee7a0","#5ce1e6","#b47aff"] },
+];
+const skinObj = () => SKINS.find(x => x.id === skinAtual) || SKINS[0];
+
+/* ==========================================================================
    3b. MODOS DE JOGO — escolhidos na tela de início, cada um com o save dele
    ========================================================================== */
 const MODOS = [
@@ -720,6 +898,8 @@ let conquistasFeitas = [], missoes = [], nivelMissao = 0;
 let buffs = [], combo = 0, ultimoClique = 0;
 let contagem = {}, vistos = new Set();            // quantos de cada emoji já saíram
 let temas = ["padrao"], temaAtual = "padrao";
+let temporadas = {}, primeiroDia = 0, temporadaForcada = null;
+let skins = ["nenhuma"], skinAtual = "nenhuma";
 const estat = {
   cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
   ganhoTotal:0, ups:0, bonusPegos:0, comboMax:0, tempo:0,
@@ -727,6 +907,7 @@ const estat = {
 };
 let cliquesRapidos = [];
 const el = id => document.getElementById(id);
+const TOTAL_EMOJIS = TIPOS.length + SECRETOS.length + TEMPORADAS.length * 7;
 
 function fmt(n) {
   if (!isFinite(n)) return "∞";
@@ -824,6 +1005,16 @@ function sortearTipo() {
     sujo = true;
     return s;
   }
+  const tp = temporadaAtiva();
+  if (tp) {                                   // temporada rolando: entram emojis do evento
+    const lista = TIPOS_TEMP[tp.t.id];
+    if (Math.random() < multSecreto() / 8000) {
+      const st = tp.t.tipoSecreto;
+      avisar("🎟️🌈 SECRETO DA TEMPORADA! " + st.e + " " + st.nome);
+      return marcar(st);
+    }
+    if (Math.random() < .12) return marcar(lista[Math.floor(Math.random() * lista.length)]);
+  }
   const nLib = raridadesLiberadas().length;
   const sorte = multSorte();
   let soma = 0;
@@ -840,12 +1031,114 @@ function sortearTipo() {
 function marcar(t) {
   contagem[t.chave] = (contagem[t.chave] || 0) + 1;
   if (t === tipoDoDia) estat.doDia++;
+  if (t.temporada) ganharPontos(t.secretoTemp ? PONTOS_SECRETO : PONTOS_EMOJI,
+                                t.secretoTemp ? "secreto" : "emoji");
   if (!vistos.has(t.chave)) {
     vistos.add(t.chave); descobertos.push(t.chave);
     if (t.rIndex >= 3) avisar("✨ " + t.e + " " + RARIDADES[t.rIndex].nome + " — R$ " + fmt(t.valor));
+    else if (t.temporada && !t.secretoTemp) avisar("🎟️ " + t.e + " — emoji de " + t.nomeTemp + "!");
     sujo = true;
   }
   return t;
+}
+
+/* ==========================================================================
+   4d. TEMPORADAS — qual está rolando, pontos e prêmios do passe
+   ========================================================================== */
+function janelaDaTemporada(t, agora) {
+  if (t.estreia) {
+    if (!primeiroDia) return null;
+    const fim = primeiroDia + t.estreia * DIA;
+    return (agora >= primeiroDia && agora <= fim) ? { ini: primeiroDia, fim } : null;
+  }
+  const ano = new Date(agora).getFullYear();
+  for (const a of [ano - 1, ano, ano + 1]) {
+    for (const [ini, fim] of t.janelas(a)) {
+      if (agora >= ini.getTime() && agora <= fim.getTime()) return { ini: ini.getTime(), fim: fim.getTime() };
+    }
+  }
+  return null;
+}
+function temporadaAtiva() {
+  const agora = Date.now();
+  if (temporadaForcada) {
+    const t = TEMPORADAS.find(x => x.id === temporadaForcada);
+    if (t) return { t, ini: agora, fim: agora + 3 * DIA, forcada: true };
+  }
+  for (const t of TEMPORADAS) {
+    const j = janelaDaTemporada(t, agora);
+    if (j) return { t, ini: j.ini, fim: j.fim };
+  }
+  return null;
+}
+function proximaTemporada() {
+  const agora = Date.now();
+  let melhor = null;
+  for (const t of TEMPORADAS) {
+    if (t.estreia) continue;
+    const ano = new Date(agora).getFullYear();
+    for (const a of [ano, ano + 1]) {
+      for (const [ini] of t.janelas(a)) {
+        const q = ini.getTime();
+        if (q > agora && (!melhor || q < melhor.quando)) melhor = { t, quando: q };
+      }
+    }
+  }
+  return melhor;
+}
+function fichaTemporada(id) {
+  const ano = new Date().getFullYear();
+  let f = temporadas[id];
+  const dono = TEMPORADAS.find(t => t.id === id);
+  if (!f || (!dono.estreia && f.ano !== ano)) f = temporadas[id] = { ano, pontos: 0, pegos: [] };
+  if (!Array.isArray(f.pegos)) f.pegos = [];
+  return f;
+}
+function ganharPontos(n, motivo) {
+  const a = temporadaAtiva(); if (!a || !n) return;
+  const f = fichaTemporada(a.t.id);
+  f.pontos += n;
+  if (motivo === "secreto") {
+    [880, 1174, 1568, 2093].forEach((x, i) => setTimeout(() => bip(x, .16), i * 90));
+  }
+  if (painelAtual === "temp") montarTemporada();
+}
+function premioDoPasse(t, nivel) {
+  const d = PASSE[nivel];
+  if (d.tipo === "dinheiro") return { ic:"💵", txt:"R$ " + fmt(Math.max(5000, recorde * d.mult)) };
+  if (d.tipo === "cristal")  return { ic:"💠", txt:d.n + (d.n > 1 ? " cristais" : " cristal") };
+  if (d.tipo === "turbo")    return { ic:"⚡", txt:"tudo x5 por 2 minutos" };
+  if (d.tipo === "tema")     return { ic:"🎨", txt:"tema + skin de " + t.nome };
+  return { ic: TIPOS_TEMP[t.id][d.i].e, txt:"o emoji " + TIPOS_TEMP[t.id][d.i].e + " no índice" };
+}
+function pegarPremio(nivel) {
+  const a = temporadaAtiva(); if (!a) return;
+  const f = fichaTemporada(a.t.id), d = PASSE[nivel];
+  if (f.pegos.includes(nivel) || f.pontos < d.p) return;
+  f.pegos.push(nivel);
+  if (d.tipo === "dinheiro") {
+    const g = Math.max(5000, recorde * d.mult);
+    dinheiro += g; estat.ganhoTotal += g; recorde = Math.max(recorde, dinheiro);
+    avisar("💵 +R$ " + fmt(g));
+  } else if (d.tipo === "cristal") { cristais += d.n; avisar("💠 +" + d.n + " cristais"); }
+  else if (d.tipo === "turbo") { addBuff("tudo", 5, 120, "⚡ Turbo x5"); avisar("⚡ tudo x5 por 2 minutos!"); }
+  else if (d.tipo === "tema") {
+    if (!temas.includes(a.t.tema.id)) temas.push(a.t.tema.id);
+    if (!skins.includes(a.t.skin.id)) skins.push(a.t.skin.id);
+    temaAtual = a.t.tema.id; aplicarTema();
+    avisar("🎨 tema e skin de " + a.t.nome + " liberados!");
+  } else {
+    const tipo = TIPOS_TEMP[a.t.id][d.i];
+    marcar(tipo); nascer(tipo);
+    avisar("🎟️ " + tipo.e + " entrou no índice!");
+  }
+  [660, 880, 1174, 1568].forEach((x, i) => setTimeout(() => bip(x, .13), i * 80));
+  sujo = true; montarTemporada(); salvar();
+}
+function temPremioPraPegar() {
+  const a = temporadaAtiva(); if (!a) return false;
+  const f = fichaTemporada(a.t.id);
+  return PASSE.some((d, i) => !f.pegos.includes(i) && f.pontos >= d.p);
 }
 
 /* ==========================================================================
@@ -887,6 +1180,11 @@ marcos("cru", "🎯", "Na Mosca", [50, 2000],
   v => "Acerte " + fmt(v) + " cliques críticos", () => estat.criticos);
 marcos("col", "🗂️", "Álbum", [1, 5, 20, 60, 120],
   v => "Complete " + v + " coleções de raridade", () => colecoesCompletas());
+marcos("tmp", "🎟️", "Temporada", [1, 12, 40],
+  v => "Pegue " + v + " prêmios de passe de temporada",
+  () => Object.values(temporadas).reduce((n, f) => n + ((f && f.pegos) ? f.pegos.length : 0), 0));
+conq("passe", "🏅", "Passe Completo", "Pegar os 12 prêmios de uma temporada só",
+  () => Object.values(temporadas).some(f => f && f.pegos && f.pegos.length >= PASSE.length), true);
 conq("temas", "🎨", "Decorador", "Compre todos os temas da caixa", () => temas.length >= TEMAS.length);
 conq("cheia", "📦", "Transbordou", "Encha a caixa até o limite", () => estat.encheu);
 conq("giro",  "📱", "Cabeça pra Baixo", "Use a inclinação do celular", () => estat.inclinou);
@@ -975,7 +1273,7 @@ function receberMissao(slot) {
   const premio = premioMissao(m);
   if (m.moeda === "cristal") { cristais += premio; avisar("💠 +" + fmt(premio) + " cristais!"); }
   else { dinheiro += premio; recorde = Math.max(recorde, dinheiro); avisar("💵 +R$ " + fmt(premio) + "!"); }
-  nivelMissao++;
+  nivelMissao++; ganharPontos(PONTOS_MISSAO);
   missoes[slot] = novaMissao(slot);
   [660, 880, 1320].forEach((f, i) => setTimeout(() => bip(f, .14), i * 90));
   sujo = true; montarMissoes(); checarMissoes(); salvar();
@@ -995,12 +1293,35 @@ function ajustar() {
 window.addEventListener("resize", ajustar);
 
 const sprites = new Map();
+function pintarSkin(x, meio, r, tipo) {
+  const s = skinObj();
+  if (!s.aro) return;
+  const raio = r + 2.8;
+  x.save();
+  x.lineWidth = s.aro;
+  if (s.grad) {
+    const g = x.createLinearGradient(meio - raio, meio - raio, meio + raio, meio + raio);
+    s.grad.forEach((c, i, a) => g.addColorStop(i / (a.length - 1), c));
+    x.strokeStyle = g;
+  } else x.strokeStyle = (s.cor === "tipo" ? tipo.cor : s.cor);
+  if (s.brilho) { x.shadowColor = (s.cor === "tipo" ? tipo.cor : (s.grad ? s.grad[1] : s.cor)); x.shadowBlur = s.brilho; }
+  x.beginPath(); x.arc(meio, meio, raio, 0, 6.2832); x.stroke();
+  if (s.pontos) {                     // bolinhas em volta, tipo pisca-pisca
+    x.shadowBlur = 0;
+    x.fillStyle = (s.cor === "tipo" ? tipo.cor : s.cor);
+    for (let i = 0; i < s.pontos; i++) {
+      const a = i / s.pontos * 6.2832;
+      x.beginPath(); x.arc(meio + Math.cos(a) * (raio + 1.6), meio + Math.sin(a) * (raio + 1.6), 1.5, 0, 6.2832); x.fill();
+    }
+  }
+  x.restore();
+}
 function sprite(tipo, r, dourado) {
-  const chave = tipo.chave + "|" + r.toFixed(1) + (dourado ? "d" : "");
+  const chave = tipo.chave + "|" + r.toFixed(1) + (dourado ? "d" : "") + "|" + skinAtual;
   let s = sprites.get(chave);
   if (s) return s;
   if (sprites.size > 260) sprites.clear();      // não deixa a memória crescer sem limite
-  const nit = 2, meio = r + 3, lado = Math.ceil(meio * 2 * nit);
+  const nit = 2, meio = r + 6, lado = Math.ceil(meio * 2 * nit);
   const c = document.createElement("canvas");
   c.width = c.height = lado;
   const x = c.getContext("2d");
@@ -1010,6 +1331,7 @@ function sprite(tipo, r, dourado) {
     ["#ff4d6d","#ffc857","#6ee7a0","#5ce1e6","#b47aff"].forEach((c, i, a) => grad.addColorStop(i / (a.length - 1), c));
     x.beginPath(); x.arc(meio, meio, r + 2.6, 0, 6.2832); x.fillStyle = grad; x.fill();
   } else if (dourado) { x.beginPath(); x.arc(meio, meio, r + 2.2, 0, 6.2832); x.fillStyle = "#ffc857"; x.fill(); }
+  pintarSkin(x, meio, r, tipo);
   x.beginPath(); x.arc(meio, meio, r, 0, 6.2832);
   x.fillStyle = tipo.cor; x.globalAlpha = .92; x.fill(); x.globalAlpha = 1;
   x.lineWidth = 1.5; x.strokeStyle = dourado ? "#8a5c00" : "#00000038"; x.stroke();
@@ -1432,6 +1754,12 @@ const TEMAS = [
   { id:"ouro",     nome:"Cofre de Ouro", ic:"🏆", custo:24, fundo:["#2a2008","#120d02"], borda:"#8a6a18", chao:"#ffc8573a" },
   { id:"arcoiris", nome:"Arco-íris",     ic:"🌈", custo:40, fundo:["#1b0f33","#2a0c28"], borda:"#ff6b9d", chao:"#ffffff20", arco:true },
 ];
+TEMPORADAS.forEach(t => {
+  TEMAS.push(Object.assign({ custo: null, temporada: t.id }, t.tema));
+  t.skin = { id:"s" + t.id, nome:t.tema.nome, ic:t.ic, custo:null, temporada:t.id,
+             aro:3.5, cor:t.cor, brilho:8, pontos:6 };
+  SKINS.push(t.skin);
+});
 const temaObj = () => TEMAS.find(t => t.id === temaAtual) || TEMAS[0];
 function aplicarTema() {
   const t = temaObj();
@@ -1441,6 +1769,9 @@ function aplicarTema() {
 }
 function comprarTema(id) {
   const t = TEMAS.find(x => x.id === id); if (!t) return;
+  if (!temas.includes(id) && t.custo === null) {
+    avisar("🎟️ essa skin é prêmio do passe da temporada " + t.nome); bip(180); return;
+  }
   if (!temas.includes(id)) {
     if (cristais < t.custo) { avisar("💠 faltam " + fmt(t.custo - cristais) + " cristais"); bip(180); return; }
     cristais -= t.custo; temas.push(id);
@@ -1449,20 +1780,102 @@ function comprarTema(id) {
   } else bip(760);
   temaAtual = id; aplicarTema(); montarTemas(); salvar();
 }
+function tempoAte(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+  if (d) return d + (d > 1 ? " dias" : " dia") + (h ? " e " + h + "h" : "");
+  if (h) return h + "h" + String(m).padStart(2, "0");
+  return m + " min";
+}
+function montarTemporada() {
+  const a = temporadaAtiva();
+  const topo = el("tempTopo"), corpo = el("tempCorpo");
+  if (!a) {
+    const prox = proximaTemporada();
+    topo.innerHTML = '<div class="tempTopo"><div class="ti">📅</div><div>' +
+      '<div class="tn">Nenhuma temporada rolando</div>' +
+      '<div class="tc">' + (prox ? "A próxima é <b>" + prox.t.ic + " " + prox.t.nome + "</b>, daqui a <b>" +
+        tempoAte(prox.quando - Date.now()) + "</b>." : "Volte outro dia!") +
+      ' Cada temporada traz emojis próprios, um secreto e uma skin.</div></div></div>';
+    corpo.innerHTML = '<div class="cabecinha" style="margin-top:4px">O calendário do ano:</div>' +
+      '<div class="calend">' + TEMPORADAS.map(t => {
+        const f = temporadas[t.id];
+        return '<div class="calLinha"><span style="font-size:1.05rem">' + t.ic + '</span>' +
+          '<span><b>' + t.nome + '</b><br><span style="color:var(--dim);font-size:.68rem">' + t.conta + '</span></span>' +
+          '<span class="cq">' + (f && f.pegos && f.pegos.length ? f.pegos.length + "/" + PASSE.length + " prêmios"
+            : "ainda não jogada") + '</span></div>';
+      }).join("") + '</div>';
+    return;
+  }
+  const f = fichaTemporada(a.t.id);
+  topo.innerHTML = '<div class="tempTopo" style="border-color:' + a.t.cor + '66">' +
+    '<div class="ti">' + a.t.ic + '</div><div style="flex:1">' +
+    '<div class="tn" style="color:' + a.t.cor + '">' + a.t.nome + '</div>' +
+    '<div class="tc">' + a.t.conta + '</div>' +
+    '<div class="tp">🎟️ <b>' + fmt(f.pontos) + ' pontos</b> · acaba em ' + tempoAte(a.fim - Date.now()) +
+      (a.forcada ? " · <b>(modo adm)</b>" : "") + '</div></div></div>';
+  corpo.innerHTML =
+    '<div class="cabecinha">Fabrique os emojis da temporada pra ganhar 🎟️ pontos: ' +
+      TIPOS_TEMP[a.t.id].map(t => t.e).join(" ") + ' — e o secreto vale ' + PONTOS_SECRETO + '.</div>' +
+    PASSE.map((d, i) => {
+      const pego = f.pegos.includes(i), pode = !pego && f.pontos >= d.p;
+      const pr = premioDoPasse(a.t, i);
+      return '<div class="passo' + (pego ? " pego" : pode ? " pronto" : "") + '">' +
+        '<div class="pi">' + pr.ic + '</div>' +
+        '<div><div class="pn">' + pr.txt + '</div>' +
+        '<div class="pd">' + fmt(Math.min(f.pontos, d.p)) + "/" + d.p + ' pontos</div></div>' +
+        '<button class="btPasse" data-n="' + i + '"' + (pode ? "" : " disabled") + '>' +
+        (pego ? "PEGO" : pode ? "PEGAR" : "🔒") + '</button></div>';
+    }).join("");
+  [...corpo.querySelectorAll(".btPasse")].forEach(b => b.onclick = () => pegarPremio(+b.dataset.n));
+}
+
+function comprarSkin(id) {
+  const k = SKINS.find(x => x.id === id); if (!k) return;
+  if (!skins.includes(id)) {
+    if (k.custo === null) { avisar("🎟️ essa skin é prêmio do passe da temporada " + k.nome); bip(180); return; }
+    if (cristais < k.custo) { avisar("💠 faltam " + fmt(k.custo - cristais) + " cristais"); bip(180); return; }
+    cristais -= k.custo; skins.push(id);
+    avisar("✨ skin " + k.nome + " comprada!");
+    [880, 1100, 1320].forEach((f, i) => setTimeout(() => bip(f, .13), i * 80));
+  } else bip(760);
+  skinAtual = id;
+  sprites.clear();                                   // os desenhos guardados são da skin antiga
+  bolas.forEach(b => b.sprite = sprite(b.tipo, b.r, b.dourado));
+  sujo = true; montarTemas(); salvar();
+}
+
 function montarTemas() {
   el("temaTopo").innerHTML = "<b>" + temas.length + " de " + TEMAS.length +
     "</b> temas · muda a cara da caixa · pago em 💠 cristais (você tem <b>" + fmt(cristais) + "</b>)";
   el("temaGrid").innerHTML = TEMAS.map(t => {
     const meu = temas.includes(t.id), usando = temaAtual === t.id;
-    return '<button class="tema' + (usando ? " usando" : "") + (!meu && cristais < t.custo ? " caro" : "") +
+    return '<button class="tema' + (usando ? " usando" : "") +
+      (!meu && (t.custo === null || cristais < t.custo) ? " caro" : "") +
       '" data-t="' + t.id + '">' +
       '<div class="amostra" style="background:linear-gradient(180deg,' + t.fundo[0] + ',' + t.fundo[1] +
         ');border-color:' + t.borda + '"></div>' +
       '<div class="tn">' + t.ic + " " + t.nome + '</div>' +
-      '<div class="tc">' + (usando ? "em uso" : meu ? "usar" : t.custo === 0 ? "grátis" : "💠 " + t.custo) + '</div>' +
+      '<div class="tc">' + (usando ? "em uso" : meu ? "usar"
+        : t.custo === null ? "🎟️ do passe" : t.custo === 0 ? "grátis" : "💠 " + t.custo) + '</div>' +
       '</button>';
   }).join("");
   [...el("temaGrid").children].forEach(b => b.onclick = () => comprarTema(b.dataset.t));
+
+  el("skinTopo").innerHTML = "<b>" + skins.length + " de " + SKINS.length +
+    "</b> skins · enfeitam <b>cada emoji</b> da caixa · as de evento saem no passe da temporada";
+  el("skinGrid").innerHTML = SKINS.map(k => {
+    const meu = skins.includes(k.id), usando = skinAtual === k.id;
+    return '<button class="tema' + (usando ? " usando" : "") +
+      (!meu && (k.custo === null || cristais < k.custo) ? " caro" : "") + '" data-k="' + k.id + '">' +
+      '<div class="amostra" style="display:grid;place-items:center;background:#0a0713;border-color:' +
+        (k.grad ? k.grad[1] : k.cor === "tipo" ? "#7ac9ff" : k.cor || "var(--linha)") + '">' +
+        '<span style="font-size:1.1rem">' + k.ic + '</span></div>' +
+      '<div class="tn">' + k.nome + '</div>' +
+      '<div class="tc">' + (usando ? "em uso" : meu ? "usar"
+        : k.custo === null ? "🎟️ do passe" : k.custo === 0 ? "grátis" : "💠 " + k.custo) + '</div></button>';
+  }).join("");
+  [...el("skinGrid").children].forEach(b => b.onclick = () => comprarSkin(b.dataset.k));
 }
 
 let vendendo = 0;
@@ -1491,6 +1904,7 @@ function terminarVenda() {
   const agora = raridadesLiberadas();
   if (agora.length > antes) {
     avisar("🎉 nova raridade: " + agora[agora.length - 1].nome.toUpperCase() + "!");
+    ganharPontos(PONTOS_RARIDADE * (agora.length - antes));
     [660, 880, 1100, 1320].forEach((f, i) => setTimeout(() => bip(f, .12), i * 110));
   }
   sujo = true; salvar();
@@ -1545,13 +1959,14 @@ function ganhosOffline(quando) {
    ========================================================================== */
 function mostrarPainel(p) {
   painelAtual = p;
-  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"],["tema","pTema"]].forEach(([k, id]) =>
+  [["loja","pLoja"],["conq","pConq"],["miss","pMiss"],["stat","pStat"],["tema","pTema"],["temp","pTemp"]].forEach(([k, id]) =>
     el(id).style.display = (k === p ? "flex" : "none"));
   [...document.querySelectorAll(".abaT")].forEach(b => b.classList.toggle("sel", b.dataset.p === p));
   if (p === "conq") montarConquistas();
   if (p === "miss") montarMissoes();
   if (p === "stat") montarStats();
   if (p === "tema") montarTemas();
+  if (p === "temp") montarTemporada();
   bip(700);
 }
 [...document.querySelectorAll(".abaT")].forEach(b => b.onclick = () => mostrarPainel(b.dataset.p));
@@ -1680,9 +2095,10 @@ function montarStats() {
     ["📜 Missões cumpridas", fmt(nivelMissao)],
     ["🗂️ Coleções completas", colecoesCompletas() + " · +" + Math.round((bonusColecao() - 1) * 100) + "%"],
     ["🎨 Temas da caixa", temas.length + "/" + TEMAS.length + " · " + temaObj().nome],
+    ["✨ Skins dos emojis", skins.length + "/" + SKINS.length + " · " + skinObj().nome],
     ["🧬 Fusões feitas", fmt(estat.fusoes) + (modoObj().fusao ? " · ímã x" + velFusao().toFixed(1) : "")],
     ["♻️ Renascimentos", fmt(renascimentos)],
-    ["📖 Índice", descobertos.length + "/" + (TIPOS.length + SECRETOS.length)],
+    ["📖 Índice", descobertos.length + "/" + TOTAL_EMOJIS],
     ["🌈 Raridades abertas", raridadesLiberadas().length + "/120"],
     ["📈 Renda estimada", "R$ " + fmt(rendaPorSegundo()) + "/s"],
     ["🌙 Renda offline", Math.round(fatorOffline() * 100) + "%"],
@@ -1716,8 +2132,22 @@ function montarIndice() {
         (tem ? s.e : "❔") + '<small>' + (tem ? "1 em " + fmt(Math.round(1 / s.chance)) : "???") + '</small></div>';
     }).join("") + '</div></div>';
 
+  const faixasTemp = pagIndice !== 0 ? "" : TEMPORADAS.map(t => {
+    const lista = TIPOS_TEMP[t.id].concat([t.tipoSecreto]);
+    const achados = lista.filter(x => vistos.has(x.chave)).length;
+    return '<div class="faixa"><div class="faixaTop">' +
+      '<span class="pastilha" style="background:' + t.cor + '22;color:' + t.cor + ';border:1px solid ' + t.cor + '55">' +
+      t.ic + " " + t.nome + '</span><span class="faixaInfo">' + achados + "/" + lista.length + ' · ' + t.conta + '</span></div>' +
+      '<div class="fileira">' + lista.map(x => {
+        const tem = vistos.has(x.chave), n = contagem[x.chave] || 0;
+        return '<div class="ficha' + (tem ? "" : " nao") + '" style="' + (tem ? "border-color:" + t.cor + "88" : "") + '">' +
+          (n > 1 ? '<b class="qtdF">x' + fmt(n) + '</b>' : "") + (tem ? x.e : "❔") +
+          '<small>' + (tem ? (x.secretoTemp ? "secreto" : "evento") : "???") + '</small></div>';
+      }).join("") + '</div></div>';
+  }).join("");
+
   const inicio = pagIndice * porPag;
-  el("faixas").innerHTML = (pagIndice === 0 ? faixaSecreta : "") + RARIDADES.slice(inicio, inicio + porPag).map(r => {
+  el("faixas").innerHTML = (pagIndice === 0 ? faixaSecreta + faixasTemp : "") + RARIDADES.slice(inicio, inicio + porPag).map(r => {
     const desta = TIPOS.filter(t => t.raridade === r.id);
     const achados = desta.filter(t => descobertos.includes(t.chave)).length;
     const liberada = recorde >= r.desbloqueio;
@@ -1735,7 +2165,7 @@ function montarIndice() {
         : "🔒 R$ " + fmt(r.desbloqueio)) + '</span></div>' +
       '<div class="fileira">' + fichas + '</div></div>';
   }).join("");
-  el("indiceSub").textContent = descobertos.length + " de " + (TIPOS.length + SECRETOS.length) + " emojis · " +
+  el("indiceSub").textContent = descobertos.length + " de " + TOTAL_EMOJIS + " emojis · " +
     raridadesLiberadas().length + " de " + RARIDADES.length + " raridades abertas · " +
     colecoesCompletas() + " coleções completas (+" + Math.round((bonusColecao() - 1) * 100) + "% em tudo)";
 }
@@ -1852,12 +2282,24 @@ function descobrirTudo() {
 }
 function darConquistas() { conquistasFeitas = CONQUISTAS.map(c => c.id); puxarAdm(); }
 function darTemas() { temas = TEMAS.map(t => t.id); montarTemas(); puxarAdm(); }
+function forcarTemporada(id) {
+  temporadaForcada = (temporadaForcada === id) ? null : id;
+  avisar(temporadaForcada ? "🎟️ temporada " + id + " ligada na marra" : "🎟️ temporada solta de novo");
+  montarTemporada(); puxarAdm();
+}
+TEMPORADAS.forEach(t => {
+  const b = document.createElement("button");
+  b.className = "bt"; b.textContent = t.ic; b.title = t.nome;
+  b.onclick = () => forcarTemporada(t.id);
+  el("admTemp").appendChild(b);
+});
 function completarMissoes() { missoes.forEach(m => m.feita = true); checarMissoes(); puxarAdm(); }
 function limparEstado() {
   dinheiro = 0; recorde = 0; cristais = 0; renascimentos = 0; vendidos = 0;
   bolas = []; deposito = 0; depositoValor = 0; descobertos = []; contagem = {};
   conquistasFeitas = []; missoes = []; nivelMissao = 0; buffs = []; combo = 0;
-  temas = ["padrao"]; temaAtual = "padrao";
+  temas = ["padrao"]; temaAtual = "padrao"; temporadas = {}; primeiroDia = 0;
+  skins = ["nenhuma"]; skinAtual = "nenhuma"; sprites.clear();
   chuvaAcum = 0; vendendo = 0; fundoAberto = false; estrela = null; cliquesRapidos = [];
   Object.assign(estat, {
     cliques:0, feitos:0, vendas:0, dourados:0, criticos:0, maiorVenda:0,
@@ -1882,10 +2324,13 @@ function puxarAdm() {
     "renascimentos: " + renascimentos + "\n" +
     "raridades....: " + raridadesLiberadas().length + "/120  (" +
       (raridadesLiberadas().slice(-1)[0] || RARIDADES[0]).nome + ")\n" +
-    "índice.......: " + descobertos.length + "/" + (TIPOS.length + SECRETOS.length) +
+    "índice.......: " + descobertos.length + "/" + TOTAL_EMOJIS +
       "  (" + colecoesCompletas() + " coleções)\n" +
     "temas........: " + temas.length + "/" + TEMAS.length + "  (" + temaObj().nome + ")\n" +
+    "skins........: " + skins.length + "/" + SKINS.length + "  (" + skinObj().nome + ")\n" +
     "modo.........: " + modoObj().nome + "   fusões: " + estat.fusoes + "\n" +
+    "temporada....: " + (temporadaAtiva() ? temporadaAtiva().t.nome + " (" +
+      fmt(fichaTemporada(temporadaAtiva().t.id).pontos) + " 🎟️)" : "nenhuma") + "\n" +
     "conquistas...: " + conquistasFeitas.length + "/" + CONQUISTAS.length + "\n" +
     "missões......: " + nivelMissao + " cumpridas\n" +
     "na caixa.....: " + bolas.length + " físicos + " + fmt(deposito) + " no depósito\n" +
@@ -2076,8 +2521,11 @@ function render() {
   el("vChuva").textContent = fmt(porSegundoChuva()) + "/s";
   el("vRec").textContent = "R$ " + fmt(recorde);
   el("vCris").textContent = cristais + (cristais ? " +" + Math.round(cristais * 35) + "%" : "");
-  el("vInd").textContent = descobertos.length + "/" + (TIPOS.length + SECRETOS.length);
+  el("vInd").textContent = descobertos.length + "/" + TOTAL_EMOJIS;
   el("vConq").textContent = conquistasFeitas.length + "/" + CONQUISTAS.length;
+  const tempA = temporadaAtiva();
+  el("vTemp").textContent = tempA ? tempA.t.ic + " " + fmt(fichaTemporada(tempA.t.id).pontos) : "—";
+  el("avisoTemp").hidden = !temPremioPraPegar();
   el("contIndice").textContent = descobertos.length;
   el("ptConq").textContent = conquistasFeitas.length;
   const lib = raridadesLiberadas();
@@ -2108,9 +2556,9 @@ function marcarModoJogado(id) {
 }
 function pacote() {
   return {
-    v: 5, modo: modoAtual, dinheiro, recorde, vendidos, cristais, renascimentos, mudo, descobertos,
+    v: 6, modo: modoAtual, dinheiro, recorde, vendidos, cristais, renascimentos, mudo, descobertos,
     conquistas: conquistasFeitas, missoes, nivelMissao, estat, quando: Date.now(),
-    contagem, temas, temaAtual,
+    contagem, temas, temaAtual, temporadas, primeiroDia, skins, skinAtual,
     ups: TODOS.filter(u => u.qtd).map(u => [u.id, u.qtd]),
   };
 }
@@ -2135,6 +2583,12 @@ function aplicar(d) {
   temas = Array.isArray(d.temas) && d.temas.length ? d.temas : ["padrao"];
   if (!temas.includes("padrao")) temas.unshift("padrao");
   temaAtual = temas.includes(d.temaAtual) ? d.temaAtual : "padrao";
+  skins = Array.isArray(d.skins) && d.skins.length ? d.skins : ["nenhuma"];
+  if (!skins.includes("nenhuma")) skins.unshift("nenhuma");
+  skinAtual = skins.includes(d.skinAtual) ? d.skinAtual : "nenhuma";
+  sprites.clear();
+  temporadas = (d.temporadas && typeof d.temporadas === "object") ? d.temporadas : {};
+  primeiroDia = d.primeiroDia || 0;
   sincronizarVistos();
   TODOS.forEach(u => u.qtd = 0);
   (d.ups || []).forEach(([id, q]) => { const u = TODOS.find(x => x.id === id); if (u) u.qtd = q; });
@@ -2184,6 +2638,7 @@ function escolherModo(id) {
   modoAtual = id;
   limparEstado();
   const d = carregar();
+  if (!primeiroDia) primeiroDia = Date.now();     // começa a temporada de Estreia
   if (modoLivre()) {                          // no Livre já começa com tudo na mão
     dinheiro = Math.max(dinheiro, 1e30);
     cristais = Math.max(cristais, 1000);
@@ -2229,9 +2684,11 @@ render();
 montarInicio();
 el("rodape").innerHTML =
   "Clique <b>dentro da caixa</b> pra fabricar. Os emojis caem, quicam e empilham de verdade.<br>" +
-  "<b>120 raridades</b> · <b>" + (TIPOS.length + SECRETOS.length) + " emojis</b> (" + SECRETOS.length + " secretos) · <b>" +
-  TODOS.length + " upgrades</b> · <b>" + CONQUISTAS.length + " conquistas</b> · <b>" + TEMAS.length + " temas</b><br>" +
-  "<b>" + MODOS.length + " modos</b> de jogo, missões, coleções, combos, críticos, emoji do dia e renda offline.<br>" +
+  "<b>120 raridades</b> · <b>" + TOTAL_EMOJIS + " emojis</b> (" + SECRETOS.length + " secretos) · <b>" +
+  TODOS.length + " upgrades</b> · <b>" + CONQUISTAS.length + " conquistas</b> · <b>" +
+  TEMAS.length + " temas</b> e <b>" + SKINS.length + " skins</b><br>" +
+  "<b>" + TEMPORADAS.length + " temporadas</b> com passe e emoji secreto próprio · <b>" + MODOS.length +
+  " modos</b> de jogo · missões, coleções, combos, críticos, emoji do dia e renda offline.<br>" +
   "No teclado: <b>espaço</b> fabrica, <b>V</b> vende e as <b>setas</b> viram a gravidade da caixa.";
 quadro();
 </script>
