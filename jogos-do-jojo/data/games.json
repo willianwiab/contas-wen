@@ -539,6 +539,61 @@
         { "versao": "5.1", "data": "2026", "mudancas": "Vários jogos salvos ao mesmo tempo, com botão de salvar, criar e apagar. E o jogo virou aplicativo: dá pra instalar na tela inicial, com ícone próprio, e jogar sem internet." }
       ],
       "ranking": []
+    },
+    {
+      "slug": "mina-de-emojis",
+      "nome": "Mina de Emojis",
+      "descricao": "Cave pra baixo, quebre pedra e ache os emojis presos em cada camada da terra. São 8 camadas, 56 emojis escondidos, robôs que cavam sozinhos e dinamite.",
+      "comoFunciona": "Você clica nas pedras encostadas no buraco pra dar picaretada nelas. Cada pedra tem uma dureza que cresce conforme você desce, e algumas escondem um emoji dentro. As moedas de cada pedra compram melhorias, que deixam você cavar mais fundo e mais rápido.",
+      "objetivo": "Chegar até o núcleo da Terra, a 84 metros, e completar o álbum com os 56 emojis escondidos nas camadas — inclusive os 8 raros, que saem em menos de 1% das pedras.",
+      "mecanicas": [
+        "Mina em grade, com túneis que você abre onde quiser",
+        "8 camadas de terra, cada uma com cor, dureza e emojis próprios",
+        "56 emojis pra achar: 6 comuns e 1 raro por camada",
+        "48 melhorias em 6 famílias, de 8 níveis cada",
+        "Robôs que cavam sozinhos enquanto você faz outra coisa",
+        "Dinamite que explode um pedaço inteiro da mina",
+        "Lanterna que mostra o que tem dentro das pedras em volta",
+        "Terreno gerado por conta: a mesma pedra tem sempre a mesma coisa dentro",
+        "Dá pra instalar como aplicativo e jogar sem internet",
+        "Salvamento automático"
+      ],
+      "categoria": "Clicker",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": 8,
+      "recorde": "",
+      "pontuacao": "Cada pedra vale mais quanto mais fundo estiver e quanto mais funda for a camada. Emoji comum dentro da pedra multiplica por 4 o que ela vale, e o raro multiplica por 25.",
+      "popularidade": 86,
+      "imagem": "assets/images/mina-de-emojis.svg",
+      "banner": "assets/images/mina-de-emojis-banner.svg",
+      "trailer": "",
+      "url": "../mina-de-emojis/index.html",
+      "galeria": [],
+      "historia": "Ninguém sabe direito quem enterrou tantos emojis. Só se sabe que quanto mais fundo você cava, mais estranhos eles ficam: primeiro minhoca e cogumelo, depois osso e cristal, e lá embaixo, perto do núcleo, coisas que não deviam estar ali.",
+      "comoJogar": "Clique numa pedra encostada no buraco pra cavar, ou aperte CAVAR (barra de espaço) que o mineiro desce sozinho. As setas movem o poço de lado pra abrir túneis. Gaste as moedas na loja: picareta pra bater mais forte, robô pra cavar sozinho, lanterna pra ver o que tem dentro da pedra e dinamite pra passar direto pelas mais duras.",
+      "controles": [
+        { "tecla": "Clique", "acao": "Dar uma picaretada na pedra" },
+        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
+        { "tecla": "Espaço", "acao": "Cavar descendo pelo poço" },
+        { "tecla": "D", "acao": "Soltar dinamite" },
+        { "tecla": "Setas", "acao": "Mover o poço de lado" },
+        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+      ],
+      "curiosidades": [
+        "O terreno não é sorteado na hora: o que tem dentro de cada pedra vem de uma conta feita com a posição dela, então a mesma pedra guarda sempre a mesma coisa, mesmo depois de fechar o jogo.",
+        "A dinamite custa de propósito mais do que as pedras que ela derruba valem — senão o jogo virava só apertar um botão pra ficar rico.",
+        "O save guarda só os buracos perto do fundo: o que ficou pra cima vira 'tudo cavado'. Uma mina de 50 metros ocupa menos de 1 KB.",
+        "Os emojis raros saem em menos de 1% das pedras, e cada camada tem o seu."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: 8 camadas, 56 emojis escondidos, 48 melhorias, robôs, dinamite, lanterna e o jogo já instalável como aplicativo." }
+      ],
+      "ranking": []
     }
   ]
 }
