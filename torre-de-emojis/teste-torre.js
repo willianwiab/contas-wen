@@ -9,6 +9,8 @@
    ============================================================ */
 const { chromium } = require('playwright-core');
 const URL = 'file://' + require('path').resolve(__dirname, 'index.html');
+const PASTA_PRINT = process.env.PRINTS || require('os').tmpdir();
+const print = (n) => require('path').join(PASTA_PRINT, n);
 const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:''));
 const espera = (p,ms) => p.waitForTimeout(ms);
 (async () => {
@@ -38,7 +40,7 @@ const espera = (p,ms) => p.waitForTimeout(ms);
   conf('empilhar bloco em cima do outro faz a torre subir e paga',
     r.altura === r.antes.h + 6 && r.moedas > r.antes.m, JSON.stringify(r));
   conf('acertar no meio conta como PERFEITO e paga 3x', r.perfeitos >= 5, JSON.stringify(r));
-  await p.screenshot({ path:'torre1.png' });
+  await p.screenshot({ path: print('torre1.png') });
 
   // errar feio: solta o bloco bem longe do topo
   r = await p.evaluate(() => new Promise(res => {
@@ -93,7 +95,7 @@ const espera = (p,ms) => p.waitForTimeout(ms);
     valor: multValor(), torre: torre.length }));
   conf('salva o dinheiro, o recorde e as melhorias',
     r.moedas===antes.moedas && r.recorde===antes.recorde && r.valor>1, JSON.stringify(r));
-  await p.screenshot({ path:'torre2.png' });
+  await p.screenshot({ path: print('torre2.png') });
 
   console.log('✅ '+ok.length+' ok'); ok.forEach(t=>console.log('   · '+t));
   if (fail.length) { console.log('❌ '+fail.length); fail.forEach(t=>console.log('   · '+t)); }

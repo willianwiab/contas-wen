@@ -9,6 +9,8 @@
    ============================================================ */
 const { chromium } = require('playwright-core');
 const URL = 'file://' + require('path').resolve(__dirname, 'index.html');
+const PASTA_PRINT = process.env.PRINTS || require('os').tmpdir();
+const print = (n) => require('path').join(PASTA_PRINT, n);
 const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:''));
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args:['--no-sandbox'] });

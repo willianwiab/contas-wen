@@ -10,6 +10,8 @@
    ============================================================ */
 const { chromium } = require('playwright-core');
 const base = process.env.BASE || 'http://127.0.0.1:8822/mina-de-emojis/';
+const PASTA_PRINT = process.env.PRINTS || require('os').tmpdir();
+const print = (n) => require('path').join(PASTA_PRINT, n);
 const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:''));
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args:['--no-sandbox'] });
@@ -51,7 +53,7 @@ const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:'')
     fundura: typeof fundura !== "undefined" ? fundura : -1,
     temMina: !!document.getElementById('mina') }));
   conf('abre sem internet, com o jogo salvo intacto', r.titulo==='MINA DE EMOJIS' && r.jogo===48 && r.fundura>0, JSON.stringify(r));
-  await p.screenshot({ path:'offline.png' });
+  await p.screenshot({ path: print('offline.png') });
   await ctx.setOffline(false);
 
   // instalável? (o Chrome só dispara beforeinstallprompt com https, mas dá pra conferir os critérios)
