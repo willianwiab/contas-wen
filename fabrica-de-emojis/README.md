@@ -40,12 +40,22 @@ da caixa.
 | Raridades | 120, da Comum à Absoluta |
 | Emojis no índice | 730, sendo 10 secretos |
 | Upgrades | 340 (17 famílias de dinheiro + 17 de cristal, 10 níveis cada) — o **🌀 Turbo da Fusão** só aparece na loja do modo Fusão |
-| Conquistas | 76, sendo 8 secretas — cada uma dá +1,5% em tudo pra sempre |
+| Conquistas | 80, sendo 9 secretas — cada uma dá +1,5% em tudo pra sempre |
+| Temporadas | 10 eventos com data marcada, cada um com 6 emojis próprios, 1 secreto, passe de 12 prêmios, tema e skin |
+| Skins de emoji | 18 (8 compradas com cristais + 10 de temporada) |
 | Modos de jogo | 4: Normal, Difícil, Fusão e Livre (save separado em cada um) |
 | Temas da caixa | 8, comprados com cristais |
 
 Além disso:
 
+- **Temporadas** — em datas do ano (Natal, Halloween, Páscoa, Semana do Brasil,
+  Férias, Festa Junina, Ano Novo, Dia das Crianças, Semana do Espaço) o jogo
+  liga um evento: caem emojis exclusivos dele, existe um emoji secreto só dele,
+  e você junta 🎟️ **pontos de temporada** pra abrir os 12 prêmios do passe
+  (dinheiro, cristais, emojis, turbo e, no fim, o tema e a skin do evento).
+  Quem começa a jogar agora pega a **Estreia da Fábrica**, que dura 14 dias.
+- **Skins dos emojis** — enfeitam cada emoji na caixa (aro, neon, ouro, cristal,
+  arco-íris...). Compradas com cristais na aba 🎨; as de evento vêm do passe.
 - **Emoji do dia** — todo dia um emoji é sorteado (pela data, igual pra todo
   mundo) e vale **10x** enquanto o dia durar.
 - **Coleções** — juntar os 6 emojis de uma raridade fecha a coleção e dá
@@ -73,9 +83,16 @@ Senha `1234` (troque na constante `SENHA_ADM`). Abre no cadeado 🔒, com
 destravar raridades, soltar emojis secretos e estrelas, completar missões e
 recomeçar do zero.
 
+## Testando
+
+`teste-regressao.js` abre o jogo num Chromium e confere as 20 coisas
+principais (modos, saves separados, temporadas, passe, fusão, skins, venda,
+emoji do dia, conquistas secretas). Rode com `npm i playwright-core && node
+teste-regressao.js`.
+
 ## Detalhes técnicos
 
-- Cada modo tem seu save no `localStorage` (`fabricaEmojis_v5_<modo>`); o save antigo (`_v4`, `_v3`, `_v2`) vira o do modo Normal.
+- Cada modo tem seu save no `localStorage` (`fabricaEmojis_v5_<modo>`, formato v6); o save antigo (`_v4`, `_v3`, `_v2`) vira o do modo Normal.
 - A física simula até 550 emojis na tela; o que passa disso vai pro **depósito**,
   que continua contando no valor e no índice — é o que segura o FPS no celular.
 - A ordem dos emojis é embaralhada com semente fixa, então o índice é igual
