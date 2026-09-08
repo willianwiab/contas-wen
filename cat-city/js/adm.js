@@ -69,7 +69,7 @@ function montar() {
         API.jogo.t, { escala:9, tipo:1 }) },
     { txt:"🧹 limpar todos", perigo:true, faz:() => API.limparGatos() },
   ]);
-  botoes("admTeto", [60, 320, 600, 900, 1500, 2200, 3000].map(n => ({
+  botoes("admTeto", [60, 320, 1000, 1500, 2000, 2500, 3000].map(n => ({
     txt:String(n), ligado:API.tetoAtual() === n, faz:() => API.mudarTeto(n) })));
 
   /* formas */

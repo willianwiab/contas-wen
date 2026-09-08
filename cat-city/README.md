@@ -64,6 +64,13 @@ repetir e empilhar.
 Nenhuma é só skin: cada uma muda raio de colisão, velocidade, força do pulo,
 massa, o que quebra e se passa por vão estreito.
 
+## A cidade
+
+**11 × 11 quarteirões** — 231 por 231 metros, umas 330 caixas de prédio, 115
+carros parados, 264 postes, 100 semáforos, 10 praças com árvores e banco, becos
+com caixote e lojas com placa. E **384 coisinhas** pra juntar espalhadas por
+tudo. Cada cidade é sorteada na hora: "🔄 recomeçar a cidade" faz outra.
+
 ## A cidade que vira gato
 
 Cinco fases, e elas chegam conforme você acha formas e segredos:
@@ -138,8 +145,8 @@ O pedido sugeria Three.js. A escolha foi outra, de propósito:
    é uma transformação de desenho, de graça. Em 3D seria treze malhas.
 2. **As referências são fotos**, e foto é uma imagem chata. Colar imagem chata
    deformada é exatamente o que o Canvas faz melhor.
-3. **Roda em computador comum.** Sem WebGL, sem shader, sem GPU boa: 39 FPS com
-   320 gatos vivos e a cidade inteira desenhada, medido no teste.
+3. **Roda em computador comum.** Sem WebGL, sem shader, sem GPU boa: 51 FPS com
+   **1000 gatos vivos** na cidade grande inteira, medido no teste.
 4. **Sem dependência externa** — o jogo abre offline, como os outros do JoJo.
 
 A câmera é de terceira pessoa mesmo assim: a cidade é vista de cima e de trás
@@ -150,14 +157,24 @@ câmera **afasta sozinha** quando o bicho cresce.
 
 - **Pool fixo.** Os gatos nunca são criados nem destruídos, só ligados e
   desligados. O array tem tamanho fixo desde o começo do jogo.
-- **Teto.** Existe um número máximo de gatos vivos (ajustável nas opções, 60 a
-  900). Passou disso, o mais velho é reciclado.
+- **Teto.** Existe um número máximo de gatos vivos: **1000** por padrão,
+  ajustável nas opções de 60 a 2000 (e até 3000 pelo modo adm). Passou disso,
+  o mais velho é reciclado.
 - **LOD.** Perto: gato inteiro, andando e balançando. Longe: a figura sem
   balanço. Muito longe: quatro pixels.
 - **IA por quadro alternado.** Quem está a mais de 60 metros pensa 1 vez a cada
   4 quadros, com o dt multiplicado — anda igual e custa um quarto.
 - **Colisão só entre vizinhos.** Gato só empurra gato num raio de 22 metros do
   jogador, e cada um só testa contra os 6 seguintes da lista. Sem isso seria n².
+- **Grade de paredes.** A cidade grande tem umas 500 caixas de colisão.
+  Perguntar "bati em alguma?" varrendo as 500 pra cada um dos mil gatos, 60
+  vezes por segundo, era o que derretia o computador. Agora as paredes ficam
+  numa grade de células de 14 metros e cada um só olha as 9 células em volta —
+  quase sempre menos de 10 caixas. Foi o que fez o jogo ficar **mais rápido com
+  1000 gatos do que era com 320**.
+- **Contar o teto uma vez só.** A multiplicação perguntava "quantos estão
+  vivos?" a cada filhote que nascia: com mil gatos isso era um milhão de contas
+  num quadro só, e o jogo engasgava justamente na hora mais divertida.
 
 ## Estrutura
 
@@ -167,7 +184,7 @@ cat-city/
   js/main.js        laço, mundo desenhado, itens, segredos, menus
   js/sprites.js     O GATO (e o carregador das fotos de verdade)
   js/formas.js      as 13 formas: corpo, habilidade e desenho
-  js/city.js        geração da cidade e a corrupção dela
+  js/city.js        geração da cidade, a grade de colisão e a corrupção
   js/player.js      o gato do jogador e os poderes
   js/cats.js        NPCs, pool, multiplicação e LOD
   js/physics.js     colisão, empurrão, quique, gravidade
