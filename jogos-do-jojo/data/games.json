@@ -1,10 +1,8 @@
 {
   "_comoUsar": "Cada objeto do array 'jogos' vira um cartão no site e ganha a própria página. Para adicionar um jogo novo, copie um objeto inteiro, cole aqui e troque os valores. Veja o README para o que cada campo significa.",
-
   "estatisticas": {
     "horasDeDesenvolvimento": 0
   },
-
   "jogos": [
     {
       "slug": "clicker-master-2-natureza",
@@ -41,8 +39,14 @@
       "historia": "A natureza precisa de ajuda, e cada clique é uma semente. Começando com um punhado de folhas, você vai reflorestando o mundo até transformar biomas inteiros.",
       "comoJogar": "Clique no botão CUIDAR para ganhar pontos. Gaste os pontos em melhorias para produzir mais sozinho. Explore os menus para descobrir biomas, chefões, expedições e todos os outros sistemas escondidos.",
       "controles": [
-        { "tecla": "Clique", "acao": "Cuidar da natureza e ganhar pontos" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" }
+        {
+          "tecla": "Clique",
+          "acao": "Cuidar da natureza e ganhar pontos"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        }
       ],
       "curiosidades": [
         "É o maior jogo do JoJo: mais de 30 sistemas diferentes, entre biomas, clãs, laboratório, gacha e bestiário.",
@@ -86,8 +90,14 @@
       "historia": "O primeiro grande jogo do JoJo, feito quando ele tinha 9 anos — e que deu origem a toda a série Clicker.",
       "comoJogar": "Clique sem parar para somar pontos. Compre melhorias, veja o multiplicador subir e, quando tiver pontos suficientes, prestigie para recomeçar mais forte. Crie um perfil para salvar sua pontuação no ranking global.",
       "controles": [
-        { "tecla": "Clique", "acao": "Ganhar pontos" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" }
+        {
+          "tecla": "Clique",
+          "acao": "Ganhar pontos"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        }
       ],
       "curiosidades": [
         "O próprio jogo traz a assinatura na tela: 'FEITO POR JOJO · 9 ANOS'.",
@@ -133,8 +143,14 @@
       "historia": "\"Oi... sou a Vegeta. Me cuide direito!\" — uma planta mal-humorada que precisa de atenção, mas reclama de qualquer jeito.",
       "comoJogar": "Use os menus de Cuidado, Física e Interação para regar, dar sol e alimentar a Vegeta. Converse com ela pelo chat, compre acessórios na loja e não deixe ela fugir do vaso.",
       "controles": [
-        { "tecla": "Clique", "acao": "Cuidar, conversar e navegar pelos menus" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" }
+        {
+          "tecla": "Clique",
+          "acao": "Cuidar, conversar e navegar pelos menus"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        }
       ],
       "curiosidades": [
         "A Vegeta responde de um jeito ranzinza a tudo: dá para elogiar, contar piada ou até ignorar ela — e ela reclama do mesmo jeito.",
@@ -180,8 +196,14 @@
       "historia": "Todo mundo que tem gato conhece a cena: ele sobe no teclado e bagunça tudo. Aqui, a bagunça virou jogo.",
       "comoJogar": "Clique em JOGAR e comece a apertar teclas. Quanto mais rápido, mais patinhas você ganha. Gaste na loja, escolha o chapéu do gatinho e tente entrar no ranking global.",
       "controles": [
-        { "tecla": "Teclas", "acao": "Qualquer tecla conta ponto — como um gato faria" },
-        { "tecla": "Mouse", "acao": "Navegar pelos menus e pela loja" }
+        {
+          "tecla": "Teclas",
+          "acao": "Qualquer tecla conta ponto — como um gato faria"
+        },
+        {
+          "tecla": "Mouse",
+          "acao": "Navegar pelos menus e pela loja"
+        }
       ],
       "curiosidades": [
         "O jogo mostra qual foi a sua tecla favorita durante a partida.",
@@ -226,8 +248,14 @@
       "historia": "Começa como um jogo alegre de tocar na tela. Mas quem continua jogando acaba encontrando o NULL, a entidade final — e um aviso de que talvez fosse melhor fechar o jogo.",
       "comoJogar": "Toque no botão TOCAR o mais rápido que conseguir para manter o combo alto. Suba de nível, junte gemas e troque por skins. Existem códigos secretos escondidos no jogo.",
       "controles": [
-        { "tecla": "Clique", "acao": "Marcar pontos" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" }
+        {
+          "tecla": "Clique",
+          "acao": "Marcar pontos"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        }
       ],
       "curiosidades": [
         "O jogo tem um aviso de direitos escrito pelo próprio JoJo, quando ele tinha 9 anos: pode fazer versão modificada desde que dê os créditos, mas não pode copiar, vender nem tirar o nome dele.",
@@ -271,8 +299,14 @@
       "historia": "A primeira fase é a Floresta Primordial. O mundo treme com a sua presença — e o Guardião surge para tentar impedir você. No fim, tudo acaba.",
       "comoJogar": "Clique em DESTRUIR para encher a barra de destruição. Quando o chefão aparecer, use ATACAR até derrotá-lo e siga para a próxima fase.",
       "controles": [
-        { "tecla": "Clique", "acao": "Destruir e atacar o chefão" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" }
+        {
+          "tecla": "Clique",
+          "acao": "Destruir e atacar o chefão"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        }
       ],
       "curiosidades": [
         "O jogo começa na Floresta Primordial, guardada por um chefão com 100 pontos de vida.",
@@ -315,8 +349,14 @@
       "historia": "A versão direta ao ponto da série Clicker: sem menus gigantes, só clicar, coletar e dominar.",
       "comoJogar": "Clique no botão para somar pontos, ative os boosts para multiplicar o ganho e acompanhe as conquistas.",
       "controles": [
-        { "tecla": "Clique", "acao": "Ganhar pontos" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" }
+        {
+          "tecla": "Clique",
+          "acao": "Ganhar pontos"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        }
       ],
       "curiosidades": [
         "É o único jogo assinado em dupla: os créditos dizem 'Jonathan & Willian' — o JoJo e o pai dele.",
@@ -357,7 +397,10 @@
       "historia": "Um computador comum, com seus ícones e sua lixeira. Até que aparece a tela azul: 'ENTITY_DETECTED_IN_SYSTEM'. Alguma coisa entrou no sistema — e um dos arquivos não tem nome.",
       "comoJogar": "Clique nos ícones da área de trabalho para explorar. Abra os arquivos e veja o que acontece. Nada disso afeta o seu computador de verdade.",
       "controles": [
-        { "tecla": "Clique", "acao": "Abrir ícones e arquivos" }
+        {
+          "tecla": "Clique",
+          "acao": "Abrir ícones e arquivos"
+        }
       ],
       "curiosidades": [
         "Um dos arquivos na área de trabalho é o FreeClickMaster.exe — uma piada com o próprio Clicker Master do JoJo.",
@@ -398,7 +441,10 @@
       "historia": "Dos pioneiros dos anos 80 até os vírus modernos: o Elk Cloner escrito por um garoto de 15 anos em 1982, o Brain criado por dois irmãos paquistaneses em 1986, o Morris Worm que travou 10% da internet em 1988 e muitos outros.",
       "comoJogar": "Escolha um vírus da lista para ver a simulação do que ele fazia. Leia a ficha de cada um para descobrir quem criou, quando e por quê. O aviso na tela é bem claro: é apenas simulação, nada afeta seu computador.",
       "controles": [
-        { "tecla": "Clique", "acao": "Escolher um vírus e ver a simulação" }
+        {
+          "tecla": "Clique",
+          "acao": "Escolher um vírus e ver a simulação"
+        }
       ],
       "curiosidades": [
         "O primeiro vírus do catálogo, o Elk Cloner, foi escrito por Rich Skrenta com apenas 15 anos, em 1982.",
@@ -444,9 +490,18 @@
       "historia": "Numa noite estrelada, o poder da inteligência artificial começou a cair do céu em forma de estrelas, robôs, cérebros e raios. Quem for rápido o bastante consegue recolher tudo antes que chegue ao chão — mas no meio da chuva de poder também vêm bombas. E, de vez em quando, um convidado lendário aparece.",
       "comoJogar": "Aperte Começar e vá clicando em cada item que cair. Acertos seguidos aumentam o combo e multiplicam seus pontos; se um item bom cair no chão, o combo zera. Nunca clique nas bombas. Fique de olho nos youtubers, que valem bastante, e reze para o lendário aparecer.",
       "controles": [
-        { "tecla": "Clique", "acao": "Pegar o item que está caindo" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular ou tablet" },
-        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+        {
+          "tecla": "Clique",
+          "acao": "Pegar o item que está caindo"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular ou tablet"
+        },
+        {
+          "tecla": "🔊",
+          "acao": "Ligar ou desligar o som"
+        }
       ],
       "curiosidades": [
         "O jogo foi feito a seis mãos: o Jojo teve as ideias e dirigiu tudo, o Gemini programou o motor do jogo e o Claude fez o visual, os rostinhos, a bomba e o arco-íris.",
@@ -458,7 +513,11 @@
       "creditos": "Ideias e direção: Jojo.\nMotor do jogo: Gemini.\nVisual, rostos e efeitos: Claude.",
       "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão publicada, com combo, bombas, arco-íris, youtubers convidados e o convidado lendário." }
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Primeira versão publicada, com combo, bombas, arco-íris, youtubers convidados e o convidado lendário."
+        }
       ],
       "ranking": []
     },
@@ -512,14 +571,38 @@
       "historia": "No começo a fábrica só sabe fazer carinhas comuns. Mas cada venda abre uma raridade nova — e do outro lado das 120 raridades existem emojis que quase ninguém viu, como o Elevador Infinito e a Bola de Espelhos, que caem uma vez em centenas de milhões.",
       "comoJogar": "Clique dentro da caixa (ou no botão FAZER EMOJI, ou na barra de espaço) pra fabricar. Quando encher, aperte VENDER e veja tudo despencar. Gaste o dinheiro nos upgrades da loja, fique de olho na estrela de bônus que aparece de vez em quando e cumpra as missões. Lá na frente, chegando a R$ 1 bilhão de recorde, dá pra renascer e ganhar cristais que valem pra sempre.",
       "controles": [
-        { "tecla": "Clique", "acao": "Fabricar emojis dentro da caixa" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
-        { "tecla": "Espaço", "acao": "Fabricar sem tirar a mão do teclado" },
-        { "tecla": "V", "acao": "Vender a caixa" },
-        { "tecla": "Setas", "acao": "Virar a gravidade da caixa" },
-        { "tecla": "📱", "acao": "Usar a inclinação do celular como gravidade" },
-        { "tecla": "📖", "acao": "Abrir o índice de emojis descobertos" },
-        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+        {
+          "tecla": "Clique",
+          "acao": "Fabricar emojis dentro da caixa"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        },
+        {
+          "tecla": "Espaço",
+          "acao": "Fabricar sem tirar a mão do teclado"
+        },
+        {
+          "tecla": "V",
+          "acao": "Vender a caixa"
+        },
+        {
+          "tecla": "Setas",
+          "acao": "Virar a gravidade da caixa"
+        },
+        {
+          "tecla": "📱",
+          "acao": "Usar a inclinação do celular como gravidade"
+        },
+        {
+          "tecla": "📖",
+          "acao": "Abrir o índice de emojis descobertos"
+        },
+        {
+          "tecla": "🔊",
+          "acao": "Ligar ou desligar o som"
+        }
       ],
       "curiosidades": [
         "A ordem dos 730 emojis é embaralhada com uma semente fixa: o índice sai igualzinho em qualquer aparelho do mundo.",
@@ -531,14 +614,46 @@
       "creditos": "Criado por Jojo com o Claude.",
       "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: física dos emojis, 120 raridades, 730 emojis no índice, 220 upgrades, renascimento com cristais e modo administrador." },
-        { "versao": "2.0", "data": "2026", "mudancas": "Upgrades novos (crítico, combo, gêmeo, fusão, radar e turno da noite), 62 conquistas, missões, estrela de bônus, turbo, renda offline, painel de estatísticas e 2 emojis secretos a mais." },
-        { "versao": "3.0", "data": "2026", "mudancas": "Coleções com bônus permanente, 8 temas pra caixa e 6 conquistas novas." },
-        { "versao": "4.0", "data": "2026", "mudancas": "Tela de início com 4 modos de jogo e save separado, fusão de repetidos no modo Fusão, emoji do dia valendo 10x e 8 conquistas secretas." },
-        { "versao": "4.1", "data": "2026", "mudancas": "A fusão saiu do botão e foi pra dentro da caixa: 5 emojis da mesma raridade que estejam parados se atraem feito ímã, se juntam no meio e explodem num emoji melhor, com reação em cadeia." },
-        { "versao": "4.2", "data": "2026", "mudancas": "Turbo da Fusão: uma família de 10 upgrades que só aparece na loja do modo Fusão e acelera o ímã em até 9 vezes." },
-        { "versao": "5.0", "data": "2026", "mudancas": "Temporadas: 10 eventos com data marcada, cada um com 6 emojis exclusivos, um emoji secreto, tema e skin próprios, e um passe de 12 prêmios que abre com pontos de temporada. Mais 18 skins pra enfeitar os emojis." },
-        { "versao": "5.1", "data": "2026", "mudancas": "Vários jogos salvos ao mesmo tempo, com botão de salvar, criar e apagar. E o jogo virou aplicativo: dá pra instalar na tela inicial, com ícone próprio, e jogar sem internet." }
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Primeira versão: física dos emojis, 120 raridades, 730 emojis no índice, 220 upgrades, renascimento com cristais e modo administrador."
+        },
+        {
+          "versao": "2.0",
+          "data": "2026",
+          "mudancas": "Upgrades novos (crítico, combo, gêmeo, fusão, radar e turno da noite), 62 conquistas, missões, estrela de bônus, turbo, renda offline, painel de estatísticas e 2 emojis secretos a mais."
+        },
+        {
+          "versao": "3.0",
+          "data": "2026",
+          "mudancas": "Coleções com bônus permanente, 8 temas pra caixa e 6 conquistas novas."
+        },
+        {
+          "versao": "4.0",
+          "data": "2026",
+          "mudancas": "Tela de início com 4 modos de jogo e save separado, fusão de repetidos no modo Fusão, emoji do dia valendo 10x e 8 conquistas secretas."
+        },
+        {
+          "versao": "4.1",
+          "data": "2026",
+          "mudancas": "A fusão saiu do botão e foi pra dentro da caixa: 5 emojis da mesma raridade que estejam parados se atraem feito ímã, se juntam no meio e explodem num emoji melhor, com reação em cadeia."
+        },
+        {
+          "versao": "4.2",
+          "data": "2026",
+          "mudancas": "Turbo da Fusão: uma família de 10 upgrades que só aparece na loja do modo Fusão e acelera o ímã em até 9 vezes."
+        },
+        {
+          "versao": "5.0",
+          "data": "2026",
+          "mudancas": "Temporadas: 10 eventos com data marcada, cada um com 6 emojis exclusivos, um emoji secreto, tema e skin próprios, e um passe de 12 prêmios que abre com pontos de temporada. Mais 18 skins pra enfeitar os emojis."
+        },
+        {
+          "versao": "5.1",
+          "data": "2026",
+          "mudancas": "Vários jogos salvos ao mesmo tempo, com botão de salvar, criar e apagar. E o jogo virou aplicativo: dá pra instalar na tela inicial, com ícone próprio, e jogar sem internet."
+        }
       ],
       "ranking": []
     },
@@ -581,14 +696,38 @@
       "historia": "A primeira fábrica ficou cheia demais: raridade aberta, índice quase completo, conquista feita. Então o JoJo mandou construir outra igualzinha do lado, com as máquinas zeradas, só pra sentir de novo o gostinho de abrir a primeira raridade.",
       "comoJogar": "Do mesmo jeito da fábrica 1: clique dentro da caixa (ou no botão FAZER EMOJI, ou na barra de espaço) pra fabricar, aperte VENDER quando encher e gaste o dinheiro na loja. O progresso daqui é só daqui — o da outra fábrica continua guardado do lado.",
       "controles": [
-        { "tecla": "Clique", "acao": "Fabricar emojis dentro da caixa" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
-        { "tecla": "Espaço", "acao": "Fabricar sem tirar a mão do teclado" },
-        { "tecla": "V", "acao": "Vender a caixa" },
-        { "tecla": "Setas", "acao": "Virar a gravidade da caixa" },
-        { "tecla": "📱", "acao": "Usar a inclinação do celular como gravidade" },
-        { "tecla": "📖", "acao": "Abrir o índice de emojis descobertos" },
-        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+        {
+          "tecla": "Clique",
+          "acao": "Fabricar emojis dentro da caixa"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        },
+        {
+          "tecla": "Espaço",
+          "acao": "Fabricar sem tirar a mão do teclado"
+        },
+        {
+          "tecla": "V",
+          "acao": "Vender a caixa"
+        },
+        {
+          "tecla": "Setas",
+          "acao": "Virar a gravidade da caixa"
+        },
+        {
+          "tecla": "📱",
+          "acao": "Usar a inclinação do celular como gravidade"
+        },
+        {
+          "tecla": "📖",
+          "acao": "Abrir o índice de emojis descobertos"
+        },
+        {
+          "tecla": "🔊",
+          "acao": "Ligar ou desligar o som"
+        }
       ],
       "curiosidades": [
         "É o mesmo index.html da fábrica 1: muda só o título, a marca, o ícone e o prefixo das chaves de save.",
@@ -600,7 +739,11 @@
       "creditos": "Criado por Jojo com o Claude.",
       "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2026", "mudancas": "A Fábrica de Emojis inteira, clonada: mesmos 800 emojis, 120 raridades, 340 upgrades, 80 conquistas, 10 temporadas, 18 temas, 18 skins, 4 modos e 12 espaços de jogo salvo. Com ícone, aplicativo e caderneta de saves próprios." }
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "A Fábrica de Emojis inteira, clonada: mesmos 800 emojis, 120 raridades, 340 upgrades, 80 conquistas, 10 temporadas, 18 temas, 18 skins, 4 modos e 12 espaços de jogo salvo. Com ícone, aplicativo e caderneta de saves próprios."
+        }
       ],
       "ranking": []
     },
@@ -647,16 +790,46 @@
       "historia": "Dizem que a fábrica foi levada de navio e montada de novo do outro lado do mundo. As máquinas são as mesmas, mas o que sai delas não é: primeiro vieram as lanternas e os envelopes vermelhos, depois os doze animais do zodíaco, e lá no fundo do estoque apareceram uns selos quadradinhos que ninguém sabe explicar.",
       "comoJogar": "Clique dentro da caixa (ou no botão FAZER EMOJI, ou na barra de espaço) pra fabricar, e aperte VENDER quando encher. Gaste na loja, cumpra as missões e fique de olho no calendário: os festivais chineses abrem e fecham em datas que mudam todo ano, porque seguem a lua.",
       "controles": [
-        { "tecla": "Clique", "acao": "Fabricar emojis dentro da caixa" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
-        { "tecla": "Espaço", "acao": "Fabricar sem tirar a mão do teclado" },
-        { "tecla": "V", "acao": "Vender a caixa" },
-        { "tecla": "Setas", "acao": "Virar a gravidade da caixa" },
-        { "tecla": "📱", "acao": "Usar a inclinação do celular como gravidade" },
-        { "tecla": "📖", "acao": "Abrir o índice de emojis descobertos" },
-        { "tecla": "中 / A", "acao": "Trocar entre chinês e português" },
-        { "tecla": "🎤", "acao": "Ligar o microfone e gritar" },
-        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+        {
+          "tecla": "Clique",
+          "acao": "Fabricar emojis dentro da caixa"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        },
+        {
+          "tecla": "Espaço",
+          "acao": "Fabricar sem tirar a mão do teclado"
+        },
+        {
+          "tecla": "V",
+          "acao": "Vender a caixa"
+        },
+        {
+          "tecla": "Setas",
+          "acao": "Virar a gravidade da caixa"
+        },
+        {
+          "tecla": "📱",
+          "acao": "Usar a inclinação do celular como gravidade"
+        },
+        {
+          "tecla": "📖",
+          "acao": "Abrir o índice de emojis descobertos"
+        },
+        {
+          "tecla": "中 / A",
+          "acao": "Trocar entre chinês e português"
+        },
+        {
+          "tecla": "🎤",
+          "acao": "Ligar o microfone e gritar"
+        },
+        {
+          "tecla": "🔊",
+          "acao": "Ligar ou desligar o som"
+        }
       ],
       "curiosidades": [
         "O microfone do grito só liga quando você aperta o botão, e o som não sai do aparelho: nada é enviado pra lugar nenhum e nada fica salvo. O jogo guarda cerca de um segundo de som só pra tocar de volta na hora, e depois joga fora.",
@@ -670,8 +843,16 @@
       "creditos": "Criado por Jojo com o Claude.",
       "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2026", "mudancas": "A fábrica virou chinesa: 120 raridades rebatizadas em chinês, baralho começando pela mesa e pelos 12 animais do zodíaco, 10 tesouros com selos chineses, 10 temporadas de festivais com calendário lunar, temas e modos com nome chinês, e ícone e cores próprios." },
-        { "versao": "2.0", "data": "2026", "mudancas": "O jogo inteiro em chinês, com botão 中/A pra voltar pro português e a escolha ficando salva. Mais a 🎡 roleta da sorte, com 12 prémios e um giro grátis a cada 10 minutos, e o 🎤 grito: você berra no microfone, a caixa treme, os emojis pulam e depois te imitam. Duas conquistas novas." }
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "A fábrica virou chinesa: 120 raridades rebatizadas em chinês, baralho começando pela mesa e pelos 12 animais do zodíaco, 10 tesouros com selos chineses, 10 temporadas de festivais com calendário lunar, temas e modos com nome chinês, e ícone e cores próprios."
+        },
+        {
+          "versao": "2.0",
+          "data": "2026",
+          "mudancas": "O jogo inteiro em chinês, com botão 中/A pra voltar pro português e a escolha ficando salva. Mais a 🎡 roleta da sorte, com 12 prémios e um giro grátis a cada 10 minutos, e o 🎤 grito: você berra no microfone, a caixa treme, os emojis pulam e depois te imitam. Duas conquistas novas."
+        }
       ],
       "ranking": []
     },
@@ -717,12 +898,30 @@
       "historia": "No começo é só um gatinho numa sala com uma borboleta. Depois vem o segundo gato, e o terceiro, e uns que caem do teto. Aí o gato começa a aparecer em volta de si mesmo, girando, e as patas passam a brotar de onde não tinha pata. Ninguém explica. Continua sendo um gato.",
       "comoJogar": "Clique nos bichinhos que passam pela sala. Não clique no 🥒 pepino, na 💣 bomba, no 🌵 cacto, no 🚿 chuveiro nem no 🧨 foguete. Compre a Mira e o Reflexo primeiro (fica bem mais fácil acertar), depois o Chamariz pra encher a sala. Quando os peixes sobrarem, adote gatos: eles caçam por você.",
       "controles": [
-        { "tecla": "Clique", "acao": "Dar a patada no bichinho" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
-        { "tecla": "Espaço", "acao": "Chamar bichinhos" },
-        { "tecla": "L", "acao": "Lambida geral: come tudo que está na tela" },
-        { "tecla": "🌀", "acao": "Escolher o quanto a sala fica estranha" },
-        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+        {
+          "tecla": "Clique",
+          "acao": "Dar a patada no bichinho"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        },
+        {
+          "tecla": "Espaço",
+          "acao": "Chamar bichinhos"
+        },
+        {
+          "tecla": "L",
+          "acao": "Lambida geral: come tudo que está na tela"
+        },
+        {
+          "tecla": "🌀",
+          "acao": "Escolher o quanto a sala fica estranha"
+        },
+        {
+          "tecla": "🔊",
+          "acao": "Ligar ou desligar o som"
+        }
       ],
       "curiosidades": [
         "O jogo tem duas referências pedidas pelo JoJo: o Toadled, pela mecânica de comer e evoluir, e o vídeo 'Welcome to Kitty City' do Cyriak, pela ideia de pegar uma coisa comum — gato — e ir multiplicando ela até virar uma máquina absurda.",
@@ -734,7 +933,11 @@
       "creditos": "Criado por Jojo com o Claude.",
       "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: caçada por clique, 31 evoluções, 25 bichinhos, 5 perigos, 96 brinquedos, 12 gatos de colônia, 6 comidas, álbum, 44 conquistas, as 9 vidas e a sala que vai derretendo em gatos repetidos." }
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Primeira versão: caçada por clique, 31 evoluções, 25 bichinhos, 5 perigos, 96 brinquedos, 12 gatos de colônia, 6 comidas, álbum, 44 conquistas, as 9 vidas e a sala que vai derretendo em gatos repetidos."
+        }
       ],
       "ranking": []
     },
@@ -777,14 +980,38 @@
       "historia": "Ninguém na cidade parece achar estranho. O semáforo continua trocando de luz, as janelas continuam acesas, o padeiro continua abrindo às seis. É só que agora tem um gato de nove metros com pernas feitas de outros gatos atravessando a faixa de pedestre.",
       "comoJogar": "Ande com WASD, pule no espaço, use a habilidade da forma no SHIFT e aperte E perto das coisas. Procure os pedestais brilhantes: cada um é uma forma nova. Os roxos são as formas secretas. Pra abrir o portal da MEGA LARVA você precisa de 9 formas.",
       "controles": [
-        { "tecla": "W A S D", "acao": "Andar pela cidade" },
-        { "tecla": "Espaço", "acao": "Pular" },
-        { "tecla": "Shift", "acao": "A habilidade da forma em que você está" },
-        { "tecla": "E", "acao": "Usar, pegar e entrar" },
-        { "tecla": "Q / 1…9", "acao": "Trocar de forma" },
-        { "tecla": "Esc", "acao": "Pausar" },
-        { "tecla": "🎮", "acao": "Controle: analógico anda, A pula, X poder, B usa" },
-        { "tecla": "📱", "acao": "Celular: arraste do lado esquerdo, botões do lado direito" }
+        {
+          "tecla": "W A S D",
+          "acao": "Andar pela cidade"
+        },
+        {
+          "tecla": "Espaço",
+          "acao": "Pular"
+        },
+        {
+          "tecla": "Shift",
+          "acao": "A habilidade da forma em que você está"
+        },
+        {
+          "tecla": "E",
+          "acao": "Usar, pegar e entrar"
+        },
+        {
+          "tecla": "Q / 1…9",
+          "acao": "Trocar de forma"
+        },
+        {
+          "tecla": "Esc",
+          "acao": "Pausar"
+        },
+        {
+          "tecla": "🎮",
+          "acao": "Controle: analógico anda, A pula, X poder, B usa"
+        },
+        {
+          "tecla": "📱",
+          "acao": "Celular: arraste do lado esquerdo, botões do lado direito"
+        }
       ],
       "curiosidades": [
         "O gato NÃO é emoji. Ele é desenhado por código imitando uma foto: gradiente de pelo, 1500 fiapos curtos em três tons, listras de tabby só na parte escura, máscara branca no focinho, olho com íris, pupila em fenda e brilho. Emoji só nos ícones da interface.",
@@ -797,7 +1024,81 @@
       "creditos": "Criado por Jojo com o Claude.",
       "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão jogável: cidade com prédios, ruas, semáforos e parque; 13 formas de gato com habilidades próprias; multiplicação com pool; 9 eventos surreais; 5 fases; 5 segredos; colecionáveis; menus, pausa, vitória e game over; controle, teclado e toque." }
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Primeira versão jogável: cidade com prédios, ruas, semáforos e parque; 13 formas de gato com habilidades próprias; multiplicação com pool; 9 eventos surreais; 5 fases; 5 segredos; colecionáveis; menus, pausa, vitória e game over; controle, teclado e toque."
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "clipy",
+      "nome": "Clipy",
+      "descricao": "Um ajudante de clipe de papel que fica num canto da tela, lê o que você escreve e aparece sozinho pra atrapalhar — igual aos assistentes que vinham nos programas de escritório dos anos 90. São 30 regras rodando dentro do navegador, sem internet nenhuma.",
+      "comoFunciona": "Você escreve num papel e o Clipy vai lendo. Cada uma das 30 regras dele sabe reconhecer uma coisa: 'começa com Prezado' é carta, 'três linhas com traço' é lista, 'tudo em maiúscula' é gritar. Quando uma regra bate, ele pula na sua frente com uma sugestão e dois botões. E os botões fazem coisa de verdade: montam a carta, numeram a lista, somam os números, abaixam as maiúsculas.",
+      "objetivo": "Não tem objetivo — é um brinquedo e uma aula. Dá pra descobrir as 30 regras escrevendo coisas diferentes e ver cada uma acender na aba 🧠, que mostra exatamente o que ele está pensando.",
+      "mecanicas": [
+        "30 regras escritas à mão, todas visíveis numa tabela que acende em verde quando a regra está batendo com o que você acabou de escrever",
+        "Os botões do balão fazem coisa de verdade: montar carta com data e despedida, numerar lista, somar tudo em R$, abaixar maiúsculas, data por extenso, arrumar telefone, tirar palavra repetida",
+        "Controle de CHATICE de 0 a 100: decide se ele espera 42 segundos ou 6 segundos entre uma fala e outra (no zero ele fica quieto de vez)",
+        "Botão 'não mostrar mais esta dica' que cala aquela regra pra sempre — o botão que todo mundo queria ter nos anos 90",
+        "Uma regra que serve de verdade: escrever 'senha', 'PIN' ou 'cartão de crédito' faz ele parar tudo e avisar",
+        "Conversa: dá pra perguntar coisas e ele responde — e admite quando não sabe, que era o que o de verdade nunca fazia",
+        "O clipe é desenhado por código num canvas: 9 humores, 6 gestos, olhos que seguem o mouse, respiração e piscada automáticas. Nenhuma imagem na página",
+        "Uma aba conta a história dos ajudantes animados, por que sumiram, e o que eles ensinam sobre as IAs de hoje",
+        "Nada sai do navegador: sem internet, sem servidor, sem conta",
+        "Dá pra instalar como aplicativo e usar sem internet"
+      ],
+      "categoria": "Brinquedo",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Pronto",
+      "dificuldade": "Fácil",
+      "fases": 0,
+      "recorde": "",
+      "pontuacao": "Não tem pontuação. O que dá pra colecionar são as 30 regras: escrever coisas diferentes até ver todas acenderem.",
+      "popularidade": 94,
+      "imagem": "assets/images/clipy.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../clipy/index.html",
+      "galeria": [],
+      "historia": "Nos anos 90 os programas de escritório vinham com ajudantes animados que ficavam num cantinho olhando o que você escrevia. O mais famoso era um clipe de papel com olhos. Todo mundo achava ele chato, porque ele interrompia na hora errada — por dentro era só uma lista de padrões. Ele foi sumindo e acabou virando piada e saudade. Este é o Clipy do JoJo: mesma ideia, clipe novo, 30 regras escritas do zero em português — e desta vez dá pra ver todas elas por dentro.",
+      "comoJogar": "Escreva qualquer coisa no papel e espere. Tente começar com 'Prezado', fazer uma lista com três traços, escrever uma conta com R$, ESCREVER TUDO EM MAIÚSCULA, ou ficar parado sem digitar (ele dorme). Se ele estiver chato demais, abaixe a Chatice lá em cima.",
+      "controles": [
+        {
+          "tecla": "Escrever",
+          "acao": "É só isso. Ele lê enquanto você digita"
+        },
+        {
+          "tecla": "Clicar no Clipy",
+          "acao": "Cutucar — ele reage"
+        },
+        {
+          "tecla": "Chatice",
+          "acao": "O quanto ele interrompe, de 0 a 100"
+        },
+        {
+          "tecla": "Abas de cima",
+          "acao": "A mesa, Conversar, Como ele pensa, Quem é o Clipy"
+        }
+      ],
+      "curiosidades": [
+        "O Clipy não usa nenhuma imagem: ele é um arame desenhado por código — uma linha só, com dois arcos e três retas — mais dois olhos e duas sobrancelhas. São as sobrancelhas que fazem quase toda a expressão.",
+        "A chatice não é enfeite: ela muda de verdade o tempo que ele espera entre uma fala e outra, de 42 segundos até 6.",
+        "A regra mais útil dele avisa pra nunca digitar senha nem número de cartão numa página. Essa não é piada.",
+        "A aba 🧠 mostra as 30 regras acendendo ao vivo enquanto você escreve — dá pra ver exatamente o que ele está pensando, coisa que o ajudante original nunca deixou ninguém ver.",
+        "O ajudante de verdade nunca dizia 'não sei'. Este diz."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Primeira versão: 30 regras, os botões que mexem no papel de verdade, a conversa, o controle de chatice, a tabela das regras ao vivo, a página da história, o clipe desenhado por código com 9 humores e 6 gestos, e o aplicativo pra instalar e usar sem internet."
+        }
       ],
       "ranking": []
     },
@@ -839,12 +1140,30 @@
       "historia": "Ninguém sabe direito quem enterrou tantos emojis. Só se sabe que quanto mais fundo você cava, mais estranhos eles ficam: primeiro minhoca e cogumelo, depois osso e cristal, e lá embaixo, perto do núcleo, coisas que não deviam estar ali.",
       "comoJogar": "Clique numa pedra encostada no buraco pra cavar, ou aperte CAVAR (barra de espaço) que o mineiro desce sozinho. As setas movem o poço de lado pra abrir túneis. Gaste as moedas na loja: picareta pra bater mais forte, robô pra cavar sozinho, lanterna pra ver o que tem dentro da pedra e dinamite pra passar direto pelas mais duras.",
       "controles": [
-        { "tecla": "Clique", "acao": "Dar uma picaretada na pedra" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
-        { "tecla": "Espaço", "acao": "Cavar descendo pelo poço" },
-        { "tecla": "D", "acao": "Soltar dinamite" },
-        { "tecla": "Setas", "acao": "Mover o poço de lado" },
-        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+        {
+          "tecla": "Clique",
+          "acao": "Dar uma picaretada na pedra"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        },
+        {
+          "tecla": "Espaço",
+          "acao": "Cavar descendo pelo poço"
+        },
+        {
+          "tecla": "D",
+          "acao": "Soltar dinamite"
+        },
+        {
+          "tecla": "Setas",
+          "acao": "Mover o poço de lado"
+        },
+        {
+          "tecla": "🔊",
+          "acao": "Ligar ou desligar o som"
+        }
       ],
       "curiosidades": [
         "O terreno não é sorteado na hora: o que tem dentro de cada pedra vem de uma conta feita com a posição dela, então a mesma pedra guarda sempre a mesma coisa, mesmo depois de fechar o jogo.",
@@ -855,7 +1174,11 @@
       "creditos": "Criado por Jojo com o Claude.",
       "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: 8 camadas, 56 emojis escondidos, 48 melhorias, robôs, dinamite, lanterna e o jogo já instalável como aplicativo." }
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Primeira versão: 8 camadas, 56 emojis escondidos, 48 melhorias, robôs, dinamite, lanterna e o jogo já instalável como aplicativo."
+        }
       ],
       "ranking": []
     },
@@ -901,12 +1224,30 @@
       "historia": "Ninguém pediu uma torre de emojis. Mas alguém pagou por ela — e paga mais a cada andar que sobe.",
       "comoJogar": "Clique na tela (ou aperte espaço) pra soltar o bloco. Tente soltar bem em cima do bloco de baixo: no meio é PERFEITO e paga 3x. Se errar demais, o bloco cai fora e você perde uma vida. Com o dinheiro, compre o Freio (o bloco anda mais devagar) e a Cola (a torre entorta menos) — são as duas que mais ajudam no começo.",
       "controles": [
-        { "tecla": "Clique", "acao": "Soltar o bloco" },
-        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
-        { "tecla": "Espaço", "acao": "Soltar o bloco" },
-        { "tecla": "R", "acao": "Começar outra rodada" },
-        { "tecla": "🔒", "acao": "Abrir o modo administrador (ou Ctrl+Shift+A)" },
-        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+        {
+          "tecla": "Clique",
+          "acao": "Soltar o bloco"
+        },
+        {
+          "tecla": "Toque",
+          "acao": "Mesma coisa, no celular"
+        },
+        {
+          "tecla": "Espaço",
+          "acao": "Soltar o bloco"
+        },
+        {
+          "tecla": "R",
+          "acao": "Começar outra rodada"
+        },
+        {
+          "tecla": "🔒",
+          "acao": "Abrir o modo administrador (ou Ctrl+Shift+A)"
+        },
+        {
+          "tecla": "🔊",
+          "acao": "Ligar ou desligar o som"
+        }
       ],
       "curiosidades": [
         "Os blocos não giram: o que decide tudo é a distância entre o centro do bloco novo e o de baixo. É isso que deixa a pilha firme em vez de tremendo.",
@@ -916,9 +1257,21 @@
       "creditos": "Criado por Jojo com o Claude.",
       "atualizacoes": "",
       "changelog": [
-        { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: empilhar com PERFEITO, vidas, torre que entorta e desaba, 36 melhorias, 4 cestas de emoji e o jogo já instalável como aplicativo." },
-        { "versao": "2.0", "data": "2026", "mudancas": "11 camadas do céu com visual próprio, da Terra até o NADA; 136 melhorias em 17 famílias; vento, blocos de ouro, sequência de PERFEITOs e poupança. E o conserto do encaixe quando a torre está torta." },
-        { "versao": "3.0", "data": "2026", "mudancas": "Renascer: junte 1 bilhão e troque as moedas e as 136 melhorias por estrelas, que pagam +30% em tudo pra sempre. E a volta do recorde, que paga até 41x até você chegar de novo onde tinha parado. Mais o modo administrador, com senha e botões de 1 a 1000 (vezes mil, milhão, bilhão ou trilhão) pra moedas, blocos, melhorias e estrelas." }
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Primeira versão: empilhar com PERFEITO, vidas, torre que entorta e desaba, 36 melhorias, 4 cestas de emoji e o jogo já instalável como aplicativo."
+        },
+        {
+          "versao": "2.0",
+          "data": "2026",
+          "mudancas": "11 camadas do céu com visual próprio, da Terra até o NADA; 136 melhorias em 17 famílias; vento, blocos de ouro, sequência de PERFEITOs e poupança. E o conserto do encaixe quando a torre está torta."
+        },
+        {
+          "versao": "3.0",
+          "data": "2026",
+          "mudancas": "Renascer: junte 1 bilhão e troque as moedas e as 136 melhorias por estrelas, que pagam +30% em tudo pra sempre. E a volta do recorde, que paga até 41x até você chegar de novo onde tinha parado. Mais o modo administrador, com senha e botões de 1 a 1000 (vezes mil, milhão, bilhão ou trilhão) pra moedas, blocos, melhorias e estrelas."
+        }
       ],
       "ranking": []
     }

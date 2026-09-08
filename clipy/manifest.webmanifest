@@ -1,0 +1,22 @@
+{
+  "id": "/contas-wen/clipy/",
+  "name": "Clipy — o ajudante que ninguém pediu",
+  "short_name": "Clipy",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0e7c7b",
+  "theme_color": "#008080",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["productivity", "education", "entertainment"],
+  "description": "Um ajudante de clipe de papel que olha o que você escreve e aparece pra atrapalhar, igual aos assistentes dos computadores antigos. 30 regras rodando no navegador, sem internet.",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

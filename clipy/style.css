@@ -1,0 +1,214 @@
+/* ==========================================================================
+   CLIPY — a cara do site
+   De propósito com cara de computador antigo: cinza, bordas em relevo,
+   barra de título azul. É o mundo em que o Clipy morava.
+   ========================================================================== */
+:root {
+  --cinza:#c3c7cb; --cinza2:#d8dade; --claro:#ffffff; --escuro:#7b7f85; --preto:#0f0f10;
+  --azul:#0b4b8f; --azul2:#2a7fd4; --verde:#0a7d3c; --amarelo:#fffbc8;
+  --tinta:#14161a; --dim:#5a5f66;
+  --fonte: "Segoe UI", Tahoma, Verdana, system-ui, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
+}
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; }
+body {
+  margin:0; background:#0e7c7b;
+  background-image:
+    radial-gradient(circle at 22% 18%, #16a3a1 0%, transparent 46%),
+    radial-gradient(circle at 82% 76%, #0a5f66 0%, transparent 52%),
+    linear-gradient(160deg, #0f8a86, #075e63);
+  color:var(--tinta); font-family:var(--fonte); font-size:15px;
+  display:flex; flex-direction:column;
+}
+
+/* ---------------- topo ---------------- */
+#topo {
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:8px 14px; background:var(--cinza);
+  border-bottom:2px solid var(--escuro); box-shadow:0 2px 0 #00000033;
+}
+.marca { font-size:1.05rem; letter-spacing:.06em; display:flex; align-items:center; gap:7px; }
+.marca .logo { font-size:1.2rem; }
+#abas { display:flex; gap:3px; flex-wrap:wrap; }
+.aba {
+  font-family:var(--fonte); font-size:.83rem; padding:7px 13px; cursor:pointer;
+  background:var(--cinza); color:var(--tinta);
+  border:2px outset var(--cinza2); border-bottom-width:2px;
+}
+.aba:hover { background:var(--cinza2); }
+.aba.sel { border-style:inset; background:var(--cinza2); font-weight:700; }
+.topoDir { margin-left:auto; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+#chaticeCaixa {
+  display:flex; align-items:center; gap:7px; font-size:.78rem;
+  border:2px inset var(--cinza2); padding:4px 9px; background:var(--cinza2);
+}
+#chaticeCaixa input { width:104px; accent-color:var(--azul); }
+#chaticeCaixa b { font-family:var(--mono); min-width:24px; text-align:right; }
+#btInstalar {
+  font-family:var(--fonte); font-size:.8rem; font-weight:700; padding:7px 12px; cursor:pointer;
+  background:var(--cinza); border:2px outset var(--cinza2);
+}
+#btInstalar:active { border-style:inset; }
+#btInstalar[hidden] { display:none; }
+
+/* ---------------- páginas ---------------- */
+main { flex:1; padding:18px 14px 26px; }
+.pagina { display:none; max-width:1180px; margin:0 auto; }
+.pagina.on { display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+
+/* ---------------- janelinha de programa ---------------- */
+.janela {
+  flex:1 1 460px; min-width:0;
+  background:var(--cinza); border:2px outset var(--cinza2);
+  box-shadow:4px 4px 0 #00000038;
+}
+.janela.estreita { max-width:720px; margin:0 auto; flex-basis:100%; }
+.janela.larga { flex-basis:100%; }
+.tituloJanela {
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:5px 6px 5px 9px; color:#fff; font-size:.83rem; font-weight:700;
+  background:linear-gradient(90deg, var(--azul), var(--azul2));
+}
+.botoesJanela { display:flex; gap:3px; }
+.botoesJanela i {
+  width:19px; height:17px; display:grid; place-items:center; font-style:normal; font-size:.62rem;
+  background:var(--cinza); color:var(--tinta); border:2px outset var(--cinza2);
+}
+.barraFerramentas {
+  display:flex; gap:4px; align-items:center; padding:6px; border-bottom:1px solid var(--escuro);
+  background:var(--cinza2); flex-wrap:wrap;
+}
+.barraFerramentas button {
+  font-family:var(--fonte); font-size:.78rem; padding:5px 10px; cursor:pointer;
+  background:var(--cinza); border:2px outset var(--cinza2);
+}
+.barraFerramentas button:active { border-style:inset; }
+.contador { margin-left:auto; font-family:var(--mono); font-size:.72rem; color:var(--dim); padding-right:4px; }
+
+#papel {
+  display:block; width:100%; height:clamp(300px, 62vh, 620px); resize:vertical;
+  padding:5px 18px 18px; border:none; outline:none;
+  /* a altura da linha é igual ao risco do papel (27px), pra escrita cair
+     em cima das linhas em vez de flutuar entre elas */
+  font-family:Georgia, "Times New Roman", serif; font-size:1.02rem; line-height:27px;
+  color:var(--tinta); background:#fffef8;
+  background-image:repeating-linear-gradient(#fffef8 0 26px, #e6e2d2 26px 27px);
+}
+
+/* ---------------- o Clipy do lado ---------------- */
+.ladoClipy { flex:0 1 300px; min-width:250px; display:flex; flex-direction:column; gap:10px; }
+.palco {
+  height:clamp(210px, 32vh, 320px); background:#ffffff1a; border:2px inset #ffffff44; border-radius:4px;
+  backdrop-filter:blur(2px);
+}
+#telaClipy { display:block; width:100%; height:100%; cursor:pointer; }
+.balao {
+  position:relative; background:var(--amarelo); border:2px solid var(--preto); border-radius:12px;
+  padding:13px 14px 10px; box-shadow:4px 4px 0 #00000038; font-size:.9rem; line-height:1.55;
+}
+.balao[hidden] { display:none; }
+.balao::after {
+  content:""; position:absolute; left:44px; bottom:-13px; width:0; height:0;
+  border:12px solid transparent; border-top-color:var(--preto); border-bottom:0;
+}
+.balao::before {
+  content:""; position:absolute; left:47px; bottom:-9px; width:0; height:0; z-index:1;
+  border:9px solid transparent; border-top-color:var(--amarelo); border-bottom:0;
+}
+.balao p { margin:0 0 10px; }
+.balaoBotoes { display:flex; flex-direction:column; gap:5px; }
+.balaoBotoes button {
+  font-family:var(--fonte); font-size:.82rem; text-align:left; padding:6px 10px; cursor:pointer;
+  background:var(--cinza); border:2px outset var(--cinza2);
+}
+.balaoBotoes button:active { border-style:inset; }
+.naoMostrar {
+  margin-top:8px; font-family:var(--fonte); font-size:.72rem; color:var(--dim);
+  background:none; border:none; text-decoration:underline; cursor:pointer; padding:0;
+}
+.rodapeClipy { display:flex; gap:6px; }
+.rodapeClipy button {
+  flex:1; font-family:var(--fonte); font-size:.82rem; font-weight:700; padding:9px; cursor:pointer;
+  background:var(--cinza); border:2px outset var(--cinza2);
+}
+.rodapeClipy button:active { border-style:inset; }
+
+/* ---------------- conversa ---------------- */
+.conversa {
+  height:min(52vh, 420px); overflow-y:auto; padding:14px; background:#fffef8;
+  display:flex; flex-direction:column; gap:9px;
+}
+.fala { max-width:82%; padding:9px 13px; border:2px solid var(--preto); font-size:.92rem; line-height:1.6; }
+.fala.dele { align-self:flex-start; background:var(--amarelo); border-radius:13px 13px 13px 3px; }
+.fala.minha { align-self:flex-end; background:#dceaff; border-radius:13px 13px 3px 13px; }
+.fala .quem { display:block; font-size:.66rem; font-weight:700; letter-spacing:.08em; color:var(--dim); margin-bottom:3px; }
+.linhaEnviar { display:flex; gap:6px; padding:8px; background:var(--cinza2); border-top:1px solid var(--escuro); }
+.linhaEnviar input {
+  flex:1; min-width:0; font-family:var(--fonte); font-size:.92rem; padding:9px 11px;
+  border:2px inset var(--cinza2); background:#fff; outline:none;
+}
+.linhaEnviar button {
+  font-family:var(--fonte); font-size:.85rem; font-weight:700; padding:9px 18px; cursor:pointer;
+  background:var(--cinza); border:2px outset var(--cinza2);
+}
+.linhaEnviar button:active { border-style:inset; }
+.sugestoes { display:flex; flex-wrap:wrap; gap:5px; padding:8px; background:var(--cinza2); }
+.sugestoes button {
+  font-family:var(--fonte); font-size:.76rem; padding:5px 10px; cursor:pointer;
+  background:var(--cinza); border:2px outset var(--cinza2);
+}
+
+/* ---------------- conteúdo de texto ---------------- */
+.conteudo { padding:18px 20px 22px; background:#fffef8; }
+.conteudo h3 { margin:20px 0 7px; font-size:1rem; color:var(--azul); }
+.conteudo h3:first-child { margin-top:0; }
+.conteudo p { margin:0 0 11px; line-height:1.72; max-width:70ch; }
+.conteudo .intro { color:var(--dim); }
+.conteudo .pequeno { font-size:.86rem; }
+.conteudo .assinatura { margin-top:18px; font-weight:700; color:var(--verde); }
+.botaoGrande {
+  margin-top:14px; font-family:var(--fonte); font-size:.88rem; font-weight:700; padding:10px 22px;
+  cursor:pointer; background:var(--cinza); border:2px outset var(--cinza2);
+}
+
+/* ---------------- tabela das regras ---------------- */
+.tabelaRegras { width:100%; border-collapse:collapse; font-size:.83rem; margin-top:10px; }
+.tabelaRegras th, .tabelaRegras td { padding:7px 9px; border:1px solid #cfcabb; vertical-align:top; text-align:left; }
+.tabelaRegras th { background:var(--cinza2); font-size:.72rem; letter-spacing:.05em; text-transform:uppercase; }
+.tabelaRegras td.num { font-family:var(--mono); color:var(--dim); text-align:right; width:2.4em; }
+.tabelaRegras td.nome { font-family:var(--mono); font-weight:700; white-space:nowrap; }
+.tabelaRegras td.fala { color:var(--dim); font-style:italic; }
+.tabelaRegras tr.batendo { background:#dcf5e4; }
+.tabelaRegras tr.batendo td.estado { color:var(--verde); font-weight:700; }
+.tabelaRegras tr.calada { opacity:.45; }
+.tabelaRegras td.estado { white-space:nowrap; font-size:.76rem; }
+
+/* ---------------- passos de instalar ---------------- */
+.passos { display:flex; flex-direction:column; gap:8px; margin:12px 0 4px; }
+.passos .p {
+  display:flex; gap:10px; align-items:flex-start; padding:10px 12px;
+  border:2px inset var(--cinza2); background:var(--cinza2); font-size:.87rem; line-height:1.6;
+}
+.passos .p .num {
+  flex:none; width:22px; height:22px; display:grid; place-items:center;
+  background:var(--azul); color:#fff; font-family:var(--mono); font-size:.72rem; font-weight:700;
+}
+.passos .obs { font-size:.8rem; color:var(--dim); margin-top:6px; line-height:1.6; }
+
+/* ---------------- rodapé ---------------- */
+#rodape {
+  padding:11px 14px; background:var(--cinza); border-top:2px solid var(--escuro);
+  font-size:.79rem; color:var(--dim); text-align:center;
+}
+#rodape a { color:var(--azul); }
+
+@media (max-width:760px) {
+  .pagina.on { flex-direction:column; }
+  .ladoClipy { flex-basis:auto; width:100%; }
+  .palco { height:190px; }
+  #chaticeCaixa input { width:72px; }
+  .tabelaRegras { font-size:.76rem; }
+  .tabelaRegras td.fala { display:none; }
+  .tabelaRegras th:nth-child(4) { display:none; }
+}
