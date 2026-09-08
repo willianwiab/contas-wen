@@ -4,11 +4,11 @@
    nova; sem internet, vem a última que ficou guardada.
    Ao mudar o site, suba a VERSAO.
    ============================================================ */
-const VERSAO = 'clipy-v2';
+const VERSAO = 'clipy-v3';
 const CACHE = VERSAO;
 const ARQUIVOS = [
   './', './index.html', './style.css', './manifest.webmanifest',
-  './js/main.js', './js/clipy.js', './js/cerebro.js', './js/prancheta.js', './js/instalar.js',
+  './js/main.js', './js/clipy.js', './js/cerebro.js', './js/calculadora.js', './js/prancheta.js', './js/instalar.js',
   './icone.svg', './icone-192.png', './icone-512.png', './icone-180.png', './icone-mascara.png',
 ];
 self.addEventListener('install', ev => {

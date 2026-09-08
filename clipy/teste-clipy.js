@@ -55,8 +55,8 @@ async function escrever(p, txt) {
     ids: new Set(Clipy.REGRAS.map(x => x.id)).size,
     abas: document.querySelectorAll('.aba').length,
     canvas: !!document.getElementById('telaClipy').getContext('2d') }));
-  conf('o site abre com o Clipy desenhado, as 5 abas e as 30 regras carregadas',
-    /Clipy/.test(r.titulo) && r.regras === 30 && r.ids === 30 && r.abas === 5 && r.canvas,
+  conf('o site abre com o Clipy desenhado, as 5 abas e as 33 regras carregadas',
+    /Clipy/.test(r.titulo) && r.regras === 33 && r.ids === 33 && r.abas === 5 && r.canvas,
     JSON.stringify(r));
 
   /* ---------- toda regra tem fala, botões e um jeito de disparar ---------- */
@@ -64,11 +64,11 @@ async function escrever(p, txt) {
     const ruins = [];
     for (const x of Clipy.REGRAS) {
       if (!x.fala || !x.botoes || !x.botoes.length || typeof x.olho !== 'function' ||
-          !(x.peso > 0) || !(x.espera > 0)) ruins.push(x.id);
+          !(x.peso > 0) || !(x.espera >= 0)) ruins.push(x.id);
     }
     return ruins;
   });
-  conf('nenhuma das 30 regras está pela metade: todas com fala, botões e peso',
+  conf('nenhuma das 33 regras está pela metade: todas com fala, botões e peso',
     r.length === 0, JSON.stringify(r));
 
   /* ---------- A CLÁSSICA ---------- */
@@ -164,8 +164,8 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => ({
     linhas: document.querySelectorAll('#corpoRegras tr').length,
     acesas: [...document.querySelectorAll('#corpoRegras tr.batendo')].map(t => t.dataset.id) }));
-  conf('a aba "como ele pensa" lista as 30 e acende a que está batendo agora',
-    r.linhas === 30 && r.acesas.includes('convite'), JSON.stringify(r));
+  conf('a aba "como ele pensa" lista as 33 e acende a que está batendo agora',
+    r.linhas === 33 && r.acesas.includes('convite'), JSON.stringify(r));
 
   /* ---------- a conversa ---------- */
   await p.click('.aba[data-aba="conversa"]');
@@ -189,7 +189,8 @@ async function escrever(p, txt) {
     /não sei|não faço ideia|sem resposta|não tenho/i.test(r), r.slice(0, 60) + '…');
 
   r = await p.evaluate(() => Clipy.responder('quanto é 12 + 30 x 2').texto);
-  conf('e conta ele faz: soma os números que aparecem na pergunta', /44/.test(r), r);
+  conf('e conta ele faz DIREITO: 12 + 30 x 2 dá 72, porque vezes vem antes de mais',
+    /72/.test(r), r);
 
   /* ---------- o botão de cutucar ---------- */
   await p.click('.aba[data-aba="mesa"]');
@@ -253,7 +254,7 @@ async function escrever(p, txt) {
   const off = await p.evaluate(() => ({ titulo: document.title, regras: Clipy.REGRAS.length,
     texto: document.getElementById('papel').value }));
   conf('SEM INTERNET o site abre inteiro e o Clipy continua reagindo ao que você escreve',
-    /Clipy/.test(off.titulo) && off.regras === 30 && r !== null, JSON.stringify({ ...off, balao: r }));
+    /Clipy/.test(off.titulo) && off.regras === 33 && r !== null, JSON.stringify({ ...off, balao: r }));
   await ctx.setOffline(false);
 
   /* ---------- no iPhone o caminho é outro ---------- */
@@ -271,6 +272,115 @@ async function escrever(p, txt) {
   r = await p2.evaluate(() => document.body.scrollWidth <= window.innerWidth + 1);
   conf('e no celular a página cabe na tela, sem rolar pro lado', r, String(r));
   await ctx2.close();
+
+
+  /* ========== ELE RESPONDE DE VERDADE ========== */
+  await p.click('.aba[data-aba="mesa"]');
+  await p.evaluate(() => { Clipy.fecharBalao(); document.getElementById('papel').value = ''; });
+
+  /* a conta pura, no navegador de verdade */
+  await p.fill('#papel', '1+1=');
+  await p.evaluate(() => Clipy.lerPapel());
+  await p.waitForTimeout(1200);
+  r = await p.evaluate(() => document.getElementById('balaoTexto').textContent);
+  conf('ESCREVER "1+1=" NO PAPEL FAZ ELE RESPONDER 2', /1\+1 = 2/.test(r), r);
+
+  r = await p.evaluate(() => document.getElementById('balao').classList.contains('resposta'));
+  conf('e a resposta aparece com destaque, não como uma dica qualquer', r, String(r));
+
+  /* a resposta acompanha a linha */
+  await p.fill('#papel', '7 * 6 =');
+  await p.evaluate(() => Clipy.lerPapel());
+  await p.waitForTimeout(1200);
+  r = await p.evaluate(() => document.getElementById('balaoTexto').textContent);
+  conf('mudar a conta muda a resposta na hora, sem deixar a velha na tela',
+    /7 \* 6 = 42/.test(r), r);
+
+  /* apagar a conta fecha o balão */
+  await p.fill('#papel', 'só um texto qualquer');
+  await p.evaluate(() => Clipy.lerPapel());
+  await p.waitForTimeout(1300);
+  r = await p.evaluate(() => ({ fechou: document.getElementById('balao').hidden ||
+    !/= /.test(document.getElementById('balaoTexto').textContent) }));
+  conf('apagar a conta faz a resposta sumir', r.fechou, JSON.stringify(r));
+
+  /* a calculadora, sem eval, com tudo que ela sabe */
+  r = await p.evaluate(() => {
+    const casos = [['1+1','2'], ['12 x 8','96'], ['10/4','2,5'], ['2^10','1.024'],
+      ['50% de 300','150'], ['raiz de 81','9'], ['metade de 50','25'], ['dobro de 12','24'],
+      ['quanto é dez vezes três?','30'], ['dois mais dois','4'], ['(2+3)*4','20'],
+      ['1.234,56 + 1','1.235,56'], ['3 + 4 * 2','11'], ['duzentos e trinta e cinco + 5','240'],
+      ['12 ao quadrado','144'], ['0,1+0,2','0,3'], ['-5 + 3','-2'], ['cem menos vinte','80']];
+    const errados = [];
+    for (const [conta, esperado] of casos) {
+      const c = Clipy.calcular(conta);
+      if (!c || c.erro || c.texto !== esperado) errados.push(conta + ' → ' + (c ? (c.erro || c.texto) : 'nada'));
+    }
+    return errados;
+  });
+  conf('a calculadora acerta as 18 contas do teste, incluindo conta escrita por extenso',
+    r.length === 0, JSON.stringify(r));
+
+  r = await p.evaluate(() => {
+    const naoSaoConta = ['oi tudo bem', 'a lista tem 3 itens', '3 gatos e 4 gatos',
+      'banana + 1', 'Prezado João', '12/03/2026'];
+    return naoSaoConta.filter(x => { const c = Clipy.calcular(x); return c && !c.erro; });
+  });
+  conf('e ela não sai inventando conta em texto que não é conta', r.length === 0, JSON.stringify(r));
+
+  r = await p.evaluate(() => {
+    const c = Clipy.calcular('10 / 0');
+    return c && c.erro;
+  });
+  conf('dividir por zero ela avisa em vez de dar um número maluco', /zero/.test(r || ''), String(r));
+
+  r = await p.evaluate(() => {
+    /* a prova de que não tem eval: uma "conta" que é código não roda nada */
+    window.__invadiu = false;
+    const c = Clipy.calcular('1 + (window.__invadiu = true)');
+    return { resultado: c, invadiu: window.__invadiu };
+  });
+  conf('a calculadora NÃO usa eval: código escrito no papel não executa nada',
+    r.invadiu === false, JSON.stringify(r));
+
+  /* a soma da coluna */
+  await p.fill('#papel', 'lista de compras\npão 5,50\nleite 4,20\narroz 22,90');
+  await p.evaluate(() => { Clipy.fecharBalao(); Clipy.cerebro.proximaChance = 0;
+    Clipy.cerebro.ultimaVez = {}; Clipy.lerPapel(); });
+  await p.waitForTimeout(1300);
+  r = await p.evaluate(() => document.getElementById('balaoTexto').textContent);
+  conf('uma lista de preços com título ele soma sozinho e ainda dá a média',
+    /32,6/.test(r) && /10,87/.test(r), r);
+
+  await p.click('#balaoBotoes button:nth-child(1)');       // escrever o total
+  r = await p.evaluate(() => document.getElementById('papel').value);
+  conf('e o botão escreve o TOTAL no fim da lista', /TOTAL: 32,6/.test(r), r.split('\n').pop());
+
+  /* pedir a resposta fura a fila da chatice */
+  await p.evaluate(() => {
+    Clipy.fecharBalao();
+    const s = document.getElementById('chatice'); s.value = 0; s.dispatchEvent(new Event('input'));
+  });
+  await p.fill('#papel', '99 + 1 =');
+  await p.evaluate(() => Clipy.lerPapel());
+  await p.waitForTimeout(1200);
+  r = await p.evaluate(() => document.getElementById('balaoTexto').textContent);
+  conf('com a chatice no ZERO ele continua respondendo conta — perguntar não é ser interrompido',
+    /99 \+ 1 = 100/.test(r), r);
+
+  /* e na conversa também */
+  await p.click('.aba[data-aba="conversa"]');
+  await p.fill('#campoConversa', 'quanto é 144 dividido por 12?');
+  await p.click('#formConversa button');
+  await p.waitForTimeout(1200);
+  r = await p.evaluate(() => {
+    const f = document.querySelectorAll('#conversa .fala.dele');
+    return f[f.length - 1].textContent;
+  });
+  conf('na conversa ele também resolve a conta em vez de enrolar', /= 12/.test(r), r.slice(0, 60));
+  await p.evaluate(() => {
+    const s = document.getElementById('chatice'); s.value = 55; s.dispatchEvent(new Event('input'));
+  });
 
 
   /* ========== A ÁREA DE TRANSFERÊNCIA ========== */

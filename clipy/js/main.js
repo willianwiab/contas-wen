@@ -4,7 +4,7 @@
    regras e o instalar.
    ========================================================================== */
 import { Clipe } from "./clipy.js";
-import { REGRAS, Cerebro, responder, somarDoTexto } from "./cerebro.js";
+import { REGRAS, Cerebro, responder, somarDoTexto, calcular, somarColuna } from "./cerebro.js";
 import { ligarInstalar } from "./instalar.js";
 import { Prancheta, tipoDoTexto, comentarioSobre, ATALHOS_DE_FABRICA } from "./prancheta.js";
 
@@ -19,6 +19,7 @@ const prancheta = new Prancheta();
 const estado = {
   texto:"", baixo:"", palavras:[], letras:0,
   apagados:0, porMinuto:0, parado:0, tempoAberto:0,
+  linha:"", conta:null, coluna:null,     // a linha do cursor e o que ela vira
 };
 let ultimoTamanho = 0, teclasNoMinuto = [], apagadosRecentes = [], ultimaTecla = 0;
 let dicaAberta = null;              // a regra que está no balão agora
@@ -40,7 +41,26 @@ function lerPapel() {
   apagadosRecentes = apagadosRecentes.filter(x => agora - x.q < 20000);
   estado.apagados = apagadosRecentes.reduce((a, x) => a + x.n, 0);
   $("contador").textContent = estado.palavras.length + (estado.palavras.length === 1 ? " palavra" : " palavras");
+
+  /* A LINHA DO CURSOR é o que ele lê pra responder. Não o texto todo: se
+     você escreveu uma conta na linha 3, é a linha 3 que ele calcula. */
+  const cursor = $("papel").selectionStart;
+  const ate = t.slice(0, cursor);
+  const comeco = ate.lastIndexOf("\n") + 1;
+  const fim = t.indexOf("\n", cursor);
+  let linha = t.slice(comeco, fim < 0 ? t.length : fim).trim();
+  if (!linha) {                                  // linha vazia: pega a última escrita
+    const cheias = t.split("\n").map(x => x.trim()).filter(Boolean);
+    linha = cheias[cheias.length - 1] || "";
+  }
+  estado.linha = linha;
+  estado.conta = calcular(linha);
+  estado.coluna = somarColuna(t);
 }
+
+/* "1+1=" ou "1+1?" é você PEDINDO a resposta: ele responde na hora, sem
+   esperar a vez e mesmo com a chatice no zero. */
+const pediuResposta = () => /[=?]\s*$/.test(estado.linha);
 
 $("papel").addEventListener("input", () => {
   const t = $("papel").value;
@@ -50,12 +70,29 @@ $("papel").addEventListener("input", () => {
   ultimaTecla = Date.now();
   lerPapel();
   salvar();
+  if (dicaAberta && dicaAberta.responde && !estado.conta) fecharBalao();
+  if (pediuResposta() || (dicaAberta && dicaAberta.responde)) responderAgora();
 });
+/* mexer o cursor com as setas também muda a linha que ele está lendo */
+for (const ev of ["click", "keyup"]) $("papel").addEventListener(ev, () => lerPapel());
+
+let ultimaResposta = "";
+function responderAgora() {
+  const r = cerebro.pensar(estado, true);
+  if (!r) return false;
+  const chave = r.id + "|" + estado.linha;
+  if (chave === ultimaResposta) return false;    // não repete a mesma resposta
+  ultimaResposta = chave;
+  mostrarDica(r);
+  return true;
+}
 
 /* ---------------------------------------------------------------- o balão */
 function mostrarDica(regra) {
   dicaAberta = regra;
-  $("balaoTexto").textContent = regra.fala;
+  const fala = regra.falaDinamica ? regra.falaDinamica(estado) : regra.fala;
+  $("balaoTexto").textContent = fala;
+  $("balao").classList.toggle("resposta", !!regra.responde && !estado.conta?.erro);
   const caixa = $("balaoBotoes"); caixa.innerHTML = "";
   for (const [txt, acao] of regra.botoes || [["Ok", null]]) {
     const b = document.createElement("button");
@@ -148,6 +185,33 @@ const ACOES = {
     dizer("Comecei por você. Agora não dá mais pra fugir.");
     clipe.fazer("pular");
   },
+  async copiarResposta() {
+    if (!estado.conta || estado.conta.erro) return;
+    const ok = await copiar(estado.conta.texto);
+    dizer(ok ? "Copiei o resultado: " + estado.conta.texto : "Não consegui copiar aqui.");
+  },
+  escreverResposta() {
+    if (!estado.conta || estado.conta.erro) return;
+    const t = papel().value;
+    const cursor = papel().selectionStart;
+    const fim = t.indexOf("\n", cursor);
+    const corte = fim < 0 ? t.length : fim;
+    const linha = t.slice(0, corte).replace(/[=?\s]+$/, "");
+    trocarPapel(linha + " = " + estado.conta.texto + t.slice(corte));
+    papel().focus();
+    dizer("Escrevi a resposta pra você.");
+    clipe.fazer("acenar");
+  },
+  escreverTotal() {
+    if (!estado.coluna) return;
+    trocarPapel(papel().value.replace(/\s*$/, "\n") + "TOTAL: " + estado.coluna.texto);
+    dizer("Total escrito no fim da lista.");
+  },
+  async copiarTotal() {
+    if (!estado.coluna) return;
+    const ok = await copiar(estado.coluna.texto);
+    dizer(ok ? "Copiei o total: " + estado.coluna.texto : "Não consegui copiar aqui.");
+  },
   numerarNada() {},
   conversar() { irPara("conversa"); },
   oi() { dizer("Oi! Que educado. Ninguém cumprimenta clipe."); clipe.fazer("acenar"); clipe.sentir("feliz"); },
@@ -171,7 +235,10 @@ const ACOES = {
       "Escreve o meu nome no papel. Eu percebo na hora.",
       "Coloca uns números com R$ que eu tento somar.",
       "Fica um tempinho sem digitar. Eu durmo.",
-      "Vai na aba 🧠 e vê as 30 regras acendendo enquanto você escreve.",
+      "Escreve 1+1= no papel. Eu respondo.",
+      "Escreve 'quanto é dez vezes três?' que eu resolvo.",
+      "Faz uma lista de preços, um por linha, que eu somo tudo.",
+      "Vai na aba 🧠 e vê as 33 regras acendendo enquanto você escreve.",
     ];
     dizer(dicas[Math.floor(Math.random() * dicas.length)]);
     clipe.sentir("atento"); clipe.fazer("acenar");
@@ -482,6 +549,9 @@ $("btNovaPasta").onclick = () => {
 
 /* ---------------------------------------------------------------- tabela */
 const COMO = {
+  resposta:"a linha onde está o cursor é uma conta que dá pra resolver",
+  contaErrada:"a conta existe mas não dá (dividir por zero, raiz de negativo)",
+  colunaSoma:"3 ou mais linhas terminando em número, tipo uma lista de preços",
   carta:"o texto começa com Prezado, Caro, Querido, Olá…",
   lista:"tem 3 ou mais linhas começando com traço ou número",
   conta:"aparecem 2 ou mais valores em R$ ou continhas",
@@ -572,7 +642,15 @@ function quadro(agora) {
 setInterval(() => {
   lerPapel();
   atualizarTabela();
+  /* A resposta acompanha a linha: se a conta mudou, o balão muda junto; se
+     você apagou a conta, ele some. Deixar uma resposta velha na tela era
+     pior do que não responder. */
+  if (dicaAberta && dicaAberta.responde) {
+    if (!estado.conta) fecharBalao();
+    else responderAgora();
+  }
   if ($("balao").hidden) {
+    if (estado.conta && !estado.conta.erro && responderAgora()) return;
     const r = cerebro.pensar(estado);
     if (r) mostrarDica(r);
     else if (estado.parado > 30 && cerebro.chatice > 0) clipe.sentir("dormindo");
@@ -600,6 +678,7 @@ setTimeout(() => { clipe.fazer("acenar"); clipe.sentir("feliz");
 
 /* pro teste (e pra curiosidade) alcançarem o Clipy por fora */
 window.Clipy = { clipe, cerebro, prancheta, estado, REGRAS, lerPapel, mostrarDica, fecharBalao,
+  calcular, somarColuna, responderAgora,
   capturar, montarHistorico, montarAtalhos, tipoDoTexto, virarAtalho,
   zerarApagados:() => { apagadosRecentes = []; estado.apagados = 0; },
   fazer, ACOES, responder, somarDoTexto, irPara, atualizarTabela, salvar, carregar, CHAVE,

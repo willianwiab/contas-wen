@@ -9,7 +9,7 @@ nos programas de escritório dos anos 90.
 ## O que ele é (e o que não é)
 
 O Clipy **não é** uma dessas inteligências artificiais de hoje. Ele é do tipo
-antigo: **30 regras escritas na mão**, cada uma sabendo reconhecer uma coisa no
+antigo: **33 regras escritas na mão**, cada uma sabendo reconhecer uma coisa no
 texto e com uma frase pronta pra soltar. Nada sai do navegador — sem internet,
 sem servidor, sem conta, sem nada sendo enviado pra lugar nenhum.
 
@@ -26,6 +26,40 @@ O site tem quatro partes:
 | 💬 **Conversar** | dá pra fazer perguntas; ele responde com o que tem escrito dentro dele |
 | 🧠 **Como ele pensa** | as 30 regras, uma por uma, e **acendendo em verde** quando estão batendo com o que você acabou de escrever |
 | 📜 **Quem é o Clipy** | a história dos ajudantes animados, por que sumiram, e o que eles ensinam sobre as IAs de hoje |
+
+## Ele responde de verdade
+
+Escreva **`1+1=`** numa linha do papel e ele responde **2**. Escreva
+**"quanto é dez vezes três?"** e ele responde **30**. Faça uma lista de preços,
+um por linha, e ele soma tudo e ainda dá a média.
+
+Três das regras são assim: em vez de **comentar** o que você está fazendo, elas
+**respondem**. E elas **furam a fila da chatice** — perguntar não é ser
+interrompido, então ele responde na hora, mesmo com a chatice no zero.
+
+A calculadora entende:
+
+| você escreve | ele responde |
+| --- | --- |
+| `1+1=` · `12 x 8` · `(2+3)*4` | 2 · 96 · 20 |
+| `3 + 4 * 2` | 11 — vezes vem antes de mais |
+| `10/4` · `2^10` · `12 ao quadrado` | 2,5 · 1.024 · 144 |
+| `50% de 300` · `metade de 50` · `dobro de 12` | 150 · 25 · 24 |
+| `raiz de 81` | 9 |
+| `quanto é dez vezes três?` | 30 |
+| `duzentos e trinta e cinco + 5` | 240 |
+| `1.234,56 + 1` · `0,1+0,2` | 1.235,56 · 0,3 |
+| `10 / 0` | "essa eu não consigo: dividir por zero" |
+
+E ela sabe o que **não** é conta: `12/03/2026` é data, `10:30` é hora,
+`3 gatos e 4 gatos` é texto, um link é um link.
+
+> **Ela não usa `eval()`.** `eval()` executaria qualquer coisa escrita no papel,
+> e o papel é texto que vem de fora — nunca se manda o navegador executar texto
+> assim. A conta é lida à mão, número por número, sinal por sinal, com um
+> analisador descendente de verdade (o mesmo tipo que uma linguagem de
+> programação usa pra ler código). Tem um teste que escreve código no papel e
+> verifica que nada acontece.
 
 ## Tem dois Clipys, e o site é os dois
 
@@ -51,10 +85,13 @@ texto longo) e comenta. É o ajudante dos anos 90 morando dentro do gerenciador.
 > quando **você manda**: colando na página (Ctrl+V) ou apertando o botão. É menos
 > prático e é muito mais seguro, e o site explica isso na própria tela.
 
-## As 30 regras
+## As 33 regras
 
 Cada regra tem: o que ela procura, o peso (quem grita mais alto ganha), a fala,
 os botões e quantos segundos ela fica quieta depois de falar.
+
+**As três que respondem** — a conta da linha onde está o cursor, a conta que
+não dá (dividir por zero), e a coluna de números pra somar.
 
 **As clássicas** — carta ("Prezado…"), lista (3 traços), conta (valores em R$),
 gritar (82% das letras em maiúscula), data, muitas interrogações, receita,
@@ -108,7 +145,8 @@ fazem quase todo o trabalho — é onde mora a expressão de um personagem.
 clipy/
   index.html · style.css
   js/clipy.js       o desenho e as animações do clipe
-  js/cerebro.js     as 30 regras, a conversa e o vigia
+  js/cerebro.js     as 33 regras, a conversa e o vigia
+  js/calculadora.js a calculadora escrita do zero, sem eval
   js/prancheta.js   o histórico da área de transferência e os atalhos
   js/main.js        o papel, o balão, as abas, o save
   js/instalar.js    service worker + instalar como aplicativo
@@ -132,7 +170,7 @@ npm i playwright-core
 node teste-clipy.js
 ```
 
-**42 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
+**54 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
 dispara a carta e o botão **monta a carta de verdade**; três traços viram lista
 e o botão numera 1. 2. 3.; R$ 10,50 + R$ 4 + R$ 25 dá **39,5**; MAIÚSCULA vira
 minúscula; "senha" dispara o aviso; apagar 60 letras dispara o comentário; "não
@@ -141,6 +179,13 @@ pra 6 segundos; a tabela acende a regra certa; a conversa responde, **admite
 quando não sabe** e faz conta; cutucar mexe o clipe; o desenho é canvas puro,
 sem nenhuma `<img>`; tudo fica salvo; e — desligando a internet de verdade — o
 site abre inteiro e o Clipy continua reagindo.
+
+Da calculadora: escrever `1+1=` no papel responde 2 **no navegador de verdade**;
+mudar a conta muda a resposta e apagar faz ela sumir; as 18 contas da tabela
+acima batem; texto que não é conta não vira conta; dividir por zero avisa;
+**escrever código no papel não executa nada** (a prova de que não tem `eval`); a
+lista de preços é somada com o total escrito no papel; com a chatice no zero ele
+ainda responde; e na conversa também.
 
 Da aba da área de transferência: as 3 pastas de fábrica nascem com id próprio;
 ele reconhece link, e-mail, telefone, dinheiro, código e cor; capturar guarda **e**
