@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#08060f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fábrica">
+<meta name="description" content="Clicker com física de verdade: os emojis caem, quicam e empilham na caixa. 800 emojis, 120 raridades, temporadas e 4 modos de jogo.">
 <title>FÁBRICA DE EMOJIS</title>
 <style>
   :root {
@@ -476,6 +484,7 @@
         <button class="pilula" id="btAdm" title="modo adm">🔒</button>
         <button class="pilula" id="btModo" title="trocar de jogo">🎮</button>
         <button class="pilula" id="btSalvar" title="salvar agora">💾</button>
+        <button class="pilula" id="btInstalar" title="instalar o jogo no aparelho" hidden>📲 INSTALAR</button>
         <div class="pilula" id="pilulaDia" style="cursor:default"></div>
         <div class="pilula info" id="contadorPilha">vazia</div>
       </div>
@@ -2792,6 +2801,33 @@ function importarSave() {
 }
 setInterval(salvar, 5000);
 window.addEventListener("beforeunload", salvar);
+
+/* ==========================================================================
+   13. APLICATIVO — instalar no aparelho e funcionar sem internet
+   ========================================================================== */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+let convite = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();                       // o navegador só oferece uma vez; a gente guarda
+  convite = e;
+  el("btInstalar").hidden = false;
+});
+el("btInstalar").onclick = async e => {
+  e.stopPropagation();
+  if (!convite) return;
+  el("btInstalar").hidden = true;
+  convite.prompt();
+  try { await convite.userChoice; } catch (err) {}
+  convite = null;
+};
+window.addEventListener("appinstalled", () => {
+  el("btInstalar").hidden = true;
+  avisar("📲 jogo instalado! agora ele tem ícone próprio");
+});
 
 /* ---------- começo: a tela de início escolhe o modo, e o modo carrega o save ---------- */
 ajustar();

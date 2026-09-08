@@ -476,6 +476,8 @@
         "4 modos de jogo (Normal, Difícil, Fusão e Livre), com save separado",
         "10 temporadas por data (Natal, Halloween, Páscoa, Férias...), cada uma com emojis próprios, um secreto e um passe de 12 prêmios",
         "Pontos de temporada: a moeda que só existe durante os eventos",
+        "Dá pra instalar como aplicativo e jogar sem internet",
+        "Vários jogos salvos ao mesmo tempo, com nome e apagar",
         "18 skins pra enfeitar os emojis e 18 temas pra caixa",
         "80 conquistas, 9 delas secretas, cada uma valendo +1,5% em tudo pra sempre",
         "Emoji do dia: um sorteado a cada dia que vale 10x",
@@ -492,7 +494,7 @@
         "Salvamento automático, com exportar e importar o save"
       ],
       "categoria": "Clicker",
-      "plataforma": "Navegador (PC e celular)",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
       "ano": 2026,
       "status": "Finalizado",
       "dificuldade": "Fácil",
@@ -533,7 +535,8 @@
         { "versao": "4.0", "data": "2026", "mudancas": "Tela de início com 4 modos de jogo e save separado, fusão de repetidos no modo Fusão, emoji do dia valendo 10x e 8 conquistas secretas." },
         { "versao": "4.1", "data": "2026", "mudancas": "A fusão saiu do botão e foi pra dentro da caixa: 5 emojis da mesma raridade que estejam parados se atraem feito ímã, se juntam no meio e explodem num emoji melhor, com reação em cadeia." },
         { "versao": "4.2", "data": "2026", "mudancas": "Turbo da Fusão: uma família de 10 upgrades que só aparece na loja do modo Fusão e acelera o ímã em até 9 vezes." },
-        { "versao": "5.0", "data": "2026", "mudancas": "Temporadas: 10 eventos com data marcada, cada um com 6 emojis exclusivos, um emoji secreto, tema e skin próprios, e um passe de 12 prêmios que abre com pontos de temporada. Mais 18 skins pra enfeitar os emojis." }
+        { "versao": "5.0", "data": "2026", "mudancas": "Temporadas: 10 eventos com data marcada, cada um com 6 emojis exclusivos, um emoji secreto, tema e skin próprios, e um passe de 12 prêmios que abre com pontos de temporada. Mais 18 skins pra enfeitar os emojis." },
+        { "versao": "5.1", "data": "2026", "mudancas": "Vários jogos salvos ao mesmo tempo, com botão de salvar, criar e apagar. E o jogo virou aplicativo: dá pra instalar na tela inicial, com ícone próprio, e jogar sem internet." }
       ],
       "ranking": []
     }
