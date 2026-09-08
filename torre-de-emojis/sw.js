@@ -9,7 +9,7 @@
 
    Ao mudar o jogo, suba a VERSAO: isso apaga o cache velho.
    ============================================================ */
-const VERSAO = 'torre-emojis-v3';
+const VERSAO = 'torre-emojis-v4';
 const CACHE = VERSAO;
 const ARQUIVOS = [
   './', './index.html', './manifest.webmanifest',

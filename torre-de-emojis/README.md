@@ -2,7 +2,8 @@
 
 O bloco vai e volta lá em cima; você solta e ele empilha. Quanto mais alta a
 torre, mais dinheiro cada bloco vale. Errar demais entorta a torre — e torre
-torta cai. Um arquivo só (`index.html`), funciona offline no celular e no PC.
+torta cai. Chegou em 1 bilhão? Dá pra **renascer** e voltar mais forte. Um
+arquivo só (`index.html`), funciona offline no celular e no PC.
 
 ## Como se joga
 
@@ -73,6 +74,45 @@ Trocam os emojis da torre. Abrem conforme o seu **recorde de altura**:
 | 🔮 Magia | 200 blocos |
 | ⬛ o NADA | 400 blocos |
 
+## ⭐ Renascer
+
+Quando você junta **🪙 1 bilhão** de uma vez só (é pra ser difícil: é o troféu do
+jogo), a aba **⭐ RENASCER** abre. Renascer:
+
+- **tira** as moedas e os 136 níveis de melhoria que você comprou;
+- **dá estrelas** — quantas depende do tamanho do seu monte
+  (`(moedas / 1 bilhão) ^ 0,38 × 3`), e **cada estrela paga +30% em tudo,
+  pra sempre**;
+- **mantém** o recorde de altura, as camadas do mapa, as cestas e o álbum;
+- e liga a **🔁 volta do recorde**.
+
+A volta do recorde é o que faz a moeda *voltar*: enquanto você não chega de novo
+no seu maior monte de moedas, **tudo paga até 41x** — e o empurrão vai
+diminuindo conforme você se aproxima, até sumir exatamente quando você alcança o
+lugar onde parou. Quer dizer: você não recomeça do zero, você **volta correndo**
+pro seu progresso e continua dali com as estrelas na mão.
+
+## ⚙ Modo administrador
+
+O cadeadinho **🔒** em cima da tela (ou **Ctrl+Shift+A**, ou escrever `ADMIN`)
+abre o modo adm. A senha é **1234**.
+
+Os botões são sempre os mesmos dez números — **1, 10, 15, 25, 100, 200, 300,
+400, 500 e 1000** — e a **escala** lá em cima (x1, x mil, x milhão, x bilhão,
+x trilhão) multiplica todos de uma vez. Dá pra dar:
+
+| Grupo | O que faz |
+| --- | --- |
+| 🪙 **Moedas** | os dez números vezes a escala escolhida |
+| 🧱 **Blocos** | empilha na hora, sem errar (e o mapa marca as camadas puladas) |
+| 🛒 **Melhorias** | +N em **cada uma** das 136 |
+| ⭐ **Estrelas** | +N estrelas (+30% cada) |
+| 🗺️ **Camadas** | abre o recorde até a Mesosfera, o Espaço ou o NADA, ou completa o álbum |
+| 🎮 **Rodada** | 99 vidas, endireitar a torre, nova rodada, derrubar |
+
+Tem também *quantidade exata* de moedas e o **apagar o jogo inteiro** (pergunta
+antes, e não deixa o save de saída escrever por cima).
+
 ## Instalar como aplicativo
 
 No Android: Chrome → menu ⋮ → *Instalar aplicativo* (ou o botão **📲 INSTALAR**).
@@ -86,6 +126,9 @@ Com `npm i playwright-core`:
 - `node teste-torre.js` — 11 checagens: as camadas na ordem certa, o encaixe com
   a torre torta, a loja das 17 famílias, a poupança, o desenho de todas as
   camadas e o save.
+- `node teste-renascer-adm.js` — 18 checagens do renascer e do modo adm: o custo
+  de 1 bilhão, a curva da volta do recorde, o +30% das estrelas, a senha, os dez
+  botões com as escalas e o save novo (com o save velho ainda abrindo).
 - `node teste-app.js` — 4 checagens de aplicativo (precisa servir por http:
   `python3 -m http.server 8822` na raiz do repositório).
 
@@ -102,4 +145,9 @@ Com `npm i playwright-core`:
   jogaria o topo de uma torre de 200 blocos pra fora da tela.
 - O **desvio** da torre é a soma das distâncias de cada bloco pro de baixo — ou
   seja, o quanto o topo saiu de cima da base. Passou de um bloco e pouco, desaba.
-- O save (`torreEmojis_v1`) guarda dinheiro, recorde, melhorias, cesta e álbum.
+- O save (`torreEmojis_v3`) guarda dinheiro, recorde, melhorias, cesta, álbum,
+  estrelas, renascimentos e a volta do recorde. Saves das versões antigas
+  (`_v2`, `_v1`) são lidos e convertidos sozinhos, sem perder nada.
+- Toda moeda que entra passa por `ganharMoedas()`: é lá que o recorde de moedas
+  se atualiza e que o valor é segurado antes de estourar pro infinito — o modo
+  adm consegue exagerar bastante.
