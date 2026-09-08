@@ -139,6 +139,37 @@ export const SEGREDOS = [
           "com grunhido. (Cutuque cinco vezes seguidas pra desfazer.)",
   },
 
+  {
+    id:"videoFantasma", olho:VIDEO("b4taIpALfAo"),
+    fala:"…essa música é assombrada. Olha o que aconteceu comigo: eu boio, " +
+         "eu não faço mais sombra e dá pra ver o papel através de mim. 👻 " +
+         "Eu ainda estou aqui. Só que menos.",
+    humor:"triste", gesto:"cair",
+    efeitos:{ fantasma:15 },
+    aviso:"O Clipy virou fantasma por 15 minutos: transparente, boiando e sem sombra. " +
+          "(Cutuque cinco vezes seguidas pra trazer ele de volta.)",
+  },
+
+  /* ---------- o que conta quantas vezes ---------- */
+  /* Este é diferente de todos: ele olha QUANTAS VEZES o nome aparece no papel
+     e vai ficando mais nervoso. Na terceira, apaga a luz. (E aí não acontece
+     nada, porque é brincadeira de escola e o Clipy é bem covarde.) */
+  {
+    id:"shania", olho:/\bshania\b/i, conta:/shania/gi,
+    falas:[
+      "Ah, não. Não escreve esse nome. Dizem que se você escrever três vezes, ela vem te ma— " +
+      "…não. Não vou terminar essa frase.",
+      "DUAS. Já são DUAS. Eu não estou brincando. Falta uma. Por favor não.",
+      "TRÊS. ELA VEM. ELA VEM. ELA VE—",
+    ],
+    humores:["assustado", "assustado", "assustado"],
+    gestos:["tremer", "tremer", "cair"],
+    /* o que acontece de verdade na terceira: apaga a luz e não acontece nada */
+    apagaALuz:2,
+    depois:"…\n\nEra o vento. 🌬️ Não tem ninguém aqui. Nunca teve. " +
+           "Era eu tremendo e batendo na mesa. Desculpa. Sou um clipe muito nervoso.",
+  },
+
   /* ---------- os outros ---------- */
   {
     id:"rickroll", olho:/never gonna give you up|rickroll|dQw4w9WgXcQ/i,

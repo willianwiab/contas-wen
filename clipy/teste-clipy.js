@@ -412,9 +412,9 @@ async function escrever(p, txt) {
   /* ========== OS SEGREDOS ========== */
   r = await p.evaluate(() => ({ quantos: Clipy.SEGREDOS.length,
     ids: new Set(Clipy.SEGREDOS.map(x => x.id)).size,
-    completos: Clipy.SEGREDOS.filter(x => !x.fala || !x.olho || !x.humor).length }));
-  conf('são 20 segredos, todos com nome próprio, fala e jeito de achar',
-    r.quantos === 20 && r.ids === 20 && r.completos === 0, JSON.stringify(r));
+    completos: Clipy.SEGREDOS.filter(x => !x.olho || !(x.fala || x.falas)).length }));
+  conf('são 22 segredos, todos com nome próprio, fala e jeito de achar',
+    r.quantos === 22 && r.ids === 22 && r.completos === 0, JSON.stringify(r));
 
   /* o vídeo que deixa ele doido */
   await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); Clipy.segredosVistos.clear(); });
@@ -514,6 +514,43 @@ async function escrever(p, txt) {
 
   await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });
 
+  /* o vídeo assombrado */
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); Clipy.segredosVistos.clear();
+    document.getElementById('papel').value = ''; Clipy.lerPapel(); });
+  await p.fill('#papel', 'https://www.youtube.com/watch?v=b4taIpALfAo&list=PLx4&index=127');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(400);
+  r = await p.evaluate(() => ({ balao: document.getElementById('balaoTexto').textContent,
+    fantasma: Clipy.clipe.faltaPara('fantasma'), barra: document.getElementById('efeitos').textContent }));
+  conf('o vídeo assombrado: ele vira FANTASMA por 15 minutos, transparente e sem sombra',
+    /assombrada/.test(r.balao) && r.fantasma === '15 min' && /fantasma/.test(r.barra),
+    JSON.stringify({ fantasma:r.fantasma }));
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });
+
+  /* o que conta três vezes */
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao();
+    document.getElementById('papel').value = ''; Clipy.lerPapel(); });
+  const shania = async (txt) => {
+    await p.fill('#papel', txt);
+    await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+    await p.waitForTimeout(320);
+    return p.evaluate(() => document.getElementById('balaoTexto').textContent);
+  };
+  r = await shania('shania');
+  conf('escrever aquele nome uma vez: ele avisa e não termina a frase',
+    /três vezes/.test(r) && /ma—/.test(r), r.slice(0, 60) + '…');
+  r = await shania('shania shania');
+  conf('duas vezes: ele fica mais nervoso e conta', /DUAS/.test(r), r.slice(0, 40));
+  r = await shania('shania shania shania');
+  conf('três vezes: ele surta e a frase é cortada no meio', /ELA VE—/.test(r), r);
+  r = await p.evaluate(() => !!document.querySelector('#apagaLuz.on'));
+  conf('e a LUZ APAGA de verdade na terceira', r === true, String(r));
+  await p.waitForTimeout(2600);
+  r = await p.evaluate(() => ({ luz: !!document.querySelector('#apagaLuz.on'),
+    balao: document.getElementById('balaoTexto').textContent }));
+  conf('a luz volta sozinha e não aconteceu nada: era o vento (é brincadeira, e acaba bem)',
+    !r.luz && /vento/.test(r.balao), r.balao.slice(0, 50) + '…');
+
   /* os outros segredos */
   r = await p.evaluate(() => {
     const casos = { 'toc toc':'tocToc', 'sudo rm tudo':'sudo', '42':'quarentaEDois',
@@ -541,8 +578,8 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => ({ total: document.querySelectorAll('#ovos .ovo').length,
     achados: document.querySelectorAll('#ovos .ovo.achado').length,
     escondidos: document.querySelectorAll('#ovos .ovo.nao').length }));
-  conf('a aba 🧠 mostra os 20 ovinhos, revelando só os que você já achou',
-    r.total === 20 && r.achados >= 1 && r.escondidos === 20 - r.achados, JSON.stringify(r));
+  conf('a aba 🧠 mostra os 22 ovinhos, revelando só os que você já achou',
+    r.total === 22 && r.achados >= 1 && r.escondidos === 22 - r.achados, JSON.stringify(r));
 
   await p.evaluate(() => Clipy.curarClipy());
 
