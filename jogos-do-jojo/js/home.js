@@ -17,7 +17,9 @@ const MINIMO_PARA_SEPARAR_SECOES = 4;
     return;
   }
 
-  const jogos = dados.jogos || [];
+  // jogos marcados como secretos não aparecem aqui: só quem procurar por eles
+  // na página de jogos (ou tiver o link) encontra.
+  const jogos = (dados.jogos || []).filter((j) => !j.secreto);
 
   renderizarPopulares(jogos);
   renderizarRecentes(jogos);
