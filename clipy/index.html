@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#008080">
+<meta name="description" content="O Clipy: um ajudante de clipe de papel que olha o que você escreve e aparece pra atrapalhar, igual aos assistentes dos computadores antigos. 30 regras rodando no seu navegador, sem internet.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Clipy">
+<title>Clipy — o ajudante que ninguém pediu</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ======================= a barra de cima ======================= -->
+<header id="topo">
+  <div class="marca"><span class="logo" aria-hidden="true">📎</span> <b>CLIPY</b></div>
+  <nav id="abas">
+    <button class="aba sel" data-aba="mesa">📝 A mesa</button>
+    <button class="aba" data-aba="conversa">💬 Conversar</button>
+    <button class="aba" data-aba="regras">🧠 Como ele pensa</button>
+    <button class="aba" data-aba="historia">📜 Quem é o Clipy</button>
+  </nav>
+  <div class="topoDir">
+    <label id="chaticeCaixa" title="o quanto ele interrompe">
+      <span>Chatice</span>
+      <input type="range" id="chatice" min="0" max="100" value="55">
+      <b id="chaticeVal">55</b>
+    </label>
+    <button id="btInstalar" hidden>📲 Instalar</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ======================= A MESA ======================= -->
+<section class="pagina on" id="pgMesa">
+  <div class="janela" id="janelaPapel">
+    <div class="tituloJanela">
+      <span>📄 Documento sem título — Papel</span>
+      <span class="botoesJanela"><i>_</i><i>▫</i><i>✕</i></span>
+    </div>
+    <div class="barraFerramentas">
+      <button data-fer="negrito"><b>N</b></button>
+      <button data-fer="maiusculas">AA</button>
+      <button data-fer="minusculas">aa</button>
+      <button data-fer="somar">Σ somar</button>
+      <button data-fer="limpar">🗑 limpar</button>
+      <span class="contador" id="contador">0 palavras</span>
+    </div>
+    <textarea id="papel" spellcheck="false"
+      placeholder="Escreva aqui.&#10;&#10;Experimente começar com &quot;Prezado&quot;, fazer uma lista com traços, escrever uma conta com R$, ou ESCREVER TUDO EM MAIÚSCULA. O Clipy está lendo."></textarea>
+  </div>
+
+  <aside class="ladoClipy">
+    <div class="balao" id="balao" hidden>
+      <p id="balaoTexto"></p>
+      <div class="balaoBotoes" id="balaoBotoes"></div>
+      <button class="naoMostrar" id="btNaoMostrar">Não mostrar mais esta dica</button>
+    </div>
+    <div class="palco" id="palco">
+      <canvas id="telaClipy"></canvas>
+    </div>
+    <div class="rodapeClipy">
+      <button id="btCutucar">👉 Cutucar</button>
+      <button id="btAjuda">💡 Me ajuda</button>
+    </div>
+  </aside>
+</section>
+
+<!-- ======================= CONVERSAR ======================= -->
+<section class="pagina" id="pgConversa">
+  <div class="janela estreita">
+    <div class="tituloJanela"><span>💬 Conversa com o Clipy</span>
+      <span class="botoesJanela"><i>_</i><i>▫</i><i>✕</i></span></div>
+    <div class="conversa" id="conversa"></div>
+    <form class="linhaEnviar" id="formConversa">
+      <input id="campoConversa" autocomplete="off" placeholder="Pergunte alguma coisa ao Clipy…">
+      <button type="submit">Enviar</button>
+    </form>
+    <div class="sugestoes" id="sugestoes"></div>
+  </div>
+</section>
+
+<!-- ======================= COMO ELE PENSA ======================= -->
+<section class="pagina" id="pgRegras">
+  <div class="janela larga">
+    <div class="tituloJanela"><span>🧠 Como o Clipy pensa</span>
+      <span class="botoesJanela"><i>_</i><i>▫</i><i>✕</i></span></div>
+    <div class="conteudo">
+      <p class="intro">O Clipy <b>não é</b> uma dessas inteligências artificiais de hoje. Ele é do tipo antigo:
+      um monte de <b>regras escritas na mão</b>. Cada regra sabe reconhecer uma coisa no que você digita e
+      tem uma frase pronta. Nada sai do seu navegador — <b>não tem internet, não tem servidor, não tem conta</b>.</p>
+
+      <p class="intro">É por isso que ele acerta o padrão e erra a intenção: ele vê "Prezado" e conclui
+      "carta". Não faz ideia do que você quer dizer. Era exatamente esse o problema dos ajudantes de
+      verdade — e também a graça deles.</p>
+
+      <h3>As <span id="qtdRegras">30</span> regras, uma por uma</h3>
+      <p class="intro pequeno">A coluna do meio é <b>o que ela procura</b>, escrita em português.
+      Verde = essa regra está batendo <b>agora</b>, com o que está escrito na mesa.</p>
+      <table class="tabelaRegras"><thead><tr>
+        <th>#</th><th>Regra</th><th>Ela dispara quando…</th><th>Ele fala</th><th>Estado</th>
+      </tr></thead><tbody id="corpoRegras"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= QUEM É O CLIPY ======================= -->
+<section class="pagina" id="pgHistoria">
+  <div class="janela larga">
+    <div class="tituloJanela"><span>📜 Quem é o Clipy</span>
+      <span class="botoesJanela"><i>_</i><i>▫</i><i>✕</i></span></div>
+    <div class="conteudo">
+      <h3>Um clipe de papel que morava no computador</h3>
+      <p>Nos anos 90, os programas de escritório vieram com <b>ajudantes animados</b>. Eles ficavam num
+      cantinho da tela, olhando o que você escrevia, e apareciam sozinhos pra oferecer ajuda. O mais
+      famoso de todos era um <b>clipe de papel com olhos</b>.</p>
+
+      <h3>Por que todo mundo achava ele chato</h3>
+      <p>Porque ele interrompia. Você estava no meio de uma frase e ele pulava na frente perguntando se
+      você queria ajuda com uma coisa que você não estava fazendo. E ele não tinha como saber: por
+      dentro era só uma lista de padrões. "Achou a palavra <i>Prezado</i> no começo? Então é carta."</p>
+      <p>O ajudante foi ficando escondido nas versões seguintes e sumiu de vez no começo dos anos 2000.
+      Virou piada, virou saudade, e hoje é uma das coisas mais lembradas daquela época de computador.</p>
+
+      <h3>O que ele ensina sobre as IAs de hoje</h3>
+      <p>Ele era o que se chama de <b>sistema de regras</b>: alguém sentou e escreveu, uma por uma, todas
+      as coisas que ele sabia reconhecer. Se você fizesse algo fora da lista, ele não entendia nada.</p>
+      <p>As IAs de agora aprendem sozinhas com uma montanha de texto, em vez de seguir uma lista escrita
+      à mão — por isso conseguem responder coisas que ninguém previu. Mas o problema mais difícil
+      continua sendo o mesmo do clipe: <b>saber a hora de falar e a hora de ficar quieto.</b></p>
+
+      <h3>Este Clipy aqui</h3>
+      <p>Este é o <b>Clipy do JoJo</b>. O desenho é feito por código — um arame dobrado, dois olhos e duas
+      sobrancelhas, num canvas — e não é o personagem de nenhuma empresa: é um clipe novo, com a mesma
+      ideia. As <b>30 regras</b> foram escritas do zero, em português, e você pode ver todas elas na aba
+      <b>🧠 Como ele pensa</b>, inclusive quais estão disparando agora.</p>
+      <p class="assinatura">📎 Feito pelo JoJo. O Clipy manda um oi. E outro. E mais um.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= INSTALAR ======================= -->
+<section class="pagina" id="pgInstalar">
+  <div class="janela estreita">
+    <div class="tituloJanela"><span>📲 Instalar o Clipy</span>
+      <span class="botoesJanela"><i>_</i><i>▫</i><i>✕</i></span></div>
+    <div class="conteudo">
+      <p>Instalado, o Clipy abre pelo ícone, como um programa de verdade — e <b>funciona sem internet</b>.</p>
+      <div class="passos" id="passosInstalar"></div>
+      <button class="botaoGrande" id="btVoltaInstalar">Voltar</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer id="rodape">
+  📎 <b>Clipy</b> — 30 regras rodando no seu navegador, sem internet nenhuma.
+  Feito pelo JoJo · <a href="../jogos-do-jojo/">Jogos do JoJo</a>
+</footer>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
