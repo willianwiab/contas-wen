@@ -9,6 +9,8 @@
    ============================================================ */
 const { chromium } = require('playwright-core');
 const URL = 'file://' + require('path').resolve(__dirname, 'index.html');
+const PASTA_PRINT = process.env.PRINTS || require('os').tmpdir();
+const print = (n) => require('path').join(PASTA_PRINT, n);
 const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:''));
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium', args:['--no-sandbox'] });
@@ -83,7 +85,7 @@ const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:'')
   await p.click('.aba[data-p="stat"]'); await p.waitForTimeout(300);
   r = await p.evaluate(() => document.querySelectorAll('#pStat > div').length);
   conf('stats com 13 linhas', r===13, 'linhas: '+r);
-  await p.screenshot({ path:'mina.png' });
+  await p.screenshot({ path: print('mina.png') });
 
   // salvar e recarregar
   const antes = await p.evaluate(() => { salvar();
@@ -95,7 +97,7 @@ const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:'')
   conf('o save não fica gigante (só guarda os buracos perto do fundo)', antes.tamanho < 60000, antes.tamanho + ' bytes');
 
   await p.click('.aba[data-p="loja"]'); await p.waitForTimeout(300);
-  await p.screenshot({ path:'mina2.png' });
+  await p.screenshot({ path: print('mina2.png') });
   console.log('✅ '+ok.length+' ok'); ok.forEach(t=>console.log('   · '+t));
   if (fail.length) { console.log('❌ '+fail.length); fail.forEach(t=>console.log('   · '+t)); }
   console.log(err.length ? '❌ console: '+JSON.stringify(err) : '✅ sem erro no console');
