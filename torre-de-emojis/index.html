@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#08060f">
-<meta name="description" content="Torre de Emojis: empilhe emojis da Terra até o NADA, ganhe dinheiro por bloco e compre 136 melhorias.">
+<meta name="description" content="Torre de Emojis: empilhe emojis da Terra até o NADA, ganhe dinheiro por bloco, compre 136 melhorias e renasça por estrelas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icone.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icone-180.png">
@@ -75,6 +75,8 @@
   }
   .pilula:hover { border-color:var(--ouro); color:var(--ouro); }
   .pilula.info { cursor:default; color:var(--ink); margin-left:auto; font-weight:700; }
+  /* o display:flex de cima ganha do [hidden] do navegador — sem isto, esconder não esconde */
+  .pilula[hidden] { display:none; }
 
   /* barra de progresso da camada */
   #barraCamada {
@@ -180,6 +182,64 @@
     opacity:0; transition:.18s; pointer-events:none; max-width:92vw; text-align:center;
   }
   #aviso.on { opacity:1; transform:translate(-50%,0); }
+
+  /* ---------- renascer ---------- */
+  #renascer {
+    width:100%; padding:13px; border-radius:13px; cursor:pointer; text-align:left;
+    font-family:inherit; color:inherit; border:1px solid #6ef0c855; font-size:.87rem; font-weight:800;
+    background:linear-gradient(135deg,#0c3a32,#141024);
+  }
+  #renascer:not(.on) { opacity:.45; cursor:not-allowed; }
+  #renascer b { color:var(--cristal); font-family:var(--mono); }
+  #renascer span { display:block; font-size:.7rem; color:var(--dim); margin-top:5px; line-height:1.55; font-weight:400; }
+  #infoEstrela {
+    font-family:var(--mono); font-size:.69rem; color:var(--verde); background:#05030b;
+    border:1px solid var(--linha); border-radius:11px; padding:10px; line-height:1.75; white-space:pre-wrap;
+  }
+  #voltaCaixa {
+    border:1px solid #ffc85766; border-radius:13px; padding:10px 12px; display:none; flex-direction:column; gap:7px;
+    background:linear-gradient(135deg,#3a2a0c,#22122c);
+  }
+  #voltaCaixa.on { display:flex; }
+  #voltaCaixa .vt { font-size:.79rem; font-weight:800; color:var(--ouro); }
+  #voltaCaixa .vs { font-size:.67rem; color:var(--dim); line-height:1.55; }
+
+  /* ---------- modo adm ---------- */
+  #adm {
+    position:fixed; inset:0; z-index:65; display:none; padding:16px;
+    background:#04020ae8; backdrop-filter:blur(6px); align-items:center; justify-content:center;
+  }
+  #adm.on { display:flex; }
+  .janela {
+    width:min(680px,100%); max-height:88vh; overflow-y:auto; padding:16px; border-radius:var(--r);
+    background:linear-gradient(180deg,var(--painel2),#0b0713); border:1px solid var(--azul); box-shadow:0 30px 60px #000;
+  }
+  .janela h3 { margin:0 0 3px; font-family:var(--mono); font-size:.76rem; letter-spacing:.26em; color:var(--azul); text-transform:uppercase; }
+  .janela .sub { margin:0 0 12px; font-size:.73rem; color:var(--dim); }
+  .grupo { margin-bottom:12px; }
+  .grupo .lab { font-family:var(--mono); font-size:.6rem; letter-spacing:.2em; color:var(--dim); text-transform:uppercase; margin-bottom:6px; }
+  .grupo .lab b { color:var(--azul); }
+  .btns { display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
+  .bt {
+    padding:7px 11px; border-radius:9px; cursor:pointer; font-family:var(--mono); font-size:.74rem;
+    font-weight:700; color:var(--ink); background:#ffffff10; border:1px solid var(--linha);
+  }
+  .bt:hover { background:#ffffff1e; border-color:var(--azul); }
+  .bt.sel { background:var(--azul); color:#04121f; border-color:var(--azul); }
+  .bt.perigo { border-color:#ff6b6b55; color:#ff9d9d; }
+  .bt.perigo:hover { background:#ff6b6b22; border-color:#ff6b6b; }
+  .campo {
+    flex:1; min-width:110px; padding:7px 10px; border-radius:9px; background:#05030b;
+    border:1px solid var(--linha); color:var(--ink); font-family:var(--mono); font-size:.78rem;
+  }
+  .campo:focus { outline:none; border-color:var(--azul); }
+  #admInfo {
+    font-family:var(--mono); font-size:.69rem; color:var(--verde); background:#05030b;
+    border:1px solid var(--linha); border-radius:9px; padding:9px; line-height:1.7; white-space:pre-wrap; margin-bottom:12px;
+  }
+  #admErro { color:#ff8787; font-size:.73rem; min-height:1.1em; margin-top:7px; }
+  #btAdm { opacity:.35; }
+  #btAdm:hover { opacity:1; }
 </style>
 </head>
 <body>
@@ -195,6 +255,7 @@
     <div class="stat"><div class="k">Vidas</div><div class="v" id="vVidas" style="color:var(--rosa)">❤️❤️❤️</div></div>
     <div class="stat"><div class="k">Combo</div><div class="v" id="vCombo" style="color:var(--ouro)">0</div></div>
     <div class="stat"><div class="k">Nesta rodada</div><div class="v" id="vRodada" style="color:var(--verde)">🪙 0</div></div>
+    <div class="stat"><div class="k">Estrelas</div><div class="v" id="vEstrelas" style="color:var(--cristal)">⭐ 0</div></div>
   </div>
 </header>
 
@@ -206,7 +267,9 @@
         <button class="pilula" id="btSom">🔊</button>
         <button class="pilula" id="btDeNovo">🔄 de novo</button>
         <button class="pilula" id="btInstalar" hidden>📲 INSTALAR</button>
+        <button class="pilula" id="btAdm" title="modo adm">🔒</button>
         <div class="pilula info" id="proximo">🧱 0</div>
+        <div class="pilula info" id="pVolta" style="color:var(--ouro);border-color:var(--ouro);margin-left:0" hidden>🔁</div>
       </div>
       <div id="fim">
         <div>
@@ -232,6 +295,7 @@
       <button class="aba sel" data-p="loja">🛒 LOJA</button>
       <button class="aba" data-p="mapa">🗺️ CAMADAS</button>
       <button class="aba" data-p="cestas">🧺 CESTAS</button>
+      <button class="aba" data-p="renascer">⭐ RENASCER</button>
     </div>
     <div id="pLoja" style="display:flex;flex-direction:column;gap:9px">
       <div class="cabecinha" id="lojaTopo"></div>
@@ -246,8 +310,74 @@
       <div class="cabecinha">🧺 <b>Cestas</b> — trocam os emojis dos blocos. Abrem conforme o seu recorde de altura.</div>
       <div class="cestas" id="cestas"></div>
     </div>
+    <div id="pRenascer" style="display:none;flex-direction:column;gap:10px">
+      <div class="cabecinha">⭐ <b>Renascer</b> — junte <b>🪙 1 bilhão</b> numa vez só, troque tudo por
+        estrelas e volte correndo pro lugar onde você parou.</div>
+      <div id="voltaCaixa">
+        <div class="vt" id="voltaT"></div>
+        <div class="trilho"><i id="voltaBarra" style="width:0%;background:linear-gradient(90deg,#ffc857,#6ef0c8)"></i></div>
+        <div class="vs" id="voltaS"></div>
+      </div>
+      <button id="renascer"></button>
+      <div id="infoEstrela"></div>
+    </div>
   </div>
 </div>
+
+<div id="adm"><div class="janela">
+  <div id="admLogin">
+    <h3>🔒 Acesso restrito</h3>
+    <p class="sub">Modo administrador da torre. Digite a senha.</p>
+    <div class="btns">
+      <input class="campo" id="admSenha" type="password" placeholder="senha" autocomplete="off">
+      <button class="bt" id="admEntrar">ENTRAR</button>
+      <button class="bt" onclick="fecharAdm()">SAIR</button>
+    </div>
+    <div id="admErro"></div>
+  </div>
+
+  <div id="admPainel" style="display:none">
+    <h3>⚙ Modo administrador</h3>
+    <p class="sub">A torre é sua. Quebra à vontade.</p>
+    <div id="admInfo"></div>
+
+    <div class="grupo"><div class="lab">Escala dos botões</div><div class="btns" id="admEscala"></div></div>
+    <div class="grupo"><div class="lab">Moedas — cada botão vale <b id="admLabMoeda">x1</b></div>
+      <div class="btns" id="admMoedas"></div></div>
+
+    <div class="grupo"><div class="lab">Quantidade exata de moedas</div><div class="btns">
+      <input class="campo" id="admQtd" type="number" placeholder="ex: 1000000000">
+      <button class="bt" onclick="definirMoedas()">DEFINIR</button>
+      <button class="bt perigo" onclick="moedas=0;puxarAdm()">ZERAR</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Blocos — coloca na hora, sem errar</div><div class="btns" id="admBlocos"></div></div>
+
+    <div class="grupo"><div class="lab">Melhorias — +N em cada uma das 136</div><div class="btns" id="admUps"></div></div>
+
+    <div class="grupo"><div class="lab">Estrelas ⭐ — cada uma paga +30% pra sempre</div><div class="btns" id="admEstrelas"></div></div>
+
+    <div class="grupo"><div class="lab">Camadas, cestas e álbum</div><div class="btns">
+      <button class="bt" onclick="liberarAte(3)">abrir até a Mesosfera</button>
+      <button class="bt" onclick="liberarAte(6)">até o Espaço</button>
+      <button class="bt" onclick="liberarAte(10)">até o NADA</button>
+      <button class="bt" onclick="encherAlbum()">ÁLBUM COMPLETO</button>
+      <button class="bt perigo" onclick="trancarTudo()">TRANCAR TUDO</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Rodada de agora</div><div class="btns">
+      <button class="bt" onclick="darVidas(99)">99 VIDAS</button>
+      <button class="bt" onclick="desvio=0;puxarAdm()">ENDIREITAR A TORRE</button>
+      <button class="bt" onclick="comecarRodada();puxarAdm()">NOVA RODADA</button>
+      <button class="bt perigo" onclick="perder('o adm derrubou');puxarAdm()">DERRUBAR</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">Perigo de verdade</div><div class="btns">
+      <button class="bt perigo" onclick="apagarTudo()">APAGAR O JOGO INTEIRO</button>
+      <button class="bt" onclick="fecharAdm()">FECHAR</button>
+    </div></div>
+  </div>
+</div></div>
 
 <div class="rodape" id="rodape"></div>
 <script>
@@ -367,7 +497,8 @@ const teto = (v, max) => max * (1 - 1 / (1 + v / max));
 const pct = (v, max) => Math.round(teto(v, max) * 100) + "%";
 
 const multValor  = () => (1 + soma("valor")) * (1 + soma("nucleo")) *
-                         (1 + soma("fama") * indiceCamada(recorde));
+                         (1 + soma("fama") * indiceCamada(recorde)) *
+                         multEstrelas() * multVolta();
 const forcaCola  = () => teto(soma("cola"), .85);
 const freio      = () => teto(soma("freio"), .75);
 const vidasMax   = () => 3 + Math.floor(soma("vida"));
@@ -386,9 +517,13 @@ const foguete    = () => Math.floor(soma("foguete"));
 /* ==========================================================================
    ESTADO
    ========================================================================== */
-const CHAVE = "torreEmojis_v2", CHAVE_ANTIGA = "torreEmojis_v1";
+const CHAVE = "torreEmojis_v3", CHAVES_ANTIGAS = ["torreEmojis_v2", "torreEmojis_v1"];
 let moedas = 0, recorde = 0, album = [], camadasVistas = [], cestaAtual = "caras", mudo = false;
 let painelAtual = "loja", famAtual = "valor";
+/* renascer: estrelas ganhas, quantas vezes já renasceu, o maior monte de moedas
+   que você já teve e o alvo da "volta do recorde" (0 = sem volta rolando) */
+let estrelas = 0, renascimentos = 0, recordeMoedas = 0, voltaAlvo = 0;
+let apagando = false;
 let estat = { rodadas:0, blocos:0, perfeitos:0, quedas:0, dourados:0, melhorCombo:0, melhorRodada:0 };
 const el = id => document.getElementById(id);
 const cestaObj = () => CESTAS.find(c => c.id === cestaAtual) || CESTAS[0];
@@ -402,6 +537,14 @@ function fmt(n) {
   while (x >= 1000 && i < u.length - 1) { x /= 1000; i++; }
   return x.toFixed(1).replace(".", ",") + u[i];
 }
+/* toda moeda que entra passa por aqui: assim o recorde de moedas nunca
+   fica pra trás e nada estoura pro infinito (o adm consegue exagerar) */
+function ganharMoedas(n) {
+  if (!isFinite(n)) return;
+  moedas = Math.min(moedas + n, 1e300);
+  if (moedas > recordeMoedas) recordeMoedas = moedas;
+}
+
 let tAviso = null;
 function avisar(t) {
   el("aviso").textContent = t; el("aviso").classList.add("on");
@@ -442,7 +585,7 @@ let L = 0, A = 0, dpr = 1, larg = 90, alt = 56;
 let torre = [], caindo = null, vidas = 3, rodada = 0, acabou = false, combo = 0;
 let desvio = 0, camY = 0, camAlvo = 0, quadros = 0, avisos = [], caindoFora = [], faiscas = [];
 let balanco = 0, proximoEmoji = 0, proximoOuro = false, ventoAtual = 0;
-let estrelas = [], nuvens = [];
+let pontosDoCeu = [], nuvens = [];
 
 function ajustar() {
   const r = cv.getBoundingClientRect();
@@ -451,7 +594,7 @@ function ajustar() {
   cv.width = Math.round(L * dpr); cv.height = Math.round(A * dpr);
   larg = L * (.23 + largoExtra() * .2);
   alt = larg * .6;
-  estrelas = Array.from({ length: 70 }, (_, i) => ({
+  pontosDoCeu = Array.from({ length: 70 }, (_, i) => ({
     x: (i * 137.5) % 100 / 100, y: (i * 61.8) % 100 / 100, t: (i % 5) + 1 }));
   nuvens = Array.from({ length: 14 }, (_, i) => ({
     x: (i * 71) % 100 / 100, y: i * 47 % 100 / 100, e: i % 3 }));
@@ -549,7 +692,7 @@ function encaixar() {
   if (perfeito) ganho *= 3 * (1 + combo * bonusCombo());
   if (caindo.ouro) { ganho *= 10; estat.dourados++; }
   ganho = Math.round(ganho);
-  moedas += ganho; rodada += ganho;
+  ganharMoedas(ganho); rodada += ganho;
   avisos.push({ x:caindo.x, y:topoY() + alt, t:0,
     txt:(caindo.ouro ? "💎 " : "") + (perfeito ? "PERFEITO" + (combo > 1 ? " x" + combo : "") + "! +" : "+") + fmt(ganho),
     cor:caindo.ouro ? "#fff3b0" : perfeito ? "#ffc857" : "#ffffffcc", grande:perfeito || caindo.ouro });
@@ -567,10 +710,13 @@ function encaixar() {
 let camadaAntes = 0;
 function verCamada() {
   const i = indiceCamada(alturaDaTorre());
+  let nova = false;                       // dá pra pular camadas (foguete, adm): marca todas
+  for (let k = 0; k <= i; k++)
+    if (!camadasVistas.includes(CAMADAS[k].nome)) { camadasVistas.push(CAMADAS[k].nome); nova = true; }
+  if (nova) { montarMapa(); salvar(); }
   if (i > camadaAntes) {
     camadaAntes = i;
     const c = CAMADAS[i];
-    if (!camadasVistas.includes(c.nome)) { camadasVistas.push(c.nome); montarMapa(); salvar(); }
     avisar(c.ic + " CHEGOU NA " + c.nome.toUpperCase() + "!");
     [523, 659, 784, 1047].forEach((f, k) => setTimeout(() => bip(f, .15), k * 110));
     faiscas.push({ x:L / 2, y:topoY(), t:0, cor:"#ffc857", n:30, forte:true });
@@ -625,7 +771,7 @@ function desenharFundo() {
   // estrelas aparecem aos poucos a partir da mesosfera
   const brilhoEstrela = Math.max(0, Math.min(1, (i - 2) / 3));
   if (brilhoEstrela > 0) {
-    for (const e of estrelas) {
+    for (const e of pontosDoCeu) {
       const y = ((e.y * A * 2 - camY * .25) % (A * 2) + A * 2) % (A * 2) - A * .5;
       if (y < -10 || y > A + 10) continue;
       const pisca = .55 + Math.sin(quadros * .04 + e.x * 30) * .35;
@@ -827,6 +973,68 @@ function quadro() {
 }
 
 /* ==========================================================================
+   RENASCER
+   Junte 🪙 1 bilhão e troque TUDO (moedas + as 136 melhorias) por estrelas.
+   Cada estrela paga +30% pra sempre. E, pra não começar do zero de novo,
+   liga a VOLTA DO RECORDE: enquanto você não chega de volta no seu último
+   recorde de moedas, tudo paga até 41x — e o empurrão vai sumindo conforme
+   você chega perto. Quer dizer: a moeda volta, o progresso volta.
+   ========================================================================== */
+const CUSTO_RENASCER = 1e9;
+const IMPULSO_VOLTA = 40;
+const estrelasAGanhar = () => moedas < CUSTO_RENASCER ? 0
+  : Math.max(1, Math.floor(Math.pow(moedas / CUSTO_RENASCER, .38) * 3));
+const multEstrelas = () => 1 + estrelas * .3;
+const naVolta = () => voltaAlvo > 0 && moedas < voltaAlvo;
+const multVolta = () => naVolta() ? 1 + IMPULSO_VOLTA * (1 - moedas / voltaAlvo) : 1;
+
+function renascer() {
+  const g = estrelasAGanhar();
+  if (!g) {
+    bip(170);
+    avisar("⭐ falta 🪙 " + fmt(CUSTO_RENASCER - moedas) + " pra renascer");
+    return;
+  }
+  estrelas += g; renascimentos++;
+  recordeMoedas = Math.max(recordeMoedas, moedas);
+  voltaAlvo = recordeMoedas;                        // é pra cá que a volta te leva
+  moedas = 0;
+  LOJA.forEach(u => u.qtd = 0);
+  combo = 0;
+  avisar("⭐ RENASCEU! +" + g + (g > 1 ? " estrelas" : " estrela"));
+  [440, 550, 660, 880, 1100, 1320].forEach((f, i) => setTimeout(() => bip(f, .16), i * 130));
+  comecarRodada(); montarRenascer(); salvar();
+}
+
+function montarRenascer() {
+  if (painelAtual !== "renascer") return;
+  const g = estrelasAGanhar(), b = el("renascer");
+  b.classList.toggle("on", g > 0);
+  b.innerHTML = g > 0
+    ? "⭐ RENASCER e ganhar <b>" + g + (g > 1 ? " estrelas" : " estrela") + "</b>" +
+      "<span>Você perde as moedas e as 136 melhorias. Fica com as estrelas, o álbum, o recorde " +
+      "de altura e as camadas — e a volta do recorde te empurra de novo pra cima.</span>"
+    : "🔒 RENASCER — falta <b>🪙 " + fmt(CUSTO_RENASCER - moedas) + "</b>" +
+      "<span>Precisa ter 🪙 " + fmt(CUSTO_RENASCER) + " na mão de uma vez só. " +
+      "É pra ser difícil mesmo: é o troféu do jogo.</span>";
+  const cx = el("voltaCaixa");
+  cx.classList.toggle("on", naVolta());
+  if (naVolta()) {
+    el("voltaT").textContent = "🔁 VOLTA DO RECORDE — tudo paga x" + multVolta().toFixed(1);
+    el("voltaBarra").style.width = Math.max(1, moedas / voltaAlvo * 100) + "%";
+    el("voltaS").textContent = "🪙 " + fmt(moedas) + " de " + fmt(voltaAlvo) +
+      " · o empurrão vai diminuindo conforme você chega perto de onde parou.";
+  }
+  el("infoEstrela").textContent =
+    "estrelas.......: " + estrelas + "  (tudo paga x" + multEstrelas().toFixed(2) + ")\n" +
+    "renascimentos..: " + renascimentos + "\n" +
+    "moedas agora...: " + fmt(moedas) + "\n" +
+    "seu recorde....: " + fmt(recordeMoedas) + " moedas\n" +
+    "custo..........: " + fmt(CUSTO_RENASCER) + "\n" +
+    "cada estrela...: +30% em tudo, pra sempre";
+}
+
+/* ==========================================================================
    PAINEL
    ========================================================================== */
 function mostrarPainel(p) {
@@ -834,10 +1042,12 @@ function mostrarPainel(p) {
   el("pLoja").style.display = p === "loja" ? "flex" : "none";
   el("pMapa").style.display = p === "mapa" ? "flex" : "none";
   el("pCestas").style.display = p === "cestas" ? "flex" : "none";
+  el("pRenascer").style.display = p === "renascer" ? "flex" : "none";
   [...document.querySelectorAll(".aba")].forEach(b => b.classList.toggle("sel", b.dataset.p === p));
   if (p === "loja") montarLoja();
   if (p === "mapa") montarMapa();
   if (p === "cestas") montarCestas();
+  if (p === "renascer") montarRenascer();
   bip(700);
 }
 [...document.querySelectorAll(".aba")].forEach(b => b.onclick = () => mostrarPainel(b.dataset.p));
@@ -924,6 +1134,10 @@ function montarCestas() {
 
 function atualizarTopo() {
   el("moedas").textContent = fmt(moedas);
+  el("vEstrelas").textContent = "⭐ " + estrelas;
+  const pv = el("pVolta");
+  pv.hidden = !naVolta();
+  if (!pv.hidden) pv.textContent = "🔁 x" + multVolta().toFixed(1);
   el("vAltura").textContent = alturaDaTorre();
   el("vRecorde").textContent = recorde;
   el("vVidas").textContent = acabou ? "—" : ("❤️".repeat(Math.max(0, Math.min(vidas, 6))) || "—");
@@ -940,6 +1154,7 @@ function atualizarTopo() {
     : "faltam " + Math.max(0, prox.de - alturaDaTorre()) + " pra " + prox.nome + " · paga x" + c.paga;
   el("bcBarra").style.width = (noTopo ? 100 : feito * 100) + "%";
   el("bcBarra").style.background = "linear-gradient(90deg," + c.ceu[1] + "," + prox.ceu[0] + ")";
+  montarRenascer();
 }
 
 /* ==========================================================================
@@ -947,9 +1162,15 @@ function atualizarTopo() {
    ========================================================================== */
 cv.addEventListener("pointerdown", e => { e.preventDefault(); soltar(); });
 document.addEventListener("keydown", e => {
+  const t = (e.key || "").toUpperCase();
+  if (e.ctrlKey && e.shiftKey && t === "A") { e.preventDefault(); abrirAdm(); return; }
+  if (e.key === "Escape") { fecharAdm(); return; }
   if (e.target.tagName === "INPUT") return;
+  if (el("adm").classList.contains("on")) return;
   if (e.key === " " || e.key === "ArrowDown") { e.preventDefault(); soltar(); }
-  if (e.key.toUpperCase() === "R") comecarRodada();
+  if (t === "R") comecarRodada();
+  segredo = (segredo + t).slice(-5);            // escrever ADMIN também abre
+  if (segredo === "ADMIN") { segredo = ""; abrirAdm(); }
 });
 el("btDeNovo").onclick = e => { e.stopPropagation(); comecarRodada(); };
 el("btJogarDeNovo").onclick = comecarRodada;
@@ -963,21 +1184,29 @@ el("btSom").onclick = e => {
 /* a Poupança rende sozinha */
 setInterval(() => {
   const j = jurosPorSeg();
-  if (j) { moedas += j / 2; atualizarTopo(); if (painelAtual === "loja") montarLoja(); }
+  if (j) { ganharMoedas(j / 2 * multEstrelas() * multVolta()); atualizarTopo(); if (painelAtual === "loja") montarLoja(); }
 }, 500);
 
 function salvar() {
+  if (apagando) return;
   try {
-    localStorage.setItem(CHAVE, JSON.stringify({ v:2, moedas, recorde, album, camadasVistas,
-      cestaAtual, mudo, estat, ups: LOJA.filter(u => u.qtd).map(u => [u.id, u.qtd]) }));
+    localStorage.setItem(CHAVE, JSON.stringify({ v:3, moedas, recorde, album, camadasVistas,
+      cestaAtual, mudo, estat, estrelas, renascimentos, recordeMoedas, voltaAlvo,
+      ups: LOJA.filter(u => u.qtd).map(u => [u.id, u.qtd]) }));
   } catch (e) {}
 }
 function carregar() {
   let d = null;
   try { d = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
-  if (!d) { try { d = JSON.parse(localStorage.getItem(CHAVE_ANTIGA) || "null"); } catch (e) {} }
+  for (const k of CHAVES_ANTIGAS) {                 // save velho vira save novo sem perder nada
+    if (d) break;
+    try { d = JSON.parse(localStorage.getItem(k) || "null"); } catch (e) {}
+  }
   if (!d) return;
   moedas = d.moedas || 0; recorde = d.recorde || 0;
+  estrelas = d.estrelas || 0; renascimentos = d.renascimentos || 0;
+  recordeMoedas = Math.max(d.recordeMoedas || 0, moedas);
+  voltaAlvo = d.voltaAlvo || 0;
   album = Array.isArray(d.album) ? d.album : [];
   camadasVistas = Array.isArray(d.camadasVistas) ? d.camadasVistas : [];
   mudo = !!d.mudo;
@@ -1007,6 +1236,128 @@ el("btInstalar").onclick = async () => {
 };
 window.addEventListener("appinstalled", () => { el("btInstalar").hidden = true; avisar("📲 torre instalada!"); });
 
+/* ==========================================================================
+   MODO ADM — a senha é 1234
+   Abre pelo cadeadinho 🔒, com Ctrl+Shift+A ou escrevendo ADMIN.
+   Os botões são os números que o Jojo pediu: 1, 10, 15, 25, 100, 200,
+   300, 400, 500 e 1000 — e a escala em cima multiplica todos eles.
+   ========================================================================== */
+const SENHA_ADM = "1234";
+const NUMEROS_ADM = [1, 10, 15, 25, 100, 200, 300, 400, 500, 1000];
+const ESCALAS = [{ n:"x1", v:1 }, { n:"x mil", v:1e3 }, { n:"x milhão", v:1e6 },
+                 { n:"x bilhão", v:1e9 }, { n:"x trilhão", v:1e12 }];
+let escalaAdm = 1, admLiberado = false, segredo = "";
+
+function botoesAdm(onde, rotulo, acao) {
+  const c = el(onde); c.innerHTML = "";
+  for (const n of NUMEROS_ADM) {
+    const b = document.createElement("button");
+    b.className = "bt"; b.textContent = rotulo(n);
+    b.onclick = () => { acao(n); puxarAdm(); };
+    c.appendChild(b);
+  }
+}
+function montarAdm() {
+  const ce = el("admEscala"); ce.innerHTML = "";
+  for (const e of ESCALAS) {
+    const b = document.createElement("button");
+    b.className = "bt" + (escalaAdm === e.v ? " sel" : ""); b.textContent = e.n;
+    b.onclick = () => { escalaAdm = e.v; montarAdm(); puxarAdm(); };
+    ce.appendChild(b);
+  }
+  el("admLabMoeda").textContent = (ESCALAS.find(e => e.v === escalaAdm) || ESCALAS[0]).n;
+  botoesAdm("admMoedas",   n => "+" + fmt(n * escalaAdm), n => ganharMoedas(n * escalaAdm));
+  botoesAdm("admBlocos",   n => "+" + n, n => darBlocos(n));
+  botoesAdm("admUps",      n => "+" + n, n => LOJA.forEach(u => u.qtd = Math.min(999, u.qtd + n)));
+  botoesAdm("admEstrelas", n => "+" + n, n => estrelas += n);
+}
+
+function darBlocos(n) {
+  if (acabou) comecarRodada();
+  for (let i = 0; i < n; i++) {
+    torre.push({ x: torre.length ? torre[torre.length - 1].x : L / 2,
+                 emoji: Math.floor(Math.random() * cestaObj().emojis.length),
+                 cor: CORES[torre.length % CORES.length], perfeito:false, ouro:false });
+  }
+  estat.blocos += n;
+  if (alturaDaTorre() > recorde) recorde = alturaDaTorre();
+  verCamada();
+  camAlvo = Math.max(0, torre.length * alt - A * .55);
+  novoBloco();
+}
+function definirMoedas() {
+  const v = parseFloat(el("admQtd").value);
+  if (isNaN(v) || v < 0) return;
+  moedas = Math.min(v, 1e300);
+  if (moedas > recordeMoedas) recordeMoedas = moedas;
+  puxarAdm();
+}
+function darVidas(n) {
+  acabou = false; el("fim").classList.remove("on");
+  vidas = n; puxarAdm();
+}
+function liberarAte(i) {
+  const c = CAMADAS[Math.max(0, Math.min(i, CAMADAS.length - 1))];
+  recorde = Math.max(recorde, c.de);
+  camadasVistas = CAMADAS.slice(0, CAMADAS.indexOf(c) + 1).map(x => x.nome);
+  puxarAdm();
+}
+function trancarTudo() {
+  recorde = 0; camadasVistas = []; camadaAntes = 0; cestaAtual = "caras";
+  puxarAdm();
+}
+function encherAlbum() {
+  album = [];
+  for (const c of CESTAS) c.emojis.forEach((e, i) => album.push(c.id + "|" + i));
+  puxarAdm();
+}
+function apagarTudo() {
+  if (!confirm("Apagar TUDO mesmo? Moedas, estrelas, álbum, recorde... não dá pra voltar atrás.")) return;
+  apagando = true;
+  try { localStorage.removeItem(CHAVE); CHAVES_ANTIGAS.forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  location.reload();
+}
+
+function abrirAdm() {
+  el("adm").classList.add("on");
+  el("admLogin").style.display = admLiberado ? "none" : "";
+  el("admPainel").style.display = admLiberado ? "" : "none";
+  el("admErro").textContent = "";
+  if (admLiberado) { montarAdm(); puxarAdm(); }
+  else { el("admSenha").value = ""; el("admSenha").focus(); }
+}
+function fecharAdm() { el("adm").classList.remove("on"); }
+function tentarSenha() {
+  if (el("admSenha").value === SENHA_ADM) {
+    admLiberado = true;
+    el("admLogin").style.display = "none"; el("admPainel").style.display = "";
+    bip(900); montarAdm(); puxarAdm();
+  } else {
+    el("admErro").textContent = "Senha errada!"; el("admSenha").value = ""; bip(140);
+  }
+}
+function puxarAdm() {
+  const c = camadaDe(alturaDaTorre());
+  el("admInfo").textContent =
+    "moedas.........: 🪙 " + fmt(moedas) + "\n" +
+    "recorde moedas.: 🪙 " + fmt(recordeMoedas) + "\n" +
+    "altura.........: " + alturaDaTorre() + " blocos   (recorde: " + recorde + ")\n" +
+    "camada.........: " + c.nome + "   paga x" + c.paga + "\n" +
+    "camadas vistas.: " + camadasVistas.length + "/" + CAMADAS.length + "\n" +
+    "estrelas.......: " + estrelas + " ⭐  (tudo x" + multEstrelas().toFixed(2) + ")\n" +
+    "volta recorde..: " + (naVolta() ? "x" + multVolta().toFixed(1) + " até 🪙 " + fmt(voltaAlvo) : "desligada") + "\n" +
+    "melhorias......: " + LOJA.reduce((t, u) => t + u.qtd, 0) + " níveis de " + LOJA.length + " itens\n" +
+    "multiplicador..: x" + fmt(multValor()) + "\n" +
+    "vidas..........: " + (acabou ? "—" : vidas + "/" + vidasMax()) + "\n" +
+    "álbum..........: " + album.length + "/" + CESTAS.reduce((t, x) => t + x.emojis.length, 0);
+  ajustar(); atualizarTopo(); montarLoja(); montarMapa(); montarCestas(); salvar();
+}
+el("admEntrar").onclick = tentarSenha;
+el("admSenha").addEventListener("keydown", e => { if (e.key === "Enter") { e.stopPropagation(); tentarSenha(); } });
+el("btAdm").onclick = e => { e.stopPropagation(); abrirAdm(); };
+el("adm").onclick = e => { if (e.target === el("adm")) fecharAdm(); };
+el("renascer").onclick = renascer;
+
 /* ---------- começo ---------- */
 carregar();
 montarFamilias();
@@ -1016,7 +1367,9 @@ el("rodape").innerHTML =
   "Clique na tela (ou aperte <b>espaço</b>) pra soltar o bloco. A setinha embaixo mostra onde é o meio do bloco de cima.<br>" +
   "<b>" + CAMADAS.length + " camadas</b>, da Terra até <b>o NADA</b> · <b>" + LOJA.length + " melhorias</b> · <b>" +
   CESTAS.length + " cestas</b> de emoji.<br>" +
-  "Cada camada paga mais que a de baixo — mas tem mais vento pra atrapalhar.";
+  "Cada camada paga mais que a de baixo — mas tem mais vento pra atrapalhar.<br>" +
+  "Chegou em <b>🪙 1 bilhão</b>? Dá pra <b>renascer</b>: troca tudo por ⭐ estrelas (+30% cada, pra sempre) " +
+  "e a <b>volta do recorde</b> te empurra de novo pro lugar onde você parou.";
 quadro();
 </script>
 </body>
