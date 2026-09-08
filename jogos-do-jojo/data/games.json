@@ -541,6 +541,66 @@
       "ranking": []
     },
     {
+      "slug": "fabrica-de-emojis-2",
+      "nome": "Fábrica de Emojis 2",
+      "descricao": "A segunda fábrica: o mesmo jogo, igualzinho, começando do zero. Os emojis caem dentro da caixa, quicam, empilham e você vende a pilha inteira. São 10 temporadas com passe, 4 modos de jogo, 120 raridades, 800 emojis pra descobrir, 340 upgrades e 80 conquistas — tudo de novo, com o save só dela.",
+      "comoFunciona": "Funciona igualzinho à fábrica 1: cada clique dentro da caixa fabrica emojis, que caem e se empilham de verdade, com gravidade, colisão e quique. Quando a caixa enche, o fundo abre, tudo despenca e vira dinheiro, e o dinheiro compra upgrades. A diferença é que aqui a caderneta de jogos salvos é outra: dá pra recomeçar tudo sem encostar num fio do jogo antigo.",
+      "objetivo": "O mesmo da fábrica 1, do começo: descobrir os 800 emojis do índice, fechar as 120 coleções, abrir todas as raridades e destravar as 80 conquistas.",
+      "mecanicas": [
+        "Tudo que a Fábrica de Emojis tem, igualzinho",
+        "Caderneta de saves separada: os 12 jogos salvos daqui não se misturam com os da fábrica 1",
+        "Dá pra instalar as duas ao mesmo tempo no celular: a 1 é dourada, a 2 é verde e tem um 2 no ícone",
+        "Física real: os emojis caem, quicam e empilham na caixa",
+        "120 raridades, da Comum à Absoluta, e 800 emojis pra descobrir",
+        "340 upgrades em 34 famílias, entre dinheiro e cristais",
+        "4 modos de jogo (Normal, Difícil, Fusão e Livre)",
+        "10 temporadas por data, cada uma com emojis próprios, um secreto e um passe de 12 prêmios",
+        "80 conquistas, 9 delas secretas, 18 skins e 18 temas pra caixa",
+        "Renascer: troca todo o progresso por cristais permanentes",
+        "Renda offline, missões, estrela de bônus e emoji do dia valendo 10x",
+        "Dá pra instalar como aplicativo e jogar sem internet"
+      ],
+      "categoria": "Clicker",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "Igual à fábrica 1: cada emoji vale conforme a raridade dele (o Comum vale R$ 1 e cada raridade seguinte vale 8,5 vezes mais), e o total da pilha ainda é multiplicado pelos upgrades, pelos cristais, pelas conquistas e pelos bônus ativos.",
+      "popularidade": 97,
+      "imagem": "assets/images/fabrica-de-emojis-2.svg",
+      "banner": "assets/images/fabrica-de-emojis-2-banner.svg",
+      "trailer": "",
+      "url": "../fabrica-de-emojis-2/index.html",
+      "galeria": [],
+      "historia": "A primeira fábrica ficou cheia demais: raridade aberta, índice quase completo, conquista feita. Então o JoJo mandou construir outra igualzinha do lado, com as máquinas zeradas, só pra sentir de novo o gostinho de abrir a primeira raridade.",
+      "comoJogar": "Do mesmo jeito da fábrica 1: clique dentro da caixa (ou no botão FAZER EMOJI, ou na barra de espaço) pra fabricar, aperte VENDER quando encher e gaste o dinheiro na loja. O progresso daqui é só daqui — o da outra fábrica continua guardado do lado.",
+      "controles": [
+        { "tecla": "Clique", "acao": "Fabricar emojis dentro da caixa" },
+        { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
+        { "tecla": "Espaço", "acao": "Fabricar sem tirar a mão do teclado" },
+        { "tecla": "V", "acao": "Vender a caixa" },
+        { "tecla": "Setas", "acao": "Virar a gravidade da caixa" },
+        { "tecla": "📱", "acao": "Usar a inclinação do celular como gravidade" },
+        { "tecla": "📖", "acao": "Abrir o índice de emojis descobertos" },
+        { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
+      ],
+      "curiosidades": [
+        "É o mesmo index.html da fábrica 1: muda só o título, a marca, o ícone e o prefixo das chaves de save.",
+        "As duas moram no mesmo endereço, e o navegador compartilha o armazenamento entre as pastas de um mesmo site — quem separa os saves é só o prefixo fabricaEmojis2_. Tem um teste no repositório que joga numa fábrica e confere que a outra não sentiu nada.",
+        "A ordem dos emojis é embaralhada com uma semente fixa: o índice sai igualzinho nas duas fábricas e em qualquer aparelho do mundo.",
+        "A caixa simula até 550 emojis com física de verdade; o que passa disso vai pro depósito e continua valendo dinheiro.",
+        "O jogo inteiro é um arquivo HTML só, e funciona offline depois de abrir uma vez."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        { "versao": "1.0", "data": "2026", "mudancas": "A Fábrica de Emojis inteira, clonada: mesmos 800 emojis, 120 raridades, 340 upgrades, 80 conquistas, 10 temporadas, 18 temas, 18 skins, 4 modos e 12 espaços de jogo salvo. Com ícone, aplicativo e caderneta de saves próprios." }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "mina-de-emojis",
       "secreto": true,
       "nome": "Mina de Emojis",
@@ -613,6 +673,9 @@
         "136 melhorias em 17 famílias, o dinheiro fica guardado entre as rodadas",
         "Blocos de ouro que pagam 10x e sequência de PERFEITOs que multiplica",
         "6 cestas de emoji que abrem conforme o recorde de altura",
+        "Renascer: com 1 bilhão na mão, troca tudo por estrelas que pagam +30% pra sempre",
+        "Volta do recorde: depois de renascer, tudo paga até 41x até você voltar pra onde parou",
+        "Modo administrador com senha, pra dar moedas, blocos, melhorias e estrelas",
         "Dá pra instalar como aplicativo e jogar sem internet",
         "Salvamento automático"
       ],
@@ -637,6 +700,7 @@
         { "tecla": "Toque", "acao": "Mesma coisa, no celular" },
         { "tecla": "Espaço", "acao": "Soltar o bloco" },
         { "tecla": "R", "acao": "Começar outra rodada" },
+        { "tecla": "🔒", "acao": "Abrir o modo administrador (ou Ctrl+Shift+A)" },
         { "tecla": "🔊", "acao": "Ligar ou desligar o som" }
       ],
       "curiosidades": [
@@ -648,7 +712,8 @@
       "atualizacoes": "",
       "changelog": [
         { "versao": "1.0", "data": "2026", "mudancas": "Primeira versão: empilhar com PERFEITO, vidas, torre que entorta e desaba, 36 melhorias, 4 cestas de emoji e o jogo já instalável como aplicativo." },
-        { "versao": "2.0", "data": "2026", "mudancas": "11 camadas do céu com visual próprio, da Terra até o NADA; 136 melhorias em 17 famílias; vento, blocos de ouro, sequência de PERFEITOs e poupança. E o conserto do encaixe quando a torre está torta." }
+        { "versao": "2.0", "data": "2026", "mudancas": "11 camadas do céu com visual próprio, da Terra até o NADA; 136 melhorias em 17 famílias; vento, blocos de ouro, sequência de PERFEITOs e poupança. E o conserto do encaixe quando a torre está torta." },
+        { "versao": "3.0", "data": "2026", "mudancas": "Renascer: junte 1 bilhão e troque as moedas e as 136 melhorias por estrelas, que pagam +30% em tudo pra sempre. E a volta do recorde, que paga até 41x até você chegar de novo onde tinha parado. Mais o modo administrador, com senha e botões de 1 a 1000 (vezes mil, milhão, bilhão ou trilhão) pra moedas, blocos, melhorias e estrelas." }
       ],
       "ranking": []
     }

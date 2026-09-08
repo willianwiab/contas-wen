@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="fA" cx="50%" cy="18%" r="95%">
+      <stop offset="0" stop-color="#12705c"/><stop offset="55%" stop-color="#0a2c31"/><stop offset="1" stop-color="#06101a"/>
+    </radialGradient>
+    <linearGradient id="aro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c8fff0"/><stop offset="0.5" stop-color="#6ef0c8"/><stop offset="1" stop-color="#1c8d75"/>
+    </linearGradient>
+    <radialGradient id="bolha" cx="38%" cy="32%" r="75%">
+      <stop offset="0" stop-color="#f2fffb"/><stop offset="1" stop-color="#a9e9d6"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#fA)"/>
+  <g opacity="0.13" stroke="#6ef0c8" stroke-width="2">
+    <path d="M0 128 H512 M0 256 H512 M0 384 H512 M128 0 V512 M256 0 V512 M384 0 V512"/>
+  </g>
+  <g opacity="0.95">
+    <circle cx="112" cy="126" r="42" fill="#7ac9ff" stroke="#00000030" stroke-width="4"/>
+    <text x="112" y="144" font-size="46" text-anchor="middle">🎉</text>
+    <circle cx="404" cy="112" r="36" fill="#ffc857" stroke="#00000030" stroke-width="4"/>
+    <text x="404" y="128" font-size="40" text-anchor="middle">⭐</text>
+    <circle cx="424" cy="336" r="32" fill="#ff6b9d" stroke="#00000030" stroke-width="4"/>
+    <text x="424" y="350" font-size="34" text-anchor="middle">💎</text>
+  </g>
+  <circle cx="256" cy="286" r="152" fill="url(#aro)"/>
+  <circle cx="256" cy="286" r="132" fill="url(#bolha)"/>
+  <text x="256" y="352" font-size="196" text-anchor="middle">🤩</text>
+  <g>
+    <circle cx="96" cy="410" r="58" fill="#06101a" stroke="url(#aro)" stroke-width="9"/>
+    <text x="96" y="440" font-size="76" font-weight="800" text-anchor="middle"
+          font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" fill="#6ef0c8">2</text>
+  </g>
+</svg>
