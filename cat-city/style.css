@@ -138,3 +138,73 @@ body {
 #btPular { right:22px; bottom:120px; }
 #btPoder { right:110px; bottom:64px; }
 #btUsar  { right:22px; bottom:34px; width:58px; height:58px; }
+
+/* ---------------- modo adm ---------------- */
+#btAdm {
+  background:none; border:0; color:inherit; font-size:.9rem; cursor:pointer;
+  opacity:.3; padding:0 4px; transition:opacity .2s;
+}
+#btAdm:hover { opacity:1; }
+
+#adm {
+  position:fixed; inset:0; z-index:60; display:none; padding:14px;
+  background:#07060ae8; backdrop-filter:blur(6px); align-items:center; justify-content:center;
+}
+#adm.on { display:flex; }
+.admJanela {
+  position:relative; width:min(720px,100%); max-height:90vh; overflow-y:auto;
+  padding:18px; border-radius:20px; background:linear-gradient(180deg,#1c1720,#100c15);
+  border:1px solid var(--ouro); box-shadow:0 30px 70px #000;
+}
+.admX {
+  position:absolute; top:12px; right:12px; width:32px; height:32px; border-radius:50%;
+  background:#ffffff12; border:1px solid var(--linha); color:var(--ink); cursor:pointer; font-size:.85rem;
+}
+.admX:hover { background:var(--vermelho); border-color:var(--vermelho); }
+.admJanela h3 {
+  margin:0 0 3px; font-family:var(--mono); font-size:.8rem; letter-spacing:.22em;
+  color:var(--ouro); text-transform:uppercase;
+}
+.admSub { margin:0 0 12px; font-size:.78rem; color:var(--dim); }
+#admInfo {
+  font-family:var(--mono); font-size:.7rem; color:var(--verde); background:#07050c;
+  border:1px solid var(--linha); border-radius:11px; padding:10px; line-height:1.75;
+  white-space:pre-wrap; margin-bottom:14px;
+}
+.admGrupo { margin-bottom:12px; }
+.admLab {
+  font-family:var(--mono); font-size:.6rem; letter-spacing:.16em; color:var(--dim);
+  text-transform:uppercase; margin-bottom:6px;
+}
+.admBts { display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
+.admBt {
+  padding:7px 11px; border-radius:10px; cursor:pointer; font-family:var(--mono);
+  font-size:.73rem; font-weight:700; color:var(--ink); background:#ffffff10;
+  border:1px solid var(--linha);
+}
+.admBt:hover { background:#ffffff1e; border-color:var(--ouro); }
+.admBt.sel { background:var(--ouro); color:#241a05; border-color:var(--ouro); }
+.admBt.perigo { border-color:#ff5f6d55; color:#ff9d9d; }
+.admBt.perigo:hover { background:#ff5f6d22; border-color:var(--vermelho); }
+.admLinha { display:flex; gap:6px; align-items:center; }
+.admCampo {
+  flex:1; min-width:120px; padding:8px 11px; border-radius:10px; background:#07050c;
+  border:1px solid var(--linha); color:var(--ink); font-family:var(--mono); font-size:.8rem;
+}
+.admCampo:focus { outline:none; border-color:var(--ouro); }
+#admErro { color:#ff8787; font-size:.76rem; min-height:1.15em; margin-top:8px; }
+
+.admGrade { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:5px; }
+.admForma {
+  position:relative; display:flex; flex-direction:column; align-items:center; gap:2px;
+  padding:8px 4px; border-radius:11px; cursor:pointer; background:#ffffff08;
+  border:1px solid var(--linha); color:var(--dim);
+}
+.admForma:hover { background:#ffffff16; border-color:var(--ouro); }
+.admForma.tem { color:var(--ink); border-color:#ffffff2e; }
+.admForma.sel { color:#241a05; background:var(--ouro); border-color:var(--ouro); }
+.admForma .e { font-size:1.25rem; line-height:1; }
+.admForma .n { font-size:.6rem; text-align:center; line-height:1.25; }
+.admForma .t {
+  position:absolute; top:3px; right:5px; font-family:var(--mono); font-size:.55rem; opacity:.55;
+}

@@ -64,7 +64,8 @@
     <button class="botao secundario" id="btOpcoes">⚙ OPÇÕES</button>
   </div>
   <button class="botao secundario" id="btComoJogar">🎮 COMO JOGAR</button>
-  <p class="sub" style="margin-bottom:0;font-size:.74rem">Feito pelo JoJo. Cuidado com a larva.</p>
+  <p class="sub" style="margin-bottom:0;font-size:.74rem">Feito pelo JoJo. Cuidado com a larva.
+    <button id="btAdm" title="modo adm">🔒</button></p>
 </div></div>
 
 <div class="tela" id="telaComo"><div class="cartao">
@@ -77,6 +78,7 @@
     <kbd>Q</kbd><span>trocar pra forma anterior</span>
     <kbd>1…9 0 - =</kbd><span>escolher uma forma direto</span>
     <kbd>ESC</kbd><span>pausar</span>
+    <kbd>Ctrl+Shift+A</kbd><span>modo adm (ou escreva ADMIN, ou clique no 🔒 do menu)</span>
     <kbd>🎮</kbd><span>controle: analógico anda, A pula, X poder, B usa</span>
     <kbd>📱</kbd><span>celular: arraste do lado esquerdo, botões do lado direito</span>
   </div>
@@ -129,6 +131,55 @@
   <p class="sub" id="fimTexto"></p>
   <button class="botao" id="btFimVoltar">LEVANTAR E CONTINUAR</button>
   <button class="botao secundario" id="btFimMenu">MENU</button>
+</div></div>
+
+<!-- ---------------- modo adm ---------------- -->
+<div id="adm"><div class="admJanela">
+  <button class="admX" id="btAdmFechar">✕</button>
+
+  <div id="admLogin">
+    <h3>🔒 Modo adm</h3>
+    <p class="admSub">Painel de administrador do Cat City. Digite a senha.</p>
+    <div class="admLinha">
+      <input class="admCampo" id="admSenha" type="password" placeholder="senha" autocomplete="off">
+      <button class="admBt" id="admEntrar">ENTRAR</button>
+    </div>
+    <div id="admErro"></div>
+  </div>
+
+  <div id="admPainel" style="display:none">
+    <h3>⚙ Modo adm</h3>
+    <p class="admSub">Aqui nada é proibido. Fecha no ✕, no ESC ou clicando fora.</p>
+    <div id="admInfo"></div>
+
+    <div class="admGrupo"><div class="admLab">🐈 Gatos — nascem em volta de você</div>
+      <div class="admBts" id="admGatos"></div></div>
+    <div class="admGrupo"><div class="admBts" id="admGatosExtra"></div></div>
+    <div class="admGrupo"><div class="admLab">Teto de gatos na cidade (quanto mais, mais pesado)</div>
+      <div class="admBts" id="admTeto"></div></div>
+
+    <div class="admGrupo"><div class="admLab">🐾 Formas — clica e vira na hora</div>
+      <div class="admGrade" id="admFormas"></div>
+      <div class="admBts" id="admFormasExtra" style="margin-top:7px"></div></div>
+
+    <div class="admGrupo"><div class="admLab">🐟 Peixes</div><div class="admBts" id="admPeixes"></div></div>
+    <div class="admGrupo"><div class="admLab">🐾 Pegadas</div><div class="admBts" id="admPegadas"></div></div>
+    <div class="admGrupo"><div class="admLab">⭐ Estrelas</div><div class="admBts" id="admEstrelas"></div></div>
+
+    <div class="admGrupo"><div class="admLab">🗝 Segredos — te leva até lá e abre</div>
+      <div class="admBts" id="admSegredos"></div></div>
+
+    <div class="admGrupo"><div class="admLab">🌀 Eventos — força qualquer um agora</div>
+      <div class="admBts" id="admEventos"></div></div>
+
+    <div class="admGrupo"><div class="admLab">✨ Truques</div><div class="admBts" id="admTruques"></div></div>
+    <div class="admGrupo"><div class="admBts" id="admTurbo"></div></div>
+    <div class="admGrupo"><div class="admBts" id="admPulo"></div></div>
+    <div class="admGrupo"><div class="admBts" id="admGigante"></div></div>
+    <div class="admGrupo"><div class="admBts" id="admZerar"></div></div>
+
+    <div class="admGrupo"><div class="admLab">🏁 Fim</div><div class="admBts" id="admFim"></div></div>
+  </div>
 </div></div>
 
 <script type="module" src="js/main.js"></script>
