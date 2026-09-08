@@ -23,7 +23,7 @@ da caixa.
 | --- | --- |
 | 🏭 **Normal** | O jogo completo, como foi feito pra ser jogado. |
 | 🔥 **Difícil** | Tudo custa 4x mais, mas cada venda vale 3x. |
-| 🧬 **Fusão** | Quando 5 emojis da mesma raridade estão parados na caixa, eles se puxam feito ímã, se juntam e viram 1 emoji da raridade de cima — dá reação em cadeia. |
+| 🧬 **Fusão** | Quando 5 emojis da mesma raridade estão parados na caixa, eles se puxam feito ímã, se juntam e viram 1 emoji da raridade de cima — dá reação em cadeia. Tem uma família de upgrade só dele, o **🌀 Turbo da Fusão**, que deixa o ímã até 9x mais rápido. |
 | 🧪 **Livre** | Dinheiro que não acaba, compras de graça e as 120 raridades abertas. É o modo de bagunçar. |
 
 ## Como se joga
@@ -39,7 +39,7 @@ da caixa.
 | --- | --- |
 | Raridades | 120, da Comum à Absoluta |
 | Emojis no índice | 730, sendo 10 secretos |
-| Upgrades | 330 (16 famílias de dinheiro + 17 de cristal, 10 níveis cada) |
+| Upgrades | 340 (17 famílias de dinheiro + 17 de cristal, 10 níveis cada) — o **🌀 Turbo da Fusão** só aparece na loja do modo Fusão |
 | Conquistas | 76, sendo 8 secretas — cada uma dá +1,5% em tudo pra sempre |
 | Modos de jogo | 4: Normal, Difícil, Fusão e Livre (save separado em cada um) |
 | Temas da caixa | 8, comprados com cristais |
