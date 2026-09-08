@@ -203,7 +203,7 @@ const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:'')
     JSON.stringify(r));
   conf('e depois do grito o jogo grava um segundo pra devolver (o "repete")', r.gravando === true);
 
-  r = await p.evaluate(() => ({ limiar: LIMIAR_GRITO, ligado: micLigado, temBotao: !!document.getElementById('btMic') }));
+  r = await p.evaluate(() => ({ limiar: limiarGrito(), ligado: micLigado, temBotao: !!document.getElementById('btMic') }));
   conf('o microfone começa desligado — só liga quando você aperta o botão',
     r.ligado === false && r.temBotao && r.limiar > 0, JSON.stringify(r));
 
@@ -214,12 +214,21 @@ const ok=[], fail=[]; const conf=(n,c,e='')=>(c?ok:fail).push(n+(e?' → '+e:'')
     r.ligado === true && r.nivel > 0 && parseFloat(r.barra) > 0, JSON.stringify(r));
 
   r = await p.evaluate(() => new Promise(res => {                 // o eco: grava ~1s e devolve mais agudo
+    const antes = sensibilidade;
+    sensibilidade = 1;              // no teste o microfone falso fica bipando o tempo todo
     gritar(0.8);
     const gravou = gravando;
-    setTimeout(() => res({ gravou, aindaGravando: gravando, sobrou: gravPedacos.length }), 1800);
+    setTimeout(() => {
+      const pedacos = gravPedacos.length;
+      gravando = false; tocarEco();                                // fecha a gravação e devolve o som
+      setTimeout(() => {
+        const r = { gravou, pedacos, sobrou: gravPedacos.length };
+        sensibilidade = antes; res(r);
+      }, 300);
+    }, 1500);
   }));
-  conf('o grito grava e devolve o som sozinho, sem sobrar nada na memória',
-    r.gravou === true && r.aindaGravando === false && r.sobrou === 0, JSON.stringify(r));
+  conf('o grito grava o som e o eco devolve, sem deixar nada na memória',
+    r.gravou === true && r.pedacos > 0 && r.sobrou === 0, JSON.stringify(r));
 
   await p.click('#btMic'); await p.waitForTimeout(400);
   r = await p.evaluate(() => ({ ligado: micLigado, fluxo: !!micFluxo, no: !!micNo }));

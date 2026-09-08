@@ -75,6 +75,20 @@ do microfone e **grita**. A caixa treme, todos os emojis pulam, cai um monte de
 emoji novo — e aí vem a melhor parte: o jogo **te imita**, tocando o seu grito
 de volta mais agudo, e os emojis pulam junto com o eco.
 
+**Como o jogo decide que você gritou.** Não é um número fixo: ao ligar, ele
+escuta 1 segundo pra medir o barulho do lugar, e depois continua acompanhando —
+o piso de ruído desce depressa quando fica quieto e sobe bem devagar, então uma
+porta batendo na hora errada não deixa o grito impossível pra sempre. Em cima
+disso tem a **barrinha de sensibilidade** (1 a 10), que sobe ou desce o gatilho
+e fica salva. O microfone é pedido **sem** cancelamento de eco e **sem** redutor
+de ruído: os dois comem o grito e o gatilho nunca dispararia.
+
+Pra dar pra ver que está funcionando, quando o microfone liga aparece um
+**medidor de volume em cima da caixa**, que fica vermelho quando passa do
+gatilho. E na aba da roleta tem mais dois botões: **🔁 testar o eco** (grava 1
+segundo e devolve, sem precisar gritar) e **😱 gritar sem microfone**, que faz o
+efeito inteiro em qualquer aparelho, mesmo sem permissão nenhuma.
+
 **Sobre o som:** o microfone só liga quando você aperta o botão, e o som **não
 sai do aparelho** — nada é enviado pra lugar nenhum e nada fica salvo. O que o
 jogo faz é medir o volume (pra sacudir a caixa) e guardar mais ou menos um
@@ -83,7 +97,10 @@ toca, esse pedaço é jogado fora. Desligar o botão solta o microfone de verdad
 
 Precisa de **https** (o GitHub Pages é) e da permissão do navegador. Abrindo o
 arquivo direto do computador (`file://`) o microfone não liga — é regra do
-navegador, não do jogo.
+navegador, não do jogo. Em alguns iPhones, o jogo aberto pelo **ícone da tela
+inicial** também não enxerga o microfone; nesse caso o jogo avisa e a saída é
+abrir o link pelo navegador. O botão **😱 gritar sem microfone** funciona em
+todos os casos.
 
 ## As temporadas — 節日
 
@@ -226,7 +243,9 @@ funcionando. Rode com `npm i playwright-core` e depois:
   deles cai como emoji comum), as datas lunares dos 10 festivais, a separação
   dos saves das três fábricas, o jogo inteiro em chinês e a volta pro português,
   a roleta (12 prémios, girar, comprar giro) e o grito — inclusive ligando o
-  microfone de verdade, com o aparelho de mentira do Chromium. Precisa de http.
+  microfone de verdade (com o aparelho de mentira do Chromium), vendo a barrinha
+  do volume andar, gravando e devolvendo o eco sem deixar nada na memória, e
+  soltando o aparelho ao desligar. Precisa de http.
 - `node teste-app.js` — 4 checagens de aplicativo: manifesto, ícones, service
   worker e abrir sem internet. Este precisa do jogo servido por http
   (`python3 -m http.server 8822` na raiz do repositório).
