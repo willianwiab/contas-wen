@@ -65,6 +65,17 @@ escreveu a música.
 A aba 🧠 tem a lista dos 22 ovinhos, mostrando **só os que você já achou** — os
 outros ficam como 🥚 ???.
 
+**Link direto:** cada aba tem endereço próprio, então dá pra mandar o link já
+aberto no lugar certo:
+
+| link | abre em |
+| --- | --- |
+| `…/clipy/#segredos` | a lista dos ovinhos 🥚 (já rolada até ela) |
+| `…/clipy/#mesa` | o papel |
+| `…/clipy/#prancheta` | a área de transferência |
+| `…/clipy/#conversa` | a conversa |
+| `…/clipy/#historia` | quem é o Clipy |
+
 ## Ele responde de verdade
 
 Escreva **`1+1=`** numa linha do papel e ele responde **2**. Escreva
@@ -208,7 +219,7 @@ npm i playwright-core
 node teste-clipy.js
 ```
 
-**77 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
+**83 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
 dispara a carta e o botão **monta a carta de verdade**; três traços viram lista
 e o botão numera 1. 2. 3.; R$ 10,50 + R$ 4 + R$ 25 dá **39,5**; MAIÚSCULA vira
 minúscula; "senha" dispara o aviso; apagar 60 letras dispara o comentário; "não
@@ -233,7 +244,7 @@ sobrevive a recarregar a página**; cinco cutucadas curam; o vídeo do Cyriak
 escreve o link do Cat City no papel; o modo BEN faz ele só grunhir; o vídeo
 assombrado deixa ele transparente; escrever aquele nome três vezes **apaga a
 luz de verdade** e ela volta sozinha; e frase comum como "dar comida pro gato"
-**não** dispara segredo.
+**não** dispara segredo. E os links diretos de cada aba abrem na aba certa.
 
 Da aba da área de transferência: as 3 pastas de fábrica nascem com id próprio;
 ele reconhece link, e-mail, telefone, dinheiro, código e cor; capturar guarda **e**

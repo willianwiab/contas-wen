@@ -333,3 +333,7 @@ main { flex:1; padding:18px 14px 26px; }
   pointer-events:none; transition:opacity .35s;
 }
 #apagaLuz.on { opacity:.97; pointer-events:all; }
+.conteudo code {
+  font-family:var(--mono); font-size:.8rem; padding:1px 5px;
+  background:#eceadf; border:1px solid #d4cfbe; border-radius:4px;
+}

@@ -704,6 +704,21 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => document.getElementById('ladoClipy').hidden);
   conf('e nas abas de leitura o Clipy sai da frente', r === true, String(r));
 
+
+  /* ---------- link direto pra cada aba ---------- */
+  for (const [hash, pagina] of [['#segredos','pgRegras'], ['#mesa','pgMesa'],
+       ['#conversa','pgConversa'], ['#prancheta','pgPrancheta'], ['#historia','pgHistoria']]) {
+    await p.goto(base + hash);
+    await p.waitForFunction(() => !!window.Clipy, null, { timeout: 15000 });
+    await p.waitForTimeout(250);
+    const q = await p.evaluate(() => [...document.querySelectorAll('.pagina.on')].map(x => x.id)[0]);
+    conf('o link ' + hash + ' abre direto na aba certa', q === pagina, q);
+  }
+  await p.goto(base);
+  await p.waitForFunction(() => !!window.Clipy, null, { timeout: 15000 });
+  r = await p.evaluate(() => [...document.querySelectorAll('.pagina.on')].map(x => x.id)[0]);
+  conf('e sem endereço nenhum ele abre na mesa, como sempre', r === 'pgMesa', r);
+
   console.log('✅ ' + ok.length + ' ok'); ok.forEach(t => console.log('   · ' + t));
   if (fail.length) { console.log('❌ ' + fail.length); fail.forEach(t => console.log('   · ' + t)); }
   console.log(err.length ? '❌ console: ' + JSON.stringify(err.slice(0, 5)) : '✅ sem erro no console');
