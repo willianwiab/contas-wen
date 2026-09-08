@@ -1,0 +1,22 @@
+{
+  "id": "/contas-wen/fabrica-de-emojis-china/",
+  "name": "中國表情符號工廠",
+  "short_name": "工廠",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#12060a",
+  "theme_color": "#12060a",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["games", "entertainment"],
+  "description": "中國表情符號工廠, a Fábrica de Emojis da China: as cinco primeiras raridades são a mesa chinesa e os 12 animais do zodíaco, os tesouros são selos chineses e as temporadas são os festivais, do Ano Novo Chinês ao Meio-Outono.",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
