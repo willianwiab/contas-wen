@@ -1,0 +1,22 @@
+{
+  "id": "/contas-wen/fabrica-de-emojis-2/",
+  "name": "Fábrica de Emojis 2",
+  "short_name": "Fábrica 2",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#08060f",
+  "theme_color": "#08060f",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["games", "entertainment"],
+  "description": "A segunda fábrica: o mesmo jogo, com o save só dele. Os emojis caem, quicam, empilham na caixa e você vende a pilha inteira. 800 emojis, 120 raridades, 340 upgrades, temporadas e 4 modos de jogo.",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
