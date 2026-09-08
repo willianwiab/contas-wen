@@ -10,7 +10,7 @@
    de desenho.
    ========================================================================== */
 import { gato, cabeca, carregarFotos } from "./sprites.js";
-import { FORMAS, porId, indiceDe, desenharForma } from "./formas.js";
+import { FORMAS, LENDARIAS, GERADAS, porId, indiceDe, existe, desenharForma } from "./formas.js";
 import { cidade, gerarCidade, paredes, gradeDeParedes, corromper, TAM, RUA } from "./city.js";
 import { camera, seguir, sacudir, paraTela, naTela, APERTO_Y } from "./camera.js";
 import { jogador, aplicarForma, formaAtual, desbloquear, usarPoder, atualizarJogador,
@@ -62,10 +62,19 @@ function novaCidade(semente = Math.floor(Math.random() * 9999)) {
     jogo.itens.push({ tipo:t.k, e:t.e, x:2 + r() * (cidade.largura - 4), y:2 + r() * (cidade.altura - 4),
                       z:.6, pego:false, fase:r() * 6.28 });
 
-  /* os pedestais de transformação: cada forma tem o seu, largado pela cidade */
-  const ordem = FORMAS.slice(1);
-  ordem.forEach((f, i) => {
-    const ang = i / ordem.length * 6.2832;
+  /* Os pedestais de transformação.
+
+     As 12 lendárias (fora o gato normal, que você já é) ficam no anel do
+     meio, sempre nos mesmos lugares: são elas que abrem as fases e os
+     segredos. Depois vêm 80 formas SORTEADAS das outras 987, espalhadas
+     pela cidade inteira — e como cada cidade sorteia de novo, "🔄 recomeçar
+     a cidade" é uma cidade nova cheia de gatos que você nunca viu.
+
+     As que você já achou entram por último no sorteio, então o mundo enche
+     de novidade em vez de repetir o que você já tem. */
+  const lendarias = FORMAS.slice(1, LENDARIAS.length);
+  lendarias.forEach((f, i) => {
+    const ang = i / lendarias.length * 6.2832;
     const raio = (14 + (i % 4) * 13) * (cidade.largura / 147);   // espalha junto com a cidade
     const x = cidade.largura / 2 + Math.cos(ang) * raio;
     const y = cidade.altura / 2 + Math.sin(ang) * raio * .9;
@@ -74,6 +83,16 @@ function novaCidade(semente = Math.floor(Math.random() * 9999)) {
       y:Math.max(3, Math.min(cidade.altura - 3, y)), z:1.1,
       secreto:["arvore", "pernaM", "megaLarva"].includes(f.id) });
   });
+
+  const NOVIDADES = 80;
+  const tenho = new Set(jogador.desbloqueadas);
+  const sorteio = GERADAS.filter(f => !tenho.has(f.id));
+  if (sorteio.length < NOVIDADES) sorteio.push(...GERADAS);      // já achou quase tudo: repete
+  for (let i = 0; i < NOVIDADES && sorteio.length; i++) {
+    const f = sorteio.splice(Math.floor(r() * sorteio.length), 1)[0];
+    jogo.itens.push({ tipo:"forma", forma:f.id, e:f.emoji, pego:false, fase:r() * 6.28,
+      x:3 + r() * (cidade.largura - 6), y:3 + r() * (cidade.altura - 6), z:1.1 });
+  }
 
   /* ---- OS SEGREDOS ---- */
   jogo.portais = [
@@ -119,7 +138,7 @@ function carregar() {
   let d = null;
   try { d = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
   if (!d) return;
-  if (Array.isArray(d.formas)) jogador.desbloqueadas = d.formas.filter(id => FORMAS.some(f => f.id === id));
+  if (Array.isArray(d.formas)) jogador.desbloqueadas = d.formas.filter(existe);
   if (!jogador.desbloqueadas.includes("normal")) jogador.desbloqueadas.unshift("normal");
   jogo.peixes = d.peixes || 0; jogo.pegadas = d.pegadas || 0; jogo.estrelas = d.estrelas || 0;
   jogo.segredos = d.segredos || 0; jogo.vencido = !!d.vencido;
@@ -395,7 +414,16 @@ function desenharItem(it) {
     ctx.save();
     ctx.translate(sx, sy + z * .9);
     const escala = Math.min(1, 2.4 / Math.max(1, f.alto));
-    desenharForma(ctx, f, z * VISUAL * .8 * escala, jogo.t + it.fase, false, true, 0);
+    const px = z * VISUAL * .8 * escala;
+    /* LOD do pedestal: 92 formas espalhadas pela cidade, cada uma com dez
+       desenhos por dentro, era o que mais pesava na tela. De longe só o rosto
+       aparece mesmo — e aí um desenho basta. */
+    if (f.alto * px < 46) {
+      const c = cabeca(f.pelo || 0, f.cor || null, f.tinta || .42), d = Math.max(10, px * 1.1);
+      ctx.drawImage(c, -d / 2, -d, d, d);
+    } else {
+      desenharForma(ctx, f, px, jogo.t + it.fase, false, true, 0);
+    }
     ctx.restore();
     return;
   }
@@ -742,12 +770,12 @@ quandoMenu(() => { if (jogo.rodando && !ui.telaAberta()) pausar(); else if (jogo
 ui.botao("btJogar", () => comecar(true));
 ui.botao("btComoJogar", () => ui.tela("telaComo"));
 ui.botao("btVoltaComo", () => ui.tela("telaMenu"));
-ui.botao("btFormas", () => { ui.montarGradeFormas(jogador.desbloqueadas); ui.tela("telaFormas"); });
+ui.botao("btFormas", () => { ui.montarGradeFormas(jogador.desbloqueadas, true); ui.tela("telaFormas"); });
 ui.botao("btVoltaFormas", () => ui.tela(jogo.rodando ? "telaPausa" : "telaMenu"));
 ui.botao("btOpcoes", () => ui.tela("telaOpcoes"));
 ui.botao("btVoltaOpcoes", () => ui.tela(jogo.rodando ? "telaPausa" : "telaMenu"));
 ui.botao("btContinuar", () => comecar(false));
-ui.botao("btPausaFormas", () => { ui.montarGradeFormas(jogador.desbloqueadas); ui.tela("telaFormas"); });
+ui.botao("btPausaFormas", () => { ui.montarGradeFormas(jogador.desbloqueadas, true); ui.tela("telaFormas"); });
 ui.botao("btPausaOpcoes", () => ui.tela("telaOpcoes"));
 ui.botao("btReiniciar", () => { recomecar(true); comecar(false); });
 ui.botao("btSair", () => { jogo.pausado = true; ui.tela("telaMenu"); });
@@ -787,6 +815,7 @@ novaCidade();
 refazerParedes();
 recomecar(true);
 ligarBotoesDeToque();
+ui.ligarCatalogo(() => jogador.desbloqueadas);
 aplicarToque();
 opVol.value = Math.round(sfx.som.volume * 100);
 document.getElementById("opCaos").value = jogo.caos;
@@ -805,7 +834,7 @@ requestAnimationFrame(passo);
    não sabe nada do jogo por dentro: ele só chama estas funções. */
 const API = {
   jogo, jogador, gatos, cidade, camera, truques, zerarTruques,
-  FORMAS, porId, EVENTOS, FASES:ui.FASES, aplicarForma,
+  FORMAS, LENDARIAS, GERADAS, porId, indiceDe, EVENTOS, FASES:ui.FASES, aplicarForma,
   trocarPara, desbloquear, faseAgora, vencer, amassado, recomecar, comecar, pausar,
   nascerGato, multiplicar, espalharPelaCidade, limparGatos, quantosVivos, tetoAtual,
   forcarEvento:id => forcarEvento(id, jogo.t, jogador, ui.faixa),
@@ -838,7 +867,34 @@ const API = {
     jogador.vx = jogador.vy = jogador.vz = 0;
     camera.x = x; camera.y = y;
   },
-  desbloquearTudo() { for (const f of FORMAS) desbloquear(f.id); ui.montarBarraFormas(jogador.desbloqueadas, jogador.forma); salvar(); },
+  /* mil chamadas de desbloquear() dariam mil ordenações; aqui é uma só */
+  desbloquearTudo() {
+    jogador.desbloqueadas = FORMAS.map(f => f.id);
+    ui.montarBarraFormas(jogador.desbloqueadas, jogador.forma); salvar();
+  },
+  desbloquearLendarias() {
+    for (const f of LENDARIAS) desbloquear(f.id);
+    ui.montarBarraFormas(jogador.desbloqueadas, jogador.forma); salvar();
+  },
+  /* sorteia formas que você ainda NÃO tem — dar repetida não é presente */
+  darFormasAoAcaso(quantas) {
+    const tenho = new Set(jogador.desbloqueadas);
+    const faltam = FORMAS.filter(f => !tenho.has(f.id));
+    let fez = 0;
+    for (let i = 0; i < quantas && faltam.length; i++) {
+      const f = faltam.splice(Math.floor(Math.random() * faltam.length), 1)[0];
+      jogador.desbloqueadas.push(f.id); fez++;
+    }
+    jogador.desbloqueadas.sort((a, b) => indiceDe(a) - indiceDe(b));
+    ui.montarBarraFormas(jogador.desbloqueadas, jogador.forma); salvar();
+    return fez;
+  },
+  formaAoAcaso() {
+    const f = FORMAS[Math.floor(Math.random() * FORMAS.length)];
+    desbloquear(f.id); trocarPara(f.id); salvar();
+    ui.faixa(f.nome.toUpperCase(), f.conta);
+    return f;
+  },
   trancarTudo() {
     jogador.desbloqueadas = ["normal"]; jogo.segredos = 0; jogo.vencido = false;
     for (const p of jogo.portais) p.achado = false;

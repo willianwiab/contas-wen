@@ -52,6 +52,39 @@ function escala(nome, chave, valores) {
     } }));
 }
 
+/* ---------------------------------------------------------------- formas */
+/* Mil botões de uma vez travariam o painel, então aqui também tem busca e
+   página — 24 por vez, que é o que cabe sem rolar demais. */
+const cat = { pagina:0, busca:"" };
+const POR_PAGINA = 24;
+
+function listaFormas() {
+  const b = cat.busca.trim().toLowerCase();
+  return b ? API.FORMAS.filter(f => f.nome.toLowerCase().includes(b)) : API.FORMAS;
+}
+function montarFormas() {
+  const lista = listaFormas();
+  const paginas = Math.max(1, Math.ceil(lista.length / POR_PAGINA));
+  cat.pagina = Math.max(0, Math.min(cat.pagina, paginas - 1));
+  const fatia = lista.slice(cat.pagina * POR_PAGINA, (cat.pagina + 1) * POR_PAGINA);
+
+  const g = $("admFormas"); g.innerHTML = "";
+  const tem = new Set(API.jogador.desbloqueadas);
+  for (const f of fatia) {
+    const i = API.indiceDe(f.id);
+    const b = document.createElement("button");
+    b.className = "admForma" + (API.jogador.forma === f.id ? " sel" : tem.has(f.id) ? " tem" : "");
+    b.innerHTML = '<span class="e">' + f.emoji + '</span><span class="n">' + f.nome + '</span>' +
+                  '<span class="t">' + (i < 12 ? ((i + 1) % 10 === 0 ? "0" : i + 1) : "") + '</span>';
+    b.title = f.habilidade;
+    b.onclick = () => { API.desbloquear(f.id); API.trocarPara(f.id); API.salvar(); montarFormas(); atualizar(); };
+    g.appendChild(b);
+  }
+  $("admFormasPagina").textContent = (cat.pagina + 1) + " / " + paginas + " · " + lista.length + " formas";
+  $("admFormasAntes").disabled = cat.pagina === 0;
+  $("admFormasDepois").disabled = cat.pagina >= paginas - 1;
+}
+
 /* ---------------------------------------------------------------- painel */
 function montar() {
   if (!API) return;
@@ -72,22 +105,18 @@ function montar() {
   botoes("admTeto", [60, 320, 1000, 1500, 2000, 2500, 3000].map(n => ({
     txt:String(n), ligado:API.tetoAtual() === n, faz:() => API.mudarTeto(n) })));
 
-  /* formas */
-  const g = $("admFormas"); g.innerHTML = "";
-  API.FORMAS.forEach((f, i) => {
-    const tem = API.jogador.desbloqueadas.includes(f.id);
-    const b = document.createElement("button");
-    b.className = "admForma" + (API.jogador.forma === f.id ? " sel" : tem ? " tem" : "");
-    b.innerHTML = '<span class="e">' + f.emoji + '</span><span class="n">' + f.nome + '</span>' +
-                  '<span class="t">' + ((i + 1) % 10 === 0 ? "0" : i + 1) + '</span>';
-    b.title = f.habilidade;
-    b.onclick = () => { API.desbloquear(f.id); API.trocarPara(f.id); API.salvar(); montar(); atualizar(); };
-    g.appendChild(b);
-  });
+  /* formas — são mil, então tem busca e páginas de 24 */
+  montarFormas();
   botoes("admFormasExtra", [
-    { txt:"🔓 destrancar as 13", faz:() => API.desbloquearTudo() },
+    { txt:"🔓 destrancar as 13 lendárias", faz:() => API.desbloquearLendarias() },
+    { txt:"🔓 destrancar TODAS as 1000", faz:() => API.desbloquearTudo() },
+    { txt:"🎲 virar uma qualquer", faz:() => API.formaAoAcaso() },
     { txt:"🔒 trancar tudo de novo", perigo:true, faz:() => API.trancarTudo() },
   ]);
+  fileiraDeNumeros("admFormasSorteio", n => "+" + n, n => {
+    const fez = API.darFormasAoAcaso(n);
+    API.ui.recado("🐈 " + fez + " forma" + (fez === 1 ? "" : "s") + " nova" + (fez === 1 ? "" : "s"));
+  });
 
   /* coisas */
   fileiraDeNumeros("admPeixes",   n => "+" + n, n => API.jogo.peixes += n);
@@ -175,6 +204,9 @@ export function ligarAdm(api) {
   $("admEntrar").onclick = entrar;
   $("admSenha").onkeydown = e => e.stopPropagation();
   $("adm").onclick = e => { if (e.target.id === "adm") fechar(); };
+  $("admFormasBusca").oninput = e => { cat.busca = e.target.value; cat.pagina = 0; montarFormas(); };
+  $("admFormasAntes").onclick = () => { cat.pagina--; montarFormas(); };
+  $("admFormasDepois").onclick = () => { cat.pagina++; montarFormas(); };
 
   const numCampo = e => e.target && e.target.tagName === "INPUT";
 

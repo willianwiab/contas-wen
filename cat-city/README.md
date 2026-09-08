@@ -43,7 +43,45 @@ usar as fotos, sem mexer em uma linha de código. Todas as 13 formas continuam
 funcionando, porque **elas são deformações da mesma figura**: esticar, achatar,
 repetir e empilhar.
 
-## As 13 formas (e o que cada uma FAZ)
+## AS 1000 FORMAS
+
+**13 feitas à mão** (as lendárias, com as três das fotos do JoJo) e **987
+saídas de uma fábrica de formas**. Escrever mil na mão seria mil vezes o mesmo
+trabalho e ninguém jogaria as mil — então as outras nascem de uma receita:
+
+```
+CORPO  x  TINTA  x  MANIA
+  12       9         20     = 2160 combinações possíveis
+```
+
+- **Corpo** é o desenho: gato, bolinha, bola, carão, lagarta, larva, carro,
+  trem, maçã, árvore, perna, aranha.
+- **Tinta** é a cor da pelagem: dourada, fantasma, elétrica, enferrujada,
+  rosada, limosa, roxa, sombria — ou sem tinta nenhuma.
+- **Mania** é o temperamento, e **mexe no jogo**: Turbo corre 1,6x, Molenga é
+  lenta mas pula muito, Elástica quica, Explosiva troca o poder por ESMAGAR,
+  Silenciosa vira fininha e passa por vão, Antiga é pesada e velha, Proibida é
+  grande, rápida, pesada e quebra tudo.
+
+Sai daí um nome próprio em português, com o gênero certo: *Larva Dourada
+Furiosa*, *Trem Elétrico Nervoso*, *Perna Fantasma Invertida*, *Maçã Roxa
+Sonolenta*. As 1000 têm nome diferente, e nenhuma é enfeite: todas têm raio de
+colisão, altura, velocidade, pulo, massa, o que quebram e um poder.
+
+O jogo pega 987 das 2160 combinações, espaçadas (um salto primo pela lista),
+então nunca saem duas iguais nem um bloco de vinte parecidas em seguida. E o
+sorteio é sempre o mesmo: a *Bola Sombria Molenga* é idêntica em qualquer
+computador.
+
+**Onde elas estão:** as 12 lendárias ficam no anel do meio da cidade, sempre.
+Junto com elas, **80 formas sorteadas** das 987, espalhadas pela cidade inteira
+— e cada cidade sorteia de novo, então "🔄 recomeçar a cidade" é uma cidade
+nova cheia de gatos que você nunca viu. O sorteio evita o que você já tem.
+
+**O catálogo** (menu → 🐈 FORMAS) mostra as mil com busca por nome, filtros
+(todas / que eu tenho / que faltam / as 13 lendárias) e páginas de 60.
+
+## As 13 lendárias (e o que cada uma FAZ)
 
 | | Forma | Habilidade (SHIFT) |
 | --- | --- | --- |
@@ -123,7 +161,7 @@ Os botões de número são os mesmos que o Jojo pediu lá:
 | --- | --- |
 | 🐈 gatos | fazem nascer N gatos em volta de você; multiplicar (1x e 3x), espalhar 100 pela cidade, colocar um gato GIGANTE do seu lado, limpar todos |
 | teto | 60 a **3000** gatos ao mesmo tempo (as opções normais param em 900) |
-| 🐾 formas | as 13 numa grade: clicar destranca **e** vira aquilo na hora; destrancar as 13 ou trancar tudo de novo |
+| 🐾 formas | as 1000 com busca e páginas de 24: clicar destranca **e** vira aquilo na hora; destrancar as 13 lendárias, destrancar TODAS as 1000, virar uma qualquer 🎲, sortear 1/10/15/25/100/…/1000 formas novas, ou trancar tudo de novo |
 | 🐟 🐾 ⭐ | somar peixes, pegadas e estrelas |
 | 🗝 segredos | te leva até cada um dos 5 e abre; ou abre os 5 de uma vez |
 | 🌀 eventos | força qualquer um dos 9 agora |
@@ -145,8 +183,9 @@ O pedido sugeria Three.js. A escolha foi outra, de propósito:
    é uma transformação de desenho, de graça. Em 3D seria treze malhas.
 2. **As referências são fotos**, e foto é uma imagem chata. Colar imagem chata
    deformada é exatamente o que o Canvas faz melhor.
-3. **Roda em computador comum.** Sem WebGL, sem shader, sem GPU boa: 51 FPS com
-   **1000 gatos vivos** na cidade grande inteira, medido no teste.
+3. **Roda em computador comum.** Sem WebGL, sem shader, sem GPU boa: 41 FPS com
+   **1000 gatos vivos** na cidade grande, e 45 FPS com as **1000 formas**
+   liberadas na fase 5, medido no teste.
 4. **Sem dependência externa** — o jogo abre offline, como os outros do JoJo.
 
 A câmera é de terceira pessoa mesmo assim: a cidade é vista de cima e de trás
@@ -172,6 +211,14 @@ câmera **afasta sozinha** quando o bicho cresce.
   numa grade de células de 14 metros e cada um só olha as 9 células em volta —
   quase sempre menos de 10 caixas. Foi o que fez o jogo ficar **mais rápido com
   1000 gatos do que era com 320**.
+- **Pintura guardada.** A cor da pelagem das mil formas é uma demão por cima
+  do gato — feita uma vez e guardada. São no máximo 45 corpos pintados e 45
+  rostos, e as gavetas têm 48 lugares cada, então nenhuma pintura precisa ser
+  refeita durante a partida. Repintar no meio do quadro derrubava o jogo pra
+  13 FPS na fase 5.
+- **LOD dos pedestais.** São 92 formas espalhadas pela cidade e cada uma tem
+  até uma dúzia de desenhos por dentro. De longe só o rosto aparece mesmo —
+  então de longe é só o rosto, um desenho em vez de doze.
 - **Contar o teto uma vez só.** A multiplicação perguntava "quantos estão
   vivos?" a cada filhote que nascia: com mil gatos isso era um milhão de contas
   num quadro só, e o jogo engasgava justamente na hora mais divertida.
@@ -183,7 +230,8 @@ cat-city/
   index.html · style.css
   js/main.js        laço, mundo desenhado, itens, segredos, menus
   js/sprites.js     O GATO (e o carregador das fotos de verdade)
-  js/formas.js      as 13 formas: corpo, habilidade e desenho
+  js/formas.js      as 13 lendárias e o desenho de cada corpo
+  js/formario.js    a fábrica das outras 987: corpo x tinta x mania
   js/city.js        geração da cidade, a grade de colisão e a corrupção
   js/player.js      o gato do jogador e os poderes
   js/cats.js        NPCs, pool, multiplicação e LOD
@@ -204,6 +252,7 @@ Precisa de http (o jogo usa módulos ES):
 python3 -m http.server 8822    # na raiz do repositório
 npm i playwright-core
 node teste-catcity.js
+node teste-mil-formas.js
 node teste-adm.js
 ```
 
@@ -215,7 +264,15 @@ estourar o pool, o evento do gato gigante acontece, os segredos desbloqueiam
 formas, o portal vira MEGA LARVA e ganha, e o progresso sobrevive ao recarregar.
 Uma delas mede o **FPS com a cidade cheia**.
 
-`teste-adm.js` tem mais **27 checagens** só do modo adm: senha errada não entra,
+`teste-mil-formas.js` tem **18 checagens** das mil formas: são mil mesmo,
+todas com nome diferente, nenhuma quebrada (todas com corpo, poder e nome), a
+fábrica mistura de verdade (12 corpos, 9 poderes, 9 cores, velocidades de 2,6 a
+24), as 13 lendárias continuam intactas, a cidade espalha 92 pedestais sem
+repetir, recomeçar sorteia outras, virar uma gerada muda o corpo, o catálogo
+pagina e a busca filtra, o adm sorteia 400 sem repetir, e as mil cabem no save
+(6,9 KB) e voltam depois de recarregar.
+
+`teste-adm.js` tem mais **28 checagens** só do modo adm: senha errada não entra,
 cada grupo de botões faz o que promete, e — o que importa — os truques mudam o
 jogo e não só o botão: com "atravessar parede" ligado o gato fica *dentro* do
 prédio, com "não morrer" o gato gigante não derruba, o tamanho x8 muda o raio de

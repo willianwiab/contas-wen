@@ -49,6 +49,10 @@ body {
 .chipForma.atual { border-color:var(--ouro); background:#ffc85733; box-shadow:0 0 14px #ffc85755; }
 .chipForma.nao { opacity:.3; }
 .chipForma .n { position:absolute; bottom:1px; right:4px; font-family:var(--mono); font-size:.44rem; color:var(--dim); }
+/* a forma gerada em que você está: mostra o nome dela, que é o graça da coisa */
+.chipForma.larga { width:auto; min-width:42px; padding:0 10px; gap:6px; grid-auto-flow:column; }
+.chipForma.larga .nome { font-size:.6rem; font-weight:700; letter-spacing:.02em; white-space:nowrap; }
+.chipForma.conta { font-family:var(--mono); font-size:.7rem; font-weight:800; color:var(--ouro); }
 #dica {
   margin-left:auto; max-width:290px; font-size:.74rem; line-height:1.5; color:var(--dim); text-align:right;
 }
@@ -114,6 +118,27 @@ body {
 .grade .f.nao { opacity:.32; }
 .grade .f .e { font-size:1.5rem; }
 .grade .f .n { font-size:.62rem; margin-top:3px; line-height:1.25; }
+.grade .f.lenda.tem { border-color:var(--rosa); background:#ff8fb11a; }
+
+/* ---------------- catálogo das mil formas ---------------- */
+.cartao.largo { width:min(880px,100%); }
+#formasBusca { width:100%; margin-bottom:9px; }
+.filtro { display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:4px; }
+.filtro button {
+  font-family:var(--mono); font-size:.66rem; letter-spacing:.08em; padding:6px 10px;
+  border-radius:9px; border:1px solid var(--linha); background:#ffffff10;
+  color:var(--dim); cursor:pointer;
+}
+.filtro button:hover { background:#ffffff1e; color:var(--ink); }
+.filtro button.sel { background:var(--ouro); color:#241a05; border-color:var(--ouro); }
+.paginas { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; }
+.paginas span { font-family:var(--mono); font-size:.72rem; color:var(--dim); min-width:70px; }
+.paginas button {
+  width:36px; height:36px; border-radius:10px; border:1px solid var(--linha);
+  background:#ffffff12; color:var(--ink); font-size:1rem; cursor:pointer;
+}
+.paginas button:hover:not(:disabled) { border-color:var(--ouro); }
+.paginas button:disabled { opacity:.25; cursor:default; }
 .opcao { display:flex; align-items:center; justify-content:space-between; gap:10px;
   padding:10px 12px; border:1px solid var(--linha); border-radius:12px; background:#ffffff08; margin:7px 0; font-size:.82rem; }
 .opcao input[type=range] { width:130px; accent-color:var(--ouro); }
