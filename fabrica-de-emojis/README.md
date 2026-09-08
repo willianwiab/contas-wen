@@ -4,6 +4,21 @@ Jogo de clicker com física de verdade: os emojis caem dentro da caixa, quicam,
 empilham e você vende a pilha inteira. Um arquivo só (`index.html`), sem
 instalação, funciona offline no celular e no computador.
 
+## Instalar como aplicativo
+
+O jogo é um PWA: dá pra colocar na tela inicial e jogar sem internet.
+
+- **Celular (Android):** abre o link no Chrome → menu ⋮ → *Instalar aplicativo*
+  (ou *Adicionar à tela de início*). Também aparece o botão **📲 INSTALAR**
+  em cima da caixa quando o navegador oferece.
+- **iPhone:** Safari → botão de compartilhar → *Adicionar à Tela de Início*.
+- **Computador:** no Chrome/Edge aparece um ⊕ na barra de endereço, ou
+  menu → *Instalar*. Vira uma janela só dele.
+
+Depois de abrir uma vez, funciona **sem internet** — o `sw.js` guarda o jogo.
+Ele usa "rede primeiro": com internet você sempre pega a versão mais nova, sem
+internet ele serve a última guardada.
+
 ## Onde ele aparece
 
 - Direto: `https://willianwiab.github.io/contas-wen/fabrica-de-emojis/`
@@ -105,6 +120,9 @@ funcionando. Rode com `npm i playwright-core` e depois:
   automática, skins, venda, emoji do dia, conquistas secretas.
 - `node teste-jogos-salvos.js` — 9 checagens: criar, abrir, salvar na mão,
   renomear e apagar jogo, e a migração do save antigo.
+- `node teste-app.js` — 4 checagens de aplicativo: manifesto, ícones, service
+  worker e abrir sem internet. Este precisa do jogo servido por http
+  (`python3 -m http.server 8822` na raiz do repositório).
 
 ## Detalhes técnicos
 
