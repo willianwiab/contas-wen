@@ -9,7 +9,7 @@
 
    Ao mudar o jogo, suba a VERSAO: isso apaga o cache velho.
    ============================================================ */
-const VERSAO = 'fabrica-china-v2';
+const VERSAO = 'fabrica-china-v3';
 const CACHE = VERSAO;
 const ARQUIVOS = [
   './', './index.html', './manifest.webmanifest',

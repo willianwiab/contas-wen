@@ -335,6 +335,17 @@
   #pRoleta .grandao { margin-top:2px; }
   #pRoleta .grandao:disabled { opacity:.45; cursor:not-allowed; box-shadow:none; transform:none; }
   #trilhoMic { height:10px; border-radius:99px; background:#ffffff14; overflow:hidden; }
+  #medidorMic {
+    position:absolute; left:10px; right:10px; bottom:46px; z-index:4; display:flex; align-items:center; gap:8px;
+    background:#0a0713d0; border:1px solid var(--linha); border-radius:99px; padding:7px 12px; backdrop-filter:blur(4px);
+  }
+  #medidorMic[hidden] { display:none; }
+  #medidorMic.alto { border-color:#ff4d4d; box-shadow:0 0 16px #ff4d4d66; }
+  #medidorMic .trilho { flex:1; height:9px; }
+  #medidorMic .trilho i { background:linear-gradient(90deg,#6ee7a0,#ffcf5c,#ff4d4d); transition:width .06s linear; }
+  #medidorMic .mLab { font-size:1rem; }
+  #medidorMic .mVal { font-family:var(--mono); font-size:.62rem; color:var(--dim); min-width:26px; text-align:right; }
+  #sensMic { accent-color:var(--ouro); }
   #trilhoMic i { display:block; height:100%; border-radius:99px; transition:width .12s linear; }
   #btIdioma { font-family:var(--mono); font-weight:800; }
   #gritoInfo, #rolInfo { line-height:1.7; }
@@ -508,6 +519,9 @@
         <div class="pilula info" id="contadorPilha"></div>
       </div>
       <div class="flutuando fInf" id="faixaBuffs"></div>
+      <div id="medidorMic" hidden><span class="mLab">🎤</span>
+        <div class="trilho"><i id="barraMicTela" style="width:0%"></i></div>
+        <span class="mVal" id="valMic">0</span></div>
     </div>
     <div class="botoes">
       <button class="grandao" id="btFazer" data-i18n="btFazer"></button>
@@ -566,8 +580,14 @@
       <div class="btns"><button class="bt" id="btComprarGiro"></button></div>
       <div class="cabecinha" id="rolInfo"></div>
       <div class="cabecinha" id="gritoTopo"></div>
-      <div class="btns"><button class="bt" id="btMic"></button></div>
+      <div class="btns"><button class="bt" id="btMic"></button><button class="bt" id="btTestarEco"></button>
+        <button class="bt" id="btFingirGrito"></button></div>
       <div class="trilho" id="trilhoMic"><i id="barraMic" style="width:0%;background:linear-gradient(90deg,#6ee7a0,#ff4d4d)"></i></div>
+      <div class="btns" id="linhaSens">
+        <span class="cabecinha" id="labSens" style="min-width:92px"></span>
+        <input type="range" id="sensMic" min="1" max="10" step="1" value="5" style="flex:1">
+      </div>
+      <div class="cabecinha" id="gritoDica"></div>
       <div class="cabecinha" id="gritoInfo"></div>
     </div>
 
@@ -1006,6 +1026,16 @@ Object.assign(DIC, {
   gritoEco:  ["🔁 表情符號在學你…", "🔁 os emojis estão te imitando..."],
   gritoQtd:  ["已經喊了 %1 次", "%1 gritos até agora"],
   gritoNivel:["音量", "Volume"],
+  gritoSemApi:["🎤 這個瀏覽器不給用麥克風。如果是從主畫面的圖示打開的，改用瀏覽器打開網址試試看。",
+               "🎤 este navegador não deixa usar o microfone. Se você abriu pelo ícone da tela inicial, tenta abrir o link pelo navegador."],
+  gritoCalibrando:["🎤 安靜一下下…（在聽房間的聲音）", "🎤 fica quietinho 1 segundo... (ouvindo o barulho do quarto)"],
+  gritoPronto:["🎤 好了！大喊看看！", "🎤 pronto! agora GRITA!"],
+  gritoSens:["靈敏度", "Sensibilidade"],
+  gritoTestar:["🔁 測試回音", "🔁 TESTAR O ECO"],
+  gritoTestando:["🔁 說話 1 秒…", "🔁 fala aí, 1 segundo..."],
+  gritoDica:["說話的時候條會動。如果大喊沒有反應，把<b>靈敏度</b>往右邊拉。沒有麥克風也可以按下面的按鈕。",
+             "A barrinha mexe quando você fala. Se o grito não pegar, arrasta a <b>sensibilidade</b> pra direita. E sem microfone dá pra usar o botão de baixo."],
+  gritoFingir:["😱 假裝大喊", "😱 GRITAR SEM MICROFONE"],
 });
 
 
@@ -3504,6 +3534,11 @@ function montarRoleta() {
     PREMIOS.map(p => p.ic + " " + tr(p.k)).join(" · ");
   el("gritoTopo").innerHTML = tr("gritoTopo") + "<br>" + tr("gritoPriv");
   el("btMic").textContent = micLigado ? tr("gritoDesligar") : tr("gritoLigar");
+  el("btTestarEco").textContent = tr("gritoTestar");
+  el("btFingirGrito").textContent = tr("gritoFingir");
+  el("labSens").textContent = tr("gritoSens") + " " + sensibilidade;
+  el("sensMic").value = sensibilidade;
+  el("gritoDica").innerHTML = tr("gritoDica");
   el("gritoInfo").textContent = tr("gritoQtd", estat.gritos);
 }
 el("btGirar").onclick = girarRoleta;
@@ -3519,15 +3554,35 @@ el("btComprarGiro").onclick = comprarGiro;
    ========================================================================== */
 let micLigado = false, micFluxo = null, micNo = null, micFonte = null, micSilencio = null;
 let micNivel = 0, ultimoGrito = 0;
-let gravando = false, gravPedacos = [], gravFaltam = 0;
-const LIMIAR_GRITO = .18;                 // acima disso já conta como grito
+let gravando = false, gravPedacos = [], gravFaltam = 0, ecoDeTeste = false;
+let calibrando = false, ruidoFundo = .01;  // o barulho de fundo do lugar onde você está
+let sensibilidade = 6;                     // 1 a 10 — quanto maior, mais fácil o grito pegar
+try { const v = +localStorage.getItem("fabricaChina_sens"); if (v >= 1 && v <= 10) sensibilidade = v; } catch (e) {}
+const RUIDO_MAX = .06;                     // teto do piso: um barulhão não pode travar o gatilho
+/* O gatilho não é um número fixo. Ele nasce do barulho do lugar onde você está,
+   e a barrinha da sensibilidade sobe ou desce esse número.
+   O piso de ruído desce depressa quando fica quieto e sobe bem devagar — assim
+   uma porta batendo na hora errada não deixa o grito impossível pra sempre. */
+const limiarGrito = () => Math.max(.012, Math.min(.3,
+  Math.max(.018, Math.min(RUIDO_MAX, ruidoFundo) * 2.5) * (11 - sensibilidade) / 6));
 let tremor = 0;                           // a caixa treme quando você grita
 
 async function ligarMicrofone() {
   if (micLigado) { desligarMicrofone(); return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    avisar(tr("gritoSemApi")); bip(170); return;     // iPhone aberto pelo ícone costuma cair aqui
+  }
+  /* pedimos o som cru: eco e redutor de ruído comem o grito e o gatilho nunca dispara.
+     Se o aparelho não aceitar essas opções, tentamos de novo do jeito simples. */
+  let fluxo = null;
   try {
-    const fluxo = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: true, noiseSuppression: false, autoGainControl: false } });
+    fluxo = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+  } catch (e) {
+    try { fluxo = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e2) {}
+  }
+  if (!fluxo) { avisar(tr("gritoNao")); bip(170); return; }
+  try {
     ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
     if (ctxAudio.state === "suspended") await ctxAudio.resume();
     micFluxo = fluxo;
@@ -3537,14 +3592,22 @@ async function ligarMicrofone() {
     micSilencio = ctxAudio.createGain(); micSilencio.gain.value = 0;   // o nó precisa de saída, mas muda
     micFonte.connect(micNo); micNo.connect(micSilencio); micSilencio.connect(ctxAudio.destination);
     micLigado = true;
-    avisar(tr("gritoOn")); bip(880, .1);
+    el("medidorMic").hidden = false;
+    calibrando = true; ruidoFundo = RUIDO_MAX;
+    avisar(tr("gritoCalibrando")); bip(660, .1);
+    setTimeout(() => {
+      calibrando = false;
+      if (micLigado) { avisar(tr("gritoPronto")); bip(880, .12); setTimeout(() => bip(1174, .1), 80); }
+    }, 1200);
     montarRoleta();
   } catch (e) {
+    try { fluxo.getTracks().forEach(t => t.stop()); } catch (e2) {}
     avisar(tr("gritoNao")); bip(170);
   }
 }
 function desligarMicrofone() {
-  micLigado = false; gravando = false; micNivel = 0;
+  micLigado = false; gravando = false; micNivel = 0; calibrando = false;
+  el("medidorMic").hidden = true; el("medidorMic").classList.remove("alto");
   try { if (micNo) micNo.disconnect(); if (micFonte) micFonte.disconnect(); if (micSilencio) micSilencio.disconnect(); } catch (e) {}
   try { if (micFluxo) micFluxo.getTracks().forEach(t => t.stop()); } catch (e) {}
   micNo = micFonte = micSilencio = micFluxo = null;
@@ -3553,17 +3616,25 @@ function desligarMicrofone() {
 }
 function ouvir(ev) {
   const dados = ev.inputBuffer.getChannelData(0);
-  let soma = 0;
-  for (let i = 0; i < dados.length; i++) soma += dados[i] * dados[i];
-  const nivel = Math.sqrt(soma / dados.length);
-  micNivel = micNivel * .7 + nivel * .3;                 // suaviza pra barra não piscar
+  let soma = 0, pico = 0;
+  for (let i = 0; i < dados.length; i++) {
+    const v = dados[i]; soma += v * v;
+    const a = v < 0 ? -v : v; if (a > pico) pico = a;
+  }
+  /* o pico entra na conta junto com a média: um "AAAH" curto não some no meio do bloco */
+  const nivel = Math.max(Math.sqrt(soma / dados.length), pico * .45);
+  micNivel = micNivel * .55 + nivel * .45;
+  /* acompanha o silêncio da sala o tempo todo, não só no primeiro segundo */
+  if (micNivel < ruidoFundo) ruidoFundo = ruidoFundo * .82 + micNivel * .18;
+  else ruidoFundo = Math.min(RUIDO_MAX, ruidoFundo * .9994 + micNivel * .0006);
+  if (calibrando) return;
   if (gravando) {
     gravPedacos.push(new Float32Array(dados));
     gravFaltam -= dados.length;
     if (gravFaltam <= 0) { gravando = false; tocarEco(); }
-  } else if (micNivel > LIMIAR_GRITO && Date.now() - ultimoGrito > 1800 && !fundoAberto) {
+  } else if (micNivel > limiarGrito() && Date.now() - ultimoGrito > 900 && !fundoAberto) {
     ultimoGrito = Date.now();
-    gritar(Math.min(1, micNivel / .55));
+    gritar(Math.max(.35, Math.min(1, micNivel / Math.max(.12, limiarGrito() * 3))));
   }
 }
 function gritar(forca) {
@@ -3580,6 +3651,14 @@ function gritar(forca) {
   /* e agora grava um pedacinho pra devolver o grito */
   gravPedacos = []; gravFaltam = Math.round(ctxAudio.sampleRate * 1.1); gravando = true;
   checarConquistas(); montarRoleta(); sujo = true;
+}
+/* grava um segundo e devolve, sem depender do grito — é o botão de testar */
+function testarEco() {
+  if (!micLigado) { ligarMicrofone(); return; }
+  if (gravando) return;
+  ecoDeTeste = true;
+  gravPedacos = []; gravFaltam = Math.round(ctxAudio.sampleRate * 1.2); gravando = true;
+  avisar(tr("gritoTestando")); bip(660, .1);
 }
 function tocarEco() {
   try {
@@ -3598,6 +3677,7 @@ function tocarEco() {
     fonte.connect(g); g.connect(ctxAudio.destination);
     fonte.start();
     avisar(tr("gritoEco"));
+    if (ecoDeTeste) { ecoDeTeste = false; tremor = Math.max(tremor, 10); }
     /* os emojis "cantam junto" enquanto o eco toca */
     let voltas = 0;
     const balanco = setInterval(() => {
@@ -3609,13 +3689,35 @@ function tocarEco() {
   } catch (e) {}
 }
 el("btMic").onclick = ligarMicrofone;
-el("btGritar").onclick = e => { e.stopPropagation(); mostrarPainel("roleta"); ligarMicrofone(); };
+el("btTestarEco").onclick = testarEco;
+el("btFingirGrito").onclick = () => gritar(.95);   // o efeito do grito sem depender do microfone
+el("sensMic").oninput = e => {
+  sensibilidade = +e.target.value;
+  try { localStorage.setItem("fabricaChina_sens", sensibilidade); } catch (err) {}
+  el("labSens").textContent = tr("gritoSens") + " " + sensibilidade;
+};
+el("btGritar").onclick = e => {
+  e.stopPropagation();
+  if (micLigado) { desligarMicrofone(); el("btGritar").textContent = "🎤"; return; }
+  mostrarPainel("roleta");
+  ligarMicrofone().then(() => { el("btGritar").textContent = micLigado ? "🎤 ON" : "🎤"; });
+};
+
+/* o medidor em cima da caixa: rápido, pra dar pra ver a voz mexendo */
+setInterval(() => {
+  if (!micLigado) return;
+  const lim = limiarGrito();
+  const p = Math.min(100, micNivel / Math.max(lim, .001) * 70);
+  el("barraMicTela").style.width = p + "%";
+  el("valMic").textContent = Math.round(micNivel * 1000);
+  el("medidorMic").classList.toggle("alto", micNivel > lim);
+  if (painelAtual === "roleta") el("barraMic").style.width = p + "%";
+}, 80);
 
 /* a barrinha do volume e o relógio do giro grátis */
 setInterval(() => {
   checarGiroGratis();
   if (painelAtual !== "roleta") return;
-  el("barraMic").style.width = Math.min(100, micNivel * 380) + "%";
   const falta = Math.max(0, proxGiro - Date.now());
   el("rolTopo").innerHTML = tr("rolTopo", GIRO_GRATIS_MIN) + "<br>" + tr("rolGiros", giros) +
     " · " + (falta > 0 ? tr("rolGratisEm", tempoAte(falta)) : tr("rolGratisJa"));
