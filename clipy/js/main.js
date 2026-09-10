@@ -210,7 +210,7 @@ function apagarALuz(segundos, aoAcender) {
    Enquanto o efeito "rindo" está ligado ele gargalha sozinho, sem parar,
    até você escrever PARA no papel. É o único efeito sem hora pra acabar.
    ========================================================================== */
-let proximaRisada = 0;
+let proximaRisada = 0, proximoRonco = 0;
 const RISADAS = ["HAHAHAHAHA", "HA. HA. HA. HAHAHA", "HEHEHEHE — não consigo",
   "HAHAHA— *respira* —HAHAHAHA", "AHAHAHAHAHA", "para… HAHAHA… não para"];
 
@@ -1225,6 +1225,12 @@ setInterval(() => {
   if (dicaAberta && dicaAberta.responde) {
     if (!estado.conta) fecharBalao();
     else responderAgora();
+  }
+  /* quem dorme ronca. Baixinho, a cada quatro segundos — e nunca se ele
+     estiver mudo pelo segredo. */
+  if (clipe.humor === "dormindo" && !clipe.temEfeito("mudo")) {
+    const agora = Date.now();
+    if (agora > proximoRonco) { proximoRonco = agora + 4000; voz.tocar("dormir"); }
   }
   if ($("balao").hidden) {
     if (estado.conta && !estado.conta.erro && responderAgora()) return;

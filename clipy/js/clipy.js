@@ -441,6 +441,36 @@ export class Clipe {
       ctx.stroke();
     }
 
+    /* ---- o zZz de quem está dormindo ---- */
+    /* Três zês subindo na diagonal, cada um numa parte da viagem: nasce
+       pequeno e opaco perto da cabeça, sobe girando devagar, vai crescendo e
+       sumindo. É o desenho mais antigo do mundo pra "está dormindo" — e
+       funciona porque o olho segue o movimento, não a letra. */
+    if (H.dorme > .3) {
+      ctx.save();
+      ctx.fillStyle = "#e8eef6";
+      ctx.strokeStyle = "#2a3038";
+      ctx.lineWidth = .028;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      for (let k = 0; k < 3; k++) {
+        const f = ((this.t * .42) + k / 3) % 1;         // 0 = acabou de sair, 1 = sumiu
+        const tam = (.26 + f * .34);
+        ctx.globalAlpha = Math.min(1, (1 - f) * 1.6) * H.dorme;
+        ctx.save();
+        /* sobe pouco e de lado: o palco é baixinho, e um z que sai pela borda
+           não é um z, é um risco cortado */
+        ctx.translate(.50 + f * .40 + Math.sin(f * 5 + k) * .06, -.74 - f * .44);
+        ctx.rotate(-.18 + Math.sin(f * 4 + k) * .16);
+        ctx.font = "bold " + tam.toFixed(3) + "px Georgia, serif";
+        ctx.fillText("z", 0, 0);
+        ctx.strokeText("z", 0, 0);
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+
     /* confete de comemoração e coraçõezinhos, que são o jeito mais barato de
        mostrar sentimento num desenho */
     if (H.festa > .3) {
