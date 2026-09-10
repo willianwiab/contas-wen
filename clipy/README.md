@@ -9,7 +9,7 @@ nos programas de escritório dos anos 90.
 ## O que ele é (e o que não é)
 
 O Clipy **não é** uma dessas inteligências artificiais de hoje. Ele é do tipo
-antigo: **33 regras escritas na mão** (e 23 segredos), cada uma sabendo reconhecer uma coisa no
+antigo: **33 regras escritas na mão** (e 25 segredos), cada uma sabendo reconhecer uma coisa no
 texto e com uma frase pronta pra soltar. Nada sai do navegador — sem internet,
 sem servidor, sem conta, sem nada sendo enviado pra lugar nenhum.
 
@@ -26,6 +26,41 @@ O site tem quatro partes:
 | 💬 **Conversar** | dá pra fazer perguntas; ele responde com o que tem escrito dentro dele |
 | 🧠 **Como ele pensa** | as 30 regras, uma por uma, e **acendendo em verde** quando estão batendo com o que você acabou de escrever |
 | 📜 **Quem é o Clipy** | a história dos ajudantes animados, por que sumiram, e o que eles ensinam sobre as IAs de hoje |
+
+## Modo Clippy clássico 🕰️
+
+O botão **🕰️ Clássico** lá em cima liga a experiência de verdade dos anos 90:
+o Clipy **solta do canto** e vira uma janelinha flutuante — com barra de título
+"Assistente do Clipy" e um ✕ — que **pula pra qualquer lugar da tela** e aparece
+**sozinho**, sem você pedir, com sugestões que não têm nada a ver com o que você
+está fazendo.
+
+São 18 sugestões e nenhuma delas olha o que você escreveu. É de propósito:
+
+> *"Parece que você está respirando. Quer ajuda?"*
+> *"Notei que você tem uma janela aberta. Quer que eu feche?"*
+> *"Parece que você está fazendo alguma coisa. Posso atrapalhar?"*
+> *"Eu reparei que você está usando o teclado. Existe também o mouse."*
+
+A **chatice** manda no ritmo: no mínimo ele aparece a cada 45 segundos, no
+máximo a cada 8. O ✕ devolve ele pro lugar, e o modo fica salvo.
+
+## As animações
+
+**Humores** (a cara): parado, atento, pensando, feliz, triste, bravo, assustado,
+dormindo, confuso, olho de burro, **furioso** (fervendo), **comemorando** (com
+confete), **rindo**, **ofegante** (com gotinha de cansaço), **apaixonado** (com
+coraçõezinhos) e **tonto**.
+
+**Gestos** (o corpo): pular, girar, acenar, tremer, encolher, cair,
+**comemorar** (três pulos, cada um mais alto, e um giro no fim), **gargalhar**
+(sacudir pra frente e pra trás — rir não é pular), **susto** (dispara pra cima
+esticando todo), **bater** (vem pra frente e bate no vidro da tela),
+**derreter**, **espiar** (dá uma olhada pro lado, como quem está aprontando),
+**ofegar** e **girar louco**.
+
+Cada humor também **respira do seu jeito**: quem está ofegante puxa ar rápido,
+quem ri sacode, quem está furioso treme o tempo todo.
 
 ## A vozinha de computador antigo 🔊
 
@@ -71,7 +106,7 @@ Palavrão escrito no papel **some na hora**, trocado por `#@$%!`. Pega com
 acento e sem acento, e em inglês também — e não censura palavra inocente que só
 parece. Isso não é segredo, é regra da casa.
 
-## Os 23 segredos
+## Os 25 segredos
 
 Palavras (ou links) que fazem alguma coisa acontecer. Três deles **deixam
 marca**: o Clipy fica esquisito por um tempo, e continua esquisito mesmo se você
@@ -88,6 +123,8 @@ fechar a página e voltar depois — o tempo fica guardado no aparelho.
 | um vídeo assombrado | ele **vira fantasma por 15 minutos**: transparente, boiando, e **sem sombra** |
 | um certo nome, escrito **três vezes** | ele conta e vai ficando nervoso. Na terceira, **a luz apaga**. E aí… era o vento. |
 | **cutucar ele 100 vezes** | ele vai reclamando e contando quanto falta. Na centésima fica **vermelho de raiva** e **sai da tela** — com um botão pra chamar de volta |
+| um vídeo que não dá pra descrever | **a tela apaga por 3 segundos** e ele volta com **QUATRO OLHOS**, ofegante, **por 24 horas**. Esse é teimoso: cutucada e 🔧 não resolvem |
+| um vídeo de rir | ele **ri sem parar**, pra sempre, até você escrever **PARA** no papel |
 
 E mais catorze escondidos: `toc toc`, `sudo`, `42`, `hello world`, `konami`,
 `miau`, `jojo`, `café`, `ypilc`, ameaçar o Clipy, dizer que gosta dele, falar
@@ -102,11 +139,15 @@ escreveu a música.
 > de BEN, ele grunhe e mostra o número. Engolir a resposta fazia o site parecer
 > quebrado, e o segredo já é engraçado sem isso.
 
+> **O único sem saída fácil.** Os quatro olhos resistem à cutucada e ao 🔧 — ele
+> viu o que viu. A única forma de tirar antes das 24 horas é **pedir desculpa
+> por escrito**: escreva `desculpa clipy` no papel e ele perdoa.
+
 > **Saída de emergência:** cutuque o Clipy **cinco vezes seguidas** e ele volta
 > ao normal na hora. Também tem um botão 🔧 consertar na barrinha que aparece
 > enquanto ele está estragado, com a contagem do tempo que falta.
 
-A aba 🧠 tem a lista dos 23 ovinhos, mostrando **só os que você já achou** — os
+A aba 🧠 tem a lista dos 25 ovinhos, mostrando **só os que você já achou** — os
 outros ficam como 🥚 ???.
 
 **Link direto:** cada aba tem endereço próprio, então dá pra mandar o link já
@@ -264,7 +305,7 @@ npm i playwright-core
 node teste-clipy.js
 ```
 
-**102 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
+**117 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
 dispara a carta e o botão **monta a carta de verdade**; três traços viram lista
 e o botão numera 1. 2. 3.; R$ 10,50 + R$ 4 + R$ 25 dá **39,5**; MAIÚSCULA vira
 minúscula; "senha" dispara o aviso; apagar 60 letras dispara o comentário; "não
@@ -297,7 +338,11 @@ fora depois de recarregar** e volta emburrado quando chamado. Da voz: cada letra
 **zero** bipes (mas a resposta aparece), o 🔇 desliga sem quebrar nada, o texto
 cresce letra por letra com o cursorzinho piscando, a frase inteira já está no
 balão desde o começo, e clicar adianta — inclusive contra o tique seguinte da
-animação, que era um bug que o teste pegou.
+animação, que era um bug que o teste pegou. Das animações: todos os humores e
+gestos novos existem e desenham; os quatro olhos apagam a tela, duram 24 h e
+resistem à cura (só a desculpa tira); a risada não tem hora pra acabar e
+sobrevive a recarregar, até escreverem PARA; e o modo clássico solta a
+janelinha, pula de lugar a cada aparição e fica salvo.
 
 Da aba da área de transferência: as 3 pastas de fábrica nascem com id próprio;
 ele reconhece link, e-mail, telefone, dinheiro, código e cor; capturar guarda **e**

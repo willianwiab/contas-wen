@@ -362,3 +362,32 @@ main { flex:1; padding:18px 14px 26px; }
 }
 @keyframes pisca { 50% { opacity:0; } }
 @media (max-width:760px) { #somCaixa input { width:56px; } }
+
+/* ---------------- modo clássico: ele solto pela tela ---------------- */
+#btClassico {
+  font-family:var(--fonte); font-size:.8rem; font-weight:700; padding:7px 11px; cursor:pointer;
+  background:var(--cinza); border:2px outset var(--cinza2); color:var(--tinta);
+}
+#btClassico:active { border-style:inset; }
+#btClassico.on { border-style:inset; background:var(--ouro); color:#241a05; }
+
+.barraFlutua { display:none; }
+.ladoClipy.solto {
+  position:fixed; z-index:40; width:270px; flex:none;
+  left:var(--cx, 60%); top:var(--cy, 30%);
+  transition:left .5s cubic-bezier(.34,1.3,.64,1), top .5s cubic-bezier(.34,1.3,.64,1);
+  background:var(--cinza); border:2px outset var(--cinza2);
+  box-shadow:6px 6px 0 #00000044; padding:0 7px 7px; gap:7px;
+}
+.ladoClipy.solto .barraFlutua {
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  margin:0 -7px 4px; padding:4px 6px 4px 9px; font-size:.76rem; font-weight:700; color:#fff;
+  background:linear-gradient(90deg,var(--azul),var(--azul2)); cursor:default;
+}
+.barraFlutua button {
+  width:19px; height:17px; display:grid; place-items:center; font-size:.62rem; cursor:pointer;
+  background:var(--cinza); color:var(--tinta); border:2px outset var(--cinza2);
+}
+.ladoClipy.solto .palco { height:150px; background:#ffffff22; }
+.ladoClipy.solto .rodapeClipy button { padding:6px; font-size:.76rem; }
+@media (max-width:900px) { .ladoClipy.solto { width:min(270px,86vw); } }

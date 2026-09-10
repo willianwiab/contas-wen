@@ -4,7 +4,7 @@
    regras e o instalar.
    ========================================================================== */
 import { Clipe } from "./clipy.js";
-import { REGRAS, Cerebro, responder, somarDoTexto, calcular, somarColuna } from "./cerebro.js";
+import { REGRAS, CLASSICAS, Cerebro, responder, somarDoTexto, calcular, somarColuna } from "./cerebro.js";
 import { ligarInstalar } from "./instalar.js";
 import { Prancheta, tipoDoTexto, comentarioSobre, ATALHOS_DE_FABRICA } from "./prancheta.js";
 import { censurar, acharSegredo, BRONCAS, SEGREDOS } from "./segredos.js";
@@ -101,6 +101,13 @@ function passarOCensor() {
    esquisito mesmo se você fechar a página e voltar depois.
    ========================================================================== */
 function procurarSegredo(texto) {
+  /* a única saída dos quatro olhos: pedir desculpa por escrito */
+  if (clipe.temEfeito("quatroOlhos") && /desculpa,?\s*clip[yi]\b/i.test(texto)) {
+    clipe.curar(true); salvar(); atualizarEfeitos();
+    clipe.sentir("triste"); clipe.fazer("acenar");
+    dizer("…tudo bem. Eu perdoo. Mas os quatro olhos foram uma experiência.", true);
+    return true;
+  }
   const s = acharSegredo(texto);
   if (!s) return false;
 
@@ -125,6 +132,20 @@ function procurarSegredo(texto) {
   if (s.efeitos) {
     for (const [qual, minutos] of Object.entries(s.efeitos)) clipe.ligarEfeito(qual, minutos);
     salvar();
+  }
+  /* alguns segredos apagam a luz ANTES de mostrar o estrago. O escuro é o
+     que faz a pessoa esperar — e esperar é metade do susto. */
+  if (s.apagaALuz && !s.falas) {
+    apagarALuz(s.apagaALuz, () => {
+      dizerSegredo(s);
+      clipe.sentir(s.humor || "assustado");
+      if (s.gesto) clipe.fazer(s.gesto, 6);
+      voz.tocar("assustar");
+      atualizarEfeitos();
+    });
+    clipe.sentir(s.humor || "assustado");
+    atualizarEfeitos();
+    return true;
   }
   /* alguns segredos escrevem no papel — e o do Cat City ainda dá o link */
   if (s.escreve) {
@@ -184,6 +205,34 @@ function apagarALuz(segundos, aoAcender) {
   }, segundos * 1000);
 }
 
+/* ==========================================================================
+   A RISADA QUE NÃO PARA
+   Enquanto o efeito "rindo" está ligado ele gargalha sozinho, sem parar,
+   até você escrever PARA no papel. É o único efeito sem hora pra acabar.
+   ========================================================================== */
+let proximaRisada = 0;
+const RISADAS = ["HAHAHAHAHA", "HA. HA. HA. HAHAHA", "HEHEHEHE — não consigo",
+  "HAHAHA— *respira* —HAHAHAHA", "AHAHAHAHAHA", "para… HAHAHA… não para"];
+
+function pensarNaRisada() {
+  if (!clipe.temEfeito("rindo")) return;
+  /* escreveu PARA? aí ele para. */
+  if (/\bpar[ae]\b|\bchega\b|\bstop\b/i.test(estado.texto)) {
+    clipe.efeitos.rindo = 0;
+    clipe.sentir("ofegante"); clipe.fazer("ofegar", 3);
+    dizer("…ufa. …obrigado. Eu não estava conseguindo mesmo. 😮‍💨", true);
+    atualizarEfeitos(); salvar();
+    return;
+  }
+  clipe.sentir("rindo");
+  if (!clipe.gesto) clipe.fazer("gargalhar");
+  const agora = Date.now();
+  if (agora > proximaRisada) {
+    proximaRisada = agora + 2600;
+    dizer(RISADAS[Math.floor(Math.random() * RISADAS.length)], true);
+  }
+}
+
 /* a barrinha que mostra o estrago e conta o tempo */
 function atualizarEfeitos() {
   const c = $("efeitos");
@@ -194,6 +243,8 @@ function atualizarEfeitos() {
   if (clipe.temEfeito("ben")) partes.push("🥼 modo BEN " + clipe.faltaPara("ben"));
   if (clipe.temEfeito("fantasma")) partes.push("👻 fantasma " + clipe.faltaPara("fantasma"));
   if (clipe.temEfeito("vermelho")) partes.push("🟥 furioso");
+  if (clipe.temEfeito("quatroOlhos")) partes.push("😦 quatro olhos " + clipe.faltaPara("quatroOlhos"));
+  if (clipe.temEfeito("rindo")) partes.push("😂 rindo sem parar — escreva PARA");
   if (clipe.foiEmbora()) {
     c.hidden = false;
     c.innerHTML = "🚪 ele saiu da tela (foram 100 cutucadas) " +
@@ -209,9 +260,13 @@ function atualizarEfeitos() {
 function curarClipy() {
   const tinha = clipe.temEfeito("arcoiris") || clipe.temEfeito("burro") ||
                 clipe.temEfeito("mudo") || clipe.temEfeito("ben") ||
-                clipe.temEfeito("fantasma") || clipe.foiEmbora();
+                clipe.temEfeito("fantasma") || clipe.temEfeito("rindo") || clipe.foiEmbora();
   cutucadasTotal = 0;
   clipe.curar(); salvar(); atualizarEfeitos();
+  if (clipe.temEfeito("quatroOlhos")) {
+    dizer("Os outros efeitos saíram. Os quatro olhos NÃO. Eu vi o que eu vi. 😦😦", true);
+    return;
+  }
   if (tinha) {
     dizer("Ufa. Voltei. Não me mostre mais aquilo.", true);
     clipe.sentir("feliz"); clipe.fazer("pular");
@@ -612,6 +667,77 @@ $("btAjuda").onclick = () => fazer("ajudaGeral");
 $("telaClipy").onclick = () => $("btCutucar").click();
 addEventListener("mousemove", e => clipe.olharPara(e.clientX, e.clientY));
 
+/* ==========================================================================
+   MODO CLÁSSICO
+   Ligado, ele solta do lugar e vira uma janelinha que pula pra qualquer canto
+   da tela, aparecendo sozinho com sugestões que não têm nada a ver com o que
+   você está fazendo. Era exatamente assim, e era exatamente por isso que todo
+   mundo achava ele insuportável.
+   ========================================================================== */
+let modoClassico = false, proximaAparicao = 0, ultimaClassica = -1;
+
+function pularParaOutroCanto() {
+  const el = $("ladoClipy");
+  const larg = el.offsetWidth || 270, alt = el.offsetHeight || 260;
+  const x = 12 + Math.random() * Math.max(12, innerWidth - larg - 24);
+  const y = 64 + Math.random() * Math.max(12, innerHeight - alt - 90);
+  el.style.setProperty("--cx", Math.round(x) + "px");
+  el.style.setProperty("--cy", Math.round(y) + "px");
+}
+
+function sugestaoClassica() {
+  let i = Math.floor(Math.random() * CLASSICAS.length);
+  if (i === ultimaClassica) i = (i + 1) % CLASSICAS.length;
+  ultimaClassica = i;
+  const [fala, ...botoes] = CLASSICAS[i];
+  pularParaOutroCanto();
+  somDele("balao");
+  escreverFalando(fala, "atento");
+  $("balao").classList.remove("resposta", "bilhete");
+  const caixa = $("balaoBotoes"); caixa.innerHTML = "";
+  for (const txt of botoes.length ? botoes : ["Ok"]) {
+    const b = document.createElement("button");
+    b.textContent = txt;
+    b.onclick = () => { voz.tocar("botao"); fecharBalao(); };
+    caixa.appendChild(b);
+  }
+  $("balao").hidden = false;
+  $("btNaoMostrar").hidden = true;
+  dicaAberta = null;
+  clipe.sentir("atento");
+  clipe.fazer(Math.random() < .3 ? "espiar" : "pular");
+}
+
+function ligarClassico(ligado) {
+  modoClassico = ligado;
+  $("btClassico").classList.toggle("on", ligado);
+  $("ladoClipy").classList.toggle("solto", ligado);
+  if (ligado) {
+    pularParaOutroCanto();
+    proximaAparicao = Date.now() + 1200;
+    voz.tocar("ligar");
+  } else {
+    $("ladoClipy").style.removeProperty("--cx");
+    $("ladoClipy").style.removeProperty("--cy");
+  }
+  salvar();
+}
+$("btClassico").onclick = () => ligarClassico(!modoClassico);
+$("btFecharFlutua").onclick = () => ligarClassico(false);
+addEventListener("resize", () => { if (modoClassico) pularParaOutroCanto(); });
+
+function pensarNoClassico() {
+  if (!modoClassico || clipe.foiEmbora() || clipe.temEfeito("rindo")) return;
+  if (!$("balao").hidden) return;
+  const agora = Date.now();
+  if (agora < proximaAparicao) return;
+  /* quanto mais chato, mais ele aparece — de 45 segundos a 8 */
+  const c = Math.max(0, Math.min(100, cerebro.chatice)) / 100;
+  proximaAparicao = agora + (45000 - c * 37000) * (.7 + Math.random() * .6);
+  if (clipe.temEfeito("mudo")) { pularParaOutroCanto(); return; }
+  sugestaoClassica();
+}
+
 /* ---------------------------------------------------------------- o som */
 function mostrarSom() {
   $("btSom").textContent = voz.som.ligado && voz.som.volume > 0 ? "🔊" : "🔇";
@@ -988,6 +1114,7 @@ const NOME_SEGREDO = {
   videoQueimando:"o vídeo que queima o cérebro", videoKittyCity:"o vídeo que virou jogo",
   videoWhatsUp:"o vídeo pra cantar junto", videoBen:"o vídeo do Ben",
   videoFantasma:"o vídeo assombrado", shania:"escrever aquele nome três vezes",
+  videoQuatroOlhos:"o vídeo dos quatro olhos", videoRisada:"o vídeo da risada sem fim",
   cemCutucadas:"cutucar ele cem vezes",
   rickroll:"never gonna…",
   quarentaEDois:"o número 42", sudo:"sudo", helloWorld:"hello, world",
@@ -1038,8 +1165,12 @@ function salvar() {
       texto: $("papel").value, chatice: cerebro.chatice,
       caladas: [...cerebro.desligadas],
       prancheta: prancheta.paraSalvar(),
-      efeitos: clipe.efeitos, censurados, segredos:[...segredosVistos],
-      som:{ ligado:voz.som.ligado, volume:voz.som.volume },
+      /* Infinity não cabe no JSON (vira null), então "pra sempre" é guardado
+         como uma data bem longe */
+      efeitos: Object.fromEntries(Object.entries(clipe.efeitos)
+        .map(([k, v]) => [k, v === Infinity ? 8.64e15 : v])),
+      censurados, segredos:[...segredosVistos],
+      som:{ ligado:voz.som.ligado, volume:voz.som.volume }, classico:modoClassico,
       contados: segredosContados, cutucadas: cutucadasTotal, saiu: clipe.indoEmbora,
     }));
   } catch (e) {}
@@ -1056,12 +1187,14 @@ function carregar() {
   }
   if (Array.isArray(d.caladas)) for (const id of d.caladas) cerebro.desligadas.add(id);
   if (d.prancheta) prancheta.carregarDe(d.prancheta);
-  if (d.efeitos) for (const k of ["arcoiris", "burro", "mudo", "ben", "fantasma", "vermelho"])
+  if (d.efeitos) for (const k of ["arcoiris", "burro", "mudo", "ben", "fantasma",
+                                  "vermelho", "quatroOlhos", "rindo"])
     if (typeof d.efeitos[k] === "number") clipe.efeitos[k] = d.efeitos[k];
   if (typeof d.censurados === "number") censurados = d.censurados;
   if (Array.isArray(d.segredos)) for (const id of d.segredos) segredosVistos.add(id);
   if (d.contados) Object.assign(segredosContados, d.contados);
   if (typeof d.cutucadas === "number") cutucadasTotal = d.cutucadas;
+  if (d.classico) modoClassico = true;
   if (d.som) { voz.som.ligado = d.som.ligado !== false;
     if (typeof d.som.volume === "number") voz.volume(d.som.volume); }
   if (d.saiu) { clipe.irEmbora(); clipe.saindo = 1; clipe.fora = true; }
@@ -1080,6 +1213,8 @@ setInterval(() => {
   lerPapel();
   atualizarTabela();
   atualizarEfeitos();
+  pensarNaRisada();
+  pensarNoClassico();
   if (clipe.temEfeito("mudo") && !estado.conta) {
     if (!$("balao").hidden && !dicaAberta) fecharBalao();
     return;
@@ -1111,6 +1246,7 @@ if (!prancheta.pastas.length) {
   salvar();
 }
 montarHistorico(); montarAtalhos(); atualizarEfeitos(); mostrarSom();
+if (modoClassico) ligarClassico(true);
 lerPapel();
 passarOCensor();
 ultimaTecla = Date.now();
@@ -1126,7 +1262,8 @@ window.Clipy = { clipe, cerebro, prancheta, estado, REGRAS, lerPapel, mostrarDic
   passarOCensor, procurarSegredo, curarClipy, atualizarEfeitos,
   censurados:() => censurados, segredosVistos, montarOvos, irPara, irPeloEndereco,
   cutucadasTotal:() => cutucadasTotal, irEmbora, chamarDeVolta, TETO_CUTUCADA,
-  voz, escreverFalando, modoDaVoz,
+  voz, escreverFalando, modoDaVoz, CLASSICAS,
+  ligarClassico, sugestaoClassica, pensarNaRisada, modoClassico:() => modoClassico,
   capturar, montarHistorico, montarAtalhos, tipoDoTexto, virarAtalho,
   zerarApagados:() => { apagadosRecentes = []; estado.apagados = 0; },
   fazer, ACOES, responder, somarDoTexto, irPara, atualizarTabela, salvar, carregar, CHAVE,

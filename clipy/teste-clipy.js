@@ -413,8 +413,8 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => ({ quantos: Clipy.SEGREDOS.length,
     ids: new Set(Clipy.SEGREDOS.map(x => x.id)).size,
     completos: Clipy.SEGREDOS.filter(x => !x.olho || !(x.fala || x.falas)).length }));
-  conf('são 23 segredos, todos com nome próprio, fala e jeito de achar',
-    r.quantos === 23 && r.ids === 23 && r.completos === 0, JSON.stringify(r));
+  conf('são 25 segredos, todos com nome próprio, fala e jeito de achar',
+    r.quantos === 25 && r.ids === 25 && r.completos === 0, JSON.stringify(r));
 
   /* o vídeo que deixa ele doido */
   await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); Clipy.segredosVistos.clear(); });
@@ -578,8 +578,8 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => ({ total: document.querySelectorAll('#ovos .ovo').length,
     achados: document.querySelectorAll('#ovos .ovo.achado').length,
     escondidos: document.querySelectorAll('#ovos .ovo.nao').length }));
-  conf('a aba 🧠 mostra os 23 ovinhos, revelando só os que você já achou',
-    r.total === 23 && r.achados >= 1 && r.escondidos === 23 - r.achados, JSON.stringify(r));
+  conf('a aba 🧠 mostra os 25 ovinhos, revelando só os que você já achou',
+    r.total === 25 && r.achados >= 1 && r.escondidos === 25 - r.achados, JSON.stringify(r));
 
   await p.evaluate(() => Clipy.curarClipy());
 
@@ -880,6 +880,140 @@ async function escrever(p, txt) {
   conf('e de BEN ele grunhe E mostra o número: "hehe… 67. HEHEHE."',
     !r.escondido && /= 67/.test(r.balao) && /hm|hehe|ugh|HÃ|mmm/i.test(r.balao), r.balao);
   await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });
+
+  /* ---------- animações novas ---------- */
+  r = await p.evaluate(() => {
+    const H = Object.keys(Clipy.clipe.constructor ? {} : {});
+    const humores = ['furioso','comemorando','rindo','ofegante','apaixonado','tonto',
+                     'bravo','dormindo','assustado','burro'];
+    const gestos = ['comemorar','gargalhar','susto','bater','derreter','espiar','ofegar','girarLouco'];
+    const falhas = [];
+    for (const h of humores) { Clipy.clipe.sentir(h); if (Clipy.clipe.humor !== h) falhas.push('humor:' + h); }
+    for (const g of gestos) { Clipy.clipe.fazer(g); if (Clipy.clipe.gesto !== g) falhas.push('gesto:' + g); }
+    Clipy.clipe.sentir('parado');
+    return falhas;
+  });
+  conf('as animações novas existem todas: bravo, comemorar, rir, ofegar, derreter, girar louco…',
+    r.length === 0, JSON.stringify(r));
+
+  r = await p.evaluate(() => {
+    /* o desenho tem que continuar saindo em todos eles, sem quebrar */
+    const c = document.getElementById('telaClipy'), g = c.getContext('2d');
+    const pintados = [];
+    for (const h of ['comemorando','rindo','ofegante','furioso','apaixonado']) {
+      Clipy.clipe.sentir(h); Clipy.clipe.trocaHumor = 1;
+      Clipy.clipe.desenhar();
+      const d = g.getImageData(0, 0, c.width, c.height).data;
+      let n = 0;
+      for (let i = 3; i < d.length; i += 4 * 53) if (d[i] > 24) n++;
+      pintados.push(n);
+    }
+    Clipy.clipe.sentir('parado');
+    return pintados;
+  });
+  conf('e cada humor novo desenha alguma coisa na tela (confete, coração, gotinha…)',
+    r.every(n => n > 40), JSON.stringify(r));
+
+  /* ---------- o vídeo dos quatro olhos ---------- */
+  await p.evaluate(() => { Clipy.curarClipy(true); Clipy.clipe.curar(true);
+    Clipy.fecharBalao(); Clipy.segredosVistos.clear();
+    document.getElementById('papel').value = ''; Clipy.lerPapel(); });
+  await p.fill('#papel', 'https://www.youtube.com/watch?v=Qk3gvp61STs&list=RD');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(350);
+  r = await p.evaluate(() => !!document.querySelector('#apagaLuz.on'));
+  conf('o vídeo dos quatro olhos APAGA A TELA primeiro (o escuro é metade do susto)',
+    r === true, String(r));
+  await p.waitForTimeout(3700);
+  r = await p.evaluate(() => ({ balao: document.getElementById('balaoTexto').textContent,
+    olhos: Clipy.clipe.faltaPara('quatroOlhos'), luz: !!document.querySelector('#apagaLuz.on') }));
+  conf('e a luz volta com ele de QUATRO OLHOS e ofegante, por 24 horas',
+    /QUATRO OLHOS/.test(r.balao) && r.olhos === '24h00' && !r.luz, JSON.stringify({ olhos:r.olhos }));
+
+  await p.evaluate(() => Clipy.curarClipy());
+  await p.waitForTimeout(200);
+  r = await p.evaluate(() => ({ ainda: Clipy.clipe.temEfeito('quatroOlhos'),
+    balao: document.getElementById('balaoTexto').textContent }));
+  conf('esse é TEIMOSO: cutucar e o 🔧 tiram os outros efeitos, mas não os quatro olhos',
+    r.ainda && /NÃO/.test(r.balao), JSON.stringify({ ainda:r.ainda }));
+
+  await p.evaluate(() => Clipy.fecharBalao());
+  await p.fill('#papel', 'desculpa clipy');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(300);
+  r = await p.evaluate(() => ({ ainda: Clipy.clipe.temEfeito('quatroOlhos'),
+    balao: document.getElementById('balaoTexto').textContent }));
+  conf('a única saída é pedir desculpa por escrito — e aí ele perdoa',
+    !r.ainda && /perdoo/.test(r.balao), JSON.stringify({ ainda:r.ainda }));
+
+  /* ---------- a risada que não para ---------- */
+  await p.evaluate(() => { Clipy.fecharBalao(); Clipy.segredosVistos.clear();
+    document.getElementById('papel').value = ''; Clipy.lerPapel(); });
+  await p.fill('#papel', 'https://www.youtube.com/watch?v=DxxLzJDARbo');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(350);
+  r = await p.evaluate(() => ({ efeito: Clipy.clipe.faltaPara('rindo'),
+    barra: document.getElementById('efeitos').textContent }));
+  conf('o vídeo da risada liga um efeito SEM FIM: ele ri até mandarem parar',
+    r.efeito === 'sem fim' && /escreva PARA/.test(r.barra), JSON.stringify(r));
+
+  await p.evaluate(() => Clipy.salvar());
+  await p.reload();
+  await p.waitForFunction(() => !!window.Clipy, null, { timeout: 15000 });
+  r = await p.evaluate(() => Clipy.clipe.temEfeito('rindo'));
+  conf('e continua rindo depois de recarregar (não tem hora pra acabar)', r === true, String(r));
+
+  await p.fill('#papel', 'PARA');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.pensarNaRisada(); });
+  await p.waitForTimeout(300);
+  r = await p.evaluate(() => ({ ainda: Clipy.clipe.temEfeito('rindo'),
+    balao: document.getElementById('balaoTexto').textContent }));
+  conf('escrever PARA faz ele parar — ofegante, mas para',
+    !r.ainda && /ufa|obrigado/i.test(r.balao), JSON.stringify({ ainda:r.ainda }));
+
+  /* ---------- modo Clippy clássico ---------- */
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });
+  r = await p.evaluate(() => Clipy.CLASSICAS.length);
+  conf('o modo clássico tem sugestões que não olham nada do que você escreveu',
+    r >= 15, r + ' sugestões');
+
+  await p.click('#btClassico');
+  await p.waitForTimeout(400);
+  r = await p.evaluate(() => {
+    const el = document.getElementById('ladoClipy');
+    return { solto: el.classList.contains('solto'),
+      fixo: getComputedStyle(el).position === 'fixed',
+      barra: !!document.querySelector('.ladoClipy.solto .barraFlutua'),
+      botao: document.getElementById('btClassico').classList.contains('on') };
+  });
+  conf('ligado, ele SOLTA do lugar e vira uma janelinha flutuante com barra de título',
+    r.solto && r.fixo && r.barra && r.botao, JSON.stringify(r));
+
+  const onde1 = await p.evaluate(() => getComputedStyle(document.getElementById('ladoClipy')).left);
+  const falas = new Set();
+  let mudouDeLugar = false;
+  for (let i = 0; i < 6; i++) {
+    await p.evaluate(() => { Clipy.fecharBalao(); Clipy.sugestaoClassica(); });
+    await p.waitForTimeout(250);
+    falas.add(await p.evaluate(() => document.getElementById('balaoTexto').textContent));
+    const onde = await p.evaluate(() => getComputedStyle(document.getElementById('ladoClipy')).left);
+    if (onde !== onde1) mudouDeLugar = true;
+  }
+  conf('e ele PULA pra outro canto da tela cada vez que aparece', mudouDeLugar, onde1);
+  conf('com sugestões diferentes, e nenhuma tem a ver com o que você está fazendo',
+    falas.size >= 4, falas.size + ' falas diferentes em 6 aparições');
+
+  await p.evaluate(() => Clipy.salvar());
+  await p.reload();
+  await p.waitForFunction(() => !!window.Clipy, null, { timeout: 15000 });
+  r = await p.evaluate(() => document.getElementById('ladoClipy').classList.contains('solto'));
+  conf('o modo clássico fica ligado mesmo depois de recarregar', r === true, String(r));
+
+  await p.click('#btFecharFlutua');
+  await p.waitForTimeout(250);
+  r = await p.evaluate(() => ({ solto: document.getElementById('ladoClipy').classList.contains('solto'),
+    botao: document.getElementById('btClassico').classList.contains('on') }));
+  conf('e o ✕ da janelinha devolve ele pro canto de sempre', !r.solto && !r.botao, JSON.stringify(r));
 
   /* ---------- link direto pra cada aba ---------- */
   for (const [hash, pagina] of [['#segredos','pgRegras'], ['#mesa','pgMesa'],

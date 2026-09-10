@@ -42,6 +42,13 @@ export const HUMORES = {
   confuso:   { cenho:.3,  sobeSobrancelha:.28, abertura:1.05, boca:-.15, torto:1 },
   /* o olho de burro: cada olho olhando pra um lado, boca aberta, cara de nada */
   burro:     { cenho:-.15, sobeSobrancelha:.1, abertura:1.25, boca:.2, burro:1, torto:.4 },
+  /* os novos */
+  furioso:   { cenho:1.15, sobeSobrancelha:-.35, abertura:1.1, boca:-.6, ferve:1 },
+  comemorando:{ cenho:-.35, sobeSobrancelha:.42, abertura:.55, boca:.9, sorriso:1, festa:1 },
+  rindo:     { cenho:-.3,  sobeSobrancelha:.3, abertura:.25, boca:1, sorriso:1, riso:1 },
+  ofegante:  { cenho:.25,  sobeSobrancelha:.15, abertura:1.35, boca:.7, ofega:1 },
+  apaixonado:{ cenho:-.2,  sobeSobrancelha:.35, abertura:.9, boca:.7, coracao:1 },
+  tonto:     { cenho:.1,   sobeSobrancelha:.2, abertura:1.1, boca:.1, tonto:1, torto:.6 },
 };
 
 const suave = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -61,7 +68,8 @@ export class Clipe {
     this.balaoAte = 0;
     /* Os efeitos dos segredos. Cada um guarda ATÉ QUANDO vale (em
        milissegundos do relógio), pra sobreviver a recarregar a página. */
-    this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0, vermelho:0 };
+    this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0, vermelho:0,
+                     quatroOlhos:0, rindo:0 };
     /* ele indo embora: 0 é aqui, 1 é fora da tela */
     this.saindo = 0; this.indoEmbora = false; this.fora = false;
     this.dpr = 1;
@@ -85,7 +93,11 @@ export class Clipe {
   }
   fazer(gesto, dur) {
     this.gesto = gesto; this.gestoT = 0;
-    this.gestoDur = dur || { pular:.55, girar:.9, acenar:1.2, tremer:.5, encolher:.7, cair:1 }[gesto] || .6;
+    this.gestoDur = dur || {
+      pular:.55, girar:.9, acenar:1.2, tremer:.5, encolher:.7, cair:1,
+      comemorar:1.6, gargalhar:1.4, susto:.8, bater:.9, derreter:1.4,
+      espiar:1.1, ofegar:1.2, girarLouco:1.8,
+    }[gesto] || .6;
   }
   mostrarBalao(txt, segundos = 1.6) { this.balao = txt; this.balaoAte = this.t + segundos; }
   olharPara(x, y) {                              // em pixels da tela
@@ -96,16 +108,23 @@ export class Clipe {
   }
 
   /* ---- os efeitos ---- */
+  /* minutos = 0 quer dizer PRA SEMPRE (até alguém desligar na mão) */
   ligarEfeito(qual, minutos) {
-    this.efeitos[qual] = Math.max(this.efeitos[qual] || 0, Date.now() + minutos * 60000);
+    const ate = minutos === 0 ? Infinity : Date.now() + minutos * 60000;
+    this.efeitos[qual] = Math.max(this.efeitos[qual] || 0, ate);
   }
   temEfeito(qual) { return (this.efeitos[qual] || 0) > Date.now(); }
-  curar() {
-    this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0, vermelho:0 };
+  /* A cura normal não tira TUDO: os quatro olhos são teimosos, ele viu o que
+     viu. Só sai com curar(true) — que é o pedido de desculpas. */
+  curar(tudo) {
+    const olhos = this.efeitos.quatroOlhos;
+    this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0, vermelho:0,
+                     quatroOlhos: tudo ? 0 : olhos, rindo:0 };
     this.voltar();
   }
   faltaPara(qual) {
     const ms = (this.efeitos[qual] || 0) - Date.now();
+    if (ms === Infinity) return "sem fim";
     if (ms <= 0) return "";
     const min = Math.ceil(ms / 60000);
     if (min < 60) return min + " min";
@@ -154,7 +173,8 @@ export class Clipe {
     const h0 = HUMORES[nomeAntes], h1 = HUMORES[nomeAgora], k = suave(this.trocaHumor);
     const H = {};
     for (const c of ["cenho", "sobeSobrancelha", "abertura", "boca", "sorriso",
-                     "olhaCima", "dorme", "torto", "burro"])
+                     "olhaCima", "dorme", "torto", "burro", "ferve", "festa",
+                     "riso", "ofega", "coracao", "tonto"])
       H[c] = mistura(h0[c] || 0, h1[c] || 0, k);
 
     /* ---- o gesto do momento vira posição ---- */
@@ -176,6 +196,46 @@ export class Clipe {
       esticaY = 1 - p * .22; esticaX = 1 + p * .16; sobe = p * A * .03;
     } else if (g === "cair") {
       gira = suave(gt) * .5; sobe = suave(gt) * A * .05;
+    } else if (g === "comemorar") {
+      /* três pulinhos, cada um mais alto, com um giro no último */
+      const salto = Math.abs(Math.sin(gt * Math.PI * 3));
+      sobe = -salto * A * (.1 + gt * .16);
+      esticaY = 1 + salto * .18; esticaX = 1 - salto * .1;
+      if (gt > .62) gira = suave((gt - .62) / .38) * Math.PI * 2;
+    } else if (g === "gargalhar") {
+      /* rir é sacudir pra trás e pra frente, não pular */
+      entorta += Math.sin(gt * Math.PI * 11) * .22;
+      esticaY = 1 + Math.sin(gt * Math.PI * 22) * .07;
+      sobe = -Math.abs(Math.sin(gt * Math.PI * 11)) * A * .03;
+    } else if (g === "susto") {
+      /* dispara pra cima, estica todo, e volta tremendo */
+      const p = gt < .3 ? gt / .3 : 1 - (gt - .3) / .7;
+      sobe = -p * A * .24;
+      esticaY = 1 + p * .34; esticaX = 1 - p * .2;
+      entorta += Math.sin(gt * Math.PI * 16) * .08 * (1 - gt);
+    } else if (g === "bater") {
+      /* ele vem pra frente e bate no vidro da tela */
+      const p = Math.sin(gt * Math.PI * 3);
+      esticaX = 1 + Math.abs(p) * .22; esticaY = 1 - Math.abs(p) * .12;
+      entorta += p * .1;
+    } else if (g === "derreter") {
+      /* escorre pro chão */
+      const p = suave(gt);
+      esticaY = 1 - p * .55; esticaX = 1 + p * .4;
+      sobe = p * A * .05;
+      entorta += Math.sin(gt * 5) * .04;
+    } else if (g === "espiar") {
+      /* dá uma espiada pro lado, como quem está aprontando */
+      entorta += Math.sin(gt * Math.PI) * .3;
+      this.alvoOlhoX = Math.sin(gt * Math.PI) * .9;
+    } else if (g === "ofegar") {
+      /* o corpo inteiro puxando ar */
+      const r = Math.sin(gt * Math.PI * 6);
+      esticaY = 1 + r * .1; esticaX = 1 - r * .06;
+      sobe = -Math.abs(r) * A * .015;
+    } else if (g === "girarLouco") {
+      gira = suave(gt) * Math.PI * 6;
+      esticaX = 1 - Math.sin(gt * Math.PI) * .15;
     }
 
     /* fantasma: ele boia devagar em vez de pisar no chão */
@@ -185,10 +245,15 @@ export class Clipe {
       entorta += Math.sin(t * .6) * .06;
     }
 
-    /* respiração: ninguém fica totalmente parado */
-    const resp = Math.sin(t * 1.7) * .012;
+    /* respiração: ninguém fica totalmente parado. E cada humor respira do
+       seu jeito: quem está ofegante puxa ar rápido, quem ferve treme. */
+    const ritmo = H.ofega ? 7.5 : H.riso ? 9 : 1.7;
+    const fundo = H.ofega ? .05 : H.riso ? .035 : .012;
+    const resp = Math.sin(t * ritmo) * fundo;
     esticaY *= 1 + resp; esticaX *= 1 - resp * .6;
     entorta += Math.sin(t * .9) * .035 + H.torto * .16;
+    if (H.ferve) entorta += Math.sin(t * 22) * .035 * H.ferve;      // fervendo
+    if (H.tonto) gira += Math.sin(t * 1.6) * .25 * H.tonto;
     if (H.dorme) { entorta += Math.sin(t * 1.1) * .07; sobe += Math.sin(t * 1.1) * 3; }
 
     const escala = Math.min(L / 2.5, A / 2.9);
@@ -316,13 +381,20 @@ export class Clipe {
 
   desenharCara(H) {
     const ctx = this.ctx;
-    const olhos = [[-.31, -.70], [.06, -.70]];
-    const r = .21;
+    /* QUATRO OLHOS: o par de sempre, mais um par menor logo abaixo. É a
+       coisa mais simples de desenhar e a mais difícil de esquecer. */
+    const quatro = this.temEfeito("quatroOlhos");
+    const olhos = quatro
+      ? [[-.34, -.78], [.09, -.78], [-.26, -.46], [.02, -.46]]
+      : [[-.31, -.70], [.06, -.70]];
+    const tamanhos = quatro ? [1, 1, .62, .62] : [1, 1];
+    const r0 = .21;
     const fecha = this.piscando > 0 ? 1 : H.dorme;
     const ax = 1, ay = Math.max(.06, H.abertura * (1 - fecha));
 
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < olhos.length; i++) {
       const [ox, oy] = olhos[i];
+      const r = r0 * tamanhos[i];
       /* olho de burro: um olho grande e um pequeno, cada um pra um lado */
       const bx = H.burro * (i === 0 ? -.055 : .05);
       const by = H.burro * (i === 0 ? .02 : -.03);
@@ -361,7 +433,7 @@ export class Clipe {
     for (let i = 0; i < 2; i++) {
       const [ox, oy] = olhos[i];
       const lado = i === 0 ? -1 : 1;
-      const y = oy - r - .1 - H.sobeSobrancelha * .12;
+      const y = oy - r0 - .1 - H.sobeSobrancelha * .12;
       const inclina = H.cenho * .16 * lado;
       ctx.beginPath();
       ctx.moveTo(ox - .17, y + inclina);
@@ -369,10 +441,63 @@ export class Clipe {
       ctx.stroke();
     }
 
+    /* confete de comemoração e coraçõezinhos, que são o jeito mais barato de
+       mostrar sentimento num desenho */
+    if (H.festa > .3) {
+      const cores = ["#ffc857", "#ff8fb1", "#7ee0a0", "#8fc9ff", "#c79bff"];
+      for (let k = 0; k < 18; k++) {
+        const f = (this.t * 1.15 + k * .056) % 1;
+        const a = k / 18 * 6.2832;
+        ctx.globalAlpha = (1 - f) * H.festa;
+        ctx.fillStyle = cores[k % cores.length];
+        ctx.save();
+        ctx.translate(Math.cos(a) * (.45 + f * 1.15), -1.05 - Math.sin(a) * .35 + f * .75);
+        ctx.rotate(this.t * 3 + k);
+        ctx.fillRect(-.06, -.04, .12, .08);
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1;
+    }
+    if (H.coracao > .3) {
+      ctx.fillStyle = "#ff5f83";
+      for (let k = 0; k < 3; k++) {
+        const f = (this.t * .8 + k * .33) % 1;
+        ctx.globalAlpha = (1 - f) * H.coracao;
+        const x = .35 + Math.sin(f * 6 + k) * .12, y = -.7 - f * .8, e = .09 * (1 - f * .3);
+        ctx.beginPath();
+        ctx.moveTo(x, y + e);
+        ctx.bezierCurveTo(x - e * 1.5, y - e * .5, x - e * .4, y - e * 1.3, x, y - e * .45);
+        ctx.bezierCurveTo(x + e * .4, y - e * 1.3, x + e * 1.5, y - e * .5, x, y + e);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
     /* ---- a boca: um risco que vira sorriso ---- */
     if (H.dorme) {
       ctx.lineWidth = .05;
       ctx.beginPath(); ctx.arc(-.12, -.42, .07, 0, Math.PI); ctx.stroke();
+    } else if (H.ofega > .5 || H.riso > .5) {
+      /* ofegante: boca aberta pulsando, com a língua pra fora e gotinha.
+         rindo: a mesma boca, mas em cima e batendo mais rápido. */
+      const rapido = H.riso > .5 ? 11 : 6.5;
+      const alt = .06 + Math.abs(Math.sin(this.t * rapido)) * (H.riso > .5 ? .075 : .06);
+      const cy = quatro ? -.30 : -.36;
+      ctx.fillStyle = "#3a2028";
+      ctx.beginPath(); ctx.ellipse(-.12, cy, .115, alt, 0, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = "#ff8fb1";
+      ctx.beginPath(); ctx.ellipse(-.10, cy + alt * .5, .05, alt * .5, .2, 0, 6.2832); ctx.fill();
+      ctx.strokeStyle = "#2a3038"; ctx.lineWidth = .03;
+      ctx.beginPath(); ctx.ellipse(-.12, cy, .115, alt, 0, 0, 6.2832); ctx.stroke();
+      if (H.ofega > .5) {                       // as gotinhas de cansaço
+        ctx.fillStyle = "#8fc9ffcc";
+        for (let k = 0; k < 2; k++) {
+          const f = (this.t * 1.6 + k * .5) % 1;
+          ctx.beginPath();
+          ctx.ellipse(.28 + k * .12, -.85 + f * .5, .035, .05, 0, 0, 6.2832);
+          ctx.fill();
+        }
+      }
     } else if (H.burro > .5) {
       /* boca aberta e língua de fora: o retrato de quem não entendeu nada */
       ctx.fillStyle = "#3a2028";

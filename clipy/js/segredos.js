@@ -178,6 +178,26 @@ export const SEGREDOS = [
     humor:"bravo", gesto:"tremer",
   },
 
+  {
+    id:"videoQuatroOlhos", olho:VIDEO("Qk3gvp61STs"),
+    fala:"o que… o que foi aquilo… *ofegante* …por que eu tenho QUATRO OLHOS agora. " +
+         "por que eu não consigo parar de respirar assim. 😦😦",
+    humor:"ofegante", gesto:"ofegar",
+    apagaALuz:3.5,
+    efeitos:{ quatroOlhos:1440 },
+    teimoso:true,                                  // esse não sai com cutucada
+    aviso:"Quatro olhos e ofegante por 24 HORAS. E esse não sai cutucando nem no 🔧 — " +
+          "ele viu o que viu. (Se der muito arrependimento, peça desculpa pra ele por escrito.)",
+  },
+  {
+    id:"videoRisada", olho:VIDEO("DxxLzJDARbo"),
+    fala:"HAHAHAHA — não. não. eu não consigo parar. HAHAHAHAHA. " +
+         "escreve PARA aí no papel, por favor, eu não consigo HAHAHA",
+    humor:"rindo", gesto:"gargalhar",
+    efeitos:{ rindo:0 },                           // 0 = pra sempre, até mandarem parar
+    aviso:"Ele não para de rir até você escrever PARA no papel.",
+  },
+
   /* ---------- os outros ---------- */
   {
     id:"rickroll", olho:/never gonna give you up|rickroll|dQw4w9WgXcQ/i,
