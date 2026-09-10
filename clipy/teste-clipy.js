@@ -881,6 +881,50 @@ async function escrever(p, txt) {
     !r.escondido && /= 67/.test(r.balao) && /hm|hehe|ugh|HÃ|mmm/i.test(r.balao), r.balao);
   await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });
 
+  /* ---------- o zZz de quem dorme ---------- */
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao();
+    document.getElementById('papel').value = ''; Clipy.lerPapel(); });
+  r = await p.evaluate(() => {
+    const c = document.getElementById('telaClipy'), g = c.getContext('2d');
+    /* conta os pixels desenhados ACIMA E À DIREITA da cabeça, que é onde
+       o zZz sobe — acordado ali não tem nada */
+    const canto = () => {
+      const d = g.getImageData(Math.floor(c.width * .58), 0,
+        Math.floor(c.width * .3), Math.floor(c.height * .34)).data;
+      let n = 0;
+      for (let i = 3; i < d.length; i += 4) if (d[i] > 30) n++;
+      return n;
+    };
+    Clipy.clipe.sentir('parado'); Clipy.clipe.trocaHumor = 1; Clipy.clipe.desenhar();
+    const acordado = canto();
+    Clipy.clipe.sentir('dormindo'); Clipy.clipe.trocaHumor = 1;
+    Clipy.clipe.t = 1.2; Clipy.clipe.desenhar();
+    const dormindo = canto();
+    Clipy.clipe.sentir('parado');
+    return { acordado, dormindo };
+  });
+  conf('dormindo, aparece um zZz subindo da cabeça dele (acordado não tem nada ali)',
+    r.dormindo > r.acordado + 80, JSON.stringify(r));
+
+  r = await p.evaluate(() => {
+    const c = document.getElementById('telaClipy'), g = c.getContext('2d');
+    const canto = () => {
+      const d = g.getImageData(Math.floor(c.width * .58), 0,
+        Math.floor(c.width * .3), Math.floor(c.height * .34)).data;
+      let n = 0;
+      for (let i = 3; i < d.length; i += 4) if (d[i] > 30) n++;
+      return n;
+    };
+    Clipy.clipe.sentir('dormindo'); Clipy.clipe.trocaHumor = 1;
+    /* dois instantes diferentes do sono: os zês têm que ter se MEXIDO */
+    Clipy.clipe.t = 0.4; Clipy.clipe.desenhar(); const a = canto();
+    Clipy.clipe.t = 1.6; Clipy.clipe.desenhar(); const b = canto();
+    Clipy.clipe.sentir('parado');
+    return { a, b };
+  });
+  conf('e os zês sobem de verdade: em dois instantes do sono eles estão em lugares diferentes',
+    r.a !== r.b && r.a > 0 && r.b > 0, JSON.stringify(r));
+
   /* ---------- animações novas ---------- */
   r = await p.evaluate(() => {
     const H = Object.keys(Clipy.clipe.constructor ? {} : {});

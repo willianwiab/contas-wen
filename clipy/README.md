@@ -59,6 +59,11 @@ esticando todo), **bater** (vem pra frente e bate no vidro da tela),
 **derreter**, **espiar** (dá uma olhada pro lado, como quem está aprontando),
 **ofegar** e **girar louco**.
 
+Quando ele **dorme**, sai um **zZz** da cabeça: três zês subindo na diagonal,
+cada um numa parte da viagem — nasce pequeno e opaco perto da cabeça, sobe
+girando devagar, vai crescendo e sumindo. E ele **ronca** baixinho a cada quatro
+segundos (a não ser que esteja mudo pelo segredo).
+
 Cada humor também **respira do seu jeito**: quem está ofegante puxa ar rápido,
 quem ri sacode, quem está furioso treme o tempo todo.
 
@@ -305,7 +310,7 @@ npm i playwright-core
 node teste-clipy.js
 ```
 
-**117 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
+**119 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
 dispara a carta e o botão **monta a carta de verdade**; três traços viram lista
 e o botão numera 1. 2. 3.; R$ 10,50 + R$ 4 + R$ 25 dá **39,5**; MAIÚSCULA vira
 minúscula; "senha" dispara o aviso; apagar 60 letras dispara o comentário; "não
