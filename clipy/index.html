@@ -27,6 +27,7 @@
     <button class="aba" data-aba="historia">📜 Quem é o Clipy</button>
   </nav>
   <div class="topoDir">
+    <button id="btClassico" type="button" title="ele aparece sozinho, em qualquer canto da tela">🕰️ Clássico</button>
     <label id="somCaixa" title="a vozinha dele">
       <button id="btSom" type="button">🔊</button>
       <input type="range" id="volume" min="0" max="100" value="50">
@@ -141,7 +142,7 @@
       verdade — e também a graça deles.</p>
 
       <h3>🥚 Os segredos</h3>
-      <p class="intro pequeno">Fora as regras, tem <b><span id="qtdSegredos">23</span> segredos</b>
+      <p class="intro pequeno">Fora as regras, tem <b><span id="qtdSegredos">25</span> segredos</b>
       escondidos: palavras (ou links) que fazem alguma coisa acontecer. Três deles deixam
       <b>marca</b> — o Clipy fica esquisito por um tempo e continua esquisito mesmo se você fechar
       a página. Aqui só aparecem os que você já achou.</p>
@@ -244,6 +245,10 @@
 
 </div>
   <aside class="ladoClipy" id="ladoClipy">
+    <div class="barraFlutua" id="barraFlutua">
+      <span>📎 Assistente do Clipy</span>
+      <button id="btFecharFlutua" title="voltar pro lugar">✕</button>
+    </div>
     <div class="balao" id="balao" hidden>
       <p id="balaoTexto"></p>
       <div class="balaoBotoes" id="balaoBotoes"></div>
@@ -262,7 +267,7 @@
 </main>
 
 <footer id="rodape">
-  📎 <b>Clipy</b> — 33 regras e 23 segredos rodando no seu navegador, sem internet nenhuma.
+  📎 <b>Clipy</b> — 33 regras e 25 segredos rodando no seu navegador, sem internet nenhuma.
   Feito pelo JoJo · <a href="../jogos-do-jojo/">Jogos do JoJo</a>
 </footer>
 

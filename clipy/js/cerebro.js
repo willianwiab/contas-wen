@@ -287,6 +287,34 @@ export const REGRAS = [
 ];
 
 /* ==========================================================================
+   MODO CLÁSSICO
+   As sugestões que ele dá SEM MOTIVO NENHUM. Era isso que o ajudante de
+   verdade fazia: aparecer no meio da sua frase, num canto qualquer da tela,
+   oferecendo ajuda com uma coisa que você nem estava fazendo. Nenhuma destas
+   olha o que você escreveu. É de propósito.
+   ========================================================================== */
+export const CLASSICAS = [
+  ["Parece que você está escrevendo uma carta.", "Mas não estou", "Estou sim"],
+  ["Parece que você está respirando. Quer ajuda?", "Não", "Sim"],
+  ["Notei que você tem uma janela aberta. Quer que eu feche?", "NÃO", "Que janela?"],
+  ["Você já pensou em usar uma tabela? Eu penso muito nisso.", "Não", "Agora sim"],
+  ["Parece que você está fazendo alguma coisa. Posso atrapalhar?", "Já atrapalhou", "Pode"],
+  ["Dica: você pode salvar o seu trabalho. (Aqui salva sozinho. A dica é geral.)", "Ok"],
+  ["Parece que você está pensando. Quer que eu conte até dez em voz alta?", "Não", "Conta"],
+  ["Eu reparei que você está usando o teclado. Existe também o mouse.", "Eu sei"],
+  ["Você quer formatar isso? Não sei o que é isso. Mas quer formatar?", "Não", "Formatar"],
+  ["Parece que você está prestes a desistir. Eu apareço mais quando isso acontece.", "Verdade"],
+  ["Se você apertar todas as teclas ao mesmo tempo, alguma coisa acontece.", "Vou tentar", "Não vou"],
+  ["Notei que faz um tempinho que eu não apareço. Corrigido.", "Obrigado…"],
+  ["Parece que você está escrevendo uma carta. …de novo. Eu insisto.", "Não estou!", "Tá bom"],
+  ["Você sabia que eu vejo tudo o que você digita? Não é ameaça. É a minha função.", "Assustador"],
+  ["Quer que eu vá pro outro canto da tela? Vou de qualquer jeito.", "Vai"],
+  ["Eu estava no canto de cima. Agora estou aqui. Ninguém me perguntou.", "Percebi"],
+  ["Parece que você está lendo. Quer que eu leia junto em voz alta? Eu só faço bipe.", "Não"],
+  ["Dica do dia: clipes seguram papel. Já vai tarde essa dica.", "Ok"],
+];
+
+/* ==========================================================================
    A CONVERSA
    Também é regra: procura palavra-chave e responde. Quando não acha nada,
    ele responde com sinceridade — que era justamente o que ele nunca fazia.
