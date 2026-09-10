@@ -27,6 +27,44 @@ O site tem quatro partes:
 | 🧠 **Como ele pensa** | as 30 regras, uma por uma, e **acendendo em verde** quando estão batendo com o que você acabou de escrever |
 | 📜 **Quem é o Clipy** | a história dos ajudantes animados, por que sumiram, e o que eles ensinam sobre as IAs de hoje |
 
+## A vozinha de computador antigo 🔊
+
+Ele não fala palavras: ele faz **bipe**. Um bipinho curto pra cada letra,
+enquanto o texto aparece letra por letra no balão. É assim que os computadores
+e os videogames antigos "falavam" — e é o que faz um texto na tela virar uma
+voz na sua cabeça.
+
+O truque pra parecer fala de verdade:
+
+- **vogal** = nota mais grave e um tiquinho mais longa
+- **consoante** = mais aguda e mais curta
+- **pontuação** = pausa (é o que dá ritmo de frase)
+- e cada letra tem a própria notinha, então cada palavra soa diferente
+
+E **cada humor tem timbre**: feliz é agudo e rápido, triste é grave e
+arrastado, bravo é uma onda dente-de-serra rasgada, assustado é agudíssimo,
+dormindo é um sopro. Os modos especiais também: **BEN** é grave e abafado,
+**fantasma** treme, **vermelho de raiva** é rasgado e rápido, **olho de burro**
+é lerdo e mole.
+
+Fora a voz, tem os bipes da interface: abrir o balão, acertar a conta
+(quatro notinhas subindo), errar, censurar, copiar, achar um segredo, a porta
+batendo quando ele vai embora, e a luz apagando.
+
+Tudo gerado na hora com oscilador — **nenhum arquivo de som**, então funciona
+sem internet e não pesa nada.
+
+**Controle:** o 🔊 lá em cima liga e desliga, e a barrinha ajusta o volume. Fica
+salvo. E quando ele está **mudo** pelo segredo, a voz some de verdade (zero
+bipes) — mas os cliques da página continuam, porque quem está mudo é o Clipy,
+não o site.
+
+**Detalhe de como foi feito:** a frase inteira entra no balão de uma vez e o
+que é animado é só a parte *visível*. Duas vantagens sobre ir juntando letra
+por letra no texto: o balão já nasce do tamanho final (não fica pulando
+enquanto ele fala) e o texto completo está sempre lá pra copiar e pra um leitor
+de tela. E **clicar no balão** faz ele parar de enrolar e mostrar tudo.
+
 ## O censurador
 
 Palavrão escrito no papel **some na hora**, trocado por `#@$%!`. Pega com
@@ -203,6 +241,7 @@ clipy/
   js/cerebro.js     as 33 regras, a conversa e o vigia
   js/calculadora.js a calculadora escrita do zero, sem eval
   js/prancheta.js   o histórico da área de transferência e os atalhos
+  js/voz.js         a vozinha de bipe e os efeitos sonoros
   js/main.js        o papel, o balão, as abas, o save
   js/instalar.js    service worker + instalar como aplicativo
 ```
@@ -225,7 +264,7 @@ npm i playwright-core
 node teste-clipy.js
 ```
 
-**95 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
+**102 checagens**: as 30 regras existem e nenhuma está pela metade; "Prezado"
 dispara a carta e o botão **monta a carta de verdade**; três traços viram lista
 e o botão numera 1. 2. 3.; R$ 10,50 + R$ 4 + R$ 25 dá **39,5**; MAIÚSCULA vira
 minúscula; "senha" dispara o aviso; apagar 60 letras dispara o comentário; "não
@@ -254,7 +293,11 @@ luz de verdade** e ela volta sozinha; e frase comum como "dar comida pro gato"
 quando ele está mudo (com o aviso do papelzinho) ou de BEN (grunhindo o
 número) — mas o palpite da carta continua calado no mudo. E a paciência: ele reclama no
 10, 25, 70, 95 e 99, aguenta até o 99, fica vermelho e sai da tela no 100, **continua
-fora depois de recarregar** e volta emburrado quando chamado.
+fora depois de recarregar** e volta emburrado quando chamado. Da voz: cada letra solta um bipe, mudo dá
+**zero** bipes (mas a resposta aparece), o 🔇 desliga sem quebrar nada, o texto
+cresce letra por letra com o cursorzinho piscando, a frase inteira já está no
+balão desde o começo, e clicar adianta — inclusive contra o tique seguinte da
+animação, que era um bug que o teste pegou.
 
 Da aba da área de transferência: as 3 pastas de fábrica nascem com id próprio;
 ele reconhece link, e-mail, telefone, dinheiro, código e cor; capturar guarda **e**
