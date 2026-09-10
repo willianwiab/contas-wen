@@ -35,7 +35,7 @@ async function escrever(p, txt) {
 (async () => {
   const b = await chromium.launch({
     executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium',
-    args: ['--no-sandbox', '--use-gl=swiftshader'] });
+    args: ['--no-sandbox', '--use-gl=swiftshader', '--autoplay-policy=no-user-gesture-required'] });
   const ctx = await b.newContext();
   const p = await ctx.newPage({ viewport: { width: 1280, height: 900 } });
   const err = [];
@@ -704,6 +704,91 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => document.getElementById('ladoClipy').hidden);
   conf('e nas abas de leitura o Clipy sai da frente', r === true, String(r));
 
+
+  /* ---------- a vozinha de computador antigo ---------- */
+  await p.click('.aba[data-aba="mesa"]');
+  await p.evaluate(() => {
+    Clipy.curarClipy(); Clipy.fecharBalao();
+    /* conta quantos bipes ele solta: é a prova de que a voz saiu mesmo */
+    window.__osc = 0;
+    const proto = (window.AudioContext || window.webkitAudioContext).prototype;
+    const antes = proto.createOscillator;
+    proto.createOscillator = function () { window.__osc++; return antes.apply(this, arguments); };
+    Clipy.voz.ligarAudio();
+  });
+  const falarE = async (prep, texto) => {
+    await p.evaluate(prep);
+    await p.evaluate(() => window.__osc = 0);
+    await p.fill('#papel', '');
+    await p.click('#papel');
+    await p.type('#papel', texto, { delay: 15 });
+    await p.waitForTimeout(1300);
+    return p.evaluate(() => ({ osc: window.__osc,
+      texto: document.getElementById('balaoTexto').textContent }));
+  };
+  r = await falarE(() => { Clipy.curarClipy(); Clipy.fecharBalao(); }, '5*5=');
+  conf('ele FALA: cada letra do balão solta um bipe de computador antigo',
+    r.osc >= 4 && /= 25/.test(r.texto), r.osc + ' bipes');
+
+  r = await falarE(() => { Clipy.curarClipy(); Clipy.clipe.ligarEfeito('mudo', 30); Clipy.fecharBalao(); }, '6*6=');
+  conf('e MUDO é mudo de verdade agora: zero bipes, mas a resposta aparece',
+    r.osc === 0 && /= 36/.test(r.texto), r.osc + ' bipes · ' + r.texto);
+
+  r = await falarE(() => { Clipy.curarClipy(); Clipy.voz.som.ligado = false; Clipy.fecharBalao(); }, '7*7=');
+  conf('o botão 🔇 desliga o som sem quebrar nada', r.osc === 0 && /= 49/.test(r.texto), r.osc + ' bipes');
+  await p.evaluate(() => { Clipy.voz.som.ligado = true; });
+
+  /* a máquina de escrever */
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao();
+    /* um teste lá atrás calou a regra da carta de propósito: devolve ela */
+    Clipy.cerebro.desligadas.clear();
+    Clipy.cerebro.ultimaVez = {}; Clipy.cerebro.proximaChance = 0; });
+  await p.fill('#papel', 'Prezado João, tudo bem com você?');
+  await p.evaluate(() => Clipy.lerPapel());
+  /* espera ele COMEÇAR a falar, em vez de chutar um tempo */
+  await p.waitForFunction(() => !!document.querySelector('#balaoTexto.digitando'),
+    null, { timeout: 6000 });
+  await p.waitForTimeout(350);            // deixa ele falar um pedaço
+  /* o texto inteiro já está no balão; o que cresce é a parte VISÍVEL */
+  const noMeio = await p.evaluate(() => ({
+    visivel: (document.querySelector('#balaoTexto span:first-child') || {}).textContent.length,
+    todo: document.getElementById('balaoTexto').textContent.length,
+    cursor: document.querySelector('#balaoTexto.digitando') !== null }));
+  await p.waitForTimeout(3000);
+  const noFim = await p.evaluate(() =>
+    (document.querySelector('#balaoTexto span:first-child') || {}).textContent.length);
+  conf('o texto aparece LETRA POR LETRA, com cursorzinho piscando enquanto ele fala',
+    noMeio.visivel > 0 && noMeio.visivel < noFim && noMeio.cursor, JSON.stringify(noMeio) + ' → ' + noFim);
+  conf('e a frase inteira já está no balão desde o começo (não fica pulando de tamanho, e dá pra copiar)',
+    noMeio.todo === noFim && noFim > noMeio.visivel, noMeio.todo + ' letras desde o início');
+
+  /* clicar no balão adianta */
+  await p.evaluate(() => { Clipy.fecharBalao(); Clipy.cerebro.desligadas.clear();
+    Clipy.cerebro.ultimaVez = {}; Clipy.cerebro.proximaChance = 0; });
+  await p.fill('#papel', 'Prezado Carlos, como vai a senhora sua mãe?');
+  await p.evaluate(() => Clipy.lerPapel());
+  await p.waitForFunction(() => !!document.querySelector('#balaoTexto.digitando'),
+    null, { timeout: 6000 });
+  await p.waitForTimeout(200);
+  await p.click('#balaoTexto');
+  await p.waitForTimeout(150);            // e o tique seguinte não pode desfazer
+  await p.waitForTimeout(120);
+  r = await p.evaluate(() => ({
+    visivel: (document.querySelector('#balaoTexto span:first-child') || {}).textContent.length,
+    cursor: document.querySelector('#balaoTexto.digitando') !== null }));
+  conf('e clicar no balão faz ele parar de enrolar e mostrar a frase inteira',
+    r.visivel > 30 && !r.cursor, JSON.stringify(r));
+
+  /* cada humor tem um timbre próprio */
+  r = await p.evaluate(() => {
+    const V = Clipy.voz;
+    const modos = ['parado','feliz','triste','bravo','assustado','ben','fantasma','vermelho','burro'];
+    return modos.filter(m => typeof V.falar === 'function').length;
+  });
+  conf('a voz tem timbre por humor (feliz agudo, bravo rasgado, BEN grave…)', r === 9, String(r));
+
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao();
+    Clipy.cerebro.calar('carta'); });      // devolve como estava antes
 
   /* ---------- a paciência: 100 cutucadas e ele vai embora ---------- */
   await p.click('.aba[data-aba="mesa"]');

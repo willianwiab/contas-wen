@@ -340,3 +340,25 @@ main { flex:1; padding:18px 14px 26px; }
 .notaMudo { margin:8px 0 0; font-size:.72rem; color:var(--dim); font-style:italic; }
 .balao.bilhete { background:#f2f4f7; border-style:dashed; }
 .balao.bilhete::before { border-top-color:#f2f4f7; }
+
+/* ---------------- a vozinha ---------------- */
+#somCaixa {
+  display:flex; align-items:center; gap:6px;
+  border:2px inset var(--cinza2); padding:3px 7px; background:var(--cinza2);
+}
+#somCaixa button {
+  font-size:.95rem; line-height:1; padding:3px 5px; cursor:pointer;
+  background:var(--cinza); border:2px outset var(--cinza2);
+}
+#somCaixa button:active { border-style:inset; }
+#somCaixa button.mudo { opacity:.45; }
+#somCaixa input { width:78px; accent-color:var(--azul); }
+/* a parte que ainda não foi "falada": ocupa o lugar mas não aparece, então
+   o balão já nasce do tamanho final em vez de crescer letra por letra */
+.balao p .porVir { visibility:hidden; }
+/* o cursorzinho piscando enquanto ele "fala" */
+.balao p.digitando::after {
+  content:"▌"; margin-left:1px; color:var(--dim); animation:pisca .6s steps(2) infinite;
+}
+@keyframes pisca { 50% { opacity:0; } }
+@media (max-width:760px) { #somCaixa input { width:56px; } }

@@ -8,6 +8,7 @@ import { REGRAS, Cerebro, responder, somarDoTexto, calcular, somarColuna } from 
 import { ligarInstalar } from "./instalar.js";
 import { Prancheta, tipoDoTexto, comentarioSobre, ATALHOS_DE_FABRICA } from "./prancheta.js";
 import { censurar, acharSegredo, BRONCAS, SEGREDOS } from "./segredos.js";
+import * as voz from "./voz.js";
 
 const $ = id => document.getElementById(id);
 const CHAVE = "clipy_v1";
@@ -83,6 +84,7 @@ function passarOCensor() {
   ultimoTamanho = r.texto.length;
   try { $("papel").setSelectionRange(cursor + diferenca, cursor + diferenca); } catch (e) {}
   censurados += r.quantos;
+  somDele("censura");
   lerPapel(); salvar();
   if (!clipe.temEfeito("mudo")) {
     dizer(BRONCAS[Math.floor(Math.random() * BRONCAS.length)] +
@@ -140,7 +142,8 @@ function procurarSegredo(texto) {
   return true;
 }
 function dizerSegredo(s) {
-  $("balaoTexto").textContent = s.fala;
+  somDele("segredo");
+  escreverFalando(s.fala, s.humor);
   const caixa = $("balaoBotoes"); caixa.innerHTML = "";
   if (s.aviso) {
     const p = document.createElement("p");
@@ -172,6 +175,7 @@ function apagarALuz(segundos, aoAcender) {
     document.body.appendChild(p);
   }
   p.classList.add("on");
+  voz.tocar("luzApaga");
   clipe.mostrarBalao("!", segundos);
   setTimeout(() => {
     p.classList.remove("on");
@@ -246,6 +250,77 @@ function responderAgora() {
   return true;
 }
 
+/* ==========================================================================
+   A VOZ NO BALÃO
+   O texto aparece letra por letra e cada letra solta um bipe. Separado, o
+   bipe é barulho e o texto é texto; junto, vira voz.
+   ========================================================================== */
+let escrevendo = 0, terminarAgora = null;
+
+/* Som que sai DELE (voz, susto, fanfarra) some quando ele está mudo. Som da
+   interface (clique, copiar) continua: quem está mudo é o Clipy, não a
+   página. */
+function somDele(nome) { if (!clipe.temEfeito("mudo")) voz.tocar(nome); }
+
+function modoDaVoz() {
+  if (clipe.temEfeito("ben")) return "ben";
+  if (clipe.temEfeito("vermelho")) return "vermelho";
+  if (clipe.temEfeito("fantasma")) return "fantasma";
+  if (clipe.temEfeito("burro")) return "burro";
+  return null;
+}
+
+function escreverFalando(txt, humor) {
+  const el = $("balaoTexto");
+  const meu = ++escrevendo;
+  /* mudo é mudo: o texto aparece de uma vez, sem voz nenhuma */
+  if (clipe.temEfeito("mudo")) {
+    voz.calar(); el.classList.remove("digitando"); el.textContent = txt; return;
+  }
+
+  voz.falar(txt, humor || clipe.humor, modoDaVoz());
+
+  /* A frase INTEIRA entra no balão de uma vez; o que é animado é só a parte
+     visível. Duas vantagens sobre ir juntando letra por letra no texto:
+     o balão já nasce do tamanho final (não fica pulando enquanto ele fala),
+     e o texto completo está sempre lá pra copiar e pra um leitor de tela. */
+  el.textContent = "";
+  const visto = document.createElement("span");
+  const porVir = document.createElement("span");
+  porVir.className = "porVir";
+  visto.textContent = ""; porVir.textContent = txt;
+  el.append(visto, porVir);
+  el.classList.add("digitando");
+
+  /* frase comprida aparece mais rápido, senão a pessoa espera demais */
+  const passo = Math.max(11, Math.min(38, 1900 / Math.max(1, txt.length)));
+  let i = 0, parou = false;
+  const acabar = () => {
+    if (meu !== escrevendo) return;
+    /* "parou" é o que faz o clique valer: sem ele, o próximo tique já
+       agendado voltava a esconder o resto da frase */
+    parou = true;
+    visto.textContent = txt; porVir.textContent = "";
+    el.classList.remove("digitando"); terminarAgora = null;
+  };
+  terminarAgora = acabar;
+  const passinho = () => {
+    if (parou || meu !== escrevendo) return;
+    i++;
+    visto.textContent = txt.slice(0, i);
+    porVir.textContent = txt.slice(i);
+    if (i >= txt.length) { el.classList.remove("digitando"); terminarAgora = null; return; }
+    const c = txt[i - 1];
+    setTimeout(passinho, ".!?…".includes(c) ? passo * 5 : ",;:".includes(c) ? passo * 3 : passo);
+  };
+  setTimeout(passinho, 60);
+}
+/* clicar no balão faz ele parar de enrolar e mostrar tudo */
+$("balao").addEventListener("click", e => {
+  if (e.target.tagName === "BUTTON") return;
+  if (terminarAgora) { voz.calar(); terminarAgora(); }
+});
+
 /* ---------------------------------------------------------------- o balão */
 function mostrarDica(regra) {
   dicaAberta = regra;
@@ -262,7 +337,8 @@ function mostrarDica(regra) {
     if (!regra.responde) return;                    // comentário fica calado mesmo
     bilhete = "🤐 (ele está mudo. escreveu num papelzinho.)";
   }
-  $("balaoTexto").textContent = fala;
+  somDele(regra.responde ? (estado.conta && estado.conta.erro ? "erro" : "acerto") : "balao");
+  escreverFalando(fala, regra.humor);
   $("balao").classList.toggle("resposta", !!regra.responde && !estado.conta?.erro);
   $("balao").classList.toggle("bilhete", !!bilhete);
   const caixa = $("balaoBotoes"); caixa.innerHTML = "";
@@ -434,7 +510,8 @@ const grunhir = () => GRUNHIDOS[Math.floor(Math.random() * GRUNHIDOS.length)];
 function dizer(txt, mesmoMudo) {
   if (clipe.temEfeito("mudo") && !mesmoMudo) return;
   if (clipe.temEfeito("ben")) txt = grunhir();
-  $("balaoTexto").textContent = txt;
+  somDele("balao");
+  escreverFalando(txt, clipe.humor);
   const caixa = $("balaoBotoes"); caixa.innerHTML = "";
   const b = document.createElement("button");
   b.textContent = "Ok"; b.onclick = fecharBalao;
@@ -485,6 +562,7 @@ function irEmbora() {
   segredosVistos.add("cemCutucadas"); montarOvos();
   atualizarEfeitos();
   setTimeout(() => {
+    voz.tocar("porta");
     clipe.irEmbora();
     fecharBalao();
     atualizarEfeitos();
@@ -492,6 +570,7 @@ function irEmbora() {
   }, 1400);
 }
 function chamarDeVolta() {
+  voz.tocar("ligar");
   cutucadasTotal = 0;
   clipe.voltar();
   clipe.efeitos.vermelho = 0;
@@ -523,6 +602,7 @@ $("btCutucar").onclick = () => {
     return;
   }
   const r = ["Ai!", "Oi!", "Presente!", "Tô aqui.", "De novo não."];
+  somDele("cutucar");
   clipe.mostrarBalao("!", 1);
   clipe.fazer(Math.random() < .5 ? "pular" : "girar");
   clipe.sentir(Math.random() < .5 ? "assustado" : "feliz");
@@ -531,6 +611,27 @@ $("btCutucar").onclick = () => {
 $("btAjuda").onclick = () => fazer("ajudaGeral");
 $("telaClipy").onclick = () => $("btCutucar").click();
 addEventListener("mousemove", e => clipe.olharPara(e.clientX, e.clientY));
+
+/* ---------------------------------------------------------------- o som */
+function mostrarSom() {
+  $("btSom").textContent = voz.som.ligado && voz.som.volume > 0 ? "🔊" : "🔇";
+  $("btSom").classList.toggle("mudo", !voz.som.ligado || voz.som.volume === 0);
+  $("volume").value = Math.round(voz.som.volume * 100);
+}
+$("btSom").onclick = () => {
+  voz.som.ligado = !voz.som.ligado;
+  if (voz.som.ligado) { voz.ligarAudio(); voz.tocar("ligar"); }
+  mostrarSom(); salvar();
+};
+$("volume").oninput = e => {
+  voz.volume(+e.target.value / 100);
+  voz.som.ligado = voz.som.volume > 0;
+  mostrarSom(); salvar();
+};
+$("volume").onchange = () => { if (voz.som.ligado) voz.tocar("botao"); };
+/* o navegador só deixa tocar som depois que a pessoa mexe na página */
+for (const ev of ["pointerdown", "keydown"])
+  addEventListener(ev, () => voz.ligarAudio(), { once:true });
 
 /* ---------------------------------------------------------------- chatice */
 $("chatice").oninput = e => {
@@ -598,6 +699,10 @@ function falarNaConversa(quem, txt) {
   d.appendChild(document.createTextNode(txt));
   $("conversa").appendChild(d);
   $("conversa").scrollTop = $("conversa").scrollHeight;
+  if (quem === "clipy" && !clipe.temEfeito("mudo")) {
+    somDele("balao");
+    voz.falar(txt, clipe.humor, modoDaVoz());
+  } else if (quem === "voce") voz.tocar("botao");
 }
 $("formConversa").onsubmit = e => {
   e.preventDefault();
@@ -651,6 +756,7 @@ function capturar(texto, comoVeio) {
   const r = prancheta.guardar(texto, comoVeio);
   if (!r.ok) {
     if (r.motivo === "segredo") {
+      somDele("assustar");
       dizer("Isso parecia uma senha ou um cartão. NÃO guardei — nem no histórico. É pra sua segurança.");
       clipe.sentir("assustado"); clipe.fazer("tremer");
       montarHistorico();
@@ -713,6 +819,7 @@ function montarHistorico() {
     const bCopiar = document.createElement("button"); bCopiar.textContent = "copiar";
     bCopiar.onclick = async () => {
       const ok = await copiar(x.texto);
+      voz.tocar(ok ? "copiar" : "erro");
       dizer(ok ? "Copiado! Agora é só colar onde você quiser." : "Não consegui copiar. Selecione e use Ctrl+C.");
       clipe.fazer("pular"); clipe.sentir("feliz");
     };
@@ -932,6 +1039,7 @@ function salvar() {
       caladas: [...cerebro.desligadas],
       prancheta: prancheta.paraSalvar(),
       efeitos: clipe.efeitos, censurados, segredos:[...segredosVistos],
+      som:{ ligado:voz.som.ligado, volume:voz.som.volume },
       contados: segredosContados, cutucadas: cutucadasTotal, saiu: clipe.indoEmbora,
     }));
   } catch (e) {}
@@ -954,6 +1062,8 @@ function carregar() {
   if (Array.isArray(d.segredos)) for (const id of d.segredos) segredosVistos.add(id);
   if (d.contados) Object.assign(segredosContados, d.contados);
   if (typeof d.cutucadas === "number") cutucadasTotal = d.cutucadas;
+  if (d.som) { voz.som.ligado = d.som.ligado !== false;
+    if (typeof d.som.volume === "number") voz.volume(d.som.volume); }
   if (d.saiu) { clipe.irEmbora(); clipe.saindo = 1; clipe.fora = true; }
   $("limiteHist").value = prancheta.limite;
 }
@@ -1000,7 +1110,7 @@ if (!prancheta.pastas.length) {
   }
   salvar();
 }
-montarHistorico(); montarAtalhos(); atualizarEfeitos();
+montarHistorico(); montarAtalhos(); atualizarEfeitos(); mostrarSom();
 lerPapel();
 passarOCensor();
 ultimaTecla = Date.now();
@@ -1016,6 +1126,7 @@ window.Clipy = { clipe, cerebro, prancheta, estado, REGRAS, lerPapel, mostrarDic
   passarOCensor, procurarSegredo, curarClipy, atualizarEfeitos,
   censurados:() => censurados, segredosVistos, montarOvos, irPara, irPeloEndereco,
   cutucadasTotal:() => cutucadasTotal, irEmbora, chamarDeVolta, TETO_CUTUCADA,
+  voz, escreverFalando, modoDaVoz,
   capturar, montarHistorico, montarAtalhos, tipoDoTexto, virarAtalho,
   zerarApagados:() => { apagadosRecentes = []; estado.apagados = 0; },
   fazer, ACOES, responder, somarDoTexto, irPara, atualizarTabela, salvar, carregar, CHAVE,
