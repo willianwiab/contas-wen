@@ -190,6 +190,25 @@ export const SEGREDOS = [
           "ele viu o que viu. (Se der muito arrependimento, peça desculpa pra ele por escrito.)",
   },
   {
+    id:"videoDeOlho", olho:VIDEO("0hhz7KSEIAE"),
+    fala:"…esse vídeo. Eu conheço esse vídeo. Não me pergunta como. " +
+         "…vai. Assiste. Eu vou ficar aqui. De olho.",
+    humor:"atento", gesto:"espiar",
+    efeitos:{ deOlho:20 },
+    aviso:"Ele ficou DE OLHO por 20 minutos: não pisca mais, a pupila cresce e o " +
+          "olho cola no seu ponteiro. E ele fala muito menos — só observa. " +
+          "(Cutuque cinco vezes seguidas se der aflição.)",
+  },
+  {
+    id:"videoDeOlho2", olho:VIDEO("1h_dRC2dr1Y"),
+    fala:"…ah. Esse também. (ele não desviou o olhar nenhuma vez enquanto escrevia isso)",
+    humor:"atento", gesto:"espiar",
+    efeitos:{ deOlho:20 },
+    aviso:"Ele ficou DE OLHO por 20 minutos: não pisca, a pupila cresce e o olho " +
+          "segue o seu ponteiro sem atraso. (Cutuque cinco vezes seguidas pra soltar.)",
+  },
+
+  {
     id:"videoRisada", olho:VIDEO("DxxLzJDARbo"),
     fala:"HAHAHAHA — não. não. eu não consigo parar. HAHAHAHAHA. " +
          "escreve PARA aí no papel, por favor, eu não consigo HAHAHA",

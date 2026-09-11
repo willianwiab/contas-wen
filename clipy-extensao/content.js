@@ -45,7 +45,8 @@
   ]);
 
   /* ---------------------------------------------------------- preferências */
-  const PADRAO = { ligado:true, chatice:55, som:true, volume:.45, bloqueados:[], canto:null };
+  const PADRAO = { ligado:true, chatice:55, som:true, volume:.45, bloqueados:[], canto:null,
+                   efeitos:null };
   const guardado = await chrome.storage.local.get(PADRAO);
   const conf = Object.assign({}, PADRAO, guardado);
   const salvar = () => chrome.storage.local.set(conf);
@@ -132,6 +133,22 @@
 
   /* ---------------------------------------------------------- o Clipy */
   const clipe = new mod.Clipe(tela);
+
+  /* OS EFEITOS SOBREVIVEM A TROCAR DE PÁGINA.
+     No site do Clipy os efeitos ficam salvos; aqui não ficavam, então um
+     efeito de 20 minutos morria no primeiro F5. Agora ficam guardados junto
+     com as opções. Detalhe chato: Infinity não passa por JSON (virava null),
+     então "pra sempre" é guardado como 8.64e15 — o mesmo truque do site. */
+  const PRA_SEMPRE = 8.64e15;
+  if (conf.efeitos) for (const k in clipe.efeitos)
+    if (typeof conf.efeitos[k] === "number")
+      clipe.efeitos[k] = conf.efeitos[k] >= PRA_SEMPRE ? Infinity : conf.efeitos[k];
+  const guardarEfeitos = () => {
+    conf.efeitos = Object.fromEntries(Object.entries(clipe.efeitos)
+      .map(([k, v]) => [k, v === Infinity ? PRA_SEMPRE : v]));
+    salvar();
+  };
+
   const cerebro = new cer.Cerebro();
   cerebro.chatice = conf.chatice;
   voz.som.ligado = conf.som;
@@ -353,6 +370,11 @@
 
     if (cerebro.chatice <= 0) return;
 
+    /* DE OLHO: ele não dá palpite e não comenta a página. Só observa.
+       Pergunta direta (uma conta, por exemplo) ele ainda responde — isso
+       passa pelo responder(), que não vem por aqui. */
+    if (clipe.temEfeito("deOlho")) return;
+
     /* 2º o que ele viu no que você digitou */
     const r = cerebro.pensar(estado);
     if (r) { falar(r.falaDinamica ? r.falaDinamica(estado) : r.fala, r.humor,
@@ -372,6 +394,7 @@
 
   /* ---------------------------------------------------------- os botões */
   $(".cutuca").onclick = () => {
+    if (cutucar()) { voz.tocar("segredo"); return; }
     voz.tocar("cutucar");
     clipe.fazer(Math.random() < .5 ? "pular" : "girar");
     ultimaVez.cutucado = 0;
@@ -510,6 +533,55 @@
     else if (saiuEm && fora > 12) reagir("voltouPraAba");
     mundo.bater().then(ids => ids.forEach(id => reagir(id)));
   });
+
+  /* ==========================================================================
+     OS VÍDEOS QUE ELE RECONHECE SÓ DE ESTAR NA PÁGINA
+     O YouTube troca de vídeo sem recarregar a página, então não dá pra
+     conferir só na chegada: tem que ficar olhando o endereço mudar.
+     A lista é curtinha e mora no reacoes.js — está explicado lá por que.
+     ========================================================================== */
+  let enderecoAntes = "";
+  function olharOEndereco() {
+    if (location.href === enderecoAntes) return;
+    enderecoAntes = location.href;
+    const qual = rea.videoDaPagina(location.href);
+    if (!qual) return;
+    reagir(qual, true);
+    clipe.ligarEfeito("deOlho", 20);
+    guardarEfeitos();
+  }
+  setTimeout(olharOEndereco, 2600);
+  setInterval(olharOEndereco, 1500);
+
+  /* ---- enquanto ele está DE OLHO ele quase não fala, só observa ---- */
+  setInterval(() => {
+    if (!clipe.temEfeito("deOlho") || !balao.hidden) return;
+    if (Math.random() < .18) reagir("deOlhoFala");
+  }, 24000);
+
+  /* ==========================================================================
+     A SAÍDA DE EMERGÊNCIA: CINCO CUTUCADAS SEGUIDAS
+     No site do Clipy isso já existia e eu tinha esquecido aqui — o que era
+     ruim de verdade: um efeito de 20 minutos e nenhum jeito de desfazer a
+     não ser esperar ou desinstalar. Cinco cutucadas em menos de 3 segundos
+     curam tudo. É o botão de pânico, e ele nunca deve faltar.
+     ========================================================================== */
+  let cutucadas = [];
+  function cutucar() {
+    const t = Date.now();
+    cutucadas = cutucadas.filter(x => t - x < 3000);
+    cutucadas.push(t);
+    if (cutucadas.length >= 5 && Object.values(clipe.efeitos).some(v => v > t)) {
+      cutucadas = [];
+      clipe.curar(true);
+      guardarEfeitos();
+      fila = [];
+      const f = rea.fala("soltou");
+      falar(f.fala, f.humor); clipe.fazer("acenar");
+      return true;
+    }
+    return false;
+  }
 
   /* ---- a internet ---- */
   addEventListener("offline", () => reagir("semInternet", true));

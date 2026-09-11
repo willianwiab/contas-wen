@@ -245,6 +245,7 @@ function atualizarEfeitos() {
   if (clipe.temEfeito("vermelho")) partes.push("🟥 furioso");
   if (clipe.temEfeito("quatroOlhos")) partes.push("😦 quatro olhos " + clipe.faltaPara("quatroOlhos"));
   if (clipe.temEfeito("rindo")) partes.push("😂 rindo sem parar — escreva PARA");
+  if (clipe.temEfeito("deOlho")) partes.push("👁 de olho em você " + clipe.faltaPara("deOlho"));
   if (clipe.foiEmbora()) {
     c.hidden = false;
     c.innerHTML = "🚪 ele saiu da tela (foram 100 cutucadas) " +
@@ -634,15 +635,25 @@ function chamarDeVolta() {
   setTimeout(() => dizer("…tá bom. Eu voltei. Mas era sério, viu.", true), 700);
 }
 
-$("btCutucar").onclick = () => {
+/* QUALQUER efeito ligado, menos os quatro olhos.
+   Antes aqui tinha uma lista escrita à mão com cinco efeitos — e cada efeito
+   novo (o rindo, o vermelho, o de olho) ficava de fora sem ninguém notar, o
+   que deixava a pessoa presa. Agora a pergunta é genérica: tem algo ligado?
+   Os quatro olhos ficam de fora de propósito: eles só saem com pedido de
+   desculpa por escrito, ou com o botão 🔧 consertar. */
+function temAlgoPraCurar() {
+  const agora = Date.now();
+  return Object.entries(clipe.efeitos)
+    .some(([qual, ate]) => qual !== "quatroOlhos" && ate > agora);
+}
+
+function cutucar() {
   /* cinco cutucadas seguidas acordam ele de qualquer efeito — é a saída
      de emergência de quem clicou naquele vídeo sem querer */
   const agora = Date.now();
   cutucadas = cutucadas.filter(x => agora - x < 3000);
   cutucadas.push(agora);
-  if (cutucadas.length >= 5 &&
-      (clipe.temEfeito("arcoiris") || clipe.temEfeito("burro") ||
-       clipe.temEfeito("mudo") || clipe.temEfeito("ben") || clipe.temEfeito("fantasma"))) {
+  if (cutucadas.length >= 5 && temAlgoPraCurar()) {
     cutucadas = []; curarClipy(); return;
   }
   if (clipe.foiEmbora()) { chamarDeVolta(); return; }
@@ -662,7 +673,8 @@ $("btCutucar").onclick = () => {
   clipe.fazer(Math.random() < .5 ? "pular" : "girar");
   clipe.sentir(Math.random() < .5 ? "assustado" : "feliz");
   dizer(r[Math.floor(Math.random() * r.length)]);
-};
+}
+$("btCutucar").onclick = cutucar;
 $("btAjuda").onclick = () => fazer("ajudaGeral");
 $("telaClipy").onclick = () => $("btCutucar").click();
 addEventListener("mousemove", e => clipe.olharPara(e.clientX, e.clientY));
@@ -1115,6 +1127,7 @@ const NOME_SEGREDO = {
   videoWhatsUp:"o vídeo pra cantar junto", videoBen:"o vídeo do Ben",
   videoFantasma:"o vídeo assombrado", shania:"escrever aquele nome três vezes",
   videoQuatroOlhos:"o vídeo dos quatro olhos", videoRisada:"o vídeo da risada sem fim",
+  videoDeOlho:"o vídeo em que ele fica de olho", videoDeOlho2:"o outro vídeo de ficar de olho",
   cemCutucadas:"cutucar ele cem vezes",
   rickroll:"never gonna…",
   quarentaEDois:"o número 42", sudo:"sudo", helloWorld:"hello, world",
@@ -1234,6 +1247,10 @@ setInterval(() => {
   }
   if ($("balao").hidden) {
     if (estado.conta && !estado.conta.erro && responderAgora()) return;
+    /* DE OLHO: ele para de dar palpite. Pergunta direta ele ainda responde
+       (a linha acima), mas palpite sobre o que você escreveu, não: ele só
+       observa. Era isso que o aviso do segredo prometia. */
+    if (clipe.temEfeito("deOlho")) return;
     const r = cerebro.pensar(estado);
     if (r) mostrarDica(r);
     else if (estado.parado > 30 && cerebro.chatice > 0) clipe.sentir("dormindo");
@@ -1268,6 +1285,7 @@ window.Clipy = { clipe, cerebro, prancheta, estado, REGRAS, lerPapel, mostrarDic
   passarOCensor, procurarSegredo, curarClipy, atualizarEfeitos,
   censurados:() => censurados, segredosVistos, montarOvos, irPara, irPeloEndereco,
   cutucadasTotal:() => cutucadasTotal, irEmbora, chamarDeVolta, TETO_CUTUCADA,
+  cutucar, temAlgoPraCurar,
   voz, escreverFalando, modoDaVoz, CLASSICAS,
   ligarClassico, sugestaoClassica, pensarNaRisada, modoClassico:() => modoClassico,
   capturar, montarHistorico, montarAtalhos, tipoDoTexto, virarAtalho,

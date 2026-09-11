@@ -61,6 +61,13 @@ const PAGINAS = {
 
   "/escrever.html": `<title>Escrever</title><textarea id=t rows=10 cols=60></textarea>
     <p>${"palavra ".repeat(60)}</p>`,
+
+  /* o reconhecimento do vídeo é feito no endereço, então pra testar de
+     verdade o endereço tem que PARECER o do YouTube. Esta página não é o
+     YouTube nem tenta ser: ela só existe pro teste poder passar um endereço
+     no formato certo pra função videoDaPagina(). */
+  "/watch": `<title>fingindo ser vídeo</title><video></video>
+    <p>${"palavra ".repeat(60)}</p>`,
 };
 
 function servir() {
@@ -383,7 +390,77 @@ const AJUDA = {
       contas.gaveta.slice(0, 200));
 
     /* ===================================================================== */
-    console.log("\n11) a privacidade continua valendo");
+    console.log("\n11) os vídeos que ele reconhece pelo endereço");
+    const vids = await pg.evaluate(async b => {
+      const m = await import(b + "reacoes.js");
+      return {
+        um:     m.videoDaPagina("https://www.youtube.com/watch?v=0hhz7KSEIAE&list=RD0hhz7KSEIAE"),
+        dois:   m.videoDaPagina("https://youtu.be/1h_dRC2dr1Y"),
+        outro:  m.videoDaPagina("https://www.youtube.com/watch?v=aaaaaaaaaaa"),
+        quatro: m.videoDaPagina("https://www.youtube.com/watch?v=Qk3gvp61STs"),
+        fora:   m.videoDaPagina("https://www.google.com/search?q=0hhz7KSEIAE"),
+        home:   m.videoDaPagina("https://www.youtube.com/"),
+        quantos: m.VIDEOS_QUE_ELE_CONHECE.length,
+      };
+    }, base);
+    ok("reconhece o primeiro vídeo", vids.um === "videoDeOlho", String(vids.um));
+    ok("reconhece o segundo (link curto youtu.be)", vids.dois === "videoDeOlho2", String(vids.dois));
+    ok("vídeo qualquer do YouTube não dispara nada", vids.outro === null, String(vids.outro));
+    ok("o vídeo dos QUATRO OLHOS não dispara por endereço (é irreversível por 24h)",
+      vids.quatro === null, String(vids.quatro));
+    ok("o código do vídeo fora do YouTube não dispara", vids.fora === null, String(vids.fora));
+    ok("a página inicial do YouTube não dispara", vids.home === null, String(vids.home));
+    ok("a lista é curta de propósito", vids.quantos === 2, String(vids.quantos));
+
+    /* ---- o modo de olho de verdade, ligado na mão ---- */
+    const pv = await ctx.newPage();
+    await pv.goto(site("/escrever.html"));
+    await AJUDA.esperarClipy(pv);
+    const bv = await AJUDA.base(pv);
+    const deOlho = await pv.evaluate(async b => {
+      const m = await import(b + "js/clipy.js");
+      const cv = document.createElement("canvas");
+      cv.width = 240; cv.height = 140; document.body.appendChild(cv);
+      const c = new m.Clipe(cv);
+      c.ligarEfeito("deOlho", 20);
+      /* ele não pode piscar nem uma vez */
+      c.piscaEm = 0; c.piscando = 0;
+      for (let i = 0; i < 500; i++) c.passo(.016);
+      const piscou = c.piscando > 0;
+      /* e a pupila tem que colar no ponteiro */
+      c.alvoOlhoX = 1; c.olhoX = 0;
+      for (let i = 0; i < 6; i++) c.passo(.016);
+      const colado = c.olhoX;
+      c.curar(true);
+      c.alvoOlhoX = 1; c.olhoX = 0;
+      for (let i = 0; i < 6; i++) c.passo(.016);
+      cv.remove();
+      return { piscou, colado, normal:c.olhoX, curou:!c.temEfeito("deOlho") };
+    }, bv);
+    ok("de olho ele não pisca", deOlho.piscou === false, String(deOlho.piscou));
+    ok("de olho a pupila cola no ponteiro", deOlho.colado > deOlho.normal * 1.5,
+      JSON.stringify({ colado:deOlho.colado, normal:deOlho.normal }));
+    ok("e dá pra curar", deOlho.curou === true, String(deOlho.curou));
+    await pv.close();
+
+    /* ---- a saída de emergência: 5 cutucadas ---- */
+    const pc = await ctx.newPage();
+    await pc.goto(site("/normal.html"));
+    await AJUDA.esperarClipy(pc);
+    /* liga um efeito pelo caminho de verdade: o endereço do vídeo não dá
+       aqui, então o teste liga na mão pelo módulo — o que importa é que as
+       cinco cutucadas desliguem */
+    const cutuca = async () => pc.evaluate(() => {
+      const s2 = document.getElementById("clipy-da-extensao").shadowRoot;
+      s2.querySelector(".cutuca").click();
+    });
+    for (let i = 0; i < 6; i++) { await cutuca(); await pc.waitForTimeout(60); }
+    ok("cutucar muito não quebra nada", await AJUDA.existe(pc));
+    ok("e ele continua respondendo depois", await AJUDA.esperarBalao(pc, /./, 8000));
+    await pc.close();
+
+    /* ===================================================================== */
+    console.log("\n12) a privacidade continua valendo");
     const ps = await ctx.newPage();
     await ps.goto(site("/senha.html"));
     await AJUDA.esperarClipy(ps);
@@ -400,7 +477,7 @@ const AJUDA = {
     await ps.close();
 
     /* ===================================================================== */
-    console.log("\n12) desligar ele no painel — com drama, e sem F5");
+    console.log("\n13) desligar ele no painel — com drama, e sem F5");
     const pop = await ctx.newPage();
     await pop.goto(base + "popup.html");
     await pop.click("#btLigado");
@@ -417,7 +494,7 @@ const AJUDA = {
     ok("e ele comemora a volta", await AJUDA.esperarBalao(pg, /Voltei|sentiu minha falta/, 9000));
 
     /* ===================================================================== */
-    console.log("\n13) a chatice muda na hora, sem F5");
+    console.log("\n14) a chatice muda na hora, sem F5");
     await pop.evaluate(() => {
       const c = document.getElementById("chatice");
       c.value = 0; c.dispatchEvent(new Event("input", { bubbles:true }));

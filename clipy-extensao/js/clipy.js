@@ -69,7 +69,7 @@ export class Clipe {
     /* Os efeitos dos segredos. Cada um guarda ATÉ QUANDO vale (em
        milissegundos do relógio), pra sobreviver a recarregar a página. */
     this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0, vermelho:0,
-                     quatroOlhos:0, rindo:0 };
+                     quatroOlhos:0, rindo:0, deOlho:0 };
     /* ele indo embora: 0 é aqui, 1 é fora da tela */
     this.saindo = 0; this.indoEmbora = false; this.fora = false;
     this.dpr = 1;
@@ -119,7 +119,7 @@ export class Clipe {
   curar(tudo) {
     const olhos = this.efeitos.quatroOlhos;
     this.efeitos = { arcoiris:0, burro:0, mudo:0, ben:0, fantasma:0, vermelho:0,
-                     quatroOlhos: tudo ? 0 : olhos, rindo:0 };
+                     quatroOlhos: tudo ? 0 : olhos, rindo:0, deOlho:0 };
     this.voltar();
   }
   faltaPara(qual) {
@@ -153,11 +153,15 @@ export class Clipe {
       if (this.gestoT >= this.gestoDur) { this.gesto = null; this.gestoT = 0; }
     }
     /* piscar sozinho, que é o que faz parecer vivo */
+    /* DE OLHO: ele não pisca. Nem uma vez. É só isso e já é desconfortável. */
+    const deOlho = this.temEfeito("deOlho");
     this.piscaEm -= dt;
-    if (this.piscaEm <= 0) { this.piscando = .13; this.piscaEm = 1.8 + Math.random() * 4; }
+    if (this.piscaEm <= 0) { this.piscando = deOlho ? 0 : .13; this.piscaEm = 1.8 + Math.random() * 4; }
     if (this.piscando > 0) this.piscando -= dt;
     /* os olhos correm atrás do alvo com preguiça */
-    this.olhoX = mistura(this.olhoX, this.alvoOlhoX, Math.min(1, dt * 6));
+    /* normalmente o olho vai devagar atrás do ponteiro, com um atrasinho.
+       De olho, não: ele COLA. Sem atraso, sem perdão. */
+    this.olhoX = mistura(this.olhoX, this.alvoOlhoX, Math.min(1, dt * (deOlho ? 20 : 6)));
     this.olhoY = mistura(this.olhoY, this.alvoOlhoY, Math.min(1, dt * 6));
     this.desenhar();
   }
@@ -384,6 +388,8 @@ export class Clipe {
     /* QUATRO OLHOS: o par de sempre, mais um par menor logo abaixo. É a
        coisa mais simples de desenhar e a mais difícil de esquecer. */
     const quatro = this.temEfeito("quatroOlhos");
+    /* de olho: pupila maior, e ela alcança mais longe dentro do olho */
+    const espiando = this.temEfeito("deOlho");
     const olhos = quatro
       ? [[-.34, -.78], [.09, -.78], [-.26, -.46], [.02, -.46]]
       : [[-.31, -.70], [.06, -.70]];
@@ -410,14 +416,15 @@ export class Clipe {
       if (ay > .2) {
         /* de burro, cada pupila vai pra um canto e não segue mais nada */
         const solto = H.burro;
-        const px = ox + bx + mistura(this.olhoX * r * .42,
+        const alcance = espiando ? .60 : .42;
+        const px = ox + bx + mistura(this.olhoX * r * alcance,
           (i === 0 ? -.42 : .40) * r + Math.sin(this.t * 1.3 + i) * r * .12, solto);
-        const py = oy + by + mistura((this.olhoY - H.olhaCima * .5) * r * .38,
+        const py = oy + by + mistura((this.olhoY - H.olhaCima * .5) * r * (alcance - .04),
           (i === 0 ? .30 : -.26) * r + Math.cos(this.t * 1.1 + i * 2) * r * .1, solto);
         ctx.fillStyle = "#15181d";
-        ctx.beginPath(); ctx.arc(px, py, r * .46, 0, 6.2832); ctx.fill();
-        ctx.fillStyle = "#ffffffdd";
-        ctx.beginPath(); ctx.arc(px - r * .16, py - r * .18, r * .13, 0, 6.2832); ctx.fill();
+        ctx.beginPath(); ctx.arc(px, py, r * (espiando ? .60 : .46), 0, 6.2832); ctx.fill();
+        ctx.fillStyle = espiando ? "#ffffff66" : "#ffffffdd";
+        ctx.beginPath(); ctx.arc(px - r * .16, py - r * .18, r * (espiando ? .09 : .13), 0, 6.2832); ctx.fill();
       }
       /* o contorno */
       ctx.save();
