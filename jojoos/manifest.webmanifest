@@ -1,0 +1,16 @@
+{
+  "name": "JojoOS — o computador do JoJo",
+  "short_name": "JojoOS",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#14746f",
+  "theme_color": "#14746f",
+  "lang": "pt-BR",
+  "description": "Um computador inteiro dentro do navegador: janelas que arrastam, barra de tarefas, e os 18 jogos do JoJo como programas. Com o Clipy morando dentro.",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

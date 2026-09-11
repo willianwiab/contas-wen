@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="JojoOS">
+  <rect width="512" height="512" rx="96" fill="#14746f"/>
+  <!-- o monitor -->
+  <rect x="86" y="112" width="340" height="234" rx="14" fill="#c9cdd4" stroke="#3c4149" stroke-width="10"/>
+  <rect x="106" y="132" width="300" height="180" fill="#0d5b57"/>
+  <!-- a janelinha dentro da tela -->
+  <rect x="132" y="158" width="176" height="120" fill="#e9edf3" stroke="#3c4149" stroke-width="7"/>
+  <rect x="132" y="158" width="176" height="26" fill="#2f7ad1"/>
+  <circle cx="292" cy="171" r="6" fill="#fff"/>
+  <!-- o clipe de papel, bem simplificado -->
+  <path d="M336 208v66a30 30 0 0 0 60 0v-84a46 46 0 0 0-92 0v92"
+        fill="none" stroke="#ffd23f" stroke-width="17" stroke-linecap="round"/>
+  <!-- o pé do monitor -->
+  <rect x="222" y="346" width="68" height="34" fill="#a4a9b2"/>
+  <rect x="160" y="380" width="192" height="26" rx="10" fill="#c9cdd4" stroke="#3c4149" stroke-width="8"/>
+</svg>

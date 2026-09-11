@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="JojoOS">
+  <defs>
+    <linearGradient id="mesa" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17827c"/><stop offset="1" stop-color="#0b4f4c"/>
+    </linearGradient>
+    <linearGradient id="tit" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#123a72"/><stop offset="1" stop-color="#2f7ad1"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="320" height="200" fill="url(#mesa)"/>
+  <g stroke="#ffffff12" stroke-width="1">
+    <path d="M32 0V200M64 0V200M96 0V200M128 0V200M160 0V200M192 0V200M224 0V200M256 0V200M288 0V200"/>
+    <path d="M0 32H320M0 64H320M0 96H320M0 128H320M0 160H320"/>
+  </g>
+
+  <!-- janela de trás -->
+  <g>
+    <rect x="150" y="26" width="132" height="92" fill="#c9cdd4" stroke="#3c4149" stroke-width="2"/>
+    <rect x="152" y="28" width="128" height="15" fill="#868c96"/>
+    <rect x="156" y="47" width="120" height="67" fill="#fff"/>
+    <g fill="#c9cdd4" stroke="#5a616b" stroke-width="1.5">
+      <rect x="162" y="53" width="32" height="28"/><rect x="200" y="53" width="32" height="28"/>
+      <rect x="238" y="53" width="32" height="28"/><rect x="162" y="86" width="32" height="24"/>
+      <rect x="200" y="86" width="32" height="24"/><rect x="238" y="86" width="32" height="24"/>
+    </g>
+  </g>
+
+  <!-- janela da frente -->
+  <g>
+    <rect x="44" y="58" width="128" height="100" fill="#c9cdd4" stroke="#3c4149" stroke-width="2"/>
+    <rect x="46" y="60" width="124" height="16" fill="url(#tit)"/>
+    <g fill="#fff"><rect x="148" y="65" width="7" height="6"/><rect x="157" y="65" width="7" height="6"/></g>
+    <rect x="48" y="80" width="120" height="74" fill="#fff"/>
+    <rect x="56" y="90" width="70" height="20" rx="9" fill="#fffbc8" stroke="#0f0f10" stroke-width="2"/>
+    <rect x="88" y="118" width="72" height="18" rx="9" fill="#2f7ad1"/>
+  </g>
+
+  <!-- o clipe -->
+  <g transform="translate(258 120) scale(.92)" fill="none" stroke="#e9edf3" stroke-width="7" stroke-linecap="round">
+    <path d="M0 -26v40a14 14 0 0 0 28 0v-52a22 22 0 0 0-44 0v56"/>
+  </g>
+  <g transform="translate(252 108)" fill="#fff">
+    <circle cx="0" cy="0" r="6.5" stroke="#14181d" stroke-width="2"/>
+    <circle cx="15" cy="0" r="6.5" stroke="#14181d" stroke-width="2"/>
+    <circle cx="2" cy="1" r="2.6" fill="#14181d"/><circle cx="17" cy="1" r="2.6" fill="#14181d"/>
+  </g>
+
+  <!-- barra de tarefas -->
+  <rect x="0" y="176" width="320" height="24" fill="#c9cdd4" stroke="#f1f4f8" stroke-width="2"/>
+  <rect x="6" y="181" width="52" height="14" fill="#c9cdd4" stroke="#5a616b" stroke-width="1.5"/>
+  <text x="12" y="192" font-family="Segoe UI,sans-serif" font-size="9" font-weight="700" fill="#14181d">Iniciar</text>
+  <rect x="64" y="181" width="58" height="14" fill="#c9cdd4" stroke="#5a616b" stroke-width="1.5"/>
+  <rect x="126" y="181" width="58" height="14" fill="#c9cdd4" stroke="#5a616b" stroke-width="1.5"/>
+  <rect x="272" y="181" width="42" height="14" fill="#c9cdd4" stroke="#5a616b" stroke-width="1.5"/>
+</svg>

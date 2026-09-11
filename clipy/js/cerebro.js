@@ -376,6 +376,14 @@ const NAO_SEI = [
 
 export { calcular, somarColuna, formatar };
 
+/* acha o primeiro pedaço da frase que tem cara de conta: números com pelo
+   menos um sinal entre eles. Devolve "" quando não acha — e aí o calcular()
+   devolve null na hora, sem pensar. */
+function pedacoDeConta(texto) {
+  const m = String(texto).match(/\d[\d.,]*(?:\s*[-+*\/x×÷^%()]\s*[\d.,()]*\d[\d.,]*)+/);
+  return m ? m[0] : "";
+}
+
 export function responder(pergunta) {
   const t = pergunta.toLowerCase().trim();
   if (!t) return null;
@@ -387,8 +395,11 @@ export function responder(pergunta) {
     }
   }
   /* Uma conta de verdade vem antes de qualquer palavra-chave: ele CALCULA em
-     vez de dizer "aperta o botão de somar". */
-  const c = calcular(pergunta);
+     vez de dizer "aperta o botão de somar".
+     E numa CONVERSA a conta quase nunca vem sozinha: vem com um oi na
+     frente e um ponto de interrogação atrás ("oi clipy, quanto é 7*8?").
+     Então, se a frase inteira não for conta, ele procura o pedaço que É. */
+  const c = calcular(pergunta) || calcular(pedacoDeConta(pergunta));
   if (c) {
     return c.erro
       ? { texto:"Essa eu não consigo: " + c.erro + ".", humor:"confuso", gesto:"girar" }
