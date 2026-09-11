@@ -19,6 +19,11 @@
 
    Tudo é desenhado dentro de um shadow DOM, então o estilo da extensão
    não vaza pra página e o estilo da página não deforma o Clipy.
+
+   ELE REAGE. As falas e os detectores estão em reacoes.js; a conta das
+   abas (sem espionar aba nenhuma) está em mundo.js. Aqui é só a fiação:
+   ouvir o que acontece, chamar reagir("oQueFoi") e deixar a fila resolver
+   quem fala primeiro.
    ========================================================================== */
 (async () => {
   "use strict";
@@ -29,12 +34,14 @@
   if (/^(chrome|about|edge|moz)-?(extension)?:/.test(location.protocol)) return;
 
   const url = c => chrome.runtime.getURL(c);
-  const [mod, cer, seg, voz, com] = await Promise.all([
+  const [mod, cer, seg, voz, com, rea, mun] = await Promise.all([
     import(url("js/clipy.js")),
     import(url("js/cerebro.js")),
     import(url("js/segredos.js")),
     import(url("js/voz.js")),
     import(url("comentarios.js")),
+    import(url("reacoes.js")),
+    import(url("mundo.js")),
   ]);
 
   /* ---------------------------------------------------------- preferências */
@@ -134,9 +141,20 @@
                    porMinuto:0, parado:0, tempoAberto:0, linha:"", conta:null, coluna:null };
 
   /* ---------------------------------------------------------- a fala */
-  let escrevendo = 0, terminar = null;
+  /* O BALÃO FECHA SOZINHO.
+     No site dele isso não importava: o balão ficava aberto até você clicar,
+     e pronto. Aqui importa muito. Enquanto o balão está aberto ele não fala
+     mais nada — então um balão esquecido aberto travava TODAS as reações: o
+     pânico do 404, a reclamação de ser arrastado, a internet caindo. Nada
+     aparecia. Agora ele fecha depois do tempo de ler, que depende do
+     tamanho da frase. */
+  let escrevendo = 0, terminar = null, fechaSozinho = 0;
+  const tempoDeLer = txt => Math.min(19000, 4800 + txt.length * 78);
+
   function falar(txt, humor, botoes) {
     const meu = ++escrevendo;
+    clearTimeout(fechaSozinho);
+    fechaSozinho = setTimeout(() => { if (meu === escrevendo) fechar(); }, tempoDeLer(txt));
     balaoBts.innerHTML = "";
     for (const [rot, faz] of (botoes || [["Ok", null]])) {
       const b = document.createElement("button");
@@ -164,7 +182,11 @@
     setTimeout(tique, 50);
     clipe.sentir(humor || "atento");
   }
-  const fechar = () => { balao.hidden = true; clipe.sentir("parado"); };
+  const fechar = () => {
+    clearTimeout(fechaSozinho);
+    balao.hidden = true;
+    clipe.sentir(Date.now() < tontoAte ? "tonto" : "parado");
+  };
   balao.addEventListener("click", e => {
     if (e.target.tagName === "BUTTON") return;
     if (terminar) { voz.calar(); terminar(); }
@@ -227,6 +249,58 @@
     return true;
   }
 
+  /* ==========================================================================
+     A FILA DE REAÇÕES
+     Muita coisa pode acontecer junta: você abre um site de jogo colorido
+     que deu erro de JavaScript enquanto fecha uma aba. Se ele falasse tudo
+     de uma vez seria um alarme, não um ajudante. Então cada acontecimento
+     entra numa fila com uma PRIORIDADE, e ele fala um de cada vez — o mais
+     urgente primeiro. E cada tipo tem um tempo de descanso, pra ele não
+     repetir a mesma reclamação de meio em meio minuto.
+     ========================================================================== */
+  const ESPERA_PADRAO = 95000;
+  const ESPERAS = {
+    cutucado:1200, arrastado:7000, tonto:11000, arrastadoRapido:9000,
+    arrastadoMuitasVezes:25000, solto:14000, exilado:60000, olhando:50000,
+    trocouAba:25000, voltouPraAba:25000, abaFechada:12000, muitasAbasFechadas:30000,
+    abaNova:40000, digitandoMuito:45000, digitandoTese:70000, apagouTudo:20000,
+    capsLock:40000, risada:30000, socorro:20000, chamouEle:25000,
+    parado30:1e9, parado60:1e9, parado180:1e9, parado300:1e9, acordou:120000,
+    erro404:6e5, erro500:6e5, paginaBranca:6e5, campoSenha:6e5, paginaLogin:6e5,
+    temGato:3e5, siteColorido:6e5, semInternet:30000, voltouInternet:30000,
+    erroDeJs:12e4, formularioInvalido:45000, carregamentoInfinito:6e5,
+    solta:55000,
+  };
+  const ultimaVez = {};
+  let fila = [];
+
+  function reagir(id, urgente) {
+    if (!rea.existe(id)) return;
+    if (fila.some(f => f.id === id)) return;
+    const espera = ESPERAS[id] !== undefined ? ESPERAS[id] : ESPERA_PADRAO;
+    if (Date.now() - (ultimaVez[id] || 0) < espera) return;
+    const f = rea.fala(id);
+    if (!f) return;
+    if (urgente) f.prioridade = Math.max(f.prioridade, 9);
+    fila.push(f);
+    fila.sort((a, b) => b.prioridade - a.prioridade);
+    if (fila.length > 6) fila.length = 6;
+    if (caixa.isConnected) caixa.dataset.fila = fila.map(x => x.id).join(",");
+  }
+
+  function dizerReacao(f) {
+    ultimaVez[f.id] = Date.now();
+    falar(f.fala, f.humor, [["Ok", null],
+      ["Para de aparecer", () => { mudarChatice(Math.max(0, cerebro.chatice - 25)); }]]);
+    if (f.gesto) clipe.fazer(f.gesto);
+    proximo = Date.now() + intervalo();
+  }
+
+  function mudarChatice(n) {
+    cerebro.chatice = n; conf.chatice = n; salvar();
+    $(".calado").textContent = n ? "😶 Quieto" : "🗣 Falar";
+  }
+
   /* ---------------------------------------------------------- o palpite */
   let proximo = Date.now() + 9000;
   const intervalo = () => {
@@ -239,8 +313,21 @@
     1600 + Math.random() * 1200);
   setTimeout(() => clipe.fazer("acenar"), 1500);
 
+  /* o que ele viu só de olhar a página, já na chegada */
+  setTimeout(() => { for (const id of rea.diagnosticar()) reagir(id); }, 3200);
+
+  /* O que ele está sentindo fica escrito em atributos do elemento. Não é
+     enfeite: atributo de DOM é a única coisa que o teste (e você, no
+     inspetor) consegue ver de fora do content script. */
+  function anotar() {
+    caixa.dataset.fila = fila.map(f => f.id).join(",");
+    caixa.dataset.humor = clipe.humor;
+    caixa.dataset.tonto = Date.now() < tontoAte ? "1" : "0";
+  }
+
   setInterval(() => {
     lerCampo();
+    anotar();
 
     /* palavrão: aqui ele só COMENTA, não mexe no que você escreveu */
     if (estado.texto && seg.acharPalavroes(estado.texto).length && Math.random() < .5) {
@@ -248,11 +335,25 @@
         clipe.fazer("tremer"); proximo = Date.now() + intervalo(); return; }
     }
 
+    /* o que ele notou no teclado (gritar, rir, chamar o nome dele, apagar tudo) */
+    const doTeclado = rea.olharTeclado(estado);
+    if (doTeclado) reagir(doTeclado);
+
     if (!balao.hidden) return;
+
+    /* 1º a fila de reações. Urgência 6 ou mais fura a fila de espera —
+       um 404 não pode esperar meio minuto pra ele entrar em pânico. */
+    if (fila.length) {
+      const f = fila[0];
+      const urgente = f.prioridade >= 6;
+      const podeFalar = urgente || (cerebro.chatice > 0 && Date.now() >= proximo);
+      if (podeFalar) { fila.shift(); dizerReacao(f); return; }
+      if (cerebro.chatice <= 0 && f.prioridade < 8) fila.shift();   // calado: descarta o miúdo
+    }
+
     if (cerebro.chatice <= 0) return;
 
-    /* primeiro o que ele viu no que você digitou; se não tiver, um palpite
-       sobre a página, que é a parte nova de morar por cima dos sites */
+    /* 2º o que ele viu no que você digitou */
     const r = cerebro.pensar(estado);
     if (r) { falar(r.falaDinamica ? r.falaDinamica(estado) : r.fala, r.humor,
               (r.botoes || []).map(([rot]) => [rot, null]));
@@ -260,11 +361,12 @@
       proximo = Date.now() + intervalo();
       return;
     }
+
+    /* 3º um palpite sobre a página */
     if (Date.now() < proximo) return;
     proximo = Date.now() + intervalo();
     falar(com.comentarioDaPagina(pagina), "atento",
-      [["Ok", null], ["Para de aparecer", () => { cerebro.chatice = Math.max(0, cerebro.chatice - 25);
-        conf.chatice = cerebro.chatice; salvar(); }]]);
+      [["Ok", null], ["Para de aparecer", () => mudarChatice(Math.max(0, cerebro.chatice - 25))]]);
     clipe.fazer(Math.random() < .35 ? "espiar" : "pular");
   }, 1000);
 
@@ -272,13 +374,14 @@
   $(".cutuca").onclick = () => {
     voz.tocar("cutucar");
     clipe.fazer(Math.random() < .5 ? "pular" : "girar");
-    falar(["Ai!", "Oi!", "Presente!", "Tô aqui.", "De novo não."][Math.floor(Math.random() * 5)], "assustado");
+    ultimaVez.cutucado = 0;
+    const f = rea.fala("cutucado");
+    falar(f.fala, f.humor);
+    ultimaVez.cutucado = Date.now();
   };
   tela.onclick = () => $(".cutuca").click();
   $(".calado").onclick = () => {
-    cerebro.chatice = cerebro.chatice > 0 ? 0 : 55;
-    conf.chatice = cerebro.chatice; salvar();
-    $(".calado").textContent = cerebro.chatice ? "😶 Quieto" : "🗣 Falar";
+    mudarChatice(cerebro.chatice > 0 ? 0 : 55);
     falar(cerebro.chatice ? "Voltei a falar. Você vai se arrepender." :
       "Tá bom. Fico quieto. …quietinho. …aqui, no canto.", cerebro.chatice ? "feliz" : "triste");
   };
@@ -296,15 +399,38 @@
   $(".som").textContent = voz.som.ligado ? "🔊" : "🔇";
   $(".calado").textContent = cerebro.chatice ? "😶 Quieto" : "🗣 Falar";
 
-  /* ---------------------------------------------------------- arrastar */
+  /* ==========================================================================
+     ARRASTAR — e ficar tonto
+     Ele mede três coisas enquanto você arrasta: quanto andou, quão rápido
+     foi, e quantas vezes você já fez isso. Andou muito ou virou muito a
+     direção = tontura de verdade (humor "tonto" + gesto "girarLouco"), e a
+     tontura DURA alguns segundos depois que você solta.
+     ========================================================================== */
   const barra = $(".titulo");
-  let pegando = null;
+  let pegando = null, arrastosTotal = 0, tontoAte = 0;
+
+  /* enquanto estiver tonto, ele volta pro humor tonto sempre que o balão
+     fecha — senão ele "sarava" na hora, o que não tem graça nenhuma */
+  function ficarTonto(segundos) {
+    tontoAte = Date.now() + segundos * 1000;
+    clipe.sentir("tonto");
+    clipe.fazer("girarLouco");
+    reagir("tonto");
+  }
+  setInterval(() => {
+    if (Date.now() < tontoAte && balao.hidden) clipe.sentir("tonto");
+    if (caixa.isConnected) caixa.dataset.tonto = Date.now() < tontoAte ? "1" : "0";
+  }, 700);
+
   barra.addEventListener("pointerdown", e => {
     if (e.target.tagName === "BUTTON") return;
     const r = painel.getBoundingClientRect();
-    pegando = { dx:e.clientX - r.left, dy:e.clientY - r.top };
+    pegando = { dx:e.clientX - r.left, dy:e.clientY - r.top,
+                x:e.clientX, y:e.clientY, q:performance.now(),
+                andou:0, pico:0, viradas:0, vx:0, vy:0 };
     barra.setPointerCapture(e.pointerId);
   });
+
   barra.addEventListener("pointermove", e => {
     if (!pegando) return;
     const x = Math.max(4, Math.min(innerWidth - 260, e.clientX - pegando.dx));
@@ -313,13 +439,42 @@
     painel.style.setProperty("--y", y + "px");
     painel.style.setProperty("--r", "auto");
     painel.style.setProperty("--b", "auto");
+
+    /* a medição da tontura */
+    const q = performance.now(), dt = Math.max(1, q - pegando.q);
+    const dx = e.clientX - pegando.x, dy = e.clientY - pegando.y;
+    const d = Math.hypot(dx, dy);
+    pegando.andou += d;
+    pegando.pico = Math.max(pegando.pico, d / dt);          // pixels por milissegundo
+    if (d > 3 && (dx * pegando.vx + dy * pegando.vy) < 0) pegando.viradas++;  // mudou de direção
+    if (d > 3) { pegando.vx = dx; pegando.vy = dy; }
+    pegando.x = e.clientX; pegando.y = e.clientY; pegando.q = q;
+
+    /* tontura no meio do arrasto, se você estiver sacudindo ele */
+    if ((pegando.viradas >= 7 || pegando.andou > 1400) && Date.now() > tontoAte - 4000)
+      ficarTonto(8);
   });
+
   barra.addEventListener("pointerup", () => {
     if (!pegando) return;
-    pegando = null;
+    const p = pegando; pegando = null;
+    arrastosTotal++;
     conf.canto = { x:painel.style.getPropertyValue("--x"), y:painel.style.getPropertyValue("--y") };
     salvar();
+
+    const r = painel.getBoundingClientRect();
+    const noCanto = (r.left < 90 || r.right > innerWidth - 90) &&
+                    (r.top < 90 || r.bottom > innerHeight - 90);
+
+    /* do mais dramático pro menos */
+    if (p.viradas >= 7 || p.andou > 1400)        { ficarTonto(9); reagir("arrastadoRapido", true); }
+    else if (p.pico > 2.2)                        reagir("arrastadoRapido");
+    else if (arrastosTotal >= 4)                  reagir("arrastadoMuitasVezes");
+    else if (noCanto && p.andou > 120)            reagir("exilado");
+    else if (p.andou > 40)                        reagir(arrastosTotal <= 2 ? "arrastado" : "solto");
+    if (p.andou > 500 && Date.now() > tontoAte)   ficarTonto(6);
   });
+
   if (conf.canto && conf.canto.x) {
     painel.style.setProperty("--x", conf.canto.x);
     painel.style.setProperty("--y", conf.canto.y);
@@ -327,8 +482,141 @@
     painel.style.setProperty("--b", "auto");
   }
 
+  /* o mouse chegando perto dele */
+  $(".palco").addEventListener("pointerenter", () => reagir("olhando"));
+
   /* o navegador só libera som depois que a pessoa mexe na página */
   addEventListener("pointerdown", () => voz.ligarAudio(), { once:true });
+
+  /* ==========================================================================
+     OS ACONTECIMENTOS
+     Daqui pra baixo é só ouvir o navegador e avisar a fila.
+     ========================================================================== */
+
+  /* ---- as abas (sem espionar aba nenhuma: leia o mundo.js) ---- */
+  const mundo = new mun.Mundo(chrome.storage.local);
+  mundo.nasci().then(ids => setTimeout(() => ids.forEach(id => reagir(id)), 2400));
+  /* o batimento só vale a pena com a aba à vista: o navegador congela o
+     cronômetro das abas escondidas, e aí ele acusaria fechamento à toa */
+  setInterval(() => { if (!document.hidden) mundo.bater().then(ids => ids.forEach(id => reagir(id))); }, 22000);
+  addEventListener("pagehide", () => mundo.saindo());
+
+  /* ---- trocar de aba ---- */
+  let saiuEm = 0;
+  addEventListener("visibilitychange", () => {
+    if (document.hidden) { saiuEm = Date.now(); reagir("trocouAba"); return; }
+    const fora = (Date.now() - saiuEm) / 1000;
+    if (saiuEm && fora > 120) reagir("voltouPraAba", true);
+    else if (saiuEm && fora > 12) reagir("voltouPraAba");
+    mundo.bater().then(ids => ids.forEach(id => reagir(id)));
+  });
+
+  /* ---- a internet ---- */
+  addEventListener("offline", () => reagir("semInternet", true));
+  addEventListener("online",  () => reagir("voltouInternet", true));
+
+  /* ---- alguém quebrou o código da página ---- */
+  /* Não é erro DELE: é da página. Ele só dedura.
+     O aviso chega pela ponte do ouvidor.js, porque o evento de erro não
+     atravessa a parede entre o mundo da página e o mundo da extensão —
+     está explicado lá. */
+  addEventListener("clipy:erro", () => reagir("erroDeJs"));
+  /* e um erro dentro da própria extensão também conta. É justo. */
+  addEventListener("error", e => {
+    if (e.target && e.target.tagName) return;   // imagem que não carregou não é erro de código
+    reagir("erroDeJs");
+  }, true);
+
+  /* ---- formulário reclamando ---- */
+  addEventListener("invalid", () => reagir("formularioInvalido"), true);
+
+  /* ---- carregamento infinito ---- */
+  setTimeout(() => { if (document.readyState !== "complete") reagir("carregamentoInfinito"); }, 13000);
+
+  /* ---- Caps Lock ---- */
+  addEventListener("keydown", e => {
+    try { if (e.getModifierState && e.getModifierState("CapsLock") && /^[A-Za-zÀ-ÿ]$/.test(e.key))
+      reagir("capsLock"); } catch (err) {}
+  }, true);
+
+  /* ---- apagou tudo ---- */
+  let tinhaTexto = 0;
+  addEventListener("input", e => {
+    if (ehSenha(e.target)) return;
+    const t = textoDe(e.target);
+    if (t === null) return;
+    if (tinhaTexto > 45 && t.length === 0) reagir("apagouTudo", true);
+    tinhaTexto = t.length;
+  }, true);
+
+  /* ==========================================================================
+     TÉDIO
+     "Parado" aqui é você parado de verdade — sem teclar, sem mexer o mouse,
+     sem rolar a tela. E só conta se a aba estiver à vista: se você está em
+     outra aba, você não está parado, você está em outro lugar.
+     ========================================================================== */
+  let ultimoSinal = Date.now(), avisados = new Set(), estavaParado = false;
+  const acordar = () => {
+    if (estavaParado && Date.now() - ultimoSinal > 45000) reagir("acordou", true);
+    estavaParado = false; ultimoSinal = Date.now(); avisados.clear();
+  };
+  for (const ev of ["pointerdown", "pointermove", "keydown", "wheel", "scroll", "touchstart"])
+    addEventListener(ev, acordar, { passive:true, capture:true });
+
+  const DEGRAUS = [[30, "parado30"], [60, "parado60"], [180, "parado180"], [300, "parado300"]];
+  setInterval(() => {
+    if (document.hidden) { ultimoSinal = Date.now(); return; }
+    const s = (Date.now() - ultimoSinal) / 1000;
+    for (const [seg2, id] of DEGRAUS)
+      if (s >= seg2 && !avisados.has(id)) { avisados.add(id); estavaParado = true; reagir(id); }
+  }, 3000);
+
+  /* ---- muito tempo na mesma página / no navegador ---- */
+  setTimeout(() => reagir("muitoTempoNaPagina"), 9 * 60000);
+  setTimeout(() => reagir("moraNoNavegador"), 40 * 60000);
+
+  /* ---- um pensamento solto de vez em quando ---- */
+  setInterval(() => { if (!document.hidden && Math.random() < .25) reagir("solta"); }, 75000);
+
+  /* ==========================================================================
+     O PAINEL MUDOU
+     Antes era preciso apertar F5 pra qualquer mudança do painel valer. Não
+     precisa mais: ele escuta a gaveta de opções e se ajusta na hora. E se
+     você DESLIGAR ele, ele não desaparece calado — ele faz drama primeiro.
+     ========================================================================== */
+  let saindoDeVez = false;
+  chrome.storage.onChanged.addListener((mudou, area) => {
+    if (area !== "local") return;
+    if (mudou.chatice) { cerebro.chatice = mudou.chatice.newValue;
+      conf.chatice = cerebro.chatice; $(".calado").textContent = cerebro.chatice ? "😶 Quieto" : "🗣 Falar"; }
+    if (mudou.som) { voz.som.ligado = conf.som = mudou.som.newValue;
+      $(".som").textContent = voz.som.ligado ? "🔊" : "🔇"; }
+    if (mudou.volume) voz.volume(conf.volume = mudou.volume.newValue);
+    if (mudou.bloqueados) {
+      const lista = mudou.bloqueados.newValue || [];
+      conf.bloqueados = lista;
+      if (lista.includes(host)) caixa.remove();
+      else if (!caixa.isConnected && !saindoDeVez) document.documentElement.appendChild(caixa);
+    }
+    if (mudou.ligado) {
+      conf.ligado = mudou.ligado.newValue;
+      if (!conf.ligado) {
+        saindoDeVez = true;
+        fila = [];
+        const f = rea.fala("desligando");
+        falar(f.fala, f.humor); clipe.fazer("derreter");
+        painel.style.transition = "opacity 2.6s, transform 2.6s";
+        setTimeout(() => { painel.style.opacity = "0"; painel.style.transform = "translateY(40px) scale(.8)"; }, 1400);
+        setTimeout(() => caixa.remove(), 4200);
+      } else if (!caixa.isConnected) {
+        saindoDeVez = false;
+        painel.style.transition = ""; painel.style.opacity = ""; painel.style.transform = "";
+        document.documentElement.appendChild(caixa);
+        setTimeout(() => { falar("Voltei! Você sentiu minha falta, admite.", "comemorando");
+          clipe.fazer("comemorar"); }, 500);
+      }
+    }
+  });
 
   /* ---------------------------------------------------------- o laço */
   let ultimo = performance.now();

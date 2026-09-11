@@ -16,11 +16,13 @@
 /* ---- comentários por tipo de site ---- */
 const POR_SITE = [
   { onde:/youtube\.|youtu\.be/i, fala:[
+    "Você está assistindo vídeo. Eu estou assistindo você assistir vídeo.",
     "YouTube! Cuidado com os vídeos. Um deles me deixou com quatro olhos.",
     "Você veio ver um vídeo só, né? Né?",
     "Se aparecer um vídeo de gato, me avisa. Eu gosto de gato. De longe.",
   ]},
   { onde:/google\.|bing\.|duckduckgo\./i, fala:[
+    "O que vamos pesquisar?",
     "Pesquisando! Dica: escreva a palavra e aperte enter. De nada.",
     "Se não achar, tenta escrever errado. Às vezes funciona.",
     "Eu também pesquisaria, mas eu não tenho dedo.",

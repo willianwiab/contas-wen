@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Clipy — o ajudante que ninguém pediu",
-  "version": "1.0.0",
-  "description": "Um clipe de papel que aparece por cima de qualquer site, lê o que você digita e dá palpite. 33 regras rodando no seu navegador. Não manda nada pra lugar nenhum.",
+  "version": "1.1.0",
+  "description": "Um clipe de papel que aparece por cima de qualquer site e REAGE: comenta o site, entra em pânico num 404, fica tonto se você sacudir ele, reclama quando você fecha uma aba e fica entediado se você parar. Faz conta de verdade. Não manda nada pra lugar nenhum.",
   "permissions": [
     "storage"
   ],
@@ -16,13 +16,26 @@
       ],
       "run_at": "document_idle",
       "all_frames": false
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "ouvidor.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false,
+      "world": "MAIN"
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
         "js/*.js",
-        "comentarios.js"
+        "comentarios.js",
+        "reacoes.js",
+        "mundo.js"
       ],
       "matches": [
         "<all_urls>"
