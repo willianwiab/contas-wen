@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "Clipy — o ajudante que ninguém pediu",
+  "version": "1.0.0",
+  "description": "Um clipe de papel que aparece por cima de qualquer site, lê o que você digita e dá palpite. 33 regras rodando no seu navegador. Não manda nada pra lugar nenhum.",
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "js/*.js",
+        "comentarios.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Clipy",
+    "default_icon": {
+      "48": "icones/icone-48.png",
+      "192": "icones/icone-192.png"
+    }
+  },
+  "icons": {
+    "48": "icones/icone-48.png",
+    "192": "icones/icone-192.png",
+    "512": "icones/icone-512.png"
+  }
+}
