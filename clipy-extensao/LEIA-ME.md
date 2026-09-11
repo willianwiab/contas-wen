@@ -45,6 +45,48 @@ baixo, à direita.
   vezes fala uma coisa que não tem nada a ver, que é o mais autêntico.
 - **Tem a vozinha de bipe** e todas as animações do site.
 - **Dá pra arrastar** pela barra de título, e ele lembra do canto onde ficou.
+- **E ele REAGE.** Não fica parado esperando: veja a lista abaixo.
+
+## As reações
+
+São **60 tipos** de reação, com cerca de 230 falas. Algumas:
+
+| quando | ele faz |
+| --- | --- |
+| você **arrasta** ele | reclama: *"EI! Eu tenho pernas, sabia?!"* |
+| você **sacode** ele | fica **tonto de verdade** — gira, entorta, e a tontura dura alguns segundos depois que você solta |
+| você joga ele **num canto** | *"Por que fui exilado?"* |
+| o mouse **chega perto** | *"Vai clicar em mim ou só ficar olhando?"* |
+| abre um **site de jogo** | *"JOGOOOOO!"* |
+| cai num **404** | entra em pânico: *"AAAAAAAA! CADÊ A PÁGINA?!"* |
+| a página dá **erro 500** | *"O SERVIDOR EXPLODIU!"* |
+| a **internet cai** | *"ALÔ? A INTERNET MORREU?"* |
+| a página está **em branco** | *"Folha em branco. Meu maior inimigo."* |
+| a página **quebra o JavaScript** | *"Alguém quebrou o código."* |
+| falta campo no **formulário** | *"Você esqueceu alguma coisa."* |
+| você **fecha uma aba** | *"Ei! Eu estava lendo isso!"* |
+| você tem **10 abas** | *"VOCÊ PRECISA DE TODAS ESSAS?!"* |
+| você tem **30 abas** | *"Isso não é um navegador. É uma biblioteca."* |
+| você **troca de aba** | *"Ei! Volta aqui!"* — e comemora quando você volta |
+| você **volta** uma página | *"Boa escolha. A anterior era suspeita."* |
+| você aperta **F5** | *"De novo?!"* |
+| você **digita muito** | *"Está escrevendo um livro?"* |
+| você **apaga tudo** | *"TODO ESSE TRABALHO FOI EMBORA."* |
+| você deixa o **Caps Lock** ligado | *"POR QUE VOCÊ ESTÁ GRITANDO?!"* |
+| você escreve **"clipy"** | *"Você chamou?"* |
+| você escreve **"socorro"** | *"O QUE ACONTECEU?!"* |
+| você escreve **"kkkkkk"** | *"Detectei risadas."* |
+| você fica **30s / 1min / 3min / 5min** parado | vai ficando entediado, degrau por degrau |
+| você **volta** depois de muito tempo | *"AH! VOCÊ ESTÁ VIVO!"* |
+| tem uma **foto de gato** na página | *"GATO. PRIORIDADE MÁXIMA."* |
+| a página é **colorida demais** | *"MEUS OLHOS!"* |
+| a página tem **campo de senha** | *"Não vou olhar. Prometo."* |
+| você **desliga** ele no painel | *"Tudo bem… eu vou ficar aqui… sozinho…"* e desaparece devagar |
+
+**Como ele decide quem fala primeiro.** Muita coisa pode acontecer junta. Cada
+reação entra numa fila com uma **prioridade**, e ele fala uma de cada vez. Um
+404 fura a fila (pânico não espera); um comentário solto espera a vez. E cada
+tipo tem um tempo de descanso, pra ele não repetir a mesma reclamação toda hora.
 
 ## Os botões
 
@@ -96,11 +138,41 @@ usada pra espionar. Por isso esta aqui é feita ao contrário:
 ```
 clipy-extensao/
   manifest.json      as permissões (só "storage") e onde a extensão entra
-  content.js         o que entra em toda página: a janelinha, a leitura, o laço
+  content.js         o que entra em toda página: a janelinha, a leitura, a
+                     fila de reações, o arrastar-e-ficar-tonto, o laço
+  reacoes.js         as 230 falas de reação + os detectores (404, gato,
+                     página colorida, campo de senha, vídeo pausado…)
+  mundo.js           a conta das abas — SEM espionar aba nenhuma
+  ouvidor.js         5 linhas que rodam do lado da página, só pra ouvir erro
   comentarios.js     o que ele fala sobre a página em que você está
   popup.html/.js     as opções no ícone da extensão
+  teste-extensao.js  53 testes num Chromium de verdade
   js/                copiados do site: o desenho, as regras, a conta, os
                      segredos e a voz
+```
+
+### Duas coisas que valem explicar
+
+**Como ele sabe que você fechou uma aba, sem ter permissão pra ver suas abas.**
+Ver aba de verdade exigiria a permissão `tabs` — e aí a extensão veria o
+endereço e o título de tudo que você abre. Eu não quis isso. Então cada aba
+deixa um bilhetinho (um número sorteado e a hora, nada mais) e, quando vai
+fechar, deixa um aviso "saí". Se em poucos segundos nascer uma página nova, era
+só troca de página. Se não nascer ninguém, foi fechamento de verdade. Ele nunca
+sabe **qual** aba era. Só que tinha uma. Está tudo explicado no `mundo.js`.
+
+**Por que existe um arquivo que roda do lado da página.** O `ouvidor.js` é o
+único, e tem 5 linhas. O Chrome separa o mundo da extensão do mundo da página —
+é isso que impede um site de mexer no Clipy. Só que o evento de erro de
+JavaScript não atravessa essa parede: o teste provou. Então o `ouvidor.js` fica
+do lado da página só pra ouvir erro e gritar de volta. Ele não lê texto, não lê
+campo, não guarda nada, e nem usa a mensagem do erro.
+
+## Como rodar os testes
+
+```
+node teste-extensao.js              # 53 testes
+xvfb-run -a node teste-extensao.js  # +1: o de trocar de aba, que precisa de tela
 ```
 
 Os arquivos de `js/` são **cópias** dos do site (`/clipy/js/`). Uma extensão não
