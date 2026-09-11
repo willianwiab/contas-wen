@@ -413,8 +413,8 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => ({ quantos: Clipy.SEGREDOS.length,
     ids: new Set(Clipy.SEGREDOS.map(x => x.id)).size,
     completos: Clipy.SEGREDOS.filter(x => !x.olho || !(x.fala || x.falas)).length }));
-  conf('são 25 segredos, todos com nome próprio, fala e jeito de achar',
-    r.quantos === 25 && r.ids === 25 && r.completos === 0, JSON.stringify(r));
+  conf('são 27 segredos, todos com nome próprio, fala e jeito de achar',
+    r.quantos === 27 && r.ids === 27 && r.completos === 0, JSON.stringify(r));
 
   /* o vídeo que deixa ele doido */
   await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); Clipy.segredosVistos.clear(); });
@@ -578,8 +578,8 @@ async function escrever(p, txt) {
   r = await p.evaluate(() => ({ total: document.querySelectorAll('#ovos .ovo').length,
     achados: document.querySelectorAll('#ovos .ovo.achado').length,
     escondidos: document.querySelectorAll('#ovos .ovo.nao').length }));
-  conf('a aba 🧠 mostra os 25 ovinhos, revelando só os que você já achou',
-    r.total === 25 && r.achados >= 1 && r.escondidos === 25 - r.achados, JSON.stringify(r));
+  conf('a aba 🧠 mostra os 27 ovinhos, revelando só os que você já achou',
+    r.total === 27 && r.achados >= 1 && r.escondidos === 27 - r.achados, JSON.stringify(r));
 
   await p.evaluate(() => Clipy.curarClipy());
 
@@ -1014,6 +1014,59 @@ async function escrever(p, txt) {
     balao: document.getElementById('balaoTexto').textContent }));
   conf('escrever PARA faz ele parar — ofegante, mas para',
     !r.ainda && /ufa|obrigado/i.test(r.balao), JSON.stringify({ ainda:r.ainda }));
+
+  /* ---------- o vídeo em que ele fica DE OLHO ---------- */
+  await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); Clipy.segredosVistos.clear();
+    document.getElementById('papel').value = ''; Clipy.lerPapel(); });
+  await p.fill('#papel', 'https://www.youtube.com/watch?v=0hhz7KSEIAE&list=RD0hhz7KSEIAE');
+  await p.evaluate(() => { Clipy.lerPapel(); Clipy.procurarSegredo(Clipy.estado.texto); });
+  await p.waitForTimeout(350);
+  r = await p.evaluate(() => ({ falta: Clipy.clipe.faltaPara('deOlho'),
+    barra: document.getElementById('efeitos').textContent,
+    balao: document.getElementById('balaoTexto').textContent }));
+  conf('o vídeo liga o modo DE OLHO por 20 minutos',
+    /^(20|19) min$/.test(r.falta) && /de olho em você/.test(r.barra), JSON.stringify(r));
+  conf('e ele avisa que vai ficar olhando', /de olho/i.test(r.balao), r.balao.slice(0, 70));
+
+  r = await p.evaluate(() => {
+    /* o olho tem que COLAR no ponteiro, sem o atraso de sempre */
+    Clipy.clipe.olharPara(innerWidth, innerHeight / 2);
+    for (let i = 0; i < 6; i++) Clipy.clipe.passo(.016);
+    const colado = Clipy.clipe.olhoX;
+    Clipy.clipe.curar(true);
+    Clipy.clipe.olharPara(innerWidth, innerHeight / 2);
+    Clipy.clipe.olhoX = 0;
+    for (let i = 0; i < 6; i++) Clipy.clipe.passo(.016);
+    return { colado, normal: Clipy.clipe.olhoX };
+  });
+  conf('de olho, a pupila alcança o ponteiro muito mais rápido',
+    r.colado > r.normal * 1.5, JSON.stringify(r));
+
+  await p.evaluate(() => { Clipy.clipe.ligarEfeito('deOlho', 20);
+    Clipy.fecharBalao(); Clipy.clipe.piscando = 0; Clipy.clipe.piscaEm = 0; });
+  r = await p.evaluate(() => { for (let i = 0; i < 400; i++) Clipy.clipe.passo(.016);
+    return Clipy.clipe.piscando; });
+  conf('e ele não pisca nenhuma vez', r <= 0, String(r));
+
+  /* de olho ele fica quieto: palpite não, resposta de conta sim */
+  await p.evaluate(() => { Clipy.fecharBalao();
+    document.getElementById('papel').value = 'oi tudo bem'; Clipy.lerPapel(); });
+  await p.waitForTimeout(1400);
+  r = await p.evaluate(() => document.getElementById('balao').hidden);
+  conf('de olho ele para de dar palpite — só observa', r === true, String(r));
+
+  await p.fill('#papel', '20+20+20+7=');
+  await p.evaluate(() => Clipy.lerPapel());
+  await p.waitForTimeout(900);
+  r = await p.evaluate(() => document.getElementById('balaoTexto').textContent);
+  conf('mas pergunta direta ele ainda responde, mesmo de olho', /67/.test(r), r.slice(0, 60));
+
+  r = await p.evaluate(() => {
+    Clipy.clipe.ligarEfeito('deOlho', 20);
+    for (let i = 0; i < 5; i++) Clipy.cutucar();
+    return Clipy.clipe.temEfeito('deOlho');
+  });
+  conf('cinco cutucadas seguidas soltam ele do modo de olho', r === false, String(r));
 
   /* ---------- modo Clippy clássico ---------- */
   await p.evaluate(() => { Clipy.curarClipy(); Clipy.fecharBalao(); });

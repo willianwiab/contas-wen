@@ -381,6 +381,24 @@ export const REACOES = {
     "Eu sou de 1997 emocionalmente.",
   ]},
 
+  /* ---------------- os vídeos que ele reconhece ---------------- */
+  videoDeOlho: { humor:"atento", gesto:"espiar", prioridade:10, fala:[
+    "…esse vídeo. Eu conheço esse vídeo. Não me pergunta como. …vai. Assiste. Eu vou ficar aqui. De olho.",
+  ]},
+  videoDeOlho2: { humor:"atento", gesto:"espiar", prioridade:10, fala:[
+    "…ah. Esse também. (ele não desviou o olhar nenhuma vez enquanto escrevia isso)",
+  ]},
+  /* o que ele fala, raramente, enquanto está de olho */
+  deOlhoFala: { humor:"atento", fala:[
+    "…", "Continua. Eu estou vendo.", "Eu não pisquei nenhuma vez.",
+    "Eu estou aqui.", "…ainda estou olhando.",
+    "Você mexeu o ponteiro. Eu percebi.",
+  ]},
+  soltou: { humor:"feliz", gesto:"acenar", prioridade:9, fala:[
+    "Ufa. Eu pisquei. Nossa, que alívio.",
+    "Tá bom, tá bom. Parei de olhar. …quase.",
+  ]},
+
   /* ---------------- ele sendo desligado ---------------- */
   desligando: { humor:"triste", gesto:"derreter", prioridade:10, fala:[
     "Tudo bem… eu vou ficar aqui… sozinho…",
@@ -518,6 +536,33 @@ function gritante() {
     if (sat > .55 && mx > 120) { fortes++; matizes.add(Math.round(Math.atan2(g - b, r - g) * 3)); }
   }
   return contados >= 8 && fortes / contados > .45 && matizes.size >= 4;
+}
+
+/* ==========================================================================
+   2b. OS VÍDEOS QUE ELE RECONHECE PELO ENDEREÇO
+
+   No site do Clipy os segredos de vídeo funcionam quando você ESCREVE o link
+   no papel. Na extensão ele pode fazer melhor: ele está por cima do YouTube,
+   então reconhece o vídeo só de estar na página.
+
+   DE PROPÓSITO ESTA LISTA É CURTA. O segredos.js tem dez vídeos, e um deles
+   deixa o Clipy com quatro olhos por 24 horas sem volta. Disparar tudo isso
+   só por você ABRIR um vídeo seria uma armadilha. Então só entram aqui os
+   que o JoJo pediu pra funcionar assim, e só o efeito "de olho", que passa.
+
+   Ele compara o endereço com esta lista e joga fora. Não guarda endereço,
+   não guarda histórico, não manda nada (a extensão não tem rede).
+   ========================================================================== */
+export const VIDEOS_QUE_ELE_CONHECE = [
+  { id:"0hhz7KSEIAE", reacao:"videoDeOlho" },
+  { id:"1h_dRC2dr1Y", reacao:"videoDeOlho2" },
+];
+
+export function videoDaPagina(endereco = location.href) {
+  if (!/youtube\.com\/watch|youtu\.be\//i.test(endereco)) return null;
+  for (const v of VIDEOS_QUE_ELE_CONHECE)
+    if (endereco.includes(v.id)) return v.reacao;
+  return null;
 }
 
 /* ==========================================================================

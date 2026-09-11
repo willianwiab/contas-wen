@@ -82,6 +82,26 @@ São **60 tipos** de reação, com cerca de 230 falas. Algumas:
 | a página é **colorida demais** | *"MEUS OLHOS!"* |
 | a página tem **campo de senha** | *"Não vou olhar. Prometo."* |
 | você **desliga** ele no painel | *"Tudo bem… eu vou ficar aqui… sozinho…"* e desaparece devagar |
+| você abre **um de dois vídeos secretos** no YouTube | ele reconhece e entra no **modo de olho** 👁 |
+
+### 👁 O modo de olho
+
+Tem dois vídeos que ele reconhece **só de você estar na página** — não precisa
+escrever nada. Quando ele reconhece, por 20 minutos:
+
+- ele **não pisca nenhuma vez**
+- a pupila **cresce** e **cola** no seu ponteiro, sem o atrasinho de sempre
+- ele **para de dar palpite**: só observa, e fala pouquinho
+- pergunta direta (uma conta) ele ainda responde
+
+**Pra soltar:** cutuca ele **5 vezes seguidas** (em menos de 3 segundos). É o
+botão de pânico, e ele desfaz qualquer efeito.
+
+> **Por que só dois vídeos?** O `segredos.js` tem dez vídeos secretos, e um
+> deles deixa o Clipy com quatro olhos por **24 horas sem volta**. Disparar
+> isso só porque você ABRIU um vídeo seria uma armadilha, não um segredo. Então
+> a lista que funciona pelo endereço é curta de propósito, e só liga um efeito
+> que passa. Os outros continuam funcionando do jeito antigo: escrevendo o link.
 
 **Como ele decide quem fala primeiro.** Muita coisa pode acontecer junta. Cada
 reação entra numa fila com uma **prioridade**, e ele fala uma de cada vez. Um
@@ -96,6 +116,7 @@ tipo tem um tempo de descanso, pra ele não repetir a mesma reclamação toda ho
 | **😶 Quieto** | ele para de dar palpite neste navegador (e volta com 🗣 Falar) |
 | **🔊** | liga e desliga a voz |
 | **✕** | ele sai **deste site** e não volta mais nele |
+| **👉 Cutucar 5× seguidas** | 🆘 **botão de pânico** — desfaz qualquer efeito |
 
 No **ícone da extensão** (ao lado da barra de endereço) tem o resto: ligar e
 desligar tudo, a **chatice** (de 0 a 100 — é o quanto ele interrompe), o volume,
