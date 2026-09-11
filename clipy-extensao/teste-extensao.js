@@ -134,17 +134,18 @@ const AJUDA = {
   const site = u => `http://127.0.0.1:${porta}${u}`;
   const perfil = fs.mkdtempSync(path.join(os.tmpdir(), "clipy-perfil-"));
 
-  /* COM TELA OU SEM TELA?
-     No navegador invisível (--headless=new) as abas nunca ficam realmente
-     escondidas: document.hidden fica false pra sempre, mesmo trocando de
-     aba. Então o teste de "trocar de aba" só funciona com tela de verdade.
-     Se houver um DISPLAY (por exemplo rodando com xvfb-run), usa tela; se
-     não houver, roda invisível e AVISA que dois testes ficaram de fora —
-     em vez de fingir que passaram. */
+  /* O QUE NÃO DÁ PRA TESTAR AQUI, E POR QUE
+     Trocar de aba de verdade. O Chromium sob controle de robô não esconde
+     aba nenhuma: document.hidden fica false pra sempre, mesmo mandando
+     bringToFront() na outra aba. Eu tentei sem tela, tentei com tela de
+     verdade (xvfb) e tentei o comando de emulação do DevTools — nenhum dos
+     três funciona. Então o teste 6 verifica o que dá pra verificar (a
+     reação existe e sai na fila) e AVISA que o gatilho de verdade só pode
+     ser conferido na mão, por uma pessoa trocando de aba. Melhor um teste
+     honesto e incompleto que um teste bonito e mentiroso. */
   const comTela = !!process.env.DISPLAY;
   const args = [ `--disable-extensions-except=${PASTA}`, `--load-extension=${PASTA}` ];
   if (!comTela) args.unshift("--headless=new");
-  console.log(comTela ? "(com tela: " + process.env.DISPLAY + ")" : "(sem tela: dois testes de aba ficam de fora)");
 
   const ctx = await chromium.launchPersistentContext(perfil, {
     executablePath: process.env.CHROMIUM || "/opt/pw-browsers/chromium",
@@ -247,16 +248,23 @@ const AJUDA = {
     const escondeu = await pg.evaluate(() => document.hidden);
     if (escondeu) {
       ok("ele nota que você saiu", await AJUDA.esperarNaFila(pg, "trocouAba", 8000));
-      await pg.bringToFront();
-      await pg.waitForTimeout(600);
-      ok("ele nota que você voltou (ou fica quieto se foi rapidinho)",
-        (await AJUDA.fila(pg)).length >= 0);
     } else {
-      console.log("  ⏭  pulado: sem tela, a aba não fica escondida de verdade");
-      console.log("     (rode com:  xvfb-run -a node teste-extensao.js)");
+      console.log("  ⚠️  o gatilho de verdade não dá pra simular: o Chromium sob");
+      console.log("     controle de robô nunca esconde a aba (document.hidden fica");
+      console.log("     false). Esta parte precisa ser conferida na mão. O que dá");
+      console.log("     pra testar, abaixo, está testado.");
     }
     await outra.close();
     await pg.bringToFront();
+    /* as duas reações existem e têm fala? */
+    const abas = await pg.evaluate(async b => {
+      const m = await import(b + "reacoes.js");
+      return { saiu:m.fala("trocouAba"), voltou:m.fala("voltouPraAba") };
+    }, base);
+    ok("a reação de sair da aba tem fala", /Volta aqui|Você saiu|outra coisa/.test(abas.saiu.fala), abas.saiu.fala);
+    ok("a reação de voltar pra aba tem fala",
+      /lembrou de mim|VOLTOU|sozinho/.test(abas.voltou.fala), abas.voltou.fala);
+    ok("voltar pra aba é reação alegre", abas.voltou.humor === "comemorando", abas.voltou.humor);
 
     /* ===================================================================== */
     console.log("\n7) a internet caiu");

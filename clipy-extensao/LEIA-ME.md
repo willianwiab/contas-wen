@@ -171,9 +171,13 @@ campo, não guarda nada, e nem usa a mensagem do erro.
 ## Como rodar os testes
 
 ```
-node teste-extensao.js              # 53 testes
-xvfb-run -a node teste-extensao.js  # +1: o de trocar de aba, que precisa de tela
+node teste-extensao.js
 ```
+
+Uma coisa **não** dá pra testar sozinha: **trocar de aba**. O Chromium sob
+controle de robô nunca esconde a aba (`document.hidden` fica `false`), e nem
+tela de verdade nem o comando de emulação do DevTools mudam isso. Essa parte o
+teste avisa que precisa ser conferida na mão — ele não finge que passou.
 
 Os arquivos de `js/` são **cópias** dos do site (`/clipy/js/`). Uma extensão não
 consegue carregar arquivo de fora dela, então eles moram nos dois lugares —
