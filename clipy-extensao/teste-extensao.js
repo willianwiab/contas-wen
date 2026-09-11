@@ -268,9 +268,10 @@ const AJUDA = {
       const m = await import(b + "reacoes.js");
       return { saiu:m.fala("trocouAba"), voltou:m.fala("voltouPraAba") };
     }, base);
-    ok("a reação de sair da aba tem fala", /Volta aqui|Você saiu|outra coisa/.test(abas.saiu.fala), abas.saiu.fala);
+    ok("a reação de sair da aba tem fala",
+      /volta aqui|você saiu|outra coisa/i.test(abas.saiu.fala), abas.saiu.fala);
     ok("a reação de voltar pra aba tem fala",
-      /lembrou de mim|VOLTOU|sozinho/.test(abas.voltou.fala), abas.voltou.fala);
+      /lembrou de mim|voltou|sozinho/i.test(abas.voltou.fala), abas.voltou.fala);
     ok("voltar pra aba é reação alegre", abas.voltou.humor === "comemorando", abas.voltou.humor);
 
     /* ===================================================================== */

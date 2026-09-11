@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JojoOS 1.0 — o computador do JoJo</title>
+<meta name="description" content="Um computador inteiro dentro do navegador: área de trabalho, janelas que arrastam, barra de tarefas — e os 18 jogos do JoJo como programas. Com o Clipy morando dentro.">
+<meta name="theme-color" content="#14746f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<style>
+/* ==========================================================================
+   JojoOS 1.0
+   Um computador de mentira que funciona de verdade.
+
+   O visual não copia nenhum sistema existente: é a ideia geral de interface
+   dos anos 90 — caixa cinza com borda em relevo, barra de título azul,
+   barra de tarefas embaixo — desenhada do zero aqui.
+   ========================================================================== */
+
+:root {
+  --mesa:        #14746f;         /* a área de trabalho */
+  --mesa-2:      #0d5b57;
+  --caixa:       #c9cdd4;         /* o cinza das janelas */
+  --luz:         #f1f4f8;         /* a borda clara do relevo */
+  --sombra:      #767c86;         /* a borda escura do relevo */
+  --sombra-2:    #3c4149;
+  --tinta:       #14181d;
+  --tinta-fraca: #5a616b;
+  --barra-a1:    #123a72;         /* barra de título da janela da frente */
+  --barra-a2:    #2f7ad1;
+  --barra-i1:    #868c96;         /* das janelas de trás */
+  --barra-i2:    #aeb4be;
+  --papel:       #ffffff;
+  --amarelo:     #ffd23f;
+  --vermelho:    #c8372a;
+  --verde:       #1d8a4a;
+  --alto-barra:  46px;
+  color-scheme: light;
+}
+html[data-tema="noite"] {
+  --mesa:        #171a2e;
+  --mesa-2:      #0c0e1c;
+  --caixa:       #2b3038;
+  --luz:         #4a515c;
+  --sombra:      #14181d;
+  --sombra-2:    #0a0c0f;
+  --tinta:       #eef2f7;
+  --tinta-fraca: #a4adba;
+  --papel:       #1b1f26;
+  --barra-a1:    #2a1d5e;
+  --barra-a2:    #6244c8;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  font-family: "Segoe UI", Tahoma, system-ui, sans-serif;
+  font-size: 14px; color: var(--tinta);
+  background: var(--mesa);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* ---------------------------------------------------------------- a mesa */
+#mesa {
+  position: fixed; inset: 0 0 var(--alto-barra) 0;
+  background:
+    radial-gradient(140% 100% at 50% 0%, #ffffff18, #0000 60%),
+    linear-gradient(160deg, var(--mesa), var(--mesa-2));
+  overflow: hidden;
+}
+#mesa.quadriculado::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(#ffffff0e 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff0e 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+#mesa.estrelas::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 22%, #fff9, #0000),
+    radial-gradient(1.4px 1.4px at 68% 12%, #fff8, #0000),
+    radial-gradient(1.8px 1.8px at 34% 64%, #fff7, #0000),
+    radial-gradient(1.3px 1.3px at 82% 48%, #fff9, #0000),
+    radial-gradient(1.5px 1.5px at 54% 84%, #fff6, #0000),
+    radial-gradient(1.2px 1.2px at 22% 88%, #fff8, #0000),
+    radial-gradient(1.7px 1.7px at 92% 76%, #fff7, #0000);
+}
+
+/* ---------------------------------------------------------- ícones da mesa */
+#icones {
+  position: absolute; inset: 12px auto 12px 12px;
+  display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start;
+  gap: 4px; max-height: calc(100% - 24px);
+}
+.icone {
+  width: 92px; padding: 8px 4px 7px;
+  display: grid; justify-items: center; gap: 5px;
+  background: none; border: 1px dotted transparent; border-radius: 4px;
+  color: #fff; font: inherit; font-size: 12px; text-align: center; cursor: pointer;
+  text-shadow: 0 1px 3px #0009;
+}
+.icone .fig { font-size: 30px; line-height: 1; filter: drop-shadow(0 2px 3px #0006); }
+.icone:hover { background: #ffffff22; }
+.icone:focus-visible { outline: none; border-color: #fff; background: #ffffff2e; }
+.icone.escolhido { background: #ffffff33; border-color: #fff9; }
+
+/* ---------------------------------------------------------------- janelas */
+.janela {
+  position: absolute;
+  display: flex; flex-direction: column;
+  min-width: 240px; min-height: 140px;
+  background: var(--caixa);
+  border: 2px solid; border-color: var(--luz) var(--sombra-2) var(--sombra-2) var(--luz);
+  box-shadow: 3px 3px 0 #00000030, 0 14px 34px -18px #000a;
+}
+.janela.minimizada { display: none; }
+.janela.cheia { inset: 0 0 0 0 !important; width: auto !important; height: auto !important; }
+
+.barraTitulo {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 4px 4px 8px; cursor: grab;
+  background: linear-gradient(90deg, var(--barra-i1), var(--barra-i2));
+  color: #ffffffcc; font-size: 13px; font-weight: 700;
+}
+.janela.frente .barraTitulo {
+  background: linear-gradient(90deg, var(--barra-a1), var(--barra-a2));
+  color: #fff;
+}
+.barraTitulo:active { cursor: grabbing; }
+.barraTitulo .nome {
+  flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: flex; align-items: center; gap: 7px;
+}
+.barraTitulo .bts { display: flex; gap: 3px; }
+
+.bt {
+  font: inherit; font-size: 12px; font-weight: 700; line-height: 1;
+  color: var(--tinta); background: var(--caixa);
+  border: 2px solid; border-color: var(--luz) var(--sombra-2) var(--sombra-2) var(--luz);
+  padding: 4px 8px; cursor: pointer;
+}
+.bt:active { border-color: var(--sombra-2) var(--luz) var(--luz) var(--sombra-2); }
+.bt:focus-visible { outline: 2px solid var(--barra-a2); outline-offset: 1px; }
+.bt.quadrado { width: 22px; height: 20px; display: grid; place-items: center; padding: 0; }
+.bt.fecha:hover { background: var(--vermelho); color: #fff; }
+.bt.principal { background: var(--barra-a2); color: #fff; border-color: #ffffff66 #00000055 #00000055 #ffffff66; }
+
+.corpo {
+  flex: 1; min-height: 0; overflow: auto;
+  background: var(--papel); color: var(--tinta);
+  border: 2px solid; border-color: var(--sombra-2) var(--luz) var(--luz) var(--sombra-2);
+  margin: 4px; padding: 0;
+  user-select: text;
+}
+.corpo.semBorda { border: 0; margin: 0; }
+.corpo iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+
+.puxador {
+  position: absolute; right: 0; bottom: 0; width: 16px; height: 16px;
+  cursor: nwse-resize;
+  background:
+    linear-gradient(135deg, #0000 48%, var(--sombra) 48% 56%, #0000 56%),
+    linear-gradient(135deg, #0000 68%, var(--sombra) 68% 76%, #0000 76%);
+}
+
+/* -------------------------------------------------------- barra de tarefas */
+#barra {
+  position: fixed; inset: auto 0 0 0; height: var(--alto-barra);
+  display: flex; align-items: center; gap: 6px; padding: 5px 7px;
+  background: var(--caixa);
+  border-top: 2px solid var(--luz);
+  z-index: 90000;
+}
+#btIniciar {
+  font-weight: 800; display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; font-size: 14px;
+}
+#btIniciar[aria-expanded="true"] { border-color: var(--sombra-2) var(--luz) var(--luz) var(--sombra-2); }
+#abertas {
+  flex: 1; display: flex; gap: 4px; overflow-x: auto; min-width: 0;
+  scrollbar-width: thin;
+}
+#abertas .aba {
+  flex: 0 1 180px; min-width: 60px; display: flex; align-items: center; gap: 6px;
+  padding: 6px 9px; font-size: 12.5px; text-align: left;
+  white-space: nowrap; overflow: hidden;
+}
+#abertas .aba.ativa { border-color: var(--sombra-2) var(--luz) var(--luz) var(--sombra-2); font-weight: 700; }
+#abertas .aba span { overflow: hidden; text-overflow: ellipsis; }
+#relogio {
+  display: grid; place-items: center; text-align: center; line-height: 1.15;
+  padding: 4px 11px; font-size: 12px; font-variant-numeric: tabular-nums;
+  border: 2px solid; border-color: var(--sombra) var(--luz) var(--luz) var(--sombra);
+  white-space: nowrap;
+}
+#relogio b { font-weight: 700; font-size: 13px; }
+
+/* ------------------------------------------------------------ menu iniciar */
+#menu {
+  position: fixed; left: 7px; bottom: var(--alto-barra); width: 268px;
+  z-index: 90001;
+  background: var(--caixa);
+  border: 2px solid; border-color: var(--luz) var(--sombra-2) var(--sombra-2) var(--luz);
+  box-shadow: 4px -4px 0 #00000030;
+  display: flex; overflow: hidden;
+}
+#menu[hidden] { display: none; }
+#menu .faixa {
+  width: 30px; flex: none;
+  background: linear-gradient(0deg, var(--barra-a1), var(--barra-a2));
+  color: #fff; font-weight: 800; font-size: 13px; letter-spacing: .08em;
+  display: grid; place-items: center;
+}
+#menu .faixa span { writing-mode: vertical-rl; transform: rotate(180deg); }
+#menu .itens { flex: 1; padding: 4px; display: grid; gap: 1px; min-width: 0; }
+#menu button {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 8px 10px; font: inherit; font-size: 13.5px; text-align: left;
+  background: none; border: 0; color: var(--tinta); cursor: pointer;
+}
+#menu button:hover, #menu button:focus-visible {
+  background: var(--barra-a1); color: #fff; outline: none;
+}
+#menu button .fig { font-size: 18px; width: 22px; text-align: center; }
+#menu hr { border: 0; border-top: 1px solid var(--sombra); margin: 3px 2px; }
+
+/* ---------------------------------------------------------- dentro dos apps */
+.pad { padding: 14px 16px; }
+.pad h2 { margin: 0 0 8px; font-size: 17px; }
+.pad p  { margin: 0 0 10px; line-height: 1.5; }
+.linha { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.grade {
+  display: grid; gap: 8px; padding: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+}
+.cartaJogo {
+  display: grid; justify-items: center; gap: 6px; padding: 10px 8px;
+  background: var(--caixa); cursor: pointer; font: inherit; font-size: 12px;
+  color: var(--tinta); text-align: center;
+  border: 2px solid; border-color: var(--luz) var(--sombra-2) var(--sombra-2) var(--luz);
+}
+.cartaJogo:hover { background: #fff; }
+.cartaJogo:active { border-color: var(--sombra-2) var(--luz) var(--luz) var(--sombra-2); }
+.cartaJogo img { width: 62px; height: 62px; object-fit: contain; }
+.cartaJogo b { font-size: 12.5px; line-height: 1.25; }
+.cartaJogo em { font-style: normal; color: var(--tinta-fraca); font-size: 11px; }
+
+textarea.folha {
+  width: 100%; height: 100%; min-height: 180px; resize: none;
+  border: 0; padding: 12px; font: inherit; font-size: 14px; line-height: 1.55;
+  background: var(--papel); color: var(--tinta);
+}
+textarea.folha:focus-visible { outline: none; }
+
+.aviso {
+  margin: 12px; padding: 11px 13px; background: #fff7d6; color: #6b4d00;
+  border: 1px solid #e2c76a; font-size: 13px; line-height: 1.5;
+}
+html[data-tema="noite"] .aviso { background: #3a3213; color: #ffe08a; border-color: #6b5b1f; }
+
+/* ----------------------------------------------------------- o Clipy na mesa */
+#cantoClipy {
+  position: absolute; right: 16px; bottom: 16px; width: 186px;
+  display: grid; gap: 0; z-index: 70000;
+}
+#cantoClipy[hidden] { display: none; }
+#falaClipy {
+  position: relative; background: #fffbc8; color: #14181d;
+  border: 2px solid #0f0f10; border-radius: 11px;
+  padding: 9px 11px 8px; font-size: 13px; line-height: 1.45; margin-bottom: 10px;
+  user-select: text;
+}
+#falaClipy[hidden] { display: none; }
+#falaClipy::after {
+  content: ""; position: absolute; left: 30px; bottom: -12px;
+  border: 11px solid transparent; border-top-color: #0f0f10; border-bottom: 0;
+}
+#falaClipy::before {
+  content: ""; position: absolute; left: 33px; bottom: -8px; z-index: 1;
+  border: 8px solid transparent; border-top-color: #fffbc8; border-bottom: 0;
+}
+#telaClipy { width: 100%; height: 108px; display: block; cursor: pointer; }
+
+/* ------------------------------------------------------------------ o café */
+#cafeRolo { padding: 12px; display: grid; gap: 10px; align-content: start; }
+.balaoFala {
+  max-width: 82%; padding: 9px 12px; font-size: 14px; line-height: 1.5;
+  border: 2px solid var(--sombra-2); border-radius: 12px;
+}
+.balaoFala.dele { background: #fffbc8; color: #14181d; justify-self: start; border-bottom-left-radius: 3px; }
+.balaoFala.meu  { background: var(--barra-a2); color: #fff; justify-self: end; border-bottom-right-radius: 3px; border-color: #0d2f5e; }
+.rodapeCafe { display: flex; gap: 6px; padding: 8px; border-top: 2px solid var(--sombra); background: var(--caixa); }
+.rodapeCafe input {
+  flex: 1; min-width: 0; font: inherit; font-size: 14px; padding: 8px 10px;
+  background: var(--papel); color: var(--tinta);
+  border: 2px solid; border-color: var(--sombra-2) var(--luz) var(--luz) var(--sombra-2);
+}
+.rodapeCafe input:focus-visible { outline: 2px solid var(--barra-a2); outline-offset: -1px; }
+
+/* ------------------------------------------------------------------ o paint */
+#paintTela { display: block; background: #fff; cursor: crosshair; touch-action: none; }
+.ferramentas {
+  display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+  padding: 7px 8px; background: var(--caixa); border-bottom: 2px solid var(--sombra);
+}
+.cor { width: 22px; height: 22px; border: 2px solid var(--sombra-2); cursor: pointer; padding: 0; }
+.cor[aria-pressed="true"] { outline: 2px solid var(--tinta); outline-offset: 2px; }
+
+/* ---------------------------------------------------------------- bem-vindo */
+.bemvindo { padding: 18px 20px; display: grid; gap: 12px; }
+.bemvindo h2 { margin: 0; font-size: 21px; }
+.bemvindo ul { margin: 0; padding-left: 20px; line-height: 1.7; }
+.bemvindo .marca {
+  font-size: 12px; color: var(--tinta-fraca); font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------- telefones */
+@media (max-width: 620px) {
+  :root { --alto-barra: 52px; }
+  .icone { width: 78px; font-size: 11.5px; }
+  #menu { width: calc(100vw - 14px); }
+  #cantoClipy { width: 150px; right: 8px; bottom: 8px; }
+  #telaClipy { height: 88px; }
+  #abertas .aba { flex-basis: 120px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="mesa" class="quadriculado">
+  <div id="icones"></div>
+
+  <div id="cantoClipy" hidden>
+    <div id="falaClipy" hidden></div>
+    <canvas id="telaClipy" width="372" height="216" aria-label="o Clipy"></canvas>
+  </div>
+</div>
+
+<nav id="barra">
+  <button id="btIniciar" class="bt" type="button" aria-expanded="false" aria-controls="menu">
+    <span aria-hidden="true">🖥️</span> Iniciar
+  </button>
+  <div id="abertas"></div>
+  <div id="relogio"><b>--:--</b><span>--/--</span></div>
+</nav>
+
+<div id="menu" hidden>
+  <div class="faixa"><span>JojoOS 1.0</span></div>
+  <div class="itens" id="menuItens"></div>
+</div>
+
+<script type="module" src="js/mesa.js"></script>
+</body>
+</html>
