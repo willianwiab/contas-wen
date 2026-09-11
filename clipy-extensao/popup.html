@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Clipy</title>
+<style>
+  body { width:270px; margin:0; padding:12px; background:#c3c7cb; color:#14161a;
+         font-family:"Segoe UI",Tahoma,system-ui,sans-serif; font-size:13px; }
+  h1 { margin:0 0 3px; font-size:15px; letter-spacing:.06em; }
+  .sub { margin:0 0 11px; font-size:11px; color:#5a5f66; line-height:1.45; }
+  .linha { display:flex; align-items:center; justify-content:space-between; gap:8px;
+           border:2px inset #d8dade; background:#d8dade; padding:7px 9px; margin-bottom:7px; }
+  .linha label { font-weight:700; }
+  input[type=range] { width:104px; accent-color:#0b4b8f; }
+  button { font-family:inherit; font-size:12px; font-weight:700; padding:6px 10px; cursor:pointer;
+           background:#c3c7cb; border:2px outset #d8dade; color:#14161a; }
+  button:active { border-style:inset; }
+  button.on { border-style:inset; background:#ffc857; }
+  .lista { max-height:110px; overflow-y:auto; border:2px inset #d8dade; background:#fffef8;
+           padding:6px; font-size:11px; }
+  .lista div { display:flex; justify-content:space-between; align-items:center; gap:6px; padding:2px 0; }
+  .lista button { font-size:10px; padding:2px 6px; }
+  .vazio { color:#5a5f66; }
+  .aviso { margin-top:10px; font-size:10.5px; color:#5a5f66; line-height:1.5;
+           border-left:3px solid #0a7d3c; padding-left:7px; }
+  .aviso b { color:#0a7d3c; }
+</style>
+</head>
+<body>
+  <h1>📎 CLIPY</h1>
+  <p class="sub">Ele aparece por cima de qualquer site, lê o que você digita e dá palpite.</p>
+
+  <div class="linha"><label>Ligado</label><button id="btLigado">SIM</button></div>
+  <div class="linha"><label>Chatice</label>
+    <span><input type="range" id="chatice" min="0" max="100"> <b id="vChatice">55</b></span></div>
+  <div class="linha"><label>Som</label>
+    <span><button id="btSom">🔊</button> <input type="range" id="volume" min="0" max="100"></span></div>
+
+  <div class="linha" style="display:block">
+    <label>Sites onde ele não aparece</label>
+    <div class="lista" id="bloqueados" style="margin-top:6px"></div>
+  </div>
+
+  <p class="aviso"><b>Nada sai do seu computador.</b> Esta extensão não tem permissão de
+  internet — só de guardar essas opções aqui. E ela <b>nunca lê campo de senha</b>.</p>
+
+<script src="popup.js"></script>
+</body>
+</html>
