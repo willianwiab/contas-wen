@@ -52,7 +52,16 @@ const J = {
   const ctx = await b.newContext({ viewport:{ width:1200, height:780 } });
   const p = await ctx.newPage();
   const erros = [];
-  p.on("console", m => { if (m.type() === "error") erros.push(m.text().slice(0, 150)); });
+  /* Só contam os erros do PRÓPRIO JojoOS. Os jogos abrem dentro de janelas,
+     e o barulho deles não é problema daqui — o Cat City, por exemplo, tenta
+     carregar fotos de gato de verdade e desenha os gatos quando não acha:
+     os 404 são de propósito e ele trata todos. */
+  p.on("console", m => {
+    if (m.type() !== "error") return;
+    const de = (m.location() && m.location().url) || "";
+    if (de && !/\/jojoos\//.test(de)) return;
+    erros.push(m.text().slice(0, 150));
+  });
   p.on("pageerror", e => erros.push("EXPLODIU: " + e.message.slice(0, 150)));
   p.on("dialog", d => d.accept("teste.txt"));      // o prompt do Bloco de Notas
 
@@ -90,7 +99,11 @@ const J = {
     await p.waitForTimeout(1200);
     ok("Meus Jogos abre", (await J.abertas(p)).includes("Meus Jogos"));
     const quantos = await p.evaluate(() => document.querySelectorAll(".cartaJogo").length);
-    ok("e lista os 18 jogos do portfólio", quantos === 18, String(quantos));
+    /* o portfólio tem 19 com o JojoOS; ele não se lista dentro de si mesmo */
+    ok("e lista os 18 jogos (sem contar o próprio JojoOS)", quantos === 18, String(quantos));
+    ok("o JojoOS não aparece dentro do JojoOS",
+      !(await p.evaluate(() => /JojoOS/.test(
+        document.querySelector(".janela .grade").textContent))));
     ok("cada jogo mostra o desenho do portfólio",
       (await p.evaluate(() => [...document.querySelectorAll(".cartaJogo img")]
         .filter(i => /assets\/images/.test(i.src)).length)) >= 15);
@@ -109,6 +122,43 @@ const J = {
     ok("abrir de novo só traz pra frente (não duplica)",
       (await J.abertas(p)).filter(t => t === "Paint do JoJo").length === 1);
     ok("e ele passa a ser o da frente", (await J.frente(p)) === "Paint do JoJo");
+
+    /* ------ os jogos de fora não podem abrir janela branca ------ */
+    await p.evaluate(() => {
+      const c = [...document.querySelectorAll(".cartaJogo")]
+        .find(x => /Clicker Master 2/.test(x.textContent));
+      c.click();
+    });
+    await p.waitForTimeout(700);
+    const cart = await p.evaluate(() => {
+      const jan = [...document.querySelectorAll(".janela")]
+        .find(x => /Clicker Master 2/.test(x.querySelector(".txt").textContent));
+      if (!jan) return null;
+      return { temQuadro: !!jan.querySelector("iframe"),
+               temBotao: !![...jan.querySelectorAll("button")].find(b => /Jogar/.test(b.textContent)),
+               temCapa: !!jan.querySelector("img"),
+               texto: jan.textContent.replace(/\s+/g, " ").slice(0, 60) };
+    });
+    ok("jogo de fora abre um CARTUCHO, não uma janela branca",
+      cart && !cart.temQuadro && cart.temBotao, JSON.stringify(cart));
+    ok("e o cartucho mostra a capa do jogo", cart && cart.temCapa);
+    await J.fechar(p, /Clicker Master 2/);
+
+    /* ------ e um jogo daqui abre DENTRO da janela ------ */
+    await p.evaluate(() => {
+      const c = [...document.querySelectorAll(".cartaJogo")].find(x => /Cat City/.test(x.textContent));
+      c.click();
+    });
+    await p.waitForTimeout(900);
+    const dentro = await p.evaluate(() => {
+      const jan = [...document.querySelectorAll(".janela")]
+        .find(x => /Cat City/.test(x.querySelector(".txt").textContent));
+      const q = jan && jan.querySelector("iframe");
+      return q ? q.getAttribute("src") : null;
+    });
+    ok("jogo daqui abre DENTRO da janela", /cat-city/.test(dentro || ""), String(dentro));
+    await J.fechar(p, /Cat City/);
+    await p.waitForTimeout(200);
 
     /* ================================================================== */
     console.log("\n3) mexer nas janelas");
@@ -231,9 +281,25 @@ const J = {
     falas = await p.evaluate(() => [...document.querySelectorAll("#cafeRolo .balaoFala")].length);
     ok("a conversa continua crescendo", falas >= 5, String(falas));
 
-    ok("e não tem placar nenhum — é o ponto da ideia 99",
-      !(await p.evaluate(() => /pontos?|placar|score|n[íi]vel|fase|voc[êe] venceu/i
-        .test(document.querySelector("#cafeRolo").closest(".janela").textContent))));
+    /* A ideia 99 é "sem objetivo, sem pontuação". Quem tem que estar limpo é
+       o PROGRAMA: a janela, os botões, a barra. O que o Clipy diz numa
+       conversa é conversa — se ele falar a palavra "fase" contando alguma
+       coisa, isso não é um placar. */
+    ok("o programa não tem placar nenhum — é o ponto da ideia 99",
+      await p.evaluate(() => {
+        const jan = document.querySelector("#cafeRolo").closest(".janela");
+        const rolo = jan.querySelector("#cafeRolo");
+        const conversa = rolo.textContent;
+        const tudo = jan.textContent;
+        const soUI = tudo.split(conversa).join(" ");
+        return !/ponto|placar|score|n[íi]vel|fase|recorde|venceu/i.test(soUI);
+      }));
+    ok("e não tem nenhum contador escondido na janela",
+      await p.evaluate(() => {
+        const jan = document.querySelector("#cafeRolo").closest(".janela");
+        return ![...jan.querySelectorAll("*")].some(el =>
+          el.children.length === 0 && /^\s*\d+\s*(pts?|pontos?)?\s*$/.test(el.textContent));
+      }));
 
     /* ================================================================== */
     console.log("\n7) o que ele guarda fica guardado");

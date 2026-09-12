@@ -37,7 +37,9 @@ export function carregarJogos() {
   prometido = fetch(ONDE)
     .then(r => { if (!r.ok) throw new Error("sem lista"); return r.json(); })
     .then(d => {
-      const lista = (d && d.jogos) || [];
+      /* o JojoOS não entra na própria estante: um computador dentro do
+         computador é engraçado por dois segundos e confuso pra sempre */
+      const lista = ((d && d.jogos) || []).filter(g => g.slug !== "jojoos");
       if (!lista.length) throw new Error("lista vazia");
       jogos = lista.map(arrumar);
       return jogos;
