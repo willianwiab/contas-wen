@@ -43,7 +43,8 @@ export function meusJogos() {
       } else {
         const s = criar("div", null, g.fig); s.style.fontSize = "46px"; carta.appendChild(s);
       }
-      carta.append(criar("b", null, g.nome), criar("em", null, g.categoria + (g.deFora ? " · fora" : "")));
+      carta.append(criar("b", null, g.nome),
+        criar("em", null, g.categoria + (g.deFora ? " · abre fora" : "")));
       carta.onclick = () => abrirJogo(g);
       grade.appendChild(carta);
     }
@@ -55,35 +56,78 @@ export function meusJogos() {
 }
 
 export function abrirJogo(g) {
+  /* DUAS FAMÍLIAS DE JOGO, DOIS JEITOS DE ABRIR.
+
+     Os jogos que moram aqui neste site abrem DENTRO de uma janela, e é a
+     graça toda do JojoOS.
+
+     Os nove que moram na outra conta do JoJo no GitHub não abrem: o
+     navegador não deixa um site mostrar outro site dentro de um quadro sem
+     permissão, e essa permissão quem dá é o outro site. Eu tentei mostrar
+     mesmo assim, com um aviso em cima — e o resultado foi uma janela branca
+     com um aviso, que é pior do que não tentar.
+
+     Então agora eles ganham um CARTUCHO: a capa, o nome, o que é, e um
+     botão grande de jogar que abre numa aba nova. Sem janela branca, sem
+     susto, sem "será que quebrou?". */
+  return g.deFora ? cartucho(g) : jogoAqui(g);
+}
+
+function jogoAqui(g) {
   const j = S.abrir({
     id: "jogo-" + g.slug, nome: g.nome, fig: g.fig,
     largura: 900, altura: 600, semBorda: true,
-    botoesExtras: [{ rotulo:"↗", titulo:"abrir fora do JojoOS",
+    botoesExtras: [{ rotulo:"\u2197", titulo:"abrir fora do JojoOS",
                      faz: () => window.open(g.url, "_blank", "noopener") }],
   });
-  if (j.corpo.childElementCount) return j;   // já estava aberto
+  if (j.corpo.childElementCount) return j;
 
   const quadro = document.createElement("iframe");
   quadro.src = g.url;
   quadro.title = g.nome;
-  quadro.setAttribute("loading", "lazy");
   quadro.allow = "autoplay; fullscreen; gamepad";
   j.corpo.appendChild(quadro);
+  return j;
+}
 
-  /* Alguns jogos moram noutro endereço (a outra conta do JoJo no GitHub) e
-     o navegador pode não deixar mostrar dentro de um quadro. Não dá pra
-     saber isso de fora por causa das regras de segurança do navegador, e
-     tentar adivinhar dá falso alarme. Então: um aviso honesto, com a saída. */
-  if (g.deFora) {
-    const aviso = criar("div", "aviso");
-    aviso.innerHTML = "Este jogo mora em <b>outro endereço</b>. Se a janela ficar branca, " +
-      "não é defeito do jogo: é o navegador que não deixa mostrar site de fora aqui dentro. ";
-    const b = criar("button", "bt", "Abrir fora do JojoOS ↗");
-    b.type = "button";
-    b.onclick = () => window.open(g.url, "_blank", "noopener");
-    aviso.appendChild(b);
-    j.corpo.insertBefore(aviso, quadro);
+function cartucho(g) {
+  const j = S.abrir({ id: "jogo-" + g.slug, nome: g.nome, fig: g.fig,
+                      largura: 460, altura: 470 });
+  if (j.corpo.childElementCount) return j;
+
+  const caixa = criar("div", "cartucho");
+  caixa.style.cssText = "display:grid;gap:11px;padding:20px;text-align:center;" +
+    "height:100%;align-content:center;justify-items:center";
+
+  if (g.imagem) {
+    const img = criar("img");
+    img.src = g.imagem; img.alt = "";
+    img.style.cssText = "width:156px;height:156px;object-fit:contain;" +
+      "background:var(--caixa);border:2px solid var(--sombra-2);padding:8px";
+    img.onerror = () => { const s2 = criar("div", null, g.fig); s2.style.fontSize = "84px"; img.replaceWith(s2); };
+    caixa.appendChild(img);
   }
+
+  const nome = criar("h2", null, g.nome);
+  nome.style.cssText = "margin:0;font-size:19px";
+  const cat = criar("p", null, g.categoria);
+  cat.style.cssText = "margin:0;font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.65";
+  const desc = criar("p", null, (g.descricao || "").split(".")[0] + ".");
+  desc.style.cssText = "margin:0;font-size:13.5px;line-height:1.5;max-width:34ch";
+
+  const bt = criar("button", "bt principal", "\u25B6  Jogar");
+  bt.type = "button";
+  bt.style.cssText = "font-size:16px;padding:12px 26px;margin-top:6px";
+  bt.onclick = () => window.open(g.url, "_blank", "noopener");
+
+  const nota = criar("p", null,
+    "Este jogo mora num endereço diferente, ent\u00e3o ele abre numa aba nova \u2014 " +
+    "o navegador n\u00e3o deixa um site mostrar o outro aqui dentro.");
+  nota.style.cssText = "margin:6px 0 0;font-size:11.5px;line-height:1.5;opacity:.6;max-width:36ch";
+
+  caixa.append(nome, cat, desc, bt, nota);
+  j.corpo.appendChild(caixa);
+  setTimeout(() => bt.focus({ preventScroll:true }), 80);
   return j;
 }
 
