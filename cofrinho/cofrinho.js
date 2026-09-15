@@ -179,7 +179,7 @@ function desenharLista(){
       <span class="cofre-meio">
         <span class="cofre-nome">${escapar(c.nome)}</span>
         <span class="cofre-linha">${linha}</span>
-        <span class="barra ${s.pronto ? 'cheia' : ''}"><div style="width:${s.pct}%"></div></span>
+        <span class="barra ${s.pronto ? 'cheia' : ''}"><span style="width:${s.pct}%"></span></span>
       </span>
       <span class="cofre-pct">${s.pronto ? '🏆' : s.pct + '%'}</span>
     </button>`;

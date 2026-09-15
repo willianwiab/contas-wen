@@ -61,15 +61,15 @@ body{
 }
 .cofre-cartao:active{transform:scale(.98)}
 .cofre-emoji{font-size:2.1rem;line-height:1;flex-shrink:0}
-.cofre-meio{flex:1;min-width:0}
-.cofre-nome{font-weight:800;font-size:1.02rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cofre-linha{font-size:.78rem;color:var(--texto2);margin-top:1px}
+.cofre-meio{flex:1;min-width:0;display:block}
+.cofre-nome{display:block;font-weight:800;font-size:1.02rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cofre-linha{display:block;font-size:.78rem;color:var(--texto2);margin-top:1px}
 .cofre-pct{font-weight:800;color:var(--rosa);font-size:1.05rem;flex-shrink:0}
 
 /* ---------- barra ---------- */
-.barra{height:12px;background:var(--rosaclaro);border-radius:99px;overflow:hidden;margin-top:7px}
-.barra > div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--rosa2),var(--rosa));transition:width .5s ease}
-.barra.cheia > div{background:linear-gradient(90deg,var(--ouro2),var(--ouro))}
+.barra{display:block;height:12px;background:var(--rosaclaro);border-radius:99px;overflow:hidden;margin-top:7px}
+.barra > *{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--rosa2),var(--rosa));transition:width .5s ease}
+.barra.cheia > *{background:linear-gradient(90deg,var(--ouro2),var(--ouro))}
 .barra.grande{height:22px;margin-top:0}
 
 /* ---------- vazio ---------- */
