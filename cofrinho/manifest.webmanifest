@@ -1,0 +1,10 @@
+{
+  "name": "Cofrinho de Objetivo",
+  "short_name": "Cofrinho",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fff7fb",
+  "theme_color": "#db2777",
+  "description": "Escolhe o que cê quer comprar, põe a data, e ele diz quanto guardar por semana.",
+  "icons": [{ "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
