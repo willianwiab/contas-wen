@@ -39,6 +39,7 @@ pra continuarem sendo uma decisão. Se fossem baratas viravam só mais um botão
 |---|---|---|
 | 🖱️ **9 melhorias de clique** | somam no valor de cada toque | quem tá com o jogo aberto |
 | 👹 **12 ajudantes** | rendem sozinhos por segundo | quem fechou e foi fazer outra coisa |
+| ⭐ **18 especiais** | multiplicam o que já existe | quem já tem bastante de alguma coisa |
 
 Um clicker só com clique cansa a mão. Um só com ajudante vira uma planilha que se olha.
 O jogo é a conversa entre os dois.
@@ -61,6 +62,55 @@ O preço de 10 **não é dez vezes o preço do primeiro**: cada unidade já sai 
 anterior, então é a soma de uma progressão geométrica. Dez morcegos no começo custam 407,
 e não 200. O botão mostra o total antes de cê apertar, e "o máximo" calcula quantos cabem
 no bolso — exatamente quantos, nunca um a mais.
+
+## ⭐ As melhorias especiais
+
+Compras **únicas** que **multiplicam**, em vez de somar mais um pedacinho. São 18:
+
+- **Uma pra cada ajudante** — *"Morcego turbinado: todos os teus morcegos rendem o DOBRO"*
+- **Três pro clique** — x2, x3 e x5
+- **Duas pra tudo** — Noite Eterna (+25%) e Véu do Além (+50%)
+- **Uma pra sorte** — Chamado Dourado, e a abóbora dourada aparece quase o dobro mais vezes
+
+Um bicho comprado 50 vezes some do radar: o próximo custa tanto que a pessoa para de olhar
+pra ele. A melhoria dele devolve um motivo pra ele existir.
+
+Cada uma **só aparece quando cê já chegou perto** (10 daquele bicho, 100 cliques, 8
+troféus…). Uma lista cheia de coisa inalcançável é barulho, não objetivo — então embaixo
+fica só um "vindo por aí" com as três próximas.
+
+## 🎭 A cara da abóbora
+
+No botão 🎭 do canto da cena dá pra trocar o rosto: caveira 💀, fantasma 👻, gato preto 🐈‍⬛,
+zumbi 🧟, lobisomem 🐺, vampiro 🧛, ceifador ☠️, lua 🌕, vela 🕯️, doce 🍬 e coroa 👑.
+
+São 12 no total, e **cada uma abre fazendo uma coisa diferente** — 1.000 cliques, 10
+fantasmas, comprar a Garra de Lobisomem, pegar 5 douradas, ganhar todos os troféus. As
+presas mostram o que falta, porque saber o preço é metade da vontade.
+
+## 🌙 As fases da noite
+
+O céu muda com a **hora de verdade** do relógio de quem está jogando:
+
+| Quando | Como fica |
+|---|---|
+| 2h – 5h | 🌫️ Madrugada, azul frio |
+| 6h – 16h | ☀️ Dia, mais claro |
+| 17h – 19h | 🌇 Entardecer, alaranjado |
+| 20h – 22h | 🌙 Noite, o roxo de sempre |
+| **23h – 1h** | **🕛 Hora das Bruxas — roxo elétrico, e tudo rende +50%** |
+
+Abrir o jogo perto da meia-noite passa a valer a pena de verdade, e não só por ficar bonito.
+
+## 📈 A sala dos números
+
+Uma aba com tudo o que o jogo sabe sobre a partida: doces no total, por segundo, por
+clique, o melhor por segundo que cê já teve, cliques dados, maior combo, douradas pegas,
+tempo de jogo, quantos ajudantes e melhorias, troféus, especiais, **qual bicho mais rende
+agora** e há quantos dias cê joga.
+
+Ela só se redesenha com a aba aberta — ficar recalculando tudo dez vezes por segundo com
+ninguém olhando é gasto à toa.
 
 ## A abóbora dourada 🌟
 

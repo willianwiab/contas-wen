@@ -70,12 +70,74 @@ const CONQUISTAS = [
   { id:'c21', e:'🔓', nome:'Trapaceiro',     desc:'Entrar no modo adm',tem:d => !!d.admUsado }
 ];
 
+/* compras ÚNICAS que MULTIPLICAM, em vez de somar.
+   Um bicho comprado 50 vezes some do radar; a melhoria dele devolve
+   um motivo pra ele existir. Cada uma só aparece quando a pessoa já
+   chegou perto — ver o que não dá pra querer ainda só faz barulho. */
+const ESPECIAIS = [
+  ...BICHOS.map(b => ({
+    id:'e_' + b.id, tipo:'bicho', alvo:b.id, fator:2, ic:b.ic,
+    nome:b.nome + ' turbinado', desc:`Todos os teus ${b.nome.toLowerCase()} rendem o DOBRO`,
+    custo: Math.ceil(b.base * 120), destrava: d => (d.bichos[b.id]||0) >= 10,
+    falta:'tenha 10 ' + b.nome.toLowerCase()
+  })),
+  { id:'e_clique1', tipo:'clique', fator:2,    ic:'👆', nome:'Dedo Amaldiçoado',
+    desc:'Teu clique passa a valer o DOBRO', custo:5e3,
+    destrava:d => d.cliques >= 100,  falta:'dê 100 cliques' },
+  { id:'e_clique2', tipo:'clique', fator:3,    ic:'🖐️', nome:'Mão de Ferro',
+    desc:'Teu clique passa a valer 3x', custo:5e6,
+    destrava:d => d.cliques >= 1000, falta:'dê 1.000 cliques' },
+  { id:'e_clique3', tipo:'clique', fator:5,    ic:'🦾', nome:'Braço do Outro Lado',
+    desc:'Teu clique passa a valer 5x', custo:8e9,
+    destrava:d => d.cliques >= 10000, falta:'dê 10.000 cliques' },
+  { id:'e_tudo1',   tipo:'tudo',   fator:1.25, ic:'🌑', nome:'Noite Eterna',
+    desc:'TUDO no jogo rende +25%', custo:1e7,
+    destrava:d => d.conquistas.length >= 8,  falta:'ganhe 8 troféus' },
+  { id:'e_tudo2',   tipo:'tudo',   fator:1.5,  ic:'🌌', nome:'Véu do Além',
+    desc:'TUDO no jogo rende +50%', custo:1e10,
+    destrava:d => d.conquistas.length >= 15, falta:'ganhe 15 troféus' },
+  { id:'e_dourada', tipo:'dourada',fator:.55,  ic:'🌟', nome:'Chamado Dourado',
+    desc:'A abóbora dourada aparece quase o dobro mais vezes', custo:1e8,
+    destrava:d => d.douradas >= 5, falta:'pegue 5 douradas' }
+];
+
+/* a cara da abóbora: puro colecionismo, e cada uma pede uma coisa
+   diferente do jogo pra abrir */
+const CARAS = [
+  { e:'🎃', nome:'Abóbora',    q:'desde sempre',          tem:() => true },
+  { e:'💀', nome:'Caveira',    q:'1.000 cliques',         tem:d => d.cliques >= 1000 },
+  { e:'🐈‍⬛', nome:'Gato Preto', q:'10 gatos pretos',       tem:d => (d.bichos.gato||0) >= 10 },
+  { e:'👻', nome:'Fantasma',   q:'10 fantasmas',          tem:d => (d.bichos.fantasma||0) >= 10 },
+  { e:'🧟', nome:'Zumbi',      q:'10 zumbis',             tem:d => (d.bichos.zumbi||0) >= 10 },
+  { e:'🐺', nome:'Lobisomem',  q:'a Garra de Lobisomem',  tem:d => (d.melhorias.garra||0) >= 1 },
+  { e:'🧛', nome:'Vampiro',    q:'10 vampiros',           tem:d => (d.bichos.vampiro||0) >= 10 },
+  { e:'🌕', nome:'Lua Cheia',  q:'a melhoria Lua Cheia',  tem:d => (d.melhorias.lua||0) >= 1 },
+  { e:'🍬', nome:'Doce',       q:'1 milhão de doces',     tem:d => d.total >= 1e6 },
+  { e:'🕯️', nome:'Vela',       q:'5 abóboras douradas',   tem:d => d.douradas >= 5 },
+  { e:'☠️', nome:'Ceifador',   q:'10 ceifadores',         tem:d => (d.bichos.ceifador||0) >= 10 },
+  { e:'👑', nome:'Coroa',      q:'todos os troféus',      tem:d => d.conquistas.length >= CONQUISTAS.length }
+];
+
+/* o céu muda com a hora DE VERDADE do relógio da pessoa —
+   e à meia-noite a casa toda rende mais */
+const FASES = [
+  { id:'f-madrugada', de:2,  ate:5,  nome:'🌫️ Madrugada',   mult:1 },
+  { id:'f-dia',       de:6,  ate:16, nome:'☀️ Dia',          mult:1 },
+  { id:'f-tarde',     de:17, ate:19, nome:'🌇 Entardecer',   mult:1 },
+  { id:'f-noite',     de:20, ate:22, nome:'🌙 Noite',        mult:1 },
+  { id:'f-bruxas',    de:23, ate:1,  nome:'🕛 Hora das Bruxas · +50% em tudo', mult:1.5 }
+];
+function faseAgora(h = new Date().getHours()){
+  return FASES.find(f => f.de <= f.ate ? (h >= f.de && h <= f.ate) : (h >= f.de || h <= f.ate));
+}
+
 /* ---------------------------------------------------------
    O ESTADO
    --------------------------------------------------------- */
 const vazio = () => ({
   v:1, doces:0, total:0, cliques:0, douradas:0, maiorCombo:0, admUsado:false,
-  melhorias:{}, bichos:{}, conquistas:[], som:true, avisos:false,
+  melhorias:{}, bichos:{}, conquistas:[], especiais:[], som:true, avisos:false,
+  cara:'🎃', comecou:Date.now(), tempoJogado:0, melhorPorSeg:0,
   destravado:false, avisouPorta:0, quando:Date.now()
 });
 
@@ -94,7 +156,8 @@ function carregar(){
       if(o && typeof o.doces === 'number'){
         /* preenche o que faltar, pra um save antigo nunca quebrar o jogo */
         return Object.assign(vazio(), o, {
-          melhorias:o.melhorias||{}, bichos:o.bichos||{}, conquistas:o.conquistas||[]
+          melhorias:o.melhorias||{}, bichos:o.bichos||{}, conquistas:o.conquistas||[],
+          especiais:o.especiais||[]
         });
       }
     }
@@ -193,19 +256,30 @@ function quantoLeva(x){
 }
 
 const multTrofeus = () => 1 + dados.conquistas.length * 0.02;
+const tenhoEsp = id => dados.especiais.includes(id);
+/* as especiais de "tudo" e a hora das bruxas multiplicam clique e produção juntos */
+const multGeral = () => ESPECIAIS
+  .filter(e => e.tipo === 'tudo' && tenhoEsp(e.id))
+  .reduce((m,e) => m * e.fator, 1) * faseAgora().mult;
+const multClique = () => ESPECIAIS
+  .filter(e => e.tipo === 'clique' && tenhoEsp(e.id))
+  .reduce((m,e) => m * e.fator, 1);
 const multCombo = () => 1 + Math.min(combo, 50) * 0.02;
 
 /* o clique "limpo", sem combo nem bônus — é o que os troféus medem */
 function porCliqueCru(){
   const somado = MELHORIAS.reduce((s,m) => s + m.poder * (dados.melhorias[m.id]||0), 1);
-  return somado * multTrofeus();
+  return somado * multTrofeus() * multClique() * multGeral();
 }
 function porClique(){
   return porCliqueCru() * multCombo() * (bonus && bonus.tipo === 'frenesi' ? 7 : 1);
 }
 
 const porSegundoCru = d =>
-  BICHOS.reduce((s,b) => s + b.porSeg * (d.bichos[b.id]||0), 0) * (1 + (d.conquistas||[]).length * 0.02);
+  BICHOS.reduce((s,b) => {
+    const dobro = (d.especiais||[]).includes('e_' + b.id) ? 2 : 1;
+    return s + b.porSeg * (d.bichos[b.id]||0) * dobro;
+  }, 0) * (1 + (d.conquistas||[]).length * 0.02) * multGeral();
 
 const porSegundo = () =>
   porSegundoCru(dados) * (bonus && bonus.tipo === 'turbo' ? 5 : 1);
@@ -314,7 +388,8 @@ const comprarBicho    = id => comprar(BICHOS.find(x => x.id === id));
    não esperava. Ela aparece sozinha e some se ninguém pegar.
    --------------------------------------------------------- */
 function marcarProximaDourada(){
-  proximaDourada = Date.now() + (40 + Math.random() * 70) * 1000;
+  const apressa = tenhoEsp('e_dourada') ? .55 : 1;
+  proximaDourada = Date.now() + (40 + Math.random() * 70) * 1000 * apressa;
 }
 
 function talvezSoltarDourada(){
@@ -456,6 +531,128 @@ function pintarCenario(){
     `<span style="animation-delay:${(i*.24).toFixed(2)}s">${b.ic}</span>`).join('');
 }
 
+/* ---------------------------------------------------------
+   AS MELHORIAS ESPECIAIS
+   --------------------------------------------------------- */
+function comprarEspecial(id){
+  const e = ESPECIAIS.find(x => x.id === id);
+  if(!e || tenhoEsp(id)) return;
+  if(!e.destrava(dados)) return recado('Essa ainda nem apareceu 👀');
+  if(dados.doces < e.custo) return recado('Falta doce pra isso! 🍬');
+  dados.doces -= e.custo;
+  dados.especiais.push(id);
+  bip(900, .1); setTimeout(() => bip(1200, .1), 90);
+  recado(`⭐ ${e.ic} ${e.nome}!`);
+  conferirConquistas(); pintarTudo(); pintarEspeciais(); gravar();
+}
+
+function pintarEspeciais(){
+  /* só mostra o que já dá pra querer: uma lista cheia de coisa
+     inalcançável vira barulho em vez de objetivo */
+  const abertas = ESPECIAIS.filter(e => e.destrava(dados) || tenhoEsp(e.id));
+  const perto = ESPECIAIS.filter(e => !e.destrava(dados) && !tenhoEsp(e.id)).slice(0, 3);
+
+  const cartao = e => {
+    const tem = tenhoEsp(e.id), pode = !tem && dados.doces >= e.custo;
+    return `<button class="esp ${tem ? 'tem' : pode ? 'pode' : 'caro'}"
+              onclick="comprarEspecial('${e.id}')">
+      <span class="ic">${e.ic}</span>
+      <span class="meio"><span class="nome">${e.nome}</span>
+        <span class="desc">${e.desc}</span></span>
+      <span class="dir">${tem ? '<span class="feito">✔ tua</span>'
+        : `<span class="preco ${pode ? '' : 'caro'}">${num(e.custo)} 🍬</span>`}</span>
+    </button>`;
+  };
+
+  $('#listaEspeciais').innerHTML =
+    (abertas.length ? abertas.map(cartao).join('')
+      : `<p class="vazio-esp">Nenhuma ainda! 👀<br>
+         Elas aparecem conforme cê vai jogando —<br>compra 10 de um bicho e vê o que acontece.</p>`)
+    + (perto.length ? `<p class="vazio-esp" style="padding-top:18px">
+         <b>Vindo por aí:</b><br>${perto.map(e => '🔒 ' + e.falta).join('<br>')}</p>` : '');
+}
+
+/* ---------------------------------------------------------
+   A CARA DA ABÓBORA
+   --------------------------------------------------------- */
+const abrirCaras = () => { pintarCaras(); $('#caras').classList.add('on'); };
+const fecharCaras = () => $('#caras').classList.remove('on');
+
+function pintarCaras(){
+  $('#listaCaras').innerHTML = CARAS.map(c => {
+    const tem = c.tem(dados), usando = dados.cara === c.e;
+    return `<button class="cara ${usando ? 'usando' : tem ? 'tem' : 'presa'}"
+              onclick="${tem ? `usarCara('${c.e}')` : `recado('Pra abrir: ${c.q}')`}">
+      <span class="e">${tem ? c.e : '🔒'}</span>
+      <span class="n">${tem ? c.nome : '???'}</span>
+      <span class="q">${usando ? 'usando agora' : c.q}</span>
+    </button>`;
+  }).join('');
+}
+
+function usarCara(e){
+  dados.cara = e;
+  $('#abobora').textContent = e;
+  gravar(); pintarCaras();
+  recado(e + ' Trocou a cara!');
+}
+
+/* ---------------------------------------------------------
+   A FASE DA NOITE
+   --------------------------------------------------------- */
+let faseAgoraId = '';
+function pintarFase(){
+  const f = faseAgora();
+  $('#fase').textContent = f.nome;
+  $('#fase').classList.toggle('bruxas', f.mult > 1);
+  if(f.id === faseAgoraId) return;
+  const antes = faseAgoraId;
+  faseAgoraId = f.id;
+  $('#cena').className = 'cena ' + f.id;
+  if(antes && f.mult > 1) recado('🕛 Chegou a Hora das Bruxas — tudo rende +50%!');
+}
+
+/* ---------------------------------------------------------
+   A SALA DOS NÚMEROS
+   --------------------------------------------------------- */
+function tempoBonito(seg){
+  if(seg < 60) return Math.floor(seg) + 's';
+  if(seg < 3600) return Math.floor(seg/60) + 'min';
+  if(seg < 86400) return Math.floor(seg/3600) + 'h ' + Math.floor(seg/60)%60 + 'min';
+  return Math.floor(seg/86400) + 'd ' + Math.floor(seg/3600)%24 + 'h';
+}
+
+function pintarNumeros(){
+  if(!$('#painel-numeros').classList.contains('on')) return;   /* aba fechada, não gasta tempo */
+  const campeao = BICHOS
+    .map(b => ({ b, rende: b.porSeg * (dados.bichos[b.id]||0) * (tenhoEsp('e_'+b.id) ? 2 : 1) }))
+    .sort((x,y) => y.rende - x.rende)[0];
+  const desde = Math.floor((Date.now() - (dados.comecou||Date.now())) / 86400000);
+
+  const cx = (r, v, classe = '') => `<div class="nmr ${classe}"><div class="r">${r}</div>
+    <div class="v">${v}</div></div>`;
+
+  $('#listaNumeros').innerHTML =
+    cx('Doces no total', num(dados.total) + ' 🍬', 'largo destaque') +
+    cx('Doces agora', num(dados.doces)) +
+    cx('Por segundo', num(porSegundo())) +
+    cx('Por clique', num(porClique())) +
+    cx('Melhor por segundo', num(dados.melhorPorSeg||0)) +
+    cx('Cliques dados', dados.cliques.toLocaleString('pt-BR')) +
+    cx('Maior combo', (dados.maiorCombo||0) + ' seguidos') +
+    cx('Douradas pegas', (dados.douradas||0) + ' 🌟') +
+    cx('Tempo de jogo', tempoBonito(dados.tempoJogado||0)) +
+    cx('Ajudantes', totalBichos(dados) + ' bichos') +
+    cx('Melhorias', MELHORIAS.reduce((s,m) => s + (dados.melhorias[m.id]||0), 0) + ' níveis') +
+    cx('Troféus', `${dados.conquistas.length} de ${CONQUISTAS.length}`) +
+    cx('Especiais', `${dados.especiais.length} de ${ESPECIAIS.length}`) +
+    cx('Quem mais rende',
+       campeao && campeao.rende > 0
+         ? `${campeao.b.ic} ${campeao.b.nome} — ${num(campeao.rende)}/s`
+         : 'ninguém ainda', 'largo') +
+    cx('Jogando há', desde === 0 ? 'hoje mesmo' : desde + (desde === 1 ? ' dia' : ' dias'), 'largo');
+}
+
 function pintarConquistas(){
   $('#listaConquistas').innerHTML = CONQUISTAS.map(c => {
     const tem = dados.conquistas.includes(c.id);
@@ -477,6 +674,7 @@ function pintarPlacar(){
   const nb = totalBichos(dados);
   $('#contaBichos').textContent = nb ? nb + ' no time' : '';
   $('#contaTrofeus').textContent = dados.conquistas.length + '/' + CONQUISTAS.length;
+  $('#contaEspeciais').textContent = dados.especiais.length + '/' + ESPECIAIS.length;
 
   const pct = Math.round(dados.conquistas.length / CONQUISTAS.length * 100);
   $('#trofNum').textContent = `${dados.conquistas.length} de ${CONQUISTAS.length}`;
@@ -488,7 +686,9 @@ function pintarPlacar(){
     (dados.maiorCombo ? ` · maior combo <b>${dados.maiorCombo}</b>` : '');
 }
 
-const pintarTudo = () => { pintarPlacar(); pintarLoja(); pintarCenario(); };
+const pintarTudo = () => {
+  pintarPlacar(); pintarLoja(); pintarCenario(); pintarFase(); pintarNumeros();
+};
 
 function trocarAba(qual){
   document.querySelectorAll('.abas button').forEach(b =>
@@ -496,7 +696,9 @@ function trocarAba(qual){
   document.querySelectorAll('.painel').forEach(p =>
     p.classList.toggle('on', p.id === 'painel-' + qual));
   /* comprar de 10 em 10 não faz sentido na parede de troféus */
-  $('#loteBarra').style.display = qual === 'conquistas' ? 'none' : '';
+  $('#loteBarra').style.display = (qual === 'cliques' || qual === 'bichos') ? '' : 'none';
+  if(qual === 'especiais') pintarEspeciais();
+  if(qual === 'numeros') pintarNumeros();
 }
 
 function recado(txt){
@@ -540,6 +742,9 @@ function tique(){
 
   const ganho = porSegundo() * dt;
   if(ganho > 0){ dados.doces += ganho; dados.total += ganho; }
+  dados.tempoJogado = (dados.tempoJogado||0) + dt;
+  const ps = porSegundo();
+  if(ps > (dados.melhorPorSeg||0)) dados.melhorPorSeg = ps;
 
   if(combo && agora - ultimoClique > 1200){ combo = 0; pintarCombo(); }
 
@@ -547,6 +752,7 @@ function tique(){
     bonus = null;
     $('#faixaBonus').classList.remove('on');
   }
+  if($('#painel-especiais').classList.contains('on')) pintarEspeciais();
   conferirPorta();
   talvezSoltarDourada();
   conferirConquistas();
@@ -736,6 +942,11 @@ function admBonus(tipo){
   fecharAdm();
   pintarTudo();
 }
+function admEspeciais(dar){
+  dados.especiais = dar ? ESPECIAIS.map(e => e.id) : [];
+  pintarEspeciais();
+  depoisDoAdm(dar ? 'todas as especiais destravadas' : 'especiais tiradas');
+}
 function admTrofeus(dar){
   dados.conquistas = dar ? CONQUISTAS.map(c => c.id) : [];
   depoisDoAdm(dar ? 'todos os troféus destravados' : 'troféus tirados');
@@ -772,9 +983,12 @@ async function baixarJogo(){
   const antes = bt.textContent;
   bt.textContent = '⏳ juntando...';
   try{
+    /* o endereço sai da própria página: assim a versão nunca
+       desencontra quando o jogo.js sobe de número */
+    const meuSrc = document.querySelector('script[src*="jogo.js"]').getAttribute('src');
     const [html, js] = await Promise.all([
       fetch('index.html').then(r => r.text()),
-      fetch('jogo.js?v=4').then(r => r.text())
+      fetch(meuSrc).then(r => r.text())
     ]);
     const saida = html
       .replace(/<script src="jogo\.js[^"]*"><\/script>/,
@@ -832,6 +1046,8 @@ function comecarJogo(){
 
 montarLoja();
 pintarConquistas();
+pintarEspeciais();
+$('#abobora').textContent = dados.cara || '🎃';
 pintarTudo();
 enfeitarCena();
 $('#btnSom').textContent = dados.som ? '🔊 Som' : '🔇 Mudo';
