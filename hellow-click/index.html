@@ -192,7 +192,57 @@ body{
   padding:7px 12px;font-weight:900;font-size:.82rem;color:var(--ouro);white-space:nowrap
 }
 .item.pode .preco{background:var(--ouro);border-color:var(--ouro);color:#2b1055}
+.item .preco small{font-size:.7em;opacity:.8}
 .item .preco.caro{color:var(--sangue)}
+
+
+/* ---- combo de cliques ---- */
+#combo{
+  position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:6;
+  background:linear-gradient(90deg,var(--brasa),var(--abobora2));color:#2b1055;
+  font-weight:900;font-size:.82rem;padding:4px 14px;border-radius:99px;
+  box-shadow:0 0 20px rgba(255,77,0,.6);display:none;white-space:nowrap
+}
+#combo.on{display:block;animation:pulsaCombo .3s}
+@keyframes pulsaCombo{0%{transform:translateX(-50%) scale(1.18)}100%{transform:translateX(-50%) scale(1)}}
+
+/* ---- comprar de 10 em 10 ---- */
+.lote{display:flex;gap:5px;align-items:center;margin-bottom:11px}
+.lote .r{font-size:.7rem;color:var(--texto3);font-weight:800;margin-right:2px}
+.lote button{
+  flex:1;padding:8px 4px;border-radius:11px;background:var(--card);
+  border:1px solid var(--linha);font-size:.8rem;font-weight:900;color:var(--texto2)
+}
+.lote button.on{background:var(--abobora);border-color:var(--abobora);color:#2b1055}
+
+/* ---- a tranca do Halloween ---- */
+#trava{
+  position:fixed;inset:0;z-index:200;display:none;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:26px;gap:12px;
+  background:radial-gradient(ellipse at 50% 22%,#2a0f3d,#0b0410 72%)
+}
+#trava.on{display:flex}
+#trava .porta{font-size:4.6rem;line-height:1;filter:drop-shadow(0 0 30px rgba(255,122,24,.5))}
+#trava h2{font-size:1.5rem;color:var(--abobora)}
+#trava p{font-size:.86rem;color:var(--texto2);line-height:1.6;max-width:320px}
+#trava .conta{
+  background:var(--card);border:1px solid var(--linha);border-radius:16px;padding:14px 20px;
+  font-size:.75rem;color:var(--texto3);font-weight:800;text-transform:uppercase;
+  letter-spacing:.08em
+}
+#trava .conta b{display:block;font-size:1.6rem;color:var(--ouro);letter-spacing:0;
+  text-transform:none;margin-top:3px}
+#trava .senha-caixa{display:flex;gap:7px;width:100%;max-width:320px;margin-top:4px}
+#trava input{
+  flex:1;padding:12px 14px;border-radius:12px;border:1px solid var(--linha);
+  background:var(--card);color:var(--texto);font-size:1rem;outline:none;text-align:center;
+  letter-spacing:1px;-webkit-user-select:text;user-select:text
+}
+#trava input:focus{border-color:var(--abobora)}
+#trava .btn{background:var(--abobora);color:#2b1055;font-weight:900;padding:12px 20px;
+  border-radius:12px;white-space:nowrap}
+#trava .erro{color:var(--sangue);font-size:.82rem;font-weight:800;min-height:1.2em}
+#trava .dica{font-size:.7rem;color:var(--texto3);max-width:300px;line-height:1.5}
 
 /* ---- troféus ---- */
 @media (max-width:359px){
@@ -284,6 +334,7 @@ body{
   </header>
 
   <div class="palco">
+    <div id="combo"></div>
     <div class="luz-chao"></div>
     <div id="abobora">🎃</div>
     <div class="chao"></div>
@@ -303,6 +354,13 @@ body{
     <button data-aba="conquistas" onclick="trocarAba('conquistas')">🏆 Troféus
       <span class="conta" id="contaTrofeus"></span></button>
   </nav>
+
+  <div class="lote" id="loteBarra">
+    <span class="r">comprar</span>
+    <button class="on" data-lote="1" onclick="trocarLote(1)">1 por vez</button>
+    <button data-lote="10" onclick="trocarLote(10)">10 de uma vez</button>
+    <button data-lote="max" onclick="trocarLote('max')">o máximo</button>
+  </div>
 
   <div class="painel on" id="painel-cliques"><div id="listaCliques"></div></div>
   <div class="painel" id="painel-bichos"><div id="listaBichos"></div></div>
@@ -324,6 +382,22 @@ body{
   </div>
 </div>
 
+<div id="trava">
+  <div class="porta">🚪</div>
+  <h2>A pizzaria tá fechada 🎃</h2>
+  <p>O Hellow Click só abre na <b>semana do Halloween</b> —
+     de <b>25 de outubro a 1º de novembro</b>.</p>
+  <div class="conta">Falta pra abrir<b id="travaConta">—</b></div>
+  <p style="margin-top:4px">Mas quem sabe a senha entra a hora que quiser. 🤫</p>
+  <div class="senha-caixa">
+    <input id="travaSenha" type="text" placeholder="a senha secreta"
+           autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="24">
+    <button class="btn" onclick="tentarSenha()">Entrar</button>
+  </div>
+  <div class="erro" id="travaErro"></div>
+  <p class="dica">Uma vez destravado, ele fica destravado neste aparelho.</p>
+</div>
+
 <div id="dourada">🎃</div>
 
 <div class="fundo-modal" id="modalFora">
@@ -334,6 +408,6 @@ body{
   </div>
 </div>
 
-<script src="jogo.js?v=2"></script>
+<script src="jogo.js?v=3"></script>
 </body>
 </html>
