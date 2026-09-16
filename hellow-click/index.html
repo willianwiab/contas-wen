@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#1a0b2e">
+<meta name="theme-color" content="#120618">
 <title>🎃 Hellow Click</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icone.svg">
@@ -12,124 +12,226 @@
 <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 <style>
 :root{
-  --abobora:#ff7518; --abobora2:#ffb347; --roxo:#2b1055; --roxo2:#1a0b2e; --roxo3:#3d1a6d;
-  --verde:#7fff6a; --texto:#f3e8ff; --texto2:#a78bca; --ouro:#ffd700; --sangue:#e63946;
-  --borda:#4c2a85;
+  --abobora:#ff7a18; --abobora2:#ffb347; --brasa:#ff4d00;
+  --noite:#120618; --noite2:#1e0b2b; --card:#251034; --cardAlto:#2e1440;
+  --linha:rgba(255,255,255,.09); --linhaForte:rgba(255,255,255,.16);
+  --texto:#f6ecff; --texto2:#a78bb8; --texto3:#7a5f8c;
+  --verde:#5ee89a; --ouro:#ffd75e; --sangue:#ff5470; --lua:#fff4d6;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;user-select:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 body{
   font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--texto);
-  background:var(--roxo2);min-height:100dvh;overflow-x:hidden;
-  background-image:radial-gradient(ellipse at 50% -10%,rgba(255,117,24,.16),transparent 55%),
-                   radial-gradient(circle at 85% 80%,rgba(127,255,106,.07),transparent 45%);
+  background:var(--noite);min-height:100dvh;overflow-x:hidden;
   padding-bottom:env(safe-area-inset-bottom)
 }
-.titulo-fonte{font-family:'Creepster',system-ui,cursive;letter-spacing:2px;font-weight:400}
+.titulo-fonte{font-family:'Creepster',system-ui,cursive;font-weight:400;letter-spacing:3px}
 
-/* ---------- morcegos de fundo ---------- */
-.morcego-fundo{position:fixed;font-size:1.3rem;opacity:.13;pointer-events:none;z-index:0;
-  animation:voa linear infinite}
+/* ============ A CENA DE CIMA ============
+   céu, lua, morro e chão — tudo num bloco só, pra abóbora
+   parar de flutuar num vazio preto. */
+.cena{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 4%, rgba(255,122,24,.20), transparent 62%),
+    linear-gradient(180deg,#1b0a27 0%, #2a0f3d 52%, #3a1652 100%);
+  border-bottom:1px solid var(--linha)
+}
+.estrela{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;
+  animation:pisca 3s ease-in-out infinite}
+@keyframes pisca{0%,100%{opacity:.18}50%{opacity:.8}}
+
+/* a lua fica NO CÉU, e não no canto: em cima ela passava por baixo do
+   título em tela estreita, e o céu no meio ficava um vazio morto */
+.lua{
+  position:absolute;top:162px;right:16px;width:44px;height:44px;border-radius:50%;
+  background:radial-gradient(circle at 36% 34%, #fffdf2, var(--lua) 58%, #e8d9ae);
+  box-shadow:0 0 34px rgba(255,244,214,.45), 0 0 90px rgba(255,244,214,.18)
+}
+.lua i{position:absolute;border-radius:50%;background:rgba(0,0,0,.07)}
+
+.morcego-cena{position:absolute;font-size:.9rem;opacity:.5;animation:voa linear infinite}
 @keyframes voa{
-  0%{transform:translate(-12vw,0) scale(1)}
-  50%{transform:translate(50vw,-40px) scale(1.15)}
-  100%{transform:translate(112vw,0) scale(1)}
+  0%{transform:translate(-14vw,0) rotate(-4deg)}
+  50%{transform:translate(48vw,-22px) rotate(4deg)}
+  100%{transform:translate(114vw,0) rotate(-4deg)}
 }
 
-.envolve{max-width:520px;margin:0 auto;padding:14px 14px 30px;position:relative;z-index:1}
+/* ---- topo da cena: título e contador ---- */
+.topo{position:relative;z-index:3;text-align:center;padding:18px 16px 0}
+.topo h1{font-size:clamp(1.7rem,7.5vw,2.1rem);color:var(--abobora);
+  text-shadow:0 0 22px rgba(255,122,24,.55),0 2px 0 rgba(0,0,0,.35)}
 
-/* ---------- placar ---------- */
-.placar{text-align:center;margin-bottom:6px}
-.placar h1{font-size:2rem;color:var(--abobora);text-shadow:0 0 18px rgba(255,117,24,.55)}
-.doces{font-size:2.3rem;font-weight:900;line-height:1.1;margin-top:6px}
-.doces small{font-size:1rem;color:var(--texto2);font-weight:700}
-.porseg{font-size:.85rem;color:var(--verde);font-weight:800;margin-top:1px;height:1.2em}
+.contador{margin-top:10px;line-height:1}
+.contador .n{font-size:2.6rem;font-weight:900;letter-spacing:-1px;
+  text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.contador .u{font-size:.8rem;color:var(--texto2);font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;margin-top:3px}
 
-/* ---------- a abóbora ---------- */
-.palco{position:relative;display:flex;justify-content:center;margin:10px 0 16px;height:190px}
+.fichas{display:flex;gap:7px;justify-content:center;margin-top:11px;flex-wrap:wrap}
+.ficha{
+  display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.34);
+  border:1px solid var(--linha);border-radius:99px;padding:5px 12px;
+  font-size:.76rem;font-weight:800;backdrop-filter:blur(3px)
+}
+.ficha .r{color:var(--texto2);font-weight:700}
+.ficha.seg .v{color:var(--verde)}
+.ficha.clique .v{color:var(--abobora2)}
+
+/* ---- a abóbora e o chão ---- */
+.palco{position:relative;z-index:3;height:194px;display:flex;align-items:flex-end;
+  justify-content:center;padding-bottom:34px;margin-top:2px}
 #abobora{
-  font-size:8.5rem;line-height:1;cursor:pointer;
-  filter:drop-shadow(0 0 26px rgba(255,117,24,.65));transition:transform .06s
+  font-size:7.6rem;line-height:1;cursor:pointer;position:relative;z-index:4;
+  filter:drop-shadow(0 6px 0 rgba(0,0,0,.25)) drop-shadow(0 0 30px rgba(255,122,24,.7));
+  transition:transform .06s;will-change:transform
 }
-#abobora:active{transform:scale(.9)}
+#abobora:active{transform:scale(.9) translateY(4px)}
 #abobora.tremendo{animation:treme .35s}
 @keyframes treme{
-  0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg) scale(1.06)}
-  75%{transform:rotate(7deg) scale(1.06)}
+  0%,100%{transform:rotate(0) scale(1)}
+  25%{transform:rotate(-6deg) scale(1.07)}
+  75%{transform:rotate(6deg) scale(1.07)}
 }
+/* o brilho que a abóbora joga no chão */
+.luz-chao{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+  width:210px;height:44px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(255,122,24,.42),transparent 70%);z-index:2}
+
+.chao{
+  position:absolute;left:0;right:0;bottom:0;height:56px;z-index:3;
+  background:linear-gradient(180deg,#43195e,#2d1040);
+  border-top:2px solid #5a2480
+}
+.chao::before{
+  content:'';position:absolute;top:-9px;left:0;right:0;height:11px;
+  background:radial-gradient(ellipse 22px 9px at 12px 9px,#5a2480 98%,transparent) repeat-x;
+  background-size:34px 11px
+}
+/* os bichos que cê já tem aparecem morando aqui */
+#moradores{position:absolute;bottom:8px;left:0;right:0;z-index:4;
+  display:flex;align-items:flex-end;justify-content:center;gap:3px;padding:0 10px;
+  flex-wrap:wrap-reverse;max-height:46px;overflow:hidden}
+#moradores span{font-size:1.25rem;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6));
+  animation:pula 2.6s ease-in-out infinite}
+@keyframes pula{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* números que sobem do dedo */
 .subindo{
-  position:absolute;font-weight:900;font-size:1.2rem;color:var(--abobora2);pointer-events:none;
-  text-shadow:0 2px 6px rgba(0,0,0,.7);animation:sobe 1s ease-out forwards;z-index:3
+  position:absolute;font-weight:900;font-size:1.25rem;color:var(--abobora2);
+  pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,.85);z-index:6;
+  animation:sobe 1s ease-out forwards
 }
 @keyframes sobe{
   0%{opacity:1;transform:translateY(0) scale(.7)}
-  30%{transform:translateY(-22px) scale(1.15)}
-  100%{opacity:0;transform:translateY(-78px) scale(1)}
+  30%{transform:translateY(-24px) scale(1.2)}
+  100%{opacity:0;transform:translateY(-84px) scale(1)}
 }
 
-/* ---------- abóbora dourada ---------- */
-#dourada{
-  position:fixed;font-size:3rem;cursor:pointer;z-index:40;display:none;
-  filter:drop-shadow(0 0 22px var(--ouro));animation:pulsa .9s ease-in-out infinite
-}
-#dourada.on{display:block}
-@keyframes pulsa{0%,100%{transform:scale(1) rotate(-6deg)}50%{transform:scale(1.18) rotate(6deg)}}
+/* ============ CORPO ============ */
+.envolve{max-width:520px;margin:0 auto;padding:14px 14px 28px}
 
 .faixa-bonus{
   background:linear-gradient(90deg,var(--ouro),var(--abobora2));color:#2b1055;font-weight:900;
-  text-align:center;padding:7px;border-radius:12px;margin-bottom:10px;font-size:.9rem;display:none
+  text-align:center;padding:9px;border-radius:14px;margin-bottom:12px;font-size:.9rem;
+  display:none;box-shadow:0 0 26px rgba(255,215,94,.4)
 }
 .faixa-bonus.on{display:block;animation:brilha 1s ease-in-out infinite}
-@keyframes brilha{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes brilha{0%,100%{filter:brightness(1)}50%{filter:brightness(1.28)}}
 
-/* ---------- abas ---------- */
-.abas{display:flex;gap:6px;margin-bottom:12px}
+/* ---- abas ---- */
+.abas{display:flex;gap:4px;background:rgba(0,0,0,.3);border:1px solid var(--linha);
+  border-radius:14px;padding:4px;margin-bottom:14px}
 .abas button{
-  flex:1;padding:10px 4px;border-radius:12px;background:rgba(255,255,255,.05);
-  border:2px solid transparent;font-size:.78rem;font-weight:800;color:var(--texto2)
+  flex:1;padding:9px 4px;border-radius:10px;font-size:.78rem;font-weight:800;
+  color:var(--texto3);transition:.15s
 }
-.abas button.on{border-color:var(--abobora);color:var(--abobora);background:rgba(255,117,24,.14)}
-.painel{display:none}.painel.on{display:block}
+.abas button.on{background:var(--cardAlto);color:var(--abobora);
+  box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.abas button .conta{display:block;font-size:.6rem;font-weight:700;opacity:.75;margin-top:1px}
+.painel{display:none}.painel.on{display:block;animation:entra .2s ease}
+@keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* ---------- itens da loja ---------- */
+/* ---- cartão de item ---- */
 .item{
-  display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:11px;
-  border-radius:14px;background:rgba(255,255,255,.05);border:2px solid var(--borda);
-  margin-bottom:8px;transition:transform .08s
+  --cor:#fff;
+  display:grid;grid-template-columns:52px 1fr auto;gap:11px;align-items:center;
+  width:100%;text-align:left;padding:11px;border-radius:16px;background:var(--card);
+  border:1px solid var(--linha);border-left:4px solid transparent;margin-bottom:8px;
+  transition:transform .09s,background .15s
 }
 .item:active{transform:scale(.985)}
-.item.pode{border-color:var(--verde);background:rgba(127,255,106,.09)}
-.item.caro{opacity:.5}
-/* span é inline por natureza: sem display:block o nome e a descrição
-   sairiam grudados na mesma linha */
-.item .ic{display:block;font-size:1.9rem;flex-shrink:0;width:42px;text-align:center}
-.item .meio{display:block;flex:1;min-width:0}
-.item .nome{display:block;font-weight:800;font-size:.92rem}
-.item .desc{display:block;font-size:.7rem;color:var(--texto2);margin-top:1px;line-height:1.35}
-.item .dir{display:block;text-align:right;flex-shrink:0}
-.item .preco{display:block;font-weight:900;font-size:.85rem;color:var(--ouro)}
-.item .preco.caro{color:var(--sangue)}
-.item .qtd{display:block;font-size:.68rem;color:var(--texto2);font-weight:800;margin-top:1px}
+.item.pode{background:var(--cardAlto);border-color:var(--linhaForte);border-left-color:var(--cor)}
+.item.caro{opacity:.52}
+.item.tenho{border-left-color:var(--cor)}
 
-/* ---------- conquistas ---------- */
-.grade-conq{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:7px}
-.conq{
-  background:rgba(255,255,255,.05);border:2px solid var(--borda);border-radius:12px;
-  padding:9px 5px;text-align:center
+.item .ic{
+  display:flex;align-items:center;justify-content:center;width:52px;height:52px;
+  border-radius:14px;background:rgba(0,0,0,.3);font-size:1.7rem;
+  border:1px solid var(--linha)
 }
-.conq.tem{border-color:var(--ouro);background:rgba(255,215,0,.12)}
-.conq .e{font-size:1.5rem}
-.conq.falta .e{filter:grayscale(1) brightness(.5)}
-.conq .n{font-size:.6rem;font-weight:800;margin-top:2px;line-height:1.25}
-.conq.falta .n{color:var(--texto2)}
-.conq .d{font-size:.55rem;color:var(--texto2);margin-top:2px;line-height:1.2}
+.item.pode .ic{background:color-mix(in srgb,var(--cor) 16%,transparent);border-color:var(--cor)}
 
-/* ---------- avisos ---------- */
+.item .meio{display:block;min-width:0}
+.item .linha1{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+/* em tela estreita o nome QUEBRA em vez de virar "Dedo Esquel..." —
+   o nome é o que a pessoa procura, não pode ser o primeiro a sumir */
+.item .nome{font-weight:800;font-size:.95rem;line-height:1.25}
+.item .tenho-selo{
+  flex-shrink:0;background:var(--cor);color:#1b0a27;font-size:.64rem;font-weight:900;
+  padding:2px 7px;border-radius:99px;letter-spacing:.02em
+}
+.item .desc{display:block;font-size:.7rem;color:var(--texto3);margin-top:2px;line-height:1.35}
+.item .rende{display:block;font-size:.7rem;color:var(--texto2);font-weight:700;margin-top:3px}
+.item .rende b{color:var(--cor)}
+
+.item .dir{display:block;text-align:right;flex-shrink:0}
+.item .preco{
+  display:block;background:rgba(0,0,0,.34);border:1px solid var(--linha);border-radius:99px;
+  padding:7px 12px;font-weight:900;font-size:.82rem;color:var(--ouro);white-space:nowrap
+}
+.item.pode .preco{background:var(--ouro);border-color:var(--ouro);color:#2b1055}
+.item .preco.caro{color:var(--sangue)}
+
+/* ---- troféus ---- */
+@media (max-width:359px){
+  .item{grid-template-columns:44px 1fr auto;gap:9px;padding:10px}
+  .item .ic{width:44px;height:44px;font-size:1.45rem;border-radius:12px}
+  .item .preco{padding:6px 9px;font-size:.76rem}
+}
+
+.grade-conq{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.conq{background:var(--card);border:1px solid var(--linha);border-radius:14px;
+  padding:11px 6px;text-align:center}
+.conq.tem{border-color:var(--ouro);background:linear-gradient(180deg,rgba(255,215,94,.16),var(--card))}
+.conq .e{font-size:1.6rem;line-height:1.2}
+.conq.falta .e{filter:grayscale(1) brightness(.55)}
+.conq .n{font-size:.62rem;font-weight:800;margin-top:3px;line-height:1.25}
+.conq.falta .n{color:var(--texto3)}
+.conq .d{font-size:.57rem;color:var(--texto3);margin-top:2px;line-height:1.2}
+.conq.tem .d{color:var(--texto2)}
+
+.resumo-trofeus{
+  background:var(--card);border:1px solid var(--linha);border-radius:14px;padding:12px;
+  margin-bottom:10px;text-align:center;font-size:.8rem;color:var(--texto2)
+}
+.resumo-trofeus b{color:var(--ouro);font-size:1.05rem}
+.barra-trof{height:7px;background:rgba(0,0,0,.4);border-radius:99px;margin-top:8px;overflow:hidden}
+.barra-trof div{height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--abobora),var(--ouro));transition:width .4s}
+
+/* ---- abóbora dourada ---- */
+#dourada{position:fixed;font-size:3rem;cursor:pointer;z-index:40;display:none;
+  filter:drop-shadow(0 0 24px var(--ouro));animation:pulsa .9s ease-in-out infinite}
+#dourada.on{display:block}
+@keyframes pulsa{0%,100%{transform:scale(1) rotate(-7deg)}50%{transform:scale(1.2) rotate(7deg)}}
+
+/* ---- avisos ---- */
 .aviso{
-  position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:60;
-  background:var(--roxo3);border:2px solid var(--ouro);color:var(--ouro);font-weight:800;
-  padding:10px 18px;border-radius:99px;font-size:.85rem;box-shadow:0 6px 24px rgba(0,0,0,.5);
+  position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:60;
+  background:var(--cardAlto);border:1px solid var(--ouro);color:var(--ouro);font-weight:800;
+  padding:10px 18px;border-radius:99px;font-size:.84rem;box-shadow:0 8px 28px rgba(0,0,0,.6);
   animation:apareceAviso 3.4s ease forwards;max-width:92vw;text-align:center
 }
 @keyframes apareceAviso{
@@ -138,51 +240,77 @@ body{
   100%{opacity:0;transform:translate(-50%,-10px)}
 }
 
-/* ---------- caixa de "enquanto cê tava fora" ---------- */
-.fundo-modal{position:fixed;inset:0;background:rgba(15,6,26,.86);display:none;
+/* ---- modal ---- */
+.fundo-modal{position:fixed;inset:0;background:rgba(10,4,16,.88);display:none;
   align-items:center;justify-content:center;z-index:70;padding:20px}
 .fundo-modal.on{display:flex}
-.modal{background:var(--roxo);border:2px solid var(--abobora);border-radius:20px;
-  padding:24px 20px;text-align:center;max-width:340px}
-.modal h2{font-size:1.3rem;color:var(--abobora);margin-bottom:8px}
-.modal p{font-size:.88rem;color:var(--texto2);line-height:1.55}
-.modal b{color:var(--verde);font-size:1.15rem}
-.modal .btn{background:var(--abobora);color:#2b1055;font-weight:900;padding:11px 26px;
-  border-radius:99px;margin-top:16px}
+.modal{background:var(--cardAlto);border:1px solid var(--abobora);border-radius:22px;
+  padding:26px 22px;text-align:center;max-width:340px;box-shadow:0 0 50px rgba(255,122,24,.25)}
+.modal h2{font-size:1.3rem;color:var(--abobora);margin-bottom:9px}
+.modal p{font-size:.88rem;color:var(--texto2);line-height:1.6}
+.modal b{color:var(--verde);font-size:1.2rem}
+.modal .btn{background:var(--abobora);color:#2b1055;font-weight:900;padding:12px 28px;
+  border-radius:99px;margin-top:18px}
 
-/* ---------- rodapé ---------- */
-.rodape{margin-top:20px;text-align:center;font-size:.72rem;color:var(--texto2);line-height:1.7}
-.rodape .linha{display:flex;gap:8px;justify-content:center;margin-top:9px;flex-wrap:wrap}
-.rodape button{border:2px solid var(--borda);border-radius:99px;padding:7px 15px;
-  font-size:.74rem;font-weight:800;color:var(--texto2)}
-.rodape button.perigo{border-color:var(--sangue);color:var(--sangue)}
+/* ---- rodapé ---- */
+.rodape{margin-top:18px;text-align:center;font-size:.74rem;color:var(--texto3);line-height:1.7}
+.rodape b{color:var(--texto2)}
+.rodape .linha{display:flex;gap:8px;justify-content:center;margin-top:11px;flex-wrap:wrap}
+.rodape button{border:1px solid var(--linha);background:var(--card);border-radius:99px;
+  padding:8px 16px;font-size:.75rem;font-weight:800;color:var(--texto2)}
+.rodape button.perigo{border-color:rgba(255,84,112,.4);color:var(--sangue)}
 </style>
 </head>
 <body>
 
-<div class="envolve">
+<!-- ============ CENA ============ -->
+<div class="cena" id="cena">
+  <div class="lua"><i style="width:11px;height:11px;top:10px;left:9px"></i>
+    <i style="width:7px;height:7px;top:26px;left:26px"></i>
+    <i style="width:5px;height:5px;top:15px;left:31px"></i></div>
 
-  <div class="placar">
+  <header class="topo">
     <h1 class="titulo-fonte">Hellow Click</h1>
-    <div class="doces"><span id="doces">0</span> <small>doces 🍬</small></div>
-    <div class="porseg" id="porSeg"></div>
-  </div>
-
-  <div class="faixa-bonus" id="faixaBonus"></div>
+    <div class="contador">
+      <div class="n" id="doces">0</div>
+      <div class="u">doces 🍬</div>
+    </div>
+    <div class="fichas">
+      <span class="ficha clique"><span class="r">por clique</span>
+        <span class="v" id="porClique">1</span></span>
+      <span class="ficha seg"><span class="r">por segundo</span>
+        <span class="v" id="porSeg">0</span></span>
+    </div>
+  </header>
 
   <div class="palco">
+    <div class="luz-chao"></div>
     <div id="abobora">🎃</div>
+    <div class="chao"></div>
+    <div id="moradores"></div>
   </div>
+</div>
 
-  <div class="abas">
-    <button class="on" data-aba="cliques" onclick="trocarAba('cliques')">🖱️ Clique</button>
-    <button data-aba="bichos" onclick="trocarAba('bichos')">👹 Ajudantes</button>
-    <button data-aba="conquistas" onclick="trocarAba('conquistas')">🏆 Troféus</button>
-  </div>
+<!-- ============ CORPO ============ -->
+<div class="envolve">
+  <div class="faixa-bonus" id="faixaBonus"></div>
+
+  <nav class="abas">
+    <button class="on" data-aba="cliques" onclick="trocarAba('cliques')">🖱️ Clique
+      <span class="conta" id="contaCliques"></span></button>
+    <button data-aba="bichos" onclick="trocarAba('bichos')">👹 Ajudantes
+      <span class="conta" id="contaBichos"></span></button>
+    <button data-aba="conquistas" onclick="trocarAba('conquistas')">🏆 Troféus
+      <span class="conta" id="contaTrofeus"></span></button>
+  </nav>
 
   <div class="painel on" id="painel-cliques"><div id="listaCliques"></div></div>
   <div class="painel" id="painel-bichos"><div id="listaBichos"></div></div>
   <div class="painel" id="painel-conquistas">
+    <div class="resumo-trofeus">
+      <b id="trofNum">0 de 15</b> troféus · <span id="trofBonus">+0%</span> em tudo
+      <div class="barra-trof"><div id="trofBarra" style="width:0"></div></div>
+    </div>
     <div class="grade-conq" id="listaConquistas"></div>
   </div>
 
@@ -206,6 +334,6 @@ body{
   </div>
 </div>
 
-<script src="jogo.js?v=1"></script>
+<script src="jogo.js?v=2"></script>
 </body>
 </html>

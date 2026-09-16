@@ -16,24 +16,24 @@ const $ = s => document.querySelector(s);
 
 /* melhoram o CLIQUE — poucas, caras, e cada nível soma no clique */
 const MELHORIAS = [
-  { id:'dedo',   ic:'💀', nome:'Dedo Esquelético',    poder:1,     base:50,       desc:'Um dedo emprestado do cemitério.' },
-  { id:'luva',   ic:'🧤', nome:'Luva da Bruxa',        poder:6,     base:600,      desc:'Ela nem sentiu falta.' },
-  { id:'garra',  ic:'🐾', nome:'Garra de Lobisomem',   poder:40,    base:6500,     desc:'Rasga a abóbora de primeira.' },
-  { id:'mao',    ic:'🫱', nome:'Mão do Além',          poder:250,   base:80000,    desc:'Clica sozinha se cê piscar.' },
-  { id:'melado', ic:'🍯', nome:'Melado Amaldiçoado',   poder:1800,  base:1200000,  desc:'Gruda doce em tudo que encosta.' },
-  { id:'lua',    ic:'🌕', nome:'Lua Cheia',            poder:15000, base:20000000, desc:'Cê não controla mais o que acontece.' }
+  { id:'dedo', cor:'#cbd5e1',   ic:'💀', nome:'Dedo Esquelético',    poder:1,     base:50,       desc:'Um dedo emprestado do cemitério.' },
+  { id:'luva', cor:'#a78bfa',   ic:'🧤', nome:'Luva da Bruxa',        poder:6,     base:600,      desc:'Ela nem sentiu falta.' },
+  { id:'garra', cor:'#f59e0b',  ic:'🐾', nome:'Garra de Lobisomem',   poder:40,    base:6500,     desc:'Rasga a abóbora de primeira.' },
+  { id:'mao', cor:'#fb923c',    ic:'🫱', nome:'Mão do Além',          poder:250,   base:80000,    desc:'Clica sozinha se cê piscar.' },
+  { id:'melado', cor:'#fbbf24', ic:'🍯', nome:'Melado Amaldiçoado',   poder:1800,  base:1200000,  desc:'Gruda doce em tudo que encosta.' },
+  { id:'lua', cor:'#fef08a',    ic:'🌕', nome:'Lua Cheia',            poder:15000, base:20000000, desc:'Cê não controla mais o que acontece.' }
 ];
 
 /* trabalham SOZINHOS — muitos, baratos no começo, é onde o jogo mora */
 const BICHOS = [
-  { id:'morcego',  ic:'🦇',  nome:'Morcego',    porSeg:0.4,   base:20,       desc:'Traz um docinho de vez em quando.' },
-  { id:'gato',     ic:'🐈‍⬛', nome:'Gato Preto', porSeg:2.5,   base:250,      desc:'Dá azar pros outros, sorte pra cê.' },
-  { id:'aranha',   ic:'🕷️',  nome:'Aranha',     porSeg:11,    base:2200,     desc:'Tece rede e pesca doce voando.' },
-  { id:'fantasma', ic:'👻',  nome:'Fantasma',   porSeg:55,    base:18000,    desc:'Atravessa a parede da loja de doce.' },
-  { id:'zumbi',    ic:'🧟',  nome:'Zumbi',      porSeg:280,   base:130000,   desc:'Devagar, mas nunca para.' },
-  { id:'bruxa',    ic:'🧙',  nome:'Bruxa',      porSeg:1400,  base:900000,   desc:'Fabrica doce no caldeirão.' },
-  { id:'vampiro',  ic:'🧛',  nome:'Vampiro',    porSeg:7500,  base:6000000,  desc:'Trabalha a noite inteira, óbvio.' },
-  { id:'ceifador', ic:'☠️',  nome:'Ceifador',   porSeg:42000, base:45000000, desc:'Ninguém discute com ele.' }
+  { id:'morcego', cor:'#a78bfa',  ic:'🦇',  nome:'Morcego',    porSeg:0.4,   base:20,       desc:'Traz um docinho de vez em quando.' },
+  { id:'gato', cor:'#94a3b8',     ic:'🐈‍⬛', nome:'Gato Preto', porSeg:2.5,   base:250,      desc:'Dá azar pros outros, sorte pra cê.' },
+  { id:'aranha', cor:'#7dd3fc',   ic:'🕷️',  nome:'Aranha',     porSeg:11,    base:2200,     desc:'Tece rede e pesca doce voando.' },
+  { id:'fantasma', cor:'#e0f2fe', ic:'👻',  nome:'Fantasma',   porSeg:55,    base:18000,    desc:'Atravessa a parede da loja de doce.' },
+  { id:'zumbi', cor:'#86efac',    ic:'🧟',  nome:'Zumbi',      porSeg:280,   base:130000,   desc:'Devagar, mas nunca para.' },
+  { id:'bruxa', cor:'#c084fc',    ic:'🧙',  nome:'Bruxa',      porSeg:1400,  base:900000,   desc:'Fabrica doce no caldeirão.' },
+  { id:'vampiro', cor:'#f87171',  ic:'🧛',  nome:'Vampiro',    porSeg:7500,  base:6000000,  desc:'Trabalha a noite inteira, óbvio.' },
+  { id:'ceifador', cor:'#cbd5e1', ic:'☠️',  nome:'Ceifador',   porSeg:42000, base:45000000, desc:'Ninguém discute com ele.' }
 ];
 
 /* cada troféu dá +2% em tudo — assim caçar troféu não é só enfeite */
@@ -269,52 +269,69 @@ function conferirConquistas(){
 const nos = {};
 
 function montarLoja(){
-  $('#listaCliques').innerHTML = MELHORIAS.map(m => `
-    <button class="item" id="it-${m.id}" onclick="comprarMelhoria('${m.id}')">
-      <span class="ic">${m.ic}</span>
+  const cartao = (x, rende) => `
+    <button class="item" id="it-${x.id}" style="--cor:${x.cor}"
+            onclick="${x.poder ? 'comprarMelhoria' : 'comprarBicho'}('${x.id}')">
+      <span class="ic">${x.ic}</span>
       <span class="meio">
-        <span class="nome">${m.nome}</span>
-        <span class="desc">${m.desc}<br>+${num(m.poder)} por clique</span>
+        <span class="linha1">
+          <span class="nome">${x.nome}</span>
+          <span class="tenho-selo" id="se-${x.id}" style="display:none"></span>
+        </span>
+        <span class="desc">${x.desc}</span>
+        <span class="rende" id="rd-${x.id}">${rende}</span>
       </span>
-      <span class="dir">
-        <span class="preco" id="pr-${m.id}">0</span>
-        <span class="qtd" id="qt-${m.id}"></span>
-      </span>
-    </button>`).join('');
+      <span class="dir"><span class="preco" id="pr-${x.id}">0</span></span>
+    </button>`;
 
-  $('#listaBichos').innerHTML = BICHOS.map(b => `
-    <button class="item" id="it-${b.id}" onclick="comprarBicho('${b.id}')">
-      <span class="ic">${b.ic}</span>
-      <span class="meio">
-        <span class="nome">${b.nome}</span>
-        <span class="desc">${b.desc}<br>${b.porSeg} doces por segundo</span>
-      </span>
-      <span class="dir">
-        <span class="preco" id="pr-${b.id}">0</span>
-        <span class="qtd" id="qt-${b.id}"></span>
-      </span>
-    </button>`).join('');
+  $('#listaCliques').innerHTML = MELHORIAS
+    .map(m => cartao(m, `cada nível: <b>+${num(m.poder)}</b> por clique`)).join('');
+  $('#listaBichos').innerHTML = BICHOS
+    .map(b => cartao(b, `cada um: <b>${num(b.porSeg)}</b> por segundo`)).join('');
 
   [...MELHORIAS, ...BICHOS].forEach(x => {
-    nos[x.id] = { item:$('#it-'+x.id), preco:$('#pr-'+x.id), qtd:$('#qt-'+x.id) };
+    nos[x.id] = { item:$('#it-'+x.id), preco:$('#pr-'+x.id),
+                  selo:$('#se-'+x.id), rende:$('#rd-'+x.id) };
   });
+}
+
+/* quantos a pessoa tem, e o quanto isso está rendendo AGORA — é a informação
+   que ela quer e que antes era a letra menor do cartão */
+function pintarUm(x, preco, quantos, textoRende){
+  const n = nos[x.id], pode = dados.doces >= preco;
+  n.preco.textContent = num(preco) + ' 🍬';
+  n.preco.className = 'preco' + (pode ? '' : ' caro');
+  n.item.className = 'item ' + (pode ? 'pode' : 'caro') + (quantos ? ' tenho' : '');
+  n.selo.style.display = quantos ? '' : 'none';
+  n.selo.textContent = quantos ? '×' + quantos : '';
+  n.rende.innerHTML = textoRende;
 }
 
 function pintarLoja(){
   for(const m of MELHORIAS){
-    const p = precoMelhoria(m), n = nos[m.id], pode = dados.doces >= p;
-    n.preco.textContent = num(p) + ' 🍬';
-    n.preco.className = 'preco' + (pode ? '' : ' caro');
-    n.qtd.textContent = (dados.melhorias[m.id]||0) ? 'nível ' + dados.melhorias[m.id] : '';
-    n.item.className = 'item ' + (pode ? 'pode' : 'caro');
+    const q = dados.melhorias[m.id]||0;
+    pintarUm(m, precoMelhoria(m), q, q
+      ? `dando <b>+${num(m.poder*q)}</b> por clique`
+      : `cada nível: <b>+${num(m.poder)}</b> por clique`);
   }
   for(const b of BICHOS){
-    const p = precoBicho(b), n = nos[b.id], pode = dados.doces >= p;
-    n.preco.textContent = num(p) + ' 🍬';
-    n.preco.className = 'preco' + (pode ? '' : ' caro');
-    n.qtd.textContent = (dados.bichos[b.id]||0) ? 'cê tem ' + dados.bichos[b.id] : '';
-    n.item.className = 'item ' + (pode ? 'pode' : 'caro');
+    const q = dados.bichos[b.id]||0;
+    pintarUm(b, precoBicho(b), q, q
+      ? `rendendo <b>${num(b.porSeg*q)}</b> por segundo`
+      : `cada um: <b>${num(b.porSeg)}</b> por segundo`);
   }
+}
+
+/* os bichos que cê comprou aparecem morando no chão da cena —
+   assim dá pra VER que o jogo andou, sem precisar ler número nenhum */
+let moradoresAgora = '';
+function pintarCenario(){
+  const meus = BICHOS.filter(b => (dados.bichos[b.id]||0) > 0);
+  const chave = meus.map(b => b.id).join(',');
+  if(chave === moradoresAgora) return;   /* só redesenha quando muda de verdade */
+  moradoresAgora = chave;
+  $('#moradores').innerHTML = meus.map((b,i) =>
+    `<span style="animation-delay:${(i*.24).toFixed(2)}s">${b.ic}</span>`).join('');
 }
 
 function pintarConquistas(){
@@ -330,14 +347,25 @@ function pintarConquistas(){
 
 function pintarPlacar(){
   $('#doces').textContent = num(dados.doces);
-  const ps = porSegundo();
-  $('#porSeg').textContent = ps > 0 ? `+${num(ps)} por segundo` : '';
+  $('#porClique').textContent = num(porClique());
+  $('#porSeg').textContent = num(porSegundo());
+
+  const nm = MELHORIAS.reduce((s,m) => s + (dados.melhorias[m.id]||0), 0);
+  $('#contaCliques').textContent = nm ? nm + ' comprados' : '';
+  const nb = totalBichos(dados);
+  $('#contaBichos').textContent = nb ? nb + ' no time' : '';
+  $('#contaTrofeus').textContent = dados.conquistas.length + '/' + CONQUISTAS.length;
+
+  const pct = Math.round(dados.conquistas.length / CONQUISTAS.length * 100);
+  $('#trofNum').textContent = `${dados.conquistas.length} de ${CONQUISTAS.length}`;
+  $('#trofBonus').textContent = `+${dados.conquistas.length*2}%`;
+  $('#trofBarra').style.width = pct + '%';
+
   $('#rodapeInfo').innerHTML =
-    `Já juntou <b>${num(dados.total)}</b> doces no total · <b>${dados.cliques}</b> cliques · ` +
-    `<b>${dados.conquistas.length}/${CONQUISTAS.length}</b> troféus (+${dados.conquistas.length*2}% em tudo)`;
+    `Já juntou <b>${num(dados.total)}</b> doces no total · <b>${dados.cliques}</b> cliques`;
 }
 
-const pintarTudo = () => { pintarPlacar(); pintarLoja(); };
+const pintarTudo = () => { pintarPlacar(); pintarLoja(); pintarCenario(); };
 
 function trocarAba(qual){
   document.querySelectorAll('.abas button').forEach(b =>
@@ -432,15 +460,24 @@ function apagarTudo(){
 /* ---------------------------------------------------------
    MORCEGOS DE ENFEITE NO FUNDO
    --------------------------------------------------------- */
-function soltarMorcegos(){
-  for(let i = 0; i < 6; i++){
+function enfeitarCena(){
+  const cena = $('#cena');
+  for(let i = 0; i < 26; i++){
+    const e = document.createElement('div');
+    e.className = 'estrela';
+    e.style.left = Math.random() * 100 + '%';
+    e.style.top = Math.random() * 62 + '%';
+    e.style.animationDelay = (Math.random() * 3).toFixed(2) + 's';
+    cena.appendChild(e);
+  }
+  for(let i = 0; i < 3; i++){
     const m = document.createElement('div');
-    m.className = 'morcego-fundo';
+    m.className = 'morcego-cena';
     m.textContent = '🦇';
-    m.style.top = (8 + Math.random() * 84) + 'vh';
-    m.style.animationDuration = (16 + Math.random() * 16) + 's';
-    m.style.animationDelay = (-Math.random() * 20) + 's';
-    document.body.appendChild(m);
+    m.style.top = (10 + Math.random() * 40) + '%';
+    m.style.animationDuration = (17 + Math.random() * 13) + 's';
+    m.style.animationDelay = (-Math.random() * 25) + 's';
+    cena.appendChild(m);
   }
 }
 
@@ -450,7 +487,7 @@ function soltarMorcegos(){
 montarLoja();
 pintarConquistas();
 pintarTudo();
-soltarMorcegos();
+enfeitarCena();
 marcarProximaDourada();
 contarTempoFora();
 $('#btnSom').textContent = dados.som ? '🔊 Som' : '🔇 Mudo';
