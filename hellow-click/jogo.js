@@ -153,7 +153,7 @@ function tentarSenha(){
 function destravar(comFesta){
   $('#trava').classList.remove('on');
   if(!rodando) comecarJogo();
-  if(comFesta) recado('🔓 Entrou! Bem-vindo à pizzaria assombrada 🎃');
+  if(comFesta) recado('🔓 Entrou! Bem-vindo à casa assombrada 🎃');
 }
 
 /* ---------------------------------------------------------
