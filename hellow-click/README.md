@@ -3,6 +3,21 @@
 Um clicker de Halloween. Cê clica na abóbora, ganha doce, compra melhoria pra ganhar mais
 por clique — e contrata monstro pra catar doce enquanto cê nem tá olhando.
 
+## 🚪 O jogo só abre na semana do Halloween
+
+De **25 de outubro a 1º de novembro** ele abre sozinho. Fora dessa semana aparece uma porta
+fechada, com a contagem de quanto falta pra próxima.
+
+**Mas quem sabe a senha entra quando quiser** — e uma vez destravado, fica destravado
+naquele aparelho pra sempre. Nem apertar "Recomeçar" tranca de novo: quem já entrou não
+precisa provar de novo.
+
+> ⚠️ **Isso é uma brincadeira, não um cadeado.** A senha está escrita no `jogo.js`, e
+> qualquer pessoa que abrir o código do site acha ela em dois segundos. Pra trancar de
+> verdade precisaria de um servidor conferindo a senha, e este jogo não tem servidor
+> nenhum — é isso que o deixa rápido, offline e sem cadastro. Serve pra ser um segredo
+> entre amigos, não pra guardar coisa importante.
+
 ## A regra que manda num clicker
 
 **O próximo número sempre tem que estar quase ao alcance.**
@@ -19,11 +34,30 @@ pra continuarem sendo uma decisão. Se fossem baratas viravam só mais um botão
 
 | | O que faz | Pra quem |
 |---|---|---|
-| 🖱️ **Melhorias de clique** | somam no valor de cada toque | quem tá com o jogo aberto |
-| 👹 **Ajudantes** | rendem sozinhos por segundo | quem fechou e foi fazer outra coisa |
+| 🖱️ **9 melhorias de clique** | somam no valor de cada toque | quem tá com o jogo aberto |
+| 👹 **12 ajudantes** | rendem sozinhos por segundo | quem fechou e foi fazer outra coisa |
 
 Um clicker só com clique cansa a mão. Um só com ajudante vira uma planilha que se olha.
 O jogo é a conversa entre os dois.
+
+## O combo: o clique deixa de ser só clique
+
+Clicando rápido (menos de 0,7 segundo entre um e outro) o combo sobe, e **cada clique vale
+até 2x**. Parado por 1,2 segundo, ele zera.
+
+Isso existe porque um clicker tem um problema: depois que os ajudantes rendem bem, não
+sobra nada pra fazer com o jogo aberto a não ser olhar. O combo devolve uma coisa que
+depende da pessoa — e tem até troféu pra quem chegar a 50 seguidos.
+
+## Comprar de 10 em 10
+
+Lá pelo meio do jogo, comprar de um em um vira trabalho braçal: são dezenas de toques pro
+número andar. Tem três botões — **1 por vez**, **10 de uma vez** e **o máximo**.
+
+O preço de 10 **não é dez vezes o preço do primeiro**: cada unidade já sai mais cara que a
+anterior, então é a soma de uma progressão geométrica. Dez morcegos no começo custam 407,
+e não 200. O botão mostra o total antes de cê apertar, e "o máximo" calcula quantos cabem
+no bolso — exatamente quantos, nunca um a mais.
 
 ## A abóbora dourada 🌟
 
@@ -39,8 +73,8 @@ clicker não é o número subindo — é a coisa que aconteceu sem a pessoa pedi
 
 ## Troféus que não são só enfeite
 
-São 15, e **cada um dá +2% em tudo**. Isso muda o que eles são: em vez de uma medalhinha
-pra olhar, viram um motivo pra ir atrás dos que faltam. Com os 15, é +30% no jogo inteiro.
+São 20, e **cada um dá +2% em tudo**. Isso muda o que eles são: em vez de uma medalhinha
+pra olhar, viram um motivo pra ir atrás dos que faltam. Com os 20, é +40% no jogo inteiro.
 
 ## Enquanto a pessoa está fora
 

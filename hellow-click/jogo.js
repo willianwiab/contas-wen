@@ -8,6 +8,7 @@
    ========================================================= */
 
 const CHAVE = 'hellow-click:v1';
+const SENHA = 'pizza12345';
 const $ = s => document.querySelector(s);
 
 /* ---------------------------------------------------------
@@ -16,24 +17,31 @@ const $ = s => document.querySelector(s);
 
 /* melhoram o CLIQUE — poucas, caras, e cada nível soma no clique */
 const MELHORIAS = [
-  { id:'dedo', cor:'#cbd5e1',   ic:'💀', nome:'Dedo Esquelético',    poder:1,     base:50,       desc:'Um dedo emprestado do cemitério.' },
-  { id:'luva', cor:'#a78bfa',   ic:'🧤', nome:'Luva da Bruxa',        poder:6,     base:600,      desc:'Ela nem sentiu falta.' },
-  { id:'garra', cor:'#f59e0b',  ic:'🐾', nome:'Garra de Lobisomem',   poder:40,    base:6500,     desc:'Rasga a abóbora de primeira.' },
-  { id:'mao', cor:'#fb923c',    ic:'🫱', nome:'Mão do Além',          poder:250,   base:80000,    desc:'Clica sozinha se cê piscar.' },
-  { id:'melado', cor:'#fbbf24', ic:'🍯', nome:'Melado Amaldiçoado',   poder:1800,  base:1200000,  desc:'Gruda doce em tudo que encosta.' },
-  { id:'lua', cor:'#fef08a',    ic:'🌕', nome:'Lua Cheia',            poder:15000, base:20000000, desc:'Cê não controla mais o que acontece.' }
+  { id:'dedo',    cor:'#cbd5e1', ic:'💀', nome:'Dedo Esquelético',   poder:1,       base:50,     desc:'Um dedo emprestado do cemitério.' },
+  { id:'luva',    cor:'#a78bfa', ic:'🧤', nome:'Luva da Bruxa',      poder:6,       base:600,    desc:'Ela nem sentiu falta.' },
+  { id:'garra',   cor:'#f59e0b', ic:'🐾', nome:'Garra de Lobisomem', poder:40,      base:6500,   desc:'Rasga a abóbora de primeira.' },
+  { id:'mao',     cor:'#fb923c', ic:'🫱', nome:'Mão do Além',        poder:250,     base:8e4,    desc:'Clica sozinha se cê piscar.' },
+  { id:'melado',  cor:'#fbbf24', ic:'🍯', nome:'Melado Amaldiçoado', poder:1800,    base:1.2e6,  desc:'Gruda doce em tudo que encosta.' },
+  { id:'lua',     cor:'#fef08a', ic:'🌕', nome:'Lua Cheia',          poder:15000,   base:2e7,    desc:'Cê não controla mais o que acontece.' },
+  { id:'meteoro', cor:'#f97316', ic:'☄️', nome:'Meteoro de Doce',    poder:120000,  base:3.5e8,  desc:'Cai do céu bem em cima da abóbora.' },
+  { id:'pacto',   cor:'#e879f9', ic:'📜', nome:'Pacto Assinado',     poder:9e5,     base:6e9,    desc:'Cê nem leu o que estava escrito.' },
+  { id:'cristal', cor:'#67e8f9', ic:'🔮', nome:'Bola de Cristal',    poder:7e6,     base:1e11,   desc:'Ela clica antes de cê pensar em clicar.' }
 ];
 
 /* trabalham SOZINHOS — muitos, baratos no começo, é onde o jogo mora */
 const BICHOS = [
-  { id:'morcego', cor:'#a78bfa',  ic:'🦇',  nome:'Morcego',    porSeg:0.4,   base:20,       desc:'Traz um docinho de vez em quando.' },
-  { id:'gato', cor:'#94a3b8',     ic:'🐈‍⬛', nome:'Gato Preto', porSeg:2.5,   base:250,      desc:'Dá azar pros outros, sorte pra cê.' },
-  { id:'aranha', cor:'#7dd3fc',   ic:'🕷️',  nome:'Aranha',     porSeg:11,    base:2200,     desc:'Tece rede e pesca doce voando.' },
-  { id:'fantasma', cor:'#e0f2fe', ic:'👻',  nome:'Fantasma',   porSeg:55,    base:18000,    desc:'Atravessa a parede da loja de doce.' },
-  { id:'zumbi', cor:'#86efac',    ic:'🧟',  nome:'Zumbi',      porSeg:280,   base:130000,   desc:'Devagar, mas nunca para.' },
-  { id:'bruxa', cor:'#c084fc',    ic:'🧙',  nome:'Bruxa',      porSeg:1400,  base:900000,   desc:'Fabrica doce no caldeirão.' },
-  { id:'vampiro', cor:'#f87171',  ic:'🧛',  nome:'Vampiro',    porSeg:7500,  base:6000000,  desc:'Trabalha a noite inteira, óbvio.' },
-  { id:'ceifador', cor:'#cbd5e1', ic:'☠️',  nome:'Ceifador',   porSeg:42000, base:45000000, desc:'Ninguém discute com ele.' }
+  { id:'morcego',  cor:'#a78bfa', ic:'🦇',  nome:'Morcego',           porSeg:0.4,   base:20,    desc:'Traz um docinho de vez em quando.' },
+  { id:'gato',     cor:'#94a3b8', ic:'🐈‍⬛', nome:'Gato Preto',        porSeg:2.5,   base:250,   desc:'Dá azar pros outros, sorte pra cê.' },
+  { id:'aranha',   cor:'#7dd3fc', ic:'🕷️',  nome:'Aranha',            porSeg:11,    base:2200,  desc:'Tece rede e pesca doce voando.' },
+  { id:'fantasma', cor:'#e0f2fe', ic:'👻',  nome:'Fantasma',          porSeg:55,    base:18000, desc:'Atravessa a parede da loja de doce.' },
+  { id:'zumbi',    cor:'#86efac', ic:'🧟',  nome:'Zumbi',             porSeg:280,   base:1.3e5, desc:'Devagar, mas nunca para.' },
+  { id:'bruxa',    cor:'#c084fc', ic:'🧙',  nome:'Bruxa',             porSeg:1400,  base:9e5,   desc:'Fabrica doce no caldeirão.' },
+  { id:'vampiro',  cor:'#f87171', ic:'🧛',  nome:'Vampiro',           porSeg:7500,  base:6e6,   desc:'Trabalha a noite inteira, óbvio.' },
+  { id:'ceifador', cor:'#cbd5e1', ic:'☠️',  nome:'Ceifador',          porSeg:42000, base:4.5e7, desc:'Ninguém discute com ele.' },
+  { id:'viva',     cor:'#fb923c', ic:'🎃',  nome:'Abóbora Viva',      porSeg:2.4e5, base:3.2e8, desc:'Ela virou funcionária. Não pergunta.' },
+  { id:'cemiterio',cor:'#94a3b8', ic:'🪦',  nome:'Cemitério Inteiro', porSeg:1.4e6, base:2.4e9, desc:'Todo mundo lá dentro trabalha pra cê.' },
+  { id:'mansao',   cor:'#a78bfa', ic:'🏚️',  nome:'Mansão Assombrada', porSeg:8e6,   base:1.8e10,desc:'Vem com os moradores inclusos.' },
+  { id:'portal',   cor:'#67e8f9', ic:'🌀',  nome:'Portal do Além',    porSeg:5e7,   base:1.4e11,desc:'Doce chegando de um lugar que é melhor não saber.' }
 ];
 
 /* cada troféu dá +2% em tudo — assim caçar troféu não é só enfeite */
@@ -43,12 +51,17 @@ const CONQUISTAS = [
   { id:'c3',  e:'🎂', nome:'Guloso',          desc:'10 mil doces',      tem:d => d.total >= 1e4 },
   { id:'c4',  e:'👑', nome:'Rei dos doces',   desc:'1 milhão',          tem:d => d.total >= 1e6 },
   { id:'c5',  e:'🌌', nome:'Doce infinito',   desc:'1 bilhão',          tem:d => d.total >= 1e9 },
+  { id:'c16', e:'🌠', nome:'Doce do espaço',  desc:'1 trilhão',         tem:d => d.total >= 1e12 },
   { id:'c6',  e:'👆', nome:'Dedo quente',     desc:'100 cliques',       tem:d => d.cliques >= 100 },
   { id:'c7',  e:'🔥', nome:'Dedo em chamas',  desc:'1.000 cliques',     tem:d => d.cliques >= 1000 },
   { id:'c8',  e:'⚡', nome:'Dedo biônico',    desc:'10.000 cliques',    tem:d => d.cliques >= 10000 },
+  { id:'c17', e:'🌪️', nome:'Combo de 50',     desc:'50 cliques seguidos', tem:d => (d.maiorCombo||0) >= 50 },
+  { id:'c20', e:'🧿', nome:'Clique poderoso', desc:'1 milhão por clique', tem:() => porCliqueCru() >= 1e6 },
   { id:'c9',  e:'🦇', nome:'Companhia',       desc:'1 ajudante',        tem:d => totalBichos(d) >= 1 },
   { id:'c10', e:'👹', nome:'Bandinha',        desc:'10 ajudantes',      tem:d => totalBichos(d) >= 10 },
   { id:'c11', e:'🏰', nome:'Mansão lotada',   desc:'100 ajudantes',     tem:d => totalBichos(d) >= 100 },
+  { id:'c19', e:'🌍', nome:'Dono do bairro',  desc:'300 ajudantes',     tem:d => totalBichos(d) >= 300 },
+  { id:'c18', e:'🛒', nome:'Colecionador',    desc:'50 de um bicho só', tem:d => BICHOS.some(b => (d.bichos[b.id]||0) >= 50) },
   { id:'c12', e:'🎪', nome:'Circo de horror', desc:'1 de cada bicho',   tem:d => BICHOS.every(b => (d.bichos[b.id]||0) > 0) },
   { id:'c13', e:'🌟', nome:'Sorte grande',    desc:'1 abóbora dourada', tem:d => d.douradas >= 1 },
   { id:'c14', e:'✨', nome:'Caçador de ouro', desc:'10 douradas',       tem:d => d.douradas >= 10 },
@@ -59,13 +72,16 @@ const CONQUISTAS = [
    O ESTADO
    --------------------------------------------------------- */
 const vazio = () => ({
-  v:1, doces:0, total:0, cliques:0, douradas:0,
-  melhorias:{}, bichos:{}, conquistas:[], som:true, quando:Date.now()
+  v:1, doces:0, total:0, cliques:0, douradas:0, maiorCombo:0,
+  melhorias:{}, bichos:{}, conquistas:[], som:true, destravado:false, quando:Date.now()
 });
 
 let dados = carregar();
 let bonus = null;          /* { tipo, ate } enquanto um bônus tá valendo */
 let proximaDourada = 0;
+let lote = 1;              /* 1, 10 ou 'max' */
+let combo = 0, ultimoClique = 0;
+let rodando = false;
 
 function carregar(){
   try{
@@ -89,19 +105,98 @@ function gravar(){
 }
 
 /* ---------------------------------------------------------
+   A TRANCA DO HALLOWEEN
+
+   O jogo só abre de 25 de outubro a 1º de novembro. Quem
+   sabe a senha entra quando quiser — e aí fica destravado
+   pra sempre neste aparelho.
+
+   Isso é uma brincadeira, não um cadeado: a senha está aqui
+   no código, e quem abrir o arquivo acha. Pra valer de
+   verdade precisaria de um servidor, que este jogo não tem.
+   --------------------------------------------------------- */
+function naSemanaDoHalloween(d = new Date()){
+  const m = d.getMonth(), dia = d.getDate();
+  return (m === 9 && dia >= 25) || (m === 10 && dia <= 1);
+}
+
+function proximaAbertura(){
+  const hoje = new Date();
+  const esteAno = new Date(hoje.getFullYear(), 9, 25);
+  return hoje < esteAno ? esteAno : new Date(hoje.getFullYear() + 1, 9, 25);
+}
+
+function pintarContagem(){
+  const falta = proximaAbertura() - new Date();
+  if(falta <= 0) return destravar(false);
+  const dias = Math.floor(falta / 86400000);
+  const horas = Math.floor(falta / 3600000) % 24;
+  const min = Math.floor(falta / 60000) % 60;
+  const seg = Math.floor(falta / 1000) % 60;
+  $('#travaConta').textContent = dias > 0
+    ? `${dias} ${dias === 1 ? 'dia' : 'dias'} e ${horas}h`
+    : `${horas}h ${String(min).padStart(2,'0')}m ${String(seg).padStart(2,'0')}s`;
+}
+
+function tentarSenha(){
+  const escrito = $('#travaSenha').value.trim().toLowerCase();
+  if(escrito === SENHA){
+    dados.destravado = true;
+    gravar();
+    destravar(true);
+  }else{
+    $('#travaErro').textContent = escrito ? 'Essa não é a senha 👻' : 'Escreve a senha aí';
+    $('#travaSenha').value = '';
+  }
+}
+
+function destravar(comFesta){
+  $('#trava').classList.remove('on');
+  if(!rodando) comecarJogo();
+  if(comFesta) recado('🔓 Entrou! Bem-vindo à pizzaria assombrada 🎃');
+}
+
+/* ---------------------------------------------------------
    AS CONTAS
    --------------------------------------------------------- */
 const totalBichos = d => BICHOS.reduce((s,b) => s + (d.bichos[b.id]||0), 0);
 
-/* preço da próxima unidade: 1,15x por unidade já comprada */
+/* preço da PRÓXIMA unidade */
 const precoBicho = b => Math.ceil(b.base * Math.pow(1.15, dados.bichos[b.id]||0));
 const precoMelhoria = m => Math.ceil(m.base * Math.pow(1.7, dados.melhorias[m.id]||0));
 
-const multTrofeus = () => 1 + dados.conquistas.length * 0.02;
+/* preço de n unidades seguidas — soma de progressão geométrica.
+   Comprar 10 de uma vez não pode sair pelo preço da primeira dez vezes. */
+function precoDeVarias(base, escala, jaTem, n){
+  return Math.ceil(base * Math.pow(escala, jaTem) * (Math.pow(escala, n) - 1) / (escala - 1));
+}
 
-function porClique(){
+/* quantas dá pra levar com o que tem no bolso */
+function quantasCabem(base, escala, jaTem){
+  let n = 0;
+  while(n < 500 && precoDeVarias(base, escala, jaTem, n + 1) <= dados.doces) n++;
+  return n;
+}
+
+/* quanto a pessoa vai comprar agora, com o lote que ela escolheu */
+function quantoLeva(x){
+  const ehMelhoria = x.poder !== undefined;
+  const escala = ehMelhoria ? 1.7 : 1.15;
+  const jaTem = (ehMelhoria ? dados.melhorias[x.id] : dados.bichos[x.id]) || 0;
+  const n = lote === 'max' ? Math.max(1, quantasCabem(x.base, escala, jaTem)) : lote;
+  return { n, escala, jaTem, preco: precoDeVarias(x.base, escala, jaTem, n) };
+}
+
+const multTrofeus = () => 1 + dados.conquistas.length * 0.02;
+const multCombo = () => 1 + Math.min(combo, 50) * 0.02;
+
+/* o clique "limpo", sem combo nem bônus — é o que os troféus medem */
+function porCliqueCru(){
   const somado = MELHORIAS.reduce((s,m) => s + m.poder * (dados.melhorias[m.id]||0), 1);
-  return somado * multTrofeus() * (bonus && bonus.tipo === 'frenesi' ? 7 : 1);
+  return somado * multTrofeus();
+}
+function porClique(){
+  return porCliqueCru() * multCombo() * (bonus && bonus.tipo === 'frenesi' ? 7 : 1);
 }
 
 const porSegundoCru = d =>
@@ -112,8 +207,6 @@ const porSegundo = () =>
 
 /* ---------------------------------------------------------
    NÚMERO GRANDE VIRA NÚMERO LEGÍVEL
-
-   "1234567" não diz nada pra ninguém. "1,23 mi" diz.
    --------------------------------------------------------- */
 const ESCADA = [[1e18,'qui'],[1e15,'qua'],[1e12,'tri'],[1e9,'bi'],[1e6,'mi'],[1e3,'mil']];
 function num(n){
@@ -132,8 +225,17 @@ function num(n){
 
 /* ---------------------------------------------------------
    CLICAR NA ABÓBORA
+
+   O combo faz o clique valer a pena: clicando rápido, cada
+   toque vale mais. Ele existe pra quem está com o jogo
+   aberto ter algo pra fazer além de esperar.
    --------------------------------------------------------- */
 function clicar(ev){
+  const agora = Date.now();
+  combo = (agora - ultimoClique < 700) ? Math.min(combo + 1, 50) : 0;
+  ultimoClique = agora;
+  if(combo > (dados.maiorCombo||0)) dados.maiorCombo = combo;
+
   const ganho = porClique();
   dados.doces += ganho;
   dados.total += ganho;
@@ -145,9 +247,17 @@ function clicar(ev){
   ab.classList.add('tremendo');
 
   numeroSubindo('+' + num(ganho), ev);
-  bip(320 + Math.random() * 60, .04);
+  pintarCombo();
+  bip(320 + Math.min(combo, 40) * 9, .04);
   conferirConquistas();
   pintarPlacar();
+}
+
+function pintarCombo(){
+  const c = $('#combo');
+  if(combo < 5){ c.classList.remove('on'); return; }
+  c.textContent = `🔥 COMBO ×${multCombo().toFixed(2).replace('.', ',')}`;
+  c.classList.remove('on'); void c.offsetWidth; c.classList.add('on');
 }
 
 /* o "+50" que sobe do dedo — no lugar exato onde a pessoa tocou */
@@ -169,27 +279,28 @@ function numeroSubindo(txt, ev){
 /* ---------------------------------------------------------
    COMPRAR
    --------------------------------------------------------- */
-function comprarMelhoria(id){
-  const m = MELHORIAS.find(x => x.id === id);
-  const preco = precoMelhoria(m);
-  if(dados.doces < preco) return recado('Falta doce pra isso! 🍬');
+function trocarLote(qual){
+  lote = qual;
+  document.querySelectorAll('.lote button').forEach(b =>
+    b.classList.toggle('on', b.dataset.lote === String(qual)));
+  pintarLoja();
+}
+
+function comprar(x){
+  const { n, preco } = quantoLeva(x);
+  if(dados.doces < preco){
+    return recado(n > 1 ? `Falta doce pra levar ${n} 🍬` : 'Falta doce pra isso! 🍬');
+  }
   dados.doces -= preco;
-  dados.melhorias[id] = (dados.melhorias[id]||0) + 1;
-  bip(620, .07);
-  recado(`${m.ic} ${m.nome} melhorou!`);
+  const onde = x.poder !== undefined ? dados.melhorias : dados.bichos;
+  onde[x.id] = (onde[x.id]||0) + n;
+  bip(x.poder !== undefined ? 620 : 500, .07);
+  recado(`${x.ic} ${x.nome}${n > 1 ? ` ×${n}` : ''} — ${x.poder !== undefined ? 'melhorou!' : 'entrou pro time!'}`);
   conferirConquistas(); pintarTudo(); gravar();
 }
 
-function comprarBicho(id){
-  const b = BICHOS.find(x => x.id === id);
-  const preco = precoBicho(b);
-  if(dados.doces < preco) return recado('Falta doce pra isso! 🍬');
-  dados.doces -= preco;
-  dados.bichos[id] = (dados.bichos[id]||0) + 1;
-  bip(500, .07);
-  recado(`${b.ic} ${b.nome} entrou pro time!`);
-  conferirConquistas(); pintarTudo(); gravar();
-}
+const comprarMelhoria = id => comprar(MELHORIAS.find(x => x.id === id));
+const comprarBicho    = id => comprar(BICHOS.find(x => x.id === id));
 
 /* ---------------------------------------------------------
    A ABÓBORA DOURADA
@@ -271,7 +382,7 @@ const nos = {};
 function montarLoja(){
   const cartao = (x, rende) => `
     <button class="item" id="it-${x.id}" style="--cor:${x.cor}"
-            onclick="${x.poder ? 'comprarMelhoria' : 'comprarBicho'}('${x.id}')">
+            onclick="${x.poder !== undefined ? 'comprarMelhoria' : 'comprarBicho'}('${x.id}')">
       <span class="ic">${x.ic}</span>
       <span class="meio">
         <span class="linha1">
@@ -297,26 +408,27 @@ function montarLoja(){
 
 /* quantos a pessoa tem, e o quanto isso está rendendo AGORA — é a informação
    que ela quer e que antes era a letra menor do cartão */
-function pintarUm(x, preco, quantos, textoRende){
-  const n = nos[x.id], pode = dados.doces >= preco;
-  n.preco.textContent = num(preco) + ' 🍬';
-  n.preco.className = 'preco' + (pode ? '' : ' caro');
-  n.item.className = 'item ' + (pode ? 'pode' : 'caro') + (quantos ? ' tenho' : '');
-  n.selo.style.display = quantos ? '' : 'none';
-  n.selo.textContent = quantos ? '×' + quantos : '';
-  n.rende.innerHTML = textoRende;
+function pintarUm(x, quantos, textoRende){
+  const { n, preco } = quantoLeva(x);
+  const nd = nos[x.id], pode = dados.doces >= preco;
+  nd.preco.innerHTML = (n > 1 ? `<small>×${n}</small> ` : '') + num(preco) + ' 🍬';
+  nd.preco.className = 'preco' + (pode ? '' : ' caro');
+  nd.item.className = 'item ' + (pode ? 'pode' : 'caro') + (quantos ? ' tenho' : '');
+  nd.selo.style.display = quantos ? '' : 'none';
+  nd.selo.textContent = quantos ? '×' + quantos : '';
+  nd.rende.innerHTML = textoRende;
 }
 
 function pintarLoja(){
   for(const m of MELHORIAS){
     const q = dados.melhorias[m.id]||0;
-    pintarUm(m, precoMelhoria(m), q, q
+    pintarUm(m, q, q
       ? `dando <b>+${num(m.poder*q)}</b> por clique`
       : `cada nível: <b>+${num(m.poder)}</b> por clique`);
   }
   for(const b of BICHOS){
     const q = dados.bichos[b.id]||0;
-    pintarUm(b, precoBicho(b), q, q
+    pintarUm(b, q, q
       ? `rendendo <b>${num(b.porSeg*q)}</b> por segundo`
       : `cada um: <b>${num(b.porSeg)}</b> por segundo`);
   }
@@ -362,7 +474,8 @@ function pintarPlacar(){
   $('#trofBarra').style.width = pct + '%';
 
   $('#rodapeInfo').innerHTML =
-    `Já juntou <b>${num(dados.total)}</b> doces no total · <b>${dados.cliques}</b> cliques`;
+    `Já juntou <b>${num(dados.total)}</b> doces no total · <b>${dados.cliques}</b> cliques` +
+    (dados.maiorCombo ? ` · maior combo <b>${dados.maiorCombo}</b>` : '');
 }
 
 const pintarTudo = () => { pintarPlacar(); pintarLoja(); pintarCenario(); };
@@ -372,6 +485,8 @@ function trocarAba(qual){
     b.classList.toggle('on', b.dataset.aba === qual));
   document.querySelectorAll('.painel').forEach(p =>
     p.classList.toggle('on', p.id === 'painel-' + qual));
+  /* comprar de 10 em 10 não faz sentido na parede de troféus */
+  $('#loteBarra').style.display = qual === 'conquistas' ? 'none' : '';
 }
 
 function recado(txt){
@@ -416,6 +531,8 @@ function tique(){
   const ganho = porSegundo() * dt;
   if(ganho > 0){ dados.doces += ganho; dados.total += ganho; }
 
+  if(combo && agora - ultimoClique > 1200){ combo = 0; pintarCombo(); }
+
   if(bonus && agora > bonus.ate){
     bonus = null;
     $('#faixaBonus').classList.remove('on');
@@ -451,14 +568,17 @@ function salvarAgora(){ gravar(); recado('💾 Salvo neste aparelho!'); }
 function apagarTudo(){
   if(!confirm('Recomeçar do zero?\n\nTeus doces, monstros e troféus somem pra sempre.')) return;
   if(!confirm('Certeza mesmo? Não tem como voltar atrás. 💀')) return;
+  const eraDestravado = dados.destravado;   /* quem já entrou não precisa da senha de novo */
   dados = vazio();
+  dados.destravado = eraDestravado;
+  combo = 0; pintarCombo();
   gravar();
   pintarTudo(); pintarConquistas();
   recado('🎃 Tudo novo de novo!');
 }
 
 /* ---------------------------------------------------------
-   MORCEGOS DE ENFEITE NO FUNDO
+   ENFEITE DA CENA
    --------------------------------------------------------- */
 function enfeitarCena(){
   const cena = $('#cena');
@@ -484,26 +604,44 @@ function enfeitarCena(){
 /* ---------------------------------------------------------
    COMEÇO
    --------------------------------------------------------- */
+function comecarJogo(){
+  if(rodando) return;
+  rodando = true;
+  contarTempoFora();
+  marcarProximaDourada();
+  ultimo = Date.now();
+  setInterval(tique, 100);
+  setInterval(gravar, 10000);
+}
+
 montarLoja();
 pintarConquistas();
 pintarTudo();
 enfeitarCena();
-marcarProximaDourada();
-contarTempoFora();
 $('#btnSom').textContent = dados.som ? '🔊 Som' : '🔇 Mudo';
 
 $('#abobora').addEventListener('pointerdown', clicar);
 $('#dourada').addEventListener('pointerdown', pegarDourada);
+$('#travaSenha').addEventListener('keydown', ev => { if(ev.key === 'Enter') tentarSenha(); });
 
-setInterval(tique, 100);
-setInterval(gravar, 10000);
 document.addEventListener('visibilitychange', () => { if(document.hidden) gravar(); });
 window.addEventListener('pagehide', gravar);
 
 /* barra de espaço também clica, pra quem joga no computador */
 document.addEventListener('keydown', ev => {
-  if(ev.code === 'Space'){ ev.preventDefault(); clicar(); }
+  if(ev.code !== 'Space') return;
+  if(!rodando || ev.target.tagName === 'INPUT') return;
+  ev.preventDefault();
+  clicar();
 });
+
+if(naSemanaDoHalloween() || dados.destravado){
+  comecarJogo();
+}else{
+  $('#trava').classList.add('on');
+  pintarContagem();
+  setInterval(pintarContagem, 1000);
+}
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
