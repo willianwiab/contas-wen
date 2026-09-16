@@ -42,10 +42,10 @@ body{
   animation:pisca 3s ease-in-out infinite}
 @keyframes pisca{0%,100%{opacity:.18}50%{opacity:.8}}
 
-/* a lua fica NO CÉU, e não no canto: em cima ela passava por baixo do
-   título em tela estreita, e o céu no meio ficava um vazio morto */
+/* a lua se mede a partir do CHÃO, não do topo: presa no topo, qualquer
+   coisa nova no cabeçalho empurrava o texto por cima dela */
 .lua{
-  position:absolute;top:162px;right:16px;width:44px;height:44px;border-radius:50%;
+  position:absolute;bottom:126px;right:16px;width:44px;height:44px;border-radius:50%;
   background:radial-gradient(circle at 36% 34%, #fffdf2, var(--lua) 58%, #e8d9ae);
   box-shadow:0 0 34px rgba(255,244,214,.45), 0 0 90px rgba(255,244,214,.18)
 }
@@ -142,10 +142,11 @@ body{
 
 /* ---- abas ---- */
 .abas{display:flex;gap:4px;background:rgba(0,0,0,.3);border:1px solid var(--linha);
-  border-radius:14px;padding:4px;margin-bottom:14px}
+  border-radius:14px;padding:4px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.abas::-webkit-scrollbar{display:none}
 .abas button{
-  flex:1;padding:9px 4px;border-radius:10px;font-size:.78rem;font-weight:800;
-  color:var(--texto3);transition:.15s
+  flex:1 0 auto;min-width:74px;padding:9px 8px;border-radius:10px;font-size:.76rem;
+  font-weight:800;color:var(--texto3);transition:.15s
 }
 .abas button.on{background:var(--cardAlto);color:var(--abobora);
   box-shadow:0 2px 8px rgba(0,0,0,.35)}
@@ -293,6 +294,84 @@ body{
 #trava .avisar-porta.ligado{background:rgba(94,232,154,.14);border-color:rgba(94,232,154,.45);
   color:var(--verde)}
 
+
+/* ---- fases da noite: o céu muda com a hora de verdade ---- */
+.cena.f-tarde{background:
+  radial-gradient(ellipse 70% 55% at 50% 4%, rgba(255,140,40,.28), transparent 62%),
+  linear-gradient(180deg,#3d1630 0%, #5a2038 46%, #6b2a3e 100%)}
+.cena.f-noite{background:
+  radial-gradient(ellipse 70% 55% at 50% 4%, rgba(255,122,24,.20), transparent 62%),
+  linear-gradient(180deg,#1b0a27 0%, #2a0f3d 52%, #3a1652 100%)}
+.cena.f-bruxas{background:
+  radial-gradient(ellipse 80% 60% at 50% 2%, rgba(140,60,255,.34), transparent 66%),
+  linear-gradient(180deg,#120424 0%, #22093f 50%, #340f5c 100%)}
+.cena.f-madrugada{background:
+  radial-gradient(ellipse 70% 55% at 50% 6%, rgba(60,120,200,.22), transparent 62%),
+  linear-gradient(180deg,#07101f 0%, #101c33 52%, #1b2b4a 100%)}
+.cena.f-dia{background:
+  radial-gradient(ellipse 70% 55% at 50% 2%, rgba(255,190,90,.30), transparent 62%),
+  linear-gradient(180deg,#46284f 0%, #6b3b58 48%, #8a5060 100%)}
+
+/* embaixo das fichas: no canto de cima ele passava por cima do título */
+#fase{
+  display:inline-block;margin-top:8px;background:rgba(0,0,0,.4);
+  border:1px solid var(--linha);border-radius:99px;padding:4px 12px;font-size:.68rem;
+  font-weight:800;color:var(--texto2);backdrop-filter:blur(3px);max-width:92%
+}
+#fase.bruxas{border-color:var(--ouro);color:var(--ouro);
+  box-shadow:0 0 16px rgba(255,215,94,.35);animation:brilha 1.4s ease-in-out infinite}
+
+/* ---- botão de trocar a cara ---- */
+#btCara{
+  position:absolute;right:12px;bottom:66px;z-index:5;width:38px;height:38px;border-radius:50%;
+  background:rgba(0,0,0,.42);border:1px solid var(--linha);font-size:1.05rem;
+  backdrop-filter:blur(3px)
+}
+#caras .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px}
+#caras .cara{background:var(--card);border:2px solid var(--linha);border-radius:14px;
+  padding:10px 5px;text-align:center}
+#caras .cara .e{font-size:1.9rem;line-height:1.1}
+#caras .cara .n{font-size:.62rem;font-weight:800;margin-top:3px}
+#caras .cara .q{font-size:.55rem;color:var(--texto3);margin-top:2px;line-height:1.25}
+#caras .cara.tem{border-color:var(--abobora)}
+#caras .cara.usando{border-color:var(--ouro);background:rgba(255,215,94,.14)}
+#caras .cara.presa{opacity:.45}
+#caras .cara.presa .e{filter:grayscale(1) brightness(.5)}
+
+/* ---- melhorias especiais ---- */
+.esp{
+  --cor:#ffd75e;
+  display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;width:100%;
+  text-align:left;padding:11px;border-radius:16px;background:var(--card);
+  border:1px solid var(--linha);border-left:4px solid var(--cor);margin-bottom:8px
+}
+.esp:active{transform:scale(.985)}
+.esp.pode{background:var(--cardAlto);border-color:var(--linhaForte)}
+.esp.caro{opacity:.52}
+.esp.tem{border-color:var(--ouro);background:linear-gradient(90deg,rgba(255,215,94,.14),var(--card))}
+.esp .ic{display:flex;align-items:center;justify-content:center;width:48px;height:48px;
+  border-radius:13px;background:rgba(255,215,94,.13);border:1px solid rgba(255,215,94,.3);
+  font-size:1.5rem}
+.esp .meio{display:block;min-width:0}
+.esp .nome{display:block;font-weight:800;font-size:.9rem;line-height:1.25}
+.esp .desc{display:block;font-size:.7rem;color:var(--texto2);margin-top:2px;line-height:1.35}
+.esp .preco{display:block;background:rgba(0,0,0,.34);border:1px solid var(--linha);
+  border-radius:99px;padding:7px 12px;font-weight:900;font-size:.8rem;color:var(--ouro);
+  white-space:nowrap}
+.esp.pode .preco{background:var(--ouro);border-color:var(--ouro);color:#2b1055}
+.esp .preco.caro{color:var(--sangue)}
+.esp .feito{display:block;color:var(--ouro);font-weight:900;font-size:.82rem}
+.vazio-esp{text-align:center;color:var(--texto3);font-size:.82rem;padding:26px 16px;line-height:1.6}
+
+/* ---- sala dos números ---- */
+.numeros{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.nmr{background:var(--card);border:1px solid var(--linha);border-radius:14px;padding:12px}
+.nmr .r{font-size:.62rem;text-transform:uppercase;letter-spacing:.07em;color:var(--texto3);
+  font-weight:800}
+.nmr .v{font-size:1.15rem;font-weight:900;margin-top:3px;line-height:1.2}
+.nmr.largo{grid-column:1/-1}
+.nmr.destaque .v{color:var(--ouro)}
+
 /* ---- modo adm ---- */
 #adm{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;
   padding:16px;background:rgba(10,4,16,.9);backdrop-filter:blur(4px)}
@@ -361,6 +440,8 @@ body{
     <i style="width:7px;height:7px;top:26px;left:26px"></i>
     <i style="width:5px;height:5px;top:15px;left:31px"></i></div>
 
+  <button id="btCara" onclick="abrirCaras()" title="trocar a cara">🎭</button>
+
   <header class="topo">
     <h1 class="titulo-fonte">Hellow Click</h1>
     <div class="contador">
@@ -373,6 +454,7 @@ body{
       <span class="ficha seg"><span class="r">por segundo</span>
         <span class="v" id="porSeg">0</span></span>
     </div>
+    <div id="fase"></div>
   </header>
 
   <div class="palco">
@@ -393,8 +475,11 @@ body{
       <span class="conta" id="contaCliques"></span></button>
     <button data-aba="bichos" onclick="trocarAba('bichos')">👹 Ajudantes
       <span class="conta" id="contaBichos"></span></button>
+    <button data-aba="especiais" onclick="trocarAba('especiais')">⭐ Especiais
+      <span class="conta" id="contaEspeciais"></span></button>
     <button data-aba="conquistas" onclick="trocarAba('conquistas')">🏆 Troféus
       <span class="conta" id="contaTrofeus"></span></button>
+    <button data-aba="numeros" onclick="trocarAba('numeros')">📈 Números</button>
   </nav>
 
   <div class="lote" id="loteBarra">
@@ -406,6 +491,8 @@ body{
 
   <div class="painel on" id="painel-cliques"><div id="listaCliques"></div></div>
   <div class="painel" id="painel-bichos"><div id="listaBichos"></div></div>
+  <div class="painel" id="painel-especiais"><div id="listaEspeciais"></div></div>
+  <div class="painel" id="painel-numeros"><div class="numeros" id="listaNumeros"></div></div>
   <div class="painel" id="painel-conquistas">
     <div class="resumo-trofeus">
       <b id="trofNum">0 de 15</b> troféus · <span id="trofBonus">+0%</span> em tudo
@@ -455,6 +542,16 @@ body{
   <p class="dica">Uma vez destravado, ele fica destravado neste aparelho.</p>
 </div>
 
+<div class="fundo-modal" id="caras" onclick="if(event.target===this)fecharCaras()">
+  <div class="modal" style="max-width:380px;width:100%">
+    <h2>🎭 A cara da abóbora</h2>
+    <p style="font-size:.8rem;color:var(--texto3);margin-bottom:14px">
+      Cada uma abre fazendo alguma coisa no jogo.</p>
+    <div class="grade" id="listaCaras"></div>
+    <button class="btn" onclick="fecharCaras()">Fechar</button>
+  </div>
+</div>
+
 <div id="adm"><div class="janela">
   <div id="admTranca">
     <h3>🔒 Modo administrador</h3>
@@ -498,6 +595,11 @@ body{
       <button onclick="admBonus('turbo')">⚡ Turbo</button>
     </div></div>
 
+    <div class="grupo"><div class="lab">Melhorias especiais</div><div class="btns">
+      <button onclick="admEspeciais(true)">⭐ Dar todas</button>
+      <button onclick="admEspeciais(false)" class="perigo">Tirar todas</button>
+    </div></div>
+
     <div class="grupo"><div class="lab">Troféus</div><div class="btns">
       <button onclick="admTrofeus(true)">🏆 Destravar todos</button>
       <button onclick="admTrofeus(false)" class="perigo">Tirar todos</button>
@@ -526,6 +628,6 @@ body{
   </div>
 </div>
 
-<script src="jogo.js?v=5"></script>
+<script src="jogo.js?v=6"></script>
 </body>
 </html>
