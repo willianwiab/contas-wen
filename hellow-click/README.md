@@ -48,6 +48,30 @@ Ao voltar, os ajudantes renderam pelo tempo que passou — **mas pela metade**, 
 8 horas. Se rendesse igual, valeria mais a pena fechar o jogo do que jogar; e sem limite,
 sumir uma semana daria mais doce do que qualquer partida.
 
+## Como a tela foi pensada
+
+**A cena tem chão.** Antes a abóbora flutuava num fundo preto. Agora existe céu com
+estrelas, lua, um morro e um chão — e **os bichos que cê comprou aparecem morando nesse
+chão**. É o único lugar do jogo onde dá pra ver o progresso sem ler número nenhum: a
+cena vai enchendo de bicho conforme o time cresce.
+
+**A loja parou de ser uma parede verde.** Antes todo item que dava pra comprar ficava com
+a mesma borda verde — e quando 7 de 8 estão verdes, verde para de significar "dá pra
+comprar". Agora cada item tem a cor dele, quem cê já tem ganha um selo **×32** bem
+visível, e o preço só vira botão amarelo aceso quando o dinheiro dá.
+
+**A informação mais importante virou a maior.** "Quantos eu tenho" e "quanto isso está
+rendendo agora" eram a letra menor do cartão. Subiram. E o **por clique**, que o jogo nem
+mostrava, agora fica lá em cima junto com o por segundo — é o número que a pessoa mais
+precisa pra decidir o que comprar.
+
+**Nome não é cortado.** Em tela estreita o nome quebra em duas linhas em vez de virar
+"Dedo Esquel...". O nome é o que a pessoa procura; não pode ser o primeiro a sumir.
+
+**A lua mora no céu, não no canto.** No canto de cima ela passava por baixo do título em
+celular estreito. Descendo pro meio do céu ela resolveu dois problemas: parou de brigar
+com o título e preencheu o vazio que tinha entre as fichas e a abóbora.
+
 ## Três detalhes que dão trabalho e ninguém nota
 
 - **Número grande vira número legível.** `1234567` não diz nada pra ninguém: vira `1,23 mi`.
