@@ -31,18 +31,18 @@ const MELHORIAS = [
 
 /* trabalham SOZINHOS — muitos, baratos no começo, é onde o jogo mora */
 const BICHOS = [
-  { id:'morcego',  cor:'#a78bfa', ic:'🦇',  nome:'Morcego',           porSeg:0.4,   base:20,    desc:'Traz um docinho de vez em quando.' },
-  { id:'gato',     cor:'#94a3b8', ic:'🐈‍⬛', nome:'Gato Preto',        porSeg:2.5,   base:250,   desc:'Dá azar pros outros, sorte pra cê.' },
-  { id:'aranha',   cor:'#7dd3fc', ic:'🕷️',  nome:'Aranha',            porSeg:11,    base:2200,  desc:'Tece rede e pesca doce voando.' },
-  { id:'fantasma', cor:'#e0f2fe', ic:'👻',  nome:'Fantasma',          porSeg:55,    base:18000, desc:'Atravessa a parede da loja de doce.' },
-  { id:'zumbi',    cor:'#86efac', ic:'🧟',  nome:'Zumbi',             porSeg:280,   base:1.3e5, desc:'Devagar, mas nunca para.' },
-  { id:'bruxa',    cor:'#c084fc', ic:'🧙',  nome:'Bruxa',             porSeg:1400,  base:9e5,   desc:'Fabrica doce no caldeirão.' },
-  { id:'vampiro',  cor:'#f87171', ic:'🧛',  nome:'Vampiro',           porSeg:7500,  base:6e6,   desc:'Trabalha a noite inteira, óbvio.' },
-  { id:'ceifador', cor:'#cbd5e1', ic:'☠️',  nome:'Ceifador',          porSeg:42000, base:4.5e7, desc:'Ninguém discute com ele.' },
-  { id:'viva',     cor:'#fb923c', ic:'🎃',  nome:'Abóbora Viva',      porSeg:2.4e5, base:3.2e8, desc:'Ela virou funcionária. Não pergunta.' },
-  { id:'cemiterio',cor:'#94a3b8', ic:'🪦',  nome:'Cemitério Inteiro', porSeg:1.4e6, base:2.4e9, desc:'Todo mundo lá dentro trabalha pra cê.' },
-  { id:'mansao',   cor:'#a78bfa', ic:'🏚️',  nome:'Mansão Assombrada', porSeg:8e6,   base:1.8e10,desc:'Vem com os moradores inclusos.' },
-  { id:'portal',   cor:'#67e8f9', ic:'🌀',  nome:'Portal do Além',    porSeg:5e7,   base:1.4e11,desc:'Doce chegando de um lugar que é melhor não saber.' }
+  { id:'morcego', plural:'morcegos',  cor:'#a78bfa', ic:'🦇',  nome:'Morcego',           porSeg:0.4,   base:20,    desc:'Traz um docinho de vez em quando.' },
+  { id:'gato', plural:'gatos pretos',     cor:'#94a3b8', ic:'🐈‍⬛', nome:'Gato Preto',        porSeg:2.5,   base:250,   desc:'Dá azar pros outros, sorte pra cê.' },
+  { id:'aranha', plural:'aranhas',   cor:'#7dd3fc', ic:'🕷️',  nome:'Aranha',            porSeg:11,    base:2200,  desc:'Tece rede e pesca doce voando.' },
+  { id:'fantasma', plural:'fantasmas', cor:'#e0f2fe', ic:'👻',  nome:'Fantasma',          porSeg:55,    base:18000, desc:'Atravessa a parede da loja de doce.' },
+  { id:'zumbi', plural:'zumbis',    cor:'#86efac', ic:'🧟',  nome:'Zumbi',             porSeg:280,   base:1.3e5, desc:'Devagar, mas nunca para.' },
+  { id:'bruxa', plural:'bruxas',    cor:'#c084fc', ic:'🧙',  nome:'Bruxa',             porSeg:1400,  base:9e5,   desc:'Fabrica doce no caldeirão.' },
+  { id:'vampiro', plural:'vampiros',  cor:'#f87171', ic:'🧛',  nome:'Vampiro',           porSeg:7500,  base:6e6,   desc:'Trabalha a noite inteira, óbvio.' },
+  { id:'ceifador', plural:'ceifadores', cor:'#cbd5e1', ic:'☠️',  nome:'Ceifador',          porSeg:42000, base:4.5e7, desc:'Ninguém discute com ele.' },
+  { id:'viva', plural:'abóboras vivas',     cor:'#fb923c', ic:'🎃',  nome:'Abóbora Viva',      porSeg:2.4e5, base:3.2e8, desc:'Ela virou funcionária. Não pergunta.' },
+  { id:'cemiterio', plural:'cemitérios inteiros',cor:'#94a3b8', ic:'🪦',  nome:'Cemitério Inteiro', porSeg:1.4e6, base:2.4e9, desc:'Todo mundo lá dentro trabalha pra cê.' },
+  { id:'mansao', plural:'mansões assombradas',   cor:'#a78bfa', ic:'🏚️',  nome:'Mansão Assombrada', porSeg:8e6,   base:1.8e10,desc:'Vem com os moradores inclusos.' },
+  { id:'portal', plural:'portais do além',   cor:'#67e8f9', ic:'🌀',  nome:'Portal do Além',    porSeg:5e7,   base:1.4e11,desc:'Doce chegando de um lugar que é melhor não saber.' }
 ];
 
 /* cada troféu dá +2% em tudo — assim caçar troféu não é só enfeite */
@@ -66,40 +66,204 @@ const CONQUISTAS = [
   { id:'c12', e:'🎪', nome:'Circo de horror', desc:'1 de cada bicho',   tem:d => BICHOS.every(b => (d.bichos[b.id]||0) > 0) },
   { id:'c13', e:'🌟', nome:'Sorte grande',    desc:'1 abóbora dourada', tem:d => d.douradas >= 1 },
   { id:'c14', e:'✨', nome:'Caçador de ouro', desc:'10 douradas',       tem:d => d.douradas >= 10 },
-  { id:'c15', e:'⏱️', nome:'Fábrica do medo', desc:'1.000 doces/seg',   tem:d => porSegundoCru(d) >= 1000 },
+  { id:'c15', e:'⏱️', nome:'Fábrica do medo', desc:'1.000 doces/seg',   tem:() => porSegundoCru() >= 1000 },
   { id:'c21', e:'🔓', nome:'Trapaceiro',     desc:'Entrar no modo adm',tem:d => !!d.admUsado }
 ];
 
-/* compras ÚNICAS que MULTIPLICAM, em vez de somar.
-   Um bicho comprado 50 vezes some do radar; a melhoria dele devolve
-   um motivo pra ele existir. Cada uma só aparece quando a pessoa já
-   chegou perto — ver o que não dá pra querer ainda só faz barulho. */
-const ESPECIAIS = [
-  ...BICHOS.map(b => ({
-    id:'e_' + b.id, tipo:'bicho', alvo:b.id, fator:2, ic:b.ic,
-    nome:b.nome + ' turbinado', desc:`Todos os teus ${b.nome.toLowerCase()} rendem o DOBRO`,
-    custo: Math.ceil(b.base * 120), destrava: d => (d.bichos[b.id]||0) >= 10,
-    falta:'tenha 10 ' + b.nome.toLowerCase()
-  })),
-  { id:'e_clique1', tipo:'clique', fator:2,    ic:'👆', nome:'Dedo Amaldiçoado',
-    desc:'Teu clique passa a valer o DOBRO', custo:5e3,
-    destrava:d => d.cliques >= 100,  falta:'dê 100 cliques' },
-  { id:'e_clique2', tipo:'clique', fator:3,    ic:'🖐️', nome:'Mão de Ferro',
-    desc:'Teu clique passa a valer 3x', custo:5e6,
-    destrava:d => d.cliques >= 1000, falta:'dê 1.000 cliques' },
-  { id:'e_clique3', tipo:'clique', fator:5,    ic:'🦾', nome:'Braço do Outro Lado',
-    desc:'Teu clique passa a valer 5x', custo:8e9,
-    destrava:d => d.cliques >= 10000, falta:'dê 10.000 cliques' },
-  { id:'e_tudo1',   tipo:'tudo',   fator:1.25, ic:'🌑', nome:'Noite Eterna',
-    desc:'TUDO no jogo rende +25%', custo:1e7,
-    destrava:d => d.conquistas.length >= 8,  falta:'ganhe 8 troféus' },
-  { id:'e_tudo2',   tipo:'tudo',   fator:1.5,  ic:'🌌', nome:'Véu do Além',
-    desc:'TUDO no jogo rende +50%', custo:1e10,
-    destrava:d => d.conquistas.length >= 15, falta:'ganhe 15 troféus' },
-  { id:'e_dourada', tipo:'dourada',fator:.55,  ic:'🌟', nome:'Chamado Dourado',
-    desc:'A abóbora dourada aparece quase o dobro mais vezes', custo:1e8,
-    destrava:d => d.douradas >= 5, falta:'pegue 5 douradas' }
+/* ---------------------------------------------------------
+   NÚMERO GRANDE VIRA NÚMERO LEGÍVEL
+
+   Este bloco mora aqui em cima de propósito: o gerador de
+   melhorias logo abaixo chama num() na hora de montar os
+   textos, e const não existe antes da linha que a declara.
+   --------------------------------------------------------- */
+const ESCADA = [
+  [1e33,'dec'],[1e30,'non'],[1e27,'oct'],[1e24,'sep'],[1e21,'sex'],
+  [1e18,'qui'],[1e15,'qua'],[1e12,'tri'],[1e9,'bi'],[1e6,'mi'],[1e3,'mil']
 ];
+function num(n){
+  if(!isFinite(n)) return '∞';
+  /* passou dos nomes que existem: vira potência, em vez de sair "undefined" */
+  if(n >= 1e36){
+    const e = Math.floor(Math.log10(n));
+    return (n / Math.pow(10, e)).toFixed(2).replace('.', ',') + ' ×10^' + e;
+  }
+  /* 0,4 por segundo não pode virar "0": pareceria que o bicho não faz nada */
+  if(n < 10 && n % 1 !== 0) return n.toFixed(1).replace('.', ',');
+  if(n < 1000) return Math.floor(n).toString();
+  for(const [v,s] of ESCADA){
+    if(n >= v){
+      const x = n / v;
+      const txt = x < 10 ? x.toFixed(2) : x < 100 ? x.toFixed(1) : Math.floor(x).toString();
+      return txt.replace('.', ',') + ' ' + s;
+    }
+  }
+}
+
+/* tempo em palavra — usado já na criação das melhorias abaixo */
+function tempoBonito(seg){
+  if(seg < 60) return Math.floor(seg) + 's';
+  if(seg < 3600) return Math.floor(seg/60) + 'min';
+  if(seg < 86400) return Math.floor(seg/3600) + 'h ' + Math.floor(seg/60)%60 + 'min';
+  return Math.floor(seg/86400) + 'd ' + Math.floor(seg/3600)%24 + 'h';
+}
+
+/* =========================================================
+   AS MELHORIAS ESPECIAIS
+
+   São mais de mil — e nenhuma escrita à mão. Escrever mil
+   seria mil cópias do mesmo texto; geradas por regra, cada
+   uma nasce de um marco de verdade do jogo ("cê tem 250
+   morcegos", "cê deu 50 mil cliques").
+
+   O fator cai conforme sobe: as três primeiras de cada
+   escada dobram, as seguintes dão +50%, e daí pra frente
+   +25%. Dobrar quarenta vezes seguidas quebraria o jogo.
+   ========================================================= */
+const fatorDoDegrau = i => i < 3 ? 2 : i < 10 ? 1.5 : 1.25;
+
+function romano(n){
+  const t = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],
+             [40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+  let r = '';
+  for(const [v,l] of t) while(n >= v){ r += l; n -= v; }
+  return r;
+}
+
+/* de quantos em quantos um bicho ganha melhoria nova */
+function escadaDeBicho(){
+  const ns = [10, 25, 50];
+  for(let n = 100;  n <= 1000; n += 50)  ns.push(n);
+  for(let n = 1100; n <= 2000; n += 100) ns.push(n);
+  for(let n = 2200; n <= 5000; n += 200) ns.push(n);
+  return ns;
+}
+
+function escadaDeCliques(){
+  const ns = [];
+  for(let e = 1; e <= 9; e++) for(const m of [1, 2.5, 5]) ns.push(m * Math.pow(10, e));
+  return ns.map(Math.round);
+}
+
+const ESPECIAIS = [];
+
+/* 1. uma escada por bicho — o grosso do conteúdo */
+BICHOS.forEach(b => escadaDeBicho().forEach((n, i) => {
+  const f = fatorDoDegrau(i);
+  ESPECIAIS.push({
+    id:`e_${b.id}_${n}`, tipo:'bicho', alvo:b.id, fator:f, ic:b.ic,
+    nome:`${b.nome} turbinado ${romano(i+1)}`,
+    desc:`Teus ${b.plural} rendem ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'}`,
+    custo: Math.min(1e300, b.base * Math.pow(1.15, n) * 8),
+    destrava: d => (d.bichos[b.id]||0) >= n,
+    falta: `tenha ${n.toLocaleString('pt-BR')} ${b.plural}`
+  });
+}));
+
+/* 2. uma escada por melhoria de clique */
+MELHORIAS.forEach(m => [5,10,20,35,50,75,100,150,200,300,450,650].forEach((n, i) => {
+  const f = fatorDoDegrau(i);
+  ESPECIAIS.push({
+    id:`e_m_${m.id}_${n}`, tipo:'melhoria', alvo:m.id, fator:f, ic:m.ic,
+    nome:`${m.nome} afiado ${romano(i+1)}`,
+    desc:`A ${m.nome} rende ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'} no clique`,
+    custo: Math.min(1e300, m.base * Math.pow(1.7, n/3) * 4),
+    destrava: d => (d.melhorias[m.id]||0) >= n,
+    falta: `tenha ${n} níveis de ${m.nome}`
+  });
+}));
+
+/* 3. escada do clique, por quantos cliques a pessoa já deu */
+escadaDeCliques().forEach((n, i) => {
+  const f = fatorDoDegrau(i);
+  ESPECIAIS.push({
+    id:`e_clique_${n}`, tipo:'clique', fator:f, ic:'👆',
+    nome:`Dedo Amaldiçoado ${romano(i+1)}`,
+    desc:`Teu clique vale ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'}`,
+    custo: Math.min(1e300, n * 60),
+    destrava: d => d.cliques >= n,
+    falta: `dê ${n.toLocaleString('pt-BR')} cliques`
+  });
+});
+
+/* 4. escada do "tudo", por doce juntado na vida inteira */
+for(let e = 4, i = 0; e <= 90; e += 2, i++){
+  const marco = Math.pow(10, e), f = fatorDoDegrau(i);
+  ESPECIAIS.push({
+    id:`e_tudo_${e}`, tipo:'tudo', fator:f, ic:'🌑',
+    nome:`Noite Eterna ${romano(i+1)}`,
+    desc:`TUDO no jogo rende ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'}`,
+    custo: Math.min(1e300, marco * 3),
+    destrava: d => d.total >= marco,
+    falta: `junte ${num(marco)} doces na vida`
+  });
+}
+
+/* 5. escada da sorte, por abóbora dourada pega */
+for(let n = 5, i = 0; n <= 500; n += 5, i++){
+  ESPECIAIS.push({
+    id:`e_dourada_${n}`, tipo:'dourada', fator:.93, ic:'🌟',
+    nome:`Chamado Dourado ${romano(i+1)}`,
+    desc:'A abóbora dourada aparece um pouco mais vezes',
+    custo: Math.min(1e300, 1e7 * Math.pow(3.2, i)),
+    destrava: d => (d.douradas||0) >= n,
+    falta: `pegue ${n} abóboras douradas`
+  });
+}
+
+/* 5b. sinergias: um bicho passa a render mais por cada OUTRO que cê tem.
+   É o que faz valer a pena espalhar o time em vez de empilhar tudo num só. */
+BICHOS.forEach(a => BICHOS.forEach(b => {
+  if(a.id === b.id) return;
+  ESPECIAIS.push({
+    id:`e_sin_${a.id}_${b.id}`, tipo:'sinergia', alvo:a.id, comQuem:b.id, fator:.02, ic:a.ic,
+    nome:`${a.nome} & ${b.nome}`,
+    desc:`Teus ${a.plural} rendem +2% pra cada ${b.nome.toLowerCase()} que cê tiver`,
+    custo: Math.min(1e300, (a.base + b.base) * 900),
+    destrava: d => (d.bichos[a.id]||0) >= 25 && (d.bichos[b.id]||0) >= 25,
+    falta: `tenha 25 ${a.plural} e 25 ${b.plural}`
+  });
+}));
+
+/* 5c. escada do tempo de jogo — prêmio por teimosia */
+[60, 300, 900, 1800, 3600, 7200, 18000, 36000, 86400, 172800, 360000, 720000]
+  .forEach((seg, i) => {
+    const f = fatorDoDegrau(i);
+    ESPECIAIS.push({
+      id:`e_tempo_${seg}`, tipo:'tudo', fator:f, ic:'⏳',
+      nome:`Paciência de Fantasma ${romano(i+1)}`,
+      desc:`TUDO no jogo rende ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'}`,
+      custo: Math.min(1e300, 2e4 * Math.pow(9, i)),
+      destrava: d => (d.tempoJogado||0) >= seg,
+      falta: `jogue ${tempoBonito(seg)} no total`
+    });
+  });
+
+/* 6. escada do combo */
+for(let n = 10, i = 0; n <= 50; n += 5, i++){
+  const f = 1 + (i+1) * .1;
+  ESPECIAIS.push({
+    id:`e_combo_${n}`, tipo:'clique', fator:f, ic:'🌪️',
+    nome:`Punho do Combo ${romano(i+1)}`,
+    desc:`Teu clique vale +${Math.round((f-1)*100)}%`,
+    custo: Math.min(1e300, 5e5 * Math.pow(8, i)),
+    destrava: d => (d.maiorCombo||0) >= n,
+    falta: `faça um combo de ${n}`
+  });
+}
+
+/* 7. escada dos troféus */
+for(let n = 3, i = 0; n <= 21; n += 3, i++){
+  const f = fatorDoDegrau(i);
+  ESPECIAIS.push({
+    id:`e_trof_${n}`, tipo:'tudo', fator:f, ic:'🏆',
+    nome:`Véu do Além ${romano(i+1)}`,
+    desc:`TUDO no jogo rende ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'}`,
+    custo: Math.min(1e300, 1e6 * Math.pow(40, i)),
+    destrava: d => d.conquistas.length >= n,
+    falta: `ganhe ${n} troféus`
+  });
+}
 
 /* a cara da abóbora: puro colecionismo, e cada uma pede uma coisa
    diferente do jogo pra abrir */
@@ -256,51 +420,58 @@ function quantoLeva(x){
 }
 
 const multTrofeus = () => 1 + dados.conquistas.length * 0.02;
-const tenhoEsp = id => dados.especiais.includes(id);
+
+/* com mais de mil especiais, varrer a lista inteira dez vezes por
+   segundo seria desperdício puro: a conta fica guardada e só se
+   refaz quando alguém compra alguma coisa */
+const MAPA_ESP = Object.fromEntries(ESPECIAIS.map(e => [e.id, e]));
+const temEsp = new Set();
+let bolo = null;
+function limparBolo(){ bolo = null; temEsp.clear(); (dados.especiais||[]).forEach(i => temEsp.add(i)); }
+const tenhoEsp = id => temEsp.has(id);
+
+function multiplicadores(){
+  if(bolo) return bolo;
+  const m = { bicho:{}, melhoria:{}, clique:1, tudo:1, dourada:1 };
+  for(const id of dados.especiais || []){
+    const e = MAPA_ESP[id];
+    if(!e) continue;                       /* especial de uma versão antiga: ignora */
+    if(e.tipo === 'bicho')         m.bicho[e.alvo]    = (m.bicho[e.alvo]    || 1) * e.fator;
+    /* sinergia depende de QUANTOS do outro bicho existem agora — por isso
+       a conta guardada também se refaz quando alguém compra um ajudante */
+    else if(e.tipo === 'sinergia') m.bicho[e.alvo]    = (m.bicho[e.alvo]    || 1)
+                                     * (1 + e.fator * (dados.bichos[e.comQuem]||0));
+    else if(e.tipo === 'melhoria') m.melhoria[e.alvo] = (m.melhoria[e.alvo] || 1) * e.fator;
+    else if(m[e.tipo] !== undefined) m[e.tipo] *= e.fator;
+  }
+  return (bolo = m);
+}
+
 /* as especiais de "tudo" e a hora das bruxas multiplicam clique e produção juntos */
-const multGeral = () => ESPECIAIS
-  .filter(e => e.tipo === 'tudo' && tenhoEsp(e.id))
-  .reduce((m,e) => m * e.fator, 1) * faseAgora().mult;
-const multClique = () => ESPECIAIS
-  .filter(e => e.tipo === 'clique' && tenhoEsp(e.id))
-  .reduce((m,e) => m * e.fator, 1);
+const multGeral  = () => multiplicadores().tudo * faseAgora().mult;
+const multClique = () => multiplicadores().clique;
 const multCombo = () => 1 + Math.min(combo, 50) * 0.02;
 
 /* o clique "limpo", sem combo nem bônus — é o que os troféus medem */
 function porCliqueCru(){
-  const somado = MELHORIAS.reduce((s,m) => s + m.poder * (dados.melhorias[m.id]||0), 1);
+  const mm = multiplicadores().melhoria;
+  const somado = MELHORIAS.reduce(
+    (s,m) => s + m.poder * (dados.melhorias[m.id]||0) * (mm[m.id] || 1), 1);
   return somado * multTrofeus() * multClique() * multGeral();
 }
 function porClique(){
   return porCliqueCru() * multCombo() * (bonus && bonus.tipo === 'frenesi' ? 7 : 1);
 }
 
-const porSegundoCru = d =>
-  BICHOS.reduce((s,b) => {
-    const dobro = (d.especiais||[]).includes('e_' + b.id) ? 2 : 1;
-    return s + b.porSeg * (d.bichos[b.id]||0) * dobro;
-  }, 0) * (1 + (d.conquistas||[]).length * 0.02) * multGeral();
+function porSegundoCru(){
+  const mb = multiplicadores().bicho;
+  return BICHOS.reduce(
+    (s,b) => s + b.porSeg * (dados.bichos[b.id]||0) * (mb[b.id] || 1), 0)
+    * multTrofeus() * multGeral();
+}
 
 const porSegundo = () =>
-  porSegundoCru(dados) * (bonus && bonus.tipo === 'turbo' ? 5 : 1);
-
-/* ---------------------------------------------------------
-   NÚMERO GRANDE VIRA NÚMERO LEGÍVEL
-   --------------------------------------------------------- */
-const ESCADA = [[1e18,'qui'],[1e15,'qua'],[1e12,'tri'],[1e9,'bi'],[1e6,'mi'],[1e3,'mil']];
-function num(n){
-  if(!isFinite(n)) return '∞';
-  /* 0,4 por segundo não pode virar "0": pareceria que o bicho não faz nada */
-  if(n < 10 && n % 1 !== 0) return n.toFixed(1).replace('.', ',');
-  if(n < 1000) return Math.floor(n).toString();
-  for(const [v,s] of ESCADA){
-    if(n >= v){
-      const x = n / v;
-      const txt = x < 10 ? x.toFixed(2) : x < 100 ? x.toFixed(1) : Math.floor(x).toString();
-      return txt.replace('.', ',') + ' ' + s;
-    }
-  }
-}
+  porSegundoCru() * (bonus && bonus.tipo === 'turbo' ? 5 : 1);
 
 /* ---------------------------------------------------------
    CLICAR NA ABÓBORA
@@ -373,6 +544,7 @@ function comprar(x){
   dados.doces -= preco;
   const onde = x.poder !== undefined ? dados.melhorias : dados.bichos;
   onde[x.id] = (onde[x.id]||0) + n;
+  limparBolo();
   bip(x.poder !== undefined ? 620 : 500, .07);
   recado(`${x.ic} ${x.nome}${n > 1 ? ` ×${n}` : ''} — ${x.poder !== undefined ? 'melhorou!' : 'entrou pro time!'}`);
   conferirConquistas(); pintarTudo(); gravar();
@@ -388,7 +560,8 @@ const comprarBicho    = id => comprar(BICHOS.find(x => x.id === id));
    não esperava. Ela aparece sozinha e some se ninguém pegar.
    --------------------------------------------------------- */
 function marcarProximaDourada(){
-  const apressa = tenhoEsp('e_dourada') ? .55 : 1;
+  /* nunca abaixo de 8 segundos: dourada sem intervalo deixa de ser sorte */
+  const apressa = Math.max(.12, multiplicadores().dourada);
   proximaDourada = Date.now() + (40 + Math.random() * 70) * 1000 * apressa;
 }
 
@@ -419,7 +592,7 @@ function pegarDourada(){
     bonus = { tipo:'turbo', ate: Date.now() + 20000 };
     faixa('⚡ TURBO! Teus monstros rendem 5x por 20 segundos!');
   }else{
-    const chuva = Math.max(30, dados.doces * .12 + porSegundoCru(dados) * 90);
+    const chuva = Math.max(30, dados.doces * .12 + porSegundoCru() * 90);
     dados.doces += chuva; dados.total += chuva;
     faixa(`🍬 CHUVA DE DOCES! +${num(chuva)}`);
     setTimeout(() => $('#faixaBonus').classList.remove('on'), 4000);
@@ -541,35 +714,64 @@ function comprarEspecial(id){
   if(dados.doces < e.custo) return recado('Falta doce pra isso! 🍬');
   dados.doces -= e.custo;
   dados.especiais.push(id);
+  limparBolo();
   bip(900, .1); setTimeout(() => bip(1200, .1), 90);
   recado(`⭐ ${e.ic} ${e.nome}!`);
-  conferirConquistas(); pintarTudo(); pintarEspeciais(); gravar();
+  conferirConquistas(); pintarTudo(); pintarEspeciais(true); gravar();
 }
 
-function pintarEspeciais(){
-  /* só mostra o que já dá pra querer: uma lista cheia de coisa
-     inalcançável vira barulho em vez de objetivo */
-  const abertas = ESPECIAIS.filter(e => e.destrava(dados) || tenhoEsp(e.id));
-  const perto = ESPECIAIS.filter(e => !e.destrava(dados) && !tenhoEsp(e.id)).slice(0, 3);
+/* Com mais de mil melhorias, jogar todas na tela seria um paredão que
+   ninguém lê. Aparece só o que dá pra comprar AGORA, da mais barata pra
+   mais cara — e embaixo, as três que estão mais perto de abrir. */
+const QUANTAS_MOSTRA = 24;
+let ultimoDesenhoEsp = 0;
+
+function pintarEspeciais(forcar){
+  const agora = Date.now();
+  if(!forcar && agora - ultimoDesenhoEsp < 500) return;  /* 1.003 checagens dez vezes por segundo seria desperdício */
+  ultimoDesenhoEsp = agora;
+
+  const podeVer = [], quaseLa = [];
+  for(const e of ESPECIAIS){
+    if(tenhoEsp(e.id)) continue;
+    (e.destrava(dados) ? podeVer : quaseLa).push(e);
+  }
+  podeVer.sort((a,b) => a.custo - b.custo);
+  const mostrando = podeVer.slice(0, QUANTAS_MOSTRA);
 
   const cartao = e => {
-    const tem = tenhoEsp(e.id), pode = !tem && dados.doces >= e.custo;
-    return `<button class="esp ${tem ? 'tem' : pode ? 'pode' : 'caro'}"
-              onclick="comprarEspecial('${e.id}')">
+    const pode = dados.doces >= e.custo;
+    return `<button class="esp ${pode ? 'pode' : 'caro'}" onclick="comprarEspecial('${e.id}')">
       <span class="ic">${e.ic}</span>
       <span class="meio"><span class="nome">${e.nome}</span>
         <span class="desc">${e.desc}</span></span>
-      <span class="dir">${tem ? '<span class="feito">✔ tua</span>'
-        : `<span class="preco ${pode ? '' : 'caro'}">${num(e.custo)} 🍬</span>`}</span>
+      <span class="dir"><span class="preco ${pode ? '' : 'caro'}">${num(e.custo)} 🍬</span></span>
     </button>`;
   };
 
-  $('#listaEspeciais').innerHTML =
-    (abertas.length ? abertas.map(cartao).join('')
-      : `<p class="vazio-esp">Nenhuma ainda! 👀<br>
-         Elas aparecem conforme cê vai jogando —<br>compra 10 de um bicho e vê o que acontece.</p>`)
-    + (perto.length ? `<p class="vazio-esp" style="padding-top:18px">
-         <b>Vindo por aí:</b><br>${perto.map(e => '🔒 ' + e.falta).join('<br>')}</p>` : '');
+  const cabeca = `<div class="resumo-trofeus" style="text-align:center">
+      <b>${dados.especiais.length}</b> de ${ESPECIAIS.length} melhorias especiais
+      <div class="barra-trof"><div style="width:${
+        (dados.especiais.length / ESPECIAIS.length * 100).toFixed(2)}%"></div></div>
+    </div>`;
+
+  let corpo;
+  if(mostrando.length){
+    corpo = mostrando.map(cartao).join('') +
+      (podeVer.length > QUANTAS_MOSTRA
+        ? `<p class="vazio-esp">+ outras <b>${podeVer.length - QUANTAS_MOSTRA}</b> já abertas,
+             esperando cê juntar mais doce 🍬</p>` : '');
+  }else{
+    corpo = `<p class="vazio-esp">Nenhuma aberta agora! 👀<br>
+      Elas nascem dos teus marcos — compra 10 de um bicho e vê o que acontece.</p>`;
+  }
+
+  /* as três mais perto de abrir, pra sempre ter um alvo à vista */
+  const perto = quaseLa.slice(0, 3)
+    .map(e => `🔒 ${e.falta}`).join('<br>');
+
+  $('#listaEspeciais').innerHTML = cabeca + corpo +
+    (perto ? `<p class="vazio-esp" style="padding-top:18px"><b>Vindo por aí:</b><br>${perto}</p>` : '');
 }
 
 /* ---------------------------------------------------------
@@ -615,12 +817,6 @@ function pintarFase(){
 /* ---------------------------------------------------------
    A SALA DOS NÚMEROS
    --------------------------------------------------------- */
-function tempoBonito(seg){
-  if(seg < 60) return Math.floor(seg) + 's';
-  if(seg < 3600) return Math.floor(seg/60) + 'min';
-  if(seg < 86400) return Math.floor(seg/3600) + 'h ' + Math.floor(seg/60)%60 + 'min';
-  return Math.floor(seg/86400) + 'd ' + Math.floor(seg/3600)%24 + 'h';
-}
 
 function pintarNumeros(){
   if(!$('#painel-numeros').classList.contains('on')) return;   /* aba fechada, não gasta tempo */
@@ -697,7 +893,7 @@ function trocarAba(qual){
     p.classList.toggle('on', p.id === 'painel-' + qual));
   /* comprar de 10 em 10 não faz sentido na parede de troféus */
   $('#loteBarra').style.display = (qual === 'cliques' || qual === 'bichos') ? '' : 'none';
-  if(qual === 'especiais') pintarEspeciais();
+  if(qual === 'especiais') pintarEspeciais(true);
   if(qual === 'numeros') pintarNumeros();
 }
 
@@ -781,7 +977,7 @@ function contarTempoFora(){
   const fora = (Date.now() - (dados.quando || Date.now())) / 1000;
   if(fora < 60) return;
   const limitado = Math.min(fora, 8 * 3600);
-  const ganho = porSegundoCru(dados) * limitado * .5;
+  const ganho = porSegundoCru() * limitado * .5;
   if(ganho < 10) return;
   dados.doces += ganho; dados.total += ganho;
   $('#foraQuanto').textContent = num(ganho);
@@ -800,6 +996,7 @@ function apagarTudo(){
   const eraDestravado = dados.destravado;   /* quem já entrou não precisa da senha de novo */
   dados = vazio();
   dados.destravado = eraDestravado;
+  limparBolo();
   combo = 0; pintarCombo();
   gravar();
   pintarTudo(); pintarConquistas();
@@ -924,10 +1121,12 @@ function admDoces(q){
 }
 function admBichos(q){
   BICHOS.forEach(b => dados.bichos[b.id] = (dados.bichos[b.id]||0) + q);
+  limparBolo();
   depoisDoAdm(`+${q} de cada ajudante`);
 }
 function admMelhorias(q){
   MELHORIAS.forEach(m => dados.melhorias[m.id] = (dados.melhorias[m.id]||0) + q);
+  limparBolo();
   depoisDoAdm(`+${q} nível em cada melhoria`);
 }
 function admDourada(){
@@ -944,7 +1143,8 @@ function admBonus(tipo){
 }
 function admEspeciais(dar){
   dados.especiais = dar ? ESPECIAIS.map(e => e.id) : [];
-  pintarEspeciais();
+  limparBolo();
+  pintarEspeciais(true);
   depoisDoAdm(dar ? 'todas as especiais destravadas' : 'especiais tiradas');
 }
 function admTrofeus(dar){
@@ -1044,9 +1244,10 @@ function comecarJogo(){
   setInterval(gravar, 10000);
 }
 
+limparBolo();
 montarLoja();
 pintarConquistas();
-pintarEspeciais();
+pintarEspeciais(true);
 $('#abobora').textContent = dados.cara || '🎃';
 pintarTudo();
 enfeitarCena();

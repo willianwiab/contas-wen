@@ -39,7 +39,7 @@ pra continuarem sendo uma decisão. Se fossem baratas viravam só mais um botão
 |---|---|---|
 | 🖱️ **9 melhorias de clique** | somam no valor de cada toque | quem tá com o jogo aberto |
 | 👹 **12 ajudantes** | rendem sozinhos por segundo | quem fechou e foi fazer outra coisa |
-| ⭐ **18 especiais** | multiplicam o que já existe | quem já tem bastante de alguma coisa |
+| ⭐ **1.003 especiais** | multiplicam o que já existe | quem já tem bastante de alguma coisa |
 
 Um clicker só com clique cansa a mão. Um só com ajudante vira uma planilha que se olha.
 O jogo é a conversa entre os dois.
@@ -63,21 +63,43 @@ anterior, então é a soma de uma progressão geométrica. Dez morcegos no come�
 e não 200. O botão mostra o total antes de cê apertar, e "o máximo" calcula quantos cabem
 no bolso — exatamente quantos, nunca um a mais.
 
-## ⭐ As melhorias especiais
+## ⭐ As 1.003 melhorias especiais
 
-Compras **únicas** que **multiplicam**, em vez de somar mais um pedacinho. São 18:
+Compras **únicas** que **multiplicam**, em vez de somar mais um pedacinho. E são mil — mas
+**nenhuma escrita à mão**.
 
-- **Uma pra cada ajudante** — *"Morcego turbinado: todos os teus morcegos rendem o DOBRO"*
-- **Três pro clique** — x2, x3 e x5
-- **Duas pra tudo** — Noite Eterna (+25%) e Véu do Além (+50%)
-- **Uma pra sorte** — Chamado Dourado, e a abóbora dourada aparece quase o dobro mais vezes
+Escrever mil seria mil cópias do mesmo texto. Elas são **geradas por regra**, e cada uma
+nasce de um marco de verdade do jogo:
 
-Um bicho comprado 50 vezes some do radar: o próximo custa tanto que a pessoa para de olhar
-pra ele. A melhoria dele devolve um motivo pra ele existir.
+| De onde vem | Quantas |
+|---|---|
+| Uma escada por ajudante (10, 25, 50, 100… até 5.000 dele) | 564 |
+| Sinergias — um bicho rende mais por cada **outro** que cê tem | 132 |
+| Uma escada por melhoria de clique | 108 |
+| Escada da sorte, por abóbora dourada pega | 100 |
+| Escada do "tudo", por doce juntado na vida | 63 |
+| Escada do clique, por clique dado | 36 |
+| **Total** | **1.003** |
 
-Cada uma **só aparece quando cê já chegou perto** (10 daquele bicho, 100 cliques, 8
-troféus…). Uma lista cheia de coisa inalcançável é barulho, não objetivo — então embaixo
-fica só um "vindo por aí" com as três próximas.
+**O fator cai conforme sobe.** As três primeiras de cada escada dobram, as seguintes dão
++50%, e daí pra frente +25%. Dobrar quarenta vezes seguidas quebraria o jogo em dez minutos.
+
+**As sinergias** são as mais interessantes: *"teus morcegos rendem +2% pra cada gato preto
+que cê tiver"*. É o que faz valer a pena espalhar o time em vez de empilhar tudo num bicho
+só.
+
+### O problema de ter mil
+
+Mil cartões numa tela é um paredão que ninguém lê. Então a aba mostra **só as 24 mais
+baratas que cê já consegue comprar**, com um aviso de quantas ficaram esperando, e embaixo
+as **três mais perto de abrir** — pra sempre ter um alvo à vista.
+
+E a conta dos multiplicadores fica **guardada**, refeita só quando alguém compra alguma
+coisa. Varrer as 1.003 dez vezes por segundo seria desperdício puro.
+
+> **O que é justo dizer:** as melhorias do fundo da escada (5.000 de um bicho só, 500
+> abóboras douradas) são mais miragem que meta — ninguém chega lá tão cedo. Elas existem
+> pra escada nunca acabar, não pra serem todas conquistadas.
 
 ## 🎭 A cara da abóbora
 
