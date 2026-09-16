@@ -9,6 +9,7 @@
 
 const CHAVE = 'hellow-click:v1';
 const SENHA = 'pizza12345';
+const SENHA_ADM = '1234';
 const $ = s => document.querySelector(s);
 
 /* ---------------------------------------------------------
@@ -65,14 +66,15 @@ const CONQUISTAS = [
   { id:'c12', e:'🎪', nome:'Circo de horror', desc:'1 de cada bicho',   tem:d => BICHOS.every(b => (d.bichos[b.id]||0) > 0) },
   { id:'c13', e:'🌟', nome:'Sorte grande',    desc:'1 abóbora dourada', tem:d => d.douradas >= 1 },
   { id:'c14', e:'✨', nome:'Caçador de ouro', desc:'10 douradas',       tem:d => d.douradas >= 10 },
-  { id:'c15', e:'⏱️', nome:'Fábrica do medo', desc:'1.000 doces/seg',   tem:d => porSegundoCru(d) >= 1000 }
+  { id:'c15', e:'⏱️', nome:'Fábrica do medo', desc:'1.000 doces/seg',   tem:d => porSegundoCru(d) >= 1000 },
+  { id:'c21', e:'🔓', nome:'Trapaceiro',     desc:'Entrar no modo adm',tem:d => !!d.admUsado }
 ];
 
 /* ---------------------------------------------------------
    O ESTADO
    --------------------------------------------------------- */
 const vazio = () => ({
-  v:1, doces:0, total:0, cliques:0, douradas:0, maiorCombo:0,
+  v:1, doces:0, total:0, cliques:0, douradas:0, maiorCombo:0, admUsado:false,
   melhorias:{}, bichos:{}, conquistas:[], som:true, destravado:false, quando:Date.now()
 });
 
@@ -602,6 +604,145 @@ function enfeitarCena(){
 }
 
 /* ---------------------------------------------------------
+   MODO ADMINISTRADOR
+
+   Abre no 🔒, com Ctrl+Shift+A, ou digitando ADMIN.
+   Mesma ideia da Fábrica de Emojis — e, como lá, a senha
+   mora no código: serve pra esconder o botão da visita,
+   não pra trancar nada de verdade.
+   --------------------------------------------------------- */
+function abrirAdm(){
+  $('#adm').classList.add('on');
+  const jaEntrou = dados.admUsado;
+  $('#admTranca').style.display = jaEntrou ? 'none' : '';
+  $('#admPainel').style.display = jaEntrou ? '' : 'none';
+  $('#admErro').textContent = '';
+  $('#admSenha').value = '';
+  if(!jaEntrou) setTimeout(() => $('#admSenha').focus(), 120);
+}
+const fecharAdm = () => $('#adm').classList.remove('on');
+
+function tentarAdm(){
+  if($('#admSenha').value !== SENHA_ADM){
+    $('#admErro').textContent = 'Senha errada 🔒';
+    $('#admSenha').value = '';
+    return;
+  }
+  dados.admUsado = true;          /* fica lembrado: não pede senha toda vez */
+  gravar();
+  $('#admTranca').style.display = 'none';
+  $('#admPainel').style.display = '';
+  conferirConquistas();
+  recado('⚙️ Modo administrador ligado');
+}
+
+function admDoces(q){
+  dados.doces = Math.max(0, dados.doces + q);
+  if(q > 0) dados.total += q;
+  depoisDoAdm(q > 0 ? `+${num(q)} doces` : 'doces zerados');
+}
+function admBichos(q){
+  BICHOS.forEach(b => dados.bichos[b.id] = (dados.bichos[b.id]||0) + q);
+  depoisDoAdm(`+${q} de cada ajudante`);
+}
+function admMelhorias(q){
+  MELHORIAS.forEach(m => dados.melhorias[m.id] = (dados.melhorias[m.id]||0) + q);
+  depoisDoAdm(`+${q} nível em cada melhoria`);
+}
+function admDourada(){
+  proximaDourada = 0;
+  talvezSoltarDourada();
+  fecharAdm();
+  recado('🎃 Soltei uma dourada — acha ela!');
+}
+function admBonus(tipo){
+  bonus = { tipo, ate: Date.now() + 30000 };
+  faixa(tipo === 'frenesi' ? '🔥 FRENESI do adm — 30 segundos!' : '⚡ TURBO do adm — 30 segundos!');
+  fecharAdm();
+  pintarTudo();
+}
+function admTrofeus(dar){
+  dados.conquistas = dar ? CONQUISTAS.map(c => c.id) : [];
+  depoisDoAdm(dar ? 'todos os troféus destravados' : 'troféus tirados');
+  pintarConquistas();
+}
+function admPorta(trancar){
+  dados.destravado = !trancar;
+  gravar();
+  if(trancar && !naSemanaDoHalloween()){
+    fecharAdm();
+    $('#trava').classList.add('on');
+    pintarContagem();
+    recado('🚪 Tranquei de novo');
+  }else{
+    depoisDoAdm('porta destrancada pra sempre');
+  }
+}
+function depoisDoAdm(txt){
+  conferirConquistas();
+  pintarTudo();
+  gravar();
+  recado('⚙️ ' + txt);
+}
+
+/* ---------------------------------------------------------
+   BAIXAR O JOGO
+
+   Junta o index.html com o jogo.js num arquivo só, pra dar
+   pra guardar no aparelho e abrir sem internet nenhuma —
+   ou mandar pros amigos pelo zap.
+   --------------------------------------------------------- */
+async function baixarJogo(){
+  const bt = $('#btBaixar');
+  const antes = bt.textContent;
+  bt.textContent = '⏳ juntando...';
+  try{
+    const [html, js] = await Promise.all([
+      fetch('index.html').then(r => r.text()),
+      fetch('jogo.js?v=4').then(r => r.text())
+    ]);
+    const saida = html
+      .replace(/<script src="jogo\.js[^"]*"><\/script>/,
+               '<script>\n/* Hellow Click — tudo num arquivo só */\n' + js + '\n<\/script>')
+      /* manifest e service worker não funcionam em arquivo solto */
+      .replace(/<link rel="manifest"[^>]*>\s*/g, '')
+      .replace(/<link rel="(preconnect|apple-touch-icon)"[^>]*>\s*/g, '');
+
+    const url = URL.createObjectURL(new Blob([saida], { type:'text/html' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hellow-click.html';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+    recado('📥 Baixado! É só abrir o arquivo pra jogar');
+  }catch(e){
+    recado('😕 Não deu pra baixar agora — tenta com internet');
+  }
+  bt.textContent = antes;
+}
+
+/* ---------------------------------------------------------
+   INSTALAR NA TELA DE INÍCIO
+
+   O botão só aparece quando o navegador de fato oferece —
+   mostrar um botão que não faz nada seria pior que não ter.
+   --------------------------------------------------------- */
+let convite = null;
+window.addEventListener('beforeinstallprompt', ev => {
+  ev.preventDefault();
+  convite = ev;
+  $('#btInstalar').style.display = '';
+});
+async function instalar(){
+  if(!convite) return recado('Pelo menu do navegador: "Adicionar à tela de início"');
+  convite.prompt();
+  const r = await convite.userChoice;
+  convite = null;
+  $('#btInstalar').style.display = 'none';
+  if(r.outcome === 'accepted') recado('📲 Instalado! Agora abre igual aplicativo');
+}
+
+/* ---------------------------------------------------------
    COMEÇO
    --------------------------------------------------------- */
 function comecarJogo(){
@@ -627,12 +768,21 @@ $('#travaSenha').addEventListener('keydown', ev => { if(ev.key === 'Enter') tent
 document.addEventListener('visibilitychange', () => { if(document.hidden) gravar(); });
 window.addEventListener('pagehide', gravar);
 
-/* barra de espaço também clica, pra quem joga no computador */
+$('#admSenha').addEventListener('keydown', ev => { if(ev.key === 'Enter') tentarAdm(); });
+$('#adm').addEventListener('click', ev => { if(ev.target === $('#adm')) fecharAdm(); });
+
+/* barra de espaço clica; Ctrl+Shift+A e digitar ADMIN abrem o adm */
+let digitado = '';
 document.addEventListener('keydown', ev => {
-  if(ev.code !== 'Space') return;
-  if(!rodando || ev.target.tagName === 'INPUT') return;
-  ev.preventDefault();
-  clicar();
+  if(ev.ctrlKey && ev.shiftKey && ev.key.toUpperCase() === 'A'){
+    ev.preventDefault(); abrirAdm(); return;
+  }
+  if(ev.target.tagName === 'INPUT') return;
+
+  digitado = (digitado + ev.key.toUpperCase()).slice(-5);
+  if(digitado === 'ADMIN'){ digitado = ''; abrirAdm(); return; }
+
+  if(ev.code === 'Space' && rodando){ ev.preventDefault(); clicar(); }
 });
 
 if(naSemanaDoHalloween() || dados.destravado){
@@ -643,6 +793,7 @@ if(naSemanaDoHalloween() || dados.destravado){
   setInterval(pintarContagem, 1000);
 }
 
-if('serviceWorker' in navigator){
+/* arquivo baixado abre em file:// , onde service worker nem existe */
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }

@@ -73,8 +73,8 @@ clicker não é o número subindo — é a coisa que aconteceu sem a pessoa pedi
 
 ## Troféus que não são só enfeite
 
-São 20, e **cada um dá +2% em tudo**. Isso muda o que eles são: em vez de uma medalhinha
-pra olhar, viram um motivo pra ir atrás dos que faltam. Com os 20, é +40% no jogo inteiro.
+São 21, e **cada um dá +2% em tudo**. Isso muda o que eles são: em vez de uma medalhinha
+pra olhar, viram um motivo pra ir atrás dos que faltam. Com os 21, é +42% no jogo inteiro.
 
 ## Enquanto a pessoa está fora
 
@@ -116,6 +116,36 @@ com o título e preencheu o vazio que tinha entre as fichas e a abóbora.
 - **Aba escondida não vira tesouro.** O relógio do jogo limita cada passo a 1 segundo; sem
   isso, voltar numa aba parada há horas despejaria tudo de uma vez pelo caminho errado (o
   tempo fora tem a conta dele, com metade e teto).
+
+## 📥 Dá pra baixar o jogo
+
+O botão **Baixar o jogo** junta o `index.html` e o `jogo.js` num arquivo `.html` só e
+salva no aparelho. Esse arquivo abre sozinho, **sem servidor e sem internet nenhuma** — e
+dá pra mandar pros amigos pelo zap, que funciona igual na mão deles.
+
+Na hora de juntar, o `manifest` e o service worker são tirados: eles não existem em
+arquivo solto (`file://`), e o registro do service worker também é pulado por lá. A fonte
+do título é a única coisa que vem de fora — sem internet o título cai na fonte do sistema
+e o resto continua inteiro.
+
+Do lado do navegador tem o **Instalar**, que usa o `manifest` pra colocar o jogo na tela
+de início como aplicativo. Esse botão **só aparece quando o navegador de fato oferece** —
+mostrar um botão que não faz nada seria pior que não ter botão.
+
+## ⚙️ Modo administrador
+
+Abre no **🔒** do rodapé, com **Ctrl+Shift+A**, ou digitando **ADMIN** — igual à Fábrica de
+Emojis. A senha é `1234`, e uma vez usada o jogo lembra: não pede de novo naquele aparelho.
+
+Lá dentro dá pra dar doces (até 1 quatrilhão), dar ajudantes e melhorias de montão, soltar
+uma abóbora dourada na hora, ligar frenesi ou turbo, destravar todos os troféus e deixar a
+porta do Halloween aberta pra sempre.
+
+Tem troféu pra quem entra: 🔓 **Trapaceiro**. E o painel avisa o óbvio — sem esforço o jogo
+perde a graça rápido.
+
+> A senha do adm também está no código, pela mesma razão da outra: sem servidor, não tem
+> onde guardar segredo. Ela serve pra esconder o botão da visita, não pra trancar nada.
 
 ## Onde as coisas ficam
 

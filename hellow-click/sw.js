@@ -1,8 +1,8 @@
 /* Guarda o jogo pra abrir sem internet — um clicker é coisa de abrir
    no ônibus, na fila, onde o sinal não ajuda. Pedido pra fora do site
    passa direto, e um arquivo que falhou nunca vira a página. */
-const CACHE = 'hellow-click-v3';
-const ARQUIVOS = ['./', './index.html', './jogo.js?v=3', './manifest.webmanifest', './icone.svg'];
+const CACHE = 'hellow-click-v4';
+const ARQUIVOS = ['./', './index.html', './jogo.js?v=4', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {
   self.skipWaiting();
