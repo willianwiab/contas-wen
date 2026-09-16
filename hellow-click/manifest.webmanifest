@@ -1,0 +1,10 @@
+{
+  "name": "Hellow Click",
+  "short_name": "Hellow",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#1a0b2e",
+  "theme_color": "#ff7518",
+  "description": "Clica na abóbora, junta doce e contrata monstro pra catar doce por você.",
+  "icons": [{ "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
