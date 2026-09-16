@@ -6,7 +6,10 @@ por clique — e contrata monstro pra catar doce enquanto cê nem tá olhando.
 ## 🚪 O jogo só abre na semana do Halloween
 
 De **25 de outubro a 1º de novembro** ele abre sozinho. Fora dessa semana aparece uma porta
-fechada, com a contagem de quanto falta pra próxima.
+fechada, com um relógio mostrando **dias, horas, minutos e segundos** até a próxima.
+
+Só dia e hora deixava a tela parada — parecia que a contagem tinha travado. Com os segundos
+correndo dá pra ver que ela está mesmo andando.
 
 **Mas quem sabe a senha entra quando quiser** — e uma vez destravado, fica destravado
 naquele aparelho pra sempre. Nem apertar "Recomeçar" tranca de novo: quem já entrou não
@@ -131,6 +134,22 @@ e o resto continua inteiro.
 Do lado do navegador tem o **Instalar**, que usa o `manifest` pra colocar o jogo na tela
 de início como aplicativo. Esse botão **só aparece quando o navegador de fato oferece** —
 mostrar um botão que não faz nada seria pior que não ter botão.
+
+## 🔔 Avisos
+
+O botão **🔔 Avisos** (e o **"Me avisa quando a porta abrir"** da própria porta) liga os
+avisos do navegador. Ele avisa em duas horas:
+
+- 🏆 **Troféu novo** — caindo vários de uma vez, sai **um aviso só** juntando todos. Três
+  avisos seguidos viram incômodo, não notícia.
+- 🚪 **A porta abriu** — quando chega 25 de outubro, uma vez por ano.
+
+Apertar de novo desliga.
+
+> **O limite honesto:** o aviso só sai se o jogo estiver **aberto em algum lugar** — pode
+> ser em outra aba, ou com o celular no bolso, mas aberto. Com o jogo **totalmente
+> fechado** não tem como: isso pediria um servidor mandando o aviso, e este jogo não tem
+> servidor. No iPhone os avisos só funcionam se o jogo estiver instalado na tela de início.
 
 ## ⚙️ Modo administrador
 

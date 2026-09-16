@@ -75,7 +75,8 @@ const CONQUISTAS = [
    --------------------------------------------------------- */
 const vazio = () => ({
   v:1, doces:0, total:0, cliques:0, douradas:0, maiorCombo:0, admUsado:false,
-  melhorias:{}, bichos:{}, conquistas:[], som:true, destravado:false, quando:Date.now()
+  melhorias:{}, bichos:{}, conquistas:[], som:true, avisos:false,
+  destravado:false, avisouPorta:0, quando:Date.now()
 });
 
 let dados = carregar();
@@ -130,14 +131,16 @@ function proximaAbertura(){
 
 function pintarContagem(){
   const falta = proximaAbertura() - new Date();
-  if(falta <= 0) return destravar(false);
-  const dias = Math.floor(falta / 86400000);
-  const horas = Math.floor(falta / 3600000) % 24;
-  const min = Math.floor(falta / 60000) % 60;
-  const seg = Math.floor(falta / 1000) % 60;
-  $('#travaConta').textContent = dias > 0
-    ? `${dias} ${dias === 1 ? 'dia' : 'dias'} e ${horas}h`
-    : `${horas}h ${String(min).padStart(2,'0')}m ${String(seg).padStart(2,'0')}s`;
+  if(falta <= 0){
+    avisar('\u{1F6AA} A porta abriu!', 'A casa assombrada est\u00e1 aberta \u2014 vem jogar Hellow Click \u{1F383}');
+    return destravar(false);
+  }
+  /* dia e hora sozinhos ficam parados na tela: com minuto e segundo
+     d\u00e1 pra ver que a contagem est\u00e1 mesmo andando */
+  $('#ctDias').textContent  = Math.floor(falta / 86400000);
+  $('#ctHoras').textContent = Math.floor(falta / 3600000) % 24;
+  $('#ctMin').textContent   = Math.floor(falta / 60000) % 60;
+  $('#ctSeg').textContent   = Math.floor(falta / 1000) % 60;
 }
 
 function tentarSenha(){
@@ -359,17 +362,22 @@ function faixa(txt){
    CONQUISTAS
    --------------------------------------------------------- */
 function conferirConquistas(){
-  let apareceu = false;
+  const novos = [];
   for(const c of CONQUISTAS){
     if(dados.conquistas.includes(c.id)) continue;
     if(c.tem(dados)){
       dados.conquistas.push(c.id);
       recado(`🏆 Troféu: ${c.e} ${c.nome}`);
       bip(760, .1);
-      apareceu = true;
+      novos.push(c);
     }
   }
-  if(apareceu) pintarConquistas();
+  if(!novos.length) return;
+  pintarConquistas();
+  /* um aviso só, mesmo caindo vários de uma vez — três avisos
+     seguidos viram incômodo, não notícia */
+  avisar(novos.length === 1 ? `🏆 Troféu novo: ${novos[0].nome}` : `🏆 ${novos.length} troféus novos!`,
+         novos.map(c => c.e + ' ' + c.nome).join(' · '));
 }
 
 /* ---------------------------------------------------------
@@ -539,9 +547,22 @@ function tique(){
     bonus = null;
     $('#faixaBonus').classList.remove('on');
   }
+  conferirPorta();
   talvezSoltarDourada();
   conferirConquistas();
   pintarTudo();
+}
+
+/* a porta pode abrir com o jogo j\u00e1 aberto \u2014 25 de outubro chega
+   enquanto algu\u00e9m est\u00e1 jogando, e isso merece um aviso */
+function conferirPorta(){
+  const ano = new Date().getFullYear();
+  if(!naSemanaDoHalloween() || dados.avisouPorta === ano) return;
+  dados.avisouPorta = ano;
+  gravar();
+  avisar('\u{1F6AA} A porta abriu!', 'A casa assombrada est\u00e1 aberta \u2014 \u00e9 semana de Halloween \u{1F383}');
+  faixa('\u{1F6AA} A porta abriu \u2014 \u00e9 semana de Halloween!');
+  setTimeout(() => $('#faixaBonus').classList.remove('on'), 6000);
 }
 
 /* ---------------------------------------------------------
@@ -601,6 +622,60 @@ function enfeitarCena(){
     m.style.animationDelay = (-Math.random() * 25) + 's';
     cena.appendChild(m);
   }
+}
+
+/* ---------------------------------------------------------
+   AVISOS DO NAVEGADOR
+
+   Avisa quando cai um trof\u00e9u novo e quando a porta do
+   Halloween abre.
+
+   O limite honesto: sem servidor, o aviso s\u00f3 sai se a p\u00e1gina
+   estiver aberta em algum lugar (mesmo em outra aba, mesmo
+   com o celular no bolso). Com o jogo TOTALMENTE fechado
+   n\u00e3o d\u00e1 \u2014 isso pediria um servidor mandando o aviso.
+   --------------------------------------------------------- */
+const temAviso = () => typeof Notification !== 'undefined';
+
+function pintarBotaoAvisos(){
+  const ligado = dados.avisos && temAviso() && Notification.permission === 'granted';
+  const bt = $('#btAvisos');
+  if(bt) bt.textContent = ligado ? '\u{1F514} Avisos ligados' : '\u{1F515} Avisos';
+  const bp = $('#btAvisarPorta');
+  if(bp){
+    bp.classList.toggle('ligado', ligado);
+    bp.textContent = ligado
+      ? '\u2705 Vou te avisar quando abrir'
+      : '\u{1F514} Me avisa quando a porta abrir';
+  }
+}
+
+async function ligarAvisos(soLigar){
+  if(!temAviso()) return recado('Este navegador n\u00e3o faz aviso \u{1F615}');
+
+  /* j\u00e1 estava ligado e a pessoa apertou de novo: desliga */
+  if(dados.avisos && Notification.permission === 'granted' && !soLigar){
+    dados.avisos = false; gravar(); pintarBotaoAvisos();
+    return recado('\u{1F515} Avisos desligados');
+  }
+
+  let ok = Notification.permission;
+  if(ok === 'default') ok = await Notification.requestPermission();
+
+  if(ok !== 'granted'){
+    return recado(ok === 'denied'
+      ? 'O navegador bloqueou os avisos \u2014 d\u00e1 pra liberar nas configura\u00e7\u00f5es dele'
+      : 'Sem aviso por enquanto');
+  }
+  dados.avisos = true; gravar(); pintarBotaoAvisos();
+  avisar('\u{1F514} Prontinho!', 'Vou te avisar de trof\u00e9u novo e de quando a porta abrir \u{1F383}');
+  recado('\u{1F514} Avisos ligados');
+}
+
+function avisar(titulo, corpo){
+  if(!dados.avisos || !temAviso() || Notification.permission !== 'granted') return;
+  try{ new Notification(titulo, { body:corpo, icon:'icone.svg', badge:'icone.svg' }); }
+  catch(e){ /* alguns navegadores s\u00f3 deixam pelo service worker: melhor calar que quebrar */ }
 }
 
 /* ---------------------------------------------------------
@@ -760,6 +835,7 @@ pintarConquistas();
 pintarTudo();
 enfeitarCena();
 $('#btnSom').textContent = dados.som ? '🔊 Som' : '🔇 Mudo';
+pintarBotaoAvisos();
 
 $('#abobora').addEventListener('pointerdown', clicar);
 $('#dourada').addEventListener('pointerdown', pegarDourada);
