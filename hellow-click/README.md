@@ -39,7 +39,7 @@ pra continuarem sendo uma decisão. Se fossem baratas viravam só mais um botão
 |---|---|---|
 | 🖱️ **9 melhorias de clique** | somam no valor de cada toque | quem tá com o jogo aberto |
 | 👹 **12 ajudantes** | rendem sozinhos por segundo | quem fechou e foi fazer outra coisa |
-| ⭐ **1.003 especiais** | multiplicam o que já existe | quem já tem bastante de alguma coisa |
+| ⭐ **1.859 especiais** | multiplicam o que já existe (1.000 são do clique) | quem já tem bastante de alguma coisa |
 
 Um clicker só com clique cansa a mão. Um só com ajudante vira uma planilha que se olha.
 O jogo é a conversa entre os dois.
@@ -63,43 +63,50 @@ anterior, então é a soma de uma progressão geométrica. Dez morcegos no come�
 e não 200. O botão mostra o total antes de cê apertar, e "o máximo" calcula quantos cabem
 no bolso — exatamente quantos, nunca um a mais.
 
-## ⭐ As 1.003 melhorias especiais
+## ⭐ As 1.859 melhorias especiais — 1.000 delas só pro clique
 
-Compras **únicas** que **multiplicam**, em vez de somar mais um pedacinho. E são mil — mas
-**nenhuma escrita à mão**.
+Compras **únicas** que **multiplicam**, em vez de somar mais um pedacinho. E são quase duas
+mil — mas **nenhuma escrita à mão**.
 
 Escrever mil seria mil cópias do mesmo texto. Elas são **geradas por regra**, e cada uma
-nasce de um marco de verdade do jogo:
+nasce de um marco de verdade do jogo.
+
+### As 1.000 do clique
 
 | De onde vem | Quantas |
 |---|---|
-| Uma escada por ajudante (10, 25, 50, 100… até 5.000 dele) | 564 |
-| Sinergias — um bicho rende mais por cada **outro** que cê tem | 132 |
-| Uma escada por melhoria de clique | 108 |
-| Escada da sorte, por abóbora dourada pega | 100 |
-| Escada do "tudo", por doce juntado na vida | 63 |
-| Escada do clique, por clique dado | 36 |
-| **Total** | **1.003** |
+| **Punho de bicho** — teu clique ganha +1% pra cada ajudante daquele tipo | 384 |
+| Escada funda em cada melhoria de clique | 297 |
+| **Melhoria com bicho** — a Luva da Bruxa rende +2% pra cada morcego | 108 |
+| Dedo Amaldiçoado e Soco do Além, por clique dado e por força de clique | 123 |
+| **Melhoria & melhoria** — o Dedo Esquelético rende +5% por nível de Luva | 72 |
+| Punho do Combo | 16 |
 
-**O fator cai conforme sobe.** As três primeiras de cada escada dobram, as seguintes dão
-+50%, e daí pra frente +25%. Dobrar quarenta vezes seguidas quebraria o jogo em dez minutos.
+O jeito mais bonito é o **Punho de bicho**: os ajudantes deixam de render só sozinhos e
+passam a **empurrar o teu dedo**. Quem gosta de clicar tem motivo pra comprar bicho, e
+quem gosta de bicho tem motivo pra clicar.
 
-**As sinergias** são as mais interessantes: *"teus morcegos rendem +2% pra cada gato preto
-que cê tiver"*. É o que faz valer a pena espalhar o time em vez de empilhar tudo num bicho
-só.
+### As outras 859
 
-### O problema de ter mil
+Escada por ajudante (564), sinergias entre bichos (132), escada da sorte por dourada pega
+(100) e a do "tudo" por doce juntado na vida (63).
 
-Mil cartões numa tela é um paredão que ninguém lê. Então a aba mostra **só as 24 mais
-baratas que cê já consegue comprar**, com um aviso de quantas ficaram esperando, e embaixo
-as **três mais perto de abrir** — pra sempre ter um alvo à vista.
+### O fator cai conforme sobe
+
+As três primeiras de cada escada dobram, as seguintes dão +50%, e daí pra frente +25%.
+Dobrar quarenta vezes seguidas quebraria o jogo em dez minutos.
+
+### O problema de ter duas mil
+
+Duas mil cartas numa tela é um paredão que ninguém lê. A aba mostra **só as 24 mais
+baratas que cê já consegue comprar**, avisa quantas ficaram esperando, e embaixo põe as
+**três mais perto de abrir** — pra sempre ter um alvo à vista.
 
 E a conta dos multiplicadores fica **guardada**, refeita só quando alguém compra alguma
-coisa. Varrer as 1.003 dez vezes por segundo seria desperdício puro.
+coisa. Desenhar a lista leva 1,3 ms e um passo do jogo 0,36 ms, com as 1.859 no ar.
 
-> **O que é justo dizer:** as melhorias do fundo da escada (5.000 de um bicho só, 500
-> abóboras douradas) são mais miragem que meta — ninguém chega lá tão cedo. Elas existem
-> pra escada nunca acabar, não pra serem todas conquistadas.
+> **O que é justo dizer:** as do fundo da escada (10.000 de um bicho, 500 douradas) são
+> mais miragem que meta. Existem pra escada nunca acabar, não pra serem todas conquistadas.
 
 ## 🎭 A cara da abóbora
 

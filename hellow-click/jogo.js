@@ -18,15 +18,15 @@ const $ = s => document.querySelector(s);
 
 /* melhoram o CLIQUE — poucas, caras, e cada nível soma no clique */
 const MELHORIAS = [
-  { id:'dedo',    cor:'#cbd5e1', ic:'💀', nome:'Dedo Esquelético',   poder:1,       base:50,     desc:'Um dedo emprestado do cemitério.' },
-  { id:'luva',    cor:'#a78bfa', ic:'🧤', nome:'Luva da Bruxa',      poder:6,       base:600,    desc:'Ela nem sentiu falta.' },
-  { id:'garra',   cor:'#f59e0b', ic:'🐾', nome:'Garra de Lobisomem', poder:40,      base:6500,   desc:'Rasga a abóbora de primeira.' },
-  { id:'mao',     cor:'#fb923c', ic:'🫱', nome:'Mão do Além',        poder:250,     base:8e4,    desc:'Clica sozinha se cê piscar.' },
-  { id:'melado',  cor:'#fbbf24', ic:'🍯', nome:'Melado Amaldiçoado', poder:1800,    base:1.2e6,  desc:'Gruda doce em tudo que encosta.' },
-  { id:'lua',     cor:'#fef08a', ic:'🌕', nome:'Lua Cheia',          poder:15000,   base:2e7,    desc:'Cê não controla mais o que acontece.' },
-  { id:'meteoro', cor:'#f97316', ic:'☄️', nome:'Meteoro de Doce',    poder:120000,  base:3.5e8,  desc:'Cai do céu bem em cima da abóbora.' },
-  { id:'pacto',   cor:'#e879f9', ic:'📜', nome:'Pacto Assinado',     poder:9e5,     base:6e9,    desc:'Cê nem leu o que estava escrito.' },
-  { id:'cristal', cor:'#67e8f9', ic:'🔮', nome:'Bola de Cristal',    poder:7e6,     base:1e11,   desc:'Ela clica antes de cê pensar em clicar.' }
+  { id:'dedo', art:'O',    cor:'#cbd5e1', ic:'💀', nome:'Dedo Esquelético',   poder:1,       base:50,     desc:'Um dedo emprestado do cemitério.' },
+  { id:'luva', art:'A',    cor:'#a78bfa', ic:'🧤', nome:'Luva da Bruxa',      poder:6,       base:600,    desc:'Ela nem sentiu falta.' },
+  { id:'garra', art:'A',   cor:'#f59e0b', ic:'🐾', nome:'Garra de Lobisomem', poder:40,      base:6500,   desc:'Rasga a abóbora de primeira.' },
+  { id:'mao', art:'A',     cor:'#fb923c', ic:'🫱', nome:'Mão do Além',        poder:250,     base:8e4,    desc:'Clica sozinha se cê piscar.' },
+  { id:'melado', art:'O',  cor:'#fbbf24', ic:'🍯', nome:'Melado Amaldiçoado', poder:1800,    base:1.2e6,  desc:'Gruda doce em tudo que encosta.' },
+  { id:'lua', art:'A',     cor:'#fef08a', ic:'🌕', nome:'Lua Cheia',          poder:15000,   base:2e7,    desc:'Cê não controla mais o que acontece.' },
+  { id:'meteoro', art:'O', cor:'#f97316', ic:'☄️', nome:'Meteoro de Doce',    poder:120000,  base:3.5e8,  desc:'Cai do céu bem em cima da abóbora.' },
+  { id:'pacto', art:'O',   cor:'#e879f9', ic:'📜', nome:'Pacto Assinado',     poder:9e5,     base:6e9,    desc:'Cê nem leu o que estava escrito.' },
+  { id:'cristal', art:'A', cor:'#67e8f9', ic:'🔮', nome:'Bola de Cristal',    poder:7e6,     base:1e11,   desc:'Ela clica antes de cê pensar em clicar.' }
 ];
 
 /* trabalham SOZINHOS — muitos, baratos no começo, é onde o jogo mora */
@@ -160,32 +160,6 @@ BICHOS.forEach(b => escadaDeBicho().forEach((n, i) => {
   });
 }));
 
-/* 2. uma escada por melhoria de clique */
-MELHORIAS.forEach(m => [5,10,20,35,50,75,100,150,200,300,450,650].forEach((n, i) => {
-  const f = fatorDoDegrau(i);
-  ESPECIAIS.push({
-    id:`e_m_${m.id}_${n}`, tipo:'melhoria', alvo:m.id, fator:f, ic:m.ic,
-    nome:`${m.nome} afiado ${romano(i+1)}`,
-    desc:`A ${m.nome} rende ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'} no clique`,
-    custo: Math.min(1e300, m.base * Math.pow(1.7, n/3) * 4),
-    destrava: d => (d.melhorias[m.id]||0) >= n,
-    falta: `tenha ${n} níveis de ${m.nome}`
-  });
-}));
-
-/* 3. escada do clique, por quantos cliques a pessoa já deu */
-escadaDeCliques().forEach((n, i) => {
-  const f = fatorDoDegrau(i);
-  ESPECIAIS.push({
-    id:`e_clique_${n}`, tipo:'clique', fator:f, ic:'👆',
-    nome:`Dedo Amaldiçoado ${romano(i+1)}`,
-    desc:`Teu clique vale ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'}`,
-    custo: Math.min(1e300, n * 60),
-    destrava: d => d.cliques >= n,
-    falta: `dê ${n.toLocaleString('pt-BR')} cliques`
-  });
-});
-
 /* 4. escada do "tudo", por doce juntado na vida inteira */
 for(let e = 4, i = 0; e <= 90; e += 2, i++){
   const marco = Math.pow(10, e), f = fatorDoDegrau(i);
@@ -239,8 +213,109 @@ BICHOS.forEach(a => BICHOS.forEach(b => {
     });
   });
 
+/* =========================================================
+   AS MIL DO CLIQUE
+
+   O pedido era este: o grosso das melhorias mexendo no DEDO,
+   não nos bichos. Todas nascem de marcos que quem clica
+   alcança de verdade — cliques dados, o quanto o clique já
+   vale, o combo, e os bichos virando força de clique.
+   ========================================================= */
+
+/* 8. escada funda do clique, por clique dado */
+(() => {
+  const ns = [];
+  for(let e = 1; e <= 9; e++)
+    for(const m of [1, 1.5, 2, 3, 5, 7]) ns.push(Math.round(m * Math.pow(10, e)));
+  ns.forEach((n, i) => {
+    const f = fatorDoDegrau(i);
+    ESPECIAIS.push({
+      id:`e_dedo_${n}`, tipo:'clique', fator:f, ic:'👆',
+      nome:`Dedo Amaldiçoado ${romano(i+1)}`,
+      desc:`Teu clique vale ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'}`,
+      custo: Math.min(1e300, n * 45),
+      destrava: d => d.cliques >= n,
+      falta: `dê ${n.toLocaleString('pt-BR')} cliques`
+    });
+  });
+})();
+
+/* 9. escada do quanto o clique já vale — ela anda junto com o jogador */
+for(let e = 1, i = 0; e <= 64; e++, i++){
+  const marco = Math.pow(10, e), f = fatorDoDegrau(i);
+  ESPECIAIS.push({
+    id:`e_forca_${e}`, tipo:'clique', fator:f, ic:'🥊',
+    nome:`Soco do Além ${romano(i+1)}`,
+    desc:`Teu clique vale ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'}`,
+    custo: Math.min(1e300, marco * 25),
+    destrava: () => porCliqueCru() >= marco,
+    falta: `chegue a ${num(marco)} por clique`
+  });
+}
+
+/* 10. os bichos viram força de DEDO: cada um empurra o teu clique */
+BICHOS.forEach(b => {
+  const degraus = [10, 25, 50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900,
+                   1000, 1200, 1400, 1600, 1800, 2000, 2400, 2800, 3200, 3600, 4000,
+                   4500, 5000, 6000, 7000, 8000, 9000, 10000];
+  degraus.forEach((n, i) => {
+    ESPECIAIS.push({
+      id:`e_bc_${b.id}_${n}`, tipo:'cliquePorBicho', comQuem:b.id, fator:.01, ic:'👊',
+      nome:`Punho de ${b.nome} ${romano(i+1)}`,
+      desc:`Teu clique ganha +1% pra cada ${b.nome.toLowerCase()} que cê tiver`,
+      custo: Math.min(1e300, b.base * Math.pow(1.15, n) * 3),
+      destrava: d => (d.bichos[b.id]||0) >= n,
+      falta: `tenha ${n.toLocaleString('pt-BR')} ${b.plural}`
+    });
+  });
+});
+
+/* 11. uma melhoria de clique puxando a outra */
+MELHORIAS.forEach(a => MELHORIAS.forEach(b => {
+  if(a.id === b.id) return;
+  ESPECIAIS.push({
+    id:`e_ms_${a.id}_${b.id}`, tipo:'melhoriaPorMelhoria', alvo:a.id, comQuem:b.id,
+    fator:.05, ic:a.ic,
+    nome:`${a.nome} & ${b.nome}`,
+    desc:`${a.art} ${a.nome} rende +5% pra cada nível de ${b.nome}`,
+    custo: Math.min(1e300, (a.base + b.base) * 700),
+    destrava: d => (d.melhorias[a.id]||0) >= 10 && (d.melhorias[b.id]||0) >= 10,
+    falta: `tenha 10 níveis de ${a.nome} e de ${b.nome}`
+  });
+}));
+
+/* 12. cada melhoria de clique turbinada por um bicho */
+MELHORIAS.forEach(m => BICHOS.forEach(b => {
+  ESPECIAIS.push({
+    id:`e_mb_${m.id}_${b.id}`, tipo:'melhoriaPorBicho', alvo:m.id, comQuem:b.id,
+    fator:.02, ic:'🫱',
+    nome:`${m.nome} com ${b.nome}`,
+    desc:`${m.art} ${m.nome} rende +2% pra cada ${b.nome.toLowerCase()}`,
+    custo: Math.min(1e300, (m.base + b.base) * 500),
+    destrava: d => (d.melhorias[m.id]||0) >= 5 && (d.bichos[b.id]||0) >= 25,
+    falta: `tenha 5 níveis de ${m.nome} e 25 ${b.plural}`
+  });
+}));
+
+/* 13. escada funda em cada melhoria de clique */
+MELHORIAS.forEach(m => {
+  const degraus = [5, 10, 20, 35, 50, 75, 100, 150, 200, 300, 450, 650, 900];
+  for(let n = 1200; n <= 5000; n += 200) degraus.push(n);
+  degraus.forEach((n, i) => {
+    const f = fatorDoDegrau(i);
+    ESPECIAIS.push({
+      id:`e_mf_${m.id}_${n}`, tipo:'melhoria', alvo:m.id, fator:f, ic:m.ic,
+      nome:`${m.nome} afiado ${romano(i+1)}`,
+      desc:`${m.art} ${m.nome} rende ${f === 2 ? 'o DOBRO' : '+' + Math.round((f-1)*100) + '%'} no clique`,
+      custo: Math.min(1e300, m.base * Math.pow(1.7, n/4) * 3),
+      destrava: d => (d.melhorias[m.id]||0) >= n,
+      falta: `tenha ${n.toLocaleString('pt-BR')} níveis de ${m.nome}`
+    });
+  });
+});
+
 /* 6. escada do combo */
-for(let n = 10, i = 0; n <= 50; n += 5, i++){
+for(let n = 10, i = 0; n <= 50; n += 2, i++){
   const f = 1 + (i+1) * .1;
   ESPECIAIS.push({
     id:`e_combo_${n}`, tipo:'clique', fator:f, ic:'🌪️',
@@ -442,6 +517,14 @@ function multiplicadores(){
     else if(e.tipo === 'sinergia') m.bicho[e.alvo]    = (m.bicho[e.alvo]    || 1)
                                      * (1 + e.fator * (dados.bichos[e.comQuem]||0));
     else if(e.tipo === 'melhoria') m.melhoria[e.alvo] = (m.melhoria[e.alvo] || 1) * e.fator;
+    /* o clique ganha força por cada bicho que existe no time */
+    else if(e.tipo === 'cliquePorBicho')
+      m.clique *= 1 + e.fator * (dados.bichos[e.comQuem]||0);
+    /* uma melhoria de clique puxando outra, ou puxada por um bicho */
+    else if(e.tipo === 'melhoriaPorMelhoria')
+      m.melhoria[e.alvo] = (m.melhoria[e.alvo] || 1) * (1 + e.fator * (dados.melhorias[e.comQuem]||0));
+    else if(e.tipo === 'melhoriaPorBicho')
+      m.melhoria[e.alvo] = (m.melhoria[e.alvo] || 1) * (1 + e.fator * (dados.bichos[e.comQuem]||0));
     else if(m[e.tipo] !== undefined) m[e.tipo] *= e.fator;
   }
   return (bolo = m);
