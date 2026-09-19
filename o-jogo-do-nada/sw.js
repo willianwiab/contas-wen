@@ -2,8 +2,8 @@
    fica parada olhando a tela não pode depender de sinal.
    Pedido pra fora do site passa direto, e um arquivo que falhou
    nunca vira a página. */
-const CACHE = 'jogo-do-nada-v1';
-const ARQUIVOS = ['./', './index.html', './nada.js', './manifest.webmanifest', './icone.svg'];
+const CACHE = 'jogo-do-nada-v2';
+const ARQUIVOS = ['./', './index.html', './metas.js', './nada.js', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {
   self.skipWaiting();
