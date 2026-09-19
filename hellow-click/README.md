@@ -270,6 +270,37 @@ perde a graça rápido.
 > A senha do adm também está no código, pela mesma razão da outra: sem servidor, não tem
 > onde guardar segredo. Ela serve pra esconder o botão da visita, não pra trancar nada.
 
+## O teto dos números
+
+O maior número que o computador soma é perto de `1,8 ×10^308`. Passando disso vira
+`Infinito` — e **Infinito menos Infinito dá `NaN`**, que perde toda comparação. Era assim
+que o jogo travava: a tela mostrava `∞`, mas nada ficava comprável, porque `NaN >= preço`
+é sempre falso.
+
+Agora todo dinheiro passa por uma função que **corta em `1 ×10^300`** antes de ser
+guardado, e **os preços também** — então o mais caro do jogo é sempre alcançável, e não
+existe beco sem saída. Comprar com preço que a conta não alcança é recusado com aviso, em
+vez de estragar o save.
+
+`NaN` também deixou de aparecer como `∞` na tela: fingindo ser infinito, ele escondia
+justamente o problema.
+
+## Quando salvar não funciona
+
+O jogo guarda no `localStorage`, e isso **pode falhar**: celular abrindo o arquivo baixado,
+aba anônima, memória cheia. Antes o erro era engolido em silêncio — a pessoa jogava horas
+e perdia tudo sem nunca ter sido avisada.
+
+Agora, ao abrir, o jogo **escreve, lê de volta e apaga** um valor de teste — só assim dá
+pra saber que funciona mesmo, porque tem navegador que aceita escrever e não guarda. Se
+falhar, aparece um aviso vermelho explicando o motivo provável, e o rodapé mostra **há
+quanto tempo foi o último save** (ou que não está conseguindo).
+
+E tem a saída: **📤 Salvar num arquivo** e **📂 Abrir save**. O jogo inteiro cabe num
+`.json` que dá pra guardar em qualquer lugar. Abrir um save pergunta antes, mostrando
+quantos doces, troféus e especiais vêm nele — trocar o jogo de alguém é grande demais pra
+fazer sem avisar.
+
 ## Quando alguma coisa sai do jogo
 
 Troféu ou melhoria especial que deixa de existir continua guardada no save de quem já

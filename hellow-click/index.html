@@ -434,6 +434,17 @@ body{
 #adm .erro{color:var(--sangue);font-size:.82rem;font-weight:800;text-align:center;
   min-height:1.2em;margin-top:8px}
 
+/* ---- aviso de quando o navegador não deixa guardar ---- */
+#avisoSave{
+  display:none;background:rgba(255,84,112,.14);border:1px solid rgba(255,84,112,.5);
+  border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:.8rem;
+  color:#ffc4cf;line-height:1.55;text-align:left
+}
+#avisoSave.on{display:block}
+#avisoSave b{color:var(--sangue)}
+#quandoSalvou{font-size:.7rem;color:var(--texto3);margin-top:6px;display:block}
+#quandoSalvou.ruim{color:var(--sangue);font-weight:800}
+
 /* ---- avisos ---- */
 .aviso{
   position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:60;
@@ -540,12 +551,17 @@ body{
     <div class="grade-conq" id="listaConquistas"></div>
   </div>
 
+  <div id="avisoSave"></div>
+
   <div class="rodape">
     <span id="rodapeInfo"></span>
+    <span id="quandoSalvou"></span>
     <div class="linha">
       <button onclick="salvarAgora()">💾 Salvar</button>
       <button onclick="virarSom()" id="btnSom">🔊 Som</button>
       <button onclick="ligarAvisos()" id="btAvisos">🔔 Avisos</button>
+      <button onclick="salvarEmArquivo()">📤 Salvar num arquivo</button>
+      <button onclick="document.getElementById('arqSave').click()">📂 Abrir save</button>
       <button onclick="baixarJogo()" id="btBaixar">📥 Baixar o jogo</button>
       <button onclick="instalar()" id="btInstalar" style="display:none">📲 Instalar</button>
       <button class="perigo" onclick="apagarTudo()">💀 Recomeçar</button>
@@ -663,6 +679,9 @@ body{
   </div>
 </div></div>
 
+<input type="file" id="arqSave" accept="application/json,.json" style="display:none"
+       onchange="abrirSave(this)">
+
 <div id="maldicao">👻</div>
 
 <div id="dourada">🎃</div>
@@ -675,6 +694,6 @@ body{
   </div>
 </div>
 
-<script src="jogo.js?v=11"></script>
+<script src="jogo.js?v=12"></script>
 </body>
 </html>
