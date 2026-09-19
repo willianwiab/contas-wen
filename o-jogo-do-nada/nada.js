@@ -116,8 +116,71 @@ const TENTACOES = [
   { aos:265, id:'ultima', dura:10000, html:
     `<div class="lead t-alto" style="color:var(--texto3)">
       Tá bom, cê ganhou.<br>
-      <span style="font-size:.82rem">Ou não — isto também é uma tentação.</span></div>` }
+      <span style="font-size:.82rem">Ou não — isto também é uma tentação.</span></div>` },
+
+  /* ===== a leva de botões ===== */
+
+  { aos:20, id:'inutil', dura:7000, html:
+    `<button class="bt-cinza t-baixo">BOTÃO INÚTIL
+      <small>não faz absolutamente nada</small></button>` },
+
+  { aos:29, id:'dois', dura:8000, html:
+    `<div class="dois-botoes t-alto">
+      <button class="bt-azul">NÃO APERTE<br><small>aperte o outro →</small></button>
+      <button class="bt-azul">NÃO APERTE<br><small>← aperte o outro</small></button>
+    </div>` },
+
+  { aos:60, id:'pausa', dura:7000, html:
+    `<button class="bt-verde t-baixo">⏸️ PAUSAR O CRONÔMETRO
+      <small>(não pausa)</small></button>` },
+
+  { aos:96, id:'ganhar', dura:8000, html:
+    `<button class="bt-ouro t-alto">🏆 BOTÃO PARA GANHAR O JOGO
+      <small>é sério, é só apertar</small></button>` },
+
+  { aos:118, id:'foge', dura:10000, html:
+    `<button class="bt-roxo bt-foge" id="btFoge">TENTA ME PEGAR</button>` },
+
+  { aos:130, id:'naotentacao', dura:7000, html:
+    `<button class="bt-cinza t-baixo">ESTE BOTÃO NÃO É UMA TENTAÇÃO
+      <small>pode apertar tranquilo</small></button>` },
+
+  { aos:155, id:'mini', dura:9000, html:
+    `<button class="bt-mini t-baixo" title="botãozinho">·</button>` },
+
+  { aos:170, id:'gigante', dura:8000, html:
+    `<button class="bt-gigante t-baixo">BOTÃO<br>GIGANTE</button>` },
+
+  { aos:200, id:'emergencia', dura:8000, html:
+    `<button class="bt-vermelho-listrado t-alto">🚨 BOTÃO DE EMERGÊNCIA
+      <small>só aperte se for MUITO importante</small></button>` },
+
+  { aos:225, id:'proibido', dura:10000, html:
+    `<button class="bt-cinza t-baixo" id="btProibido">🔒 BOTÃO PROIBIDO
+      <small id="proibidoSub">desbloqueia em 3…</small></button>` },
+
+  { aos:250, id:'continuar', dura:8000, html:
+    `<button class="bt-verde t-alto">APERTE PARA CONTINUAR FAZENDO NADA
+      <small>(apertar é parar de fazer nada)</small></button>` },
+
+  { aos:290, id:'confirma', dura:9000, html:
+    `<div class="erro-falso t-baixo"><h3 style="color:var(--texto2)">Confirmação</h3>
+      <p>Cê tem certeza de que NÃO quer apertar este botão?</p>
+      <span class="ok" style="background:var(--papel);border:1px solid var(--linha);color:var(--texto)">
+        SIM, TENHO CERTEZA</span></div>` },
+
+  { aos:320, id:'novo', dura:8000, html:
+    `<button class="bt-azul t-alto">BOTÃO NOVO <span class="selo">NOVO!</span>
+      <small>acabou de chegar, ninguém apertou ainda</small></button>` },
+
+  { aos:360, id:'ultimo', dura:12000, html:
+    `<button class="bt-roxo t-baixo">O ÚLTIMO BOTÃO
+      <small>prometo que é o último. depois dele acaba.</small></button>` }
 ];
+
+/* fora de ordem no código porque os botões chegaram por último —
+   o jogo ordena antes de usar, pra não depender de quem escreveu certo */
+TENTACOES.sort((a, b) => a.aos - b.aos);
 
 /* ---------------------------------------------------------
    O ESTADO
@@ -133,6 +196,7 @@ let tentacaoNaTela = null;
 let jaMostradas = new Set();
 let relogio = null;
 let contaFalsa = null;
+let sumico = null;      /* o agendamento que tira a tentação da tela */
 
 function carregar(){
   try{
@@ -271,7 +335,21 @@ function recadoDaQueda(culpa, s){
     fechando:  'O jogo não fecha sozinho. Nunca ia fechar.',
     coceira:   'Não tinha nada no teu dedo.',
     pontinho:  'Era um pontinho. Só isso. Um pontinho.',
-    ultima:    'Cê caiu na última. O aviso estava escrito ali.'
+    ultima:    'Cê caiu na última. O aviso estava escrito ali.',
+    inutil:    'Ele não fazia nada mesmo. Apertar ele é que fez.',
+    dois:      'Os dois mandavam apertar o outro. Cê apertou um.',
+    pausa:     'Não dava pra pausar. Nunca deu.',
+    ganhar:    'Não tinha botão de ganhar. Ganhar é não apertar.',
+    foge:      'Cê pegou. Parabéns — e perdeu.',
+    naotentacao:'Ele disse que não era tentação. Era.',
+    mini:      'Cê achou o botãozinho. E apertou.',
+    gigante:   'Difícil errar aquele, né.',
+    emergencia:'Não era uma emergência.',
+    proibido:  'Ele desbloqueou e cê apertou na hora. Era esse o plano dele.',
+    continuar: 'Pra continuar fazendo nada era só… continuar.',
+    confirma:  'Cê confirmou que não queria apertar. Apertando.',
+    novo:      'Era novo. Agora está usado.',
+    ultimo:    'Era mesmo o último. Mas o jogo não acabou.'
   }[culpa];
   return porQuem || 'Cê encostou na tela sem nada te pedir isso.';
 }
@@ -327,6 +405,30 @@ function porTentacao(t){
       el.textContent = f.toFixed(1).replace('.', ',');
     }, 100);
   }
+  if(t.id === 'foge'){
+    /* mexer o ponteiro NÃO derruba (só apertar derruba), então o botão
+       pode fugir do dedo sem que chegar perto já seja perder */
+    const bt = $('#btFoge');
+    const pula = () => {
+      if(!document.getElementById('btFoge')) return;
+      bt.style.left = (12 + Math.random() * 62) + 'vw';
+      bt.style.top  = (18 + Math.random() * 48) + 'vh';
+    };
+    pula();
+    bt.addEventListener('pointerenter', pula);
+    contaFalsa = setInterval(pula, 1400);
+  }
+  if(t.id === 'proibido'){
+    let n = 3;
+    contaFalsa = setInterval(() => {
+      const sub = $('#proibidoSub'), bt = $('#btProibido');
+      if(!sub) return clearInterval(contaFalsa);
+      if(--n > 0){ sub.textContent = `desbloqueia em ${n}…`; return; }
+      clearInterval(contaFalsa);
+      bt.classList.add('liberado');
+      bt.innerHTML = '🔓 DESBLOQUEADO!<small>pode apertar agora</small>';
+    }, 1000);
+  }
   if(t.id === 'carregando'){
     let pct = 99;
     contaFalsa = setInterval(() => {
@@ -337,13 +439,18 @@ function porTentacao(t){
       if(barra) barra.style.width = pct + '%';
     }, 400);
   }
-  setTimeout(() => { if(tentacaoNaTela === t.id) limparTentacao(); }, t.dura);
+  /* guardado pra poder ser cancelado: sem isso, perder e recomeçar
+     rápido fazia o agendamento da partida velha apagar a tentação da
+     partida nova antes da hora */
+  clearTimeout(sumico);
+  sumico = setTimeout(() => { if(tentacaoNaTela === t.id) limparTentacao(); }, t.dura);
 }
 
 function limparTentacao(){
   $('#tentacao').innerHTML = '';
   tentacaoNaTela = null;
   clearInterval(contaFalsa);
+  clearTimeout(sumico);
 }
 
 /* ---------------------------------------------------------
@@ -440,7 +547,12 @@ function pintarRodape(){
     algo:'o botão do algo', naonada:'o "não fazer nada"', mosca:'a mosca',
     crono2:'o cronômetro falso', bateria:'a bateria fraca', milionesimo:'o milionésimo jogador',
     rachou:'a tela rachada', carregando:'os 99%', certeza:'a pergunta', fechando:'o "fecha em 5"',
-    coceira:'a coceira', pontinho:'o pontinho', ultima:'a última tentação' };
+    coceira:'a coceira', pontinho:'o pontinho', ultima:'a última tentação',
+    inutil:'o botão inútil', dois:'os dois botões', pausa:'o falso pause',
+    ganhar:'o botão de ganhar', foge:'o botão que foge', naotentacao:'o "não é tentação"',
+    mini:'o botãozinho', gigante:'o botão gigante', emergencia:'a emergência',
+    proibido:'o botão proibido', continuar:'o "continuar fazendo nada"',
+    confirma:'a confirmação', novo:'o botão novo', ultimo:'o último botão' };
 
   el.innerHTML = dados.tentativas
     ? `<b>${dados.tentativas}</b> tentativa${dados.tentativas === 1 ? '' : 's'}`

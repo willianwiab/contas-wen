@@ -8,7 +8,7 @@ nada. Encostou em qualquer lugar — tela, tecla, rolagem — volta pro zero.
 Um jogo sobre nada só funciona se **fazer nada for difícil**. Ficar parado olhando um
 número subir não é jogo nenhum.
 
-Então o jogo passa o tempo inteiro **te tentando**. São **23 tentações**, em ordem de
+Então o jogo passa o tempo inteiro **te tentando**. São **37 tentações**, em ordem de
 descaramento:
 
 | Aos | O que aparece |
@@ -36,6 +36,30 @@ descaramento:
 | 210s | *"Tem alguma coisa no teu dedo."* (não tem) |
 | 235s | um **pontinho** que vai crescendo |
 | 265s | *"Tá bom, cê ganhou."* — que também é uma tentação |
+
+### E a leva de botões
+
+Depois que o JoJo pediu "mais botões pra atrapalhar", entraram mais catorze:
+
+| Aos | O botão |
+|---|---|
+| 20s | **BOTÃO INÚTIL** — *não faz absolutamente nada* |
+| 29s | **dois botões** lado a lado, cada um mandando apertar o outro |
+| 60s | **⏸️ PAUSAR O CRONÔMETRO** — *(não pausa)* |
+| 96s | **🏆 BOTÃO PARA GANHAR O JOGO** — *é sério, é só apertar* |
+| 118s | **TENTA ME PEGAR** — ele foge do dedo e muda de lugar sozinho |
+| 130s | **ESTE BOTÃO NÃO É UMA TENTAÇÃO** — *pode apertar tranquilo* |
+| 155s | um **botãozinho** de 14 pixels |
+| 170s | um **BOTÃO GIGANTE** que ocupa um terço da tela |
+| 200s | **🚨 BOTÃO DE EMERGÊNCIA** — *só aperte se for MUITO importante* |
+| 225s | **🔒 BOTÃO PROIBIDO** — destrava em 3, 2, 1… e pisca "pode apertar agora" |
+| 250s | **APERTE PARA CONTINUAR FAZENDO NADA** |
+| 290s | **"Cê tem certeza de que NÃO quer apertar?"** com um SIM |
+| 320s | **BOTÃO NOVO** com selo de novidade |
+| 360s | **O ÚLTIMO BOTÃO** — *prometo que é o último* |
+
+O que foge é o único que reage ao dedo antes de ser tocado: **mexer o ponteiro não
+derruba** (só apertar derruba), então ele pode correr sem que chegar perto já seja perder.
 
 Todas são armadilha. Encostar em qualquer uma é encostar na tela.
 
