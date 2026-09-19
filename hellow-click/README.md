@@ -108,6 +108,43 @@ coisa. Desenhar a lista leva 1,3 ms e um passo do jogo 0,36 ms, com as 1.859 no 
 > **O que é justo dizer:** as do fundo da escada (10.000 de um bicho, 500 douradas) são
 > mais miragem que meta. Existem pra escada nunca acabar, não pra serem todas conquistadas.
 
+## 👹 A Abóbora Chefão
+
+De tempos em tempos ela invade a tela: uma abóbora gigante com barra de vida e **20
+segundos** pra cê derrubar no braço.
+
+**A vida dela é medida no TEU clique** — sempre 24 pancadas, seja teu dedo fraco ou
+monstruoso. Assim ela continua sendo desafio no começo e no fim do jogo, em vez de virar
+impossível ou piada. E o combo conta na pancada, então clicar rápido ajuda de verdade.
+
+O prêmio também é medido na tua produção: quem produz pouco ganha pouco, quem produz muito
+ganha muito. Perdeu, ela foge rindo.
+
+## 👻 As maldições
+
+O contrário da dourada. Um fantasma aparece e **come metade da tua produção** até alguém
+clicar nele pra espantar. Se ninguém clicar, ele vai embora sozinho em 15 segundos.
+
+Um jogo em que só coisa boa acontece vira paisagem. E ela nunca aparece pra quem ainda não
+produz nada — maldição em quem tem 3 doces seria só maldade.
+
+## 👻 Renascer
+
+Quando cê junta **1 bilhão numa rodada**, dá pra zerar tudo em troca de **almas**. Cada
+alma vale **+2% em tudo, pra sempre**.
+
+A conta é a **raiz quadrada** do que cê juntou na rodada: dobrar as almas exige quatro
+vezes mais doce, então renascer cedo demais nunca compensa.
+
+| Cê perde | Cê guarda pra sempre |
+|---|---|
+| doces, ajudantes, melhorias de clique | as almas e o bônus delas |
+| todas as especiais compradas | os troféus e as caras da abóbora |
+| | os teus números e o que cê aprendeu |
+
+É o que faz um clicker durar meses em vez de uma tarde: a próxima rodada corre mais rápido
+que a anterior, e a seguinte mais ainda.
+
 ## 🎭 A cara da abóbora
 
 No botão 🎭 do canto da cena dá pra trocar o rosto: caveira 💀, fantasma 👻, gato preto 🐈‍⬛,
@@ -155,8 +192,8 @@ clicker não é o número subindo — é a coisa que aconteceu sem a pessoa pedi
 
 ## Troféus que não são só enfeite
 
-São 21, e **cada um dá +2% em tudo**. Isso muda o que eles são: em vez de uma medalhinha
-pra olhar, viram um motivo pra ir atrás dos que faltam. Com os 21, é +42% no jogo inteiro.
+São 26, e **cada um dá +2% em tudo**. Isso muda o que eles são: em vez de uma medalhinha
+pra olhar, viram um motivo pra ir atrás dos que faltam. Com os 26, é +52% no jogo inteiro.
 
 ## Enquanto a pessoa está fora
 
