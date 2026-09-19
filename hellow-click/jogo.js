@@ -8,6 +8,13 @@
    ========================================================= */
 
 const CHAVE = 'hellow-click:v1';
+
+/* O maior número que o computador ainda soma sem virar "Infinito".
+   Passando disso, Infinito menos Infinito dá NaN — e NaN perde toda
+   comparação, então o jogo mostrava ∞ e não deixava comprar NADA.
+   Tudo que é dinheiro passa por aqui antes de ser guardado. */
+const TETO = 1e300;
+const seguro = n => !isFinite(n) ? (n > 0 ? TETO : 0) : Math.min(Math.max(n, 0), TETO);
 const SENHA = 'pizza12345';
 const SENHA_ADM = '1234';
 const $ = s => document.querySelector(s);
@@ -112,6 +119,7 @@ const ESCADA = [
   [1e18,'qui'],[1e15,'qua'],[1e12,'tri'],[1e9,'bi'],[1e6,'mi'],[1e3,'mil']
 ];
 function num(n){
+  if(Number.isNaN(n)) return '0';     /* NaN fingindo ser ∞ escondia o problema */
   if(!isFinite(n)) return '∞';
   /* passou dos nomes que existem: vira potência, em vez de sair "undefined" */
   if(n >= 1e36){
@@ -429,26 +437,141 @@ function carregar(){
     const cru = localStorage.getItem(CHAVE);
     if(cru){
       const o = JSON.parse(cru);
-      if(o && typeof o.doces === 'number'){
-        /* preenche o que faltar, pra um save antigo nunca quebrar o jogo */
-        /* troféu ou especial que saiu do jogo continua guardado no save e
-           contaria bônus de uma coisa que não existe mais — some aqui */
-        const valeTrofeu = new Set(CONQUISTAS.map(c => c.id));
-        const valeEsp = new Set(ESPECIAIS.map(e => e.id));
-        return Object.assign(vazio(), o, {
-          melhorias:o.melhorias||{}, bichos:o.bichos||{},
-          conquistas:(o.conquistas||[]).filter(id => valeTrofeu.has(id)),
-          especiais:(o.especiais||[]).filter(id => valeEsp.has(id))
-        });
-      }
+      if(o && (typeof o.doces === 'number' || o.doces === null)) return carregarDe(o);
     }
   }catch(e){ /* save torto: melhor começar do zero do que travar na tela preta */ }
   return vazio();
 }
 
+/* a limpeza vale pro save do navegador e pro save que veio de arquivo */
+function carregarDe(o){
+  /* quem já ficou travado com ∞ ou NaN volta a jogar */
+  ['doces','total','totalRodada','almas','tempoJogado','melhorPorSeg']
+    .forEach(k => { if(o[k] !== undefined) o[k] = seguro(o[k]); });
+  /* troféu ou especial que saiu do jogo continua guardado no save e
+     contaria bônus de uma coisa que não existe mais — some aqui */
+  const valeTrofeu = new Set(CONQUISTAS.map(c => c.id));
+  const valeEsp = new Set(ESPECIAIS.map(e => e.id));
+  return Object.assign(vazio(), o, {
+    melhorias:o.melhorias||{}, bichos:o.bichos||{},
+    conquistas:(o.conquistas||[]).filter(id => valeTrofeu.has(id)),
+    especiais:(o.especiais||[]).filter(id => valeEsp.has(id))
+  });
+}
+
+/* ---------------------------------------------------------
+   GUARDAR O JOGO
+
+   Antes isto engolia o erro calado: se o navegador recusasse
+   (celular abrindo arquivo baixado, aba anônima, memória
+   cheia), a pessoa jogava horas e perdia tudo sem nunca ter
+   sido avisada. Agora a falha aparece na tela — e tem um
+   backup em arquivo pra quem não puder contar com o navegador.
+   --------------------------------------------------------- */
+let salvouAs = 0;
+let guardarQuebrado = false;
+
+/* escreve, lê de volta e apaga: só assim dá pra saber que funciona
+   mesmo — tem navegador que aceita escrever e não guarda nada */
+function testarGuardar(){
+  try{
+    localStorage.setItem('hellow-click:teste', 'ok');
+    const voltou = localStorage.getItem('hellow-click:teste') === 'ok';
+    localStorage.removeItem('hellow-click:teste');
+    return voltou;
+  }catch(e){ return false; }
+}
+
 function gravar(){
   dados.quando = Date.now();
-  try{ localStorage.setItem(CHAVE, JSON.stringify(dados)); }catch(e){}
+  try{
+    localStorage.setItem(CHAVE, JSON.stringify(dados));
+    salvouAs = Date.now();
+    if(guardarQuebrado){ guardarQuebrado = false; mostrarAvisoSave(); }
+    return true;
+  }catch(e){
+    if(!guardarQuebrado){ guardarQuebrado = true; mostrarAvisoSave(e); }
+    return false;
+  }
+}
+
+function mostrarAvisoSave(erro){
+  const el = $('#avisoSave');
+  if(!el) return;
+  el.classList.toggle('on', guardarQuebrado);
+  if(!guardarQuebrado) return;
+  const cheio = erro && /quota|exceed/i.test((erro.name||'') + ' ' + (erro.message||''));
+  el.innerHTML = `<b>⚠️ Este navegador não está guardando teu jogo!</b><br>
+    ${cheio
+      ? 'A memória do navegador encheu. Dá uma limpada nos dados de sites antigos.'
+      : `Costuma ser uma destas: cê abriu o <b>arquivo baixado</b> no celular (alguns
+         celulares não deixam arquivo solto guardar nada), ou está numa <b>aba anônima</b>.`}
+    <br><br>Enquanto isso usa o <b>📤 Salvar num arquivo</b> aqui embaixo — aí teu jogo não
+    some, e cê volta nele pelo <b>📂 Abrir save</b>.`;
+}
+
+function pintarQuandoSalvou(){
+  const el = $('#quandoSalvou');
+  if(!el) return;
+  if(guardarQuebrado){
+    el.textContent = '⚠️ não está conseguindo salvar';
+    el.className = 'ruim';
+    return;
+  }
+  el.className = '';
+  if(!salvouAs){ el.textContent = ''; return; }
+  const seg = Math.floor((Date.now() - salvouAs) / 1000);
+  el.textContent = seg < 5  ? '💾 salvo agora mesmo'
+                 : seg < 60 ? `💾 salvo há ${seg} segundos`
+                 : `💾 salvo há ${Math.floor(seg/60)} min`;
+}
+
+/* ---------------------------------------------------------
+   O SAVE NUM ARQUIVO
+
+   A saída de quem não pode contar com o navegador: o jogo
+   inteiro cabe num .json que dá pra guardar e trazer de volta.
+   --------------------------------------------------------- */
+function salvarEmArquivo(){
+  try{
+    dados.quando = Date.now();
+    const url = URL.createObjectURL(new Blob([JSON.stringify(dados)], { type:'application/json' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hellow-click-save-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+    recado('📤 Save guardado no arquivo!');
+  }catch(e){ recado('😕 Não deu pra guardar o arquivo'); }
+}
+
+function abrirSave(input){
+  const arq = input.files && input.files[0];
+  input.value = '';
+  if(!arq) return;
+  const leitor = new FileReader();
+  leitor.onload = () => {
+    let o;
+    try{ o = JSON.parse(leitor.result); }
+    catch(e){ return alert('Esse arquivo não é um save do Hellow Click 😕'); }
+    if(!o || (typeof o.doces !== 'number' && o.doces !== null))
+      return alert('Esse arquivo não é um save do Hellow Click 😕');
+
+    /* trocar o jogo da pessoa é grande demais pra fazer sem perguntar,
+       e ela precisa saber o que está trocando pelo quê */
+    const trofeus = (o.conquistas||[]).length, esp = (o.especiais||[]).length;
+    if(!confirm(`Abrir este save?\n\nEle tem ${num(seguro(o.total))} doces no total, `
+      + `${trofeus} troféus e ${esp} melhorias especiais.\n\n`
+      + `Isso SUBSTITUI o jogo que está aqui agora.`)) return;
+
+    dados = carregarDe(o);
+    limparBolo(); moradoresAgora = 'refazer';
+    gravar();
+    pintarTudo(); pintarConquistas(); pintarEspeciais(true); pintarRenascer();
+    $('#abobora').textContent = dados.cara || '🎃';
+    recado('📂 Save aberto!');
+  };
+  leitor.readAsText(arq);
 }
 
 /* ---------------------------------------------------------
@@ -511,19 +634,26 @@ function destravar(comFesta){
 const totalBichos = d => BICHOS.reduce((s,b) => s + (d.bichos[b.id]||0), 0);
 
 /* preço da PRÓXIMA unidade */
-const precoBicho = b => Math.ceil(b.base * Math.pow(1.15, dados.bichos[b.id]||0));
-const precoMelhoria = m => Math.ceil(m.base * Math.pow(1.7, dados.melhorias[m.id]||0));
+const precoBicho = b => seguro(Math.ceil(b.base * Math.pow(1.15, dados.bichos[b.id]||0)));
+const precoMelhoria = m => seguro(Math.ceil(m.base * Math.pow(1.7, dados.melhorias[m.id]||0)));
 
 /* preço de n unidades seguidas — soma de progressão geométrica.
    Comprar 10 de uma vez não pode sair pelo preço da primeira dez vezes. */
 function precoDeVarias(base, escala, jaTem, n){
-  return Math.ceil(base * Math.pow(escala, jaTem) * (Math.pow(escala, n) - 1) / (escala - 1));
+  return seguro(Math.ceil(base * Math.pow(escala, jaTem)
+                          * (Math.pow(escala, n) - 1) / (escala - 1)));
 }
 
 /* quantas dá pra levar com o que tem no bolso */
 function quantasCabem(base, escala, jaTem){
   let n = 0;
-  while(n < 500 && precoDeVarias(base, escala, jaTem, n + 1) <= dados.doces) n++;
+  while(n < 500){
+    const p = precoDeVarias(base, escala, jaTem, n + 1);
+    /* parar no teto também: lá em cima todo preço fica igual, e sem isso
+       daria pra levar 500 de uma vez pelo preço de um */
+    if(p > dados.doces || p >= TETO) break;
+    n++;
+  }
   return n;
 }
 
@@ -586,7 +716,7 @@ function porCliqueCru(){
   const mm = multiplicadores().melhoria;
   const somado = MELHORIAS.reduce(
     (s,m) => s + m.poder * (dados.melhorias[m.id]||0) * (mm[m.id] || 1), 1);
-  return somado * multTrofeus() * multClique() * multGeral();
+  return seguro(somado * multTrofeus() * multClique() * multGeral());
 }
 function porClique(){
   return porCliqueCru() * multCombo() * (bonus && bonus.tipo === 'frenesi' ? 7 : 1);
@@ -594,13 +724,21 @@ function porClique(){
 
 function porSegundoCru(){
   const mb = multiplicadores().bicho;
-  return BICHOS.reduce(
+  return seguro(BICHOS.reduce(
     (s,b) => s + b.porSeg * (dados.bichos[b.id]||0) * (mb[b.id] || 1), 0)
-    * multTrofeus() * multGeral();
+    * multTrofeus() * multGeral());
 }
 
 const porSegundo = () =>
-  porSegundoCru() * (bonus && bonus.tipo === 'turbo' ? 5 : 1);
+  seguro(porSegundoCru() * (bonus && bonus.tipo === 'turbo' ? 5 : 1));
+
+/* todo doce que entra passa por aqui, e nada nunca vira Infinito */
+function guardaDoce(quanto){
+  const q = seguro(quanto);
+  dados.doces       = seguro(dados.doces + q);
+  dados.total       = seguro(dados.total + q);
+  dados.totalRodada = seguro((dados.totalRodada||0) + q);
+}
 
 /* ---------------------------------------------------------
    CLICAR NA ABÓBORA
@@ -616,9 +754,7 @@ function clicar(ev){
   if(combo > (dados.maiorCombo||0)) dados.maiorCombo = combo;
 
   const ganho = porClique();
-  dados.doces += ganho;
-  dados.total += ganho;
-  dados.totalRodada = (dados.totalRodada||0) + ganho;
+  guardaDoce(ganho);
   dados.cliques++;
 
   const ab = $('#abobora');
@@ -668,10 +804,11 @@ function trocarLote(qual){
 
 function comprar(x){
   const { n, preco } = quantoLeva(x);
+  if(!(preco > 0) || !isFinite(preco)) return recado('Esse preço passou da conta do jogo 😅');
   if(dados.doces < preco){
     return recado(n > 1 ? `Falta doce pra levar ${n} 🍬` : 'Falta doce pra isso! 🍬');
   }
-  dados.doces -= preco;
+  dados.doces = seguro(dados.doces - preco);
   const onde = x.poder !== undefined ? dados.melhorias : dados.bichos;
   onde[x.id] = (onde[x.id]||0) + n;
   limparBolo();
@@ -723,7 +860,7 @@ function pegarDourada(){
     faixa('⚡ TURBO! Teus monstros rendem 5x por 20 segundos!');
   }else{
     const chuva = Math.max(30, dados.doces * .12 + porSegundoCru() * 90);
-    dados.doces += chuva; dados.total += chuva;
+    guardaDoce(chuva);
     faixa(`🍬 CHUVA DE DOCES! +${num(chuva)}`);
     setTimeout(() => $('#faixaBonus').classList.remove('on'), 4000);
   }
@@ -979,8 +1116,9 @@ function comprarEspecial(id){
   const e = ESPECIAIS.find(x => x.id === id);
   if(!e || tenhoEsp(id)) return;
   if(!e.destrava(dados)) return recado('Essa ainda nem apareceu 👀');
+  if(!isFinite(e.custo)) return recado('Esse preço passou da conta do jogo 😅');
   if(dados.doces < e.custo) return recado('Falta doce pra isso! 🍬');
-  dados.doces -= e.custo;
+  dados.doces = seguro(dados.doces - e.custo);
   dados.especiais.push(id);
   limparBolo();
   bip(900, .1); setTimeout(() => bip(1200, .1), 90);
@@ -1210,8 +1348,7 @@ function tique(){
   ultimo = agora;
 
   const ganho = porSegundo() * dt;
-  if(ganho > 0){ dados.doces += ganho; dados.total += ganho;
-                 dados.totalRodada = (dados.totalRodada||0) + ganho; }
+  if(ganho > 0) guardaDoce(ganho);
   dados.tempoJogado = (dados.tempoJogado||0) + dt;
   const ps = porSegundo();
   if(ps > (dados.melhorPorSeg||0)) dados.melhorPorSeg = ps;
@@ -1224,6 +1361,7 @@ function tique(){
   }
   if($('#painel-especiais').classList.contains('on')) pintarEspeciais();
   conferirPorta();
+  pintarQuandoSalvou();
   talvezSoltarDourada();
 
   /* a maldição tem hora pra acabar */
@@ -1258,7 +1396,7 @@ function contarTempoFora(){
   const limitado = Math.min(fora, 8 * 3600);
   const ganho = porSegundoCru() * limitado * .5;
   if(ganho < 10) return;
-  dados.doces += ganho; dados.total += ganho;
+  guardaDoce(ganho);
   $('#foraQuanto').textContent = num(ganho);
   $('#modalFora').classList.add('on');
 }
@@ -1267,7 +1405,9 @@ const fecharFora = () => $('#modalFora').classList.remove('on');
 /* ---------------------------------------------------------
    BOTÕES DO RODAPÉ
    --------------------------------------------------------- */
-function salvarAgora(){ gravar(); recado('💾 Salvo neste aparelho!'); }
+function salvarAgora(){
+  recado(gravar() ? '💾 Salvo neste aparelho!' : '⚠️ O navegador não deixou salvar');
+}
 
 function apagarTudo(){
   if(!confirm('Recomeçar do zero?\n\nTeus doces, monstros e troféus somem pra sempre.')) return;
@@ -1410,6 +1550,7 @@ function admMelhorias(q){
 }
 function admDourada(){
   proximaDourada = 0;
+  pintarQuandoSalvou();
   talvezSoltarDourada();
   fecharAdm();
   recado('🎃 Soltei uma dourada — acha ela!');
@@ -1531,6 +1672,9 @@ function comecarJogo(){
 }
 
 limparBolo();
+if(!testarGuardar()){ guardarQuebrado = true; mostrarAvisoSave(); }
+pintarQuandoSalvou();   /* o aviso do rodapé tem que valer já na abertura,
+                           não só depois que o relógio do jogo começa */
 montarLoja();
 pintarConquistas();
 pintarEspeciais(true);
