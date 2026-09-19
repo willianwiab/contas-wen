@@ -250,7 +250,8 @@ const TROFEUS = [
   { id:'dezmin',  e:'🚪', nome:'Dez minutos',       desc:'Chegar aos 10 minutos' },
   { id:'bichos',  e:'🐛', nome:'Apanhador',         desc:'Cair no bichinho, na borboleta e na mosca' },
   { id:'tudo',    e:'🧨', nome:'Caiu em tudo',      desc:'Cair em todas as tentações, uma vez cada' },
-  { id:'teimoso', e:'🔁', nome:'Teimoso',           desc:'Tentar 50 vezes' }
+  { id:'teimoso', e:'🔁', nome:'Teimoso',           desc:'Tentar 50 vezes' },
+  { id:'trapaceiro', e:'🔓', nome:'Trapaceiro',     desc:'Descobrir o modo administrador' }
 ];
 
 function ganharTrofeu(id){
@@ -312,6 +313,11 @@ function talvezBotaoReal(s){
   const qual = Math.floor(s / A_CADA);
   if(qual < 1 || qual === ultimoReal || clipyAberto) return;
   ultimoReal = qual;
+  mostrarBotaoReal();
+}
+
+/* separado do relógio porque o modo adm chama isto na mão */
+function mostrarBotaoReal(){
   limparTentacao();
   tentacaoNaTela = null;          /* não é tentação: encostar aqui não derruba */
   $('#tentacao').innerHTML = `
@@ -341,8 +347,10 @@ function apertouReal(){
   dados.clipyFalou = (dados.clipyFalou||0) + 1;
   ganharTrofeu('clipy1');
 
-  /* os 5%: o Clipy aperta um botão por cê, e cê perde */
-  const traiu = Math.random() < .05;
+  /* os 5%: o Clipy aperta um botão por cê, e cê perde.
+     forcarTraicao só é diferente de null quando o adm mandou */
+  const traiu = forcarTraicao === null ? Math.random() < .05 : forcarTraicao;
+  forcarTraicao = null;
   const fala = traiu
     ? 'Opa, deixa eu só apertar esse botãozinho aqui pra cê…'
     : FALAS_CLIPY[Math.floor(Math.random() * FALAS_CLIPY.length)];
@@ -386,6 +394,8 @@ let jaMostradas = new Set();
 let relogio = null;
 let contaFalsa = null;
 let sumico = null;      /* o agendamento que tira a tentação da tela */
+let invencivel = false;        /* modo adm: tocar não derruba */
+let forcarTraicao = null;      /* modo adm: null = sorteio normal */
 
 function carregar(){
   try{
@@ -430,6 +440,7 @@ function comecar(){
   antesDaPartida = dados.recorde;
   ultimoReal = -1;
   clipyAberto = false;
+  forcarTraicao = null;
   estado = 'jogando';
   comecouEm = Date.now();
   decorridoAntes = 0;
@@ -469,8 +480,19 @@ function corDoFundo(s){
   document.body.className = n ? 'n' + n : '';
 }
 
+let ultimoBloqueio = 0;
+
 function perder(oQue){
   if(estado !== 'jogando') return;
+  if(invencivel){
+    /* o escudo do adm: avisa de vez em quando pra ninguém achar
+       que o jogo travou */
+    if(Date.now() - ultimoBloqueio > 1200){
+      ultimoBloqueio = Date.now();
+      avisoTrofeu('🛡️ invencível');
+    }
+    return;
+  }
   const s = agoraSeg();
   estado = 'perdeu';
   clipyAberto = false;
@@ -682,7 +704,8 @@ function pintarMetas(){
   const feitas = metasFeitas(dados.recorde);
   const prox = proximaMeta(dados.recorde);
 
-  $('#metasConta').textContent = feitas;
+  /* com ponto de milhar, senão em cima ficava "1000 / 1.000 metas" */
+  $('#metasConta').textContent = feitas.toLocaleString('pt-BR');
   $('#metasBarra').style.width = (feitas / METAS.length * 100) + '%';
   $('#metasProx').innerHTML = prox
     ? `Próxima: <b>#${prox.n} ${prox.ic} ${prox.nome}</b> — aguenta
@@ -766,29 +789,33 @@ function listaDaFaixa(id){
 /* ---------------------------------------------------------
    O RODAPÉ — os números honestos
    --------------------------------------------------------- */
+/* o apelido de cada queda — fica aqui em cima porque o rodapé e o
+   modo adm usam a mesma lista */
+const NOMES_QUEDA = { botao:'o botão vermelho', premio:'o prêmio falso', aviso:'a mensagem falsa',
+  erro:'o erro falso', contagem:'a contagem', escuro:'o escuro', fimfalso:'o fim falso',
+  bicho:'o bichinho', bicho2:'a borboleta', nada:'a tela vazia',
+  algo:'o botão do algo', naonada:'o "não fazer nada"', mosca:'a mosca',
+  crono2:'o cronômetro falso', bateria:'a bateria fraca', milionesimo:'o milionésimo jogador',
+  rachou:'a tela rachada', carregando:'os 99%', certeza:'a pergunta', fechando:'o "fecha em 5"',
+  coceira:'a coceira', pontinho:'o pontinho', ultima:'a última tentação',
+  inutil:'o botão inútil', dois:'os dois botões', pausa:'o falso pause',
+  ganhar:'o botão de ganhar', foge:'o botão que foge', naotentacao:'o "não é tentação"',
+  mini:'o botãozinho', gigante:'o botão gigante', emergencia:'a emergência',
+  proibido:'o botão proibido', continuar:'o "continuar fazendo nada"',
+  confirma:'a confirmação', novo:'o botão novo', ultimo:'o último botão',
+  cookies:'os cookies', chave:'o interruptor', anuncio:'o anúncio',
+  caixinha:'a caixinha', arrasta:'o arrastador', play:'o play',
+  sinos:'as notificações', escolha:'o sim ou não', volume:'o volume',
+  apertado:'o já apertado', reinicia:'o reiniciar', fantasma:'o quase invisível',
+  clipy:'o Clipy' };
+
 function pintarRodape(){
   const el = $('#rodape');
   if(estado === 'jogando'){ el.innerHTML = ''; return; }
 
   const quedas = Object.entries(dados.quedas).sort((a,b) => b[1] - a[1]);
   const vilao = quedas[0];
-  const nomes = { botao:'o botão vermelho', premio:'o prêmio falso', aviso:'a mensagem falsa',
-    erro:'o erro falso', contagem:'a contagem', escuro:'o escuro', fimfalso:'o fim falso',
-    bicho:'o bichinho', bicho2:'a borboleta', nada:'a tela vazia',
-    algo:'o botão do algo', naonada:'o "não fazer nada"', mosca:'a mosca',
-    crono2:'o cronômetro falso', bateria:'a bateria fraca', milionesimo:'o milionésimo jogador',
-    rachou:'a tela rachada', carregando:'os 99%', certeza:'a pergunta', fechando:'o "fecha em 5"',
-    coceira:'a coceira', pontinho:'o pontinho', ultima:'a última tentação',
-    inutil:'o botão inútil', dois:'os dois botões', pausa:'o falso pause',
-    ganhar:'o botão de ganhar', foge:'o botão que foge', naotentacao:'o "não é tentação"',
-    mini:'o botãozinho', gigante:'o botão gigante', emergencia:'a emergência',
-    proibido:'o botão proibido', continuar:'o "continuar fazendo nada"',
-    confirma:'a confirmação', novo:'o botão novo', ultimo:'o último botão',
-    cookies:'os cookies', chave:'o interruptor', anuncio:'o anúncio',
-    caixinha:'a caixinha', arrasta:'o arrastador', play:'o play',
-    sinos:'as notificações', escolha:'o sim ou não', volume:'o volume',
-    apertado:'o já apertado', reinicia:'o reiniciar', fantasma:'o quase invisível',
-    clipy:'o Clipy' };
+  const nomes = NOMES_QUEDA;
 
   el.innerHTML = dados.tentativas
     ? `<b>${dados.tentativas}</b> tentativa${dados.tentativas === 1 ? '' : 's'}`
@@ -809,7 +836,8 @@ function mostrar(qual){
       ? `teu recorde: <b>${tempoBonito(dados.recorde)}</b>`
       : 'cê ainda não tem recorde';
     const feitas = metasFeitas(dados.recorde);
-    $('#progInicio').innerHTML = `<b style="color:var(--texto2)">${feitas}</b> de 1.000 metas`
+    $('#progInicio').innerHTML =
+      `<b style="color:var(--texto2)">${feitas.toLocaleString('pt-BR')}</b> de 1.000 metas`
       + ` · <b style="color:var(--ouro)">${dados.trofeus.length}</b> de ${TROFEUS.length} troféus`;
   }
   pintarRodape();
@@ -830,6 +858,10 @@ function mostrar(qual){
        ser tocado. É o erro do Windows e o Clipy — e o jogo não conta
        isso pra ninguém */
     if(e.target && e.target.closest && e.target.closest('#seguro')) return;
+    /* o modo adm também é zona segura: o painel é cheio de botão, e
+       digitar a senha no meio da partida seria perder na primeira letra */
+    if($('#adm').classList.contains('on')) return;
+    if(e.target && e.target.closest && e.target.closest('#btAdmJogo')) return;
     e.preventDefault();
     perder(tentacaoNaTela);
   }, { passive:false, capture:true }));
@@ -852,6 +884,180 @@ document.addEventListener('visibilitychange', () => {
     $('#pausa').classList.remove('on');
   }
 });
+
+/* =========================================================
+   ⚙️ MODO ADMINISTRADOR
+
+   Neste jogo tem um problema que nenhum outro tem: qualquer
+   tecla derruba. Então não dá pra "digitar ADMIN" no meio da
+   partida — a senha é só aqui dentro, e o painel inteiro é
+   zona segura, igual ao Clipy.
+
+   A senha não protege nada de verdade (está escrita logo
+   abaixo, e qualquer um lê o arquivo). Ela é só pra ninguém
+   entrar sem querer.
+   ========================================================= */
+const SENHA_ADM = '1234';
+let admLigado = false;
+let apagarArmado = false;
+
+function abrirAdm(){
+  $('#adm').classList.add('on');
+  $('#admErro').textContent = '';
+  desarmarApagar();
+  if(admLigado || dados.admUsado){
+    admLigado = true;
+    $('#admTranca').style.display = 'none';
+    $('#admPainel').style.display = '';
+    pintarAdm();
+  }else{
+    $('#admTranca').style.display = '';
+    $('#admPainel').style.display = 'none';
+    const c = $('#admSenha');
+    c.value = '';
+    setTimeout(() => c.focus(), 60);
+  }
+}
+
+function fecharAdm(){
+  $('#adm').classList.remove('on');
+  $('#admSenha').value = '';
+  desarmarApagar();
+}
+
+function tentarAdm(){
+  if($('#admSenha').value.trim() !== SENHA_ADM){
+    $('#admErro').textContent = 'senha errada 🙃';
+    $('#admSenha').value = '';
+    $('#admSenha').focus();
+    return;
+  }
+  admLigado = true;
+  dados.admUsado = true;
+  gravar();
+  $('#admErro').textContent = '';
+  $('#admTranca').style.display = 'none';
+  $('#admPainel').style.display = '';
+  $('#btAdmJogo').classList.add('on');
+  pintarAdm();
+  ganharTrofeu('trapaceiro');
+}
+
+/* a senha também entra no Enter — dentro do painel a tecla é segura */
+$('#admSenha').addEventListener('keydown', e => {
+  e.stopPropagation();
+  if(e.key === 'Enter') tentarAdm();
+});
+
+function pintarAdm(){
+  const bt = $('#btInvencivel');
+  bt.textContent = invencivel ? 'ligado' : 'desligado';
+  bt.classList.toggle('on', invencivel);
+  const sel = $('#admTentacao');
+  if(!sel.options.length){
+    sel.innerHTML = TENTACOES.map(t =>
+      `<option value="${t.id}">${NOMES_QUEDA[t.id] || t.id} · aos ${t.aos}s</option>`).join('');
+  }
+}
+
+function admRecado(txt){ avisoTrofeu(txt); }
+
+/* ---- o cronômetro ---- */
+function admPular(seg){
+  if(estado !== 'jogando') comecar();
+  decorridoAntes += seg;
+  const s = agoraSeg();
+  /* marca como já vistas as tentações que ficaram pra trás: sem isso
+     o pulo despeja todas de uma vez na mesma décima de segundo */
+  for(const t of TENTACOES) if(s >= t.aos) jaMostradas.add(t.id);
+  pintarCrono(s);
+  corDoFundo(s);
+  admRecado(`⏩ ${tempoBonito(s)}`);
+}
+
+/* ---- o escudo ---- */
+function admInvencivel(){
+  invencivel = !invencivel;
+  pintarAdm();
+}
+
+/* ---- o Clipy na hora ---- */
+function admClipy(traicao){
+  if(estado !== 'jogando') comecar();
+  forcarTraicao = traicao;
+  clipyAberto = false;
+  ultimoReal = -1;
+  fecharAdm();
+  mostrarBotaoReal();
+}
+
+/* ---- as tentações ---- */
+function admMostrarTentacao(){
+  const t = TENTACOES.find(x => x.id === $('#admTentacao').value);
+  if(!t) return;
+  if(estado !== 'jogando') comecar();
+  jaMostradas.add(t.id);
+  fecharAdm();
+  porTentacao(t);
+}
+
+function admLimparTentacao(){ limparTentacao(); }
+
+/* ---- o recorde (as metas saem dele) ---- */
+function admRecorde(seg){
+  dados.recorde = seg;
+  antesDaPartida = seg;
+  gravar();
+  if(estado === 'jogando') pintarCrono();
+  if($('#metas').classList.contains('on')) pintarMetas();
+  if(estado === 'parado') mostrar('inicio');
+  admRecado(`🏅 recorde: ${tempoLongo(seg)}`);
+}
+
+/* ---- os troféus ---- */
+function admTrofeus(dar){
+  dados.trofeus = dar ? TROFEUS.map(t => t.id) : [];
+  gravar();
+  if($('#metas').classList.contains('on')) pintarMetas();
+  if(estado === 'parado') mostrar('inicio');
+  admRecado(dar ? '🏆 todos os troféus' : '🗑️ troféus zerados');
+}
+
+/* ---- recomeçar do zero: dois toques, sem janelinha do navegador ---- */
+function admApagar(){
+  const bt = $('#btApagar');
+  if(!apagarArmado){
+    apagarArmado = true;
+    bt.textContent = 'tem certeza? aperta de novo';
+    setTimeout(desarmarApagar, 4000);
+    return;
+  }
+  desarmarApagar();
+  try{ localStorage.removeItem(CHAVE); }catch(e){}
+  dados = vazio();
+  invencivel = false;
+  admLigado = true;          /* já está aqui dentro, não tranca na cara */
+  estado = 'parado';
+  clearInterval(relogio);
+  clearInterval(contaFalsa);
+  comecouEm = 0;
+  decorridoAntes = 0;
+  antesDaPartida = 0;
+  limparTentacao();
+  document.body.className = '';
+  fecharAdm();
+  mostrar('inicio');
+  admRecado('💀 tudo zerado');
+}
+
+function desarmarApagar(){
+  apagarArmado = false;
+  const bt = $('#btApagar');
+  if(bt) bt.textContent = 'Recomeçar do zero';
+}
+
+if(dados.admUsado) $('#btAdmJogo').classList.add('on');
+pintarAdm();
 
 mostrar('inicio');
 

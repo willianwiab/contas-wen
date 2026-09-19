@@ -109,6 +109,7 @@ precisam ser guardados um a um — não dá pra deduzir do recorde.
 | 🐛 | Apanhador | Cair no bichinho, na borboleta e na mosca |
 | 🧨 | Caiu em tudo | Cair em todas as tentações, uma vez cada |
 | 🔁 | Teimoso | Tentar 50 vezes |
+| 🔓 | Trapaceiro | Descobrir o modo administrador |
 
 O "Caiu em tudo" conta só as tentações **que existem hoje** — se alguma sair do jogo, o
 troféu não fica impossível pra sempre.
@@ -171,6 +172,33 @@ fases, em vez de fingir que são alcançáveis:
 
 > 🗿 **Aqui ninguém chega.** Estas metas existem pra lista nunca acabar — não pra serem
 > pegas.
+
+## ⚙️ Modo administrador
+
+Senha **1234**, no cadeado 🔒 da tela de começo. Depois de entrar uma vez, aparece um
+cadeado pequeno no canto de baixo pra abrir de dentro da partida.
+
+Este jogo tem um problema que nenhum outro tem: **qualquer tecla derruba**. Digitar uma
+senha no meio da partida seria perder na primeira letra. Por isso o painel inteiro é
+**zona segura** — igual ao Clipy, encostar nele não conta como fazer algo.
+
+| | O que dá pra fazer |
+|---|---|
+| 🕐 | **Adiantar o cronômetro** em 30s, 1min, 5min ou 10min |
+| 🛡️ | **Invencível** — tocar na tela não derruba |
+| 📎 | **Chamar o Clipy agora**, sem esperar os dez minutos — e **forçar a traição** dos 5% |
+| 😈 | **Mostrar qualquer uma das 49 tentações** na hora, escolhida numa lista |
+| 🏅 | **Trocar o recorde** pra 1 minuto, 1 hora, 1 dia ou os 100 anos das 1.000 metas |
+| 🏆 | **Dar ou tirar todos os troféus** |
+| 💀 | **Recomeçar do zero** — e este pede confirmação em dois toques |
+
+O pulo do cronômetro **marca como já vistas** as tentações que ficaram pra trás. Sem isso,
+pular dez minutos despejava as quarenta e nove de uma vez na mesma décima de segundo.
+
+A senha **não protege nada de verdade**: ela está escrita no `nada.js`, e qualquer um que
+abra o arquivo lê. Ela serve pra ninguém entrar sem querer, e só.
+
+Entrar uma vez rende o troféu 🔓 **Trapaceiro** — que é, convenhamos, honesto.
 
 ## O que mais o jogo guarda
 
