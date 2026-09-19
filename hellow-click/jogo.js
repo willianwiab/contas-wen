@@ -67,7 +67,12 @@ const CONQUISTAS = [
   { id:'c13', e:'🌟', nome:'Sorte grande',    desc:'1 abóbora dourada', tem:d => d.douradas >= 1 },
   { id:'c14', e:'✨', nome:'Caçador de ouro', desc:'10 douradas',       tem:d => d.douradas >= 10 },
   { id:'c15', e:'⏱️', nome:'Fábrica do medo', desc:'1.000 doces/seg',   tem:() => porSegundoCru() >= 1000 },
-  { id:'c21', e:'🔓', nome:'Trapaceiro',     desc:'Entrar no modo adm',tem:d => !!d.admUsado }
+  { id:'c21', e:'🔓', nome:'Trapaceiro',     desc:'Entrar no modo adm',tem:d => !!d.admUsado },
+  { id:'c22', e:'👹', nome:'Caçador de chefe',desc:'Derrubar 1 chefão',  tem:d => (d.chefoesGanhos||0) >= 1 },
+  { id:'c23', e:'⚔️', nome:'Lenda do chefão', desc:'Derrubar 25 chefões',tem:d => (d.chefoesGanhos||0) >= 25 },
+  { id:'c24', e:'✨', nome:'Espanta-fantasma',desc:'Espantar 10 maldições',tem:d => (d.maldicoesEspantadas||0) >= 10 },
+  { id:'c25', e:'👻', nome:'Renascido',       desc:'Renascer 1 vez',     tem:d => (d.renascimentos||0) >= 1 },
+  { id:'c26', e:'🌗', nome:'Alma velha',      desc:'Ter 100 almas',      tem:d => (d.almas||0) >= 100 }
 ];
 
 /* ---------------------------------------------------------
@@ -374,7 +379,8 @@ function faseAgora(h = new Date().getHours()){
    O ESTADO
    --------------------------------------------------------- */
 const vazio = () => ({
-  v:1, doces:0, total:0, cliques:0, douradas:0, maiorCombo:0, admUsado:false,
+  v:1, doces:0, total:0, totalRodada:0, cliques:0, douradas:0, maiorCombo:0, admUsado:false,
+  almas:0, renascimentos:0, chefoesGanhos:0, maldicoesEspantadas:0,
   melhorias:{}, bichos:{}, conquistas:[], especiais:[], som:true, avisos:false,
   cara:'🎃', comecou:Date.now(), tempoJogado:0, melhorPorSeg:0,
   destravado:false, avisouPorta:0, quando:Date.now()
@@ -531,7 +537,11 @@ function multiplicadores(){
 }
 
 /* as especiais de "tudo" e a hora das bruxas multiplicam clique e produção juntos */
-const multGeral  = () => multiplicadores().tudo * faseAgora().mult;
+/* cada alma dá +2% em tudo, pra sempre — é o que faz a próxima
+   rodada correr mais rápido que a anterior */
+const multAlmas  = () => 1 + (dados.almas||0) * .02;
+const multGeral  = () => multiplicadores().tudo * faseAgora().mult * multAlmas()
+                         * (maldicao ? .5 : 1);
 const multClique = () => multiplicadores().clique;
 const multCombo = () => 1 + Math.min(combo, 50) * 0.02;
 
@@ -572,6 +582,7 @@ function clicar(ev){
   const ganho = porClique();
   dados.doces += ganho;
   dados.total += ganho;
+  dados.totalRodada = (dados.totalRodada||0) + ganho;
   dados.cliques++;
 
   const ab = $('#abobora');
@@ -687,6 +698,216 @@ function faixa(txt){
   const f = $('#faixaBonus');
   f.textContent = txt;
   f.classList.add('on');
+}
+
+/* =========================================================
+   👹 A ABÓBORA CHEFÃO
+
+   A vida dela é medida no TEU clique: 24 cliques certeiros
+   derrubam, seja teu dedo fraco ou monstruoso. Assim ela
+   continua sendo um desafio no começo e no fim do jogo,
+   em vez de virar impossível ou piada.
+   ========================================================= */
+let chefao = null;
+let proximoChefao = 0;
+
+const marcarProximoChefao = () =>
+  proximoChefao = Date.now() + (150 + Math.random() * 150) * 1000;
+
+function talvezChamarChefao(){
+  if(chefao || Date.now() < proximoChefao) return;
+  chamarChefao();
+}
+
+function chamarChefao(){
+  const vida = Math.max(1, porCliqueCru() * 24);
+  chefao = { vida, vidaMax: vida, ate: Date.now() + 20000 };
+  marcarProximoChefao();
+  $('#chefaoDica').textContent = 'Clica nela sem parar antes do tempo acabar!';
+  $('#chefao').classList.add('on');
+  bip(180, .14); setTimeout(() => bip(140, .14), 140);
+  pintarChefao();
+}
+
+function baterNoChefao(){
+  if(!chefao) return;
+  chefao.vida -= porClique();
+  const bicho = $('#chefaoBicho');
+  bicho.classList.remove('bateu'); void bicho.offsetWidth; bicho.classList.add('bateu');
+  bip(420 + Math.random() * 120, .05);
+  if(chefao.vida <= 0) venceuChefao();
+  else pintarChefao();
+}
+
+function pintarChefao(){
+  if(!chefao) return;
+  $('#chefaoVida').style.width = Math.max(0, chefao.vida / chefao.vidaMax * 100) + '%';
+  $('#chefaoTempo').textContent = Math.ceil(Math.max(0, chefao.ate - Date.now()) / 1000);
+}
+
+function venceuChefao(){
+  /* o prêmio é medido na tua própria produção: quem produz pouco
+     ganha pouco, quem produz muito ganha muito — sempre relevante */
+  const premio = Math.max(200, porSegundoCru() * 420 + dados.doces * .08);
+  dados.doces += premio; dados.total += premio;
+  dados.totalRodada = (dados.totalRodada||0) + premio;
+  dados.chefoesGanhos = (dados.chefoesGanhos||0) + 1;
+  fecharChefao();
+  faixa(`👹 DERRUBOU O CHEFÃO! +${num(premio)} doces`);
+  setTimeout(() => $('#faixaBonus').classList.remove('on'), 5000);
+  bip(700, .12); setTimeout(() => bip(1000, .12), 110); setTimeout(() => bip(1300, .14), 220);
+  conferirConquistas(); pintarTudo(); gravar();
+}
+
+function perdeuChefao(){
+  fecharChefao();
+  recado('👹 O chefão fugiu rindo de você...');
+  bip(150, .1);
+}
+
+function fecharChefao(){
+  chefao = null;
+  $('#chefao').classList.remove('on');
+  $('#faixaBonus').classList.remove('ruim');
+}
+
+/* =========================================================
+   💀 AS MALDIÇÕES
+
+   O contrário da dourada: um fantasma aparece e come metade
+   da tua produção até alguém clicar nele. Um jogo só de
+   coisa boa acontecendo vira paisagem.
+   ========================================================= */
+let maldicao = null;
+let proximaMaldicao = 0;
+
+const marcarProximaMaldicao = () =>
+  proximaMaldicao = Date.now() + (100 + Math.random() * 140) * 1000;
+
+function talvezSoltarMaldicao(){
+  if(maldicao || Date.now() < proximaMaldicao) return;
+  /* maldição em quem ainda não produz nada seria só maldade */
+  if(porSegundoCru() < 5){ marcarProximaMaldicao(); return; }
+  soltarMaldicao();
+}
+
+function soltarMaldicao(){
+  maldicao = { ate: Date.now() + 15000 };
+  marcarProximaMaldicao();
+  const m = $('#maldicao');
+  m.style.left = (10 + Math.random() * 70) + 'vw';
+  m.style.top  = (16 + Math.random() * 58) + 'vh';
+  m.classList.add('on');
+  $('#faixaBonus').classList.add('ruim');
+  faixa('👻 MALDIÇÃO! Tua produção caiu pela metade — clica no fantasma!');
+  bip(200, .1);
+  limparBolo();
+}
+
+function espantarMaldicao(comClique){
+  if(!maldicao) return;
+  maldicao = null;
+  $('#maldicao').classList.remove('on');
+  $('#faixaBonus').classList.remove('on', 'ruim');
+  limparBolo();
+  if(comClique){
+    dados.maldicoesEspantadas = (dados.maldicoesEspantadas||0) + 1;
+    recado('✨ Espantou a maldição!');
+    bip(820, .1);
+    conferirConquistas();
+  }else{
+    recado('👻 A maldição foi embora sozinha');
+  }
+  pintarTudo();
+}
+
+/* =========================================================
+   👻 RENASCER
+
+   Zerar tudo em troca de almas que valem pra sempre. É o
+   que faz um clicker durar meses em vez de uma tarde: a
+   próxima rodada corre mais rápido que a anterior.
+   ========================================================= */
+const PORTA_RENASCER = 1e9;   /* 1 bilhão numa rodada pra poder renascer */
+
+/* raiz quadrada: dobrar as almas exige quatro vezes mais doce,
+   então renascer cedo demais nunca compensa */
+const almasQueGanha = () =>
+  Math.floor(Math.sqrt((dados.totalRodada||0) / PORTA_RENASCER));
+
+function pintarRenascer(){
+  if(!$('#painel-renascer').classList.contains('on')) return;
+  const ganha = almasQueGanha();
+  const falta = PORTA_RENASCER - (dados.totalRodada||0);
+
+  $('#listaRenascer').innerHTML = `
+    <div class="renascer-caixa">
+      <h3>Almas que cê já tem</h3>
+      <div class="grande">👻 ${num(dados.almas||0)}</div>
+      <div class="sub">valendo <b>+${((multAlmas()-1)*100).toFixed(0)}%</b> em tudo, pra sempre
+        · ${dados.renascimentos||0} renascimento${(dados.renascimentos||0) === 1 ? '' : 's'}</div>
+    </div>
+
+    <div class="renascer-caixa">
+      <h3>Se renascer agora</h3>
+      <div class="grande">+ ${num(ganha)} 👻</div>
+      <div class="sub">${ganha > 0
+        ? `ficaria com <b>${num((dados.almas||0) + ganha)}</b> almas
+           (+${(((1 + ((dados.almas||0)+ganha)*.02)-1)*100).toFixed(0)}% em tudo)`
+        : `junta mais <b>${num(Math.max(0, falta))}</b> doces nesta rodada pra valer a pena`}</div>
+    </div>
+
+    <div class="renascer-caixa">
+      <p><b>O que cê perde:</b> doces, ajudantes, melhorias de clique e todas as especiais
+      compradas.<br><br>
+      <b>O que fica pra sempre:</b> as almas, os troféus, as caras da abóbora, os teus
+      números e o que cê já aprendeu.<br><br>
+      Cada alma dá <b>+2% em tudo</b>. Com 50 almas, a rodada seguinte corre ao dobro.</p>
+    </div>
+
+    <button class="btn-renascer ${ganha > 0 ? '' : 'travado'}" onclick="renascer()">
+      ${ganha > 0 ? `👻 Renascer e ganhar ${num(ganha)} almas` : '🔒 Ainda não dá pra renascer'}
+    </button>`;
+}
+
+function renascer(){
+  const ganha = almasQueGanha();
+  if(ganha < 1) return recado(`Junta 1 bilhão numa rodada primeiro 👻`);
+  if(!confirm(`Renascer agora?\n\nCê ganha ${ganha} alma${ganha === 1 ? '' : 's'} `
+    + `(+${ganha*2}% em tudo, pra sempre).\n\nMas perde teus doces, ajudantes, melhorias `
+    + `e especiais. Troféus e caras ficam.`)) return;
+
+  const guarda = {
+    almas: (dados.almas||0) + ganha,
+    renascimentos: (dados.renascimentos||0) + 1,
+    total: dados.total, cliques: dados.cliques, douradas: dados.douradas,
+    maiorCombo: dados.maiorCombo, conquistas: dados.conquistas, cara: dados.cara,
+    som: dados.som, avisos: dados.avisos, destravado: dados.destravado,
+    admUsado: dados.admUsado, avisouPorta: dados.avisouPorta,
+    comecou: dados.comecou, tempoJogado: dados.tempoJogado,
+    melhorPorSeg: dados.melhorPorSeg, chefoesGanhos: dados.chefoesGanhos,
+    maldicoesEspantadas: dados.maldicoesEspantadas
+  };
+  dados = Object.assign(vazio(), guarda);
+  limparBolo(); moradoresAgora = 'refazer';
+  gravar();
+  festaDeAlmas();
+  conferirConquistas();          /* o troféu de Renascido cai agora, não no tique seguinte */
+  pintarTudo(); pintarConquistas(); pintarEspeciais(true); pintarRenascer();
+  recado(`👻 Renasceu com ${num(guarda.almas)} almas!`);
+}
+
+function festaDeAlmas(){
+  for(let i = 0; i < 30; i++){
+    const f = document.createElement('div');
+    f.className = 'alminha';
+    f.textContent = '👻';
+    f.style.left = Math.random() * 100 + 'vw';
+    f.style.top = '-40px';
+    f.style.animationDelay = Math.random() * .6 + 's';
+    document.body.appendChild(f);
+    setTimeout(() => f.remove(), 2600);
+  }
 }
 
 /* ---------------------------------------------------------
@@ -925,6 +1146,10 @@ function pintarNumeros(){
     cx('Melhorias', MELHORIAS.reduce((s,m) => s + (dados.melhorias[m.id]||0), 0) + ' níveis') +
     cx('Troféus', `${dados.conquistas.length} de ${CONQUISTAS.length}`) +
     cx('Especiais', `${dados.especiais.length} de ${ESPECIAIS.length}`) +
+    cx('Almas', num(dados.almas||0) + ' 👻') +
+    cx('Renascimentos', (dados.renascimentos||0)) +
+    cx('Chefões derrubados', (dados.chefoesGanhos||0) + ' 👹') +
+    cx('Maldições espantadas', (dados.maldicoesEspantadas||0) + ' ✨') +
     cx('Quem mais rende',
        campeao && campeao.rende > 0
          ? `${campeao.b.ic} ${campeao.b.nome} — ${num(campeao.rende)}/s`
@@ -954,6 +1179,7 @@ function pintarPlacar(){
   $('#contaBichos').textContent = nb ? nb + ' no time' : '';
   $('#contaTrofeus').textContent = dados.conquistas.length + '/' + CONQUISTAS.length;
   $('#contaEspeciais').textContent = dados.especiais.length + '/' + ESPECIAIS.length;
+  $('#contaAlmas').textContent = (dados.almas||0) ? num(dados.almas) + ' almas' : '';
 
   const pct = Math.round(dados.conquistas.length / CONQUISTAS.length * 100);
   $('#trofNum').textContent = `${dados.conquistas.length} de ${CONQUISTAS.length}`;
@@ -966,7 +1192,7 @@ function pintarPlacar(){
 }
 
 const pintarTudo = () => {
-  pintarPlacar(); pintarLoja(); pintarCenario(); pintarFase(); pintarNumeros();
+  pintarPlacar(); pintarLoja(); pintarCenario(); pintarFase(); pintarNumeros(); pintarRenascer();
 };
 
 function trocarAba(qual){
@@ -978,6 +1204,7 @@ function trocarAba(qual){
   $('#loteBarra').style.display = (qual === 'cliques' || qual === 'bichos') ? '' : 'none';
   if(qual === 'especiais') pintarEspeciais(true);
   if(qual === 'numeros') pintarNumeros();
+  if(qual === 'renascer') pintarRenascer();
 }
 
 function recado(txt){
@@ -1020,7 +1247,8 @@ function tique(){
   ultimo = agora;
 
   const ganho = porSegundo() * dt;
-  if(ganho > 0){ dados.doces += ganho; dados.total += ganho; }
+  if(ganho > 0){ dados.doces += ganho; dados.total += ganho;
+                 dados.totalRodada = (dados.totalRodada||0) + ganho; }
   dados.tempoJogado = (dados.tempoJogado||0) + dt;
   const ps = porSegundo();
   if(ps > (dados.melhorPorSeg||0)) dados.melhorPorSeg = ps;
@@ -1034,6 +1262,16 @@ function tique(){
   if($('#painel-especiais').classList.contains('on')) pintarEspeciais();
   conferirPorta();
   talvezSoltarDourada();
+
+  /* o chefão e a maldição têm hora pra acabar */
+  if(chefao){
+    if(agora > chefao.ate) perdeuChefao();
+    else pintarChefao();
+  }else talvezChamarChefao();
+
+  if(maldicao){
+    if(agora > maldicao.ate) espantarMaldicao(false);
+  }else talvezSoltarMaldicao();
   conferirConquistas();
   pintarTudo();
 }
@@ -1224,6 +1462,13 @@ function admBonus(tipo){
   fecharAdm();
   pintarTudo();
 }
+function admChefao(){ fecharAdm(); chamarChefao(); }
+function admMaldicao(){ fecharAdm(); soltarMaldicao(); }
+function admAlmas(q){
+  dados.almas = Math.max(0, (dados.almas||0) + q);
+  pintarRenascer();
+  depoisDoAdm(`+${q} almas`);
+}
 function admEspeciais(dar){
   dados.especiais = dar ? ESPECIAIS.map(e => e.id) : [];
   limparBolo();
@@ -1322,6 +1567,8 @@ function comecarJogo(){
   rodando = true;
   contarTempoFora();
   marcarProximaDourada();
+  marcarProximoChefao();
+  marcarProximaMaldicao();
   ultimo = Date.now();
   setInterval(tique, 100);
   setInterval(gravar, 10000);
@@ -1339,6 +1586,8 @@ pintarBotaoAvisos();
 
 $('#abobora').addEventListener('pointerdown', clicar);
 $('#dourada').addEventListener('pointerdown', pegarDourada);
+$('#chefaoBicho').addEventListener('pointerdown', baterNoChefao);
+$('#maldicao').addEventListener('pointerdown', () => espantarMaldicao(true));
 $('#travaSenha').addEventListener('keydown', ev => { if(ev.key === 'Enter') tentarSenha(); });
 
 document.addEventListener('visibilitychange', () => { if(document.hidden) gravar(); });
