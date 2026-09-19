@@ -381,30 +381,6 @@ body{
   100%{transform:translateY(92vh) rotate(420deg);opacity:0}
 }
 
-/* ---- a abóbora chefão ---- */
-#chefao{
-  position:fixed;inset:0;z-index:90;display:none;flex-direction:column;align-items:center;
-  justify-content:center;gap:14px;background:rgba(20,2,8,.86);backdrop-filter:blur(3px);
-  padding:24px;text-align:center
-}
-#chefao.on{display:flex;animation:entraChefe .3s ease}
-@keyframes entraChefe{from{opacity:0}to{opacity:1}}
-#chefao h2{font-size:1.5rem;color:var(--sangue);text-shadow:0 0 20px rgba(255,84,112,.6)}
-#chefao .bicho{
-  font-size:7.5rem;line-height:1;cursor:pointer;user-select:none;
-  filter:drop-shadow(0 0 40px rgba(255,84,112,.8));transition:transform .05s
-}
-#chefao .bicho:active{transform:scale(.88)}
-#chefao .bicho.bateu{animation:bateuChefe .16s}
-@keyframes bateuChefe{0%{transform:scale(1)}40%{transform:scale(1.12) rotate(-5deg);filter:brightness(2)}100%{transform:scale(1)}}
-#chefao .vida-fora{width:100%;max-width:340px;height:22px;background:rgba(0,0,0,.55);
-  border:2px solid var(--sangue);border-radius:99px;overflow:hidden}
-#chefao .vida-dentro{height:100%;background:linear-gradient(90deg,#ff2d55,#ff8a3d);
-  transition:width .12s;border-radius:99px}
-#chefao .conta{font-size:2.2rem;font-weight:900;color:var(--ouro);
-  font-variant-numeric:tabular-nums;line-height:1}
-#chefao .dica{font-size:.82rem;color:var(--texto2);max-width:300px;line-height:1.5}
-
 /* ---- a maldição ---- */
 #maldicao{
   position:fixed;font-size:3.2rem;cursor:pointer;z-index:45;display:none;
@@ -658,8 +634,7 @@ body{
       <button onclick="admBonus('turbo')">⚡ Turbo</button>
     </div></div>
 
-    <div class="grupo"><div class="lab">Chefão, maldição e almas</div><div class="btns">
-      <button onclick="admChefao()">👹 Chamar o chefão</button>
+    <div class="grupo"><div class="lab">Maldição e almas</div><div class="btns">
       <button onclick="admMaldicao()">👻 Soltar maldição</button>
       <button onclick="admAlmas(10)">+10 almas</button>
       <button onclick="admAlmas(100)">+100 almas</button>
@@ -688,14 +663,6 @@ body{
   </div>
 </div></div>
 
-<div id="chefao">
-  <h2>👹 A ABÓBORA CHEFÃO!</h2>
-  <div class="conta" id="chefaoTempo">20</div>
-  <div class="bicho" id="chefaoBicho">🎃</div>
-  <div class="vida-fora"><div class="vida-dentro" id="chefaoVida" style="width:100%"></div></div>
-  <p class="dica" id="chefaoDica">Clica nela sem parar antes do tempo acabar!</p>
-</div>
-
 <div id="maldicao">👻</div>
 
 <div id="dourada">🎃</div>
@@ -708,6 +675,6 @@ body{
   </div>
 </div>
 
-<script src="jogo.js?v=10"></script>
+<script src="jogo.js?v=11"></script>
 </body>
 </html>

@@ -108,18 +108,6 @@ coisa. Desenhar a lista leva 1,4 ms e um passo do jogo 0,77 ms, com as 3.350 no 
 > **O que é justo dizer:** as do fundo da escada (10.000 de um bicho, 500 douradas) são
 > mais miragem que meta. Existem pra escada nunca acabar, não pra serem todas conquistadas.
 
-## 👹 A Abóbora Chefão
-
-De tempos em tempos ela invade a tela: uma abóbora gigante com barra de vida e **20
-segundos** pra cê derrubar no braço.
-
-**A vida dela é medida no TEU clique** — sempre 24 pancadas, seja teu dedo fraco ou
-monstruoso. Assim ela continua sendo desafio no começo e no fim do jogo, em vez de virar
-impossível ou piada. E o combo conta na pancada, então clicar rápido ajuda de verdade.
-
-O prêmio também é medido na tua produção: quem produz pouco ganha pouco, quem produz muito
-ganha muito. Perdeu, ela foge rindo.
-
 ## 👻 As maldições
 
 O contrário da dourada. Um fantasma aparece e **come metade da tua produção** até alguém
@@ -192,8 +180,8 @@ clicker não é o número subindo — é a coisa que aconteceu sem a pessoa pedi
 
 ## Troféus que não são só enfeite
 
-São 39, e **cada um dá +2% em tudo**. Isso muda o que eles são: em vez de uma medalhinha
-pra olhar, viram um motivo pra ir atrás dos que faltam. Com os 39, é +78% no jogo inteiro.
+São 36, e **cada um dá +2% em tudo**. Isso muda o que eles são: em vez de uma medalhinha
+pra olhar, viram um motivo pra ir atrás dos que faltam. Com os 36, é +72% no jogo inteiro.
 
 ## Enquanto a pessoa está fora
 
@@ -281,6 +269,13 @@ perde a graça rápido.
 
 > A senha do adm também está no código, pela mesma razão da outra: sem servidor, não tem
 > onde guardar segredo. Ela serve pra esconder o botão da visita, não pra trancar nada.
+
+## Quando alguma coisa sai do jogo
+
+Troféu ou melhoria especial que deixa de existir continua guardada no save de quem já
+jogou — e contaria bônus de uma coisa que não existe mais. Na hora de carregar, o jogo
+**joga fora o que não está mais na lista**. Foi o que aconteceu quando a Abóbora Chefão
+saiu e os três troféus dela foram junto.
 
 ## Onde as coisas ficam
 

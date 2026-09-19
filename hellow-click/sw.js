@@ -1,8 +1,12 @@
 /* Guarda o jogo pra abrir sem internet — um clicker é coisa de abrir
    no ônibus, na fila, onde o sinal não ajuda. Pedido pra fora do site
    passa direto, e um arquivo que falhou nunca vira a página. */
-const CACHE = 'hellow-click-v10';
-const ARQUIVOS = ['./', './index.html', './jogo.js?v=10', './manifest.webmanifest', './icone.svg'];
+const CACHE = 'hellow-click-v11';
+/* sem o ?v= aqui: essa lista já desencontrou duas vezes do número que o
+   index.html pede. O jogo.js real entra no cache no primeiro carregamento
+   (o fetch guarda o endereço que foi pedido de verdade), e sem internet o
+   ignoreSearch lá embaixo acha ele com qualquer versão. */
+const ARQUIVOS = ['./', './index.html', './jogo.js', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {
   self.skipWaiting();
