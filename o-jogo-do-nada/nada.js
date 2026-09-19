@@ -251,7 +251,8 @@ const TROFEUS = [
   { id:'bichos',  e:'🐛', nome:'Apanhador',         desc:'Cair no bichinho, na borboleta e na mosca' },
   { id:'tudo',    e:'🧨', nome:'Caiu em tudo',      desc:'Cair em todas as tentações, uma vez cada' },
   { id:'teimoso', e:'🔁', nome:'Teimoso',           desc:'Tentar 50 vezes' },
-  { id:'trapaceiro', e:'🔓', nome:'Trapaceiro',     desc:'Descobrir o modo administrador' }
+  { id:'trapaceiro', e:'🔓', nome:'Trapaceiro',     desc:'Descobrir o modo administrador' },
+  { id:'saiu',    e:'🚶', nome:'Saiu pela porta',  desc:'Sair de propósito em vez de cair' }
 ];
 
 function ganharTrofeu(id){
@@ -396,6 +397,8 @@ let contaFalsa = null;
 let sumico = null;      /* o agendamento que tira a tentação da tela */
 let invencivel = false;        /* modo adm: tocar não derruba */
 let forcarTraicao = null;      /* modo adm: null = sorteio normal */
+let saindo = false;            /* true só durante a saída de propósito */
+let seguraSair = null;         /* o agendamento do "segura pra sair" */
 
 function carregar(){
   try{
@@ -447,6 +450,8 @@ function comecar(){
   jaMostradas.clear();
   limparTentacao();
   document.body.className = '';
+  $('#btSair').classList.add('on');
+  $('#sairTxt').textContent = '✕ segura pra sair';
   mostrar('jogo');
   pintarCrono();
   clearInterval(relogio);
@@ -484,7 +489,7 @@ let ultimoBloqueio = 0;
 
 function perder(oQue){
   if(estado !== 'jogando') return;
-  if(invencivel){
+  if(invencivel && !saindo){
     /* o escudo do adm: avisa de vez em quando pra ninguém achar
        que o jogo travou */
     if(Date.now() - ultimoBloqueio > 1200){
@@ -502,13 +507,16 @@ function perder(oQue){
 
   dados.tentativas++;
   const culpa = oQue || 'nada';
-  dados.quedas[culpa] = (dados.quedas[culpa] || 0) + 1;
+  /* sair de propósito não é cair: não conta no "o que mais te derruba" */
+  if(culpa !== 'saiu') dados.quedas[culpa] = (dados.quedas[culpa] || 0) + 1;
 
   const recordeNovo = s > dados.recorde;
   if(recordeNovo) dados.recorde = s;
   conferirTrofeus();
   gravar();
 
+  $('#sobPerdeu').textContent = culpa === 'saiu' ? 'cê saiu de propósito'
+                                                 : 'cê fez alguma coisa';
   $('#tempoFeito').textContent = tempoBonito(s);
   $('#novoRec').style.display = recordeNovo && s >= 1 ? '' : 'none';
   $('#notaPerdeu').textContent = recadoDaQueda(culpa, s);
@@ -519,6 +527,8 @@ function perder(oQue){
   $('#metasGanhas').innerHTML =
     (ganhas > 0 ? `🏆 <b>${ganhas} meta${ganhas > 1 ? 's' : ''} nova${ganhas > 1 ? 's' : ''}!</b><br>` : '')
     + (prox ? `próxima: <b>#${prox.n} ${prox.nome}</b> — ${tempoLongo(prox.seg)}` : '');
+  soltarSair();
+  $('#btSair').classList.remove('on');
   limparTentacao();
   document.body.className = '';
   mostrar('perdeu');
@@ -540,6 +550,7 @@ function recadoDaQueda(culpa, s){
     erro:      'Não tinha erro nenhum. O erro era acreditar.',
     contagem:  'A contagem não ia terminar em nada.',
     escuro:    'A luz nunca apagou de verdade.',
+    saiu:      'Cê segurou o botão de sair. O tempo ficou salvo do mesmo jeito.',
     fimfalso:  'O jogo não tinha acabado. Cê acreditou.',
     bicho:     'Era só um bichinho passando.',
     bicho2:    'Era só uma borboleta.',
@@ -862,6 +873,7 @@ function mostrar(qual){
        digitar a senha no meio da partida seria perder na primeira letra */
     if($('#adm').classList.contains('on')) return;
     if(e.target && e.target.closest && e.target.closest('#btAdmJogo')) return;
+    if(e.target && e.target.closest && e.target.closest('#btSair')) return;
     e.preventDefault();
     perder(tentacaoNaTela);
   }, { passive:false, capture:true }));
@@ -1058,6 +1070,73 @@ function desarmarApagar(){
 
 if(dados.admUsado) $('#btAdmJogo').classList.add('on');
 pintarAdm();
+
+/* =========================================================
+   ✕ O BOTÃO DE SAIR
+
+   Sem ele, a única forma de terminar uma partida era perder.
+   Mas um botão de sair num jogo em que apertar derruba seria
+   a armadilha mais cruel de todas — então ele não obedece a
+   um toque: tem que SEGURAR um segundo e meio.
+
+   Tocar de leve nele não derruba (ele é zona segura, igual
+   ao Clipy) — só explica que é pra segurar.
+   ========================================================= */
+const SEGURA = 1500;
+let comecouASegurar = 0;
+let enchendo = null;
+
+function apertouSair(){
+  if(estado !== 'jogando') return;
+  comecouASegurar = Date.now();
+  $('#btSair').classList.add('segurando');
+  $('#sairTxt').textContent = 'segurando…';
+  clearInterval(enchendo);
+  enchendo = setInterval(() => {
+    const quanto = Math.min((Date.now() - comecouASegurar) / SEGURA, 1);
+    $('#sairEnche').style.width = (quanto * 100) + '%';
+    if(quanto >= 1) sair();
+  }, 50);
+  clearTimeout(seguraSair);
+  seguraSair = setTimeout(sair, SEGURA);
+}
+
+function soltarSair(){
+  const segurou = comecouASegurar && Date.now() - comecouASegurar;
+  clearInterval(enchendo);
+  clearTimeout(seguraSair);
+  comecouASegurar = 0;
+  const bt = $('#btSair');
+  if(!bt) return;
+  bt.classList.remove('segurando');
+  $('#sairEnche').style.width = '0';
+  /* soltou antes da hora: explica, em vez de simplesmente não fazer nada */
+  $('#sairTxt').textContent = (segurou && estado === 'jogando')
+    ? 'segura mais um pouco!' : '✕ segura pra sair';
+  if(segurou && estado === 'jogando'){
+    setTimeout(() => { if(!comecouASegurar) $('#sairTxt').textContent = '✕ segura pra sair'; }, 1600);
+  }
+}
+
+function sair(){
+  if(estado !== 'jogando') return;
+  clearInterval(enchendo);
+  clearTimeout(seguraSair);
+  comecouASegurar = 0;
+  ganharTrofeu('saiu');
+  saindo = true;            /* passa por cima do invencível do adm */
+  perder('saiu');
+  saindo = false;
+}
+
+$('#btSair').addEventListener('pointerdown', e => { e.stopPropagation(); apertouSair(); });
+/* segurar um segundo e meio no celular abriria o menu de copiar em cima
+   do botão: aqui ele é barrado sem que isso conte como fazer algo */
+$('#btSair').addEventListener('contextmenu', e => e.preventDefault());
+['pointerup','pointerleave','pointercancel'].forEach(ev =>
+  $('#btSair').addEventListener(ev, soltarSair));
+/* soltar com o dedo já fora do botão também conta como soltar */
+document.addEventListener('pointerup', () => { if(comecouASegurar) soltarSair(); });
 
 mostrar('inicio');
 
