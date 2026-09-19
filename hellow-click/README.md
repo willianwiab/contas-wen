@@ -37,9 +37,9 @@ pra continuarem sendo uma decisão. Se fossem baratas viravam só mais um botão
 
 | | O que faz | Pra quem |
 |---|---|---|
-| 🖱️ **9 melhorias de clique** | somam no valor de cada toque | quem tá com o jogo aberto |
-| 👹 **12 ajudantes** | rendem sozinhos por segundo | quem fechou e foi fazer outra coisa |
-| ⭐ **1.859 especiais** | multiplicam o que já existe (1.000 são do clique) | quem já tem bastante de alguma coisa |
+| 🖱️ **16 melhorias de clique** | somam no valor de cada toque | quem tá com o jogo aberto |
+| 👹 **20 ajudantes** | rendem sozinhos por segundo | quem fechou e foi fazer outra coisa |
+| ⭐ **3.350 especiais** | multiplicam o que já existe (1.867 são do clique) | quem já tem bastante de alguma coisa |
 
 Um clicker só com clique cansa a mão. Um só com ajudante vira uma planilha que se olha.
 O jogo é a conversa entre os dois.
@@ -63,7 +63,7 @@ anterior, então é a soma de uma progressão geométrica. Dez morcegos no come�
 e não 200. O botão mostra o total antes de cê apertar, e "o máximo" calcula quantos cabem
 no bolso — exatamente quantos, nunca um a mais.
 
-## ⭐ As 1.859 melhorias especiais — 1.000 delas só pro clique
+## ⭐ As 3.350 melhorias especiais — 1.867 delas só pro clique
 
 Compras **únicas** que **multiplicam**, em vez de somar mais um pedacinho. E são quase duas
 mil — mas **nenhuma escrita à mão**.
@@ -103,7 +103,7 @@ baratas que cê já consegue comprar**, avisa quantas ficaram esperando, e embai
 **três mais perto de abrir** — pra sempre ter um alvo à vista.
 
 E a conta dos multiplicadores fica **guardada**, refeita só quando alguém compra alguma
-coisa. Desenhar a lista leva 1,3 ms e um passo do jogo 0,36 ms, com as 1.859 no ar.
+coisa. Desenhar a lista leva 1,4 ms e um passo do jogo 0,77 ms, com as 3.350 no ar.
 
 > **O que é justo dizer:** as do fundo da escada (10.000 de um bicho, 500 douradas) são
 > mais miragem que meta. Existem pra escada nunca acabar, não pra serem todas conquistadas.
@@ -150,7 +150,7 @@ que a anterior, e a seguinte mais ainda.
 No botão 🎭 do canto da cena dá pra trocar o rosto: caveira 💀, fantasma 👻, gato preto 🐈‍⬛,
 zumbi 🧟, lobisomem 🐺, vampiro 🧛, ceifador ☠️, lua 🌕, vela 🕯️, doce 🍬 e coroa 👑.
 
-São 12 no total, e **cada uma abre fazendo uma coisa diferente** — 1.000 cliques, 10
+São 15 no total, e **cada uma abre fazendo uma coisa diferente** — 1.000 cliques, 10
 fantasmas, comprar a Garra de Lobisomem, pegar 5 douradas, ganhar todos os troféus. As
 presas mostram o que falta, porque saber o preço é metade da vontade.
 
@@ -192,8 +192,8 @@ clicker não é o número subindo — é a coisa que aconteceu sem a pessoa pedi
 
 ## Troféus que não são só enfeite
 
-São 26, e **cada um dá +2% em tudo**. Isso muda o que eles são: em vez de uma medalhinha
-pra olhar, viram um motivo pra ir atrás dos que faltam. Com os 26, é +52% no jogo inteiro.
+São 39, e **cada um dá +2% em tudo**. Isso muda o que eles são: em vez de uma medalhinha
+pra olhar, viram um motivo pra ir atrás dos que faltam. Com os 39, é +78% no jogo inteiro.
 
 ## Enquanto a pessoa está fora
 
