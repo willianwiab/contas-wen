@@ -26,7 +26,14 @@ const MELHORIAS = [
   { id:'lua', art:'A',     cor:'#fef08a', ic:'🌕', nome:'Lua Cheia',          poder:15000,   base:2e7,    desc:'Cê não controla mais o que acontece.' },
   { id:'meteoro', art:'O', cor:'#f97316', ic:'☄️', nome:'Meteoro de Doce',    poder:120000,  base:3.5e8,  desc:'Cai do céu bem em cima da abóbora.' },
   { id:'pacto', art:'O',   cor:'#e879f9', ic:'📜', nome:'Pacto Assinado',     poder:9e5,     base:6e9,    desc:'Cê nem leu o que estava escrito.' },
-  { id:'cristal', art:'A', cor:'#67e8f9', ic:'🔮', nome:'Bola de Cristal',    poder:7e6,     base:1e11,   desc:'Ela clica antes de cê pensar em clicar.' }
+  { id:'cristal', art:'A', cor:'#67e8f9', ic:'🔮', nome:'Bola de Cristal',    poder:7e6,     base:1e11,   desc:'Ela clica antes de cê pensar em clicar.' },
+  { id:'chave',   art:'A', cor:'#d4a373', ic:'🗝️', nome:'Chave do Porão',     poder:5e7,     base:1.5e12, desc:'Tem coisa lá embaixo que ajuda a clicar.' },
+  { id:'olho',    art:'O', cor:'#818cf8', ic:'🪬', nome:'Olho que Tudo Vê',   poder:4e8,     base:2e13,   desc:'Ele acha a abóbora antes do teu dedo.' },
+  { id:'mutante', art:'A', cor:'#4ade80', ic:'🧬', nome:'Mão Mutante',        poder:3e9,     base:2.5e14, desc:'Cresceram mais três dedos. Melhor não olhar.' },
+  { id:'pocao',   art:'A', cor:'#c084fc', ic:'⚗️', nome:'Poção do Dedo',      poder:2.4e10,  base:3e15,   desc:'Bebeu e o dedo virou martelo.' },
+  { id:'varinha', art:'A', cor:'#fbbf24', ic:'🪄', nome:'Varinha Quebrada',   poder:2e11,    base:4e16,   desc:'Quebrada, mas ainda solta faísca em cada toque.' },
+  { id:'eclipse', art:'O', cor:'#64748b', ic:'🌑', nome:'Eclipse',            poder:1.6e12,  base:5e17,   desc:'Enquanto durar, teu dedo manda em tudo.' },
+  { id:'dedoinf', art:'O', cor:'#f472b6', ic:'♾️', nome:'Dedo Infinito',      poder:1.3e13,  base:6e18,   desc:'Clica sem parar mesmo quando cê solta.' }
 ];
 
 /* trabalham SOZINHOS — muitos, baratos no começo, é onde o jogo mora */
@@ -42,7 +49,15 @@ const BICHOS = [
   { id:'viva', plural:'abóboras vivas',     cor:'#fb923c', ic:'🎃',  nome:'Abóbora Viva',      porSeg:2.4e5, base:3.2e8, desc:'Ela virou funcionária. Não pergunta.' },
   { id:'cemiterio', plural:'cemitérios inteiros',cor:'#94a3b8', ic:'🪦',  nome:'Cemitério Inteiro', porSeg:1.4e6, base:2.4e9, desc:'Todo mundo lá dentro trabalha pra cê.' },
   { id:'mansao', plural:'mansões assombradas',   cor:'#a78bfa', ic:'🏚️',  nome:'Mansão Assombrada', porSeg:8e6,   base:1.8e10,desc:'Vem com os moradores inclusos.' },
-  { id:'portal', plural:'portais do além',   cor:'#67e8f9', ic:'🌀',  nome:'Portal do Além',    porSeg:5e7,   base:1.4e11,desc:'Doce chegando de um lugar que é melhor não saber.' }
+  { id:'portal', plural:'portais do além',   cor:'#67e8f9', ic:'🌀',  nome:'Portal do Além',    porSeg:5e7,   base:1.4e11,desc:'Doce chegando de um lugar que é melhor não saber.' },
+  { id:'relogio',  plural:'relógios parados', cor:'#94a3b8', ic:'🕰️',  nome:'Relógio Parado',    porSeg:3e8,   base:1.1e12,desc:'Ele para o tempo pra encher o saco de doce com calma.' },
+  { id:'vulcao',   plural:'vulcões de doce',  cor:'#f97316', ic:'🌋',  nome:'Vulcão de Doce',    porSeg:1.8e9, base:8e12,  desc:'Cuspindo caramelo quente sem parar.' },
+  { id:'disco',    plural:'discos voadores',  cor:'#86efac', ic:'🛸',  nome:'Disco Voador',      porSeg:1.1e10,base:6e13,  desc:'Abduz doce das casas do bairro inteiro.' },
+  { id:'dragao',   plural:'dragões',          cor:'#4ade80', ic:'🐉',  nome:'Dragão',            porSeg:7e10,  base:4.5e14,desc:'Dorme em cima de uma montanha de bala.' },
+  { id:'buraco',   plural:'buracos negros',   cor:'#6366f1', ic:'🕳️',  nome:'Buraco Negro',      porSeg:4.5e11,base:3.5e15,desc:'Puxa todo doce que passar perto. Nada escapa.' },
+  { id:'cometa',   plural:'cometas',          cor:'#67e8f9', ic:'🌠',  nome:'Cometa de Açúcar',  porSeg:3e12,  base:2.8e16,desc:'Passa uma vez por século e deixa um rastro doce.' },
+  { id:'templo',   plural:'portais antigos',  cor:'#f472b6', ic:'⛩️',  nome:'Portal Antigo',     porSeg:2e13,  base:2.2e17,desc:'Mais velho que o Halloween. Ninguém sabe quem construiu.' },
+  { id:'infinito', plural:'infinitos',        cor:'#fbbf24', ic:'♾️',  nome:'O Infinito',        porSeg:1.4e14,base:1.8e18,desc:'Doce que não acaba nunca. Literalmente.' }
 ];
 
 /* cada troféu dá +2% em tudo — assim caçar troféu não é só enfeite */
@@ -72,7 +87,20 @@ const CONQUISTAS = [
   { id:'c23', e:'⚔️', nome:'Lenda do chefão', desc:'Derrubar 25 chefões',tem:d => (d.chefoesGanhos||0) >= 25 },
   { id:'c24', e:'✨', nome:'Espanta-fantasma',desc:'Espantar 10 maldições',tem:d => (d.maldicoesEspantadas||0) >= 10 },
   { id:'c25', e:'👻', nome:'Renascido',       desc:'Renascer 1 vez',     tem:d => (d.renascimentos||0) >= 1 },
-  { id:'c26', e:'🌗', nome:'Alma velha',      desc:'Ter 100 almas',      tem:d => (d.almas||0) >= 100 }
+  { id:'c26', e:'🌗', nome:'Alma velha',      desc:'Ter 100 almas',      tem:d => (d.almas||0) >= 100 },
+  { id:'c27', e:'💎', nome:'Doce eterno',     desc:'1 quatrilhão',       tem:d => d.total >= 1e15 },
+  { id:'c28', e:'🌟', nome:'Doce cósmico',    desc:'1 sextilhão',        tem:d => d.total >= 1e21 },
+  { id:'c29', e:'🏋️', nome:'Dedo de aço',     desc:'100.000 cliques',    tem:d => d.cliques >= 1e5 },
+  { id:'c30', e:'🤖', nome:'Dedo de máquina', desc:'1 milhão de cliques',tem:d => d.cliques >= 1e6 },
+  { id:'c31', e:'🐲', nome:'Domador',         desc:'Ter 1 dragão',       tem:d => (d.bichos.dragao||0) >= 1 },
+  { id:'c32', e:'♾️', nome:'Tocou o infinito',desc:'Ter 1 Infinito',     tem:d => (d.bichos.infinito||0) >= 1 },
+  { id:'c33', e:'⭐', nome:'Cem especiais',   desc:'Comprar 100 especiais',   tem:d => (d.especiais||[]).length >= 100 },
+  { id:'c34', e:'🎖️', nome:'Mil especiais',   desc:'Comprar 1.000 especiais', tem:d => (d.especiais||[]).length >= 1000 },
+  { id:'c35', e:'🗡️', nome:'Terror dos chefes',desc:'Derrubar 100 chefões',   tem:d => (d.chefoesGanhos||0) >= 100 },
+  { id:'c36', e:'🧹', nome:'Espanta tudo',    desc:'Espantar 50 maldições',   tem:d => (d.maldicoesEspantadas||0) >= 50 },
+  { id:'c37', e:'🔁', nome:'Renascido x10',   desc:'Renascer 10 vezes',  tem:d => (d.renascimentos||0) >= 10 },
+  { id:'c38', e:'🌌', nome:'Mil almas',       desc:'Ter 1.000 almas',    tem:d => (d.almas||0) >= 1000 },
+  { id:'c39', e:'🎭', nome:'Cara de tudo',    desc:'Abrir todas as caras', tem:d => CARAS.every(c => c.tem(d)) }
 ];
 
 /* ---------------------------------------------------------
@@ -359,7 +387,13 @@ const CARAS = [
   { e:'🍬', nome:'Doce',       q:'1 milhão de doces',     tem:d => d.total >= 1e6 },
   { e:'🕯️', nome:'Vela',       q:'5 abóboras douradas',   tem:d => d.douradas >= 5 },
   { e:'☠️', nome:'Ceifador',   q:'10 ceifadores',         tem:d => (d.bichos.ceifador||0) >= 10 },
-  { e:'👑', nome:'Coroa',      q:'todos os troféus',      tem:d => d.conquistas.length >= CONQUISTAS.length }
+  { e:'🐉', nome:'Dragão',     q:'10 dragões',            tem:d => (d.bichos.dragao||0) >= 10 },
+  { e:'🕳️', nome:'Buraco',     q:'10 buracos negros',     tem:d => (d.bichos.buraco||0) >= 10 },
+  { e:'♾️', nome:'Infinito',   q:'1 Infinito',            tem:d => (d.bichos.infinito||0) >= 1 },
+  /* a Coroa não pode pedir o troféu "Cara de tudo", que por sua vez
+     pede a Coroa — um esperaria o outro pra sempre */
+  { e:'👑', nome:'Coroa',      q:'todos os outros troféus',
+    tem:d => d.conquistas.filter(id => id !== 'c39').length >= CONQUISTAS.length - 1 }
 ];
 
 /* o céu muda com a hora DE VERDADE do relógio da pessoa —
