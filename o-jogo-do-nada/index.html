@@ -223,6 +223,97 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
 .selo{background:#fff;color:#1d4ed8;font-size:.55rem;font-weight:900;padding:2px 6px;
   border-radius:6px;margin-left:5px;vertical-align:middle;letter-spacing:.06em}
 
+
+/* ---- coisas com cara de botão ---- */
+.cookies,.anuncio,.arrasta,.volume,.escolha,.interruptor{
+  background:var(--papel);border:1px solid var(--linha);border-radius:15px;padding:13px 16px;
+  font-size:.8rem;color:var(--texto2);max-width:290px;line-height:1.5;text-align:center}
+.cookies{display:flex;flex-direction:column;gap:9px;align-items:center}
+.anuncio{display:flex;flex-direction:column;gap:7px;align-items:center}
+.anuncio small{font-size:.55rem;letter-spacing:.2em;color:var(--texto3)}
+.anuncio b{color:var(--texto);font-size:.92rem}
+.interruptor{display:flex;flex-direction:column;gap:7px;align-items:center}
+.interruptor .chave{width:52px;height:29px;background:#2a2a33;border-radius:99px;
+  display:flex;align-items:center;padding:3px}
+.interruptor .chave i{width:23px;height:23px;background:var(--texto3);border-radius:50%}
+.interruptor small{font-size:.65rem;color:var(--texto3)}
+.caixinha{display:flex;align-items:center;gap:10px;background:var(--papel);
+  border:1px solid var(--linha);border-radius:15px;padding:14px 16px;font-size:.84rem;
+  color:var(--texto2);max-width:290px;line-height:1.4}
+.caixinha .quadro{width:22px;height:22px;border:2px solid var(--texto3);border-radius:6px;
+  flex-shrink:0}
+.arrasta .trilho,.volume .trilho{display:block;height:9px;background:#2a2a33;border-radius:99px;
+  margin-top:9px;position:relative}
+.arrasta .trilho i{position:absolute;left:0;top:-7px;width:23px;height:23px;
+  background:var(--texto2);border-radius:50%}
+.volume .trilho i{display:block;height:100%;background:var(--frio);border-radius:99px}
+.volume{display:flex;flex-direction:column;gap:4px}
+.escolha{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.escolha .op{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--texto)}
+.escolha .op i{width:17px;height:17px;border:2px solid var(--texto3);border-radius:50%}
+.bt-play{width:74px;height:74px;border-radius:50%;background:var(--papel);
+  border:2px solid var(--linha);color:var(--texto);font-size:1.7rem;padding-left:6px}
+.bolha{position:absolute;top:-7px;right:-7px;background:var(--errado);color:#fff;
+  font-size:.62rem;font-weight:900;min-width:22px;height:22px;border-radius:99px;
+  display:flex;align-items:center;justify-content:center;padding:0 5px}
+.bt-apertado{transform:translateX(-50%) translateY(5px)!important;
+  box-shadow:0 1px 0 rgba(0,0,0,.45)!important;filter:brightness(.82)}
+
+/* ---- o erro do Windows (o único botão seguro) ---- */
+.janela-erro{
+  width:290px;background:#d9d9d9;border:2px solid #fff;border-right-color:#5a5a5a;
+  border-bottom-color:#5a5a5a;border-radius:2px;box-shadow:0 16px 50px rgba(0,0,0,.7);
+  font-family:'Segoe UI',system-ui,sans-serif;color:#000;bottom:6%;
+  -webkit-user-select:none;user-select:none}
+.janela-erro .barra-titulo{background:linear-gradient(90deg,#0a246a,#a6caf0);color:#fff;
+  font-size:.76rem;font-weight:700;padding:4px 6px;display:flex;justify-content:space-between}
+.janela-erro .barra-titulo .x{background:#d9d9d9;color:#000;width:17px;height:15px;
+  display:flex;align-items:center;justify-content:center;font-size:.6rem;
+  border:1px solid #fff;border-right-color:#5a5a5a;border-bottom-color:#5a5a5a}
+.janela-erro .corpo{display:flex;gap:12px;padding:16px 14px;align-items:center}
+.janela-erro .ico{font-size:2.1rem}
+.janela-erro .msg{font-size:.78rem;line-height:1.5}
+.janela-erro .msg small{color:#555;font-size:.66rem}
+.janela-erro .pe{padding:0 14px 14px;text-align:center}
+.bt-win{background:#d9d9d9;border:1px solid #fff;border-right-color:#5a5a5a;
+  border-bottom-color:#5a5a5a;color:#000;font-size:.78rem;font-weight:600;
+  padding:5px 26px;border-radius:2px}
+.bt-win:active{border-color:#5a5a5a;border-right-color:#fff;border-bottom-color:#fff}
+
+/* ---- o Clipy ---- */
+/* embaixo, não no meio: uma das falas do Clipy é "teu cronômetro
+   continua correndo", e ficava tapando justamente o cronômetro */
+.clipy-caixa{display:flex;flex-direction:column;align-items:center;gap:8px;
+  bottom:5%;max-width:300px}
+.clipy-caixa .balao{background:#ffffe1;color:#000;border:1px solid #808000;border-radius:8px;
+  padding:13px 15px;font-size:.84rem;line-height:1.5;text-align:center;
+  box-shadow:0 12px 40px rgba(0,0,0,.6);animation:surge .3s ease}
+.clipy-caixa .clipy{font-size:3.4rem;animation:mexe 1.6s ease-in-out infinite}
+@keyframes mexe{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+
+/* ---- aviso de troféu ---- */
+.trofeu-pop{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:64px;z-index:60;
+  background:var(--ouro);color:#2b1a00;font-weight:900;font-size:.85rem;
+  padding:11px 20px;border-radius:99px;box-shadow:0 10px 34px rgba(0,0,0,.6);
+  animation:trofeuSobe 3.6s ease forwards;white-space:nowrap;max-width:92vw}
+@keyframes trofeuSobe{
+  0%{opacity:0;transform:translate(-50%,18px)}
+  10%,82%{opacity:1;transform:translate(-50%,0)}
+  100%{opacity:0;transform:translate(-50%,-12px)}
+}
+
+/* ---- troféus na lista ---- */
+.trofeu{display:flex;align-items:center;gap:11px;padding:11px;border-radius:13px;
+  background:var(--papel);border:1px solid var(--linha);margin-bottom:6px}
+.trofeu.tem{border-color:var(--ouro);background:rgba(255,215,94,.09)}
+.trofeu .e{font-size:1.5rem;width:32px;text-align:center}
+.trofeu.falta .e{filter:grayscale(1) brightness(.45)}
+.trofeu .meio{flex:1;min-width:0}
+.trofeu .nm{font-weight:800;font-size:.88rem}
+.trofeu.falta .nm{color:var(--texto2)}
+.trofeu .ds{font-size:.68rem;color:var(--texto3);margin-top:2px;line-height:1.35}
+
 /* =========== CONQUISTAS & RECORDES =========== */
 #metas{position:fixed;inset:0;z-index:30;background:var(--fundo);display:none;
   flex-direction:column}
@@ -381,6 +472,6 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
 </div>
 
 <script src="metas.js"></script>
-<script src="nada.js?v=3"></script>
+<script src="nada.js?v=4"></script>
 </body>
 </html>
