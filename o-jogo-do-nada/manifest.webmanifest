@@ -1,0 +1,10 @@
+{
+  "name": "O Jogo do Nada",
+  "short_name": "Nada",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "description": "O objetivo é não fazer nada. Encostou na tela, volta pro zero.",
+  "icons": [{ "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
