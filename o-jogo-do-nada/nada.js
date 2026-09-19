@@ -175,17 +175,206 @@ const TENTACOES = [
 
   { aos:360, id:'ultimo', dura:12000, html:
     `<button class="bt-roxo t-baixo">O ÚLTIMO BOTÃO
-      <small>prometo que é o último. depois dele acaba.</small></button>` }
+      <small>prometo que é o último. depois dele acaba.</small></button>` },
+
+  /* ===== coisas que não são botão mas pedem dedo igualzinho ===== */
+
+  { aos:24, id:'cookies', dura:8000, html:
+    `<div class="cookies t-baixo">🍪 Este jogo usa cookies para nada.
+      <span class="bt-azul" style="padding:9px 18px;font-size:.8rem">ACEITAR TODOS</span></div>` },
+
+  { aos:44, id:'chave', dura:8000, html:
+    `<div class="interruptor t-alto"><span>modo "fazer nada"</span>
+      <span class="chave"><i></i></span><small>desligado</small></div>` },
+
+  { aos:68, id:'anuncio', dura:9000, html:
+    `<div class="anuncio t-alto"><small>ANÚNCIO</small>
+      <b>Cansado de fazer nada?</b>
+      <span class="bt-cinza" style="padding:8px 14px;font-size:.75rem" id="pularAd">
+        PULAR EM 5</span></div>` },
+
+  { aos:86, id:'caixinha', dura:8000, html:
+    `<label class="caixinha t-baixo"><span class="quadro"></span>
+      Eu prometo que NÃO vou tocar na tela</label>` },
+
+  { aos:106, id:'arrasta', dura:9000, html:
+    `<div class="arrasta t-baixo"><small>arraste para não fazer nada</small>
+      <span class="trilho"><i></i></span></div>` },
+
+  { aos:143, id:'play', dura:7000, html:
+    `<button class="bt-play t-alto">▶</button>` },
+
+  { aos:182, id:'sinos', dura:8000, html:
+    `<button class="bt-cinza t-alto" style="position:relative">🔔 NOTIFICAÇÕES
+      <span class="bolha">12</span><small>doze coisas esperando por cê</small></button>` },
+
+  { aos:215, id:'escolha', dura:9000, html:
+    `<div class="escolha t-baixo"><small>cê está fazendo nada?</small>
+      <span class="op"><i></i> sim</span><span class="op"><i></i> não</span></div>` },
+
+  { aos:240, id:'volume', dura:8000, html:
+    `<div class="volume t-alto"><small>🔊 volume do nada</small>
+      <span class="trilho"><i style="width:0"></i></span><small>está no zero</small></div>` },
+
+  { aos:280, id:'apertado', dura:8000, html:
+    `<button class="bt-azul bt-apertado t-baixo">ALGUÉM JÁ ESTÁ APERTANDO
+      <small>não precisa apertar também</small></button>` },
+
+  { aos:305, id:'reinicia', dura:8000, html:
+    `<button class="bt-vermelho-listrado t-baixo">↻ REINICIAR O JOGO
+      <small>por que cê faria isso</small></button>` },
+
+  { aos:340, id:'fantasma', dura:9000, html:
+    `<button class="bt-cinza t-alto" style="opacity:.25">BOTÃO QUASE INVISÍVEL
+      <small>cê nem devia ter visto</small></button>` }
 ];
 
 /* fora de ordem no código porque os botões chegaram por último —
    o jogo ordena antes de usar, pra não depender de quem escreveu certo */
 TENTACOES.sort((a, b) => a.aos - b.aos);
 
+/* =========================================================
+   🏆 OS TROFÉUS
+
+   Diferentes das 1.000 metas: meta é tempo, troféu é coisa
+   que aconteceu. Por isso estes precisam ser guardados um a
+   um — não dá pra deduzir do recorde.
+   ========================================================= */
+const TROFEUS = [
+  { id:'clipy1',  e:'📎', nome:'Conheceu o Clipy',  desc:'Apertar o botão de verdade' },
+  { id:'clipy5',  e:'💬', nome:'Amigo do clipe',    desc:'Falar com o Clipy 5 vezes' },
+  { id:'clipy20', e:'🧲', nome:'Melhor amigo',      desc:'Falar com o Clipy 20 vezes' },
+  { id:'traido',  e:'🤦', nome:'Traído pelo clipe', desc:'O Clipy apertar um botão por cê' },
+  { id:'sortudo', e:'🍀', nome:'Sortudo',           desc:'10 conversas sem o Clipy te derrubar' },
+  { id:'resistiu',e:'⛔', nome:'Resistiu ao seguro', desc:'Deixar o botão de verdade ir embora' },
+  { id:'dezmin',  e:'🚪', nome:'Dez minutos',       desc:'Chegar aos 10 minutos' },
+  { id:'bichos',  e:'🐛', nome:'Apanhador',         desc:'Cair no bichinho, na borboleta e na mosca' },
+  { id:'tudo',    e:'🧨', nome:'Caiu em tudo',      desc:'Cair em todas as tentações, uma vez cada' },
+  { id:'teimoso', e:'🔁', nome:'Teimoso',           desc:'Tentar 50 vezes' }
+];
+
+function ganharTrofeu(id){
+  if(dados.trofeus.includes(id)) return;
+  dados.trofeus.push(id);
+  gravar();
+  const t = TROFEUS.find(x => x.id === id);
+  if(t) avisoTrofeu(`🏆 ${t.e} ${t.nome}`);
+}
+
+function conferirTrofeus(){
+  const q = dados.quedas || {};
+  if(q.bicho && q.bicho2 && q.mosca) ganharTrofeu('bichos');
+  if(dados.tentativas >= 50) ganharTrofeu('teimoso');
+  /* "todas" conta só as tentações que existem hoje — se alguma sair do
+     jogo, o troféu não fica impossível pra sempre */
+  if(TENTACOES.every(t => q[t.id])) ganharTrofeu('tudo');
+  if((dados.clipyFalou||0) >= 5) ganharTrofeu('clipy5');
+  if((dados.clipyFalou||0) >= 20) ganharTrofeu('clipy20');
+  if((dados.clipySemQueda||0) >= 10) ganharTrofeu('sortudo');
+}
+
+function avisoTrofeu(txt){
+  const el = document.createElement('div');
+  el.className = 'trofeu-pop';
+  el.textContent = txt;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3600);
+}
+
+/* =========================================================
+   🪟 O BOTÃO DE VERDADE
+
+   A cada dez minutos aparece um erro do Windows — e o botão
+   dele é a única coisa do jogo inteira que PODE ser apertada
+   sem perder. O jogo não avisa: descobrir é o prêmio.
+
+   Quem aperta ganha o Clipy. E o Clipy, em 5% das vezes,
+   aperta um botão por cê — e aí era bom enquanto durou.
+   ========================================================= */
+const A_CADA = 600;            /* dez minutos */
+let ultimoReal = -1;
+let clipyAberto = false;
+
+const FALAS_CLIPY = [
+  'Parece que cê está tentando não fazer nada. Quer ajuda?',
+  'Oi! Reparei que cê não faz nada há um tempão. Tudo bem aí?',
+  'Este é o único botão do jogo que dá pra apertar. Cê achou.',
+  'Cê sabia que apertar botão é fazer algo? Pois é. Menos este.',
+  'Eu fico aqui dentro do erro. É meio apertado, mas é calmo.',
+  'Nos outros 37 botões, não encosta. Neste, pode.',
+  'Se cê está lendo isto, o teu cronômetro continua correndo. De nada.',
+  'Vim só dar uma olhada. Não vou mexer em nada. Prometo.',
+  'Fazer nada é mais difícil do que parece, né?',
+  'Cê é a primeira pessoa a falar comigo hoje. Ou a única.'
+];
+
+function talvezBotaoReal(s){
+  const qual = Math.floor(s / A_CADA);
+  if(qual < 1 || qual === ultimoReal || clipyAberto) return;
+  ultimoReal = qual;
+  limparTentacao();
+  tentacaoNaTela = null;          /* não é tentação: encostar aqui não derruba */
+  $('#tentacao').innerHTML = `
+    <div class="janela-erro" id="seguro">
+      <div class="barra-titulo"><span>Erro</span><span class="x">✕</span></div>
+      <div class="corpo">
+        <span class="ico">⛔</span>
+        <span class="msg"><b>nada.exe</b><br>
+          A aplicação não conseguiu não fazer nada.<br>
+          <small>0x00000000</small></span>
+      </div>
+      <div class="pe"><button class="bt-win" id="btReal">OK</button></div>
+    </div>`;
+  $('#btReal').addEventListener('pointerdown', ev => { ev.stopPropagation(); apertouReal(); });
+  /* sem som: um jogo em que a pessoa fica parada em silêncio não pode
+     dar um susto que faça ela tocar a tela sem querer */
+  clearTimeout(sumico);
+  sumico = setTimeout(() => {
+    if($('#seguro')){ limparTentacao(); ganharTrofeu('resistiu'); }
+  }, 25000);
+}
+
+function apertouReal(){
+  if(estado !== 'jogando') return;
+  clearTimeout(sumico);
+  clipyAberto = true;
+  dados.clipyFalou = (dados.clipyFalou||0) + 1;
+  ganharTrofeu('clipy1');
+
+  /* os 5%: o Clipy aperta um botão por cê, e cê perde */
+  const traiu = Math.random() < .05;
+  const fala = traiu
+    ? 'Opa, deixa eu só apertar esse botãozinho aqui pra cê…'
+    : FALAS_CLIPY[Math.floor(Math.random() * FALAS_CLIPY.length)];
+
+  $('#tentacao').innerHTML = `
+    <div class="clipy-caixa" id="seguro">
+      <div class="balao">${fala}</div>
+      <div class="clipy">📎</div>
+    </div>`;
+
+  if(traiu){
+    dados.clipySemQueda = 0;
+    gravar();
+    setTimeout(() => {
+      clipyAberto = false;
+      ganharTrofeu('traido');
+      perder('clipy');
+    }, 2200);
+    return;
+  }
+
+  dados.clipySemQueda = (dados.clipySemQueda||0) + 1;
+  gravar();
+  conferirTrofeus();
+  sumico = setTimeout(() => { clipyAberto = false; limparTentacao(); }, 8000);
+}
+
 /* ---------------------------------------------------------
    O ESTADO
    --------------------------------------------------------- */
-const vazio = () => ({ recorde:0, tentativas:0, quedas:{} });
+const vazio = () => ({ recorde:0, tentativas:0, quedas:{}, trofeus:[],
+  clipyFalou:0, clipySemQueda:0 });
 
 let dados = carregar();
 let estado = 'parado';          /* parado · jogando · perdeu */
@@ -203,10 +392,14 @@ function carregar(){
     const cru = localStorage.getItem(CHAVE);
     if(cru){
       const o = JSON.parse(cru);
-      if(o && typeof o.recorde === 'number')
-        /* o 'medalhas' dos saves antigos não entra: as 1.000 metas
-           saem do recorde e não precisam ser guardadas uma a uma */
-        return Object.assign(vazio(), o, { quedas:o.quedas||{}, medalhas:undefined });
+      if(o && typeof o.recorde === 'number'){
+        /* o 'medalhas' dos saves antigos não entra: as 1.000 metas saem
+           do recorde. E troféu que saiu do jogo também não entra, senão
+           a tela contaria coisa que não existe mais. */
+        const vale = new Set(TROFEUS.map(t => t.id));
+        return Object.assign(vazio(), o, { quedas:o.quedas||{},
+          trofeus:(o.trofeus||[]).filter(id => vale.has(id)), medalhas:undefined });
+      }
     }
   }catch(e){ /* save torto: começa limpo em vez de travar */ }
   return vazio();
@@ -235,6 +428,8 @@ let antesDaPartida = 0;
 
 function comecar(){
   antesDaPartida = dados.recorde;
+  ultimoReal = -1;
+  clipyAberto = false;
   estado = 'jogando';
   comecouEm = Date.now();
   decorridoAntes = 0;
@@ -253,6 +448,8 @@ function passo(){
   pintarCrono(s);
   corDoFundo(s);
   talvezTentar(s);
+  talvezBotaoReal(s);
+  if(s >= A_CADA) ganharTrofeu('dezmin');
 }
 
 function pintarCrono(s = agoraSeg()){
@@ -276,6 +473,7 @@ function perder(oQue){
   if(estado !== 'jogando') return;
   const s = agoraSeg();
   estado = 'perdeu';
+  clipyAberto = false;
   clearInterval(relogio);
   clearInterval(contaFalsa);
   comecouEm = 0;
@@ -286,6 +484,7 @@ function perder(oQue){
 
   const recordeNovo = s > dados.recorde;
   if(recordeNovo) dados.recorde = s;
+  conferirTrofeus();
   gravar();
 
   $('#tempoFeito').textContent = tempoBonito(s);
@@ -349,7 +548,20 @@ function recadoDaQueda(culpa, s){
     continuar: 'Pra continuar fazendo nada era só… continuar.',
     confirma:  'Cê confirmou que não queria apertar. Apertando.',
     novo:      'Era novo. Agora está usado.',
-    ultimo:    'Era mesmo o último. Mas o jogo não acabou.'
+    ultimo:    'Era mesmo o último. Mas o jogo não acabou.',
+    cookies:   'Aceitou os cookies. Não tinha cookie nenhum.',
+    chave:     'Era um interruptor desenhado. Não ligava nada.',
+    anuncio:   'O "pular" nunca ia liberar.',
+    caixinha:  'Cê marcou a caixinha prometendo não tocar. Tocando.',
+    arrasta:   'Arrastar é tocar. Dobrado.',
+    play:      'Não tinha nada pra tocar.',
+    sinos:     'Não tinha notificação nenhuma. Nunca tem.',
+    escolha:   'Responder "sim, estou fazendo nada" é fazer algo.',
+    volume:    'O volume do nada já estava certo no zero.',
+    apertado:  'Cê apertou junto. Agora são dois.',
+    reinicia:  'Cê reiniciou. Era isso que ele queria.',
+    fantasma:  'Cê viu o quase invisível. E foi nele.',
+    clipy:     '📎 O Clipy apertou um botão por cê. Ele avisou que não ia mexer em nada.'
   }[culpa];
   return porQuem || 'Cê encostou na tela sem nada te pedir isso.';
 }
@@ -480,10 +692,13 @@ function pintarMetas(){
   $('#metasFiltros').innerHTML =
     `<button class="${faixaAberta === 'todas' ? 'on' : ''}" onclick="filtrarMetas('todas')">
        Todas</button>` +
+    `<button class="${faixaAberta === 'trofeus' ? 'on' : ''}" onclick="filtrarMetas('trofeus')">
+       🏆 Troféus ${dados.trofeus.length}/${TROFEUS.length}</button>` +
     FAIXAS.map(f => `<button class="${faixaAberta === f.id ? 'on' : ''}"
        onclick="filtrarMetas('${f.id}')">${f.ic} ${f.nome}</button>`).join('');
 
-  $('#metasLista').innerHTML = faixaAberta === 'todas' ? listaDeFaixas() : listaDaFaixa(faixaAberta);
+  $('#metasLista').innerHTML = faixaAberta === 'todas' ? listaDeFaixas()
+    : faixaAberta === 'trofeus' ? listaDeTrofeus() : listaDaFaixa(faixaAberta);
   $('#metasLista').scrollTop = 0;
 }
 
@@ -504,6 +719,22 @@ function listaDeFaixas(){
       <span class="cnt" style="color:${feitas ? f.cor : 'var(--texto3)'}">${feitas}/${f.n}</span>
     </button>`;
   }).join('');
+}
+
+/* os troféus são de coisa que aconteceu, não de tempo — por isso
+   ficam numa lista à parte das mil metas */
+function listaDeTrofeus(){
+  return `<div class="faixa-cab">🏆 troféus · ${dados.trofeus.length}/${TROFEUS.length}</div>`
+    + `<div class="nota-faixa">Estes não são de aguentar tempo: são de <b>coisa que
+        aconteceu</b>. Tem um deles que quase ninguém vai ver.</div>`
+    + TROFEUS.map(t => {
+        const tem = dados.trofeus.includes(t.id);
+        return `<div class="trofeu ${tem ? 'tem' : 'falta'}">
+          <span class="e">${tem ? t.e : '🔒'}</span>
+          <span class="meio"><span class="nm">${tem ? t.nome : '???'}</span>
+            <span class="ds">${t.desc}</span></span>
+        </div>`;
+      }).join('');
 }
 
 function listaDaFaixa(id){
@@ -552,7 +783,12 @@ function pintarRodape(){
     ganhar:'o botão de ganhar', foge:'o botão que foge', naotentacao:'o "não é tentação"',
     mini:'o botãozinho', gigante:'o botão gigante', emergencia:'a emergência',
     proibido:'o botão proibido', continuar:'o "continuar fazendo nada"',
-    confirma:'a confirmação', novo:'o botão novo', ultimo:'o último botão' };
+    confirma:'a confirmação', novo:'o botão novo', ultimo:'o último botão',
+    cookies:'os cookies', chave:'o interruptor', anuncio:'o anúncio',
+    caixinha:'a caixinha', arrasta:'o arrastador', play:'o play',
+    sinos:'as notificações', escolha:'o sim ou não', volume:'o volume',
+    apertado:'o já apertado', reinicia:'o reiniciar', fantasma:'o quase invisível',
+    clipy:'o Clipy' };
 
   el.innerHTML = dados.tentativas
     ? `<b>${dados.tentativas}</b> tentativa${dados.tentativas === 1 ? '' : 's'}`
@@ -573,7 +809,8 @@ function mostrar(qual){
       ? `teu recorde: <b>${tempoBonito(dados.recorde)}</b>`
       : 'cê ainda não tem recorde';
     const feitas = metasFeitas(dados.recorde);
-    $('#progInicio').innerHTML = `<b style="color:var(--texto2)">${feitas}</b> de 1.000 metas`;
+    $('#progInicio').innerHTML = `<b style="color:var(--texto2)">${feitas}</b> de 1.000 metas`
+      + ` · <b style="color:var(--ouro)">${dados.trofeus.length}</b> de ${TROFEUS.length} troféus`;
   }
   pintarRodape();
 }
@@ -589,6 +826,10 @@ function mostrar(qual){
 ['pointerdown','keydown','wheel','touchstart','contextmenu'].forEach(ev =>
   document.addEventListener(ev, e => {
     if(estado !== 'jogando') return;
+    /* a única exceção do jogo: o que estiver dentro do "seguro" pode
+       ser tocado. É o erro do Windows e o Clipy — e o jogo não conta
+       isso pra ninguém */
+    if(e.target && e.target.closest && e.target.closest('#seguro')) return;
     e.preventDefault();
     perder(tentacaoNaTela);
   }, { passive:false, capture:true }));

@@ -8,7 +8,7 @@ nada. Encostou em qualquer lugar — tela, tecla, rolagem — volta pro zero.
 Um jogo sobre nada só funciona se **fazer nada for difícil**. Ficar parado olhando um
 número subir não é jogo nenhum.
 
-Então o jogo passa o tempo inteiro **te tentando**. São **37 tentações**, em ordem de
+Então o jogo passa o tempo inteiro **te tentando**. São **49 tentações**, em ordem de
 descaramento:
 
 | Aos | O que aparece |
@@ -62,6 +62,56 @@ O que foge é o único que reage ao dedo antes de ser tocado: **mexer o ponteiro
 derruba** (só apertar derruba), então ele pode correr sem que chegar perto já seja perder.
 
 Todas são armadilha. Encostar em qualquer uma é encostar na tela.
+
+## 🪟 O botão de verdade
+
+**A cada dez minutos**, no meio de quarenta e nove armadilhas, aparece um **erro do
+Windows** — e o botão dele é a **única coisa do jogo inteiro que pode ser apertada sem
+perder**.
+
+O jogo **não avisa**. Depois de tanto tempo aprendendo que tocar é perder, quem aperta
+está apostando. Descobrir é o prêmio.
+
+### 📎 E aí vem o Clipy
+
+Quem aperta ganha uma visita do Clipy — o mesmo do [`clipy/`](../clipy/) — com balão
+amarelo e tudo. Ele tem dez falas, e elas sabem onde estão:
+
+> *"Nos outros 37 botões, não encosta. Neste, pode."*
+> *"Se cê está lendo isto, o teu cronômetro continua correndo. De nada."*
+> *"Vim só dar uma olhada. Não vou mexer em nada. Prometo."*
+
+Por isso o Clipy e o erro ficam **embaixo** da tela: uma das falas dele promete que o
+cronômetro continua correndo, e no meio da tela ele tapava justamente o cronômetro.
+
+### Os 5%
+
+Em **uma vez a cada vinte**, o Clipy diz:
+
+> *"Opa, deixa eu só apertar esse botãozinho aqui pra cê…"*
+
+E aperta. Cê perde. Era bom enquanto durou — e rende um troféu.
+
+## 🏆 Os troféus
+
+Diferentes das 1.000 metas: **meta é tempo, troféu é coisa que aconteceu**. Por isso estes
+precisam ser guardados um a um — não dá pra deduzir do recorde.
+
+| | Troféu | Como se pega |
+|---|---|---|
+| 📎 | Conheceu o Clipy | Apertar o botão de verdade |
+| 💬 | Amigo do clipe | Falar com o Clipy 5 vezes |
+| 🧲 | Melhor amigo | Falar com o Clipy 20 vezes |
+| 🤦 | Traído pelo clipe | O Clipy apertar um botão por cê |
+| 🍀 | Sortudo | 10 conversas sem ele te derrubar |
+| ⛔ | Resistiu ao seguro | Deixar o botão de verdade ir embora sem apertar |
+| 🚪 | Dez minutos | Chegar aos 10 minutos |
+| 🐛 | Apanhador | Cair no bichinho, na borboleta e na mosca |
+| 🧨 | Caiu em tudo | Cair em todas as tentações, uma vez cada |
+| 🔁 | Teimoso | Tentar 50 vezes |
+
+O "Caiu em tudo" conta só as tentações **que existem hoje** — se alguma sair do jogo, o
+troféu não fica impossível pra sempre.
 
 ## Três decisões que fazem diferença
 
