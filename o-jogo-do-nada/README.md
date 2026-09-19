@@ -110,6 +110,7 @@ precisam ser guardados um a um — não dá pra deduzir do recorde.
 | 🧨 | Caiu em tudo | Cair em todas as tentações, uma vez cada |
 | 🔁 | Teimoso | Tentar 50 vezes |
 | 🔓 | Trapaceiro | Descobrir o modo administrador |
+| 🚶 | Saiu pela porta | Sair de propósito em vez de cair |
 
 O "Caiu em tudo" conta só as tentações **que existem hoje** — se alguma sair do jogo, o
 troféu não fica impossível pra sempre.
@@ -173,6 +174,28 @@ fases, em vez de fingir que são alcançáveis:
 > 🗿 **Aqui ninguém chega.** Estas metas existem pra lista nunca acabar — não pra serem
 > pegas.
 
+## ✕ O botão de sair
+
+Antes dele, a única forma de terminar uma partida era **perder**. Começou, ou cê aguenta,
+ou cê cai.
+
+Mas um botão de sair num jogo em que **apertar derruba** seria a armadilha mais cruel de
+todas. Então ele não obedece a um toque: tem que **segurar um segundo e meio**, com uma
+barrinha enchendo pra cê ver quanto falta. Soltou antes, ele avisa *"segura mais um
+pouco!"* e volta pro zero.
+
+Tocar de leve nele **não derruba** — ele é zona segura, igual ao Clipy.
+
+Fica apagadinho no canto de baixo, só pra não virar muleta, e acende enquanto está sendo
+segurado.
+
+Sair **salva o tempo** como qualquer partida, mas **não conta no "o que mais te derruba"**:
+sair de propósito não é cair. A tela de fim muda o título pra *"cê saiu de propósito"*, e
+rende o troféu 🚶 **Saiu pela porta**.
+
+Segurar um botão por um segundo e meio no celular abriria o menu de copiar em cima dele —
+esse menu é barrado ali, sem que isso conte como fazer algo.
+
 ## ⚙️ Modo administrador
 
 Senha **1234**, no cadeado 🔒 da tela de começo. Depois de entrar uma vez, aparece um
@@ -191,6 +214,9 @@ senha no meio da partida seria perder na primeira letra. Por isso o painel intei
 | 🏅 | **Trocar o recorde** pra 1 minuto, 1 hora, 1 dia ou os 100 anos das 1.000 metas |
 | 🏆 | **Dar ou tirar todos os troféus** |
 | 💀 | **Recomeçar do zero** — e este pede confirmação em dois toques |
+
+O escudo do invencível **não prende ninguém dentro da partida**: o botão de sair passa por
+cima dele.
 
 O pulo do cronômetro **marca como já vistas** as tentações que ficaram pra trás. Sem isso,
 pular dez minutos despejava as quarenta e nove de uma vez na mesma décima de segundo.

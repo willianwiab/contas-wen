@@ -347,6 +347,21 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
   font-size:.82rem;color:var(--texto3);display:none}
 #btAdmJogo.on{display:block}
 
+/* ---- o botão de sair ----
+   fica apagadinho no canto pra não virar muleta, e só acende
+   enquanto está sendo segurado */
+#btSair{position:fixed;right:10px;bottom:10px;z-index:25;display:none;
+  padding:9px 13px;border-radius:14px;border:1px solid var(--linha);
+  background:rgba(255,255,255,.05);color:var(--texto3);font-size:.7rem;
+  font-weight:700;letter-spacing:.02em;opacity:.3;overflow:hidden;
+  transition:opacity .2s;-webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none}
+#btSair.on{display:block}
+#btSair.segurando{opacity:1;color:var(--texto)}
+#btSair .enche{position:absolute;left:0;top:0;bottom:0;width:0;
+  background:rgba(255,84,112,.35);transition:width .1s linear}
+#btSair .txt{position:relative}
+
 /* =========== CONQUISTAS & RECORDES =========== */
 #metas{position:fixed;inset:0;z-index:30;background:var(--fundo);display:none;
   flex-direction:column}
@@ -470,7 +485,7 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
 
   <!-- ===== perdeu ===== -->
   <section class="tela" id="tela-perdeu">
-    <div class="sob">cê fez alguma coisa</div>
+    <div class="sob" id="sobPerdeu">cê fez alguma coisa</div>
     <div class="tempo-feito" id="tempoFeito">0,0</div>
     <p class="perdeu-nota" id="notaPerdeu"></p>
     <p class="novo-rec" id="novoRec" style="display:none">🏆 RECORDE NOVO!</p>
@@ -498,6 +513,9 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
   <div class="filtros" id="metasFiltros"></div>
   <div class="lista-metas" id="metasLista"></div>
 </div>
+
+<button id="btSair"><span class="enche" id="sairEnche"></span
+  ><span class="txt" id="sairTxt">✕ segura pra sair</span></button>
 
 <button id="btAdmJogo" onclick="abrirAdm()" title="modo adm">🔒</button>
 
@@ -572,6 +590,6 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
 </div>
 
 <script src="metas.js"></script>
-<script src="nada.js?v=5"></script>
+<script src="nada.js?v=6"></script>
 </body>
 </html>
