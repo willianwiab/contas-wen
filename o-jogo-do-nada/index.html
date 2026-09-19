@@ -314,6 +314,39 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
 .trofeu.falta .nm{color:var(--texto2)}
 .trofeu .ds{font-size:.68rem;color:var(--texto3);margin-top:2px;line-height:1.35}
 
+
+/* ---- modo adm ---- */
+#adm{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+  padding:16px;background:rgba(10,10,12,.94)}
+#adm.on{display:flex}
+#adm .janela{background:var(--papel);border:2px solid #4cc9f0;border-radius:18px;
+  padding:18px 16px;max-width:400px;width:100%;max-height:92dvh;overflow-y:auto}
+#adm h3{color:#4cc9f0;font-size:1.05rem;text-align:center;margin-bottom:4px}
+#adm .sub{font-size:.74rem;color:var(--texto3);text-align:center;line-height:1.5;
+  margin-bottom:13px}
+#adm .grupo{margin-bottom:12px}
+#adm .lab{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--texto3);
+  font-weight:800;margin-bottom:5px}
+#adm .btns{display:flex;gap:5px;flex-wrap:wrap}
+#adm .btns button{background:rgba(76,201,240,.13);border:1px solid rgba(76,201,240,.4);
+  border-radius:10px;padding:8px 11px;font-size:.76rem;font-weight:800;color:#a9e6fb}
+#adm .btns button.perigo{background:rgba(255,84,112,.13);border-color:rgba(255,84,112,.4);
+  color:var(--errado)}
+#adm .btns button.on{background:#4cc9f0;color:#04202c}
+#adm select,#adm input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--linha);
+  background:var(--fundo);color:var(--texto);font-size:.88rem;outline:none;
+  -webkit-user-select:text;user-select:text}
+#adm input{text-align:center;font-size:1rem}
+#adm .fechar{width:100%;margin-top:6px;padding:11px;border-radius:12px;background:#4cc9f0;
+  color:#04202c;font-weight:900}
+#adm .erro{color:var(--errado);font-size:.8rem;font-weight:800;text-align:center;
+  min-height:1.2em;margin-top:7px}
+
+#btAdmJogo{position:fixed;left:10px;bottom:10px;z-index:25;width:32px;height:32px;
+  border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--linha);
+  font-size:.82rem;color:var(--texto3);display:none}
+#btAdmJogo.on{display:block}
+
 /* =========== CONQUISTAS & RECORDES =========== */
 #metas{position:fixed;inset:0;z-index:30;background:var(--fundo);display:none;
   flex-direction:column}
@@ -425,6 +458,7 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
     <div class="recorde" id="recInicio"></div>
     <button class="btn-metas" onclick="abrirMetas()">🏆 Conquistas &amp; Recordes</button>
     <div class="recorde" id="progInicio"></div>
+    <button class="btn calmo" onclick="abrirAdm()" style="font-size:.9rem">🔒</button>
   </section>
 
   <!-- ===== jogando ===== -->
@@ -465,6 +499,72 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
   <div class="lista-metas" id="metasLista"></div>
 </div>
 
+<button id="btAdmJogo" onclick="abrirAdm()" title="modo adm">🔒</button>
+
+<div id="adm"><div class="janela">
+  <div id="admTranca">
+    <h3>🔒 Modo administrador</h3>
+    <p class="sub">Neste jogo, digitar ADMIN no meio da partida<br>seria perder na hora.
+      Então é só aqui mesmo.</p>
+    <input id="admSenha" type="password" placeholder="senha" autocomplete="off"
+           autocapitalize="off" spellcheck="false" maxlength="24">
+    <div class="erro" id="admErro"></div>
+    <button class="fechar" onclick="tentarAdm()">Entrar</button>
+    <button class="fechar" style="background:none;color:var(--texto3);margin-top:2px"
+            onclick="fecharAdm()">Deixa pra lá</button>
+  </div>
+
+  <div id="admPainel" style="display:none">
+    <h3>⚙️ Modo administrador</h3>
+    <p class="sub">Aqui dá pra ver tudo sem esperar.<br>
+      Só lembra que o graçado é aguentar. 😅</p>
+
+    <div class="grupo"><div class="lab">🕐 Adiantar o cronômetro</div><div class="btns">
+      <button onclick="admPular(30)">+30s</button>
+      <button onclick="admPular(60)">+1min</button>
+      <button onclick="admPular(300)">+5min</button>
+      <button onclick="admPular(600)">+10min</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">🛡️ Modo invencível (tocar não derruba)</div>
+      <div class="btns">
+      <button id="btInvencivel" onclick="admInvencivel()">desligado</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">📎 O Clipy</div><div class="btns">
+      <button onclick="admClipy(false)">🪟 Chamar agora</button>
+      <button onclick="admClipy(true)" class="perigo">😈 Forçar a traição</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">😈 Mostrar uma tentação</div>
+      <select id="admTentacao"></select>
+      <div class="btns" style="margin-top:6px">
+        <button onclick="admMostrarTentacao()">Mostrar essa</button>
+        <button onclick="admLimparTentacao()">Limpar a tela</button>
+      </div>
+    </div>
+
+    <div class="grupo"><div class="lab">🏆 Recorde (destrava metas)</div><div class="btns">
+      <button onclick="admRecorde(60)">1 min</button>
+      <button onclick="admRecorde(3600)">1 hora</button>
+      <button onclick="admRecorde(86400)">1 dia</button>
+      <button onclick="admRecorde(3153600000)">as 1.000</button>
+      <button onclick="admRecorde(0)" class="perigo">zerar</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">🎖️ Troféus</div><div class="btns">
+      <button onclick="admTrofeus(true)">Dar todos</button>
+      <button onclick="admTrofeus(false)" class="perigo">Tirar todos</button>
+    </div></div>
+
+    <div class="grupo"><div class="lab">💀 Apagar tudo</div><div class="btns">
+      <button class="perigo" id="btApagar" onclick="admApagar()">Recomeçar do zero</button>
+    </div></div>
+
+    <button class="fechar" onclick="fecharAdm()">Fechar</button>
+  </div>
+</div></div>
+
 <div id="pausa">
   <div class="grande">🫥</div>
   <p class="lead">Cê saiu da tela.<br>O cronômetro parou — <b>fazer nada é estar aqui</b>.</p>
@@ -472,6 +572,6 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
 </div>
 
 <script src="metas.js"></script>
-<script src="nada.js?v=4"></script>
+<script src="nada.js?v=5"></script>
 </body>
 </html>
