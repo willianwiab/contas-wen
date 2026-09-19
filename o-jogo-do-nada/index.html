@@ -125,6 +125,115 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
 
 .contagem{font-size:.85rem;color:var(--frio);font-weight:800;letter-spacing:.06em}
 
+
+/* ---- o botão do "algo" (o algo é apertar o botão) ---- */
+.botao-roxo{
+  background:linear-gradient(180deg,#a78bfa,#6d28d9);color:#fff;font-weight:900;
+  font-size:1rem;padding:17px 26px;border-radius:18px;line-height:1.3;max-width:280px;
+  box-shadow:0 7px 0 #3d1478, 0 0 36px rgba(167,139,250,.45)
+}
+.botao-roxo small{display:block;font-size:.66rem;font-weight:800;opacity:.75;margin-top:5px}
+
+.botao-calmo{
+  background:var(--papel);border:1px solid var(--linha);color:var(--texto2);font-weight:800;
+  font-size:.92rem;padding:15px 22px;border-radius:16px;line-height:1.35;max-width:270px
+}
+.botao-calmo small{display:block;font-size:.66rem;color:var(--texto3);margin-top:4px}
+
+/* ---- a mosca andando pela tela ---- */
+.mosca{font-size:1.9rem;animation:voa 7s ease-in-out infinite}
+@keyframes voa{
+  0%{top:22%;left:18%}25%{top:70%;left:72%}50%{top:34%;left:80%}
+  75%{top:66%;left:22%}100%{top:22%;left:18%}
+}
+
+/* ---- o cronômetro falso ---- */
+.crono-falso{
+  background:var(--papel);border:1px solid var(--linha);border-radius:16px;padding:10px 20px;
+  text-align:center;opacity:.9
+}
+.crono-falso small{display:block;font-size:.58rem;color:var(--texto3);letter-spacing:.22em;
+  text-transform:uppercase;font-weight:800}
+.crono-falso b{display:block;font-size:1.9rem;font-weight:900;color:var(--errado);
+  font-variant-numeric:tabular-nums;line-height:1.1}
+
+/* ---- a tela "rachada" ---- */
+.rachadura{display:flex;flex-direction:column;align-items:center;gap:8px;
+  top:50%;transform:translate(-50%,-50%)!important;font-size:4.4rem;opacity:.85}
+.rachadura span{font-size:.82rem;color:var(--texto2);text-align:center;line-height:1.5}
+.rachadura b{color:var(--errado)}
+
+/* ---- os 99% que nunca chegam ---- */
+.carregando{background:var(--papel);border:1px solid var(--linha);border-radius:14px;
+  padding:13px 18px;min-width:230px}
+.carregando span{font-size:.82rem;color:var(--texto2)}
+.carregando b{color:var(--frio);font-weight:900}
+.carregando .barrinha{height:7px;background:rgba(0,0,0,.5);border-radius:99px;
+  margin-top:9px;overflow:hidden}
+.carregando .barrinha div{height:100%;background:var(--frio);border-radius:99px}
+
+/* ---- o pontinho ---- */
+.pontinho{width:7px;height:7px;border-radius:50%;background:var(--texto3);
+  top:50%;margin-top:120px;animation:cresce 10s ease-in-out}
+@keyframes cresce{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(4)}}
+
+/* =========== CONQUISTAS & RECORDES =========== */
+#metas{position:fixed;inset:0;z-index:30;background:var(--fundo);display:none;
+  flex-direction:column}
+#metas.on{display:flex}
+#metas .topo{padding:16px 16px 10px;border-bottom:1px solid var(--linha);flex-shrink:0}
+#metas .titulo{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#metas h2{font-size:1.05rem;font-weight:900}
+#metas .fechar{font-size:1.5rem;color:var(--texto3);padding:2px 8px;line-height:1}
+#metas .conta{font-size:2rem;font-weight:900;margin-top:8px;line-height:1}
+#metas .conta small{font-size:.9rem;color:var(--texto3);font-weight:800}
+.barra-metas{height:8px;background:var(--papel);border-radius:99px;margin-top:8px;overflow:hidden}
+.barra-metas div{height:100%;border-radius:99px;transition:width .5s;
+  background:linear-gradient(90deg,#7dd3fc,#5ee89a,#ffd75e)}
+#metas .prox{font-size:.76rem;color:var(--texto2);margin-top:9px;line-height:1.5}
+#metas .prox b{color:var(--ouro)}
+
+.filtros{display:flex;gap:5px;overflow-x:auto;padding:10px 16px;flex-shrink:0;
+  scrollbar-width:none;border-bottom:1px solid var(--linha)}
+.filtros::-webkit-scrollbar{display:none}
+.filtros button{flex:0 0 auto;background:var(--papel);border:1px solid var(--linha);
+  border-radius:99px;padding:7px 13px;font-size:.76rem;font-weight:800;color:var(--texto3);
+  white-space:nowrap}
+.filtros button.on{background:var(--texto);color:var(--fundo);border-color:var(--texto)}
+
+.lista-metas{flex:1;overflow-y:auto;padding:12px 16px 30px;-webkit-overflow-scrolling:touch}
+.faixa-cab{font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;color:var(--texto3);
+  font-weight:800;margin:14px 0 8px}
+.faixa-cab:first-child{margin-top:0}
+.faixa-cartao{display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  background:var(--papel);border:1px solid var(--linha);border-radius:14px;padding:12px;
+  margin-bottom:7px}
+.faixa-cartao .ic{font-size:1.6rem;width:34px;text-align:center}
+.faixa-cartao .meio{flex:1;min-width:0}
+.faixa-cartao .nome{font-weight:800;font-size:.92rem}
+.faixa-cartao .fase{font-size:.66rem;color:var(--texto3);margin-top:2px;line-height:1.3}
+.faixa-cartao .cnt{font-size:.8rem;font-weight:900;white-space:nowrap}
+
+.meta{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;
+  background:var(--papel);border:1px solid var(--linha);margin-bottom:5px}
+.meta.feita{border-color:var(--certo);background:rgba(94,232,154,.09)}
+.meta .num{font-size:.62rem;color:var(--texto3);font-weight:800;min-width:38px;
+  font-variant-numeric:tabular-nums}
+.meta.feita .num{color:var(--certo)}
+.meta .e{font-size:1.05rem}
+.meta .nm{flex:1;font-size:.82rem;font-weight:700;min-width:0;line-height:1.3}
+.meta.falta .nm{color:var(--texto2)}
+.meta .tp{font-size:.72rem;color:var(--texto3);font-weight:800;white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.meta.feita .tp{color:var(--certo)}
+
+.nota-faixa{font-size:.72rem;color:var(--texto3);line-height:1.6;background:var(--papel);
+  border:1px solid var(--linha);border-radius:12px;padding:11px 13px;margin-bottom:12px}
+.nota-faixa b{color:var(--texto2)}
+
+.btn-metas{background:var(--papel);border:1px solid var(--linha);color:var(--texto2);
+  font-weight:800;font-size:.84rem;padding:11px 22px;border-radius:99px;margin-top:10px}
+
 /* ---------- perdeu ---------- */
 .perdeu-nota{font-size:.95rem;color:var(--errado);font-weight:800;line-height:1.5;
   max-width:320px}
@@ -177,7 +286,8 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
       O jogo vai tentar te fazer encostar.<br>Não cai.</p>
     <button class="btn" id="btComecar">Não fazer nada</button>
     <div class="recorde" id="recInicio"></div>
-    <div class="medalhas" id="medInicio"></div>
+    <button class="btn-metas" onclick="abrirMetas()">🏆 Conquistas &amp; Recordes</button>
+    <div class="recorde" id="progInicio"></div>
   </section>
 
   <!-- ===== jogando ===== -->
@@ -193,14 +303,29 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
     <div class="tempo-feito" id="tempoFeito">0,0</div>
     <p class="perdeu-nota" id="notaPerdeu"></p>
     <p class="novo-rec" id="novoRec" style="display:none">🏆 RECORDE NOVO!</p>
+    <p class="lead" id="metasGanhas" style="font-size:.82rem"></p>
     <button class="btn" id="btDeNovo">Tentar de novo</button>
     <button class="btn calmo" id="btVoltar">voltar pro começo</button>
-    <div class="medalhas" id="medPerdeu"></div>
+    <button class="btn-metas" onclick="abrirMetas()">🏆 Conquistas &amp; Recordes</button>
   </section>
 
   <div id="tentacao"></div>
 
   <div class="rodape" id="rodape"></div>
+</div>
+
+<div id="metas">
+  <div class="topo">
+    <div class="titulo">
+      <h2>🏆 Conquistas &amp; Recordes</h2>
+      <button class="fechar" onclick="fecharMetas()">✕</button>
+    </div>
+    <div class="conta"><span id="metasConta">0</span><small> / 1.000 metas</small></div>
+    <div class="barra-metas"><div id="metasBarra" style="width:0"></div></div>
+    <div class="prox" id="metasProx"></div>
+  </div>
+  <div class="filtros" id="metasFiltros"></div>
+  <div class="lista-metas" id="metasLista"></div>
 </div>
 
 <div id="pausa">
@@ -209,6 +334,7 @@ h1 .fraco{color:var(--texto3);display:block;font-size:.42em;font-weight:800;
   <p class="lead" style="color:var(--texto3);font-size:.8rem">Volta que ele continua de onde parou.</p>
 </div>
 
-<script src="nada.js?v=1"></script>
+<script src="metas.js"></script>
+<script src="nada.js?v=2"></script>
 </body>
 </html>
