@@ -193,7 +193,8 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
    uma, o site PERGUNTA o nome em vez de chutar a primeira.
    ============================================================ */
 
-const API = 'https://api.pokemontcg.io/v2/cards';
+const API    = 'https://api.pokemontcg.io/v2/cards';
+const TCGDEX = 'https://api.tcgdex.net/v2/en';   // o site reserva, se o principal cair
 
 const palco   = document.getElementById('palco');
 const campo   = document.getElementById('campo');
@@ -250,7 +251,86 @@ function consultaNumero(valor){
   const limpo = valor.replace(/^0+/, '');
   if(limpo) formas.add(limpo);
   if(/^\d+$/.test(limpo)){ formas.add(limpo.padStart(2,'0')); formas.add(limpo.padStart(3,'0')); }
-  return '(' + [...formas].map(f => 'number:"' + aspas(f) + '"').join(' or ') + ')';
+  // O OR precisa ser MAIÚSCULO: em minúsculo o buscador deles entende "or"
+  // como se fosse parte do nome e devolve erro 500.
+  return '(' + [...formas].map(f => 'number:"' + aspas(f) + '"').join(' OR ') + ')';
+}
+
+/* As consultas que eu mando, da mais caprichada pra mais simples. Se a
+   primeira der erro eu tento a próxima — já vi a API engasgar com consulta
+   elaborada e responder numa simples. */
+function tentativas(valor){
+  const q = modo === 'numero' ? consultaNumero(valor) : 'name:"' + aspas(valor) + '*"';
+  const cru = modo === 'numero'
+    ? 'number:' + valor.replace(/[^0-9A-Za-z]/g, '')
+    : 'name:'   + valor.replace(/[^0-9A-Za-z ]/g, '') + '*';
+  return [
+    API + '?q=' + encodeURIComponent(q)   + '&pageSize=250&orderBy=-set.releaseDate',
+    API + '?q=' + encodeURIComponent(q)   + '&pageSize=250',
+    API + '?q=' + encodeURIComponent(cru) + '&pageSize=250',
+  ];
+}
+
+async function pedirJSON(url){
+  const r = await fetch(url, { headers:{ Accept:'application/json' } });
+  if(!r.ok){ const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
+  return r.json();
+}
+
+/* ---------- o site reserva ----------
+   Formato diferente do principal, então eu traduzo pro mesmo formato aqui
+   dentro e o resto da tela nem fica sabendo da troca. A lista de lá não
+   traz preço; o preço vem quando a pessoa escolhe a carta. */
+function numero(){
+  for(const v of arguments) if(typeof v === 'number' && isFinite(v)) return v;
+  return undefined;
+}
+function deTcgdex(c){
+  const set = c.set || {};
+  const saida = {
+    id: c.id,
+    name: c.name || '?',
+    number: c.localId != null ? String(c.localId) : '',
+    rarity: c.rarity || '',
+    set: { name: set.name || '',
+           printedTotal: (set.cardCount && set.cardCount.official) || null,
+           releaseDate: set.releaseDate || '' },
+    images: c.image ? { small: c.image + '/low.png', large: c.image + '/high.png' } : {},
+  };
+  const p = c.pricing || {};
+  if(p.tcgplayer){
+    const precos = {};
+    for(const par of Object.entries(p.tcgplayer)){
+      const k = par[0], v = par[1];
+      if(!v || typeof v !== 'object') continue;              // pula 'unit', 'updated' e afins
+      const nome = k.replace(/-([a-z])/g, (m, l) => l.toUpperCase());
+      precos[nome] = { market: numero(v.marketPrice, v.market),
+                       low:    numero(v.lowPrice, v.low),
+                       mid:    numero(v.midPrice, v.mid),
+                       high:   numero(v.highPrice, v.high) };
+    }
+    if(Object.keys(precos).length) saida.tcgplayer = { prices: precos };
+  }
+  if(p.cardmarket){
+    const cm = p.cardmarket;
+    saida.cardmarket = { prices:{
+      trendPrice:       numero(cm.trendPrice, cm.trend),
+      averageSellPrice: numero(cm.averageSellPrice, cm.avg, cm.avg30),
+      lowPrice:         numero(cm.lowPrice, cm.low) } };
+  }
+  return saida;
+}
+async function buscarReserva(valor){
+  const url = modo === 'numero'
+    ? TCGDEX + '/cards?localId=' + encodeURIComponent(valor.replace(/^0+/, '') || valor)
+    : TCGDEX + '/cards?name='    + encodeURIComponent(valor);
+  const lista = await pedirJSON(url);
+  if(!Array.isArray(lista)) throw new Error('resposta fora do esperado');
+  return lista.slice(0, 120).map(c => {
+    const n = deTcgdex(c);
+    n.__faltaPreco = true;   // o preço vem só quando escolherem esta carta
+    return n;
+  });
 }
 
 async function buscar(valor){
@@ -258,37 +338,47 @@ async function buscar(valor){
   cartaAberta = null;
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a carta…</div>';
 
-  const q = modo === 'numero' ? consultaNumero(valor) : 'name:"' + aspas(valor) + '*"';
-  const url = API + '?q=' + encodeURIComponent(q) +
-              '&pageSize=250&orderBy=-set.releaseDate';
+  const tropecos = [];
 
-  try{
-    const resp = await fetch(url, { headers:{ Accept:'application/json' } });
-    // A API é de graça e sem cadastro, então tem limite por dia. Vale explicar.
-    if(resp.status === 429){
-      palco.innerHTML = '<div class="aviso ruim"><strong>Calma aí ⏳</strong>' +
-        'O site dos preços atingiu o limite de pesquisas de hoje. Tenta de novo daqui a pouco.</div>';
-      return;
+  // Três consultas no site principal, da mais caprichada pra mais simples.
+  for(const url of tentativas(valor)){
+    try{
+      const dados = await pedirJSON(url);
+      return receber(dados.data || [], valor);
+    }catch(e){
+      if(e.status === 429){   // de graça e sem cadastro, tem limite por dia
+        palco.innerHTML = '<div class="aviso ruim"><strong>Calma aí ⏳</strong>' +
+          'O site dos preços atingiu o limite de pesquisas de hoje. Tenta de novo daqui a pouco.</div>';
+        return;
+      }
+      tropecos.push('pokemontcg.io ' + (e.message || e));
     }
-    if(!resp.ok) throw new Error('status ' + resp.status);
-    const dados = await resp.json();
-    achadas = dados.data || [];
-
-    if(achadas.length === 0){
-      palco.innerHTML = '<div class="aviso"><strong>Não achei nenhuma carta 😕</strong>' +
-        (modo === 'numero'
-          ? 'Confere o número, ou tenta procurar pelo nome.'
-          : 'Tenta o nome em inglês — a lista é toda em inglês.') + '</div>';
-      return;
-    }
-    if(achadas.length === 1){ mostrarCarta(achadas[0]); return; }
-    perguntarNome(valor, achadas);
-
-  }catch(erro){
-    palco.innerHTML = '<div class="aviso ruim"><strong>Deu ruim na busca 📡</strong>' +
-      'Não consegui falar com o site dos preços. Vê se a internet tá funcionando e tenta de novo.' +
-      '<br><small>' + String(erro.message || erro) + '</small></div>';
   }
+
+  // Se o principal estiver de cama, tento o reserva.
+  try{
+    return receber(await buscarReserva(valor), valor);
+  }catch(e){
+    tropecos.push('tcgdex.net ' + (e.message || e));
+  }
+
+  palco.innerHTML = '<div class="aviso ruim"><strong>Os sites de preço não responderam 📡</strong>' +
+    'Tentei em dois lugares diferentes e nenhum atendeu. Quase sempre é coisa passageira: ' +
+    'espera uns minutinhos e aperta Procurar de novo.' +
+    '<br><br><small>' + escapar(tropecos.join(' · ')) + '</small></div>';
+}
+
+function receber(cartas, valor){
+  achadas = cartas;
+  if(cartas.length === 0){
+    palco.innerHTML = '<div class="aviso"><strong>Não achei nenhuma carta 😕</strong>' +
+      (modo === 'numero'
+        ? 'Confere o número, ou tenta procurar pelo nome.'
+        : 'Tenta o nome em inglês — a lista é toda em inglês.') + '</div>';
+    return;
+  }
+  if(cartas.length === 1){ mostrarCarta(cartas[0]); return; }
+  perguntarNome(valor, cartas);
 }
 
 /* ---------- a pergunta do nome ---------- */
@@ -338,7 +428,9 @@ function desenharOpcoes(lista){
       '<img loading="lazy" alt="Carta ' + escapar(c.name) + '" src="' +
         escapar((c.images && c.images.small) || '') + '" />' +
       '<b>' + escapar(c.name) + '</b>' +
-      '<small>' + escapar((c.set && c.set.name) || '') + ' · nº ' + escapar(c.number || '') + '</small>';
+      // A lista do site reserva não traz o nome da coleção; sem ele, nada de "· " solto.
+      '<small>' + [ (c.set && c.set.name) || '', c.number ? 'nº ' + c.number : '' ]
+                  .filter(Boolean).map(escapar).join(' · ') + '</small>';
     b.onclick = () => mostrarCarta(c);
     grade.appendChild(b);
   });
@@ -427,6 +519,8 @@ function blocoCardmarket(carta){
 
 /* ---------- a carta na tela ---------- */
 function mostrarCarta(carta){
+  // Carta que veio do site reserva chega sem preço: busco o dela agora.
+  if(carta.__faltaPreco) return abrirDoReserva(carta);
   cartaAberta = carta;
   const preco = precoPrincipal(carta);
   const img = (carta.images && (carta.images.large || carta.images.small)) || '';
@@ -472,6 +566,18 @@ function mostrarCarta(carta){
   const voltar = document.getElementById('voltar');
   if(voltar) voltar.onclick = () => perguntarNome(campo.value.trim(), achadas);
   palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+async function abrirDoReserva(carta){
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>Pegando o preço…</div>';
+  let cheia = carta;
+  try{
+    cheia = deTcgdex(await pedirJSON(TCGDEX + '/cards/' + encodeURIComponent(carta.id)));
+  }catch(e){ /* sem detalhe, mostro o que já tenho — sem preço é melhor que nada */ }
+  cheia.__faltaPreco = false;
+  const i = achadas.findIndex(c => c.id === carta.id);   // não buscar de novo
+  if(i >= 0) achadas[i] = cheia;
+  mostrarCarta(cheia);
 }
 
 function escapar(t){
