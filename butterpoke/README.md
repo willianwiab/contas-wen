@@ -18,6 +18,34 @@ ele **pergunta o nome**. Aparece a pergunta "achei 47 cartas com o número 25, q
 tua?", com as cartinhas na tela pra tocar e um campo pra escrever o nome. Quando o
 número traz só uma carta, ele pula a pergunta e mostra o preço direto.
 
+## Não é só bicho: treinador, pokébola e energia
+
+Carta de Pokémon não é só Pokémon. Tem **Treinador** (Pokébola, Ultra Ball, Professor,
+objeto) e **Energia**. Elas sempre vieram na busca — o número 25 traz a Pikachu e traz
+a Poké Ball — mas ficavam misturadas e ninguém achava.
+
+Agora a grade tem botõezinhos de tipo: **Todas / ⚡ Pokémon / 🎒 Treinador / 🔋 Energia**.
+Aparecem só quando a lista tem mais de um tipo, e combinam com o filtro de nome
+(Treinador + "ball" deixa Poké Ball e Ultra Ball). O tipo também virou etiqueta na
+tela da carta.
+
+O campo se chama `supertype` no site principal e `category` no reserva — e lá o Pokémon
+vem sem acento, então é traduzido na entrada.
+
+## Quando nem o principal conhece a carta
+
+Antes, o reserva só entrava se o principal **desse erro**. Se ele respondesse
+educadamente "não tenho essa carta", o site desistia ali.
+
+Mas os dois bancos não têm as mesmas cartas. O principal é o catálogo oficial em
+inglês; o reserva tem coisa que nunca saiu em inglês — promo japonesa, por exemplo.
+Então agora, quando o principal responde vazio, o reserva é consultado do mesmo jeito.
+Só quando os dois não conhecem é que aparece o "não achei", e ele diz que procurou nos
+dois.
+
+Nenhum dos dois é meu, então **não dá pra adicionar carta à mão**. O que dá é procurar
+em mais de um lugar — e é o que ele faz.
+
 ## Ver as coleções inteiras
 
 Além de procurar carta solta, dá pra entrar pelo outro lado: o botão **"Ou vê todas as
