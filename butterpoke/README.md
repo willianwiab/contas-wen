@@ -18,6 +18,25 @@ ele **pergunta o nome**. Aparece a pergunta "achei 47 cartas com o número 25, q
 tua?", com as cartinhas na tela pra tocar e um campo pra escrever o nome. Quando o
 número traz só uma carta, ele pula a pergunta e mostra o preço direto.
 
+## Ver as coleções inteiras
+
+Além de procurar carta solta, dá pra entrar pelo outro lado: o botão **"Ou vê todas as
+coleções"** lista tudo que já saiu — Base Set, Celebrations, 151, o que for — das mais
+novas pras mais velhas, com o logo, quantas cartas tem e o ano. Tocando numa, aparecem
+**todas as cartas dela**, na ordem impressa, e tocando numa carta vai pro preço.
+
+Dois detalhes que dão trabalho e ninguém vê:
+
+- A ordem é pelo número impresso, tratado **como número**. Ordenando como texto, a 10
+  vem antes da 2 e a coleção parece bagunçada.
+- Coleção grande passa das 250 cartas por página da API, então vale o mesmo esquema de
+  páginas da busca.
+
+A grade é a mesma nos três casos (escolher entre cartas de mesmo número, escolher
+coleção, ver as cartas de uma coleção): muda o título e o que acontece no clique, o
+filtro e a paginação são iguais. Da carta, o botão **"Voltar pra lista"** devolve pra
+lista de onde ela veio, seja qual for.
+
 ## Versão, estado e PSA
 
 Depois de achar a carta, o site pergunta mais duas coisas, porque a mesma carta
