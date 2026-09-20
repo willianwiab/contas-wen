@@ -521,6 +521,7 @@ async function buscar(valor, caiuProIngles){
   cartaAberta = null;
   voltarPraLista = null;
   langBusca = caiuProIngles ? 'en' : idioma;
+  if(location.hash) location.replace('#');
   if(!caiuProIngles) avisoBusca = '';
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a carta…</div>';
 
@@ -611,6 +612,7 @@ function receber(cartas, valor, total){
 const ORDENS = [
   { id:'novas',    nome:'🆕 Mais novas',   onde:'ambos' },
   { id:'antigas',  nome:'🕰️ Mais antigas', onde:'ambos' },
+  { id:'top10',    nome:'🏆 Top 10 mais caras', onde:'carta', precisa:'preco' },
   { id:'caras',    nome:'💰 Mais caras',   onde:'carta', precisa:'preco' },
   { id:'baratas',  nome:'🪙 Mais baratas', onde:'carta', precisa:'preco' },
   { id:'raridade', nome:'💎 Mais raras',   onde:'carta', precisa:'raridade' },
@@ -745,7 +747,8 @@ function comparador(id){
   if(id === 'antigas')  return (a, b) => dataDe(a).localeCompare(dataDe(b));
   if(id === 'nome')     return (a, b) => (a.name || '').localeCompare(b.name || '', 'en');
   if(id === 'numero')   return porNumero;
-  if(id === 'caras')    return (a, b) => dif(valorOu(b, -Infinity), valorOu(a, -Infinity));
+  if(id === 'caras' || id === 'top10')
+                        return (a, b) => dif(valorOu(b, -Infinity), valorOu(a, -Infinity));
   if(id === 'baratas')  return (a, b) => dif(valorOu(a, Infinity), valorOu(b, Infinity));
   if(id === 'raridade') return (a, b) => dif(nivelRaridade(b), nivelRaridade(a));
   if(id === 'hp')       return (a, b) => dif(numHp(b), numHp(a));
@@ -942,7 +945,11 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
   const filtro = document.getElementById('filtro');
   const atualizar = () => {
     limiteGrade = 60;
-    desenharOpcoes(ordenar(filtrar(lista, filtro.value)));
+    let saida = ordenar(filtrar(lista, filtro.value));
+    // O top 10 é a ordem "mais caras" cortada no décimo — o corte é o que
+    // faz ele ser um top, senão é só a mesma lista inteira ordenada.
+    if(ordemAtual === 'top10') saida = saida.slice(0, 10);
+    desenharOpcoes(saida);
   };
   const marcar = (id, valor) => document.querySelectorAll('#' + id + ' .chip').forEach(b =>
     b.setAttribute('aria-pressed', b.dataset.v === valor));
@@ -1396,6 +1403,49 @@ function torneio(c){
     'cantinho da carta: é ela que diz quando a carta vai sair do Padrão.</p>';
 }
 
+/* ---------- link da carta ----------
+   Cada carta ganha um endereço próprio, pra mandar pro amigo. Guardo só o
+   que preciso pra achar ela de novo: o id, o idioma e em qual banco ela
+   estava. O preço não vai no link — ele é buscado na hora de abrir, senão
+   o amigo veria um preço de meses atrás. */
+function linkDaCarta(c){
+  const base = location.href.split('#')[0];
+  return base + '#carta=' + encodeURIComponent(c.id) +
+    (c.__lang && c.__lang !== 'en' ? '&lang=' + encodeURIComponent(c.__lang) : '') +
+    (c.__daReserva ? '&de=reserva' : '');
+}
+function lerEndereco(){
+  const h = (location.hash || '').replace(/^#/, '');
+  if(!h) return null;
+  const par = {};
+  h.split('&').forEach(pedaco => {
+    const i = pedaco.indexOf('=');
+    if(i > 0) par[pedaco.slice(0, i)] = decodeURIComponent(pedaco.slice(i + 1));
+  });
+  return par.carta ? par : null;
+}
+async function abrirDoEndereco(){
+  const par = lerEndereco();
+  if(!par) return false;
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>Abrindo a carta do link…</div>';
+  try{
+    if(par.de === 'reserva'){
+      const cheia = deTcgdex(await pedirReserva('/cards/' + encodeURIComponent(par.carta), par.lang || 'en'));
+      cheia.__faltaPreco = false;
+      mostrarCarta(cheia);
+    }else{
+      const d = await pedirJSON(API + '/' + encodeURIComponent(par.carta));
+      if(!d || !d.data) throw new Error('carta não encontrada');
+      mostrarCarta(d.data);
+    }
+  }catch(e){
+    palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui abrir essa carta 🔗</strong>' +
+      'O link pode estar quebrado, ou o site dos preços não respondeu. Tenta procurar ela na busca.' +
+      '<br><br><small>' + escapar(String(e.message || e)) + '</small></div>';
+  }
+  return true;
+}
+
 /* ---------- de onde a carta é ----------
    Nenhum dos dois bancos tem campo de país, então isto é dedução, e a tela
    diz de onde ela saiu em vez de fingir que é dado oficial:
@@ -1534,6 +1584,8 @@ function desenharCarta(){
             'style="padding:10px 18px;font-size:.95rem">' +
             (ehFavorita(carta.id) ? '⭐ Está nos favoritos' : '☆ Guardar nos favoritos') +
           '</button>' +
+          '<button class="btn secundario" type="button" id="copiar" ' +
+            'style="padding:10px 18px;font-size:.95rem">🔗 Copiar link da carta</button>' +
           (voltarPraLista
             ? '<button class="btn secundario" type="button" id="voltar" ' +
               'style="padding:10px 18px;font-size:.95rem">↩ Voltar pra lista</button>'
@@ -1546,6 +1598,33 @@ function desenharCarta(){
   ligarChips('chips-estado', v => { estadoEscolhido = v; });
   const voltar = document.getElementById('voltar');
   if(voltar) voltar.onclick = () => voltarPraLista && voltarPraLista();
+  // O endereço acompanha a carta aberta, pra o botão de voltar do navegador
+  // funcionar e pra dar pra copiar da barra também.
+  try{
+    const alvo = linkDaCarta(carta).split('#')[1];
+    if(alvo && location.hash.replace(/^#/, '') !== alvo) location.replace('#' + alvo);
+  }catch(e){}
+
+  const copiar = document.getElementById('copiar');
+  if(copiar) copiar.onclick = async () => {
+    const url = linkDaCarta(carta);
+    try{
+      await navigator.clipboard.writeText(url);
+      copiar.textContent = '✅ Link copiado!';
+      setTimeout(() => { copiar.textContent = '🔗 Copiar link da carta'; }, 2500);
+    }catch(e){
+      // Sem permissão de copiar (acontece em alguns navegadores): mostro o
+      // link já selecionado, pra dar pra copiar na mão.
+      const caixa = document.createElement('input');
+      caixa.readOnly = true; caixa.value = url;
+      caixa.style.cssText = 'width:100%;margin-top:8px;padding:9px 11px;font:inherit;' +
+        'font-size:.82rem;border:2px solid var(--borda);border-radius:10px';
+      copiar.parentNode.appendChild(caixa);
+      caixa.select();
+      copiar.textContent = '👆 Copia daqui';
+    }
+  };
+
   const fav = document.getElementById('fav');
   if(fav) fav.onclick = () => {
     const virou = virarFavorita(carta);
@@ -1636,6 +1715,18 @@ selIdioma.onchange = () => {
 document.getElementById('btn-colecoes').onclick = mostrarColecoes;
 document.getElementById('btn-favoritos').onclick = mostrarFavoritos;
 contarFavoritos();
+
+// Link de carta: abre direto nela, e o botão de voltar do navegador funciona.
+abrirDoEndereco();
+/* Trocar só o pedaço depois do # não recarrega a página, então quem chega
+   por um link estando já numa carta depende deste aviso. Comparar o id é o
+   que evita reabrir a mesma carta quando fui eu quem mexeu no endereço. */
+window.addEventListener('hashchange', () => {
+  const par = lerEndereco();
+  if(!par) return;
+  if(cartaAberta && cartaAberta.id === par.carta) return;
+  abrirDoEndereco();
+});
 
 campo.focus();
 if('serviceWorker' in navigator)
