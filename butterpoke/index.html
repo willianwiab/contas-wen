@@ -146,6 +146,9 @@ header{text-align:center;padding:30px 0 18px}
 .carta h2{font-family:'Baloo 2',cursive;font-size:1.9rem;line-height:1.1}
 .etiquetas{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px}
 .etiqueta{background:#f5edff;border:2px solid var(--borda);border-radius:999px;padding:5px 12px;font-size:.82rem;font-weight:600}
+.etiqueta.pais{background:var(--asa);border-color:var(--asa-escura);color:#fff}
+.de-onde{font-size:.82rem;color:var(--tinta-fraca);margin:-8px 0 16px;line-height:1.45}
+.de-onde b{color:var(--tinta)}
 .destaque{
   background:linear-gradient(135deg,var(--asa),#c9a8ef);border-radius:18px;
   padding:16px 18px;border:2px solid var(--asa-escura);
@@ -1007,6 +1010,32 @@ function blocoCardmarket(carta){
     '</tbody></table>';
 }
 
+/* ---------- de onde a carta é ----------
+   Nenhum dos dois bancos tem campo de país, então isto é dedução, e a tela
+   diz de onde ela saiu em vez de fingir que é dado oficial:
+
+   - o banco principal É o catálogo das cartas em inglês. Estar nele quer
+     dizer que a carta saiu em inglês. Isso é certeza, não palpite.
+   - achar a carta só no reserva quer dizer que ela não está no catálogo em
+     inglês. O caso mais comum disso é promo japonesa.
+   - quando o nome da coleção já diz "Japanese", aí não precisa deduzir. */
+function origemDaCarta(c){
+  const set = (c.set && c.set.name) || '';
+  if(/japan|japanese|\bjp\b/i.test(set))
+    return { etiqueta:'🇯🇵 Japão',
+             conta:'O nome da coleção já diz que ela é japonesa.' };
+  if(/world championship/i.test(set))
+    return { etiqueta:'🏆 Mundial',
+             conta:'Carta de campeonato mundial, entregue no evento — não vendida em loja.' };
+  if(c.__daReserva)
+    return { etiqueta:'🗾 Fora do inglês',
+             conta:'Ela não está no catálogo das cartas em inglês; achei só no outro banco, ' +
+                   'que guarda carta que nunca saiu em inglês. Quase sempre isso quer dizer Japão.' };
+  return { etiqueta:'🌎 Em inglês',
+           conta:'Ela está no catálogo das cartas em inglês (Estados Unidos e Europa). ' +
+                 'Quase toda carta também existe em japonês, mas o preço aqui é o da versão em inglês.' };
+}
+
 /* ---------- a carta na tela ---------- */
 function mostrarCarta(carta){
   // Favorita guarda só a identidade: o preço de hoje vem agora.
@@ -1073,6 +1102,7 @@ function desenharCarta(){
       '<div class="preco" style="font-size:1.4rem">Ninguém anunciou essa ainda</div>' +
       '<div class="qual">Sem preço registrado pra essa carta.</div></div>';
 
+  const de = origemDaCarta(carta);
   const link = (carta.tcgplayer && carta.tcgplayer.url) || (carta.cardmarket && carta.cardmarket.url);
 
   palco.innerHTML =
@@ -1088,7 +1118,10 @@ function desenharCarta(){
             escapar(NOME_TIPO[carta.supertype] || carta.supertype) + '</span>' : '') +
           (carta.rarity ? '<span class="etiqueta">' + escapar(carta.rarity) + '</span>' : '') +
           (set.releaseDate ? '<span class="etiqueta">' + escapar(set.releaseDate.slice(0,4)) + '</span>' : '') +
+          '<span class="etiqueta pais">' + escapar(de.etiqueta) + '</span>' +
         '</div>' +
+        '<p class="de-onde">' + escapar(de.conta) +
+          ' <b>Isso é dedução minha</b> — os bancos de carta não guardam o país.</p>' +
         escolherVersao + escolherEstado + caixaPreco +
         tabelaPSA(base) +
         tabelaTCG(carta) +
