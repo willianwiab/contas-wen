@@ -577,6 +577,25 @@ function especiaisDe(c){
   return (c.subtypes || []).filter(x => ESPECIAIS.indexOf(x) >= 0);
 }
 
+/* Tipos anunciados que ainda não saíram. O botão aparece mesmo sem carta
+   nenhuma — é o jeito de dizer "ainda não saiu" em vez de simplesmente não
+   existir. No dia em que as cartas entrarem nos bancos, ele já funciona
+   sozinho, sem eu mexer em nada.
+
+   O problema: eu não sei que nome os bancos vão dar. Por isso cada um
+   carrega várias escritas possíveis, em vez de uma só que pode furar. */
+const FUTUROS = [
+  { id:'futuro:ex-estrela', nome:'⭐ ex estrela',
+    pistas: [/ex\s*★/i, /★\s*ex/i, /\bstar\s*ex\b/i, /\bex\s*star\b/i, /ex\s*estrela/i],
+    aviso: 'Ainda não achei nenhuma carta <b>ex estrela</b>. Ou ela não saiu ainda, ' +
+           'ou saiu agora e os bancos de carta ainda não pegaram — eles demoram uns dias. ' +
+           'No dia em que entrar, ela aparece aqui sozinha, sem eu precisar mexer no site.' },
+];
+function casaComFuturo(c, f){
+  const alvos = (c.subtypes || []).concat([c.name || '', c.rarity || '']);
+  return f.pistas.some(re => alvos.some(t => re.test(t)));
+}
+
 /* A raridade vem como texto livre e muda de coleção pra coleção, então em
    vez de uma lista fechada (que ia furar na próxima coleção que sair) eu
    dou uma nota pelo que está escrito. Uncommon antes de Common, senão
@@ -765,14 +784,12 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
             .concat(lista.some(c => (c.types || []).length > 1)
               ? [{ v:'duplo', rotulo:'🔀 Dois tipos' }] : []), ''))
       : '') +
-    (() => {
-      const presentes = ESPECIAIS.filter(x => lista.some(c => especiaisDe(c).indexOf(x) >= 0));
-      return presentes.length
-        ? caixinha('Carta especial', chips('chips-especial',
-            [{ v:'', rotulo:'Todas' }].concat(
-              presentes.map(x => ({ v:x, rotulo:rotuloEspecial(x) }))), ''))
-        : '';
-    })() +
+    caixinha('Carta especial', chips('chips-especial',
+      [{ v:'', rotulo:'Todas' }]
+        .concat(ESPECIAIS.filter(x => lista.some(c => especiaisDe(c).indexOf(x) >= 0))
+          .map(x => ({ v:x, rotulo:rotuloEspecial(x) })))
+        // As que ainda não saíram vão no fim, e aparecem mesmo sem carta.
+        .concat(FUTUROS.map(f => ({ v:f.id, rotulo:f.nome }))), '')) +
     (temPreco
       ? caixinha('Preço', chips('chips-faixa', FAIXAS.map(f => ({ v:f.id, rotulo:f.nome })), ''))
       : '') +
@@ -854,7 +871,11 @@ function filtrar(lista, texto){
   if(energiaFiltro === 'duplo') saida = saida.filter(c => (c.types || []).length > 1);
   else if(energiaFiltro) saida = saida.filter(c => (c.types || []).indexOf(energiaFiltro) >= 0);
   if(artistaFiltro) saida = saida.filter(c => c.artist === artistaFiltro);
-  if(especialFiltro) saida = saida.filter(c => (c.subtypes || []).indexOf(especialFiltro) >= 0);
+  if(especialFiltro){
+    const fut = FUTUROS.find(f => f.id === especialFiltro);
+    saida = fut ? saida.filter(c => casaComFuturo(c, fut))
+                : saida.filter(c => (c.subtypes || []).indexOf(especialFiltro) >= 0);
+  }
   // Acima de um valor: carta sem preço não entra, porque não dá pra afirmar que passa.
   if(min > 0) saida = saida.filter(c => { const v = precoDe(c); return v != null && v >= min; });
   if(t) saida = saida.filter(c => (c.name || '').toLowerCase().includes(t));
@@ -879,7 +900,11 @@ function desenharOpcoes(lista){
   if(!grade || !gradeAtual) return;
   const ehColecao = gradeAtual.tipo === 'colecao';
   if(lista.length === 0){
-    grade.innerHTML = '<p style="color:var(--tinta-fraca)">Nada com esse nome aqui. Apaga uma letrinha.</p>';
+    const fut = FUTUROS.find(f => f.id === especialFiltro);
+    grade.innerHTML = fut
+      ? '<div class="aviso" style="grid-column:1/-1;margin:0"><strong>Ainda não saiu ⏳</strong>' +
+        fut.aviso + '</div>'
+      : '<p style="color:var(--tinta-fraca)">Nada com esse nome aqui. Apaga uma letrinha.</p>';
     return;
   }
   grade.innerHTML = '';
