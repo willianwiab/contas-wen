@@ -18,6 +18,18 @@ ele **pergunta o nome**. Aparece a pergunta "achei 47 cartas com o número 25, q
 tua?", com as cartinhas na tela pra tocar e um campo pra escrever o nome. Quando o
 número traz só uma carta, ele pula a pergunta e mostra o preço direto.
 
+## Ordenar, procurar e guardar
+
+Toda grade tem **ordenação** — mais novas, mais antigas, mais caras, mais baratas, pelo
+número, por nome. A que entra marcada muda com o contexto: busca abre pelas mais novas,
+coleção pelo número, favoritos por nome. As opções de preço só aparecem quando há preço
+na mão: nos favoritos o preço só chega ao abrir a carta, e oferecer ali seria mentira.
+
+Os **favoritos** ficam no aparelho (`localStorage`). A estrelinha aparece no canto de
+cada cartinha e na tela da carta. Guardo só a identidade da carta, **nunca o preço**:
+preço guardado envelhece e mente, então ao abrir a favorita ele é buscado de novo, no
+site de onde ela veio.
+
 ## Não é só bicho: treinador, pokébola e energia
 
 Carta de Pokémon não é só Pokémon. Tem **Treinador** (Pokébola, Ultra Ball, Professor,
@@ -31,6 +43,14 @@ tela da carta.
 
 O campo se chama `supertype` no site principal e `category` no reserva — e lá o Pokémon
 vem sem acento, então é traduzido na entrada.
+
+Na mesma fileira entram os botões de **✨ 1ª edição**, **🌟 Promo**, **💫 Holo**,
+**🔄 Reverse** e **📏 Jumbo**. Cada um só aparece se a lista tiver do que ele filtra —
+sem carta jumbo na lista, não existe botão de jumbo pra clicar à toa.
+
+Nenhum dos dois bancos tem campo de "jumbo", então esse é deduzido do subtipo e do nome
+da carta. Os outros saem de dados de verdade: 1ª edição e reverse das próprias chaves de
+preço (`1stEditionHolofoil`, `reverseHolofoil`), promo da raridade e do nome da coleção.
 
 ## Quando nem o principal conhece a carta
 
