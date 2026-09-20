@@ -61,6 +61,12 @@ Também em "⚙️ Mais opções":
   na ordem em que apareceram no jogo. `EX` maiúsculo e `ex` minúsculo são cartas de
   épocas diferentes, então viram dois botões: "EX (das antigas)" e "ex (das novas)".
   Também viram etiqueta vermelha na tela da carta
+- **⭐ ex estrela** — o único botão que aparece **sem ter carta nenhuma**. É o jeito de
+  dizer "ainda não saiu" em vez de simplesmente não existir na tela. Clicando, vem um
+  aviso explicando, e no dia em que as cartas entrarem nos bancos ele passa a funcionar
+  sozinho, sem ninguém mexer no site. Como não dá pra saber que nome os bancos vão dar,
+  ele procura várias escritas (`ex ★`, `★ ex`, `Star ex`, `ex Star`, `ex estrela`) no
+  subtipo, no nome e na raridade
 - **Preço** — $1, $10 ou $100 pra cima. Carta sem preço não entra, porque não dá pra
   afirmar que passa
 - **Quem desenhou** — a lista de artistas da própria busca
