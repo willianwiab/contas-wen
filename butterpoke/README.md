@@ -54,6 +54,13 @@ Também em "⚙️ Mais opções":
 - **🔀 Dois tipos** — os Pokémon de tipo duplo, que são poucos e se perdiam no meio dos
   outros quando se filtrava por um tipo só. Os tipos da carta viraram etiqueta na tela
   dela, então dá pra ver o duplo
+- **Carta especial** — EX, MEGA, GX, V, VMAX, VSTAR, BREAK, LEGEND, ex, Tera, Radiant,
+  Prism Star, TAG TEAM e as antigas (Star, Shining, Dark, Light, Delta). A API chama isso
+  de subtipo, mas na mesma lista vêm coisas estruturais (Basic, Stage 1, Item, Supporter)
+  que não é o que alguém procura pensando em "carta ex" — por isso a lista é fechada, e
+  na ordem em que apareceram no jogo. `EX` maiúsculo e `ex` minúsculo são cartas de
+  épocas diferentes, então viram dois botões: "EX (das antigas)" e "ex (das novas)".
+  Também viram etiqueta vermelha na tela da carta
 - **Preço** — $1, $10 ou $100 pra cima. Carta sem preço não entra, porque não dá pra
   afirmar que passa
 - **Quem desenhou** — a lista de artistas da própria busca
