@@ -134,7 +134,11 @@ header{text-align:center;padding:30px 0 18px}
 .destaque .rotulo{font-size:.82rem;font-weight:600;color:#3d2a5c;text-transform:uppercase;letter-spacing:.06em}
 .destaque .preco{font-family:'Baloo 2',cursive;font-size:2.4rem;line-height:1.1;color:var(--tinta)}
 .destaque .reais{font-size:1.05rem;font-weight:600;color:#3d2a5c}
-.destaque .qual{font-size:.85rem;color:#3d2a5c;margin-top:4px}
+.destaque .crua{
+  margin-top:8px;font-size:.88rem;color:#3d2a5c;background:rgba(255,255,255,.55);
+  padding:7px 11px;border-radius:10px;display:inline-block;
+}
+.destaque .qual{font-size:.85rem;color:#3d2a5c;margin-top:6px}
 h3.titulinho{margin:22px 0 8px;font-size:1rem;color:var(--tinta-fraca);text-transform:uppercase;letter-spacing:.05em}
 table{width:100%;max-width:100%;border-collapse:collapse;font-size:.92rem;table-layout:fixed}
 th,td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--borda)}
@@ -230,6 +234,7 @@ let modo = 'numero';
 let versaoEscolhida = null;    // qual versão da carta a pessoa tem na mão
 let estadoEscolhido = 'perfeita';
 let limiteGrade = 60;          // quantas cartas a grade mostra por vez
+let totalReal = 0;             // quantas existem, mesmo que eu não tenha trazido todas
 let achadas = [];   // resultado da última busca, pra filtrar sem ir na internet de novo
 let cartaAberta = null;
 
@@ -290,11 +295,28 @@ function tentativas(valor){
   const cru = modo === 'numero'
     ? 'number:' + valor.replace(/[^0-9A-Za-z]/g, '')
     : 'name:'   + valor.replace(/[^0-9A-Za-z ]/g, '') + '*';
+  // Cada uma monta a URL de uma página, porque a API entrega 250 por vez.
   return [
-    API + '?q=' + encodeURIComponent(q)   + '&pageSize=250&orderBy=-set.releaseDate',
-    API + '?q=' + encodeURIComponent(q)   + '&pageSize=250',
-    API + '?q=' + encodeURIComponent(cru) + '&pageSize=250',
+    pag => API + '?q=' + encodeURIComponent(q)   + '&pageSize=250&orderBy=-set.releaseDate&page=' + pag,
+    pag => API + '?q=' + encodeURIComponent(q)   + '&pageSize=250&page=' + pag,
+    pag => API + '?q=' + encodeURIComponent(cru) + '&pageSize=250&page=' + pag,
   ];
+}
+
+/* A API devolve 250 cartas por página, e número popular passa disso. Pego
+   as outras páginas de uma vez, até o teto: acima de mil cartas ninguém
+   vai olhar mesmo, e o filtro pelo nome resolve melhor que rolar a tela. */
+const MAX_PAGINAS = 4;
+async function todasAsPaginas(monta, primeira, total){
+  const paginas = Math.min(Math.ceil(total / 250), MAX_PAGINAS);
+  if(paginas <= 1) return primeira;
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
+    'São ' + total + ' cartas! Buscando todas…</div>';
+  const resto = await Promise.all(
+    Array.from({ length: paginas - 1 }, (x, i) =>
+      pedirJSON(monta(i + 2)).then(d => d.data || []).catch(() => []))
+  );
+  return primeira.concat.apply(primeira, resto);
 }
 
 async function pedirJSON(url){
@@ -352,7 +374,7 @@ async function buscarReserva(valor){
     : TCGDEX + '/cards?name='    + encodeURIComponent(valor);
   const lista = await pedirJSON(url);
   if(!Array.isArray(lista)) throw new Error('resposta fora do esperado');
-  return lista.slice(0, 120).map(c => {
+  return lista.slice(0, 500).map(c => {
     const n = deTcgdex(c);
     n.__faltaPreco = true;   // o preço vem só quando escolherem esta carta
     return n;
@@ -367,10 +389,12 @@ async function buscar(valor){
   const tropecos = [];
 
   // Três consultas no site principal, da mais caprichada pra mais simples.
-  for(const url of tentativas(valor)){
+  for(const monta of tentativas(valor)){
     try{
-      const dados = await pedirJSON(url);
-      return receber(dados.data || [], valor);
+      const dados = await pedirJSON(monta(1));
+      const primeira = dados.data || [];
+      const total = dados.totalCount || primeira.length;
+      return receber(await todasAsPaginas(monta, primeira, total), valor, total);
     }catch(e){
       if(e.status === 429){   // de graça e sem cadastro, tem limite por dia
         palco.innerHTML = '<div class="aviso ruim"><strong>Calma aí ⏳</strong>' +
@@ -394,8 +418,9 @@ async function buscar(valor){
     '<br><br><small>' + escapar(tropecos.join(' · ')) + '</small></div>';
 }
 
-function receber(cartas, valor){
+function receber(cartas, valor, total){
   achadas = cartas;
+  totalReal = total || cartas.length;
   if(cartas.length === 0){
     palco.innerHTML = '<div class="aviso"><strong>Não achei nenhuma carta 😕</strong>' +
       (modo === 'numero'
@@ -414,7 +439,11 @@ function perguntarNome(valor, lista){
     '<section class="pergunta">' +
       '<h2>Achei ' + quantos + ' cartas ' +
         (modo === 'numero' ? 'com o número <b>' + escapar(valor) + '</b>' : 'com esse nome') + '.</h2>' +
-      '<p>Qual é o nome da tua? Escreve aí ou toca na carta certa.</p>' +
+      '<p>Qual é o nome da tua? Escreve aí ou toca na carta certa.' +
+        (totalReal > lista.length
+          ? ' <br><small>(existem ' + totalReal + ' no total; trouxe as ' + lista.length +
+            ' mais novas — escreve o nome pra achar a tua)</small>'
+          : '') + '</p>' +
       '<input id="filtro" autocomplete="off" placeholder="Nome da carta…" aria-label="Filtrar pelo nome" />' +
       '<div class="grade" id="grade"></div>' +
     '</section>';
@@ -648,6 +677,13 @@ function desenharCarta(){
         '<div class="rotulo">' + escapar(est.nome.replace(/^\S+\s/, '')) + ', vale mais ou menos</div>' +
         '<div class="preco">' + dinheiro(vale, base.moeda) + '</div>' +
         '<div class="reais">' + escapar(emReais(vale, base.moeda)) + '</div>' +
+        // O preço puro, do jeito que a API deu, sem o desconto do estado.
+        (est.fator !== 1
+          ? '<div class="crua">Sem contar o estado, o preço de tabela é <b>' +
+              dinheiro(base.valor, base.moeda) + '</b>' +
+              (soReais(base.valor, base.moeda) ? ' · ' + escapar(soReais(base.valor, base.moeda)) : '') +
+            '</div>'
+          : '') +
         '<div class="qual">' + escapar(base.qual) +
           (est.fator !== 1 ? ' · ' + Math.round(est.fator * 100) + '% do preço de carta perfeita' : '') +
           ' · fonte: ' + escapar(base.onde) + '</div>' +

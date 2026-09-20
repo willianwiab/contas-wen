@@ -29,7 +29,9 @@ tem preços bem diferentes dependendo delas:
 2. **Como ela está** — perfeita, estado bom, médio ou ruim, cada uma com a
    explicação do que isso quer dizer, que ninguém nasce sabendo.
 
-O valor em destaque recalcula na hora, e embaixo vem a tabela de quanto ela valeria
+O valor em destaque recalcula na hora. Quando o estado desconta alguma coisa, aparece
+junto o **preço de tabela sem contar o estado** — o número cru que a API deu, pra dar
+pra comparar os dois de um olhada só. E embaixo vem a tabela de quanto ela valeria
 **avaliada pela PSA**, das notas 10 a 6.
 
 ### O aviso que importa
@@ -99,8 +101,12 @@ tentativa respondeu, pra ficar fácil descobrir o que houve.
 - **Sem chave de API.** A pokemontcg.io responde sem cadastro, com limite por dia.
   Se um dia estourar o limite, aparece o aviso de "deu ruim na busca".
 - **Os nomes são em inglês**, porque a base é em inglês. A busca por nome avisa isso.
-- **A grade mostra 60 cartas por vez**, com um botão pra pedir mais. Número popular
-  como o 25 traz mais de cem: despejar tudo de uma vez trava celular fraco.
+- **A busca pega todas as páginas.** A API entrega 250 cartas por vez, e número
+  popular passa disso, então as páginas seguintes vêm todas de uma vez (`Promise.all`),
+  com teto de 4 páginas — acima de mil cartas ninguém rola a tela, o filtro pelo nome
+  resolve melhor. Quando o teto corta, a tela diz quantas existem no total.
+- **A grade mostra 60 cartas por vez**, com um botão pra pedir mais. Despejar mil
+  cartinhas de uma vez trava celular fraco.
 - **Funciona no celular como app** (manifesto + service worker). A casca abre offline,
   mas preço só com internet — preço velho enganaria mais do que ajudaria.
 
