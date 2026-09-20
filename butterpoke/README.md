@@ -167,7 +167,15 @@ tentativa respondeu, pra ficar fácil descobrir o que houve.
 - **Ordenado pela coleção mais nova**, que é a carta que a criança provavelmente tem na mão.
 - **Sem chave de API.** A pokemontcg.io responde sem cadastro, com limite por dia.
   Se um dia estourar o limite, aparece o aviso de "deu ruim na busca".
+- **A busca por nome acha pedaço no meio.** `name:"Imakuni*"` não acha
+  "Dance! Neo Imakuni?", porque o `*` só vale no fim: o nome tem que *começar* com o
+  que se digitou. Então a segunda consulta leva estrela dos dois lados (`name:*x*`) e o
+  pedaço pode estar em qualquer lugar. Consulta que responde vazio não encerra a busca —
+  a próxima é mais ampla e pode achar.
 - **Os nomes são em inglês**, porque a base é em inglês. A busca por nome avisa isso.
+- **Coleção recém-lançada demora a aparecer.** Os bancos são alimentados por gente, e
+  carta que saiu essa semana (ainda mais japonesa) leva um tempo até entrar. Não tem o
+  que o site faça: ele só pergunta.
 - **A busca pega todas as páginas.** A API entrega 250 cartas por vez, e número
   popular passa disso, então as páginas seguintes vêm todas de uma vez (`Promise.all`),
   com teto de 4 páginas — acima de mil cartas ninguém rola a tela, o filtro pelo nome
