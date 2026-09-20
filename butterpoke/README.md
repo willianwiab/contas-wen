@@ -18,6 +18,46 @@ ele **pergunta o nome**. Aparece a pergunta "achei 47 cartas com o número 25, q
 tua?", com as cartinhas na tela pra tocar e um campo pra escrever o nome. Quando o
 número traz só uma carta, ele pula a pergunta e mostra o preço direto.
 
+## Versão, estado e PSA
+
+Depois de achar a carta, o site pergunta mais duas coisas, porque a mesma carta
+tem preços bem diferentes dependendo delas:
+
+1. **Qual versão é a tua** — Normal, Holo (o desenho brilha), Reverse Holo (o fundo
+   brilha e o desenho não) ou 1ª edição. Só aparecem as versões que realmente têm
+   preço registrado; carta com uma versão só pula a pergunta.
+2. **Como ela está** — perfeita, estado bom, médio ou ruim, cada uma com a
+   explicação do que isso quer dizer, que ninguém nasce sabendo.
+
+O valor em destaque recalcula na hora, e embaixo vem a tabela de quanto ela valeria
+**avaliada pela PSA**, das notas 10 a 6.
+
+### O aviso que importa
+
+Os preços de **versão** são reais: vêm da API, cada versão com a sua cotação.
+
+Os de **estado** e de **PSA** são **conta minha**, e o site diz isso na cara da pessoa,
+na caixinha embaixo da tabela. O motivo é simples: preço de carta avaliada não existe
+em API de graça — quem tem esse dado (PriceCharting, a própria PSA) cobra por ele. Então
+eu parto do preço da carta perfeita e multiplico:
+
+| | fator |
+|---|---|
+| Perfeita (é o que a API dá) | 1 |
+| Estado bom | 0,80 |
+| Estado médio | 0,60 |
+| Estado ruim | 0,35 |
+| PSA 10 | 5 |
+| PSA 9 | 2 |
+| PSA 8 | 1,3 |
+| PSA 7 | 1 |
+| PSA 6 | 0,75 |
+
+São as réguas que o pessoal de carta usa de cabeça. Servem pra dar noção — carta
+avaliada varia muito de uma pra outra, e pra vender de verdade tem que olhar anúncio
+fechado no eBay ou no PriceCharting. Quando nem o PSA 10 pagaria os ~$25 da avaliação,
+o site avisa que não compensa mandar avaliar.
+
 ## De onde vem o preço
 
 Da [pokemontcg.io](https://pokemontcg.io), que junta os preços do **TCGplayer** (em dólar,
@@ -59,6 +99,8 @@ tentativa respondeu, pra ficar fácil descobrir o que houve.
 - **Sem chave de API.** A pokemontcg.io responde sem cadastro, com limite por dia.
   Se um dia estourar o limite, aparece o aviso de "deu ruim na busca".
 - **Os nomes são em inglês**, porque a base é em inglês. A busca por nome avisa isso.
+- **A grade mostra 60 cartas por vez**, com um botão pra pedir mais. Número popular
+  como o 25 traz mais de cem: despejar tudo de uma vez trava celular fraco.
 - **Funciona no celular como app** (manifesto + service worker). A casca abre offline,
   mas preço só com internet — preço velho enganaria mais do que ajudaria.
 
