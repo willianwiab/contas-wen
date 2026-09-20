@@ -131,6 +131,28 @@ coleção, ver as cartas de uma coleção): muda o título e o que acontece no c
 filtro e a paginação são iguais. Da carta, o botão **"Voltar pra lista"** devolve pra
 lista de onde ela veio, seja qual for.
 
+## Escolher o idioma da carta
+
+Um seletor em cima da busca: 🇺🇸 Inglês, 🇧🇷 Português, 🇯🇵 Japonês, 🇪🇸 Espanhol,
+🇫🇷 Francês, 🇩🇪 Alemão, 🇮🇹 Italiano, 🇰🇷 Coreano e 🇹🇼 Chinês. A escolha fica guardada
+no aparelho.
+
+O que muda por dentro: **o banco principal só fala inglês**. Fora do inglês ele nem é
+consultado, e a busca vai direto pro reserva, que é multilíngue. Vale pras coleções também.
+
+Dois cuidados:
+
+- **O português está em `pt-br` num lugar e `pt` em outro**, e não dá pra saber daqui qual
+  existe. Então cada idioma carrega uma lista de escritas, tentadas em ordem, e a primeira
+  que responder ganha — um 404 numa não derruba a busca. O mesmo vale pro espanhol
+  (`es`/`es-mx`) e pro chinês (`zh-tw`/`zh-cn`).
+- **Trocar de idioma limpa a tela.** O que estava ali era do idioma antigo, e deixar
+  misturado seria mentira. Entra um aviso dizendo o que mudou, e avisando que fora do
+  inglês tem bem menos carta cadastrada e preço quase nunca vem junto.
+
+A etiqueta de origem passa a mostrar o idioma escolhido em vez do palpite de país, porque
+aí não é palpite: você pediu aquele idioma.
+
 ## De qual país é a carta
 
 **Nenhum dos dois bancos guarda o país da carta.** Esse dado não existe pra simplesmente

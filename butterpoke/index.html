@@ -70,7 +70,9 @@ header{text-align:center;padding:30px 0 18px}
 .btn.secundario{background:var(--asa);color:var(--tinta);box-shadow:0 5px 0 var(--asa-escura)}
 .btn.secundario:active{box-shadow:0 1px 0 var(--asa-escura)}
 .dica{margin-top:12px;font-size:.88rem;color:var(--tinta-fraca)}
-.atalhos{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.idioma-linha{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;font-size:.9rem;font-weight:600}
+.idioma-linha select{flex:1 1 150px;max-width:220px}
+.atalhos{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
 .atalhos .btn{flex:1 1 150px;padding:12px 10px;font-size:.95rem}
 .rotulo-filtro{display:block;font-size:.9rem;font-weight:600;margin:0 0 6px}
 .mais-opcoes{
@@ -237,6 +239,10 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
     <p class="dica" id="dica">
       O número fica no cantinho de baixo da carta — em <b>25/185</b>, o número é o <b>25</b>.
     </p>
+    <div class="idioma-linha">
+      <label for="sel-idioma">🌐 Idioma da carta:</label>
+      <select id="sel-idioma" class="escolher"></select>
+    </div>
     <div class="atalhos">
       <button class="btn secundario" type="button" id="btn-colecoes">📚 Ver as coleções</button>
       <button class="btn secundario" type="button" id="btn-favoritos">⭐ Meus favoritos</button>
@@ -264,7 +270,36 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
    ============================================================ */
 
 const API    = 'https://api.pokemontcg.io/v2/cards';
-const TCGDEX = 'https://api.tcgdex.net/v2/en';   // o site reserva, se o principal cair
+/* O site reserva fala vários idiomas — é o que permite procurar carta em
+   português. O principal é só em inglês, então fora do inglês a busca vai
+   direto pro reserva. */
+const TCGDEX = 'https://api.tcgdex.net/v2';
+const IDIOMAS = [
+  { id:'en',    nome:'🇺🇸 Inglês',    codigos:['en'] },
+  { id:'pt-br', nome:'🇧🇷 Português', codigos:['pt-br', 'pt'] },
+  { id:'ja',    nome:'🇯🇵 Japonês',   codigos:['ja'] },
+  { id:'es',    nome:'🇪🇸 Espanhol',  codigos:['es', 'es-mx'] },
+  { id:'fr',    nome:'🇫🇷 Francês',   codigos:['fr'] },
+  { id:'de',    nome:'🇩🇪 Alemão',    codigos:['de'] },
+  { id:'it',    nome:'🇮🇹 Italiano',  codigos:['it'] },
+  { id:'ko',    nome:'🇰🇷 Coreano',   codigos:['ko'] },
+  { id:'zh-tw', nome:'🇹🇼 Chinês',    codigos:['zh-tw', 'zh-cn'] },
+];
+let idioma = 'en';
+function nomeIdioma(id){ return (IDIOMAS.find(i => i.id === id) || IDIOMAS[0]).nome; }
+
+/* O português está em "pt-br" num lugar e "pt" em outro, e não dá pra saber
+   daqui qual existe. Então tento as escritas em ordem e fico na primeira
+   que responder — erro numa não derruba a busca. */
+async function pedirReserva(caminho, qual){
+  const idi = IDIOMAS.find(i => i.id === (qual || idioma)) || IDIOMAS[0];
+  let ultimo = null;
+  for(const cod of idi.codigos){
+    try{ return await pedirJSON(TCGDEX + '/' + cod + caminho); }
+    catch(e){ ultimo = e; }
+  }
+  throw ultimo || new Error('sem resposta');
+}
 const API_SETS = 'https://api.pokemontcg.io/v2/sets';
 
 const palco   = document.getElementById('palco');
@@ -404,7 +439,7 @@ function deTcgdex(c){
     name: c.name || '?',
     // lá o campo chama category, e o Pokémon vem sem acento
     supertype: c.category === 'Pokemon' ? 'Pokémon' : (c.category || ''),
-    __daReserva: true,
+    __daReserva: true, __lang: idioma,
     hp: c.hp, types: c.types || [], artist: c.illustrator || '',
     subtypes: [c.suffix, c.stage].filter(Boolean),
     nationalPokedexNumbers: c.dexId || [],
@@ -440,9 +475,9 @@ function deTcgdex(c){
 }
 async function buscarReserva(valor){
   const url = modo === 'numero'
-    ? TCGDEX + '/cards?localId=' + encodeURIComponent(valor.replace(/^0+/, '') || valor)
-    : TCGDEX + '/cards?name='    + encodeURIComponent(valor);
-  const lista = await pedirJSON(url);
+    ? '/cards?localId=' + encodeURIComponent(valor.replace(/^0+/, '') || valor)
+    : '/cards?name='    + encodeURIComponent(valor);
+  const lista = await pedirReserva(url);
   if(!Array.isArray(lista)) throw new Error('resposta fora do esperado');
   return lista.slice(0, 500).map(c => {
     const n = deTcgdex(c);
@@ -460,8 +495,11 @@ async function buscar(valor){
   const tropecos = [];
   let ninguemConhece = false;
 
+  // O principal só fala inglês. Nos outros idiomas ele nem é consultado.
+  const soReserva = idioma !== 'en';
+
   // Três consultas no site principal, da mais caprichada pra mais simples.
-  for(const monta of tentativas(valor)){
+  for(const monta of (soReserva ? [] : tentativas(valor))){
     try{
       const dados = await pedirJSON(monta(1));
       const primeira = dados.data || [];
@@ -494,7 +532,11 @@ async function buscar(valor){
 
   if(ninguemConhece){
     palco.innerHTML = '<div class="aviso"><strong>Não achei essa carta 😕</strong>' +
-      'Procurei nos dois bancos de carta e nenhum tem. ' +
+      (soReserva
+        ? 'Procurei nas cartas em ' + escapar(nomeIdioma(idioma).replace(/^\S+\s/, '')) +
+          '. Nem toda carta sai em todo idioma — tenta trocar pra 🇺🇸 Inglês ali em cima, ' +
+          'que é onde tem mais carta. '
+        : 'Procurei nos dois bancos de carta e nenhum tem. ') +
       (modo === 'numero'
         ? 'Confere o número, ou tenta procurar pelo nome.'
         : 'Tenta escrever o nome em inglês, ou só um pedaço dele — ' +
@@ -685,6 +727,7 @@ function virarFavorita(carta){
     set: { name:(carta.set && carta.set.name) || '', releaseDate:(carta.set && carta.set.releaseDate) || '' },
     images: { small:(carta.images && carta.images.small) || '' },
     fonte: carta.__daReserva ? 'reserva' : 'principal',
+    lang: carta.__lang || 'en',
     __soIdentidade: true,
   });
   gravarFavoritos(l);
@@ -719,7 +762,7 @@ async function abrirFavorito(c){
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Pegando o preço de hoje…</div>';
   try{
     if(c.fonte === 'reserva'){
-      const cheia = deTcgdex(await pedirJSON(TCGDEX + '/cards/' + encodeURIComponent(c.id)));
+      const cheia = deTcgdex(await pedirReserva('/cards/' + encodeURIComponent(c.id), c.lang));
       cheia.__faltaPreco = false;
       return mostrarCarta(cheia);
     }
@@ -979,12 +1022,14 @@ async function mostrarColecoes(){
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Pegando a lista de coleções…</div>';
   let colecoes = null;
   try{
+    if(idioma !== 'en') throw new Error('idioma ' + idioma + ': só o reserva tem');
     const d = await pedirJSON(API_SETS + '?pageSize=250&orderBy=-releaseDate');
     colecoes = (d.data || []).map(deSetPrincipal);
   }catch(e){
     try{
-      const l = await pedirJSON(TCGDEX + '/sets');
+      const l = await pedirReserva('/sets');
       colecoes = (Array.isArray(l) ? l : []).map(deSetReserva);
+      colecoes.forEach(c => { c.lang = idioma; });
     }catch(e2){
       palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui pegar as coleções 📡</strong>' +
         'Os dois sites de dados falharam. Tenta de novo daqui a pouco.' +
@@ -1020,7 +1065,7 @@ async function abrirColecao(colecao){
       const d = await pedirJSON(monta(1));
       cartas = await todasAsPaginas(monta, d.data || [], d.totalCount || (d.data || []).length);
     }else{
-      const d = await pedirJSON(TCGDEX + '/sets/' + encodeURIComponent(colecao.id));
+      const d = await pedirReserva('/sets/' + encodeURIComponent(colecao.id));
       cartas = ((d && d.cards) || []).map(c => {
         const n = deTcgdex(c);
         n.set = { name: colecao.name, printedTotal: colecao.total, releaseDate: colecao.releaseDate };
@@ -1227,6 +1272,12 @@ function origemDaCarta(c){
   if(/world championship/i.test(set))
     return { etiqueta:'🏆 Mundial',
              conta:'Carta de campeonato mundial, entregue no evento — não vendida em loja.' };
+  if(c.__lang && c.__lang !== 'en')
+    return { etiqueta:nomeIdioma(c.__lang),
+             conta:'Você está procurando as cartas em ' +
+                   nomeIdioma(c.__lang).replace(/^\S+\s/, '') +
+                   ', então esta é a versão nesse idioma. Se ela tiver preço, ele costuma ser ' +
+                   'o do mercado onde essa versão é vendida.' };
   if(c.__daReserva)
     return { etiqueta:'🗾 Fora do inglês',
              conta:'Ela não está no catálogo das cartas em inglês; achei só no outro banco, ' +
@@ -1401,7 +1452,7 @@ async function abrirDoReserva(carta){
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Pegando o preço…</div>';
   let cheia = carta;
   try{
-    cheia = deTcgdex(await pedirJSON(TCGDEX + '/cards/' + encodeURIComponent(carta.id)));
+    cheia = deTcgdex(await pedirReserva('/cards/' + encodeURIComponent(carta.id), carta.__lang));
   }catch(e){ /* sem detalhe, mostro o que já tenho — sem preço é melhor que nada */ }
   cheia.__faltaPreco = false;
   const i = achadas.findIndex(c => c.id === carta.id);   // não buscar de novo
@@ -1413,6 +1464,28 @@ function escapar(t){
   return String(t ?? '').replace(/[&<>"']/g, c =>
     ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
+
+const selIdioma = document.getElementById('sel-idioma');
+selIdioma.innerHTML = IDIOMAS.map(i =>
+  '<option value="' + i.id + '">' + i.nome + '</option>').join('');
+try{
+  const salvo = localStorage.getItem('butterpoke:idioma');
+  if(salvo && IDIOMAS.some(i => i.id === salvo)) idioma = salvo;
+}catch(e){}
+selIdioma.value = idioma;
+selIdioma.onchange = () => {
+  idioma = selIdioma.value;
+  try{ localStorage.setItem('butterpoke:idioma', idioma); }catch(e){}
+  // O que está na tela é do idioma antigo, então some com ele.
+  cartaAberta = null; voltarPraLista = null; achadas = [];
+  palco.innerHTML = '<div class="aviso"><strong>Idioma trocado pra ' +
+    escapar(nomeIdioma(idioma)) + '</strong>' +
+    (idioma === 'en'
+      ? 'Procura de novo, que agora vem o catálogo em inglês, que é o maior de todos.'
+      : 'Procura de novo. Fora do inglês tem bem menos carta cadastrada, ' +
+        'e preço quase nunca vem junto.') + '</div>';
+  campo.focus();
+};
 
 document.getElementById('btn-colecoes').onclick = mostrarColecoes;
 document.getElementById('btn-favoritos').onclick = mostrarFavoritos;
