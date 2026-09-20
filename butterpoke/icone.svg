@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ButterPoke">
+  <rect width="512" height="512" rx="110" fill="#fffdf0"/>
+  <!-- tijolo de manteiga -->
+  <g transform="rotate(-10 256 300)">
+    <path d="M110 300h220l52-46H162z" fill="#e0ad1f"/>
+    <rect x="110" y="300" width="220" height="92" rx="10" fill="#f7c948"/>
+    <path d="M330 300l52-46v92l-52 46z" fill="#c9971a"/>
+  </g>
+  <!-- pokebola -->
+  <g transform="translate(300 170)">
+    <circle r="104" fill="#fff" stroke="#3b2f0b" stroke-width="14"/>
+    <path d="M-104 0a104 104 0 0 1 208 0z" fill="#e3350d" stroke="#3b2f0b" stroke-width="14"/>
+    <line x1="-104" y1="0" x2="104" y2="0" stroke="#3b2f0b" stroke-width="14"/>
+    <circle r="34" fill="#fff" stroke="#3b2f0b" stroke-width="14"/>
+  </g>
+</svg>
