@@ -39,6 +39,24 @@ E um **código** que a pessoa leva na mão:
 - código de outro site, ou cortado no meio, dá um recado em português explicando —
   sem isso o navegador devolve o erro do `atob` em inglês, que não ajuda ninguém
 
+## Cartão de treinador
+
+O perfil virado carta: fundo escolhido entre oito, símbolo, nome, três números e as
+favoritas em miniatura. Os números são **contados na hora** a partir das favoritas
+guardadas — quantas cartas, de quantas coleções diferentes, e o ano da mais antiga.
+
+Preço não entra: as favoritas guardam só a identidade da carta, e somar preço aqui exigiria
+buscar cada uma. Melhor três números certos do que quatro com um inventado.
+
+Mexer no símbolo ou no fundo redesenha o cartão na hora — senão a pessoa escolheria às
+cegas e só veria o resultado depois.
+
+### Espiar o cartão de um amigo
+
+Colar o código de alguém tem dois botões, e a diferença é o ponto: **"só ver o cartão
+dele"** mostra o cartão e as cartas sem encostar nas tuas, e **"trazer as cartas pra cá"**
+é que junta. Ver antes de decidir é o mínimo.
+
 ## Álbum
 
 As favoritas como num fichário de verdade: **nove por página**, e os buraquinhos vazios

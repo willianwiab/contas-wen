@@ -72,6 +72,9 @@ header{text-align:center;padding:30px 0 18px}
 .dica{margin-top:12px;font-size:.88rem;color:var(--tinta-fraca)}
 .idioma-linha{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;font-size:.9rem;font-weight:600}
 .idioma-linha select{flex:1 1 150px;max-width:220px}
+/* Esta regra tinha sumido num ajuste anterior, e os botões do perfil
+   voltaram a ficar do tamanho do texto, apertadinhos no celular. */
+.btn.larga{margin-top:12px;width:100%;padding:13px;font-size:1rem}
 .atalhos{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
 .atalhos .btn{flex:1 1 150px;padding:12px 10px;font-size:.95rem}
 .rotulo-filtro{display:block;font-size:.9rem;font-weight:600;margin:0 0 6px}
@@ -289,6 +292,36 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 }
 .codigo:focus{outline:none;border-color:var(--asa-escura)}
 #chips-bicho .chip{font-size:1.3rem;padding:7px 12px}
+#chips-fundo .chip{font-size:1.2rem;padding:9px 14px;color:#fff;border-color:rgba(0,0,0,.2)}
+#chips-fundo .chip[aria-pressed="true"]{border:3px solid var(--tinta);transform:scale(1.08)}
+/* ---------- cartão de treinador ---------- */
+.cartao-treinador{
+  border-radius:20px;padding:18px;color:#fff;margin:4px 0 18px;
+  box-shadow:0 6px 0 rgba(0,0,0,.18);
+}
+.tt-topo{display:flex;align-items:center;gap:14px}
+.tt-bicho{
+  font-size:2.2rem;background:rgba(255,255,255,.22);border-radius:50%;
+  width:62px;height:62px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+}
+.tt-nome{min-width:0}
+.tt-nome b{display:block;font-family:'Baloo 2',cursive;font-size:1.7rem;line-height:1.1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tt-nome span{font-size:.8rem;opacity:.85}
+.tt-numeros{display:flex;gap:9px;margin:15px 0 12px}
+.tt-numero{
+  flex:1 1 0;min-width:0;background:rgba(255,255,255,.18);border-radius:13px;
+  padding:9px 6px;text-align:center;
+}
+.tt-numero b{display:block;font-family:'Baloo 2',cursive;font-size:1.5rem;line-height:1.1}
+.tt-numero span{font-size:.7rem;opacity:.9;text-transform:uppercase;letter-spacing:.04em}
+.tt-cartas{display:flex;gap:7px;align-items:center;overflow-x:auto;padding-bottom:3px}
+.tt-cartas img{
+  width:56px;flex:0 0 auto;border-radius:6px;aspect-ratio:245/342;object-fit:cover;
+  background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.55);
+}
+.tt-resto{font-weight:700;font-size:.95rem;opacity:.9;padding:0 4px}
+.tt-vazio{font-size:.86rem;opacity:.9;font-style:italic}
 .escondido{display:none}
 </style>
 </head>
@@ -337,7 +370,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 17 — 20/09</span>
+    <br><span class="versao">versão 18 — 20/09</span>
   </footer>
 </div>
 
@@ -897,6 +930,59 @@ function mostrarFavoritos(){
    um código que a pessoa leva na mão pro outro aparelho. */
 const CHAVE_PERFIL = 'butterpoke:perfil';
 const BICHOS = ['🦋','⚡','🔥','💧','🌿','🔮','🐉','🌑','⚙️','🧚','⭐','👊'];
+/* Os fundos do cartão de treinador. Todos escuros o bastante pra o texto
+   branco por cima se ler em qualquer um — por isso não há fundo claro. */
+const FUNDOS = [
+  { id:'borboleta', nome:'🦋', css:'linear-gradient(135deg,#a97fd6,#5b3a86)' },
+  { id:'fogo',      nome:'🔥', css:'linear-gradient(135deg,#ff8f3c,#c62828)' },
+  { id:'agua',      nome:'💧', css:'linear-gradient(135deg,#4fa8e0,#0d47a1)' },
+  { id:'grama',     nome:'🌿', css:'linear-gradient(135deg,#66bb6a,#1b5e20)' },
+  { id:'eletrico',  nome:'⚡', css:'linear-gradient(135deg,#f9c220,#ef6c00)' },
+  { id:'psiquico',  nome:'🔮', css:'linear-gradient(135deg,#c07ae8,#4a148c)' },
+  { id:'dragao',    nome:'🐉', css:'linear-gradient(135deg,#7e8fa8,#2c3e50)' },
+  { id:'sombrio',   nome:'🌑', css:'linear-gradient(135deg,#4a5560,#11161c)' },
+];
+function fundoDe(id){ return (FUNDOS.find(f => f.id === id) || FUNDOS[0]).css; }
+
+/* ---------- cartão de treinador ----------
+   O perfil virado carta: fundo, símbolo, nome, três números e as favoritas
+   em miniatura. Serve pro dono e pra espiar o de um amigo pelo código. */
+function cartaoTreinador(perfil, favoritos, dono){
+  const p = perfil || {}, favs = Array.isArray(favoritos) ? favoritos : [];
+  const colecoes = {};
+  let maisAntiga = '';
+  favs.forEach(f => {
+    const nome = (f.set && f.set.name) || '';
+    if(nome) colecoes[nome] = 1;
+    const ano = String((f.set && f.set.releaseDate) || '').replace(/-/g, '/').slice(0, 4);
+    if(ano && (!maisAntiga || ano < maisAntiga)) maisAntiga = ano;
+  });
+  const mostrar = favs.slice(0, 6);
+  const numero = (valor, rotulo) =>
+    '<div class="tt-numero"><b>' + escapar(String(valor)) + '</b><span>' + rotulo + '</span></div>';
+
+  return '<div class="cartao-treinador" style="background:' + fundoDe(p.fundo) + '">' +
+    '<div class="tt-topo">' +
+      '<span class="tt-bicho">' + escapar(p.bicho || '🦋') + '</span>' +
+      '<div class="tt-nome">' +
+        '<b>' + escapar(p.nome || 'Treinador sem nome') + '</b>' +
+        '<span>' + (dono ? 'Meu cartão de treinador' : 'Cartão de um amigo') + '</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="tt-numeros">' +
+      numero(favs.length, favs.length === 1 ? 'carta' : 'cartas') +
+      numero(Object.keys(colecoes).length, 'coleções') +
+      numero(maisAntiga || '—', 'mais antiga') +
+    '</div>' +
+    (mostrar.length
+      ? '<div class="tt-cartas">' + mostrar.map(f =>
+          '<img loading="lazy" alt="' + escapar(f.name || '') + '" src="' +
+            escapar((f.images && f.images.small) || '') + '" />').join('') +
+          (favs.length > 6 ? '<span class="tt-resto">+' + (favs.length - 6) + '</span>' : '') +
+        '</div>'
+      : '<p class="tt-vazio">Nenhuma carta guardada ainda.</p>') +
+  '</div>';
+}
 
 function lerPerfil(){
   try{
@@ -942,11 +1028,20 @@ function mostrarPerfil(){
     '<section class="pergunta">' +
       '<h2>👤 Meu perfil</h2>' +
       '<p>Fica guardado neste aparelho. Não tem senha, e não precisa.</p>' +
+      cartaoTreinador(p, favs, true) +
       '<label class="rotulo-filtro" for="nome-perfil">Como você quer ser chamado</label>' +
       '<input id="nome-perfil" maxlength="20" autocomplete="off" placeholder="Teu nome ou apelido" value="' +
         escapar(p.nome || '') + '" />' +
       '<div class="escolha"><h3>Teu símbolo</h3>' +
         chips('chips-bicho', BICHOS.map(x => ({ v:x, rotulo:x })), p.bicho || '🦋') +
+      '</div>' +
+      '<div class="escolha"><h3>Fundo do cartão</h3>' +
+        '<div class="chips" id="chips-fundo">' + FUNDOS.map(f =>
+          '<button type="button" class="chip fundo" data-v="' + escapar(f.id) + '" ' +
+            'aria-pressed="' + (f.id === (p.fundo || 'borboleta')) + '" ' +
+            'style="background:' + f.css + '" aria-label="Fundo ' + escapar(f.nome) + '">' +
+            escapar(f.nome) + '</button>').join('') +
+        '</div>' +
       '</div>' +
       '<div class="quadrinhos">' +
         '<div class="quadrinho"><span>Favoritas</span><b>' + favs.length + '</b></div>' +
@@ -964,16 +1059,35 @@ function mostrarPerfil(){
       '<p class="nota">Cola aqui o código do outro aparelho. ' +
         '<b>As favoritas de lá se juntam às daqui</b>, nada é apagado.</p>' +
       '<textarea id="colar" class="codigo" rows="3" placeholder="Cola o código aqui…"></textarea>' +
-      '<button class="btn secundario larga" type="button" id="restaurar">📥 Trazer pra cá</button>' +
+      '<button class="btn secundario larga" type="button" id="espiar">👀 Só ver o cartão dele</button>' +
+      '<button class="btn secundario larga" type="button" id="restaurar">📥 Trazer as cartas pra cá</button>' +
+      '<div id="cartao-amigo"></div>' +
       '<p id="recado-perfil"></p>' +
     '</section>';
 
   const nome = document.getElementById('nome-perfil');
   nome.oninput = () => { const a = lerPerfil(); a.nome = nome.value.trim(); gravarPerfil(a); };
-  ligarChips('chips-bicho', v => { const a = lerPerfil(); a.bicho = v; gravarPerfil(a); }, () => {
-    document.querySelectorAll('#chips-bicho .chip').forEach(b =>
-      b.setAttribute('aria-pressed', b.dataset.v === (lerPerfil().bicho || '🦋')));
-  });
+  // Mexer no símbolo ou no fundo tem que mudar o cartão na hora, senão a
+  // pessoa escolhe às cegas e só descobre o resultado depois.
+  ligarChips('chips-bicho', v => { const a = lerPerfil(); a.bicho = v; gravarPerfil(a); }, mostrarPerfil);
+  ligarChips('chips-fundo', v => { const a = lerPerfil(); a.fundo = v; gravarPerfil(a); }, mostrarPerfil);
+
+  document.getElementById('espiar').onclick = () => {
+    const alvo = document.getElementById('cartao-amigo');
+    let dados;
+    try{ dados = lerCodigo(document.getElementById('colar').value); }
+    catch(e){
+      alvo.innerHTML = '<p class="nota" style="border-color:var(--olho)">❌ ' +
+        escapar(e.message) + '</p>';
+      return;
+    }
+    // Espiar não mexe em nada do que é meu — é só olhar.
+    alvo.innerHTML = '<h3 class="titulinho">O cartão dele</h3>' +
+      cartaoTreinador(dados.perfil, dados.favoritos, false) +
+      '<p class="nota">Isto é só uma olhada. Nada disso entrou nas tuas cartas — ' +
+      'pra trazer, aperta o outro botão.</p>';
+    alvo.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  };
 
   const recado = document.getElementById('recado-perfil');
   document.getElementById('copiar-codigo').onclick = async () => {
