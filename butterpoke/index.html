@@ -538,6 +538,8 @@ function virarFavorita(carta){
   else l.push({
     id: carta.id, name: carta.name, number: carta.number || '',
     supertype: carta.supertype || '',
+    rarity: carta.rarity || '',
+    subtypes: carta.subtypes || [],
     set: { name:(carta.set && carta.set.name) || '', releaseDate:(carta.set && carta.set.releaseDate) || '' },
     images: { small:(carta.images && carta.images.small) || '' },
     fonte: carta.__daReserva ? 'reserva' : 'principal',
@@ -601,6 +603,7 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
 
   const ehCarta = gradeAtual.tipo === 'carta';
   const temPreco = ehCarta && lista.some(c => precoDe(c) != null);
+
   // Ordem por preço só aparece quando há preço na mão: nos favoritos o preço
   // só chega ao abrir a carta, e oferecer ali seria mentira.
   const ordens = ORDENS.filter(o =>
@@ -610,12 +613,12 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
       chips('chips-ordem', ordens.map(o => ({ v:o.id, rotulo:o.nome })), ordemAtual) +
     '</div>';
 
-  // Os botõezinhos de tipo só aparecem quando há mais de um tipo na lista.
-  const tiposPresentes = TIPOS.filter(t => t.id === 'todos' ||
-    lista.some(c => c.supertype === t.id));
-  const escolherTipo = (gradeAtual.tipo === 'carta' && tiposPresentes.length > 2)
-    ? '<div class="escolha" style="margin:0 0 14px">' +
-        chips('chips-tipo', tiposPresentes.map(t => ({ v:t.id, rotulo:t.nome })), 'todos') +
+  // Cada botãozinho só aparece se a lista tiver do que ele filtra. Sem
+  // carta jumbo na lista, não existe botão de jumbo pra clicar à toa.
+  const presentes = FILTROS.filter(f => f.id === 'todos' || lista.some(f.testa));
+  const escolherTipo = (ehCarta && presentes.length > 2)
+    ? '<div class="escolha" style="margin:0 0 14px"><h3>Mostrar só</h3>' +
+        chips('chips-tipo', presentes.map(f => ({ v:f.id, rotulo:f.nome })), 'todos') +
       '</div>'
     : '';
 
@@ -657,7 +660,8 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
 
 function filtrar(lista, texto){
   const t = texto.trim().toLowerCase();
-  let saida = tipoFiltro === 'todos' ? lista : lista.filter(c => c.supertype === tipoFiltro);
+  const f = FILTROS.find(x => x.id === tipoFiltro) || FILTROS[0];
+  const saida = tipoFiltro === 'todos' ? lista : lista.filter(f.testa);
   return t ? saida.filter(c => (c.name || '').toLowerCase().includes(t)) : saida;
 }
 
@@ -860,11 +864,35 @@ const VARIANTES = {
 /* Carta de Pokémon não é só bicho: tem Treinador (Pokébola, Professor,
    objeto) e Energia. Elas sempre vieram na busca, mas ficavam misturadas
    e ninguém achava. Estes são os nomes que as duas APIs usam. */
-const TIPOS = [
-  { id:'todos',   nome:'Todas' },
-  { id:'Pokémon', nome:'⚡ Pokémon' },
-  { id:'Trainer', nome:'🎒 Treinador' },
-  { id:'Energy',  nome:'🔋 Energia' },
+function chavesPreco(c){ return Object.keys((c.tcgplayer && c.tcgplayer.prices) || {}); }
+function temPrimeiraEdicao(c){ return chavesPreco(c).some(k => k.indexOf('1stEdition') === 0); }
+function temHolo(c){
+  return chavesPreco(c).some(k => /holofoil/i.test(k) && !/reverse/i.test(k)) ||
+         /holo/i.test(c.rarity || '');
+}
+function temReverse(c){ return chavesPreco(c).some(k => /reverse/i.test(k)); }
+function ehPromo(c){
+  return /promo/i.test(c.rarity || '') ||
+         /promo|black star/i.test((c.set && c.set.name) || '');
+}
+/* Jumbo é a carta gigante. Nenhuma das duas APIs tem um campo pra isso,
+   então procuro nos subtipos e no nome. O botão só aparece se a lista
+   realmente tiver alguma: melhor não ter o botão do que ter um que mente. */
+function ehJumbo(c){
+  return (c.subtypes || []).some(x => /jumbo|oversize/i.test(x)) ||
+         /jumbo|oversize/i.test(c.name || '');
+}
+
+const FILTROS = [
+  { id:'todos',    nome:'Todas',        testa:function(){ return true; } },
+  { id:'Pokémon',  nome:'⚡ Pokémon',   testa:c => c.supertype === 'Pokémon' },
+  { id:'Trainer',  nome:'🎒 Treinador', testa:c => c.supertype === 'Trainer' },
+  { id:'Energy',   nome:'🔋 Energia',   testa:c => c.supertype === 'Energy' },
+  { id:'primeira', nome:'✨ 1ª edição', testa:temPrimeiraEdicao },
+  { id:'promo',    nome:'🌟 Promo',     testa:ehPromo },
+  { id:'holo',     nome:'💫 Holo',      testa:temHolo },
+  { id:'reverse',  nome:'🔄 Reverse',   testa:temReverse },
+  { id:'jumbo',    nome:'📏 Jumbo',     testa:ehJumbo },
 ];
 const NOME_TIPO = { 'Pokémon':'Pokémon', 'Trainer':'Treinador', 'Energy':'Energia' };
 
