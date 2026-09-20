@@ -1,7 +1,7 @@
 /* Guarda só a casca do site (página, ícone, manifesto) pra abrir rápido e
    sem internet. Os preços vêm de fora e nunca são guardados: preço velho
    seria pior do que preço nenhum. */
-const CACHE = 'butterpoke-v1';
+const CACHE = 'butterpoke-v2';   // subiu junto com a cara nova, pra limpar o cache antigo
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {

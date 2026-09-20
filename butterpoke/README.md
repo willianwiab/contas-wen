@@ -1,6 +1,9 @@
-# 🧈⚡ ButterPoke
+# 🦋 ButterPoke
 
 Digita o número da carta de Pokémon e o site diz quanto ela vale.
+
+O nome é **Butterfree** + **Pokémon**, então a cara do site é a dela: asa branca,
+corpo roxo e aqueles olhões vermelhos.
 
 ▶️ **Abrir:** https://willianwiab.github.io/contas-wen/butterpoke/
 

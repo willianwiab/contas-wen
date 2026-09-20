@@ -3,8 +3,15 @@
   "short_name": "ButterPoke",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#fffdf0",
-  "theme_color": "#f7c948",
+  "background_color": "#faf7ff",
+  "theme_color": "#a97fd6",
   "description": "Digita o número da carta de Pokémon e descobre quanto ela vale.",
-  "icons": [{ "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+  "icons": [
+    {
+      "src": "icone.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
