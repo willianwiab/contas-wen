@@ -152,6 +152,26 @@ dois.
 Nenhum dos dois é meu, então **não dá pra adicionar carta à mão**. O que dá é procurar
 em mais de um lugar — e é o que ele faz.
 
+## Todas as cartas do TCG
+
+Um botão que abre o catálogo inteiro, sem precisar procurar nada. São mais de vinte mil
+cartas, então baixar tudo de uma vez seria minutos de espera e um celular travado: vêm de
+**250 em 250**, das mais novas pras mais velhas, e quem quiser mais pede mais.
+
+São dois botões diferentes no fim da grade, e a diferença importa: **"mostrar mais 60"**
+mostra mais das que já estão aqui, **"buscar mais 250 no banco"** vai buscar cartas novas
+lá fora. O segundo só aparece depois que todas as que já vieram estão na tela — senão a
+pessoa pediria mais sem ter visto o que já tem.
+
+E depois de buscar mais, a grade continua mostrando o que mostrava: voltar pras 60
+primeiras obrigaria a clicar tudo de novo pra chegar onde estava.
+
+## Link que já abre numa busca
+
+`#busca=25` abre o site com a lista pronta. Serve pra mandar uma busca pro amigo — e
+serve pra combinar "abre exatamente esta tela" com alguém, que sem isso não havia como
+garantir.
+
 ## Ver as coleções inteiras
 
 Além de procurar carta solta, dá pra entrar pelo outro lado: o botão **"Ou vê todas as
