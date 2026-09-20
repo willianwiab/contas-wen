@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ButterPoke — quanto vale a tua carta?</title>
+<meta name="description" content="Digita o número da carta de Pokémon e o ButterPoke mostra quanto ela vale. Se tiver mais de uma carta com o mesmo número, ele pergunta o nome." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#f7c948" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="ButterPoke" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --manteiga:#f7c948; --manteiga-escura:#e0ad1f; --creme:#fffdf0;
+  --pokebola:#e3350d; --tinta:#3b2f0b; --tinta-fraca:#7a6a3a;
+  --cartao:#ffffff; --borda:#f0e2b4; --sombra:0 6px 0 #ecd898;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Rubik',system-ui,sans-serif; color:var(--tinta);
+  background:var(--creme);
+  background-image:radial-gradient(circle at 12% 8%, #fff4c2 0 22%, transparent 22.5%),
+                   radial-gradient(circle at 88% 72%, #ffe9a8 0 18%, transparent 18.5%);
+  background-attachment:fixed;
+  min-height:100vh; padding:0 16px 56px;
+}
+.envolve{max-width:900px;margin:0 auto}
+
+/* ---------- topo ---------- */
+header{text-align:center;padding:30px 0 18px}
+.logo{
+  font-family:'Baloo 2',cursive; font-size:clamp(2.4rem,9vw,3.6rem); line-height:1;
+  color:var(--pokebola); text-shadow:3px 3px 0 var(--manteiga);
+}
+.logo span{color:var(--manteiga-escura);text-shadow:3px 3px 0 #fff}
+.slogan{margin-top:8px;color:var(--tinta-fraca);font-size:1rem}
+
+/* ---------- busca ---------- */
+.busca{
+  background:var(--cartao); border:3px solid var(--manteiga); border-radius:22px;
+  padding:20px; box-shadow:var(--sombra);
+}
+.modos{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.modos button{
+  flex:1 1 140px; padding:10px 14px; border:2px solid var(--borda); background:#fff;
+  border-radius:999px; font:inherit; font-weight:600; color:var(--tinta-fraca); cursor:pointer;
+}
+.modos button[aria-pressed="true"]{background:var(--manteiga);border-color:var(--manteiga-escura);color:var(--tinta)}
+.linha-busca{display:flex;gap:10px;flex-wrap:wrap}
+#campo{
+  flex:1 1 200px; min-width:0; padding:16px 18px; font:inherit; font-size:1.15rem;
+  border:3px solid var(--borda); border-radius:16px; background:#fffdf5; color:var(--tinta);
+}
+#campo:focus{outline:none;border-color:var(--manteiga-escura);background:#fff}
+.btn{
+  padding:16px 26px; border:none; border-radius:16px; font:inherit; font-weight:700;
+  font-size:1.05rem; cursor:pointer; background:var(--pokebola); color:#fff;
+  box-shadow:0 5px 0 #a8250a; transition:transform .08s, box-shadow .08s;
+}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #a8250a}
+.btn.secundario{background:var(--manteiga);color:var(--tinta);box-shadow:0 5px 0 var(--manteiga-escura)}
+.btn.secundario:active{box-shadow:0 1px 0 var(--manteiga-escura)}
+.dica{margin-top:12px;font-size:.88rem;color:var(--tinta-fraca)}
+
+/* ---------- avisos ---------- */
+.aviso{
+  margin-top:22px;background:#fff;border:3px dashed var(--borda);border-radius:20px;
+  padding:26px 20px;text-align:center;color:var(--tinta-fraca);
+}
+.aviso strong{display:block;color:var(--tinta);font-size:1.15rem;margin-bottom:6px}
+.aviso.ruim{border-color:#f5b3a4;background:#fff6f4}
+.girando{
+  width:42px;height:42px;margin:0 auto 14px;border-radius:50%;
+  border:6px solid var(--borda);border-top-color:var(--pokebola);animation:gira .8s linear infinite;
+}
+@keyframes gira{to{transform:rotate(360deg)}}
+
+/* ---------- pergunta do nome ---------- */
+.pergunta{margin-top:26px}
+.pergunta h2{font-family:'Baloo 2',cursive;font-size:1.5rem;margin-bottom:4px}
+.pergunta p{color:var(--tinta-fraca);margin-bottom:14px}
+#filtro{
+  width:100%;padding:13px 16px;font:inherit;border:3px solid var(--borda);
+  border-radius:14px;background:#fff;color:var(--tinta);margin-bottom:16px;
+}
+#filtro:focus{outline:none;border-color:var(--manteiga-escura)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.opcao{
+  background:var(--cartao);border:3px solid var(--borda);border-radius:18px;padding:10px;
+  cursor:pointer;text-align:center;font:inherit;color:var(--tinta);
+  transition:transform .12s,border-color .12s;
+}
+.opcao:hover,.opcao:focus{transform:translateY(-4px);border-color:var(--manteiga-escura);outline:none}
+.opcao img{width:100%;border-radius:10px;display:block;background:#f6efd8;aspect-ratio:245/342}
+.opcao b{display:block;margin-top:8px;font-size:.98rem}
+.opcao small{display:block;color:var(--tinta-fraca);font-size:.8rem;margin-top:2px}
+
+/* ---------- carta ---------- */
+.carta{
+  margin-top:26px;background:var(--cartao);border:3px solid var(--manteiga);
+  border-radius:24px;padding:22px;box-shadow:var(--sombra);
+  display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:24px;
+}
+/* No celular a carta vira uma coluna só. O minmax(0,...) é o que impede
+   a tabela de preços de esticar a página pro lado. */
+@media(max-width:640px){
+  .carta{grid-template-columns:minmax(0,1fr);padding:16px;gap:16px}
+  /* Foto menor no celular: quem procurou o preço não quer rolar meia tela
+     de carta antes de ver o número. Dá pra reconhecer a carta assim. */
+  .carta .foto{max-width:200px;margin:0 auto}
+  .carta h2{font-size:1.6rem;text-align:center}
+  .etiquetas{justify-content:center}
+  th,td{padding:8px 3px;font-size:.85rem}
+  thead th{font-size:.72rem}
+  .modos button{flex:1 1 120px;padding:10px 8px;font-size:.92rem}
+}
+.carta .foto{width:100%;align-self:start;border-radius:14px;display:block;background:#f6efd8;aspect-ratio:245/342;object-fit:contain}
+.carta h2{font-family:'Baloo 2',cursive;font-size:1.9rem;line-height:1.1}
+.etiquetas{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px}
+.etiqueta{background:#fff7d9;border:2px solid var(--borda);border-radius:999px;padding:5px 12px;font-size:.82rem;font-weight:600}
+.destaque{
+  background:linear-gradient(135deg,var(--manteiga),#ffe07a);border-radius:18px;
+  padding:16px 18px;border:2px solid var(--manteiga-escura);
+}
+.destaque .rotulo{font-size:.82rem;font-weight:600;color:#6b5510;text-transform:uppercase;letter-spacing:.06em}
+.destaque .preco{font-family:'Baloo 2',cursive;font-size:2.4rem;line-height:1.1;color:var(--tinta)}
+.destaque .reais{font-size:1.05rem;font-weight:600;color:#6b5510}
+.destaque .qual{font-size:.85rem;color:#6b5510;margin-top:4px}
+h3.titulinho{margin:22px 0 8px;font-size:1rem;color:var(--tinta-fraca);text-transform:uppercase;letter-spacing:.05em}
+table{width:100%;max-width:100%;border-collapse:collapse;font-size:.92rem;table-layout:fixed}
+th,td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--borda)}
+th:first-child,td:first-child{text-align:left}
+thead th{color:var(--tinta-fraca);font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+.fonte{margin-top:10px;font-size:.82rem;color:var(--tinta-fraca)}
+.fonte a{color:var(--pokebola)}
+
+/* ---------- cotação ---------- */
+.cotacao{
+  margin-top:24px;background:#fff;border:2px solid var(--borda);border-radius:16px;
+  padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.9rem;color:var(--tinta-fraca);
+}
+.cotacao input{width:90px;padding:8px 10px;font:inherit;border:2px solid var(--borda);border-radius:10px;color:var(--tinta)}
+footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85rem}
+.escondido{display:none}
+</style>
+</head>
+<body>
+<div class="envolve">
+
+  <header>
+    <h1 class="logo">Butter<span>Poke</span> 🧈⚡</h1>
+    <p class="slogan">Digita o número da carta e eu te digo quanto ela vale.</p>
+  </header>
+
+  <section class="busca">
+    <div class="modos" role="group" aria-label="Buscar por">
+      <button type="button" id="modo-numero" aria-pressed="true">🔢 Pelo número</button>
+      <button type="button" id="modo-nome" aria-pressed="false">🔤 Pelo nome</button>
+    </div>
+    <form class="linha-busca" id="formulario">
+      <input id="campo" inputmode="numeric" autocomplete="off"
+             placeholder="Ex: 25" aria-label="Número da carta" />
+      <button class="btn" type="submit">Procurar</button>
+    </form>
+    <p class="dica" id="dica">
+      O número fica no cantinho de baixo da carta — em <b>25/185</b>, o número é o <b>25</b>.
+    </p>
+  </section>
+
+  <div id="palco" aria-live="polite"></div>
+
+  <div class="cotacao">
+    <label for="cotacao">💵 Dólar hoje: R$</label>
+    <input id="cotacao" type="number" step="0.01" min="0" value="5.40" />
+    <span>— serve só pra dar uma ideia em reais, não é o valor oficial.</span>
+  </div>
+
+  <footer>ButterPoke · preços da API pública pokemontcg.io (TCGplayer e Cardmarket)</footer>
+</div>
+
+<script>
+/* ============================================================
+   ButterPoke — quanto vale a carta
+
+   A ideia: o número sozinho não identifica uma carta. Existem dezenas
+   de cartas "25" (uma por coleção). Então quando a busca traz mais de
+   uma, o site PERGUNTA o nome em vez de chutar a primeira.
+   ============================================================ */
+
+const API = 'https://api.pokemontcg.io/v2/cards';
+
+const palco   = document.getElementById('palco');
+const campo   = document.getElementById('campo');
+const dica    = document.getElementById('dica');
+const btnNum  = document.getElementById('modo-numero');
+const btnNome = document.getElementById('modo-nome');
+const inpCota = document.getElementById('cotacao');
+
+let modo = 'numero';
+let achadas = [];   // resultado da última busca, pra filtrar sem ir na internet de novo
+let cartaAberta = null;
+
+/* ---------- cotação do dólar, guardada no aparelho ---------- */
+try{
+  const salva = localStorage.getItem('butterpoke:dolar');
+  if(salva) inpCota.value = salva;
+}catch(e){}
+inpCota.addEventListener('input', () => {
+  try{ localStorage.setItem('butterpoke:dolar', inpCota.value); }catch(e){}
+  if(cartaAberta) mostrarCarta(cartaAberta);   // redesenha o preço em reais
+});
+
+/* ---------- troca de modo ---------- */
+function trocarModo(novo){
+  modo = novo;
+  btnNum.setAttribute('aria-pressed', novo === 'numero');
+  btnNome.setAttribute('aria-pressed', novo === 'nome');
+  if(novo === 'numero'){
+    campo.placeholder = 'Ex: 25';
+    campo.inputMode = 'numeric';
+    dica.innerHTML = 'O número fica no cantinho de baixo da carta — em <b>25/185</b>, o número é o <b>25</b>.';
+  }else{
+    campo.placeholder = 'Ex: Pikachu';
+    campo.inputMode = 'text';
+    dica.innerHTML = 'Escreve o nome em inglês, que é como vem na API — <b>Pikachu</b>, <b>Charizard</b>, <b>Eevee</b>.';
+  }
+  campo.focus();
+}
+btnNum.onclick  = () => trocarModo('numero');
+btnNome.onclick = () => trocarModo('nome');
+
+/* ---------- a busca ---------- */
+document.getElementById('formulario').addEventListener('submit', ev => {
+  ev.preventDefault();
+  buscar(campo.value.trim());
+});
+
+function aspas(t){ return t.replace(/"/g, ''); }
+
+/* Quem escreve "025" e quem escreve "25" quer a mesma carta, e a API
+   guarda só uma das formas. Então pergunto por todas de uma vez. */
+function consultaNumero(valor){
+  const formas = new Set([valor]);
+  const limpo = valor.replace(/^0+/, '');
+  if(limpo) formas.add(limpo);
+  if(/^\d+$/.test(limpo)){ formas.add(limpo.padStart(2,'0')); formas.add(limpo.padStart(3,'0')); }
+  return '(' + [...formas].map(f => 'number:"' + aspas(f) + '"').join(' or ') + ')';
+}
+
+async function buscar(valor){
+  if(!valor){ campo.focus(); return; }
+  cartaAberta = null;
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a carta…</div>';
+
+  const q = modo === 'numero' ? consultaNumero(valor) : 'name:"' + aspas(valor) + '*"';
+  const url = API + '?q=' + encodeURIComponent(q) +
+              '&pageSize=250&orderBy=-set.releaseDate';
+
+  try{
+    const resp = await fetch(url, { headers:{ Accept:'application/json' } });
+    // A API é de graça e sem cadastro, então tem limite por dia. Vale explicar.
+    if(resp.status === 429){
+      palco.innerHTML = '<div class="aviso ruim"><strong>Calma aí ⏳</strong>' +
+        'O site dos preços atingiu o limite de pesquisas de hoje. Tenta de novo daqui a pouco.</div>';
+      return;
+    }
+    if(!resp.ok) throw new Error('status ' + resp.status);
+    const dados = await resp.json();
+    achadas = dados.data || [];
+
+    if(achadas.length === 0){
+      palco.innerHTML = '<div class="aviso"><strong>Não achei nenhuma carta 😕</strong>' +
+        (modo === 'numero'
+          ? 'Confere o número, ou tenta procurar pelo nome.'
+          : 'Tenta o nome em inglês — a lista é toda em inglês.') + '</div>';
+      return;
+    }
+    if(achadas.length === 1){ mostrarCarta(achadas[0]); return; }
+    perguntarNome(valor, achadas);
+
+  }catch(erro){
+    palco.innerHTML = '<div class="aviso ruim"><strong>Deu ruim na busca 📡</strong>' +
+      'Não consegui falar com o site dos preços. Vê se a internet tá funcionando e tenta de novo.' +
+      '<br><small>' + String(erro.message || erro) + '</small></div>';
+  }
+}
+
+/* ---------- a pergunta do nome ---------- */
+function perguntarNome(valor, lista){
+  const quantos = lista.length;
+  palco.innerHTML =
+    '<section class="pergunta">' +
+      '<h2>Achei ' + quantos + ' cartas ' +
+        (modo === 'numero' ? 'com o número <b>' + escapar(valor) + '</b>' : 'com esse nome') + '.</h2>' +
+      '<p>Qual é o nome da tua? Escreve aí ou toca na carta certa.</p>' +
+      '<input id="filtro" autocomplete="off" placeholder="Nome da carta…" aria-label="Filtrar pelo nome" />' +
+      '<div class="grade" id="grade"></div>' +
+    '</section>';
+
+  const filtro = document.getElementById('filtro');
+  desenharOpcoes(lista);
+
+  filtro.addEventListener('input', () => {
+    const t = filtro.value.trim().toLowerCase();
+    const sobraram = t ? lista.filter(c => c.name.toLowerCase().includes(t)) : lista;
+    desenharOpcoes(sobraram);
+  });
+  // Se o filtro deixou só uma carta, Enter abre ela direto.
+  filtro.addEventListener('keydown', ev => {
+    if(ev.key !== 'Enter') return;
+    ev.preventDefault();
+    const t = filtro.value.trim().toLowerCase();
+    const sobraram = t ? lista.filter(c => c.name.toLowerCase().includes(t)) : lista;
+    if(sobraram.length === 1) mostrarCarta(sobraram[0]);
+  });
+  filtro.focus();
+}
+
+function desenharOpcoes(lista){
+  const grade = document.getElementById('grade');
+  if(!grade) return;
+  if(lista.length === 0){
+    grade.innerHTML = '<p style="color:var(--tinta-fraca)">Nenhuma carta com esse nome aqui. Apaga uma letrinha.</p>';
+    return;
+  }
+  grade.innerHTML = '';
+  lista.slice(0, 60).forEach(c => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'opcao';
+    b.innerHTML =
+      '<img loading="lazy" alt="Carta ' + escapar(c.name) + '" src="' +
+        escapar((c.images && c.images.small) || '') + '" />' +
+      '<b>' + escapar(c.name) + '</b>' +
+      '<small>' + escapar((c.set && c.set.name) || '') + ' · nº ' + escapar(c.number || '') + '</small>';
+    b.onclick = () => mostrarCarta(c);
+    grade.appendChild(b);
+  });
+  if(lista.length > 60){
+    const p = document.createElement('p');
+    p.style.cssText = 'grid-column:1/-1;color:var(--tinta-fraca);font-size:.88rem';
+    p.textContent = 'Mostrando as 60 mais novas de ' + lista.length + '. Escreve o nome pra afinar a busca.';
+    grade.appendChild(p);
+  }
+}
+
+/* ---------- preços ---------- */
+const VARIANTES = {
+  normal:'Normal', holofoil:'Holográfica', reverseHolofoil:'Reverse Holo',
+  '1stEditionHolofoil':'1ª edição holo', '1stEditionNormal':'1ª edição normal',
+  unlimitedHolofoil:'Ilimitada holo', unlimited:'Ilimitada'
+};
+// Ordem de importância: a versão mais valiosa é a que a pessoa quer ver primeiro.
+const ORDEM = ['1stEditionHolofoil','holofoil','1stEditionNormal','unlimitedHolofoil','normal','reverseHolofoil','unlimited'];
+
+function precoPrincipal(carta){
+  const p = carta.tcgplayer && carta.tcgplayer.prices;
+  if(p){
+    const chaves = Object.keys(p).sort((a,b) => {
+      const ia = ORDEM.indexOf(a), ib = ORDEM.indexOf(b);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
+    for(const k of chaves){
+      const v = p[k] && (p[k].market ?? p[k].mid ?? p[k].low);
+      if(typeof v === 'number' && v > 0)
+        return { valor:v, moeda:'USD', qual:VARIANTES[k] || k, onde:'TCGplayer' };
+    }
+  }
+  const cm = carta.cardmarket && carta.cardmarket.prices;
+  if(cm){
+    const v = cm.trendPrice ?? cm.averageSellPrice ?? cm.avg30 ?? cm.lowPrice;
+    if(typeof v === 'number' && v > 0)
+      return { valor:v, moeda:'EUR', qual:'preço médio', onde:'Cardmarket' };
+  }
+  return null;
+}
+
+function dinheiro(v, moeda){
+  if(typeof v !== 'number') return '—';
+  // Com separador de milhar: $11,500.00 se lê, $11500.00 não.
+  return v.toLocaleString('en-US', { style:'currency', currency: moeda || 'USD' });
+}
+function emReais(v, moeda){
+  const cotacao = parseFloat(inpCota.value);
+  if(!(cotacao > 0) || typeof v !== 'number') return '';
+  // O campo é a cotação do dólar; pro euro uso uma folguinha de 8%.
+  const taxa = moeda === 'EUR' ? cotacao * 1.08 : cotacao;
+  return 'mais ou menos ' + (v * taxa).toLocaleString('pt-BR',
+    { style:'currency', currency:'BRL' });
+}
+
+function tabelaTCG(carta){
+  const p = carta.tcgplayer && carta.tcgplayer.prices;
+  if(!p || Object.keys(p).length === 0) return '';
+  let linhas = '';
+  for(const [k, v] of Object.entries(p)){
+    if(!v) continue;
+    linhas += '<tr><td>' + escapar(VARIANTES[k] || k) + '</td>' +
+      '<td>' + dinheiro(v.market, 'USD') + '</td>' +
+      '<td>' + dinheiro(v.low, 'USD') + '</td>' +
+      '<td>' + dinheiro(v.high, 'USD') + '</td></tr>';
+  }
+  if(!linhas) return '';
+  return '<h3 class="titulinho">Por versão da carta (TCGplayer, em dólar)</h3>' +
+    '<table><thead><tr><th>Versão</th><th>Mercado</th><th>Mais barata</th><th>Mais cara</th></tr></thead>' +
+    '<tbody>' + linhas + '</tbody></table>';
+}
+
+function blocoCardmarket(carta){
+  const cm = carta.cardmarket && carta.cardmarket.prices;
+  if(!cm) return '';
+  const v = cm.trendPrice ?? cm.averageSellPrice;
+  if(typeof v !== 'number') return '';
+  return '<h3 class="titulinho">Na Europa (Cardmarket, em euro)</h3>' +
+    '<table><tbody>' +
+      '<tr><td>Tendência</td><td>' + dinheiro(cm.trendPrice, 'EUR') + '</td></tr>' +
+      '<tr><td>Média de venda</td><td>' + dinheiro(cm.averageSellPrice, 'EUR') + '</td></tr>' +
+      '<tr><td>Mais barata</td><td>' + dinheiro(cm.lowPrice, 'EUR') + '</td></tr>' +
+    '</tbody></table>';
+}
+
+/* ---------- a carta na tela ---------- */
+function mostrarCarta(carta){
+  cartaAberta = carta;
+  const preco = precoPrincipal(carta);
+  const img = (carta.images && (carta.images.large || carta.images.small)) || '';
+  const set = carta.set || {};
+
+  const caixaPreco = preco
+    ? '<div class="destaque">' +
+        '<div class="rotulo">Vale mais ou menos</div>' +
+        '<div class="preco">' + dinheiro(preco.valor, preco.moeda) + '</div>' +
+        '<div class="reais">' + escapar(emReais(preco.valor, preco.moeda)) + '</div>' +
+        '<div class="qual">versão ' + escapar(preco.qual) + ' · fonte: ' + escapar(preco.onde) + '</div>' +
+      '</div>'
+    : '<div class="destaque"><div class="rotulo">Preço</div>' +
+      '<div class="preco" style="font-size:1.4rem">Ninguém anunciou essa ainda</div>' +
+      '<div class="qual">Sem preço registrado pra essa carta.</div></div>';
+
+  const link = (carta.tcgplayer && carta.tcgplayer.url) || (carta.cardmarket && carta.cardmarket.url);
+
+  palco.innerHTML =
+    '<article class="carta">' +
+      '<img class="foto" alt="Carta ' + escapar(carta.name) + '" src="' + escapar(img) + '" />' +
+      '<div>' +
+        '<h2>' + escapar(carta.name) + '</h2>' +
+        '<div class="etiquetas">' +
+          '<span class="etiqueta">nº ' + escapar(carta.number || '?') +
+            (set.printedTotal ? '/' + escapar(String(set.printedTotal)) : '') + '</span>' +
+          (set.name ? '<span class="etiqueta">' + escapar(set.name) + '</span>' : '') +
+          (carta.rarity ? '<span class="etiqueta">' + escapar(carta.rarity) + '</span>' : '') +
+          (set.releaseDate ? '<span class="etiqueta">' + escapar(set.releaseDate.slice(0,4)) + '</span>' : '') +
+        '</div>' +
+        caixaPreco +
+        tabelaTCG(carta) +
+        blocoCardmarket(carta) +
+        (link ? '<p class="fonte">Ver anúncios de verdade: <a href="' + escapar(link) +
+                '" target="_blank" rel="noopener">abrir a loja</a></p>' : '') +
+        (achadas.length > 1
+          ? '<p class="fonte"><button class="btn secundario" type="button" id="voltar" ' +
+            'style="margin-top:10px;padding:10px 18px;font-size:.95rem">↩ Ver as outras cartas</button></p>'
+          : '') +
+      '</div>' +
+    '</article>';
+
+  const voltar = document.getElementById('voltar');
+  if(voltar) voltar.onclick = () => perguntarNome(campo.value.trim(), achadas);
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function escapar(t){
+  return String(t ?? '').replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+campo.focus();
+if('serviceWorker' in navigator)
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+</script>
+</body>
+</html>
