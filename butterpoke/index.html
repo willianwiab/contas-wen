@@ -285,14 +285,17 @@ const IDIOMAS = [
   { id:'ko',    nome:'🇰🇷 Coreano',   codigos:['ko'] },
   { id:'zh-tw', nome:'🇹🇼 Chinês',    codigos:['zh-tw', 'zh-cn'] },
 ];
-let idioma = 'en';
+let idioma = 'en';        // o que a pessoa escolheu
+let langBusca = 'en';     // o que esta busca está de fato usando
+let avisoBusca = '';      // recado no topo da lista, quando caí pro inglês
 function nomeIdioma(id){ return (IDIOMAS.find(i => i.id === id) || IDIOMAS[0]).nome; }
+function soNome(id){ return nomeIdioma(id).replace(/^\S+\s/, ''); }   // sem a bandeirinha
 
 /* O português está em "pt-br" num lugar e "pt" em outro, e não dá pra saber
    daqui qual existe. Então tento as escritas em ordem e fico na primeira
    que responder — erro numa não derruba a busca. */
 async function pedirReserva(caminho, qual){
-  const idi = IDIOMAS.find(i => i.id === (qual || idioma)) || IDIOMAS[0];
+  const idi = IDIOMAS.find(i => i.id === (qual || langBusca)) || IDIOMAS[0];
   let ultimo = null;
   for(const cod of idi.codigos){
     try{ return await pedirJSON(TCGDEX + '/' + cod + caminho); }
@@ -439,7 +442,7 @@ function deTcgdex(c){
     name: c.name || '?',
     // lá o campo chama category, e o Pokémon vem sem acento
     supertype: c.category === 'Pokemon' ? 'Pokémon' : (c.category || ''),
-    __daReserva: true, __lang: idioma,
+    __daReserva: true, __lang: langBusca,
     hp: c.hp, types: c.types || [], artist: c.illustrator || '',
     subtypes: [c.suffix, c.stage].filter(Boolean),
     nationalPokedexNumbers: c.dexId || [],
@@ -486,17 +489,19 @@ async function buscarReserva(valor){
   });
 }
 
-async function buscar(valor){
+async function buscar(valor, caiuProIngles){
   if(!valor){ campo.focus(); return; }
   cartaAberta = null;
   voltarPraLista = null;
+  langBusca = caiuProIngles ? 'en' : idioma;
+  if(!caiuProIngles) avisoBusca = '';
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a carta…</div>';
 
   const tropecos = [];
   let ninguemConhece = false;
 
   // O principal só fala inglês. Nos outros idiomas ele nem é consultado.
-  const soReserva = idioma !== 'en';
+  const soReserva = langBusca !== 'en';
 
   // Três consultas no site principal, da mais caprichada pra mais simples.
   for(const monta of (soReserva ? [] : tentativas(valor))){
@@ -530,12 +535,21 @@ async function buscar(valor){
     tropecos.push('tcgdex.net ' + (e.message || e));
   }
 
+  /* Não achar no idioma escolhido não pode virar tela vazia: o catálogo em
+     inglês é muito maior, e a carta quase sempre está lá. Então em vez de
+     dar de ombros, procuro em inglês sozinho e aviso o que fiz. */
+  if(ninguemConhece && soReserva){
+    palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
+      'Não achei em ' + escapar(soNome(idioma)) + '. Procurando em inglês…</div>';
+    avisoBusca = 'Não achei essa carta em ' + soNome(idioma) +
+      ' — tem bem menos carta cadastrada fora do inglês. Estas aqui são as <b>em inglês</b>.';
+    return buscar(valor, true);
+  }
+
   if(ninguemConhece){
     palco.innerHTML = '<div class="aviso"><strong>Não achei essa carta 😕</strong>' +
-      (soReserva
-        ? 'Procurei nas cartas em ' + escapar(nomeIdioma(idioma).replace(/^\S+\s/, '')) +
-          '. Nem toda carta sai em todo idioma — tenta trocar pra 🇺🇸 Inglês ali em cima, ' +
-          'que é onde tem mais carta. '
+      (avisoBusca
+        ? 'Procurei em ' + escapar(soNome(idioma)) + ' e também em inglês, e não achei em nenhum. '
         : 'Procurei nos dois bancos de carta e nenhum tem. ') +
       (modo === 'numero'
         ? 'Confere o número, ou tenta procurar pelo nome.'
@@ -642,6 +656,29 @@ function casaComFuturo(c, f){
    vez de uma lista fechada (que ia furar na próxima coleção que sair) eu
    dou uma nota pelo que está escrito. Uncommon antes de Common, senão
    "uncommon" cai na regra de "common". */
+/* A raridade vem escrita em inglês mesmo quando a carta é de outro idioma.
+   Traduzir é o que dá pra fazer sem inventar nada. */
+const RARIDADES = {
+  'Common':'Comum', 'Uncommon':'Incomum', 'Rare':'Rara',
+  'Rare Holo':'Rara holográfica', 'Rare Holo EX':'Rara holo EX',
+  'Rare Holo GX':'Rara holo GX', 'Rare Holo V':'Rara holo V',
+  'Rare Holo VMAX':'Rara holo VMAX', 'Rare Holo VSTAR':'Rara holo VSTAR',
+  'Rare Holo LV.X':'Rara holo LV.X', 'Rare Ultra':'Ultra rara',
+  'Rare Secret':'Rara secreta', 'Rare Rainbow':'Rara arco-íris',
+  'Rare Shiny':'Rara brilhante', 'Rare Shining':'Rara brilhante',
+  'Rare Prime':'Rara Prime', 'Rare ACE':'Rara ACE', 'Rare BREAK':'Rara BREAK',
+  'Rare Prism Star':'Rara Prism Star', 'Amazing Rare':'Rara incrível',
+  'Radiant Rare':'Rara radiante', 'Illustration Rare':'Rara ilustrada',
+  'Special Illustration Rare':'Rara ilustrada especial',
+  'Hyper Rare':'Hiper rara', 'Double Rare':'Rara dupla',
+  'Ultra Rare':'Ultra rara', 'Secret Rare':'Rara secreta',
+  'Shiny Rare':'Rara brilhante', 'Shiny Ultra Rare':'Ultra rara brilhante',
+  'ACE SPEC Rare':'Rara ACE SPEC', 'Trainer Gallery Rare Holo':'Rara holo da galeria',
+  'Classic Collection':'Coleção clássica', 'Promo':'Promo', 'LEGEND':'LEGEND',
+  'None':'Sem raridade',
+};
+function nomeRaridade(r){ return RARIDADES[r] || r || ''; }
+
 function nivelRaridade(c){
   const r = (c.rarity || '').toLowerCase();
   if(!r) return 0;
@@ -866,6 +903,7 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
     '<section class="pergunta">' +
       '<h2>' + titulo + '</h2>' +
       '<p>' + subtitulo + '</p>' +
+      (avisoBusca ? '<p class="nota" style="margin:0 0 14px">🌐 ' + avisoBusca + '</p>' : '') +
       '<label class="rotulo-filtro" for="filtro">🔎 ' +
         (ehCarta ? 'Procurar pelo nome da carta' : 'Procurar coleção') + '</label>' +
       '<input id="filtro" autocomplete="off" placeholder="' + escapar(placeholder) + '" ' +
@@ -1361,6 +1399,8 @@ function desenharCarta(){
       '<img class="foto" alt="Carta ' + escapar(carta.name) + '" src="' + escapar(img) + '" />' +
       '<div>' +
         '<h2>' + escapar(carta.name) + '</h2>' +
+        (avisoBusca && !voltarPraLista
+          ? '<p class="nota" style="margin:0 0 12px">🌐 ' + avisoBusca + '</p>' : '') +
         '<div class="etiquetas">' +
           '<span class="etiqueta">nº ' + escapar(carta.number || '?') +
             (set.printedTotal ? '/' + escapar(String(set.printedTotal)) : '') + '</span>' +
@@ -1372,7 +1412,7 @@ function desenharCarta(){
               escapar((ENERGIAS.find(e => e.id === t) || { nome:t }).nome) + '</span>').join('')) +
           (carta.supertype ? '<span class="etiqueta">' +
             escapar(NOME_TIPO[carta.supertype] || carta.supertype) + '</span>' : '') +
-          (carta.rarity ? '<span class="etiqueta">' + escapar(carta.rarity) + '</span>' : '') +
+          (carta.rarity ? '<span class="etiqueta">' + escapar(nomeRaridade(carta.rarity)) + '</span>' : '') +
           (set.releaseDate ? '<span class="etiqueta">' + escapar(set.releaseDate.slice(0,4)) + '</span>' : '') +
           '<span class="etiqueta pais">' + escapar(de.etiqueta) + '</span>' +
         '</div>' +
@@ -1482,8 +1522,9 @@ selIdioma.onchange = () => {
     escapar(nomeIdioma(idioma)) + '</strong>' +
     (idioma === 'en'
       ? 'Procura de novo, que agora vem o catálogo em inglês, que é o maior de todos.'
-      : 'Procura de novo. Fora do inglês tem bem menos carta cadastrada, ' +
-        'e preço quase nunca vem junto.') + '</div>';
+      : 'Procura de novo. Fora do inglês tem bem <b>menos carta cadastrada</b> e preço ' +
+        'quase nunca vem junto — mas fica tranquilo: se eu não achar em ' +
+        escapar(soNome(idioma)) + ', eu procuro em inglês sozinho e te aviso.') + '</div>';
   campo.focus();
 };
 

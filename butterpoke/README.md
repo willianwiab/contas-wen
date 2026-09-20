@@ -147,8 +147,24 @@ Dois cuidados:
   que responder ganha — um 404 numa não derruba a busca. O mesmo vale pro espanhol
   (`es`/`es-mx`) e pro chinês (`zh-tw`/`zh-cn`).
 - **Trocar de idioma limpa a tela.** O que estava ali era do idioma antigo, e deixar
-  misturado seria mentira. Entra um aviso dizendo o que mudou, e avisando que fora do
-  inglês tem bem menos carta cadastrada e preço quase nunca vem junto.
+  misturado seria mentira. Entra um aviso dizendo o que mudou.
+
+### Não achar no idioma escolhido não pode virar tela vazia
+
+Esse foi um erro meu, pego em uso: quem trocava pro português e procurava não via nada, e
+parecia que o site tinha quebrado. Tecnicamente estava certo — não há carta em português
+cadastrada — mas "tecnicamente certo" e "inútil" são a mesma coisa pra quem está olhando.
+
+Agora, quando o idioma escolhido não devolve nada, **o site procura em inglês sozinho** e
+diz o que fez, num recado em cima da lista. O "não achei" de verdade só aparece quando nem
+o inglês tem, e aí ele diz que procurou nos dois.
+
+### O português que dá pra ter
+
+O nome da carta vem do banco, então em português só existe o que estiver cadastrado lá.
+O que **não** depende disso, o site traduz: os tipos de energia, o tipo da carta e agora
+também a **raridade** — "Rare Holo" vira "Rara holográfica", "Double Rare" vira "Rara
+dupla", e assim por diante. A raridade chega em inglês mesmo em carta de outro idioma.
 
 A etiqueta de origem passa a mostrar o idioma escolhido em vez do palpite de país, porque
 aí não é palpite: você pediu aquele idioma.
