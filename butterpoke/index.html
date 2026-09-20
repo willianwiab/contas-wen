@@ -230,7 +230,11 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
   padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.9rem;color:var(--tinta-fraca);
 }
 .cotacao input{width:90px;padding:8px 10px;font:inherit;border:2px solid var(--borda);border-radius:10px;color:var(--tinta)}
-footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85rem}
+footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85rem;line-height:1.7}
+/* O número da versão existe pra responder "tá vendo a nova ou a velha?"
+   sem ninguém ter que adivinhar. */
+.versao{display:inline-block;background:#fff;border:2px solid var(--borda);border-radius:999px;
+  padding:3px 12px;font-size:.78rem;font-weight:600;margin-top:4px}
 .escondido{display:none}
 </style>
 </head>
@@ -273,7 +277,10 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
     <span>— serve só pra dar uma ideia em reais, não é o valor oficial.</span>
   </div>
 
-  <footer>ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)</footer>
+  <footer>
+    ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
+    <br><span class="versao">versão 13 — 20/09</span>
+  </footer>
 </div>
 
 <script>
