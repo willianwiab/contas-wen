@@ -2,6 +2,8 @@
 
 Digita o número da carta de Pokémon e o site diz quanto ela vale.
 
+▶️ **Abrir:** https://willianwiab.github.io/contas-wen/butterpoke/
+
 ## O problema que ele resolve
 
 Número de carta **não identifica carta nenhuma**. Existe uma carta "25" em quase toda
