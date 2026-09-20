@@ -275,6 +275,20 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
    sem ninguém ter que adivinhar. */
 .versao{display:inline-block;background:#fff;border:2px solid var(--borda);border-radius:999px;
   padding:3px 12px;font-size:.78rem;font-weight:600;margin-top:4px}
+.cracha{display:inline-block;background:var(--asa);color:#fff;border-radius:999px;
+  padding:5px 15px;font-weight:700;font-size:.95rem;margin-top:8px}
+#nome-perfil{
+  width:100%;max-width:340px;padding:12px 14px;font:inherit;border:3px solid var(--borda);
+  border-radius:14px;background:#fff;color:var(--tinta);margin-bottom:6px;
+}
+#nome-perfil:focus{outline:none;border-color:var(--asa-escura)}
+.codigo{
+  width:100%;padding:11px 13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:.74rem;line-height:1.5;border:2px solid var(--borda);border-radius:12px;
+  background:#fdfbff;color:var(--tinta);resize:vertical;word-break:break-all;
+}
+.codigo:focus{outline:none;border-color:var(--asa-escura)}
+#chips-bicho .chip{font-size:1.3rem;padding:7px 12px}
 .escondido{display:none}
 </style>
 </head>
@@ -284,6 +298,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
   <header>
     <h1 class="logo">Butter<span>Poke</span><img class="bicho" src="icone.svg" alt="" /></h1>
     <p class="slogan">Digita o número da carta e eu te digo quanto ela vale.</p>
+    <p id="saudacao"></p>
   </header>
 
   <section class="busca">
@@ -308,6 +323,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <button class="btn secundario" type="button" id="btn-favoritos">⭐ Meus favoritos</button>
       <button class="btn secundario" type="button" id="btn-album">📖 Meu álbum</button>
       <button class="btn secundario" type="button" id="btn-todas">🗃️ Todas as cartas</button>
+      <button class="btn secundario" type="button" id="btn-perfil">👤 Meu perfil</button>
     </div>
   </section>
 
@@ -321,7 +337,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 16 — 20/09</span>
+    <br><span class="versao">versão 17 — 20/09</span>
   </footer>
 </div>
 
@@ -872,6 +888,132 @@ function mostrarFavoritos(){
     'Toca numa pra ver o preço de hoje. Ficam guardadas só neste aparelho.',
     l, mostrarCarta, 'carta', 'Nome da carta…', 'nome');
   gradeAtual.ehFavoritos = true;
+}
+
+/* ---------- perfil ----------
+   Não é cadastro de verdade: não há servidor, e sem servidor não há como
+   guardar senha com segurança. Fazer um login de mentira seria pior que
+   não ter — pareceria seguro sem ser. Então é um perfil no aparelho, mais
+   um código que a pessoa leva na mão pro outro aparelho. */
+const CHAVE_PERFIL = 'butterpoke:perfil';
+const BICHOS = ['🦋','⚡','🔥','💧','🌿','🔮','🐉','🌑','⚙️','🧚','⭐','👊'];
+
+function lerPerfil(){
+  try{
+    const j = JSON.parse(localStorage.getItem(CHAVE_PERFIL) || '{}');
+    return (j && typeof j === 'object') ? j : {};
+  }catch(e){ return {}; }
+}
+function gravarPerfil(p){
+  try{ localStorage.setItem(CHAVE_PERFIL, JSON.stringify(p)); }catch(e){}
+  saudacao();
+}
+function saudacao(){
+  const p = lerPerfil(), alvo = document.getElementById('saudacao');
+  if(!alvo) return;
+  alvo.innerHTML = p.nome
+    ? '<span class="cracha">' + escapar(p.bicho || '🦋') + ' Olá, ' + escapar(p.nome) + '!</span>'
+    : '';
+}
+
+/* O código do perfil: tudo que é teu vira um texto só. Base64 porque ele
+   precisa sobreviver a ser colado no zap sem quebrar em pedaços. */
+function fazerCodigo(){
+  const tudo = { v:1, perfil:lerPerfil(), favoritos:lerFavoritos() };
+  return 'BP1.' + btoa(unescape(encodeURIComponent(JSON.stringify(tudo))));
+}
+function lerCodigo(txt){
+  const limpo = String(txt || '').trim().replace(/\s+/g, '');
+  if(limpo.indexOf('BP1.') !== 0) throw new Error('Esse código não é do ButterPoke.');
+  let dados;
+  // Sem este try, um código cortado no meio devolve o erro do navegador em
+  // inglês, que não ajuda ninguém a entender o que fazer.
+  try{ dados = JSON.parse(decodeURIComponent(escape(atob(limpo.slice(4))))); }
+  catch(e){ throw new Error('O código chegou quebrado ou incompleto.'); }
+  if(!dados || typeof dados !== 'object') throw new Error('O código está estragado.');
+  return dados;
+}
+
+function mostrarPerfil(){
+  cartaAberta = null; voltarPraLista = null;
+  const p = lerPerfil();
+  const favs = lerFavoritos();
+  palco.innerHTML =
+    '<section class="pergunta">' +
+      '<h2>👤 Meu perfil</h2>' +
+      '<p>Fica guardado neste aparelho. Não tem senha, e não precisa.</p>' +
+      '<label class="rotulo-filtro" for="nome-perfil">Como você quer ser chamado</label>' +
+      '<input id="nome-perfil" maxlength="20" autocomplete="off" placeholder="Teu nome ou apelido" value="' +
+        escapar(p.nome || '') + '" />' +
+      '<div class="escolha"><h3>Teu símbolo</h3>' +
+        chips('chips-bicho', BICHOS.map(x => ({ v:x, rotulo:x })), p.bicho || '🦋') +
+      '</div>' +
+      '<div class="quadrinhos">' +
+        '<div class="quadrinho"><span>Favoritas</span><b>' + favs.length + '</b></div>' +
+        '<div class="quadrinho"><span>Idioma</span><b>' + escapar(nomeIdioma(idioma)) + '</b></div>' +
+      '</div>' +
+
+      '<h3 class="titulinho">🔑 Levar pra outro aparelho</h3>' +
+      '<p class="nota">Este código guarda teu perfil e tuas ' + favs.length + ' favoritas. ' +
+        'Copia, manda pra ti mesmo no zap, e cola no outro aparelho. ' +
+        '<b>Ele não guarda senha nenhuma</b> — é só a tua lista.</p>' +
+      '<textarea id="codigo" class="codigo" readonly rows="3">' + escapar(fazerCodigo()) + '</textarea>' +
+      '<button class="btn secundario larga" type="button" id="copiar-codigo">📋 Copiar meu código</button>' +
+
+      '<h3 class="titulinho">📥 Colar um código</h3>' +
+      '<p class="nota">Cola aqui o código do outro aparelho. ' +
+        '<b>As favoritas de lá se juntam às daqui</b>, nada é apagado.</p>' +
+      '<textarea id="colar" class="codigo" rows="3" placeholder="Cola o código aqui…"></textarea>' +
+      '<button class="btn secundario larga" type="button" id="restaurar">📥 Trazer pra cá</button>' +
+      '<p id="recado-perfil"></p>' +
+    '</section>';
+
+  const nome = document.getElementById('nome-perfil');
+  nome.oninput = () => { const a = lerPerfil(); a.nome = nome.value.trim(); gravarPerfil(a); };
+  ligarChips('chips-bicho', v => { const a = lerPerfil(); a.bicho = v; gravarPerfil(a); }, () => {
+    document.querySelectorAll('#chips-bicho .chip').forEach(b =>
+      b.setAttribute('aria-pressed', b.dataset.v === (lerPerfil().bicho || '🦋')));
+  });
+
+  const recado = document.getElementById('recado-perfil');
+  document.getElementById('copiar-codigo').onclick = async () => {
+    const area = document.getElementById('codigo');
+    try{
+      await navigator.clipboard.writeText(area.value);
+      recado.innerHTML = '<span class="nota" style="display:block">✅ Copiado! Agora cola no outro aparelho.</span>';
+    }catch(e){
+      area.select();
+      recado.innerHTML = '<span class="nota" style="display:block">👆 Não consegui copiar sozinho. ' +
+        'O código já está selecionado aí em cima — copia na mão.</span>';
+    }
+  };
+
+  document.getElementById('restaurar').onclick = () => {
+    const txt = document.getElementById('colar').value;
+    let dados;
+    try{ dados = lerCodigo(txt); }
+    catch(e){
+      recado.innerHTML = '<span class="nota" style="display:block;border-color:var(--olho)">❌ ' +
+        escapar(e.message) + ' Confere se copiou o código inteiro.</span>';
+      return;
+    }
+    // Juntar, nunca substituir: quem cola um código não espera perder o que já tinha.
+    const minhas = lerFavoritos();
+    const vindas = Array.isArray(dados.favoritos) ? dados.favoritos : [];
+    let novas = 0;
+    vindas.forEach(f => {
+      if(f && f.id && !minhas.some(m => m.id === f.id)){ minhas.push(f); novas++; }
+    });
+    gravarFavoritos(minhas);
+    if(dados.perfil && dados.perfil.nome && !lerPerfil().nome) gravarPerfil(dados.perfil);
+    const aviso = novas
+      ? 'Chegaram ' + novas + (novas === 1 ? ' carta nova.' : ' cartas novas.')
+      : 'Nenhuma carta nova — você já tinha todas.';
+    mostrarPerfil();
+    document.getElementById('recado-perfil').innerHTML =
+      '<span class="nota" style="display:block">✅ Pronto! ' + aviso + '</span>';
+  };
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 /* ---------- álbum ----------
@@ -1961,6 +2103,8 @@ document.getElementById('btn-colecoes').onclick = mostrarColecoes;
 document.getElementById('btn-favoritos').onclick = mostrarFavoritos;
 document.getElementById('btn-album').onclick = () => { paginaAlbum = 0; mostrarAlbum(); };
 document.getElementById('btn-todas').onclick = () => mostrarTodas(true);
+document.getElementById('btn-perfil').onclick = mostrarPerfil;
+saudacao();
 contarFavoritos();
 
 // Link de carta: abre direto nela, e o botão de voltar do navegador funciona.
