@@ -322,6 +322,23 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 }
 .tt-resto{font-weight:700;font-size:.95rem;opacity:.9;padding:0 4px}
 .tt-vazio{font-size:.86rem;opacity:.9;font-style:italic}
+.tt-top3{margin:13px 0 4px}
+.tt-rotulo{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;
+  opacity:.9;margin-bottom:6px;font-weight:700}
+.tt-grandes{display:flex;gap:9px}
+.tt-grandes figure{flex:1 1 0;min-width:0;margin:0;text-align:center}
+.tt-grandes img{width:100%;border-radius:9px;aspect-ratio:245/342;object-fit:cover;
+  background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.6)}
+.tt-grandes figcaption{font-size:.68rem;margin-top:4px;line-height:1.2;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.opcional{font-weight:400;color:var(--tinta-fraca);font-size:.82rem}
+.lista-tirar{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.tirar-item{display:flex;align-items:center;gap:11px;border:2px solid var(--borda);
+  border-radius:13px;padding:7px 11px;background:#fff}
+.tirar-item img{width:36px;border-radius:5px;aspect-ratio:245/342;object-fit:cover;background:#f2eafc}
+.tirar-item b{flex:1;min-width:0;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tirar{border:none;background:var(--olho);color:#fff;border-radius:50%;width:30px;height:30px;
+  font-size:.9rem;cursor:pointer;flex:0 0 auto}
 .escondido{display:none}
 </style>
 </head>
@@ -356,6 +373,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <button class="btn secundario" type="button" id="btn-favoritos">⭐ Meus favoritos</button>
       <button class="btn secundario" type="button" id="btn-album">📖 Meu álbum</button>
       <button class="btn secundario" type="button" id="btn-todas">🗃️ Todas as cartas</button>
+      <button class="btn secundario" type="button" id="btn-desejos">💖 Quero essas</button>
       <button class="btn secundario" type="button" id="btn-perfil">👤 Meu perfil</button>
     </div>
   </section>
@@ -370,7 +388,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 18 — 20/09</span>
+    <br><span class="versao">versão 19 — 20/09</span>
   </footer>
 </div>
 
@@ -867,25 +885,26 @@ function ordenar(lista){
    Guardo só a identidade da carta, não o preço: preço guardado envelhece e
    mente. Quando a pessoa abre a favorita, o preço é buscado na hora. */
 const CHAVE_FAV = 'butterpoke:favoritos';
-function lerFavoritos(){
+const CHAVE_TOP3 = 'butterpoke:preferidas';
+const CHAVE_DESEJO = 'butterpoke:desejos';
+const MAX_TOP3 = 3;
+
+function lerLista(chave){
   try{
-    const j = JSON.parse(localStorage.getItem(CHAVE_FAV) || '[]');
+    const j = JSON.parse(localStorage.getItem(chave) || '[]');
     return Array.isArray(j) ? j : [];
   }catch(e){ return []; }
 }
-function gravarFavoritos(l){
-  try{ localStorage.setItem(CHAVE_FAV, JSON.stringify(l)); }catch(e){}
+function gravarLista(chave, l){
+  try{ localStorage.setItem(chave, JSON.stringify(l)); }catch(e){}
   contarFavoritos();
 }
-function ehFavorita(id){ return lerFavoritos().some(f => f.id === id); }
-function virarFavorita(carta){
-  const l = lerFavoritos();
-  const i = l.findIndex(f => f.id === carta.id);
-  if(i >= 0) l.splice(i, 1);
-  else l.push({
+/* Só a identidade da carta, nunca o preço: as três listas guardam a mesma
+   coisa, e preço guardado envelhece e mente. */
+function identidade(carta){
+  return {
     id: carta.id, name: carta.name, number: carta.number || '',
-    supertype: carta.supertype || '',
-    rarity: carta.rarity || '',
+    supertype: carta.supertype || '', rarity: carta.rarity || '',
     subtypes: carta.subtypes || [],
     hp: carta.hp || '', types: carta.types || [], artist: carta.artist || '',
     nationalPokedexNumbers: carta.nationalPokedexNumbers || [],
@@ -894,10 +913,26 @@ function virarFavorita(carta){
     fonte: carta.__daReserva ? 'reserva' : 'principal',
     lang: carta.__lang || 'en',
     __soIdentidade: true,
-  });
-  gravarFavoritos(l);
-  return i < 0;   // true = acabou de virar favorita
+  };
 }
+function naLista(chave, id){ return lerLista(chave).some(f => f.id === id); }
+/* Devolve o que aconteceu, e não um booleano: "cheio" precisa de um recado
+   diferente de "saiu", e quem chama tem que saber qual dos dois foi. */
+function virarNaLista(chave, carta, limite){
+  const l = lerLista(chave);
+  const i = l.findIndex(f => f.id === carta.id);
+  if(i >= 0){ l.splice(i, 1); gravarLista(chave, l); return 'saiu'; }
+  if(limite && l.length >= limite) return 'cheio';
+  l.push(identidade(carta)); gravarLista(chave, l); return 'entrou';
+}
+
+function lerFavoritos(){ return lerLista(CHAVE_FAV); }
+function gravarFavoritos(l){
+  try{ localStorage.setItem(CHAVE_FAV, JSON.stringify(l)); }catch(e){}
+  contarFavoritos();
+}
+function ehFavorita(id){ return lerFavoritos().some(f => f.id === id); }
+function virarFavorita(carta){ return virarNaLista(CHAVE_FAV, carta) === 'entrou'; }
 function contarFavoritos(){
   const n = lerFavoritos().length;
   const b = document.getElementById('btn-favoritos');
@@ -923,6 +958,24 @@ function mostrarFavoritos(){
   gradeAtual.ehFavoritos = true;
 }
 
+function mostrarDesejos(){
+  const l = lerLista(CHAVE_DESEJO);
+  cartaAberta = null;
+  if(!l.length){
+    palco.innerHTML = '<div class="aviso"><strong>Lista de desejos vazia 💖</strong>' +
+      'Abre uma carta que você quer ter e toca em "Quero essa carta". ' +
+      'Ela entra aqui, e vai junto no teu código — dá pra mostrar pra quem quiser trocar.</div>';
+    return;
+  }
+  achadas = l; totalReal = l.length;
+  voltarPraLista = mostrarDesejos;
+  mostrarGrade(
+    '💖 Cartas que eu quero',
+    l.length + (l.length === 1 ? ' carta na lista.' : ' cartas na lista.') +
+      ' Toca numa pra ver o preço de hoje.',
+    l, mostrarCarta, 'carta', 'Nome da carta…', 'nome');
+}
+
 /* ---------- perfil ----------
    Não é cadastro de verdade: não há servidor, e sem servidor não há como
    guardar senha com segurança. Fazer um login de mentira seria pior que
@@ -944,10 +997,19 @@ const FUNDOS = [
 ];
 function fundoDe(id){ return (FUNDOS.find(f => f.id === id) || FUNDOS[0]).css; }
 
+/* ---------- onde a pessoa mora ----------
+   Só o estado, escolhido à mão numa lista. Nunca o GPS: GPS aponta pra
+   porta da casa, e quem usa isto é criança. Estado é grosso o bastante pra
+   não localizar ninguém e fino o bastante pra saber se dá pra trocar perto.
+   E só sai daqui dentro do código, que é a pessoa quem decide a quem dar. */
+// UFS e não ESTADOS: "estado" aqui já é o da conservação da carta.
+const UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB',
+             'PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+
 /* ---------- cartão de treinador ----------
    O perfil virado carta: fundo, símbolo, nome, três números e as favoritas
    em miniatura. Serve pro dono e pra espiar o de um amigo pelo código. */
-function cartaoTreinador(perfil, favoritos, dono){
+function cartaoTreinador(perfil, favoritos, dono, extras){
   const p = perfil || {}, favs = Array.isArray(favoritos) ? favoritos : [];
   const colecoes = {};
   let maisAntiga = '';
@@ -960,19 +1022,31 @@ function cartaoTreinador(perfil, favoritos, dono){
   const mostrar = favs.slice(0, 6);
   const numero = (valor, rotulo) =>
     '<div class="tt-numero"><b>' + escapar(String(valor)) + '</b><span>' + rotulo + '</span></div>';
+  const top3 = Array.isArray(extras && extras.top3) ? extras.top3 : [];
+  const desejos = Array.isArray(extras && extras.desejos) ? extras.desejos : [];
 
   return '<div class="cartao-treinador" style="background:' + fundoDe(p.fundo) + '">' +
     '<div class="tt-topo">' +
       '<span class="tt-bicho">' + escapar(p.bicho || '🦋') + '</span>' +
       '<div class="tt-nome">' +
         '<b>' + escapar(p.nome || 'Treinador sem nome') + '</b>' +
-        '<span>' + (dono ? 'Meu cartão de treinador' : 'Cartão de um amigo') + '</span>' +
+        '<span>' + (dono ? 'Meu cartão de treinador' : 'Cartão de um amigo') +
+          (p.estado ? ' · 📍 ' + escapar(p.estado) : '') + '</span>' +
       '</div>' +
     '</div>' +
+    (top3.length
+      ? '<div class="tt-top3"><span class="tt-rotulo">🥇 As preferidas</span>' +
+          '<div class="tt-grandes">' + top3.slice(0, 3).map(f =>
+            '<figure><img loading="lazy" alt="' + escapar(f.name || '') + '" src="' +
+              escapar((f.images && f.images.small) || '') + '" />' +
+              '<figcaption>' + escapar(f.name || '') + '</figcaption></figure>').join('') +
+          '</div></div>'
+      : '') +
     '<div class="tt-numeros">' +
       numero(favs.length, favs.length === 1 ? 'carta' : 'cartas') +
       numero(Object.keys(colecoes).length, 'coleções') +
       numero(maisAntiga || '—', 'mais antiga') +
+      numero(desejos.length, 'quer ter') +
     '</div>' +
     (mostrar.length
       ? '<div class="tt-cartas">' + mostrar.map(f =>
@@ -981,6 +1055,14 @@ function cartaoTreinador(perfil, favoritos, dono){
           (favs.length > 6 ? '<span class="tt-resto">+' + (favs.length - 6) + '</span>' : '') +
         '</div>'
       : '<p class="tt-vazio">Nenhuma carta guardada ainda.</p>') +
+    (desejos.length
+      ? '<div class="tt-top3"><span class="tt-rotulo">💖 Quer ter</span>' +
+          '<div class="tt-cartas">' + desejos.slice(0, 6).map(f =>
+            '<img loading="lazy" alt="' + escapar(f.name || '') + '" src="' +
+              escapar((f.images && f.images.small) || '') + '" />').join('') +
+            (desejos.length > 6 ? '<span class="tt-resto">+' + (desejos.length - 6) + '</span>' : '') +
+          '</div></div>'
+      : '') +
   '</div>';
 }
 
@@ -1005,7 +1087,8 @@ function saudacao(){
 /* O código do perfil: tudo que é teu vira um texto só. Base64 porque ele
    precisa sobreviver a ser colado no zap sem quebrar em pedaços. */
 function fazerCodigo(){
-  const tudo = { v:1, perfil:lerPerfil(), favoritos:lerFavoritos() };
+  const tudo = { v:2, perfil:lerPerfil(), favoritos:lerFavoritos(),
+                 top3:lerLista(CHAVE_TOP3), desejos:lerLista(CHAVE_DESEJO) };
   return 'BP1.' + btoa(unescape(encodeURIComponent(JSON.stringify(tudo))));
 }
 function lerCodigo(txt){
@@ -1024,11 +1107,12 @@ function mostrarPerfil(){
   cartaAberta = null; voltarPraLista = null;
   const p = lerPerfil();
   const favs = lerFavoritos();
+  const top3 = lerLista(CHAVE_TOP3);
   palco.innerHTML =
     '<section class="pergunta">' +
       '<h2>👤 Meu perfil</h2>' +
       '<p>Fica guardado neste aparelho. Não tem senha, e não precisa.</p>' +
-      cartaoTreinador(p, favs, true) +
+      cartaoTreinador(p, favs, true, { top3:lerLista(CHAVE_TOP3), desejos:lerLista(CHAVE_DESEJO) }) +
       '<label class="rotulo-filtro" for="nome-perfil">Como você quer ser chamado</label>' +
       '<input id="nome-perfil" maxlength="20" autocomplete="off" placeholder="Teu nome ou apelido" value="' +
         escapar(p.nome || '') + '" />' +
@@ -1043,13 +1127,40 @@ function mostrarPerfil(){
             escapar(f.nome) + '</button>').join('') +
         '</div>' +
       '</div>' +
+      '<div class="escolha"><h3>Onde você mora <span class="opcional">(pode deixar em branco)</span></h3>' +
+        '<select id="sel-uf" class="escolher">' +
+          '<option value="">Prefiro não dizer</option>' +
+          UFS.map(u => '<option value="' + u + '"' + (p.estado === u ? ' selected' : '') + '>' +
+            u + '</option>').join('') +
+        '</select>' +
+        '<p class="nota">Só o <b>estado</b>, e só se você quiser. ' +
+        'Não peço nem uso o GPS: <b>GPS aponta pra porta da tua casa</b>, e isso não é ' +
+        'coisa pra pôr num site. O estado sozinho não localiza ninguém, e serve pra saber ' +
+        'se dá pra trocar carta perto. Ele só sai daqui dentro do teu código — ' +
+        '<b>quem recebe é você quem escolhe</b>.</p>' +
+      '</div>' +
+
+      (top3.length
+        ? '<h3 class="titulinho">🥇 Minhas 3 preferidas</h3>' +
+          '<div class="lista-tirar">' + top3.map((f, i) =>
+            '<div class="tirar-item"><img alt="" src="' +
+              escapar((f.images && f.images.small) || '') + '" />' +
+              '<b>' + escapar(f.name || '') + '</b>' +
+              '<button type="button" class="tirar" data-i="' + i + '" ' +
+                'aria-label="Tirar ' + escapar(f.name || '') + ' das preferidas">✕</button>' +
+            '</div>').join('') + '</div>'
+        : '<p class="nota">🥇 Você ainda não escolheu as <b>3 preferidas</b>. ' +
+          'Abre uma carta e toca em "Pôr nas 3 preferidas".</p>') +
+
       '<div class="quadrinhos">' +
         '<div class="quadrinho"><span>Favoritas</span><b>' + favs.length + '</b></div>' +
+        '<div class="quadrinho"><span>Quero ter</span><b>' + lerLista(CHAVE_DESEJO).length + '</b></div>' +
         '<div class="quadrinho"><span>Idioma</span><b>' + escapar(nomeIdioma(idioma)) + '</b></div>' +
       '</div>' +
 
       '<h3 class="titulinho">🔑 Levar pra outro aparelho</h3>' +
-      '<p class="nota">Este código guarda teu perfil e tuas ' + favs.length + ' favoritas. ' +
+      '<p class="nota">Este código guarda teu perfil, tuas ' + favs.length + ' favoritas, ' +
+        'as preferidas e a lista de desejos. ' +
         'Copia, manda pra ti mesmo no zap, e cola no outro aparelho. ' +
         '<b>Ele não guarda senha nenhuma</b> — é só a tua lista.</p>' +
       '<textarea id="codigo" class="codigo" readonly rows="3">' + escapar(fazerCodigo()) + '</textarea>' +
@@ -1083,11 +1194,23 @@ function mostrarPerfil(){
     }
     // Espiar não mexe em nada do que é meu — é só olhar.
     alvo.innerHTML = '<h3 class="titulinho">O cartão dele</h3>' +
-      cartaoTreinador(dados.perfil, dados.favoritos, false) +
+      cartaoTreinador(dados.perfil, dados.favoritos, false, { top3:dados.top3, desejos:dados.desejos }) +
       '<p class="nota">Isto é só uma olhada. Nada disso entrou nas tuas cartas — ' +
       'pra trazer, aperta o outro botão.</p>';
     alvo.scrollIntoView({ behavior:'smooth', block:'nearest' });
   };
+
+  const selUf = document.getElementById('sel-uf');
+  if(selUf) selUf.onchange = () => { const a = lerPerfil(); a.estado = selUf.value; gravarPerfil(a); mostrarPerfil(); };
+
+  palco.querySelectorAll('.tirar').forEach(b => {
+    b.onclick = () => {
+      const l = lerLista(CHAVE_TOP3);
+      l.splice(Number(b.dataset.i), 1);
+      gravarLista(CHAVE_TOP3, l);
+      mostrarPerfil();
+    };
+  });
 
   const recado = document.getElementById('recado-perfil');
   document.getElementById('copiar-codigo').onclick = async () => {
@@ -1119,6 +1242,13 @@ function mostrarPerfil(){
       if(f && f.id && !minhas.some(m => m.id === f.id)){ minhas.push(f); novas++; }
     });
     gravarFavoritos(minhas);
+    // Os desejos também se juntam. As preferidas não: são três, e são as
+    // dele — trocar as minhas pelas dele seria mexer onde não devo.
+    const meusDesejos = lerLista(CHAVE_DESEJO);
+    (Array.isArray(dados.desejos) ? dados.desejos : []).forEach(f => {
+      if(f && f.id && !meusDesejos.some(m => m.id === f.id)) meusDesejos.push(f);
+    });
+    gravarLista(CHAVE_DESEJO, meusDesejos);
     if(dados.perfil && dados.perfil.nome && !lerPerfil().nome) gravarPerfil(dados.perfil);
     const aviso = novas
       ? 'Chegaram ' + novas + (novas === 1 ? ' carta nova.' : ' cartas novas.')
@@ -2080,6 +2210,14 @@ function desenharCarta(){
           '</button>' +
           '<button class="btn secundario" type="button" id="copiar" ' +
             'style="padding:10px 18px;font-size:.95rem">🔗 Copiar link da carta</button>' +
+          '<button class="btn secundario" type="button" id="pref" ' +
+            'style="padding:10px 18px;font-size:.95rem">' +
+            (naLista(CHAVE_TOP3, carta.id) ? '🥇 É uma das 3 preferidas' : '🥇 Pôr nas 3 preferidas') +
+          '</button>' +
+          '<button class="btn secundario" type="button" id="desejo" ' +
+            'style="padding:10px 18px;font-size:.95rem">' +
+            (naLista(CHAVE_DESEJO, carta.id) ? '💖 Está na lista de desejos' : '💖 Quero essa carta') +
+          '</button>' +
           (carta.supertype === 'Pokémon'
             ? '<button class="btn secundario" type="button" id="tempo" ' +
               'style="padding:10px 18px;font-size:.95rem">🗂️ Ver todas ao longo do tempo</button>'
@@ -2121,6 +2259,24 @@ function desenharCarta(){
       caixa.select();
       copiar.textContent = '👆 Copia daqui';
     }
+  };
+
+  const pref = document.getElementById('pref');
+  if(pref) pref.onclick = () => {
+    const fim = virarNaLista(CHAVE_TOP3, carta, MAX_TOP3);
+    if(fim === 'cheio'){
+      // Recusar calado seria o pior: o botão pareceria quebrado.
+      pref.textContent = '🥇 Já tem 3! Tira uma no perfil';
+      setTimeout(() => { pref.textContent = '🥇 Pôr nas 3 preferidas'; }, 3000);
+      return;
+    }
+    pref.textContent = fim === 'entrou' ? '🥇 É uma das 3 preferidas' : '🥇 Pôr nas 3 preferidas';
+  };
+
+  const desejo = document.getElementById('desejo');
+  if(desejo) desejo.onclick = () => {
+    const fim = virarNaLista(CHAVE_DESEJO, carta);
+    desejo.textContent = fim === 'entrou' ? '💖 Está na lista de desejos' : '💖 Quero essa carta';
   };
 
   const tempo = document.getElementById('tempo');
@@ -2217,6 +2373,7 @@ document.getElementById('btn-colecoes').onclick = mostrarColecoes;
 document.getElementById('btn-favoritos').onclick = mostrarFavoritos;
 document.getElementById('btn-album').onclick = () => { paginaAlbum = 0; mostrarAlbum(); };
 document.getElementById('btn-todas').onclick = () => mostrarTodas(true);
+document.getElementById('btn-desejos').onclick = mostrarDesejos;
 document.getElementById('btn-perfil').onclick = mostrarPerfil;
 saudacao();
 contarFavoritos();
