@@ -18,6 +18,27 @@ ele **pergunta o nome**. Aparece a pergunta "achei 47 cartas com o número 25, q
 tua?", com as cartinhas na tela pra tocar e um campo pra escrever o nome. Quando o
 número traz só uma carta, ele pula a pergunta e mostra o preço direto.
 
+## Perfil — e por que não é cadastro de verdade
+
+Pediram um cadastro. **Não dá, e o motivo importa:** cadastro de verdade precisa de
+servidor, e este site é um arquivo só, hospedado de graça, que não roda programa nenhum
+do outro lado. Sem servidor não há onde guardar senha com segurança.
+
+Fazer um login de mentira — pedir senha e guardar no aparelho — seria **pior que não
+ter**: pareceria seguro sem ser, e ensinaria a criança a digitar senha em qualquer coisa
+que peça. Então não foi feito, e o site diz isso na cara.
+
+O que existe é um **perfil no aparelho**: nome e um símbolo, que viram um crachá no topo.
+E um **código** que a pessoa leva na mão:
+
+- o código guarda o perfil e as favoritas num texto só, em base64 pra sobreviver a ser
+  colado no zap sem quebrar em pedaços
+- colar um código **junta** as favoritas de lá com as daqui; nunca substitui, porque
+  quem cola não espera perder o que já tinha
+- colar o mesmo código duas vezes não duplica nada
+- código de outro site, ou cortado no meio, dá um recado em português explicando —
+  sem isso o navegador devolve o erro do `atob` em inglês, que não ajuda ninguém
+
 ## Álbum
 
 As favoritas como num fichário de verdade: **nove por página**, e os buraquinhos vazios
