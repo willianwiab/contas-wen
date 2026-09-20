@@ -46,6 +46,26 @@ no topo, depois illustration/ultra, depois VMAX e LEGEND, depois ex/GX/V, holo, 
 rare, uncommon, common. `uncommon` é testado antes de `common`, senão cairia na regra
 errada.
 
+### Top 10 mais caras
+
+Uma ordem a mais na fileira, que é "mais caras" **cortada no décimo**. O corte é o que
+faz dela um top: sem ele, é a mesma lista inteira em outra ordem.
+
+### Link da carta
+
+Cada carta tem um endereço próprio (`#carta=<id>`), pra mandar pro amigo. O botão
+"🔗 Copiar link" copia, e quando o navegador não deixa copiar (acontece), ele mostra o
+link já selecionado pra copiar na mão.
+
+**O link não leva o preço junto**, só o id, o idioma e em qual banco a carta estava: o
+preço é buscado na hora de abrir, senão quem recebesse o link veria um preço de meses
+atrás.
+
+O endereço acompanha a carta aberta, então o botão de voltar do navegador funciona. E
+trocar só o pedaço depois do `#` não recarrega a página, então quem chega por um link já
+estando numa carta depende do `hashchange` — que compara o id pra não reabrir a mesma
+carta quando fui eu quem mexeu no endereço.
+
 ### Filtrar mais fundo
 
 Também em "⚙️ Mais opções":
