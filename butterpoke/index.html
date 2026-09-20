@@ -70,6 +70,10 @@ header{text-align:center;padding:30px 0 18px}
 .btn.secundario{background:var(--asa);color:var(--tinta);box-shadow:0 5px 0 var(--asa-escura)}
 .btn.secundario:active{box-shadow:0 1px 0 var(--asa-escura)}
 .dica{margin-top:12px;font-size:.88rem;color:var(--tinta-fraca)}
+.btn.larga{margin-top:14px;width:100%;padding:13px;font-size:1rem}
+/* O logo da coleção é deitado e cada um tem um formato; não dá pra tratar
+   como carta em pé, senão estica tudo. */
+.opcao.colecao img{aspect-ratio:auto;height:72px;object-fit:contain;background:transparent;padding:4px}
 
 /* ---------- avisos ---------- */
 .aviso{
@@ -198,6 +202,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
     <p class="dica" id="dica">
       O número fica no cantinho de baixo da carta — em <b>25/185</b>, o número é o <b>25</b>.
     </p>
+    <button class="btn secundario larga" type="button" id="btn-colecoes">📚 Ou vê todas as coleções</button>
   </section>
 
   <div id="palco" aria-live="polite"></div>
@@ -222,6 +227,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
 const API    = 'https://api.pokemontcg.io/v2/cards';
 const TCGDEX = 'https://api.tcgdex.net/v2/en';   // o site reserva, se o principal cair
+const API_SETS = 'https://api.pokemontcg.io/v2/sets';
 
 const palco   = document.getElementById('palco');
 const campo   = document.getElementById('campo');
@@ -235,6 +241,8 @@ let versaoEscolhida = null;    // qual versão da carta a pessoa tem na mão
 let estadoEscolhido = 'perfeita';
 let limiteGrade = 60;          // quantas cartas a grade mostra por vez
 let totalReal = 0;             // quantas existem, mesmo que eu não tenha trazido todas
+let gradeAtual = null;         // a lista que a grade está mostrando e o que fazer no clique
+let voltarPraLista = null;     // como voltar da carta pra lista de onde ela veio
 let achadas = [];   // resultado da última busca, pra filtrar sem ir na internet de novo
 let cartaAberta = null;
 
@@ -384,6 +392,7 @@ async function buscarReserva(valor){
 async function buscar(valor){
   if(!valor){ campo.focus(); return; }
   cartaAberta = null;
+  voltarPraLista = null;
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a carta…</div>';
 
   const tropecos = [];
@@ -432,78 +441,188 @@ function receber(cartas, valor, total){
   perguntarNome(valor, cartas);
 }
 
-/* ---------- a pergunta do nome ---------- */
-function perguntarNome(valor, lista){
-  const quantos = lista.length;
+/* ---------- a grade ----------
+   Serve pra três coisas: escolher a carta entre as de mesmo número,
+   escolher uma coleção, e ver as cartas de uma coleção. Mudam o título e
+   o que acontece no clique; o resto (filtro, paginação) é igual. */
+function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder){
+  gradeAtual = { lista: lista, aoClicar: aoClicar, tipo: tipo || 'carta' };
+  limiteGrade = 60;
   palco.innerHTML =
     '<section class="pergunta">' +
-      '<h2>Achei ' + quantos + ' cartas ' +
-        (modo === 'numero' ? 'com o número <b>' + escapar(valor) + '</b>' : 'com esse nome') + '.</h2>' +
-      '<p>Qual é o nome da tua? Escreve aí ou toca na carta certa.' +
-        (totalReal > lista.length
-          ? ' <br><small>(existem ' + totalReal + ' no total; trouxe as ' + lista.length +
-            ' mais novas — escreve o nome pra achar a tua)</small>'
-          : '') + '</p>' +
-      '<input id="filtro" autocomplete="off" placeholder="Nome da carta…" aria-label="Filtrar pelo nome" />' +
+      '<h2>' + titulo + '</h2>' +
+      '<p>' + subtitulo + '</p>' +
+      '<input id="filtro" autocomplete="off" placeholder="' + escapar(placeholder) + '" ' +
+        'aria-label="Filtrar pelo nome" />' +
       '<div class="grade" id="grade"></div>' +
     '</section>';
 
   const filtro = document.getElementById('filtro');
-  limiteGrade = 60;
   desenharOpcoes(lista);
-
   filtro.addEventListener('input', () => {
-    const t = filtro.value.trim().toLowerCase();
-    const sobraram = t ? lista.filter(c => c.name.toLowerCase().includes(t)) : lista;
-    desenharOpcoes(sobraram);
+    limiteGrade = 60;
+    desenharOpcoes(filtrar(lista, filtro.value));
   });
-  // Se o filtro deixou só uma carta, Enter abre ela direto.
+  // Se o filtro deixou só uma, Enter abre ela direto.
   filtro.addEventListener('keydown', ev => {
     if(ev.key !== 'Enter') return;
     ev.preventDefault();
-    const t = filtro.value.trim().toLowerCase();
-    const sobraram = t ? lista.filter(c => c.name.toLowerCase().includes(t)) : lista;
-    if(sobraram.length === 1) mostrarCarta(sobraram[0]);
+    const sobraram = filtrar(lista, filtro.value);
+    if(sobraram.length === 1) aoClicar(sobraram[0]);
   });
   filtro.focus();
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function filtrar(lista, texto){
+  const t = texto.trim().toLowerCase();
+  return t ? lista.filter(c => (c.name || '').toLowerCase().includes(t)) : lista;
+}
+
+function perguntarNome(valor, lista){
+  voltarPraLista = () => perguntarNome(valor, lista);
+  mostrarGrade(
+    'Achei ' + lista.length + ' cartas ' +
+      (modo === 'numero' ? 'com o número <b>' + escapar(valor) + '</b>' : 'com esse nome') + '.',
+    'Qual é o nome da tua? Escreve aí ou toca na carta certa.' +
+      (totalReal > lista.length
+        ? ' <br><small>(existem ' + totalReal + ' no total; trouxe as ' + lista.length +
+          ' mais novas — escreve o nome pra achar a tua)</small>'
+        : ''),
+    lista, mostrarCarta, 'carta', 'Nome da carta…');
 }
 
 function desenharOpcoes(lista){
   const grade = document.getElementById('grade');
-  if(!grade) return;
+  if(!grade || !gradeAtual) return;
+  const ehColecao = gradeAtual.tipo === 'colecao';
   if(lista.length === 0){
-    grade.innerHTML = '<p style="color:var(--tinta-fraca)">Nenhuma carta com esse nome aqui. Apaga uma letrinha.</p>';
+    grade.innerHTML = '<p style="color:var(--tinta-fraca)">Nada com esse nome aqui. Apaga uma letrinha.</p>';
     return;
   }
   grade.innerHTML = '';
   lista.slice(0, limiteGrade).forEach(c => {
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'opcao';
+    b.className = 'opcao' + (ehColecao ? ' colecao' : '');
+    const img = ehColecao ? c.logo : ((c.images && c.images.small) || '');
+    const linhaDebaixo = ehColecao
+      ? [ c.total ? c.total + ' cartas' : '', (c.releaseDate || '').slice(0, 4) ]
+      : [ (c.set && c.set.name) || '', c.number ? 'nº ' + c.number : '' ];
     b.innerHTML =
-      '<img loading="lazy" alt="Carta ' + escapar(c.name) + '" src="' +
-        escapar((c.images && c.images.small) || '') + '" />' +
+      '<img loading="lazy" alt="' + escapar(c.name) + '" src="' + escapar(img) + '" />' +
       '<b>' + escapar(c.name) + '</b>' +
-      // A lista do site reserva não traz o nome da coleção; sem ele, nada de "· " solto.
-      '<small>' + [ (c.set && c.set.name) || '', c.number ? 'nº ' + c.number : '' ]
-                  .filter(Boolean).map(escapar).join(' · ') + '</small>';
-    b.onclick = () => mostrarCarta(c);
+      '<small>' + linhaDebaixo.filter(Boolean).map(escapar).join(' · ') + '</small>';
+    b.onclick = () => gradeAtual.aoClicar(c);
     grade.appendChild(b);
   });
   // Em vez de cortar em 60 e pronto, dá pra pedir mais.
   if(lista.length > limiteGrade){
     const p = document.createElement('p');
     p.style.cssText = 'grid-column:1/-1;text-align:center;color:var(--tinta-fraca);font-size:.88rem';
-    p.textContent = 'Mostrando ' + limiteGrade + ' das ' + lista.length +
-                    ' cartas, das mais novas pras mais velhas.';
+    p.textContent = 'Mostrando ' + limiteGrade + ' de ' + lista.length + '.';
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'btn secundario mais';
     b.style.cssText = 'padding:10px 20px;font-size:.95rem';
-    b.textContent = '⬇ Mostrar mais ' + Math.min(60, lista.length - limiteGrade) + ' cartas';
+    b.textContent = '⬇ Mostrar mais ' + Math.min(60, lista.length - limiteGrade);
     b.onclick = () => { limiteGrade += 60; desenharOpcoes(lista); };
     p.appendChild(b);
     grade.appendChild(p);
   }
+}
+
+/* ---------- as coleções ----------
+   Cada coleção é uma leva de cartas que saiu junto (Celebrations, 151,
+   Base Set...). Dá pra ver todas e entrar numa pra olhar carta por carta. */
+function deSetPrincipal(s){
+  return { id:s.id, name:s.name, serie:s.series || '',
+           total:s.printedTotal || s.total || null, releaseDate:s.releaseDate || '',
+           logo:(s.images && (s.images.logo || s.images.symbol)) || '', fonte:'principal' };
+}
+function deSetReserva(s){
+  return { id:s.id, name:s.name, serie:(s.serie && s.serie.name) || '',
+           total:(s.cardCount && (s.cardCount.official || s.cardCount.total)) || null,
+           releaseDate:s.releaseDate || '',
+           logo:s.logo ? s.logo + '.png' : (s.symbol ? s.symbol + '.png' : ''), fonte:'reserva' };
+}
+
+async function mostrarColecoes(){
+  cartaAberta = null;
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>Pegando a lista de coleções…</div>';
+  let colecoes = null;
+  try{
+    const d = await pedirJSON(API_SETS + '?pageSize=250&orderBy=-releaseDate');
+    colecoes = (d.data || []).map(deSetPrincipal);
+  }catch(e){
+    try{
+      const l = await pedirJSON(TCGDEX + '/sets');
+      colecoes = (Array.isArray(l) ? l : []).map(deSetReserva);
+    }catch(e2){
+      palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui pegar as coleções 📡</strong>' +
+        'Os dois sites de dados falharam. Tenta de novo daqui a pouco.' +
+        '<br><br><small>' + escapar(String(e.message || e) + ' · ' + String(e2.message || e2)) +
+        '</small></div>';
+      return;
+    }
+  }
+  if(!colecoes.length){
+    palco.innerHTML = '<div class="aviso"><strong>Nenhuma coleção veio 🤔</strong>Tenta de novo.</div>';
+    return;
+  }
+  mostrarGrade(
+    'Todas as ' + colecoes.length + ' coleções.',
+    'Toca numa pra ver as cartas dela, da primeira à última. Estão das mais novas pras mais velhas.',
+    colecoes, abrirColecao, 'colecao', 'Nome da coleção… (ex: Celebrations)');
+}
+
+/* Ordena pelo número impresso na carta, tratando número como número:
+   senão a 10 fica antes da 2, e a coleção parece bagunçada. */
+function porNumero(a, b){
+  return String(a.number || '').localeCompare(String(b.number || ''), 'en', { numeric:true });
+}
+
+async function abrirColecao(colecao){
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
+    'Pegando as cartas de ' + escapar(colecao.name) + '…</div>';
+  let cartas = [];
+  try{
+    if(colecao.fonte === 'principal'){
+      const monta = pag => API + '?q=' + encodeURIComponent('set.id:"' + aspas(colecao.id) + '"') +
+                           '&pageSize=250&page=' + pag;
+      const d = await pedirJSON(monta(1));
+      cartas = await todasAsPaginas(monta, d.data || [], d.totalCount || (d.data || []).length);
+    }else{
+      const d = await pedirJSON(TCGDEX + '/sets/' + encodeURIComponent(colecao.id));
+      cartas = ((d && d.cards) || []).map(c => {
+        const n = deTcgdex(c);
+        n.set = { name: colecao.name, printedTotal: colecao.total, releaseDate: colecao.releaseDate };
+        n.__faltaPreco = true;
+        return n;
+      });
+    }
+  }catch(e){
+    palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui abrir essa coleção 📡</strong>' +
+      'Tenta de novo, ou escolhe outra.<br><br><small>' + escapar(String(e.message || e)) + '</small></div>';
+    return;
+  }
+  if(!cartas.length){
+    palco.innerHTML = '<div class="aviso"><strong>Essa coleção veio vazia 🤔</strong>' +
+      'Acontece com coleção muito nova. Tenta outra.</div>';
+    return;
+  }
+  cartas.sort(porNumero);
+  achadas = cartas;
+  totalReal = cartas.length;
+  voltarPraLista = () => { mostrarCartasDaColecao(colecao, cartas); };
+  mostrarCartasDaColecao(colecao, cartas);
+}
+
+function mostrarCartasDaColecao(colecao, cartas){
+  mostrarGrade(
+    escapar(colecao.name) + ' — ' + cartas.length + ' cartas.',
+    'Toca numa carta pra ver quanto ela vale.' +
+      (colecao.releaseDate ? ' <br><small>Saiu em ' + escapar(colecao.releaseDate) + '.</small>' : ''),
+    cartas, mostrarCarta, 'carta', 'Nome da carta…');
 }
 
 /* ---------- estado da carta e nota da PSA ----------
@@ -712,9 +831,9 @@ function desenharCarta(){
         blocoCardmarket(carta) +
         (link ? '<p class="fonte">Ver anúncios de verdade: <a href="' + escapar(link) +
                 '" target="_blank" rel="noopener">abrir a loja</a></p>' : '') +
-        (achadas.length > 1
+        (voltarPraLista
           ? '<p class="fonte"><button class="btn secundario" type="button" id="voltar" ' +
-            'style="margin-top:10px;padding:10px 18px;font-size:.95rem">↩ Ver as outras cartas</button></p>'
+            'style="margin-top:10px;padding:10px 18px;font-size:.95rem">↩ Voltar pra lista</button></p>'
           : '') +
       '</div>' +
     '</article>';
@@ -722,7 +841,7 @@ function desenharCarta(){
   ligarChips('chips-versao', v => { versaoEscolhida = v; });
   ligarChips('chips-estado', v => { estadoEscolhido = v; });
   const voltar = document.getElementById('voltar');
-  if(voltar) voltar.onclick = () => perguntarNome(campo.value.trim(), achadas);
+  if(voltar) voltar.onclick = () => voltarPraLista && voltarPraLista();
 }
 
 function chips(id, itens, ativo){
@@ -781,6 +900,8 @@ function escapar(t){
   return String(t ?? '').replace(/[&<>"']/g, c =>
     ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
+
+document.getElementById('btn-colecoes').onclick = mostrarColecoes;
 
 campo.focus();
 if('serviceWorker' in navigator)
