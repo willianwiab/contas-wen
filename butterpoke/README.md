@@ -51,6 +51,35 @@ buscar cada uma. Melhor três números certos do que quatro com um inventado.
 Mexer no símbolo ou no fundo redesenha o cartão na hora — senão a pessoa escolheria às
 cegas e só veria o resultado depois.
 
+### As 3 preferidas e a lista de desejos
+
+Duas listas novas ao lado das favoritas, e as três guardam a mesma coisa: só a identidade
+da carta, nunca o preço.
+
+- **🥇 As 3 preferidas** têm teto de três. Quando enche, o botão **diz** que encheu e onde
+  tirar uma — recusar calado faria o botão parecer quebrado. Elas aparecem grandes no
+  cartão, e saem de lá pelo perfil.
+- **💖 Quero essa carta** é a lista de desejos, com tela própria. Ela vai no código, que é
+  o que torna a troca possível: o amigo vê o que você tem e o que você quer.
+
+Colar um código junta as favoritas e os desejos, mas **não as preferidas**: são três, e
+são dele. Trocar as minhas pelas dele seria mexer onde não devo.
+
+### Onde a pessoa mora — e por que só o estado
+
+Pediram localização pra trocar carta com gente perto. **Foi feito só até onde é seguro:**
+um seletor com os 27 estados, escolhido à mão, com "prefiro não dizer" como primeira
+opção.
+
+**O site não pede nem usa GPS, em lugar nenhum.** GPS aponta pra porta da casa, e quem usa
+isto é criança. Estado é grosso o bastante pra não localizar ninguém e fino o bastante pra
+saber se dá pra trocar perto — e ele só sai daqui dentro do código, que a pessoa entrega a
+quem ela escolhe.
+
+O que **não** existe e não vai existir aqui: um lugar onde estranhos veem o teu cartão.
+Isso precisaria de servidor, e um site de criança não é lugar pra juntar gente
+desconhecida com a localização de menores.
+
 ### Espiar o cartão de um amigo
 
 Colar o código de alguém tem dois botões, e a diferença é o ponto: **"só ver o cartão
