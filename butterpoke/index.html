@@ -163,6 +163,7 @@ select.escolher:focus{outline:none;border-color:var(--asa-escura)}
 .etiquetas{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px}
 .etiqueta{background:#f5edff;border:2px solid var(--borda);border-radius:999px;padding:5px 12px;font-size:.82rem;font-weight:600}
 .etiqueta.pais{background:var(--asa);border-color:var(--asa-escura);color:#fff}
+.etiqueta.forte{background:var(--olho);border-color:#a8250a;color:#fff}
 .de-onde{font-size:.82rem;color:var(--tinta-fraca);margin:-8px 0 16px;line-height:1.45}
 .de-onde b{color:var(--tinta)}
 .destaque{
@@ -405,6 +406,7 @@ function deTcgdex(c){
     supertype: c.category === 'Pokemon' ? 'Pokémon' : (c.category || ''),
     __daReserva: true,
     hp: c.hp, types: c.types || [], artist: c.illustrator || '',
+    subtypes: [c.suffix, c.stage].filter(Boolean),
     nationalPokedexNumbers: c.dexId || [],
     number: c.localId != null ? String(c.localId) : '',
     rarity: c.rarity || '',
@@ -552,7 +554,28 @@ const FAIXAS = [
   { id:'10',  nome:'💰 $10 ou mais',  min:10 },
   { id:'100', nome:'💎 $100 ou mais', min:100 },
 ];
-let energiaFiltro = '', faixaFiltro = '', artistaFiltro = '';
+let energiaFiltro = '', faixaFiltro = '', artistaFiltro = '', especialFiltro = '';
+
+/* As cartas "especiais": EX, MEGA, GX, V e companhia. A API chama isso de
+   subtipo, e na mesma lista vêm coisas estruturais (Basic, Stage 1, Item,
+   Supporter) que não é o que a pessoa procura quando pensa em "carta ex".
+   Por isso a lista é fechada, e na ordem em que apareceram no jogo. */
+const ESPECIAIS = [
+  'Star', 'Shining', 'Light', 'Dark', 'Baby', 'Delta Species',
+  'EX', 'LEGEND', 'Prism Star', 'BREAK', 'MEGA', 'GX', 'TAG TEAM',
+  'V', 'VMAX', 'VSTAR', 'V-UNION', 'Radiant',
+  'Single Strike', 'Rapid Strike', 'Fusion Strike',
+  'ex', 'Tera', 'ACE SPEC', 'Ancient', 'Future',
+];
+// EX (maiúsculo, antigo) e ex (minúsculo, novo) são cartas diferentes.
+const NOME_ESPECIAL = {
+  'EX':'EX (das antigas)', 'ex':'ex (das novas)', 'MEGA':'MEGA (M)',
+  'TAG TEAM':'TAG TEAM (duas juntas)', 'Delta Species':'Delta (δ)',
+};
+function rotuloEspecial(x){ return NOME_ESPECIAL[x] || x; }
+function especiaisDe(c){
+  return (c.subtypes || []).filter(x => ESPECIAIS.indexOf(x) >= 0);
+}
 
 /* A raridade vem como texto livre e muda de coleção pra coleção, então em
    vez de uma lista fechada (que ia furar na próxima coleção que sair) eu
@@ -700,7 +723,7 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
   limiteGrade = 60;
   tipoFiltro = 'todos';
   ordemAtual = ordemInicial || 'novas';
-  desempate = energiaFiltro = faixaFiltro = artistaFiltro = '';
+  desempate = energiaFiltro = faixaFiltro = artistaFiltro = especialFiltro = '';
 
   const ehCarta = gradeAtual.tipo === 'carta';
   const temPreco = ehCarta && lista.some(c => precoDe(c) != null);
@@ -742,6 +765,14 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
             .concat(lista.some(c => (c.types || []).length > 1)
               ? [{ v:'duplo', rotulo:'🔀 Dois tipos' }] : []), ''))
       : '') +
+    (() => {
+      const presentes = ESPECIAIS.filter(x => lista.some(c => especiaisDe(c).indexOf(x) >= 0));
+      return presentes.length
+        ? caixinha('Carta especial', chips('chips-especial',
+            [{ v:'', rotulo:'Todas' }].concat(
+              presentes.map(x => ({ v:x, rotulo:rotuloEspecial(x) }))), ''))
+        : '';
+    })() +
     (temPreco
       ? caixinha('Preço', chips('chips-faixa', FAIXAS.map(f => ({ v:f.id, rotulo:f.nome })), ''))
       : '') +
@@ -795,6 +826,7 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
   ligarChips('chips-ordem',   v => { ordemAtual = v; },    () => { atualizar(); marcar('chips-ordem', ordemAtual); });
   ligarChips('chips-energia', v => { energiaFiltro = v; }, () => { atualizar(); marcar('chips-energia', energiaFiltro); });
   ligarChips('chips-faixa',   v => { faixaFiltro = v; },   () => { atualizar(); marcar('chips-faixa', faixaFiltro); });
+  ligarChips('chips-especial', v => { especialFiltro = v; }, () => { atualizar(); marcar('chips-especial', especialFiltro); });
   const selArt = document.getElementById('sel-artista');
   if(selArt) selArt.onchange = () => { artistaFiltro = selArt.value; atualizar(); };
   const selDes = document.getElementById('sel-desempate');
@@ -822,6 +854,7 @@ function filtrar(lista, texto){
   if(energiaFiltro === 'duplo') saida = saida.filter(c => (c.types || []).length > 1);
   else if(energiaFiltro) saida = saida.filter(c => (c.types || []).indexOf(energiaFiltro) >= 0);
   if(artistaFiltro) saida = saida.filter(c => c.artist === artistaFiltro);
+  if(especialFiltro) saida = saida.filter(c => (c.subtypes || []).indexOf(especialFiltro) >= 0);
   // Acima de um valor: carta sem preço não entra, porque não dá pra afirmar que passa.
   if(min > 0) saida = saida.filter(c => { const v = precoDe(c); return v != null && v >= min; });
   if(t) saida = saida.filter(c => (c.name || '').toLowerCase().includes(t));
@@ -1256,6 +1289,8 @@ function desenharCarta(){
           '<span class="etiqueta">nº ' + escapar(carta.number || '?') +
             (set.printedTotal ? '/' + escapar(String(set.printedTotal)) : '') + '</span>' +
           (set.name ? '<span class="etiqueta">' + escapar(set.name) + '</span>' : '') +
+          (especiaisDe(carta).map(x =>
+            '<span class="etiqueta forte">' + escapar(rotuloEspecial(x)) + '</span>').join('')) +
           ((carta.types || []).map(t =>
             '<span class="etiqueta">' +
               escapar((ENERGIAS.find(e => e.id === t) || { nome:t }).nome) + '</span>').join('')) +
