@@ -143,6 +143,26 @@ thead th{color:var(--tinta-fraca);font-size:.8rem;text-transform:uppercase;lette
 .fonte{margin-top:10px;font-size:.82rem;color:var(--tinta-fraca)}
 .fonte a{color:var(--olho)}
 
+/* ---------- escolher versão e estado ---------- */
+.escolha{margin:18px 0 0}
+.escolha h3{font-size:.95rem;margin-bottom:8px;color:var(--tinta)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  border:2px solid var(--borda);background:#fff;border-radius:14px;padding:9px 14px;
+  font:inherit;font-weight:600;font-size:.92rem;color:var(--tinta-fraca);cursor:pointer;
+  text-align:left;line-height:1.25;transition:transform .1s;
+}
+.chip:hover{transform:translateY(-2px)}
+.chip[aria-pressed="true"]{background:var(--asa);border-color:var(--asa-escura);color:#fff}
+.chip small{display:block;font-weight:400;font-size:.72rem;opacity:.8;margin-top:1px}
+.nota{
+  margin-top:10px;font-size:.84rem;color:var(--tinta-fraca);background:#f7f2ff;
+  border-left:4px solid var(--asa);padding:10px 12px;border-radius:0 10px 10px 0;
+}
+.nota b{color:var(--tinta)}
+td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
+.mais{margin:16px auto 0;display:block}
+
 /* ---------- cotação ---------- */
 .cotacao{
   margin-top:24px;background:#fff;border:2px solid var(--borda);border-radius:16px;
@@ -207,6 +227,9 @@ const btnNome = document.getElementById('modo-nome');
 const inpCota = document.getElementById('cotacao');
 
 let modo = 'numero';
+let versaoEscolhida = null;    // qual versão da carta a pessoa tem na mão
+let estadoEscolhido = 'perfeita';
+let limiteGrade = 60;          // quantas cartas a grade mostra por vez
 let achadas = [];   // resultado da última busca, pra filtrar sem ir na internet de novo
 let cartaAberta = null;
 
@@ -217,7 +240,7 @@ try{
 }catch(e){}
 inpCota.addEventListener('input', () => {
   try{ localStorage.setItem('butterpoke:dolar', inpCota.value); }catch(e){}
-  if(cartaAberta) mostrarCarta(cartaAberta);   // redesenha o preço em reais
+  if(cartaAberta) desenharCarta();   // redesenha os preços em reais
 });
 
 /* ---------- troca de modo ---------- */
@@ -397,6 +420,7 @@ function perguntarNome(valor, lista){
     '</section>';
 
   const filtro = document.getElementById('filtro');
+  limiteGrade = 60;
   desenharOpcoes(lista);
 
   filtro.addEventListener('input', () => {
@@ -423,7 +447,7 @@ function desenharOpcoes(lista){
     return;
   }
   grade.innerHTML = '';
-  lista.slice(0, 60).forEach(c => {
+  lista.slice(0, limiteGrade).forEach(c => {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'opcao';
@@ -437,19 +461,55 @@ function desenharOpcoes(lista){
     b.onclick = () => mostrarCarta(c);
     grade.appendChild(b);
   });
-  if(lista.length > 60){
+  // Em vez de cortar em 60 e pronto, dá pra pedir mais.
+  if(lista.length > limiteGrade){
     const p = document.createElement('p');
-    p.style.cssText = 'grid-column:1/-1;color:var(--tinta-fraca);font-size:.88rem';
-    p.textContent = 'Mostrando as 60 mais novas de ' + lista.length + '. Escreve o nome pra afinar a busca.';
+    p.style.cssText = 'grid-column:1/-1;text-align:center;color:var(--tinta-fraca);font-size:.88rem';
+    p.textContent = 'Mostrando ' + limiteGrade + ' das ' + lista.length +
+                    ' cartas, das mais novas pras mais velhas.';
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn secundario mais';
+    b.style.cssText = 'padding:10px 20px;font-size:.95rem';
+    b.textContent = '⬇ Mostrar mais ' + Math.min(60, lista.length - limiteGrade) + ' cartas';
+    b.onclick = () => { limiteGrade += 60; desenharOpcoes(lista); };
+    p.appendChild(b);
     grade.appendChild(p);
   }
 }
 
+/* ---------- estado da carta e nota da PSA ----------
+   Os preços que as APIs dão são de carta Near Mint: perfeita, sem uso.
+   Daqui pra baixo é CONTA MINHA, não preço de tabela. Os fatores são a
+   régua que o pessoal de carta usa de cabeça pra descontar o desgaste,
+   e servem pra dar noção — a carta vale mesmo é o que alguém pagar. */
+const ESTADOS = [
+  { id:'perfeita', nome:'✨ Perfeita',     fator:1,    dica:'Saiu do pacote agora: cantos afiados, sem risco nenhum.' },
+  { id:'boa',      nome:'🙂 Estado bom',   fator:0.80, dica:'Risquinhos que só aparecem na luz, cantos quase perfeitos.' },
+  { id:'media',    nome:'😐 Estado médio', fator:0.60, dica:'Cantos embranquecidos e riscos que dá pra ver de longe.' },
+  { id:'ruim',     nome:'😬 Estado ruim',  fator:0.35, dica:'Dobrada, rasgada, manchada ou bem gasta.' },
+];
+/* Quanto a MESMA carta costuma valer depois de avaliada pela PSA. Varia
+   muito de carta pra carta, então é palpite pra dar noção, não cotação:
+   preço de carta avaliada ninguém entrega de graga numa API. */
+const NOTAS_PSA = [
+  { nome:'PSA 10', fator:5,    obs:'perfeita de lupa' },
+  { nome:'PSA 9',  fator:2,    obs:'quase perfeita' },
+  { nome:'PSA 8',  fator:1.3,  obs:'muito boa' },
+  { nome:'PSA 7',  fator:1,    obs:'boa' },
+  { nome:'PSA 6',  fator:0.75, obs:'dá pra ver o uso' },
+];
+const CUSTO_PSA = 25;   // dólares, mais ou menos, pra mandar uma carta avaliar
+
 /* ---------- preços ---------- */
 const VARIANTES = {
-  normal:'Normal', holofoil:'Holográfica', reverseHolofoil:'Reverse Holo',
+  normal:'Normal', holofoil:'Holo', reverseHolofoil:'Reverse Holo',
   '1stEditionHolofoil':'1ª edição holo', '1stEditionNormal':'1ª edição normal',
   unlimitedHolofoil:'Ilimitada holo', unlimited:'Ilimitada'
+};
+const EXPLICA = {
+  normal:'sem brilho nenhum', holofoil:'o desenho brilha',
+  reverseHolofoil:'o fundo brilha, o desenho não',
+  '1stEditionHolofoil':'tem o selo de 1ª edição', '1stEditionNormal':'selo de 1ª edição, sem brilho',
 };
 // Ordem de importância: a versão mais valiosa é a que a pessoa quer ver primeiro.
 const ORDEM = ['1stEditionHolofoil','holofoil','1stEditionNormal','unlimitedHolofoil','normal','reverseHolofoil','unlimited'];
@@ -481,13 +541,32 @@ function dinheiro(v, moeda){
   // Com separador de milhar: $11,500.00 se lê, $11500.00 não.
   return v.toLocaleString('en-US', { style:'currency', currency: moeda || 'USD' });
 }
-function emReais(v, moeda){
+function soReais(v, moeda){
   const cotacao = parseFloat(inpCota.value);
   if(!(cotacao > 0) || typeof v !== 'number') return '';
   // O campo é a cotação do dólar; pro euro uso uma folguinha de 8%.
   const taxa = moeda === 'EUR' ? cotacao * 1.08 : cotacao;
-  return 'mais ou menos ' + (v * taxa).toLocaleString('pt-BR',
-    { style:'currency', currency:'BRL' });
+  return (v * taxa).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+}
+function emReais(v, moeda){
+  const r = soReais(v, moeda);
+  return r ? 'mais ou menos ' + r : '';
+}
+
+/* O preço de carta perfeita (Near Mint) de uma versão específica. É daqui
+   que saem todas as contas de estado e de nota da PSA. */
+function precoNM(carta, chave){
+  const v = carta.tcgplayer && carta.tcgplayer.prices && carta.tcgplayer.prices[chave];
+  if(!v) return null;
+  const n = [v.market, v.mid, v.low].find(x => typeof x === 'number' && x > 0);
+  return n == null ? null : n;
+}
+function versoesComPreco(carta){
+  const p = (carta.tcgplayer && carta.tcgplayer.prices) || {};
+  return Object.keys(p).filter(k => precoNM(carta, k) != null).sort((a, b) => {
+    const ia = ORDEM.indexOf(a), ib = ORDEM.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  });
 }
 
 function tabelaTCG(carta){
@@ -525,16 +604,53 @@ function mostrarCarta(carta){
   // Carta que veio do site reserva chega sem preço: busco o dela agora.
   if(carta.__faltaPreco) return abrirDoReserva(carta);
   cartaAberta = carta;
-  const preco = precoPrincipal(carta);
+  versaoEscolhida = versoesComPreco(carta)[0] || null;   // começa pela mais valiosa
+  estadoEscolhido = 'perfeita';
+  desenharCarta();
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* Redesenha a carta inteira com a versão e o estado escolhidos. É de
+   propósito que redesenha tudo: são poucos elementos, e assim não tem
+   como a tela e a escolha ficarem contando histórias diferentes. */
+function desenharCarta(){
+  const carta = cartaAberta;
+  if(!carta) return;
   const img = (carta.images && (carta.images.large || carta.images.small)) || '';
   const set = carta.set || {};
+  const versoes = versoesComPreco(carta);
 
-  const caixaPreco = preco
+  // preço de carta perfeita, da versão escolhida
+  const base = versaoEscolhida
+    ? { valor: precoNM(carta, versaoEscolhida), moeda:'USD',
+        qual: VARIANTES[versaoEscolhida] || versaoEscolhida, onde:'TCGplayer' }
+    : precoPrincipal(carta);
+
+  const est = ESTADOS.find(e => e.id === estadoEscolhido) || ESTADOS[0];
+  const vale = base && typeof base.valor === 'number' ? base.valor * est.fator : null;
+
+  const escolherVersao = versoes.length > 1
+    ? '<div class="escolha"><h3>1. Qual versão é a tua?</h3>' +
+        chips('chips-versao', versoes.map(v => ({
+          v: v, rotulo: VARIANTES[v] || v, sub: EXPLICA[v] || '' })), versaoEscolhida) +
+      '</div>'
+    : '';
+
+  const escolherEstado = base
+    ? '<div class="escolha"><h3>' + (versoes.length > 1 ? '2. ' : '') + 'Como ela está?</h3>' +
+        chips('chips-estado', ESTADOS.map(e => ({
+          v: e.id, rotulo: e.nome, sub: e.dica })), estadoEscolhido) +
+      '</div>'
+    : '';
+
+  const caixaPreco = vale != null
     ? '<div class="destaque">' +
-        '<div class="rotulo">Vale mais ou menos</div>' +
-        '<div class="preco">' + dinheiro(preco.valor, preco.moeda) + '</div>' +
-        '<div class="reais">' + escapar(emReais(preco.valor, preco.moeda)) + '</div>' +
-        '<div class="qual">versão ' + escapar(preco.qual) + ' · fonte: ' + escapar(preco.onde) + '</div>' +
+        '<div class="rotulo">' + escapar(est.nome.replace(/^\S+\s/, '')) + ', vale mais ou menos</div>' +
+        '<div class="preco">' + dinheiro(vale, base.moeda) + '</div>' +
+        '<div class="reais">' + escapar(emReais(vale, base.moeda)) + '</div>' +
+        '<div class="qual">' + escapar(base.qual) +
+          (est.fator !== 1 ? ' · ' + Math.round(est.fator * 100) + '% do preço de carta perfeita' : '') +
+          ' · fonte: ' + escapar(base.onde) + '</div>' +
       '</div>'
     : '<div class="destaque"><div class="rotulo">Preço</div>' +
       '<div class="preco" style="font-size:1.4rem">Ninguém anunciou essa ainda</div>' +
@@ -554,7 +670,8 @@ function mostrarCarta(carta){
           (carta.rarity ? '<span class="etiqueta">' + escapar(carta.rarity) + '</span>' : '') +
           (set.releaseDate ? '<span class="etiqueta">' + escapar(set.releaseDate.slice(0,4)) + '</span>' : '') +
         '</div>' +
-        caixaPreco +
+        escolherVersao + escolherEstado + caixaPreco +
+        tabelaPSA(base) +
         tabelaTCG(carta) +
         blocoCardmarket(carta) +
         (link ? '<p class="fonte">Ver anúncios de verdade: <a href="' + escapar(link) +
@@ -566,9 +683,50 @@ function mostrarCarta(carta){
       '</div>' +
     '</article>';
 
+  ligarChips('chips-versao', v => { versaoEscolhida = v; });
+  ligarChips('chips-estado', v => { estadoEscolhido = v; });
   const voltar = document.getElementById('voltar');
   if(voltar) voltar.onclick = () => perguntarNome(campo.value.trim(), achadas);
-  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function chips(id, itens, ativo){
+  return '<div class="chips" id="' + id + '">' + itens.map(i =>
+    '<button type="button" class="chip" data-v="' + escapar(i.v) + '" ' +
+      'aria-pressed="' + (i.v === ativo) + '">' + escapar(i.rotulo) +
+      (i.sub ? '<small>' + escapar(i.sub) + '</small>' : '') +
+    '</button>').join('') + '</div>';
+}
+function ligarChips(id, aoEscolher){
+  const caixa = document.getElementById(id);
+  if(!caixa) return;
+  caixa.querySelectorAll('.chip').forEach(b => {
+    b.onclick = () => { aoEscolher(b.dataset.v); desenharCarta(); };
+  });
+}
+
+/* ---------- se ela for avaliada ----------
+   Carta avaliada pela PSA vem num case lacrado com uma nota de 1 a 10, e
+   vale bem mais que a mesma carta solta. Preço de carta avaliada não sai
+   de API de graça, então aqui é conta em cima do preço solto — por isso o
+   aviso embaixo da tabela, que não é enfeite. */
+function tabelaPSA(base){
+  if(!base || !(base.valor > 0)) return '';
+  const linhas = NOTAS_PSA.map(n =>
+    '<tr><td><b>' + n.nome + '</b><span class="sub">' + escapar(n.obs) + '</span></td>' +
+    '<td>' + dinheiro(base.valor * n.fator, base.moeda) + '</td>' +
+    '<td>' + escapar(soReais(base.valor * n.fator, base.moeda) || '—') + '</td></tr>').join('');
+
+  const naoCompensa = base.moeda === 'USD' && base.valor * 5 < CUSTO_PSA;
+  return '<h3 class="titulinho">Se ela for avaliada (PSA)</h3>' +
+    '<table><thead><tr><th>Nota</th><th>Valeria</th><th>Em reais</th></tr></thead>' +
+    '<tbody>' + linhas + '</tbody></table>' +
+    '<p class="nota"><b>Isso aqui é conta minha, não é preço de tabela.</b> ' +
+    'Ninguém dá preço de carta avaliada de graça, então eu multiplico o preço da carta solta. ' +
+    'Carta avaliada varia muito: serve pra ter noção, não pra vender.' +
+    (naoCompensa
+      ? '<br><br>Nessa carta nem vale a pena pensar nisso: mandar avaliar custa uns $' + CUSTO_PSA +
+        ', mais do que ela valeria com PSA 10.'
+      : '') + '</p>';
 }
 
 async function abrirDoReserva(carta){
