@@ -188,6 +188,23 @@ inglês. Não estar nele, e existir só no reserva, quer dizer que ela nunca sai
 inglês — e o caso comum disso é promo japonesa. Não é prova, é o que dá pra afirmar, e a
 etiqueta diz "fora do inglês" em vez de "Japão" justamente por isso.
 
+## A carta no jogo
+
+Ataques, habilidade, fraqueza, resistência, recuo e "evolui de" já vinham junto com a
+carta desde o primeiro dia — e eu jogava tudo fora, mostrando só o preço. Agora a tela da
+carta traz a ficha inteira, com o custo de energia em bolinhas (🔥🔥) e o dano em destaque.
+
+Treinador e energia não têm nada disso, então neles o bloco simplesmente não aparece, em
+vez de mostrar uma ficha vazia.
+
+## Pode usar em torneio?
+
+A API diz se a carta vale no **Padrão**, no **Expandido** e no **Ilimitado**, e traz a
+**marca de regulação** (a letrinha no cantinho). A tela mostra os três com ✅ / ❌ / 🚫
+(banida), mais uma explicação do que cada formato quer dizer — que é a parte que ninguém
+nasce sabendo: Padrão é onde se joga campeonato e só aceita carta dos últimos anos,
+Expandido aceita carta bem mais velha, Ilimitado aceita tudo.
+
 ## Versão, estado e PSA
 
 Depois de achar a carta, o site pergunta mais duas coisas, porque a mesma carta

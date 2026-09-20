@@ -206,6 +206,22 @@ thead th{color:var(--tinta-fraca);font-size:.8rem;text-transform:uppercase;lette
 }
 .nota b{color:var(--tinta)}
 td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
+/* ---------- ficha do jogo ---------- */
+.evolui{font-size:.9rem;color:var(--tinta-fraca);margin-bottom:10px}
+.golpe{border:2px solid var(--borda);border-radius:14px;padding:11px 13px;margin-bottom:9px;background:#fdfbff}
+.golpe .cabeca{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.golpe .cabeca b{font-size:1rem}
+.golpe p{margin-top:6px;font-size:.86rem;color:var(--tinta-fraca);line-height:1.45}
+.custo{font-size:1.05rem;letter-spacing:1px}
+.custo.vazio{font-size:.76rem;color:var(--tinta-fraca);letter-spacing:0}
+.marca{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  background:var(--asa);color:#fff;border-radius:999px;padding:3px 9px}
+.dano{margin-left:auto;font-family:'Baloo 2',cursive;font-size:1.4rem;color:var(--olho)}
+.quadrinhos{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 4px}
+.quadrinho{flex:1 1 105px;border:2px solid var(--borda);border-radius:13px;padding:9px 11px;background:#fff}
+.quadrinho span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--tinta-fraca)}
+.quadrinho b{font-size:.98rem}
+.conto{margin-top:11px;font-size:.85rem;font-style:italic;color:var(--tinta-fraca);line-height:1.5}
 .mais{margin:16px auto 0;display:block}
 
 /* ---------- cotação ---------- */
@@ -445,6 +461,17 @@ function deTcgdex(c){
     __daReserva: true, __lang: langBusca,
     hp: c.hp, types: c.types || [], artist: c.illustrator || '',
     subtypes: [c.suffix, c.stage].filter(Boolean),
+    attacks: (c.attacks || []).map(a => ({ name:a.name, cost:a.cost, damage:a.damage, text:a.effect })),
+    abilities: (c.abilities || []).map(a => ({ name:a.name, text:a.effect, type:a.type })),
+    weaknesses: c.weaknesses || [], resistances: c.resistances || [],
+    convertedRetreatCost: typeof c.retreat === 'number' ? c.retreat : undefined,
+    evolvesFrom: c.evolveFrom || '', flavorText: c.description || '',
+    regulationMark: c.regulationMark || '',
+    legalities: c.legal ? {
+      standard: c.legal.standard ? 'Legal' : '',
+      expanded: c.legal.expanded ? 'Legal' : '',
+      unlimited: 'Legal',
+    } : null,
     nationalPokedexNumbers: c.dexId || [],
     number: c.localId != null ? String(c.localId) : '',
     rarity: c.rarity || '',
@@ -1293,6 +1320,82 @@ function blocoCardmarket(carta){
     '</tbody></table>';
 }
 
+/* ---------- a carta no jogo ----------
+   Ataques, habilidade, fraqueza, resistência e recuo já vinham junto com a
+   carta desde o primeiro dia e eu jogava tudo fora, mostrando só o preço. */
+const EMOJI_ENERGIA = {
+  Grass:'🌿', Fire:'🔥', Water:'💧', Lightning:'⚡', Psychic:'🔮', Fighting:'👊',
+  Darkness:'🌑', Metal:'⚙️', Dragon:'🐉', Fairy:'🧚', Colorless:'⭐',
+};
+function bolinhas(custo){
+  const c = custo || [];
+  if(!c.length) return '<span class="custo vazio">sem energia</span>';
+  return '<span class="custo">' + c.map(t => EMOJI_ENERGIA[t] || '·').join('') + '</span>';
+}
+function tipoComEmoji(t){
+  return (EMOJI_ENERGIA[t] || '') + ' ' + ((ENERGIAS.find(e => e.id === t) || {}).nome || t).replace(/^\S+\s/, '');
+}
+
+function fichaDoJogo(c){
+  const ataques = c.attacks || [], habilidades = c.abilities || [];
+  const fraq = (c.weaknesses || [])[0], resist = (c.resistances || [])[0];
+  const recuo = c.retreatCost || [];
+  const temRecuo = recuo.length || typeof c.convertedRetreatCost === 'number';
+  if(!ataques.length && !habilidades.length && !fraq && !resist && !temRecuo && !c.evolvesFrom)
+    return '';   // treinador e energia não têm nada disso
+
+  const golpes =
+    habilidades.map(h =>
+      '<div class="golpe"><div class="cabeca">' +
+        '<span class="marca">✨ habilidade</span><b>' + escapar(h.name || '') + '</b></div>' +
+        (h.text ? '<p>' + escapar(h.text) + '</p>' : '') +
+      '</div>').join('') +
+    ataques.map(a =>
+      '<div class="golpe"><div class="cabeca">' +
+        bolinhas(a.cost) + '<b>' + escapar(a.name || '') + '</b>' +
+        (a.damage ? '<span class="dano">' + escapar(a.damage) + '</span>' : '') +
+      '</div>' +
+      (a.text ? '<p>' + escapar(a.text) + '</p>' : '') +
+      '</div>').join('');
+
+  const caixa = (rotulo, valor) =>
+    '<div class="quadrinho"><span>' + rotulo + '</span><b>' + valor + '</b></div>';
+  const trio =
+    (fraq   ? caixa('Fraqueza',   escapar(tipoComEmoji(fraq.type)) + ' ' + escapar(fraq.value || '')) : '') +
+    (resist ? caixa('Resistência', escapar(tipoComEmoji(resist.type)) + ' ' + escapar(resist.value || '')) : '') +
+    (temRecuo ? caixa('Recuo', recuo.length ? bolinhas(recuo) : escapar(String(c.convertedRetreatCost))) : '');
+
+  return '<h3 class="titulinho">A carta no jogo</h3>' +
+    (c.evolvesFrom ? '<p class="evolui">🔼 Evolui de <b>' + escapar(c.evolvesFrom) + '</b></p>' : '') +
+    golpes +
+    (trio ? '<div class="quadrinhos">' + trio + '</div>' : '') +
+    (c.flavorText ? '<p class="conto">“' + escapar(c.flavorText) + '”</p>' : '');
+}
+
+/* ---------- pode usar em torneio? ----------
+   Padrão é o formato das cartas novas, e é o que se joga em campeonato.
+   Expandido aceita carta bem mais velha. Ilimitado aceita tudo, e serve
+   pra jogar em casa. A marca de regulação é a letrinha no cantinho. */
+function torneio(c){
+  const l = c.legalities || {};
+  if(!l.standard && !l.expanded && !l.unlimited && !c.regulationMark) return '';
+  const sinal = v => v === 'Legal' ? '✅' : (v === 'Banned' ? '🚫' : '❌');
+  const diz = v => v === 'Legal' ? 'pode' : (v === 'Banned' ? 'banida' : 'não pode');
+  const linha = (nome, v) =>
+    '<div class="quadrinho"><span>' + nome + '</span><b>' + sinal(v) + ' ' + diz(v) + '</b></div>';
+  return '<h3 class="titulinho">Pode usar em torneio?</h3>' +
+    '<div class="quadrinhos">' +
+      linha('Padrão', l.standard) + linha('Expandido', l.expanded) + linha('Ilimitado', l.unlimited) +
+      (c.regulationMark
+        ? '<div class="quadrinho"><span>Marca</span><b>' + escapar(c.regulationMark) + '</b></div>'
+        : '') +
+    '</div>' +
+    '<p class="nota"><b>Padrão</b> é onde se joga campeonato de verdade, e só aceita carta ' +
+    'dos últimos anos. <b>Expandido</b> aceita carta bem mais velha. <b>Ilimitado</b> aceita ' +
+    'tudo, e serve pra jogar em casa com os amigos. A <b>marca</b> é aquela letrinha no ' +
+    'cantinho da carta: é ela que diz quando a carta vai sair do Padrão.</p>';
+}
+
 /* ---------- de onde a carta é ----------
    Nenhum dos dois bancos tem campo de país, então isto é dedução, e a tela
    diz de onde ela saiu em vez de fingir que é dado oficial:
@@ -1419,6 +1522,8 @@ function desenharCarta(){
         '<p class="de-onde">' + escapar(de.conta) +
           ' <b>Isso é dedução minha</b> — os bancos de carta não guardam o país.</p>' +
         escolherVersao + escolherEstado + caixaPreco +
+        fichaDoJogo(carta) +
+        torneio(carta) +
         tabelaPSA(base) +
         tabelaTCG(carta) +
         blocoCardmarket(carta) +
