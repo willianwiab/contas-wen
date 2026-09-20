@@ -73,6 +73,22 @@ header{text-align:center;padding:30px 0 18px}
 .atalhos{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
 .atalhos .btn{flex:1 1 150px;padding:12px 10px;font-size:.95rem}
 .rotulo-filtro{display:block;font-size:.9rem;font-weight:600;margin:0 0 6px}
+.mais-opcoes{
+  border:2px solid var(--borda);border-radius:16px;background:#fff;
+  padding:4px 14px;margin:0 0 16px;
+}
+.mais-opcoes summary{
+  cursor:pointer;font-weight:600;padding:10px 0;color:var(--tinta-fraca);list-style:none;
+}
+.mais-opcoes summary::-webkit-details-marker{display:none}
+.mais-opcoes summary::before{content:'▸ ';color:var(--asa-escura)}
+.mais-opcoes[open] summary::before{content:'▾ '}
+.mais-opcoes .escolha{margin:0 0 14px}
+select.escolher{
+  width:100%;max-width:340px;padding:10px 12px;font:inherit;border:2px solid var(--borda);
+  border-radius:12px;background:#fff;color:var(--tinta);cursor:pointer;
+}
+select.escolher:focus{outline:none;border-color:var(--asa-escura)}
 /* A estrela fica por cima da cartinha; por isso a opção virou caixa com
    dois botões dentro, em vez de um botão só (botão dentro de botão não vale). */
 .opcao{position:relative;padding:0;overflow:hidden}
@@ -388,6 +404,8 @@ function deTcgdex(c){
     // lá o campo chama category, e o Pokémon vem sem acento
     supertype: c.category === 'Pokemon' ? 'Pokémon' : (c.category || ''),
     __daReserva: true,
+    hp: c.hp, types: c.types || [], artist: c.illustrator || '',
+    nationalPokedexNumbers: c.dexId || [],
     number: c.localId != null ? String(c.localId) : '',
     rarity: c.rarity || '',
     set: { name: set.name || '',
@@ -506,14 +524,62 @@ function receber(cartas, valor, total){
 /* ---------- ordenar ----------
    O nome disso é ordenação: a mesma lista, em ordens diferentes. */
 const ORDENS = [
-  { id:'novas',   nome:'🆕 Mais novas',   onde:'ambos' },
-  { id:'antigas', nome:'🕰️ Mais antigas', onde:'ambos' },
-  { id:'caras',   nome:'💰 Mais caras',   onde:'carta' },
-  { id:'baratas', nome:'🪙 Mais baratas', onde:'carta' },
-  { id:'numero',  nome:'🔢 Pelo número',  onde:'carta' },
-  { id:'nome',    nome:'🔤 Por nome',     onde:'ambos' },
+  { id:'novas',    nome:'🆕 Mais novas',   onde:'ambos' },
+  { id:'antigas',  nome:'🕰️ Mais antigas', onde:'ambos' },
+  { id:'caras',    nome:'💰 Mais caras',   onde:'carta', precisa:'preco' },
+  { id:'baratas',  nome:'🪙 Mais baratas', onde:'carta', precisa:'preco' },
+  { id:'raridade', nome:'💎 Mais raras',   onde:'carta', precisa:'raridade' },
+  { id:'hp',       nome:'❤️ Mais fortes',  onde:'carta', precisa:'hp' },
+  { id:'pokedex',  nome:'🔢 Pela Pokédex', onde:'carta', precisa:'dex' },
+  { id:'numero',   nome:'🃏 Pelo número',  onde:'carta' },
+  { id:'nome',     nome:'🔤 Por nome',     onde:'ambos' },
 ];
 let ordemAtual = 'novas';
+let desempate = '';            // a segunda ordenação, pras cartas que empatam
+
+/* Os tipos de energia. As duas APIs escrevem igual, em inglês. */
+const ENERGIAS = [
+  { id:'Grass', nome:'🌿 Grama' },      { id:'Fire', nome:'🔥 Fogo' },
+  { id:'Water', nome:'💧 Água' },       { id:'Lightning', nome:'⚡ Elétrico' },
+  { id:'Psychic', nome:'🔮 Psíquico' }, { id:'Fighting', nome:'👊 Lutador' },
+  { id:'Darkness', nome:'🌑 Sombrio' }, { id:'Metal', nome:'⚙️ Metal' },
+  { id:'Dragon', nome:'🐉 Dragão' },    { id:'Fairy', nome:'🧚 Fada' },
+  { id:'Colorless', nome:'⭐ Incolor' },
+];
+const FAIXAS = [
+  { id:'',    nome:'Qualquer preço', min:0 },
+  { id:'1',   nome:'💵 $1 ou mais',   min:1 },
+  { id:'10',  nome:'💰 $10 ou mais',  min:10 },
+  { id:'100', nome:'💎 $100 ou mais', min:100 },
+];
+let energiaFiltro = '', faixaFiltro = '', artistaFiltro = '';
+
+/* A raridade vem como texto livre e muda de coleção pra coleção, então em
+   vez de uma lista fechada (que ia furar na próxima coleção que sair) eu
+   dou uma nota pelo que está escrito. Uncommon antes de Common, senão
+   "uncommon" cai na regra de "common". */
+function nivelRaridade(c){
+  const r = (c.rarity || '').toLowerCase();
+  if(!r) return 0;
+  if(/secret|rainbow|hyper|special illustration/.test(r)) return 9;
+  if(/illustration|ultra|ace spec|shiny/.test(r))         return 8;
+  if(/vmax|vstar|legend|amazing|radiant|prime|star/.test(r)) return 7;
+  if(/\bex\b|\bgx\b|\bv\b|double rare/.test(r))        return 6;
+  if(/holo/.test(r))     return 5;
+  if(/promo/.test(r))    return 4;
+  if(/rare/.test(r))     return 3;
+  if(/uncommon/.test(r)) return 2;
+  if(/common/.test(r))   return 1;
+  return 0;
+}
+function numHp(c){ const n = parseInt(c.hp, 10); return isNaN(n) ? -Infinity : n; }
+function numDex(c){
+  const d = (c.nationalPokedexNumbers || [])[0];
+  return typeof d === 'number' ? d : Infinity;
+}
+function valorOu(c, fim){ const v = precoDe(c); return v == null ? fim : v; }
+// Subtrair não serve: Infinity - Infinity dá NaN, e comparador com NaN embaralha a lista.
+function dif(x, y){ return x === y ? 0 : (x < y ? -1 : 1); }
 
 // As duas APIs escrevem data diferente (2021/10/08 e 2021-10-08). Igualando
 // a barra, as duas viram texto que já compara na ordem certa.
@@ -524,17 +590,28 @@ function precoDe(c){
   const p = precoPrincipal(c);
   return p && typeof p.valor === 'number' ? p.valor : null;
 }
+/* Carta sem o dado da ordem vai sempre pro fim: ela não é barata nem
+   fraca, é desconhecida, e no meio da lista viraria mentira. */
+function comparador(id){
+  if(id === 'novas')    return (a, b) => dataDe(b).localeCompare(dataDe(a));
+  if(id === 'antigas')  return (a, b) => dataDe(a).localeCompare(dataDe(b));
+  if(id === 'nome')     return (a, b) => (a.name || '').localeCompare(b.name || '', 'en');
+  if(id === 'numero')   return porNumero;
+  if(id === 'caras')    return (a, b) => dif(valorOu(b, -Infinity), valorOu(a, -Infinity));
+  if(id === 'baratas')  return (a, b) => dif(valorOu(a, Infinity), valorOu(b, Infinity));
+  if(id === 'raridade') return (a, b) => dif(nivelRaridade(b), nivelRaridade(a));
+  if(id === 'hp')       return (a, b) => dif(numHp(b), numHp(a));
+  if(id === 'pokedex')  return (a, b) => dif(numDex(a), numDex(b));
+  return () => 0;
+}
+
+/* Duas ordenações ao mesmo tempo: a principal manda, e onde ela empata
+   quem decide é a de desempate. É o que faz "mais raras, e entre as da
+   mesma raridade, as mais caras primeiro". */
 function ordenar(lista){
-  const l = lista.slice();
-  if(ordemAtual === 'antigas') return l.sort((a, b) => dataDe(a).localeCompare(dataDe(b)));
-  if(ordemAtual === 'novas')   return l.sort((a, b) => dataDe(b).localeCompare(dataDe(a)));
-  if(ordemAtual === 'nome')    return l.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'en'));
-  if(ordemAtual === 'numero')  return l.sort(porNumero);
-  // Carta sem preço vai pro fim nas duas ordens: ela não é barata, é desconhecida.
-  const comPreco = [], semPreco = [];
-  l.forEach(c => { const v = precoDe(c); (v == null ? semPreco : comPreco).push({ c:c, v:v }); });
-  comPreco.sort((a, b) => ordemAtual === 'caras' ? b.v - a.v : a.v - b.v);
-  return comPreco.map(x => x.c).concat(semPreco.map(x => x.c));
+  const principal = comparador(ordemAtual);
+  const segunda = desempate ? comparador(desempate) : null;
+  return lista.slice().sort((a, b) => principal(a, b) || (segunda ? segunda(a, b) : 0));
 }
 
 /* ---------- favoritos ----------
@@ -561,6 +638,8 @@ function virarFavorita(carta){
     supertype: carta.supertype || '',
     rarity: carta.rarity || '',
     subtypes: carta.subtypes || [],
+    hp: carta.hp || '', types: carta.types || [], artist: carta.artist || '',
+    nationalPokedexNumbers: carta.nationalPokedexNumbers || [],
     set: { name:(carta.set && carta.set.name) || '', releaseDate:(carta.set && carta.set.releaseDate) || '' },
     images: { small:(carta.images && carta.images.small) || '' },
     fonte: carta.__daReserva ? 'reserva' : 'principal',
@@ -621,18 +700,67 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
   limiteGrade = 60;
   tipoFiltro = 'todos';
   ordemAtual = ordemInicial || 'novas';
+  desempate = energiaFiltro = faixaFiltro = artistaFiltro = '';
 
   const ehCarta = gradeAtual.tipo === 'carta';
   const temPreco = ehCarta && lista.some(c => precoDe(c) != null);
 
   // Ordem por preço só aparece quando há preço na mão: nos favoritos o preço
   // só chega ao abrir a carta, e oferecer ali seria mentira.
+  // Uma ordem só é oferecida se as cartas da lista tiverem o dado dela.
+  const tem = {
+    preco: temPreco,
+    raridade: ehCarta && lista.some(c => nivelRaridade(c) > 0),
+    hp: ehCarta && lista.some(c => numHp(c) > -Infinity),
+    dex: ehCarta && lista.some(c => numDex(c) < Infinity),
+  };
   const ordens = ORDENS.filter(o =>
-    (o.onde === 'ambos' || ehCarta) && (o.id === 'caras' || o.id === 'baratas' ? temPreco : true));
+    (o.onde === 'ambos' || ehCarta) && (o.precisa ? tem[o.precisa] : true));
   const escolherOrdem =
     '<div class="escolha" style="margin:0 0 14px"><h3>Ordenar por</h3>' +
       chips('chips-ordem', ordens.map(o => ({ v:o.id, rotulo:o.nome })), ordemAtual) +
     '</div>';
+
+  // As energias e os artistas que existem nesta lista, nada além disso.
+  const energias = ENERGIAS.filter(e => lista.some(c => (c.types || []).indexOf(e.id) >= 0));
+  const artistas = [];
+  lista.forEach(c => { if(c.artist && artistas.indexOf(c.artist) < 0) artistas.push(c.artist); });
+  artistas.sort((a, b) => a.localeCompare(b, 'en'));
+
+  const caixinha = (rotulo, corpo) => '<div class="escolha"><h3>' + rotulo + '</h3>' + corpo + '</div>';
+  const opcoesSelect = (itens, ativo) => itens.map(i =>
+    '<option value="' + escapar(i.v) + '"' + (i.v === ativo ? ' selected' : '') + '>' +
+      escapar(i.rotulo) + '</option>').join('');
+
+  const extras = ehCarta ? (
+    (energias.length > 1
+      ? caixinha('Tipo de energia', chips('chips-energia',
+          [{ v:'', rotulo:'Todos' }]
+            .concat(energias.map(e => ({ v:e.id, rotulo:e.nome })))
+            // Carta de dois tipos é rara, e procurando por um tipo só ela
+            // se perde no meio das outras. Ganha botão próprio.
+            .concat(lista.some(c => (c.types || []).length > 1)
+              ? [{ v:'duplo', rotulo:'🔀 Dois tipos' }] : []), ''))
+      : '') +
+    (temPreco
+      ? caixinha('Preço', chips('chips-faixa', FAIXAS.map(f => ({ v:f.id, rotulo:f.nome })), ''))
+      : '') +
+    (artistas.length > 1
+      ? caixinha('Quem desenhou',
+          '<select id="sel-artista" class="escolher">' +
+            opcoesSelect([{ v:'', rotulo:'Qualquer artista' }].concat(
+              artistas.map(a => ({ v:a, rotulo:a }))), '') + '</select>')
+      : '') +
+    (ordens.length > 1
+      ? caixinha('Empatou? Desempata por',
+          '<select id="sel-desempate" class="escolher">' +
+            opcoesSelect([{ v:'', rotulo:'Deixa como está' }].concat(
+              ordens.map(o => ({ v:o.id, rotulo:o.nome }))), '') + '</select>')
+      : '')
+  ) : '';
+  const maisOpcoes = extras
+    ? '<details class="mais-opcoes"><summary>⚙️ Mais opções</summary>' + extras + '</details>'
+    : '';
 
   // Cada botãozinho só aparece se a lista tiver do que ele filtra. Sem
   // carta jumbo na lista, não existe botão de jumbo pra clicar à toa.
@@ -651,7 +779,7 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
         (ehCarta ? 'Procurar pelo nome da carta' : 'Procurar coleção') + '</label>' +
       '<input id="filtro" autocomplete="off" placeholder="' + escapar(placeholder) + '" ' +
         'aria-label="Procurar pelo nome" />' +
-      escolherTipo + escolherOrdem +
+      escolherTipo + escolherOrdem + maisOpcoes +
       '<div class="grade" id="grade"></div>' +
     '</section>';
 
@@ -660,11 +788,17 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
     limiteGrade = 60;
     desenharOpcoes(ordenar(filtrar(lista, filtro.value)));
   };
-  const marcar = id => document.querySelectorAll('#' + id + ' .chip').forEach(b =>
-    b.setAttribute('aria-pressed', b.dataset.v === (id === 'chips-tipo' ? tipoFiltro : ordemAtual)));
+  const marcar = (id, valor) => document.querySelectorAll('#' + id + ' .chip').forEach(b =>
+    b.setAttribute('aria-pressed', b.dataset.v === valor));
 
-  ligarChips('chips-tipo',  v => { tipoFiltro = v; }, () => { atualizar(); marcar('chips-tipo'); });
-  ligarChips('chips-ordem', v => { ordemAtual = v; }, () => { atualizar(); marcar('chips-ordem'); });
+  ligarChips('chips-tipo',    v => { tipoFiltro = v; },    () => { atualizar(); marcar('chips-tipo', tipoFiltro); });
+  ligarChips('chips-ordem',   v => { ordemAtual = v; },    () => { atualizar(); marcar('chips-ordem', ordemAtual); });
+  ligarChips('chips-energia', v => { energiaFiltro = v; }, () => { atualizar(); marcar('chips-energia', energiaFiltro); });
+  ligarChips('chips-faixa',   v => { faixaFiltro = v; },   () => { atualizar(); marcar('chips-faixa', faixaFiltro); });
+  const selArt = document.getElementById('sel-artista');
+  if(selArt) selArt.onchange = () => { artistaFiltro = selArt.value; atualizar(); };
+  const selDes = document.getElementById('sel-desempate');
+  if(selDes) selDes.onchange = () => { desempate = selDes.value; atualizar(); };
 
   atualizar();
   filtro.addEventListener('input', atualizar);
@@ -682,8 +816,16 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
 function filtrar(lista, texto){
   const t = texto.trim().toLowerCase();
   const f = FILTROS.find(x => x.id === tipoFiltro) || FILTROS[0];
-  const saida = tipoFiltro === 'todos' ? lista : lista.filter(f.testa);
-  return t ? saida.filter(c => (c.name || '').toLowerCase().includes(t)) : saida;
+  const min = (FAIXAS.find(x => x.id === faixaFiltro) || FAIXAS[0]).min;
+  let saida = lista;
+  if(tipoFiltro !== 'todos') saida = saida.filter(f.testa);
+  if(energiaFiltro === 'duplo') saida = saida.filter(c => (c.types || []).length > 1);
+  else if(energiaFiltro) saida = saida.filter(c => (c.types || []).indexOf(energiaFiltro) >= 0);
+  if(artistaFiltro) saida = saida.filter(c => c.artist === artistaFiltro);
+  // Acima de um valor: carta sem preço não entra, porque não dá pra afirmar que passa.
+  if(min > 0) saida = saida.filter(c => { const v = precoDe(c); return v != null && v >= min; });
+  if(t) saida = saida.filter(c => (c.name || '').toLowerCase().includes(t));
+  return saida;
 }
 
 function perguntarNome(valor, lista){
@@ -1114,6 +1256,9 @@ function desenharCarta(){
           '<span class="etiqueta">nº ' + escapar(carta.number || '?') +
             (set.printedTotal ? '/' + escapar(String(set.printedTotal)) : '') + '</span>' +
           (set.name ? '<span class="etiqueta">' + escapar(set.name) + '</span>' : '') +
+          ((carta.types || []).map(t =>
+            '<span class="etiqueta">' +
+              escapar((ENERGIAS.find(e => e.id === t) || { nome:t }).nome) + '</span>').join('')) +
           (carta.supertype ? '<span class="etiqueta">' +
             escapar(NOME_TIPO[carta.supertype] || carta.supertype) + '</span>' : '') +
           (carta.rarity ? '<span class="etiqueta">' + escapar(carta.rarity) + '</span>' : '') +

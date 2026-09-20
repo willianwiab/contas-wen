@@ -20,10 +20,43 @@ número traz só uma carta, ele pula a pergunta e mostra o preço direto.
 
 ## Ordenar, procurar e guardar
 
-Toda grade tem **ordenação** — mais novas, mais antigas, mais caras, mais baratas, pelo
-número, por nome. A que entra marcada muda com o contexto: busca abre pelas mais novas,
-coleção pelo número, favoritos por nome. As opções de preço só aparecem quando há preço
-na mão: nos favoritos o preço só chega ao abrir a carta, e oferecer ali seria mentira.
+Toda grade tem **ordenação**: mais novas, mais antigas, mais caras, mais baratas,
+💎 mais raras, ❤️ mais fortes (HP), 🔢 pela Pokédex, pelo número e por nome. A que entra
+marcada muda com o contexto: busca abre pelas mais novas, coleção pelo número, favoritos
+por nome.
+
+**Cada ordem só aparece se as cartas da lista tiverem o dado dela.** Nos favoritos o
+preço só chega ao abrir a carta, então lá não há "mais caras"; numa lista de treinadores
+não há "mais fortes". Oferecer uma ordem que não tem como cumprir seria mentira.
+
+E **carta sem o dado da ordem vai sempre pro fim** — ela não é barata nem fraca, é
+desconhecida, e no meio da lista viraria mentira também.
+
+### Duas ordenações ao mesmo tempo
+
+Em "⚙️ Mais opções" tem o **desempate**: a ordem principal manda, e onde ela empata quem
+decide é a segunda. É o que faz "mais raras, e entre as da mesma raridade, as mais caras
+primeiro". Na prática é um `sort` só, com `principal(a,b) || segunda(a,b)`.
+
+### A raridade
+
+Ela vem como texto livre e muda a cada coleção nova, então em vez de uma lista fechada
+(que ia furar no próximo lançamento) a nota sai do que está escrito: secret/rainbow/hyper
+no topo, depois illustration/ultra, depois VMAX e LEGEND, depois ex/GX/V, holo, promo,
+rare, uncommon, common. `uncommon` é testado antes de `common`, senão cairia na regra
+errada.
+
+### Filtrar mais fundo
+
+Também em "⚙️ Mais opções":
+
+- **Tipo de energia** — Grama, Fogo, Água, Elétrico e os outros, só os que a lista tiver
+- **🔀 Dois tipos** — os Pokémon de tipo duplo, que são poucos e se perdiam no meio dos
+  outros quando se filtrava por um tipo só. Os tipos da carta viraram etiqueta na tela
+  dela, então dá pra ver o duplo
+- **Preço** — $1, $10 ou $100 pra cima. Carta sem preço não entra, porque não dá pra
+  afirmar que passa
+- **Quem desenhou** — a lista de artistas da própria busca
 
 Os **favoritos** ficam no aparelho (`localStorage`). A estrelinha aparece no canto de
 cada cartinha e na tela da carta. Guardo só a identidade da carta, **nunca o preço**:
