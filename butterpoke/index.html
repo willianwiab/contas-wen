@@ -70,7 +70,22 @@ header{text-align:center;padding:30px 0 18px}
 .btn.secundario{background:var(--asa);color:var(--tinta);box-shadow:0 5px 0 var(--asa-escura)}
 .btn.secundario:active{box-shadow:0 1px 0 var(--asa-escura)}
 .dica{margin-top:12px;font-size:.88rem;color:var(--tinta-fraca)}
-.btn.larga{margin-top:14px;width:100%;padding:13px;font-size:1rem}
+.atalhos{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.atalhos .btn{flex:1 1 150px;padding:12px 10px;font-size:.95rem}
+.rotulo-filtro{display:block;font-size:.9rem;font-weight:600;margin:0 0 6px}
+/* A estrela fica por cima da cartinha; por isso a opção virou caixa com
+   dois botões dentro, em vez de um botão só (botão dentro de botão não vale). */
+.opcao{position:relative;padding:0;overflow:hidden}
+.opcao .abrir{
+  display:block;width:100%;border:none;background:none;padding:10px;
+  font:inherit;color:inherit;text-align:center;cursor:pointer;
+}
+.opcao .estrela{
+  position:absolute;top:7px;right:7px;width:34px;height:34px;border:none;
+  border-radius:50%;background:rgba(255,255,255,.92);cursor:pointer;
+  font-size:1.05rem;line-height:1;padding:0;box-shadow:0 1px 5px rgba(0,0,0,.18);
+}
+.opcao .estrela:hover{background:#fff;transform:scale(1.1)}
 /* O logo da coleção é deitado e cada um tem um formato; não dá pra tratar
    como carta em pé, senão estica tudo. */
 .opcao.colecao img{aspect-ratio:auto;height:72px;object-fit:contain;background:transparent;padding:4px}
@@ -202,7 +217,10 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
     <p class="dica" id="dica">
       O número fica no cantinho de baixo da carta — em <b>25/185</b>, o número é o <b>25</b>.
     </p>
-    <button class="btn secundario larga" type="button" id="btn-colecoes">📚 Ou vê todas as coleções</button>
+    <div class="atalhos">
+      <button class="btn secundario" type="button" id="btn-colecoes">📚 Ver as coleções</button>
+      <button class="btn secundario" type="button" id="btn-favoritos">⭐ Meus favoritos</button>
+    </div>
   </section>
 
   <div id="palco" aria-live="polite"></div>
@@ -349,6 +367,7 @@ function deTcgdex(c){
     name: c.name || '?',
     // lá o campo chama category, e o Pokémon vem sem acento
     supertype: c.category === 'Pokemon' ? 'Pokémon' : (c.category || ''),
+    __daReserva: true,
     number: c.localId != null ? String(c.localId) : '',
     rarity: c.rarity || '',
     set: { name: set.name || '',
@@ -463,14 +482,133 @@ function receber(cartas, valor, total){
   perguntarNome(valor, cartas);
 }
 
+/* ---------- ordenar ----------
+   O nome disso é ordenação: a mesma lista, em ordens diferentes. */
+const ORDENS = [
+  { id:'novas',   nome:'🆕 Mais novas',   onde:'ambos' },
+  { id:'antigas', nome:'🕰️ Mais antigas', onde:'ambos' },
+  { id:'caras',   nome:'💰 Mais caras',   onde:'carta' },
+  { id:'baratas', nome:'🪙 Mais baratas', onde:'carta' },
+  { id:'numero',  nome:'🔢 Pelo número',  onde:'carta' },
+  { id:'nome',    nome:'🔤 Por nome',     onde:'ambos' },
+];
+let ordemAtual = 'novas';
+
+// As duas APIs escrevem data diferente (2021/10/08 e 2021-10-08). Igualando
+// a barra, as duas viram texto que já compara na ordem certa.
+function dataDe(c){
+  return String((c.set && c.set.releaseDate) || c.releaseDate || '').replace(/-/g, '/');
+}
+function precoDe(c){
+  const p = precoPrincipal(c);
+  return p && typeof p.valor === 'number' ? p.valor : null;
+}
+function ordenar(lista){
+  const l = lista.slice();
+  if(ordemAtual === 'antigas') return l.sort((a, b) => dataDe(a).localeCompare(dataDe(b)));
+  if(ordemAtual === 'novas')   return l.sort((a, b) => dataDe(b).localeCompare(dataDe(a)));
+  if(ordemAtual === 'nome')    return l.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'en'));
+  if(ordemAtual === 'numero')  return l.sort(porNumero);
+  // Carta sem preço vai pro fim nas duas ordens: ela não é barata, é desconhecida.
+  const comPreco = [], semPreco = [];
+  l.forEach(c => { const v = precoDe(c); (v == null ? semPreco : comPreco).push({ c:c, v:v }); });
+  comPreco.sort((a, b) => ordemAtual === 'caras' ? b.v - a.v : a.v - b.v);
+  return comPreco.map(x => x.c).concat(semPreco.map(x => x.c));
+}
+
+/* ---------- favoritos ----------
+   Guardo só a identidade da carta, não o preço: preço guardado envelhece e
+   mente. Quando a pessoa abre a favorita, o preço é buscado na hora. */
+const CHAVE_FAV = 'butterpoke:favoritos';
+function lerFavoritos(){
+  try{
+    const j = JSON.parse(localStorage.getItem(CHAVE_FAV) || '[]');
+    return Array.isArray(j) ? j : [];
+  }catch(e){ return []; }
+}
+function gravarFavoritos(l){
+  try{ localStorage.setItem(CHAVE_FAV, JSON.stringify(l)); }catch(e){}
+  contarFavoritos();
+}
+function ehFavorita(id){ return lerFavoritos().some(f => f.id === id); }
+function virarFavorita(carta){
+  const l = lerFavoritos();
+  const i = l.findIndex(f => f.id === carta.id);
+  if(i >= 0) l.splice(i, 1);
+  else l.push({
+    id: carta.id, name: carta.name, number: carta.number || '',
+    supertype: carta.supertype || '',
+    set: { name:(carta.set && carta.set.name) || '', releaseDate:(carta.set && carta.set.releaseDate) || '' },
+    images: { small:(carta.images && carta.images.small) || '' },
+    fonte: carta.__daReserva ? 'reserva' : 'principal',
+    __soIdentidade: true,
+  });
+  gravarFavoritos(l);
+  return i < 0;   // true = acabou de virar favorita
+}
+function contarFavoritos(){
+  const n = lerFavoritos().length;
+  const b = document.getElementById('btn-favoritos');
+  if(b) b.textContent = n ? '⭐ Meus favoritos (' + n + ')' : '⭐ Meus favoritos';
+}
+
+function mostrarFavoritos(){
+  const l = lerFavoritos();
+  cartaAberta = null;
+  if(!l.length){
+    palco.innerHTML = '<div class="aviso"><strong>Nenhuma favorita ainda ⭐</strong>' +
+      'Acha uma carta e toca na estrelinha do cantinho dela. Ela fica guardada aqui ' +
+      'neste aparelho, e o preço é buscado toda vez que você abrir.</div>';
+    return;
+  }
+  achadas = l;
+  totalReal = l.length;
+  voltarPraLista = mostrarFavoritos;
+  mostrarGrade(
+    'Meus favoritos — ' + l.length + (l.length === 1 ? ' carta.' : ' cartas.'),
+    'Toca numa pra ver o preço de hoje. Ficam guardadas só neste aparelho.',
+    l, mostrarCarta, 'carta', 'Nome da carta…', 'nome');
+  gradeAtual.ehFavoritos = true;
+}
+
+async function abrirFavorito(c){
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>Pegando o preço de hoje…</div>';
+  try{
+    if(c.fonte === 'reserva'){
+      const cheia = deTcgdex(await pedirJSON(TCGDEX + '/cards/' + encodeURIComponent(c.id)));
+      cheia.__faltaPreco = false;
+      return mostrarCarta(cheia);
+    }
+    const d = await pedirJSON(API + '/' + encodeURIComponent(c.id));
+    if(d && d.data) return mostrarCarta(d.data);
+    throw new Error('veio vazio');
+  }catch(e){
+    palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui abrir essa favorita 📡</strong>' +
+      'O site dos preços não respondeu. Tenta de novo daqui a pouco.' +
+      '<br><br><small>' + escapar(String(e.message || e)) + '</small></div>';
+  }
+}
+
 /* ---------- a grade ----------
    Serve pra três coisas: escolher a carta entre as de mesmo número,
    escolher uma coleção, e ver as cartas de uma coleção. Mudam o título e
    o que acontece no clique; o resto (filtro, paginação) é igual. */
-function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder){
+function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ordemInicial){
   gradeAtual = { lista: lista, aoClicar: aoClicar, tipo: tipo || 'carta' };
   limiteGrade = 60;
   tipoFiltro = 'todos';
+  ordemAtual = ordemInicial || 'novas';
+
+  const ehCarta = gradeAtual.tipo === 'carta';
+  const temPreco = ehCarta && lista.some(c => precoDe(c) != null);
+  // Ordem por preço só aparece quando há preço na mão: nos favoritos o preço
+  // só chega ao abrir a carta, e oferecer ali seria mentira.
+  const ordens = ORDENS.filter(o =>
+    (o.onde === 'ambos' || ehCarta) && (o.id === 'caras' || o.id === 'baratas' ? temPreco : true));
+  const escolherOrdem =
+    '<div class="escolha" style="margin:0 0 14px"><h3>Ordenar por</h3>' +
+      chips('chips-ordem', ordens.map(o => ({ v:o.id, rotulo:o.nome })), ordemAtual) +
+    '</div>';
 
   // Os botõezinhos de tipo só aparecem quando há mais de um tipo na lista.
   const tiposPresentes = TIPOS.filter(t => t.id === 'todos' ||
@@ -485,26 +623,28 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder){
     '<section class="pergunta">' +
       '<h2>' + titulo + '</h2>' +
       '<p>' + subtitulo + '</p>' +
-      escolherTipo +
+      '<label class="rotulo-filtro" for="filtro">🔎 ' +
+        (ehCarta ? 'Procurar pelo nome da carta' : 'Procurar coleção') + '</label>' +
       '<input id="filtro" autocomplete="off" placeholder="' + escapar(placeholder) + '" ' +
-        'aria-label="Filtrar pelo nome" />' +
+        'aria-label="Procurar pelo nome" />' +
+      escolherTipo + escolherOrdem +
       '<div class="grade" id="grade"></div>' +
     '</section>';
 
   const filtro = document.getElementById('filtro');
-  ligarChips('chips-tipo', v => { tipoFiltro = v; }, () => {
+  const atualizar = () => {
     limiteGrade = 60;
-    desenharOpcoes(filtrar(lista, filtro.value));
-    // o chip clicado tem que ficar marcado, e só ele
-    document.querySelectorAll('#chips-tipo .chip').forEach(b =>
-      b.setAttribute('aria-pressed', b.dataset.v === tipoFiltro));
-  });
-  desenharOpcoes(lista);
-  filtro.addEventListener('input', () => {
-    limiteGrade = 60;
-    desenharOpcoes(filtrar(lista, filtro.value));
-  });
-  // Se o filtro deixou só uma, Enter abre ela direto.
+    desenharOpcoes(ordenar(filtrar(lista, filtro.value)));
+  };
+  const marcar = id => document.querySelectorAll('#' + id + ' .chip').forEach(b =>
+    b.setAttribute('aria-pressed', b.dataset.v === (id === 'chips-tipo' ? tipoFiltro : ordemAtual)));
+
+  ligarChips('chips-tipo',  v => { tipoFiltro = v; }, () => { atualizar(); marcar('chips-tipo'); });
+  ligarChips('chips-ordem', v => { ordemAtual = v; }, () => { atualizar(); marcar('chips-ordem'); });
+
+  atualizar();
+  filtro.addEventListener('input', atualizar);
+  // Se a busca deixou só uma, Enter abre ela direto.
   filtro.addEventListener('keydown', ev => {
     if(ev.key !== 'Enter') return;
     ev.preventDefault();
@@ -531,7 +671,7 @@ function perguntarNome(valor, lista){
         ? ' <br><small>(existem ' + totalReal + ' no total; trouxe as ' + lista.length +
           ' mais novas — escreve o nome pra achar a tua)</small>'
         : ''),
-    lista, mostrarCarta, 'carta', 'Nome da carta…');
+    lista, mostrarCarta, 'carta', 'Nome da carta…', 'novas');
 }
 
 function desenharOpcoes(lista){
@@ -544,19 +684,40 @@ function desenharOpcoes(lista){
   }
   grade.innerHTML = '';
   lista.slice(0, limiteGrade).forEach(c => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'opcao' + (ehColecao ? ' colecao' : '');
+    const caixa = document.createElement('div');
+    caixa.className = 'opcao' + (ehColecao ? ' colecao' : '');
     const img = ehColecao ? c.logo : ((c.images && c.images.small) || '');
     const linhaDebaixo = ehColecao
       ? [ c.total ? c.total + ' cartas' : '', (c.releaseDate || '').slice(0, 4) ]
       : [ (c.set && c.set.name) || '', c.number ? 'nº ' + c.number : '' ];
-    b.innerHTML =
-      '<img loading="lazy" alt="' + escapar(c.name) + '" src="' + escapar(img) + '" />' +
-      '<b>' + escapar(c.name) + '</b>' +
-      '<small>' + linhaDebaixo.filter(Boolean).map(escapar).join(' · ') + '</small>';
-    b.onclick = () => gradeAtual.aoClicar(c);
-    grade.appendChild(b);
+    caixa.innerHTML =
+      '<button type="button" class="abrir">' +
+        '<img loading="lazy" alt="' + escapar(c.name) + '" src="' + escapar(img) + '" />' +
+        '<b>' + escapar(c.name) + '</b>' +
+        '<small>' + linhaDebaixo.filter(Boolean).map(escapar).join(' · ') + '</small>' +
+      '</button>';
+    caixa.querySelector('.abrir').onclick = () => gradeAtual.aoClicar(c);
+
+    if(!ehColecao){
+      const estrela = document.createElement('button');
+      estrela.type = 'button';
+      estrela.className = 'estrela';
+      const pintar = () => {
+        const tem = ehFavorita(c.id);
+        estrela.textContent = tem ? '⭐' : '☆';
+        estrela.title = tem ? 'Tirar dos favoritos' : 'Guardar nos favoritos';
+        estrela.setAttribute('aria-label', estrela.title);
+      };
+      pintar();
+      estrela.onclick = () => {
+        virarFavorita(c);
+        pintar();
+        // Na tela dos favoritos, tirar uma tem que sumir com ela na hora.
+        if(gradeAtual.ehFavoritos) mostrarFavoritos();
+      };
+      caixa.appendChild(estrela);
+    }
+    grade.appendChild(caixa);
   });
   // Em vez de cortar em 60 e pronto, dá pra pedir mais.
   if(lista.length > limiteGrade){
@@ -614,7 +775,7 @@ async function mostrarColecoes(){
   mostrarGrade(
     'Todas as ' + colecoes.length + ' coleções.',
     'Toca numa pra ver as cartas dela, da primeira à última. Estão das mais novas pras mais velhas.',
-    colecoes, abrirColecao, 'colecao', 'Nome da coleção… (ex: Celebrations)');
+    colecoes, abrirColecao, 'colecao', 'Ex: Celebrations', 'novas');
 }
 
 /* Ordena pelo número impresso na carta, tratando número como número:
@@ -664,7 +825,7 @@ function mostrarCartasDaColecao(colecao, cartas){
     escapar(colecao.name) + ' — ' + cartas.length + ' cartas.',
     'Toca numa carta pra ver quanto ela vale.' +
       (colecao.releaseDate ? ' <br><small>Saiu em ' + escapar(colecao.releaseDate) + '.</small>' : ''),
-    cartas, mostrarCarta, 'carta', 'Nome da carta…');
+    cartas, mostrarCarta, 'carta', 'Nome da carta…', 'numero');
 }
 
 /* ---------- estado da carta e nota da PSA ----------
@@ -802,6 +963,8 @@ function blocoCardmarket(carta){
 
 /* ---------- a carta na tela ---------- */
 function mostrarCarta(carta){
+  // Favorita guarda só a identidade: o preço de hoje vem agora.
+  if(carta.__soIdentidade) return abrirFavorito(carta);
   // Carta que veio do site reserva chega sem preço: busco o dela agora.
   if(carta.__faltaPreco) return abrirDoReserva(carta);
   cartaAberta = carta;
@@ -886,10 +1049,16 @@ function desenharCarta(){
         blocoCardmarket(carta) +
         (link ? '<p class="fonte">Ver anúncios de verdade: <a href="' + escapar(link) +
                 '" target="_blank" rel="noopener">abrir a loja</a></p>' : '') +
-        (voltarPraLista
-          ? '<p class="fonte"><button class="btn secundario" type="button" id="voltar" ' +
-            'style="margin-top:10px;padding:10px 18px;font-size:.95rem">↩ Voltar pra lista</button></p>'
-          : '') +
+        '<p class="fonte" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">' +
+          '<button class="btn secundario" type="button" id="fav" ' +
+            'style="padding:10px 18px;font-size:.95rem">' +
+            (ehFavorita(carta.id) ? '⭐ Está nos favoritos' : '☆ Guardar nos favoritos') +
+          '</button>' +
+          (voltarPraLista
+            ? '<button class="btn secundario" type="button" id="voltar" ' +
+              'style="padding:10px 18px;font-size:.95rem">↩ Voltar pra lista</button>'
+            : '') +
+        '</p>' +
       '</div>' +
     '</article>';
 
@@ -897,6 +1066,11 @@ function desenharCarta(){
   ligarChips('chips-estado', v => { estadoEscolhido = v; });
   const voltar = document.getElementById('voltar');
   if(voltar) voltar.onclick = () => voltarPraLista && voltarPraLista();
+  const fav = document.getElementById('fav');
+  if(fav) fav.onclick = () => {
+    const virou = virarFavorita(carta);
+    fav.textContent = virou ? '⭐ Está nos favoritos' : '☆ Guardar nos favoritos';
+  };
 }
 
 function chips(id, itens, ativo){
@@ -957,6 +1131,8 @@ function escapar(t){
 }
 
 document.getElementById('btn-colecoes').onclick = mostrarColecoes;
+document.getElementById('btn-favoritos').onclick = mostrarFavoritos;
+contarFavoritos();
 
 campo.focus();
 if('serviceWorker' in navigator)
