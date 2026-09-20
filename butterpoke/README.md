@@ -85,6 +85,25 @@ coleção, ver as cartas de uma coleção): muda o título e o que acontece no c
 filtro e a paginação são iguais. Da carta, o botão **"Voltar pra lista"** devolve pra
 lista de onde ela veio, seja qual for.
 
+## De qual país é a carta
+
+**Nenhum dos dois bancos guarda o país da carta.** Esse dado não existe pra simplesmente
+mostrar. Então a etiqueta é dedução, e a tela diz isso embaixo dela em vez de fingir que
+é informação oficial:
+
+| Etiqueta | De onde sai |
+|---|---|
+| 🇯🇵 Japão | o nome da coleção já diz "Japanese" |
+| 🏆 Mundial | o nome da coleção é de World Championships |
+| 🗾 Fora do inglês | a carta **não** está no catálogo em inglês; achei só no reserva |
+| 🌎 Em inglês | a carta está no catálogo em inglês |
+
+A do meio é a que interessa e a que mais engana, então vale explicar. O banco principal
+**é** o catálogo das cartas em inglês: estar nele é certeza de que a carta saiu em
+inglês. Não estar nele, e existir só no reserva, quer dizer que ela nunca saiu em
+inglês — e o caso comum disso é promo japonesa. Não é prova, é o que dá pra afirmar, e a
+etiqueta diz "fora do inglês" em vez de "Japão" justamente por isso.
+
 ## Versão, estado e PSA
 
 Depois de achar a carta, o site pergunta mais duas coisas, porque a mesma carta
