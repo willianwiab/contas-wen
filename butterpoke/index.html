@@ -222,6 +222,46 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 .quadrinho span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--tinta-fraca)}
 .quadrinho b{font-size:.98rem}
 .conto{margin-top:11px;font-size:.85rem;font-style:italic;color:var(--tinta-fraca);line-height:1.5}
+/* ---------- álbum ---------- */
+.folha{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:var(--cartao);
+  border:3px solid var(--asa);border-radius:20px;padding:14px;box-shadow:var(--sombra);
+  /* Sem teto, no computador a folha vira uma parede de 1300px de altura. */
+  max-width:660px;margin:0 auto;
+}
+.buraco{
+  border:2px dashed var(--borda);border-radius:12px;background:#faf7ff;padding:7px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  aspect-ratio:245/342;font:inherit;color:inherit;overflow:hidden;
+}
+.buraco.cheio{border-style:solid;background:#fff;cursor:pointer;transition:transform .12s}
+.buraco.cheio:hover{transform:translateY(-4px);border-color:var(--asa-escura)}
+/* flex-basis 0 é o que faz o buraco obedecer o aspect-ratio: com basis auto
+   a altura natural da imagem entra na conta e estoura a folha por baixo. */
+.buraco img{width:100%;border-radius:8px;flex:1 1 0;min-height:0;object-fit:contain;background:#f2eafc}
+.buraco span{font-size:.72rem;font-weight:600;margin-top:5px;line-height:1.2;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.buraco .vazio{color:var(--tinta-fraca);font-weight:400;font-style:italic}
+.folhear{display:flex;gap:10px;margin-top:14px;max-width:660px;margin-left:auto;margin-right:auto}
+.folhear .btn{flex:1;padding:11px;font-size:.95rem}
+.folhear .btn[disabled]{opacity:.4;cursor:default;box-shadow:none;transform:none}
+/* ---------- linha do tempo ---------- */
+.epoca{margin-top:18px}
+.epoca h3{
+  font-family:'Baloo 2',cursive;font-size:1.3rem;color:var(--asa-escura);
+  border-bottom:3px solid var(--borda);padding-bottom:4px;margin-bottom:10px;
+}
+.fila{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}
+.mini{
+  flex:0 0 108px;border:2px solid var(--borda);border-radius:12px;background:#fff;
+  padding:7px;cursor:pointer;font:inherit;color:inherit;transition:transform .12s;
+}
+.mini:hover{transform:translateY(-4px);border-color:var(--asa-escura)}
+.mini img{width:100%;border-radius:8px;display:block;aspect-ratio:245/342;
+  object-fit:cover;background:#f2eafc}
+.mini span{display:block;font-size:.68rem;color:var(--tinta-fraca);margin-top:4px;line-height:1.2;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+@media(max-width:520px){ .folha{gap:7px;padding:10px} .buraco span{font-size:.64rem} }
 .mais{margin:16px auto 0;display:block}
 
 /* ---------- cotação ---------- */
@@ -266,6 +306,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
     <div class="atalhos">
       <button class="btn secundario" type="button" id="btn-colecoes">📚 Ver as coleções</button>
       <button class="btn secundario" type="button" id="btn-favoritos">⭐ Meus favoritos</button>
+      <button class="btn secundario" type="button" id="btn-album">📖 Meu álbum</button>
     </div>
   </section>
 
@@ -279,7 +320,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 13 — 20/09</span>
+    <br><span class="versao">versão 14 — 20/09</span>
   </footer>
 </div>
 
@@ -830,6 +871,126 @@ function mostrarFavoritos(){
     'Toca numa pra ver o preço de hoje. Ficam guardadas só neste aparelho.',
     l, mostrarCarta, 'carta', 'Nome da carta…', 'nome');
   gradeAtual.ehFavoritos = true;
+}
+
+/* ---------- álbum ----------
+   As favoritas como num fichário de verdade: nove por página, e os
+   buraquinhos vazios aparecem, porque é isso que dá vontade de preencher. */
+const POR_PAGINA = 9;
+let paginaAlbum = 0;
+
+function mostrarAlbum(){
+  const l = ordenar(lerFavoritos());
+  cartaAberta = null;
+  if(!l.length){
+    palco.innerHTML = '<div class="aviso"><strong>Álbum vazio 📖</strong>' +
+      'Acha uma carta e toca na estrelinha. Ela entra aqui.</div>';
+    return;
+  }
+  const paginas = Math.max(1, Math.ceil(l.length / POR_PAGINA));
+  if(paginaAlbum >= paginas) paginaAlbum = paginas - 1;
+  if(paginaAlbum < 0) paginaAlbum = 0;
+  const daPagina = l.slice(paginaAlbum * POR_PAGINA, (paginaAlbum + 1) * POR_PAGINA);
+  voltarPraLista = mostrarAlbum;
+  achadas = l;
+
+  let buracos = '';
+  for(let i = 0; i < POR_PAGINA; i++){
+    const c = daPagina[i];
+    buracos += c
+      ? '<button type="button" class="buraco cheio" data-i="' + i + '">' +
+          '<img loading="lazy" alt="' + escapar(c.name) + '" src="' +
+            escapar((c.images && c.images.small) || '') + '" />' +
+          '<span>' + escapar(c.name) + '</span>' +
+        '</button>'
+      : '<div class="buraco"><span class="vazio">vazio</span></div>';
+  }
+
+  palco.innerHTML =
+    '<section class="pergunta">' +
+      '<h2>📖 Meu álbum</h2>' +
+      '<p>' + l.length + (l.length === 1 ? ' carta guardada' : ' cartas guardadas') +
+        ' · página ' + (paginaAlbum + 1) + ' de ' + paginas + '</p>' +
+      '<div class="folha">' + buracos + '</div>' +
+      '<div class="folhear">' +
+        '<button class="btn secundario" type="button" id="antes"' +
+          (paginaAlbum === 0 ? ' disabled' : '') + '>◀ Página anterior</button>' +
+        '<button class="btn secundario" type="button" id="depois"' +
+          (paginaAlbum >= paginas - 1 ? ' disabled' : '') + '>Próxima página ▶</button>' +
+      '</div>' +
+    '</section>';
+
+  palco.querySelectorAll('.buraco.cheio').forEach(b => {
+    b.onclick = () => mostrarCarta(daPagina[Number(b.dataset.i)]);
+  });
+  const antes = document.getElementById('antes'), depois = document.getElementById('depois');
+  if(antes)  antes.onclick  = () => { paginaAlbum--; mostrarAlbum(); };
+  if(depois) depois.onclick = () => { paginaAlbum++; mostrarAlbum(); };
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- linha do tempo ----------
+   Todas as cartas que um Pokémon já teve, agrupadas por ano. É o jeito de
+   ver o desenho dele mudando ao longo das coleções. */
+async function linhaDoTempo(nome){
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
+    'Procurando todas as cartas de ' + escapar(nome) + '…</div>';
+  const so = nome.replace(/[^0-9A-Za-z ]/g, '').trim().split(' ')[0];   // "Charizard ex" -> "Charizard"
+  let cartas = [];
+  try{
+    const monta = pag => url('name:"' + aspas(so) + '"', pag, false);
+    const d = await pedirJSON(monta(1));
+    cartas = await todasAsPaginas(monta, d.data || [], d.totalCount || 0);
+  }catch(e){
+    try{ cartas = await buscarReserva(so); }
+    catch(e2){
+      palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui montar a linha do tempo 📡</strong>' +
+        'Os sites de carta não responderam. Tenta de novo daqui a pouco.</div>';
+      return;
+    }
+  }
+  if(!cartas.length){
+    palco.innerHTML = '<div class="aviso"><strong>Só achei essa 🤷</strong>' +
+      'Não encontrei outras cartas de ' + escapar(so) + '.</div>';
+    return;
+  }
+
+  cartas.sort((a, b) => dataDe(a).localeCompare(dataDe(b)));   // da mais velha pra mais nova
+  achadas = cartas;
+  totalReal = cartas.length;
+  voltarPraLista = () => linhaDoTempo(nome);
+
+  const anos = [];
+  cartas.forEach(c => {
+    const ano = (dataDe(c) || '????').slice(0, 4);
+    const ultimo = anos[anos.length - 1];
+    if(ultimo && ultimo.ano === ano) ultimo.cartas.push(c);
+    else anos.push({ ano: ano, cartas: [c] });
+  });
+
+  palco.innerHTML =
+    '<section class="pergunta">' +
+      '<h2>🗂️ ' + escapar(so) + ' ao longo do tempo</h2>' +
+      '<p>' + cartas.length + ' cartas, de ' + escapar(anos[0].ano) + ' até ' +
+        escapar(anos[anos.length - 1].ano) + '. Toca numa pra ver o preço.</p>' +
+      anos.map(g =>
+        '<div class="epoca"><h3>' + escapar(g.ano) + '</h3><div class="fila">' +
+          g.cartas.map(c =>
+            '<button type="button" class="mini" data-id="' + escapar(c.id) + '">' +
+              '<img loading="lazy" alt="' + escapar(c.name) + '" src="' +
+                escapar((c.images && c.images.small) || '') + '" />' +
+              '<span>' + escapar((c.set && c.set.name) || '') + '</span>' +
+            '</button>').join('') +
+        '</div></div>').join('') +
+    '</section>';
+
+  palco.querySelectorAll('.mini').forEach(b => {
+    b.onclick = () => {
+      const c = cartas.find(x => String(x.id) === b.dataset.id);
+      if(c) mostrarCarta(c);
+    };
+  });
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 async function abrirFavorito(c){
@@ -1593,6 +1754,10 @@ function desenharCarta(){
           '</button>' +
           '<button class="btn secundario" type="button" id="copiar" ' +
             'style="padding:10px 18px;font-size:.95rem">🔗 Copiar link da carta</button>' +
+          (carta.supertype === 'Pokémon'
+            ? '<button class="btn secundario" type="button" id="tempo" ' +
+              'style="padding:10px 18px;font-size:.95rem">🗂️ Ver todas ao longo do tempo</button>'
+            : '') +
           (voltarPraLista
             ? '<button class="btn secundario" type="button" id="voltar" ' +
               'style="padding:10px 18px;font-size:.95rem">↩ Voltar pra lista</button>'
@@ -1631,6 +1796,9 @@ function desenharCarta(){
       copiar.textContent = '👆 Copia daqui';
     }
   };
+
+  const tempo = document.getElementById('tempo');
+  if(tempo) tempo.onclick = () => linhaDoTempo(carta.name);
 
   const fav = document.getElementById('fav');
   if(fav) fav.onclick = () => {
@@ -1721,6 +1889,7 @@ selIdioma.onchange = () => {
 
 document.getElementById('btn-colecoes').onclick = mostrarColecoes;
 document.getElementById('btn-favoritos').onclick = mostrarFavoritos;
+document.getElementById('btn-album').onclick = () => { paginaAlbum = 0; mostrarAlbum(); };
 contarFavoritos();
 
 // Link de carta: abre direto nela, e o botão de voltar do navegador funciona.

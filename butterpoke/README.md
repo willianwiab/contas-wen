@@ -18,6 +18,26 @@ ele **pergunta o nome**. Aparece a pergunta "achei 47 cartas com o número 25, q
 tua?", com as cartinhas na tela pra tocar e um campo pra escrever o nome. Quando o
 número traz só uma carta, ele pula a pergunta e mostra o preço direto.
 
+## Álbum
+
+As favoritas como num fichário de verdade: **nove por página**, e os buraquinhos vazios
+aparecem — é isso que dá vontade de preencher. Dá pra folhear, e tocar numa carta abre ela
+com o preço de hoje.
+
+Um detalhe de CSS que custou caro: o buraco tem `aspect-ratio:245/342`, mas com a imagem
+em `flex:1 1 auto` a altura natural dela entrava na conta e a última fileira **vazava por
+baixo da folha**. Com `flex-basis:0` a imagem para de opinar sobre a altura e o buraco
+obedece a proporção.
+
+## Linha do tempo
+
+Todas as cartas que um Pokémon já teve, **agrupadas por ano**, da mais velha à mais nova.
+É o jeito de ver o desenho dele mudando ao longo das coleções. O botão fica na tela da
+carta, e só aparece em Pokémon — treinador e energia não têm uma história dessas pra contar.
+
+A busca usa só a primeira palavra do nome ("Charizard ex" → "Charizard"), senão as outras
+cartas dele ficariam de fora.
+
 ## Ordenar, procurar e guardar
 
 Toda grade tem **ordenação**: mais novas, mais antigas, mais caras, mais baratas,
