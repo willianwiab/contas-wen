@@ -242,6 +242,7 @@ let estadoEscolhido = 'perfeita';
 let limiteGrade = 60;          // quantas cartas a grade mostra por vez
 let totalReal = 0;             // quantas existem, mesmo que eu não tenha trazido todas
 let gradeAtual = null;         // a lista que a grade está mostrando e o que fazer no clique
+let tipoFiltro = 'todos';      // Pokémon, Treinador, Energia ou tudo junto
 let voltarPraLista = null;     // como voltar da carta pra lista de onde ela veio
 let achadas = [];   // resultado da última busca, pra filtrar sem ir na internet de novo
 let cartaAberta = null;
@@ -346,6 +347,8 @@ function deTcgdex(c){
   const saida = {
     id: c.id,
     name: c.name || '?',
+    // lá o campo chama category, e o Pokémon vem sem acento
+    supertype: c.category === 'Pokemon' ? 'Pokémon' : (c.category || ''),
     number: c.localId != null ? String(c.localId) : '',
     rarity: c.rarity || '',
     set: { name: set.name || '',
@@ -396,12 +399,16 @@ async function buscar(valor){
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a carta…</div>';
 
   const tropecos = [];
+  let ninguemConhece = false;
 
   // Três consultas no site principal, da mais caprichada pra mais simples.
   for(const monta of tentativas(valor)){
     try{
       const dados = await pedirJSON(monta(1));
       const primeira = dados.data || [];
+      // Respondeu, mas não conhece a carta. Consulta mais simples não vai
+      // achar o que a mais ampla não achou — quem pode ter é o reserva.
+      if(primeira.length === 0){ ninguemConhece = true; break; }
       const total = dados.totalCount || primeira.length;
       return receber(await todasAsPaginas(monta, primeira, total), valor, total);
     }catch(e){
@@ -414,11 +421,26 @@ async function buscar(valor){
     }
   }
 
-  // Se o principal estiver de cama, tento o reserva.
+  /* Chega aqui por dois motivos: o principal caiu, ou ele não conhece a
+     carta. O reserva vale nos dois casos — a base dele é outra, e carta
+     japonesa ou promo que não saiu em inglês costuma estar só lá. */
   try{
-    return receber(await buscarReserva(valor), valor);
+    const doReserva = await buscarReserva(valor);
+    if(doReserva.length) return receber(doReserva, valor, doReserva.length);
+    ninguemConhece = true;
   }catch(e){
     tropecos.push('tcgdex.net ' + (e.message || e));
+  }
+
+  if(ninguemConhece){
+    palco.innerHTML = '<div class="aviso"><strong>Não achei essa carta 😕</strong>' +
+      'Procurei nos dois bancos de carta e nenhum tem. ' +
+      (modo === 'numero'
+        ? 'Confere o número, ou tenta procurar pelo nome.'
+        : 'Tenta escrever o nome em inglês, ou só um pedaço dele — ' +
+          'os bancos são em inglês, e carta que só saiu no Japão às vezes não está em nenhum.') +
+      '</div>';
+    return;
   }
 
   palco.innerHTML = '<div class="aviso ruim"><strong>Os sites de preço não responderam 📡</strong>' +
@@ -448,16 +470,35 @@ function receber(cartas, valor, total){
 function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder){
   gradeAtual = { lista: lista, aoClicar: aoClicar, tipo: tipo || 'carta' };
   limiteGrade = 60;
+  tipoFiltro = 'todos';
+
+  // Os botõezinhos de tipo só aparecem quando há mais de um tipo na lista.
+  const tiposPresentes = TIPOS.filter(t => t.id === 'todos' ||
+    lista.some(c => c.supertype === t.id));
+  const escolherTipo = (gradeAtual.tipo === 'carta' && tiposPresentes.length > 2)
+    ? '<div class="escolha" style="margin:0 0 14px">' +
+        chips('chips-tipo', tiposPresentes.map(t => ({ v:t.id, rotulo:t.nome })), 'todos') +
+      '</div>'
+    : '';
+
   palco.innerHTML =
     '<section class="pergunta">' +
       '<h2>' + titulo + '</h2>' +
       '<p>' + subtitulo + '</p>' +
+      escolherTipo +
       '<input id="filtro" autocomplete="off" placeholder="' + escapar(placeholder) + '" ' +
         'aria-label="Filtrar pelo nome" />' +
       '<div class="grade" id="grade"></div>' +
     '</section>';
 
   const filtro = document.getElementById('filtro');
+  ligarChips('chips-tipo', v => { tipoFiltro = v; }, () => {
+    limiteGrade = 60;
+    desenharOpcoes(filtrar(lista, filtro.value));
+    // o chip clicado tem que ficar marcado, e só ele
+    document.querySelectorAll('#chips-tipo .chip').forEach(b =>
+      b.setAttribute('aria-pressed', b.dataset.v === tipoFiltro));
+  });
   desenharOpcoes(lista);
   filtro.addEventListener('input', () => {
     limiteGrade = 60;
@@ -476,7 +517,8 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder){
 
 function filtrar(lista, texto){
   const t = texto.trim().toLowerCase();
-  return t ? lista.filter(c => (c.name || '').toLowerCase().includes(t)) : lista;
+  let saida = tipoFiltro === 'todos' ? lista : lista.filter(c => c.supertype === tipoFiltro);
+  return t ? saida.filter(c => (c.name || '').toLowerCase().includes(t)) : saida;
 }
 
 function perguntarNome(valor, lista){
@@ -654,6 +696,17 @@ const VARIANTES = {
   '1stEditionHolofoil':'1ª edição holo', '1stEditionNormal':'1ª edição normal',
   unlimitedHolofoil:'Ilimitada holo', unlimited:'Ilimitada'
 };
+/* Carta de Pokémon não é só bicho: tem Treinador (Pokébola, Professor,
+   objeto) e Energia. Elas sempre vieram na busca, mas ficavam misturadas
+   e ninguém achava. Estes são os nomes que as duas APIs usam. */
+const TIPOS = [
+  { id:'todos',   nome:'Todas' },
+  { id:'Pokémon', nome:'⚡ Pokémon' },
+  { id:'Trainer', nome:'🎒 Treinador' },
+  { id:'Energy',  nome:'🔋 Energia' },
+];
+const NOME_TIPO = { 'Pokémon':'Pokémon', 'Trainer':'Treinador', 'Energy':'Energia' };
+
 const EXPLICA = {
   normal:'sem brilho nenhum', holofoil:'o desenho brilha',
   reverseHolofoil:'o fundo brilha, o desenho não',
@@ -822,6 +875,8 @@ function desenharCarta(){
           '<span class="etiqueta">nº ' + escapar(carta.number || '?') +
             (set.printedTotal ? '/' + escapar(String(set.printedTotal)) : '') + '</span>' +
           (set.name ? '<span class="etiqueta">' + escapar(set.name) + '</span>' : '') +
+          (carta.supertype ? '<span class="etiqueta">' +
+            escapar(NOME_TIPO[carta.supertype] || carta.supertype) + '</span>' : '') +
           (carta.rarity ? '<span class="etiqueta">' + escapar(carta.rarity) + '</span>' : '') +
           (set.releaseDate ? '<span class="etiqueta">' + escapar(set.releaseDate.slice(0,4)) + '</span>' : '') +
         '</div>' +
@@ -851,11 +906,11 @@ function chips(id, itens, ativo){
       (i.sub ? '<small>' + escapar(i.sub) + '</small>' : '') +
     '</button>').join('') + '</div>';
 }
-function ligarChips(id, aoEscolher){
+function ligarChips(id, aoEscolher, redesenhar){
   const caixa = document.getElementById(id);
   if(!caixa) return;
   caixa.querySelectorAll('.chip').forEach(b => {
-    b.onclick = () => { aoEscolher(b.dataset.v); desenharCarta(); };
+    b.onclick = () => { aoEscolher(b.dataset.v); (redesenhar || desenharCarta)(); };
   });
 }
 
