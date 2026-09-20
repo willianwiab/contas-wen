@@ -307,6 +307,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <button class="btn secundario" type="button" id="btn-colecoes">📚 Ver as coleções</button>
       <button class="btn secundario" type="button" id="btn-favoritos">⭐ Meus favoritos</button>
       <button class="btn secundario" type="button" id="btn-album">📖 Meu álbum</button>
+      <button class="btn secundario" type="button" id="btn-todas">🗃️ Todas as cartas</button>
     </div>
   </section>
 
@@ -320,7 +321,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 14 — 20/09</span>
+    <br><span class="versao">versão 16 — 20/09</span>
   </footer>
 </div>
 
@@ -569,7 +570,7 @@ async function buscar(valor, caiuProIngles){
   cartaAberta = null;
   voltarPraLista = null;
   langBusca = caiuProIngles ? 'en' : idioma;
-  if(location.hash) location.replace('#');
+  if(location.hash && !(lerEndereco() || {}).busca) location.replace('#');
   if(!caiuProIngles) avisoBusca = '';
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a carta…</div>';
 
@@ -1240,6 +1241,21 @@ function desenharOpcoes(lista){
     p.appendChild(b);
     grade.appendChild(p);
   }
+  /* Isto é outra coisa: acima é "mostrar mais das que já tenho", aqui é
+     "ir buscar mais no banco". Só aparece quando já mostrei todas as que
+     tenho, senão a pessoa pediria mais sem ter visto o que já veio. */
+  else if(gradeAtual.maisDoBanco){
+    const p = document.createElement('p');
+    p.style.cssText = 'grid-column:1/-1;text-align:center;color:var(--tinta-fraca);font-size:.88rem';
+    p.textContent = 'Acabaram as que eu trouxe.';
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn secundario mais';
+    b.style.cssText = 'padding:11px 20px;font-size:.95rem';
+    b.textContent = '⬇ Buscar mais 250 no banco';
+    b.onclick = () => { b.textContent = 'Buscando…'; b.disabled = true; gradeAtual.maisDoBanco(); };
+    p.appendChild(b);
+    grade.appendChild(p);
+  }
 }
 
 /* ---------- as coleções ----------
@@ -1255,6 +1271,52 @@ function deSetReserva(s){
            total:(s.cardCount && (s.cardCount.official || s.cardCount.total)) || null,
            releaseDate:s.releaseDate || '',
            logo:s.logo ? s.logo + '.png' : (s.symbol ? s.symbol + '.png' : ''), fonte:'reserva' };
+}
+
+/* ---------- todas as cartas ----------
+   O catálogo inteiro passa de vinte mil cartas. Baixar tudo de uma vez
+   seria minutos de espera e um celular travado, então vem de 250 em 250,
+   e quem quiser mais pede mais. As mais novas primeiro, que é o que a
+   pessoa provavelmente tem na mão. */
+let paginaTodas = 1;
+let todasCartas = [];
+
+async function mostrarTodas(reiniciar){
+  if(reiniciar){ paginaTodas = 1; todasCartas = []; }
+  cartaAberta = null;
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
+    (todasCartas.length ? 'Buscando mais 250 cartas…' : 'Abrindo o catálogo…') + '</div>';
+  try{
+    const d = await pedirJSON(API + '?pageSize=250&orderBy=-set.releaseDate&page=' + paginaTodas);
+    const novas = (d && d.data) || [];
+    todasCartas = todasCartas.concat(novas);
+    totalReal = (d && d.totalCount) || todasCartas.length;
+    if(novas.length === 250) paginaTodas++;
+    else paginaTodas = 0;   // acabou o catálogo
+  }catch(e){
+    palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui abrir o catálogo 📡</strong>' +
+      'O site das cartas não respondeu. Tenta de novo daqui a pouco.' +
+      '<br><br><small>' + escapar(String(e.message || e)) + '</small></div>';
+    return;
+  }
+  if(!todasCartas.length){
+    palco.innerHTML = '<div class="aviso"><strong>Veio vazio 🤔</strong>Tenta de novo.</div>';
+    return;
+  }
+  achadas = todasCartas;
+  voltarPraLista = () => mostrarTodas(false);
+  // Quem pediu mais no banco já tinha rolado até o fim do que havia. Voltar
+  // a mostrar 60 obrigaria a clicar tudo de novo pra chegar onde estava.
+  const jaMostrava = todasCartas.length - (paginaTodas > 0 ? 250 : (totalReal % 250 || 250));
+  mostrarGrade(
+    '🗃️ Todas as cartas do TCG',
+    'Tenho ' + todasCartas.length + ' das ' + totalReal + ' que existem, das mais novas pras mais velhas. ' +
+      'Usa os filtros e a busca aqui embaixo pra achar a tua.',
+    todasCartas, mostrarCarta, 'carta', 'Nome da carta…', 'novas');
+  // O botão de buscar mais vive na grade, porque é lá que ele faz sentido.
+  gradeAtual.maisDoBanco = paginaTodas > 0 ? () => mostrarTodas(false) : null;
+  if(jaMostrava > limiteGrade) limiteGrade = jaMostrava;
+  desenharOpcoes(ordenar(filtrar(todasCartas, '')));
 }
 
 async function mostrarColecoes(){
@@ -1590,11 +1652,19 @@ function lerEndereco(){
     const i = pedaco.indexOf('=');
     if(i > 0) par[pedaco.slice(0, i)] = decodeURIComponent(pedaco.slice(i + 1));
   });
-  return par.carta ? par : null;
+  return (par.carta || par.busca) ? par : null;
 }
 async function abrirDoEndereco(){
   const par = lerEndereco();
   if(!par) return false;
+  /* #busca=25 já cai na lista pronta. Serve pra mandar uma busca pro amigo
+     e pra combinar "abre exatamente esta tela" com alguém. */
+  if(par.busca){
+    if(par.modo === 'nome') trocarModo('nome');
+    campo.value = par.busca;
+    await buscar(par.busca);
+    return true;
+  }
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Abrindo a carta do link…</div>';
   try{
     if(par.de === 'reserva'){
@@ -1890,6 +1960,7 @@ selIdioma.onchange = () => {
 document.getElementById('btn-colecoes').onclick = mostrarColecoes;
 document.getElementById('btn-favoritos').onclick = mostrarFavoritos;
 document.getElementById('btn-album').onclick = () => { paginaAlbum = 0; mostrarAlbum(); };
+document.getElementById('btn-todas').onclick = () => mostrarTodas(true);
 contarFavoritos();
 
 // Link de carta: abre direto nela, e o botão de voltar do navegador funciona.
@@ -1900,7 +1971,8 @@ abrirDoEndereco();
 window.addEventListener('hashchange', () => {
   const par = lerEndereco();
   if(!par) return;
-  if(cartaAberta && cartaAberta.id === par.carta) return;
+  if(par.carta && cartaAberta && cartaAberta.id === par.carta) return;
+  if(par.busca && campo.value === par.busca && !cartaAberta) return;
   abrirDoEndereco();
 });
 
