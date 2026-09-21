@@ -39,6 +39,31 @@ E um **código** que a pessoa leva na mão:
 - código de outro site, ou cortado no meio, dá um recado em português explicando —
   sem isso o navegador devolve o erro do `atob` em inglês, que não ajuda ninguém
 
+## Vale a pena abrir um pacote?
+
+Pediram produtos: booster, pelúcia, boneco, com preço e um veredito. **Pelúcia e boneco eu
+não tenho de onde tirar** — os dois bancos são catálogos de *carta*, e inventar preço de
+brinquedo seria mentir. Isso o site diz na cara.
+
+Mas a pergunta por trás — *vale a pena comprar?* — essa dá pra responder com os preços que
+já estão na mão. Virou o **terceiro modo de busca**, ao lado de "pelo número" e "pelo
+nome": escreve o nome de uma coleção e ele soma.
+
+A conta é **por faixa de raridade**, não a média de tudo junto: um pacote traz 4 comuns,
+3 incomuns, 1 reverse e 1 rara, e não 10 sorteios iguais. A média de tudo junto seria
+puxada pelas raras e prometeria um pacote que não existe.
+
+Você digita quanto custa o pacote na tua loja e ele compara. E, o mais importante, o aviso
+que fecha a tela:
+
+> **Cuidado com a média.** Ela não é o que você vai tirar: a maior parte dos pacotes vem só
+> com carta baratinha, e quem levanta a média são as poucas caras que quase ninguém tira.
+> Se você quer uma carta específica, quase sempre sai mais barato comprar ela do que caçar
+> em pacote. Abrir pacote é diversão, não investimento.
+
+Um site que calcula valor esperado pra criança e não diz isso está ensinando a coisa
+errada.
+
 ## Jogos
 
 Dois, porque compartilham tudo: pegar um monte de carta, sortear e marcar ponto.

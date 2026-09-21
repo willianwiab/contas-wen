@@ -84,7 +84,7 @@ header{text-align:center;padding:30px 0 18px}
 }
 .modos{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .modos button{
-  flex:1 1 140px; padding:10px 14px; border:2px solid var(--borda); background:var(--cartao);
+  flex:1 1 120px; padding:10px 14px; border:2px solid var(--borda); background:var(--cartao);
   border-radius:999px; font:inherit; font-weight:600; color:var(--tinta-fraca); cursor:pointer;
 }
 .modos button[aria-pressed="true"]{background:var(--asa);border-color:var(--asa-escura);color:var(--tinta)}
@@ -334,6 +334,13 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 .veredito{font-family:'Baloo 2',cursive;font-size:1.6rem;margin:16px 0 4px;text-align:center}
 .veredito.certo{color:#2e9e4f}
 .veredito.errado{color:var(--olho)}
+.linha-preco{display:flex;align-items:center;gap:9px;font-weight:600;font-size:1.05rem}
+.linha-preco input{
+  width:120px;padding:11px 13px;font:inherit;border:3px solid var(--borda);
+  border-radius:14px;background:var(--campo);color:var(--tinta);
+}
+.linha-preco input:focus{outline:none;border-color:var(--asa-escura)}
+.fila .mini span b{color:var(--tinta);font-size:.8rem}
 
 /* ---------- duelo ---------- */
 .duelo{display:flex;align-items:center;gap:10px;margin:6px 0 18px}
@@ -490,6 +497,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
     <div class="modos" role="group" aria-label="Buscar por">
       <button type="button" id="modo-numero" aria-pressed="true">🔢 Pelo número</button>
       <button type="button" id="modo-nome" aria-pressed="false">🔤 Pelo nome</button>
+      <button type="button" id="modo-pacote" aria-pressed="false">📦 Vale a pena?</button>
     </div>
     <form class="linha-busca" id="formulario">
       <input id="campo" inputmode="text" autocomplete="off"
@@ -526,7 +534,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 26 — 21/09</span>
+    <br><span class="versao">versão 27 — 21/09</span>
   </footer>
 </div>
 
@@ -580,6 +588,7 @@ const campo   = document.getElementById('campo');
 const dica    = document.getElementById('dica');
 const btnNum  = document.getElementById('modo-numero');
 const btnNome = document.getElementById('modo-nome');
+const btnPacote = document.getElementById('modo-pacote');
 const inpCota = document.getElementById('cotacao');
 
 let modo = 'numero';
@@ -608,6 +617,16 @@ function trocarModo(novo){
   modo = novo;
   btnNum.setAttribute('aria-pressed', novo === 'numero');
   btnNome.setAttribute('aria-pressed', novo === 'nome');
+  btnPacote.setAttribute('aria-pressed', novo === 'pacote');
+  if(novo === 'pacote'){
+    campo.placeholder = 'Ex: 151, Obsidian, Celebrations…';
+    campo.inputMode = 'text';
+    dica.innerHTML = 'Escreve o nome de uma <b>coleção</b> e eu somo os preços das cartas ' +
+      'dela pra dizer quanto um pacote devolve, em média. ' +
+      '<b>Pelúcia e boneco eu não tenho</b> — os bancos só guardam carta.';
+    campo.focus();
+    return;
+  }
   if(novo === 'numero'){
     campo.placeholder = 'Ex: 25 ou 25/185';
     campo.inputMode = 'text';   // a barra do 25/185 não existe no teclado numérico
@@ -622,10 +641,13 @@ function trocarModo(novo){
 }
 btnNum.onclick  = () => trocarModo('numero');
 btnNome.onclick = () => trocarModo('nome');
+btnPacote.onclick = () => trocarModo('pacote');
 
 /* ---------- a busca ---------- */
 document.getElementById('formulario').addEventListener('submit', ev => {
   ev.preventDefault();
+  // O modo pacote procura coleção, não carta: outro caminho inteiro.
+  if(modo === 'pacote') return buscarPacote(campo.value.trim());
   buscar(campo.value.trim());
 });
 
@@ -1235,6 +1257,167 @@ function mostrarFavoritos(){
     'Toca numa pra ver o preço de hoje. Ficam guardadas só neste aparelho.',
     l, mostrarCarta, 'carta', 'Nome da carta…', 'nome');
   gradeAtual.ehFavoritos = true;
+}
+
+/* ---------- vale a pena abrir um pacote? ----------
+   Pelúcia, boneco e brinquedo eu não tenho de onde tirar: os dois bancos
+   são catálogos de CARTA. Mas a pergunta por trás — "vale a pena comprar?"
+   — essa eu respondo com os preços que já estão na mão.
+
+   Um pacote moderno traz umas dez cartas, e não são dez sorteios iguais:
+   é um monte de comum, umas poucas incomuns e uma rara. Por isso a conta
+   é por faixa, e não a média de tudo junto — a média de tudo junto seria
+   puxada pelas raras e prometeria um pacote que não existe. */
+const PACOTE = [
+  { nome:'comuns',   quantas:4, nivel:c => nivelRaridade(c) === 1 },
+  { nome:'incomuns', quantas:3, nivel:c => nivelRaridade(c) === 2 },
+  { nome:'reverse',  quantas:1, nivel:c => nivelRaridade(c) <= 2 },
+  { nome:'rara ou melhor', quantas:1, nivel:c => nivelRaridade(c) >= 3 },
+];
+
+function mediaDe(cartas, filtro, usarReverse){
+  const vals = [];
+  cartas.forEach(c => {
+    if(!filtro(c)) return;
+    const p = c.tcgplayer && c.tcgplayer.prices;
+    let v = null;
+    if(usarReverse && p && p.reverseHolofoil){
+      v = p.reverseHolofoil.market != null ? p.reverseHolofoil.market : p.reverseHolofoil.mid;
+    }else{
+      v = precoDe(c);
+    }
+    if(typeof v === 'number' && v > 0) vals.push(v);
+  });
+  if(!vals.length) return null;
+  vals.sort((a, b) => a - b);
+  return { media: vals.reduce((s, x) => s + x, 0) / vals.length,
+           meio: vals[Math.floor(vals.length / 2)], quantas: vals.length };
+}
+
+async function analisarPacote(colecao){
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
+    'Somando os preços de ' + escapar(colecao.name) + '…</div>';
+  let cartas = [];
+  try{
+    const monta = pag => API + '?q=' + encodeURIComponent('set.id:"' + aspas(colecao.id) + '"') +
+                         '&pageSize=250&page=' + pag;
+    const d = await pedirJSON(monta(1));
+    cartas = await todasAsPaginas(monta, d.data || [], d.totalCount || (d.data || []).length);
+  }catch(e){
+    avisoErro('Não consegui somar essa coleção', e, () => analisarPacote(colecao));
+    return;
+  }
+  const comPreco = cartas.filter(c => precoDe(c) != null);
+  if(comPreco.length < 10){
+    palco.innerHTML = '<div class="aviso"><strong>Essa coleção não tem preço suficiente 🤷</strong>' +
+      'Achei ' + cartas.length + ' cartas, mas só ' + comPreco.length + ' com preço. ' +
+      'Sem preço não dá pra fazer conta nenhuma — tenta uma coleção mais conhecida.</div>';
+    return;
+  }
+
+  const faixas = PACOTE.map(f => Object.assign({}, f,
+    { dados: mediaDe(cartas, f.nivel, f.nome === 'reverse') }));
+  const esperado = faixas.reduce((s, f) => s + (f.dados ? f.dados.media * f.quantas : 0), 0);
+  const caras = comPreco.slice().sort((a, b) => precoDe(b) - precoDe(a)).slice(0, 5);
+  const cotacao = parseFloat(inpCota.value) || 5.4;
+
+  const linhas = faixas.map(f =>
+    '<tr><td>' + f.quantas + ' ' + f.nome + '</td>' +
+    '<td>' + (f.dados ? dinheiro(f.dados.media, 'USD') : '—') + '</td>' +
+    '<td>' + (f.dados ? dinheiro(f.dados.media * f.quantas, 'USD') : '—') + '</td></tr>').join('');
+
+  palco.innerHTML =
+    '<section class="pergunta">' +
+      '<h2>📦 Vale a pena abrir ' + escapar(colecao.name) + '?</h2>' +
+      '<p>Somei ' + comPreco.length + ' cartas com preço, de ' + cartas.length + ' na coleção.</p>' +
+
+      '<div class="destaque">' +
+        '<div class="rotulo">Um pacote devolve, em média</div>' +
+        '<div class="preco">' + dinheiro(esperado, 'USD') + '</div>' +
+        '<div class="reais">' + escapar(soReais(esperado, 'USD') || '') + '</div>' +
+        '<div class="qual">contando 4 comuns, 3 incomuns, 1 reverse e 1 rara</div>' +
+      '</div>' +
+
+      '<div class="escolha"><h3>Quanto custa o pacote aí na tua loja?</h3>' +
+        '<div class="linha-preco">' +
+          '<span>R$</span><input id="preco-pacote" type="number" step="0.5" min="0" value="25" />' +
+        '</div>' +
+      '</div>' +
+      '<div id="veredito-pacote"></div>' +
+
+      '<h3 class="titulinho">De onde sai a conta</h3>' +
+      '<table><thead><tr><th>O que vem</th><th>Vale cada</th><th>Soma</th></tr></thead>' +
+      '<tbody>' + linhas + '</tbody></table>' +
+
+      '<h3 class="titulinho">🏆 O prêmio grande desta coleção</h3>' +
+      '<div class="fila">' + caras.map(c =>
+        '<button type="button" class="mini" data-id="' + escapar(c.id) + '">' +
+          '<img loading="lazy" alt="' + escapar(c.name) + '" src="' +
+            escapar((c.images && c.images.small) || '') + '" />' +
+          '<span>' + escapar(c.name) + '<br><b>' + dinheiro(precoDe(c), 'USD') + '</b></span>' +
+        '</button>').join('') + '</div>' +
+
+      '<p class="nota"><b>Cuidado com a média.</b> Ela não é o que você vai tirar: ' +
+      'a maior parte dos pacotes vem só com carta baratinha, e quem levanta a média são ' +
+      'as poucas caras que quase ninguém tira. Abrir dez pacotes provavelmente dá menos ' +
+      'que dez vezes essa conta — e é por isso que loja vende pacote.<br><br>' +
+      'Se você quer <b>uma carta específica</b>, quase sempre sai mais barato comprar ela ' +
+      'do que caçar em pacote. Abrir pacote é diversão, não investimento.</p>' +
+    '</section>';
+
+  const input = document.getElementById('preco-pacote');
+  const dizer = () => {
+    const custo = parseFloat(input.value);
+    const alvo = document.getElementById('veredito-pacote');
+    if(!(custo > 0)){ alvo.innerHTML = ''; return; }
+    const devolve = esperado * cotacao;
+    const razao = devolve / custo;
+    const bom = razao >= 1;
+    alvo.innerHTML = '<p class="veredito ' + (bom ? 'certo' : 'errado') + '">' +
+        (bom ? '🙂 Na média, sobra' : '😬 Na média, falta') + '</p>' +
+      '<p class="nota">Pagando <b>R$ ' + custo.toFixed(2).replace('.', ',') + '</b> você recebe, ' +
+      'em média, <b>' + escapar(soReais(esperado, 'USD') || '') + '</b> em carta — ' +
+      (bom ? 'mais ' : 'menos ') + 'do que pagou' +
+      (bom ? '.' : ', o que é o normal: é assim que a loja ganha.') +
+      ' Isso é <b>média</b>, não promessa.</p>';
+  };
+  input.oninput = dizer;
+  dizer();
+
+  palco.querySelectorAll('.mini').forEach(b => {
+    b.onclick = () => {
+      const c = caras.find(x => String(x.id) === b.dataset.id);
+      if(c){ voltarPraLista = () => analisarPacote(colecao); mostrarCarta(c); }
+    };
+  });
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* Procura a coleção pelo nome e deixa escolher — o mesmo caminho do "ver
+   as coleções", só que no fim vai pra conta em vez da lista de cartas. */
+async function buscarPacote(valor){
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a coleção…</div>';
+  let colecoes = [];
+  try{
+    const d = await pedirJSON(API_SETS + '?pageSize=250&orderBy=-releaseDate');
+    colecoes = (d.data || []).map(deSetPrincipal);
+  }catch(e){
+    avisoErro('Não consegui pegar as coleções', e, () => buscarPacote(valor));
+    return;
+  }
+  const t = String(valor || '').trim().toLowerCase();
+  const achadas = t ? colecoes.filter(c => (c.name || '').toLowerCase().includes(t)) : colecoes;
+  if(!achadas.length){
+    palco.innerHTML = '<div class="aviso"><strong>Não achei essa coleção 😕</strong>' +
+      'Escreve um pedaço do nome, tipo <b>151</b>, <b>Obsidian</b> ou <b>Evolving</b>. ' +
+      'Ou deixa em branco e aperta Procurar pra ver todas.</div>';
+    return;
+  }
+  if(achadas.length === 1) return analisarPacote(achadas[0]);
+  voltarPraLista = () => buscarPacote(valor);
+  mostrarGrade('Qual coleção?', 'Achei ' + achadas.length +
+    '. Toca numa pra eu calcular se vale a pena abrir um pacote dela.',
+    achadas, analisarPacote, 'colecao', 'Nome da coleção…', 'novas');
 }
 
 /* ---------- jogos ----------
