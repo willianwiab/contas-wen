@@ -749,6 +749,26 @@ Os códigos viram português: 5xx é problema do lado deles, 429 é limite do di
 fora do catálogo, e falha de rede com `navigator.onLine === false` vira "teu aparelho está
 sem internet".
 
+## Montar deck
+
+Pediram duas vezes e eu nunca tinha feito. As regras do jogo são poucas e **checáveis**,
+então o deck não virou só uma lista: ele diz **o que falta pra poder jogar de verdade**.
+
+- **60 cartas exatas** — com barra e contagem grande, porque "faltam 12" é mais útil que
+  "inválido"
+- **no máximo 4 iguais** — com a exceção que quase todo mundo esquece: **energia básica
+  pode repetir à vontade**. É por isso que existe deck com vinte Água. Tratar ela como as
+  outras faria o site reclamar de um deck perfeitamente legal.
+- **pelo menos 1 Pokémon básico** — a regra que mais derruba deck de iniciante: sem um
+  deles você não começa a partida
+
+Separa por 🐾 Pokémon / 🧑‍🏫 Treinador / ⚡ Energia, dá pra mexer na quantidade com − e +
+ali mesmo, e soma quanto custaria comprar o deck inteiro carta por carta.
+
+**O preço de cada carta é o do dia em que ela entrou no deck**, e está escrito de quando é
+a mais antiga. Um deck se monta ao longo de dias; sair buscando sessenta preços toda vez
+que a tela abre seria lento e falharia na metade das vezes.
+
 ## Dá pra usar sem internet?
 
 Perguntaram isso, e a resposta honesta era "em parte" — o service worker fazia a **página**

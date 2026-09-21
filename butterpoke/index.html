@@ -339,6 +339,41 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 .espiadela.aberta{aspect-ratio:245/342;max-width:230px}
 .espiadela.aberta img{transform:none;object-position:center}
 .opcoes-jogo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px}
+/* ---------- montar deck ---------- */
+.destaque-deck{
+  background:var(--cartao2);border:3px solid var(--borda);border-radius:20px;
+  padding:18px 20px;text-align:center;margin-bottom:14px;
+}
+.destaque-deck.pronto{border-color:#2e9e4f}
+.destaque-deck .contagem{font-family:'Baloo 2',cursive;font-size:3rem;line-height:1;color:var(--asa-escura)}
+.destaque-deck .contagem small{font-size:1.1rem;color:var(--tinta-fraca);margin-left:6px}
+.barra-deck{height:14px;border-radius:999px;background:var(--vazio);overflow:hidden;margin:12px 0 10px}
+.barra-deck span{display:block;height:100%;background:var(--asa);border-radius:999px;transition:width .3s}
+.destaque-deck.pronto .barra-deck span{background:#2e9e4f}
+.recado-deck{font-weight:700;font-size:1rem}
+.regras-deck{list-style:none;display:flex;flex-direction:column;gap:8px;margin:0 0 6px}
+.regras-deck li{
+  display:flex;gap:10px;align-items:flex-start;border:2px solid var(--borda);
+  border-radius:14px;padding:10px 13px;font-size:.9rem;line-height:1.5;background:var(--cartao);
+}
+.regras-deck li.falta{border-color:var(--olho)}
+.regras-deck li.ok{color:var(--tinta-fraca)}
+.linhas-deck{list-style:none;display:flex;flex-direction:column;gap:7px}
+.linhas-deck li{
+  display:flex;align-items:center;gap:10px;background:var(--cartao);
+  border:2px solid var(--borda);border-radius:14px;padding:8px 11px;
+}
+.linhas-deck img{width:38px;border-radius:6px;background:var(--vazio);flex:0 0 auto}
+.linhas-deck .qual{flex:1 1 auto;min-width:0}
+.linhas-deck .qual b{display:block;font-size:.95rem;overflow-wrap:anywhere}
+.linhas-deck .qual small{display:block;color:var(--tinta-fraca);font-size:.76rem;margin-top:1px}
+.linhas-deck .mexer{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.linhas-deck .mexer b{min-width:1.2em;text-align:center;font-size:1.05rem}
+.linhas-deck .mexer button{
+  border:none;background:var(--vazio);color:var(--tinta);border-radius:50%;
+  width:32px;height:32px;font:inherit;font-weight:700;font-size:1.1rem;cursor:pointer;line-height:1;
+}
+.linhas-deck .mexer button:hover{background:var(--asa);color:#fff}
 /* Com vinte e cinco jogos, a lista aberta empurraria o jogo pra baixo da
    dobra. Fechada, ela diz só qual está valendo. */
 .menu-jogos{
@@ -627,6 +662,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <button class="btn atalho" type="button" id="btn-todas"><i>🗃️</i>Todas</button>
       <button class="btn atalho" type="button" id="btn-desejos"><i>💖</i>Quero</button>
       <button class="btn atalho" type="button" id="btn-duelo"><i>⚔️</i>Duelo</button>
+      <button class="btn atalho" type="button" id="btn-deck"><i>🛠️</i>Deck</button>
       <button class="btn atalho" type="button" id="btn-jogos"><i>🎮</i>Jogos</button>
       <button class="btn atalho" type="button" id="btn-vale"><i>📦</i>Vale a pena</button>
       <button class="btn atalho" type="button" id="btn-bonecos"><i>🧸</i>Bonecos</button>
@@ -645,7 +681,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 38 — 21/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 39 — 21/09 · 🔄</button>
   </footer>
 </div>
 
@@ -2030,6 +2066,211 @@ async function buscarPacote(valor){
   mostrarGrade('Qual coleção?', 'Achei ' + achadas.length +
     '. Toca numa pra eu calcular se vale a pena abrir um pacote dela.',
     achadas, analisarPacote, 'colecao', 'Nome da coleção…', 'novas');
+}
+
+/* ---------- montar deck ----------
+   Pediram duas vezes e eu nunca tinha feito. As regras do jogo são poucas
+   e checáveis, então o deck não é só uma lista: ele diz o que falta pra
+   poder jogar de verdade.
+
+   Três regras de torneio, e uma delas tem exceção que quase todo mundo
+   esquece: energia básica pode repetir à vontade — é por isso que existe
+   deck com vinte Água. Tratar ela como as outras faria o site reclamar de
+   um deck perfeitamente legal. */
+const CHAVE_DECK = 'butterpoke:deck';
+const CARTAS_NO_DECK = 60;
+const MAX_IGUAIS = 4;
+
+function lerDeck(){
+  try{
+    const j = JSON.parse(localStorage.getItem(CHAVE_DECK) || '[]');
+    return Array.isArray(j) ? j.filter(x => x && x.carta && x.carta.id) : [];
+  }catch(e){ return []; }
+}
+function gravarDeck(l){
+  try{ localStorage.setItem(CHAVE_DECK, JSON.stringify(l)); }catch(e){}
+}
+function quantasNoDeck(id){
+  const x = lerDeck().find(y => y.carta.id === id);
+  return x ? x.quantas : 0;
+}
+function totalDoDeck(){
+  return lerDeck().reduce((s, x) => s + x.quantas, 0);
+}
+/* Energia básica é a exceção do limite de quatro. "Basic Energy" no
+   subtype é o jeito seguro de reconhecer; pelo nome eu erraria as
+   especiais, que valem o limite. */
+function ehEnergiaBasica(c){
+  return (c.supertype === 'Energy') &&
+    (c.subtypes || []).some(s => /basic/i.test(s));
+}
+function ehPokemonBasico(c){
+  return c.supertype === 'Pokémon' && (c.subtypes || []).some(s => /^basic$/i.test(s));
+}
+function grupoDaCarta(c){
+  if(c.supertype === 'Pokémon') return 'pokemon';
+  if(c.supertype === 'Energy') return 'energia';
+  return 'treinador';
+}
+const GRUPOS_DECK = [
+  { id:'pokemon',    nome:'🐾 Pokémon' },
+  { id:'treinador',  nome:'🧑‍🏫 Treinador' },
+  { id:'energia',    nome:'⚡ Energia' },
+];
+
+/* Guardo o preço do dia em que a carta entrou. O deck é uma lista que a
+   pessoa monta ao longo de dias, e sair buscando sessenta preços toda vez
+   que ela abre a tela seria lento e ia falhar metade das vezes. Por isso a
+   soma vem com a data escrita do lado. */
+function porNoDeck(carta){
+  const l = lerDeck();
+  const i = l.findIndex(x => x.carta.id === carta.id);
+  const limite = ehEnergiaBasica(carta) ? 99 : MAX_IGUAIS;
+  if(i >= 0){
+    if(l[i].quantas >= limite) return 'cheio';
+    l[i].quantas++;
+  }else{
+    if(totalDoDeck() >= CARTAS_NO_DECK) return 'deck-cheio';
+    l.push({ carta:identidade(carta), quantas:1, preco:precoDe(carta), quando:Date.now() });
+  }
+  gravarDeck(l);
+  return 'entrou';
+}
+function tirarDoDeck(id, todas){
+  const l = lerDeck();
+  const i = l.findIndex(x => x.carta.id === id);
+  if(i < 0) return;
+  if(todas || l[i].quantas <= 1) l.splice(i, 1);
+  else l[i].quantas--;
+  gravarDeck(l);
+}
+
+/* As regras, cada uma sabendo dizer o que está errado. Verde não é
+   enfeite: é a diferença entre "posso levar pro torneio" e "não posso". */
+function conferirDeck(){
+  const l = lerDeck();
+  const total = l.reduce((s, x) => s + x.quantas, 0);
+  const demais = l.filter(x => !ehEnergiaBasica(x.carta) && x.quantas > MAX_IGUAIS);
+  const basicos = l.filter(x => ehPokemonBasico(x.carta)).reduce((s, x) => s + x.quantas, 0);
+  return [
+    { ok: total === CARTAS_NO_DECK,
+      certo: 'São exatamente 60 cartas.',
+      errado: total < CARTAS_NO_DECK
+        ? 'Faltam <b>' + (CARTAS_NO_DECK - total) + '</b> cartas pra chegar em 60.'
+        : 'Passou <b>' + (total - CARTAS_NO_DECK) + '</b> de 60.' },
+    { ok: !demais.length,
+      certo: 'Nenhuma carta repetida mais que 4 vezes.',
+      errado: 'Tem mais de 4 iguais: ' + demais.map(x =>
+        '<b>' + escapar(x.carta.name) + '</b> (' + x.quantas + ')').join(', ') +
+        '. Só <b>energia básica</b> pode passar de 4.' },
+    { ok: basicos > 0,
+      certo: 'Tem Pokémon básico pra começar o jogo (' + basicos + ').',
+      errado: 'Nenhum <b>Pokémon básico</b>. Sem um deles você não começa a partida — ' +
+        'é a regra que mais derruba deck de iniciante.' },
+  ];
+}
+
+function mostrarDeck(){
+  cartaAberta = null; voltarPraLista = null;
+  const l = lerDeck();
+  const total = l.reduce((s, x) => s + x.quantas, 0);
+  const regras = conferirDeck();
+  const tudoCerto = regras.every(r => r.ok);
+
+  if(!l.length){
+    palco.innerHTML = '<section class="pergunta"><h2>🛠️ Montar deck</h2>' +
+      '<div class="aviso"><strong>Teu deck está vazio 🃏</strong>' +
+      'Procura uma carta, abre ela e toca em <b>"🛠️ Pôr no deck"</b>. ' +
+      'Pode tocar de novo pra pôr mais de uma.<br><br>' +
+      'Um deck de torneio tem <b>60 cartas</b>, no máximo <b>4 iguais</b> ' +
+      '(energia básica pode repetir à vontade) e pelo menos <b>1 Pokémon básico</b>. ' +
+      'Eu vou conferindo enquanto você monta.</div></section>';
+    palco.scrollIntoView({ behavior:'smooth', block:'start' });
+    return;
+  }
+
+  const soma = l.reduce((s, x) => s + (x.preco || 0) * x.quantas, 0);
+  const semPreco = l.filter(x => !x.preco).reduce((s, x) => s + x.quantas, 0);
+  const maisVelha = l.reduce((m, x) => Math.min(m, x.quando || Date.now()), Date.now());
+
+  palco.innerHTML =
+    '<section class="pergunta"><h2>🛠️ Montar deck</h2>' +
+      '<div class="destaque-deck ' + (tudoCerto ? 'pronto' : '') + '">' +
+        '<div class="contagem">' + total + '<small>/ 60</small></div>' +
+        '<div class="barra-deck"><span style="width:' +
+          Math.min(100, (total / CARTAS_NO_DECK) * 100) + '%"></span></div>' +
+        '<div class="recado-deck">' + (tudoCerto
+          ? '✅ Deck válido! Pode levar pra jogar.'
+          : '🔧 Ainda não dá pra jogar com ele — olha a lista aqui embaixo.') + '</div>' +
+      '</div>' +
+
+      '<ul class="regras-deck">' + regras.map(r =>
+        '<li class="' + (r.ok ? 'ok' : 'falta') + '">' +
+          '<span>' + (r.ok ? '✅' : '⚠️') + '</span>' +
+          '<div>' + (r.ok ? r.certo : r.errado) + '</div></li>').join('') + '</ul>' +
+
+      GRUPOS_DECK.map(g => {
+        const desse = l.filter(x => grupoDaCarta(x.carta) === g.id);
+        if(!desse.length) return '';
+        const quantas = desse.reduce((s, x) => s + x.quantas, 0);
+        return '<h3 class="titulinho">' + g.nome + ' — ' + quantas + '</h3>' +
+          '<ul class="linhas-deck">' + desse.map(x =>
+            '<li>' +
+              '<img alt="" src="' + escapar(x.carta.images.small || '') + '" />' +
+              '<div class="qual"><b>' + escapar(x.carta.name) + '</b>' +
+                '<small>' + escapar(x.carta.set.name || '') +
+                (x.preco ? ' · ' + dinheiro(x.preco, 'USD') + ' cada' : ' · sem preço') +
+                '</small></div>' +
+              '<div class="mexer">' +
+                '<button type="button" class="menos" data-id="' + escapar(x.carta.id) + '" ' +
+                  'aria-label="Tirar uma">−</button>' +
+                '<b>' + x.quantas + '</b>' +
+                '<button type="button" class="mais" data-id="' + escapar(x.carta.id) + '" ' +
+                  'aria-label="Pôr mais uma">+</button>' +
+              '</div>' +
+            '</li>').join('') + '</ul>';
+      }).join('') +
+
+      '<h3 class="titulinho">Quanto custaria</h3>' +
+      '<div class="destaque">' +
+        '<div class="rotulo">O deck inteiro, comprando carta por carta</div>' +
+        '<div class="preco">' + dinheiro(soma, 'USD') + '</div>' +
+        '<div class="reais">' + escapar(soReais(soma, 'USD') || '') + '</div>' +
+        '<div class="qual">' + (semPreco
+          ? (semPreco === 1
+              ? '1 carta sem preço não entrou na conta'
+              : semPreco + ' cartas sem preço não entraram na conta')
+          : 'todas as ' + total + ' cartas entraram na conta') + '</div>' +
+      '</div>' +
+      '<p class="nota">O preço de cada carta é o do dia em que ela entrou no deck — a mais ' +
+      'antiga entrou <b>' + escapar(quantoFaz(maisVelha)) + '</b>. Buscar sessenta preços toda ' +
+      'vez que você abre esta tela seria lento e falharia na metade das vezes, então eu guardo ' +
+      'o do dia e digo de quando é.</p>' +
+
+      '<button class="btn secundario larga" type="button" id="limpar-deck">🗑️ Desmontar o deck</button>' +
+    '</section>';
+
+  palco.querySelectorAll('.linhas-deck .menos').forEach(b => {
+    b.onclick = () => { tirarDoDeck(b.dataset.id, false); mostrarDeck(); };
+  });
+  palco.querySelectorAll('.linhas-deck .mais').forEach(b => {
+    b.onclick = () => {
+      const x = lerDeck().find(y => y.carta.id === b.dataset.id);
+      if(!x) return;
+      const limite = ehEnergiaBasica(x.carta) ? 99 : MAX_IGUAIS;
+      if(x.quantas >= limite || totalDoDeck() >= CARTAS_NO_DECK) return;
+      const l2 = lerDeck();
+      const i = l2.findIndex(y => y.carta.id === b.dataset.id);
+      l2[i].quantas++;
+      gravarDeck(l2);
+      mostrarDeck();
+    };
+  });
+  document.getElementById('limpar-deck').onclick = () => {
+    gravarDeck([]);
+    mostrarDeck();
+  };
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 /* ---------- jogos ----------
@@ -4181,6 +4422,12 @@ function desenharCarta(){
               (naLista(CHAVE_DUELO, carta.id) ? '⚔️ Está no duelo' : '⚔️ Pôr no duelo') +
             '</button>'
             : '') +
+          '<button class="btn secundario" type="button" id="no-deck" ' +
+            'style="padding:10px 18px;font-size:.95rem">' +
+            (quantasNoDeck(carta.id)
+              ? '🛠️ No deck (' + quantasNoDeck(carta.id) + ')'
+              : '🛠️ Pôr no deck') +
+          '</button>' +
           '<button class="btn secundario" type="button" id="pref" ' +
             'style="padding:10px 18px;font-size:.95rem">' +
             (naLista(CHAVE_TOP3, carta.id) ? '🥇 É uma das 3 preferidas' : '🥇 Pôr nas 3 preferidas') +
@@ -4249,6 +4496,22 @@ function desenharCarta(){
     bd.textContent = fim === 'entrou'
       ? (quantas === 2 ? '⚔️ Prontos! Toca em Duelo' : '⚔️ Está no duelo (falta 1)')
       : '⚔️ Pôr no duelo';
+  };
+
+  const bdeck = document.getElementById('no-deck');
+  if(bdeck) bdeck.onclick = () => {
+    const fim = porNoDeck(carta);
+    if(fim === 'cheio'){
+      bdeck.textContent = '🛠️ Já são 4 dessa!';
+      setTimeout(() => { bdeck.textContent = '🛠️ No deck (' + quantasNoDeck(carta.id) + ')'; }, 2500);
+      return;
+    }
+    if(fim === 'deck-cheio'){
+      bdeck.textContent = '🛠️ O deck já tem 60!';
+      setTimeout(() => { bdeck.textContent = '🛠️ Pôr no deck'; }, 2500);
+      return;
+    }
+    bdeck.textContent = '🛠️ No deck (' + quantasNoDeck(carta.id) + ')';
   };
 
   const pref = document.getElementById('pref');
@@ -4393,6 +4656,7 @@ document.getElementById('btn-album').onclick = () => { paginaAlbum = 0; mostrarA
 document.getElementById('btn-todas').onclick = () => mostrarTodas(true);
 document.getElementById('btn-desejos').onclick = mostrarDesejos;
 document.getElementById('btn-duelo').onclick = mostrarDuelo;
+document.getElementById('btn-deck').onclick = mostrarDeck;
 document.getElementById('btn-jogos').onclick = abrirJogos;
 document.getElementById('btn-bonecos').onclick = mostrarBonecos;
 document.getElementById('btn-recado').onclick = mostrarRecado;
