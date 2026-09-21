@@ -124,6 +124,26 @@ select.escolher:focus{outline:none;border-color:var(--asa-escura)}
 }
 .aviso strong{display:block;color:var(--tinta);font-size:1.15rem;margin-bottom:6px}
 .aviso.ruim{border-color:#f5b3a4;background:#fff6f4}
+/* ---------- tela de erro ----------
+   Antes era um parágrafo vermelho com "HTTP 500" no fim. Agora tem cara de
+   recado: o que houve, de quem é a culpa, um botão pra tentar de novo, e o
+   detalhe técnico guardado pra quem quiser abrir. */
+.erro{
+  margin-top:22px;background:#fff;border:3px solid #f5b3a4;border-radius:22px;
+  padding:26px 20px;text-align:center;box-shadow:0 6px 0 #fadcd4;
+}
+.erro-cara{font-size:2.8rem;line-height:1;margin-bottom:10px}
+.erro strong{display:block;font-family:'Baloo 2',cursive;font-size:1.5rem;color:var(--tinta);margin-bottom:8px}
+.erro p{color:var(--tinta-fraca);font-size:.95rem;line-height:1.5;max-width:460px;margin:0 auto}
+.erro p b{color:var(--tinta)}
+.erro-extra{margin-top:8px !important;font-size:.88rem !important;opacity:.9}
+.erro .btn{margin-top:18px}
+.erro-detalhe{margin-top:16px;text-align:left;max-width:460px;margin-left:auto;margin-right:auto}
+.erro-detalhe summary{cursor:pointer;font-size:.8rem;color:var(--tinta-fraca);padding:5px 0}
+.erro-detalhe code{
+  display:block;margin-top:6px;padding:9px 11px;background:#fdf3f1;border-radius:9px;
+  font-size:.74rem;color:var(--tinta-fraca);word-break:break-word;line-height:1.5;
+}
 .girando{
   width:42px;height:42px;margin:0 auto 14px;border-radius:50%;
   border:6px solid var(--borda);border-top-color:var(--olho);animation:gira .8s linear infinite;
@@ -402,7 +422,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 20 — 21/09</span>
+    <br><span class="versao">versão 21 — 21/09</span>
   </footer>
 </div>
 
@@ -567,10 +587,61 @@ async function todasAsPaginas(monta, primeira, total){
   return primeira.concat.apply(primeira, resto);
 }
 
-async function pedirJSON(url){
-  const r = await fetch(url, { headers:{ Accept:'application/json' } });
-  if(!r.ok){ const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
-  return r.json();
+/* Erro 500 é soluço do servidor deles, não pedido errado meu: uma segunda
+   chance resolve boa parte. 429 não entra na regra — ali insistir só piora. */
+async function pedirJSON(url, jaTentei){
+  try{
+    const r = await fetch(url, { headers:{ Accept:'application/json' } });
+    if(!r.ok){ const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
+    return await r.json();
+  }catch(e){
+    const valeInsistir = !e.status || e.status >= 500;
+    if(valeInsistir && !jaTentei){
+      // Meio segundo: dá tempo do soluço passar sem deixar a pessoa
+      // olhando pro rodinha, já que a busca tenta várias consultas.
+      await new Promise(f => setTimeout(f, 500));
+      return pedirJSON(url, true);
+    }
+    throw e;
+  }
+}
+
+/* ---------- avisos de erro ----------
+   "HTTP 500" não diz nada pra quem está do outro lado. O que a pessoa
+   precisa saber é: de quem é a culpa, se vai voltar, e o que fazer agora. */
+function explicarErro(e){
+  const m = String((e && e.message) || e || '');
+  if(typeof navigator !== 'undefined' && navigator.onLine === false)
+    return 'Teu aparelho está <b>sem internet</b>. Liga o wi-fi ou os dados e tenta de novo.';
+  if(/HTTP 5\d\d/.test(m))
+    return 'O site das cartas está com problema <b>do lado deles</b> — não é culpa tua nem do ' +
+           'ButterPoke. Costuma voltar sozinho em alguns minutos.';
+  if(/HTTP 429/.test(m))
+    return 'O site das cartas atingiu o <b>limite de pesquisas</b> por hoje. ' +
+           'Amanhã volta, ou daqui a pouco se foi só um pico.';
+  if(/HTTP 404/.test(m))
+    return 'Essa carta <b>não está mais</b> no catálogo deles.';
+  if(/failed to fetch|networkerror|load failed|network request failed/i.test(m))
+    return 'Não consegui chegar no site das cartas. Ou a internet oscilou, ou eles estão fora do ar.';
+  return 'Não consegui falar com o site das cartas.';
+}
+
+let contaTentar = 0;
+function avisoErro(titulo, e, tentarDeNovo, extra){
+  const id = 'tentar' + (++contaTentar);
+  const detalhe = String((e && e.message) || e || '');
+  palco.innerHTML =
+    '<div class="erro">' +
+      '<div class="erro-cara">😵‍💫</div>' +
+      '<strong>' + titulo + '</strong>' +
+      '<p>' + explicarErro(e) + '</p>' +
+      (extra ? '<p class="erro-extra">' + extra + '</p>' : '') +
+      (tentarDeNovo ? '<button class="btn" type="button" id="' + id + '">🔄 Tentar de novo</button>' : '') +
+      (detalhe ? '<details class="erro-detalhe"><summary>Detalhe técnico</summary><code>' +
+        escapar(detalhe) + '</code></details>' : '') +
+    '</div>';
+  const b = document.getElementById(id);
+  if(b) b.onclick = () => tentarDeNovo();
 }
 
 /* ---------- o site reserva ----------
@@ -657,6 +728,7 @@ async function buscar(valor, caiuProIngles){
 
   const tropecos = [];
   let ninguemConhece = false;
+  let principalRespondeu = false;   // respondeu, mesmo que vazio
 
   // O principal só fala inglês. Nos outros idiomas ele nem é consultado.
   const soReserva = langBusca !== 'en';
@@ -668,14 +740,15 @@ async function buscar(valor, caiuProIngles){
       const primeira = dados.data || [];
       // Respondeu, mas veio vazio. A próxima consulta é mais ampla, então
       // vale tentar; só depois de todas é que o reserva entra.
+      principalRespondeu = true;
       if(primeira.length === 0){ ninguemConhece = true; continue; }
       ninguemConhece = false;
       const total = dados.totalCount || primeira.length;
       return receber(await todasAsPaginas(monta, primeira, total), valor, total);
     }catch(e){
       if(e.status === 429){   // de graça e sem cadastro, tem limite por dia
-        palco.innerHTML = '<div class="aviso ruim"><strong>Calma aí ⏳</strong>' +
-          'O site dos preços atingiu o limite de pesquisas de hoje. Tenta de novo daqui a pouco.</div>';
+        avisoErro('Calma aí', e, () => buscar(valor),
+          'É de graça e sem cadastro, e isso vem com limite.');
         return;
       }
       tropecos.push('pokemontcg.io ' + (e.message || e));
@@ -704,6 +777,17 @@ async function buscar(valor, caiuProIngles){
     return buscar(valor, true);
   }
 
+  /* "Procurei nos dois e nenhum tem" só vale se os dois tiverem respondido.
+     Quando o principal ficou calado, dizer isso seria mentira: ele pode ter
+     a carta e eu simplesmente não consegui perguntar. */
+  if(ninguemConhece && !principalRespondeu && !soReserva){
+    avisoErro('O catálogo principal não respondeu', { message:tropecos.join(' · ') },
+      () => buscar(valor),
+      'O banco reserva respondeu e não tem essa carta, mas o principal — que é o maior — ' +
+      'ficou calado. Pode ser que ele tenha.');
+    return;
+  }
+
   if(ninguemConhece){
     palco.innerHTML = '<div class="aviso"><strong>Não achei essa carta 😕</strong>' +
       (avisoBusca
@@ -717,10 +801,8 @@ async function buscar(valor, caiuProIngles){
     return;
   }
 
-  palco.innerHTML = '<div class="aviso ruim"><strong>Os sites de preço não responderam 📡</strong>' +
-    'Tentei em dois lugares diferentes e nenhum atendeu. Quase sempre é coisa passageira: ' +
-    'espera uns minutinhos e aperta Procurar de novo.' +
-    '<br><br><small>' + escapar(tropecos.join(' · ')) + '</small></div>';
+  avisoErro('Os sites de carta não responderam', { message:tropecos.join(' · ') },
+    () => buscar(valor), 'Tentei nos dois lugares e nenhum atendeu.');
 }
 
 function receber(cartas, valor, total){
@@ -1372,8 +1454,7 @@ async function linhaDoTempo(nome){
   }catch(e){
     try{ cartas = await buscarReserva(so); }
     catch(e2){
-      palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui montar a linha do tempo 📡</strong>' +
-        'Os sites de carta não responderam. Tenta de novo daqui a pouco.</div>';
+      avisoErro('Não consegui montar a linha do tempo', e2, () => linhaDoTempo(nome));
       return;
     }
   }
@@ -1421,21 +1502,46 @@ async function linhaDoTempo(nome){
   palco.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
+/* Uma carta guardada tem três caminhos até o preço de hoje, e antes eu
+   usava um só. Se todos falharem, mostro a carta assim mesmo: o nome e a
+   foto eu já tenho, e uma carta sem preço é melhor que uma tela de erro. */
 async function abrirFavorito(c){
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Pegando o preço de hoje…</div>';
+  const tropecos = [];
+
+  if(c.fonte !== 'reserva'){
+    try{
+      const d = await pedirJSON(API + '/' + encodeURIComponent(c.id));
+      if(d && d.data) return mostrarCarta(d.data);
+      tropecos.push('principal: veio vazio');
+    }catch(e){ tropecos.push('principal: ' + (e.message || e)); }
+  }
+
   try{
-    if(c.fonte === 'reserva'){
-      const cheia = deTcgdex(await pedirReserva('/cards/' + encodeURIComponent(c.id), c.lang));
-      cheia.__faltaPreco = false;
-      return mostrarCarta(cheia);
-    }
-    const d = await pedirJSON(API + '/' + encodeURIComponent(c.id));
-    if(d && d.data) return mostrarCarta(d.data);
-    throw new Error('veio vazio');
-  }catch(e){
-    palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui abrir essa favorita 📡</strong>' +
-      'O site dos preços não respondeu. Tenta de novo daqui a pouco.' +
-      '<br><br><small>' + escapar(String(e.message || e)) + '</small></div>';
+    const cheia = deTcgdex(await pedirReserva('/cards/' + encodeURIComponent(c.id), c.lang));
+    if(cheia && cheia.name){ cheia.__faltaPreco = false; return mostrarCarta(cheia); }
+    tropecos.push('reserva: veio vazio');
+  }catch(e){ tropecos.push('reserva: ' + (e.message || e)); }
+
+  // Último caminho: procurar pelo nome, que pega o caso do id ter mudado.
+  if(c.name){
+    try{
+      const d = await pedirJSON(url('name:"' + aspas(c.name) + '"', 1, false));
+      const achada = (d.data || []).find(x => x.id === c.id) || (d.data || [])[0];
+      if(achada) return mostrarCarta(achada);
+    }catch(e){ tropecos.push('pelo nome: ' + (e.message || e)); }
+  }
+
+  const semPreco = Object.assign({}, c, { __soIdentidade:false, __faltaPreco:false });
+  mostrarCarta(semPreco);
+  const onde = document.querySelector('.carta > div');
+  if(onde){
+    const p = document.createElement('p');
+    p.className = 'nota';
+    p.style.cssText = 'margin:10px 0 0';
+    p.innerHTML = '📡 <b>Não consegui o preço de hoje desta carta.</b> ' + explicarErro({ message:tropecos[0] }) +
+      ' Ela está aqui do jeito que você guardou.';
+    onde.appendChild(p);
   }
 }
 
@@ -1741,9 +1847,7 @@ async function mostrarTodas(reiniciar){
     if(novas.length === 250) paginaTodas++;
     else paginaTodas = 0;   // acabou o catálogo
   }catch(e){
-    palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui abrir o catálogo 📡</strong>' +
-      'O site das cartas não respondeu. Tenta de novo daqui a pouco.' +
-      '<br><br><small>' + escapar(String(e.message || e)) + '</small></div>';
+    avisoErro('Não consegui abrir o catálogo', e, () => mostrarTodas(false));
     return;
   }
   if(!todasCartas.length){
@@ -1780,10 +1884,8 @@ async function mostrarColecoes(){
       colecoes = (Array.isArray(l) ? l : []).map(deSetReserva);
       colecoes.forEach(c => { c.lang = idioma; });
     }catch(e2){
-      palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui pegar as coleções 📡</strong>' +
-        'Os dois sites de dados falharam. Tenta de novo daqui a pouco.' +
-        '<br><br><small>' + escapar(String(e.message || e) + ' · ' + String(e2.message || e2)) +
-        '</small></div>';
+      avisoErro('Não consegui pegar as coleções',
+        { message:String(e.message || e) + ' · ' + String(e2.message || e2) }, mostrarColecoes);
       return;
     }
   }
@@ -1823,8 +1925,7 @@ async function abrirColecao(colecao){
       });
     }
   }catch(e){
-    palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui abrir essa coleção 📡</strong>' +
-      'Tenta de novo, ou escolhe outra.<br><br><small>' + escapar(String(e.message || e)) + '</small></div>';
+    avisoErro('Não consegui abrir essa coleção', e, () => abrirColecao(colecao));
     return;
   }
   if(!cartas.length){
@@ -2139,9 +2240,8 @@ async function abrirDoEndereco(){
       mostrarCarta(d.data);
     }
   }catch(e){
-    palco.innerHTML = '<div class="aviso ruim"><strong>Não consegui abrir essa carta 🔗</strong>' +
-      'O link pode estar quebrado, ou o site dos preços não respondeu. Tenta procurar ela na busca.' +
-      '<br><br><small>' + escapar(String(e.message || e)) + '</small></div>';
+    avisoErro('Não consegui abrir essa carta', e, () => abrirDoEndereco(),
+      'O link pode estar quebrado. Se não for isso, procura a carta na busca aí em cima.');
   }
   return true;
 }
