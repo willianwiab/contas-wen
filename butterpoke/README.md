@@ -205,6 +205,40 @@ então dá pra aprender quanto as coisas valem errando.
 Trocar de jogo zera o placar — misturar ponto de jogos diferentes não diria nada. O
 recorde de cada um fica guardado no aparelho, separado.
 
+### Sete jogos, e mais cartas dentro deles
+
+Pediram mais jogos e mais cartas no "que carta é essa". As duas coisas eram o mesmo
+problema por baixo.
+
+**As cartas.** Eu pegava sempre a página 1 das coleções mais novas: as mesmas 250 cartas,
+toda vez. Depois de uns minutos já eram conhecidas. Agora eu **sorteio três páginas** entre
+as quarenta primeiras, o que traz umas 750 cartas e mistura coleção velha com nova — e tem
+um botão **🔀 Trocar as cartas** pra quem cansou. Como o jogo usa oito campos e não a carta
+inteira, peço com `select=` e a resposta vem pequena mesmo trazendo o triplo.
+
+Uma página que falhar não derruba o jogo: ele monta com as que vieram.
+
+**Os jogos.** De dois viraram sete, mas o código não triplicou — porque todos caem em duas
+formas:
+
+- **duas cartas, qual ganha**: 💰 vale mais, ❤️ mais HP, 📅 mais antiga, 💎 mais rara
+- **olha o desenho e escolhe entre quatro**: 🎲 que carta é essa, 🎨 quem desenhou,
+  ⚡ que tipo é
+
+São duas funções, `rodadaDuas` e `rodadaQuatro`, e cada jogo é só uma receitinha: qual é a
+pergunta, de onde sai o número (ou o rótulo), e o que explicar no fim. "Mais antiga" é
+"mais cara" virada do avesso — mesma função, `maior: false`.
+
+O zoom da espiadela ganhou um segundo emprego: ele esconde o nome lá em cima **e a linha do
+ilustrador lá embaixo**, que é o que torna o 🎨 possível. Sem ele seria ler o rodapé.
+
+Dois cuidados que dão trabalho e não aparecem:
+
+- as três opções erradas têm que ser diferentes da certa **e entre si** — senão a resposta
+  certa apareceria duas vezes e uma delas contaria como erro;
+- quando a pessoa erra, **a certa fica verde**. Antes só o botão tocado ficava colorido, e
+  quem errava não via qual era a resposta.
+
 ## Duelo
 
 Duas cartas lado a lado, com o dano **calculado como no jogo**: a fraqueza multiplica (ou
