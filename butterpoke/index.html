@@ -302,6 +302,8 @@ thead th{color:var(--tinta-fraca);font-size:.8rem;text-transform:uppercase;lette
   border-left:4px solid var(--asa);padding:10px 12px;border-radius:0 10px 10px 0;
 }
 .nota b{color:var(--tinta)}
+/* Recado de "não dá pra jogar isso agora": chama mais que nota comum. */
+.nota.atencao{border-left-color:var(--olho)}
 td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 /* ---------- ficha do jogo ---------- */
 .evolui{font-size:.9rem;color:var(--tinta-fraca);margin-bottom:10px}
@@ -599,7 +601,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 34 — 21/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 35 — 21/09 · 🔄</button>
   </footer>
 </div>
 
@@ -1921,9 +1923,15 @@ async function buscarPacote(valor){
 }
 
 /* ---------- jogos ----------
-   Dois, porque compartilham tudo: pegar um monte de carta, sortear e
-   marcar ponto. "Que carta é essa?" esconde o nome dando zoom no desenho;
-   "Qual vale mais?" usa os preços que já estão na mão. */
+   Sete jogos que dividem tudo: um monte de carta no bolso, sorteio e
+   placar. Eles caem em duas formas só, e por isso são duas funções:
+
+   - "duas cartas, qual ganha" (preço, HP, idade, raridade)
+   - "olha o desenho e escolhe entre quatro" (nome, artista, tipo)
+
+   A espiadela dá zoom no meio da carta, e isso esconde o nome lá em cima e
+   a linha do ilustrador lá embaixo. Sem ela, "quem desenhou?" seria só ler
+   o rodapé da carta. */
 const CHAVE_RECORDE = 'butterpoke:recordes';
 let cartasDoJogo = [];
 let jogoAtual = 'nome';
@@ -1949,19 +1957,43 @@ function sortear(lista, quantas, fora){
   return saida;
 }
 
+/* Pedir carta inteira pra jogar é desperdício: o jogo usa oito campos. Com
+   select a resposta fica pequena, e aí dá pra trazer MUITA carta em vez de
+   uma página só. */
+const CAMPOS_JOGO = 'id,name,images,supertype,rarity,hp,types,artist,set,tcgplayer';
+const PAGINAS_JOGO = 3;
+
+/* Antes eu pegava sempre a página 1 das mais novas: as mesmas 250 cartas,
+   sempre, e depois de uns minutos já não tinha graça. Agora sorteio as
+   páginas — o baralho muda a cada vez, e entra carta velha também. */
+async function encherOBolso(){
+  const escolhidas = new Set();
+  while(escolhidas.size < PAGINAS_JOGO) escolhidas.add(1 + Math.floor(Math.random() * 40));
+  const vistas = new Map();
+  let tropeco = null;
+  for(const pag of escolhidas){
+    palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
+      'Embaralhando as cartas… (' +
+      (vistas.size ? vistas.size + ' até agora' : 'começando') + ')</div>';
+    try{
+      const d = await pedirJSON(API + '?select=' + CAMPOS_JOGO +
+        '&pageSize=250&orderBy=-set.releaseDate&page=' + pag);
+      ((d && d.data) || []).forEach(c => {
+        if(c.name && c.images && (c.images.large || c.images.small) && c.supertype === 'Pokémon')
+          vistas.set(c.id, c);
+      });
+    }catch(e){ tropeco = e; }   // uma página que falha não estraga o jogo
+  }
+  if(!vistas.size && tropeco) throw tropeco;
+  cartasDoJogo = [...vistas.values()];
+}
+
 async function abrirJogos(){
   cartaAberta = null; voltarPraLista = null;
   pontos = 0; seguidas = 0;
   if(cartasDoJogo.length < 12){
-    palco.innerHTML = '<div class="aviso"><div class="girando"></div>Preparando o jogo…</div>';
-    try{
-      const d = await pedirJSON(API + '?pageSize=250&orderBy=-set.releaseDate&page=1');
-      cartasDoJogo = ((d && d.data) || []).filter(c =>
-        c.name && c.images && (c.images.large || c.images.small) && c.supertype === 'Pokémon');
-    }catch(e){
-      avisoErro('Não consegui preparar o jogo', e, abrirJogos);
-      return;
-    }
+    try{ await encherOBolso(); }
+    catch(e){ avisoErro('Não consegui preparar o jogo', e, abrirJogos); return; }
   }
   if(cartasDoJogo.length < 12){
     palco.innerHTML = '<div class="aviso"><strong>Vieram poucas cartas 🤔</strong>' +
@@ -1970,6 +2002,21 @@ async function abrirJogos(){
   }
   rodada();
 }
+async function trocarBaralho(){
+  try{ await encherOBolso(); }
+  catch(e){ avisoErro('Não consegui trocar as cartas', e, trocarBaralho); return; }
+  rodada();
+}
+
+const JOGOS = [
+  { v:'nome',     rotulo:'🎲 Que carta é essa?' },
+  { v:'preco',    rotulo:'💰 Qual vale mais?' },
+  { v:'hp',       rotulo:'❤️ Quem tem mais HP?' },
+  { v:'antiga',   rotulo:'📅 Qual é mais antiga?' },
+  { v:'raridade', rotulo:'💎 Qual é mais rara?' },
+  { v:'artista',  rotulo:'🎨 Quem desenhou?' },
+  { v:'tipo',     rotulo:'⚡ Que tipo é essa?' },
+];
 
 function cabecalhoJogo(){
   const r = lerRecordes()[jogoAtual] || 0;
@@ -1979,18 +2026,21 @@ function cabecalhoJogo(){
       '<div><b>' + r + '</b><span>recorde</span></div>' +
     '</div>' +
     '<div class="escolha" style="margin:0 0 16px"><h3>Qual jogo</h3>' +
-      chips('chips-jogo', [
-        { v:'nome',  rotulo:'🎲 Que carta é essa?' },
-        { v:'preco', rotulo:'💰 Qual vale mais?' },
-      ], jogoAtual) +
+      chips('chips-jogo', JOGOS, jogoAtual) +
     '</div>';
 }
 
 function rodada(){
   palco.innerHTML = '<section class="pergunta"><h2>🎮 Jogos</h2>' + cabecalhoJogo() +
-    '<div id="rodada"></div></section>';
+    '<div id="rodada"></div>' +
+    '<p class="nota">Estou sorteando entre <b>' + cartasDoJogo.length + ' cartas</b>. ' +
+      'Cansou de ver as mesmas? Troca o baralho.</p>' +
+    '<button class="btn secundario larga" type="button" id="trocar-baralho">' +
+      '🔀 Trocar as cartas</button>' +
+    '</section>';
   ligarChips('chips-jogo', v => { jogoAtual = v; pontos = 0; seguidas = 0; }, rodada);
-  (jogoAtual === 'preco' ? rodadaPreco : rodadaNome)();
+  document.getElementById('trocar-baralho').onclick = trocarBaralho;
+  (RODADAS[jogoAtual] || RODADAS.nome)();
   palco.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
@@ -2005,46 +2055,23 @@ function responder(acertou, explicacao){
     '<button class="btn larga" type="button" id="proxima">▶ Próxima</button>';
   document.getElementById('proxima').onclick = rodada;
 }
-
-function rodadaNome(){
-  const certa = sortear(cartasDoJogo, 1)[0];
-  const opcoes = sortear(cartasDoJogo, 3, certa).concat([certa]);
-  opcoes.sort(() => Math.random() - 0.5);
+function naoDaPraJogar(porque){
   document.getElementById('rodada').innerHTML =
-    '<p class="pergunta-jogo">Só o desenho. Que carta é essa?</p>' +
-    '<div class="espiadela"><img alt="Pedaço de uma carta" src="' +
-      escapar(certa.images.large || certa.images.small) + '" /></div>' +
-    '<div class="opcoes-jogo">' + opcoes.map((c, i) =>
-      '<button type="button" class="btn secundario" data-i="' + i + '">' +
-        escapar(c.name) + '</button>').join('') + '</div>' +
-    '<div id="resposta"></div>';
-  palco.querySelectorAll('.opcoes-jogo button').forEach(b => {
-    b.onclick = () => {
-      const escolhida = opcoes[Number(b.dataset.i)];
-      palco.querySelectorAll('.opcoes-jogo button').forEach(x => { x.disabled = true; });
-      const acertou = escolhida.id === certa.id;
-      b.classList.add(acertou ? 'acerto' : 'erro');
-      // Mostrar a carta inteira é a parte que ensina: some o zoom.
-      palco.querySelector('.espiadela').classList.add('aberta');
-      responder(acertou, 'Era <b>' + escapar(certa.name) + '</b>, da coleção ' +
-        escapar((certa.set && certa.set.name) || '?') + '.');
-    };
-  });
+    '<p class="nota atencao">' + porque + ' Escolhe outro jogo aí em cima, ou ' +
+    'troca as cartas ali embaixo.</p>';
 }
 
-function rodadaPreco(){
-  const comPreco = cartasDoJogo.filter(c => precoDe(c) != null);
-  if(comPreco.length < 4){
-    document.getElementById('rodada').innerHTML =
-      '<p class="nota">Nenhuma dessas cartas tem preço agora, então não dá pra jogar este. ' +
-      'Tenta o 🎲 Que carta é essa?</p>';
-    return;
-  }
+/* ---------- forma 1: duas cartas, qual ganha ---------- */
+function rodadaDuas(cfg){
+  const podem = cartasDoJogo.filter(c => cfg.valor(c) != null);
+  if(podem.length < 4) return naoDaPraJogar(cfg.falta);
   let a, b, voltas = 0;
-  do{ const dois = sortear(comPreco, 2); a = dois[0]; b = dois[1]; voltas++; }
-  while(a && b && precoDe(a) === precoDe(b) && voltas < 20);   // empate não dá jogo
+  do{ const dois = sortear(podem, 2); a = dois[0]; b = dois[1]; voltas++; }
+  while(a && b && cfg.valor(a) === cfg.valor(b) && voltas < 30);   // empate não dá jogo
+  if(!a || !b || cfg.valor(a) === cfg.valor(b)) return naoDaPraJogar(cfg.falta);
+
   document.getElementById('rodada').innerHTML =
-    '<p class="pergunta-jogo">Qual das duas vale mais?</p>' +
+    '<p class="pergunta-jogo">' + cfg.pergunta + '</p>' +
     '<div class="duas">' + [a, b].map((c, i) =>
       '<button type="button" class="escolha-carta" data-i="' + i + '">' +
         '<img alt="' + escapar(c.name) + '" src="' +
@@ -2052,18 +2079,143 @@ function rodadaPreco(){
         '<b>' + escapar(c.name) + '</b>' +
       '</button>').join('') + '</div>' +
     '<div id="resposta"></div>';
+
   palco.querySelectorAll('.escolha-carta').forEach(botao => {
     botao.onclick = () => {
       const esc = Number(botao.dataset.i) === 0 ? a : b;
       const outra = esc === a ? b : a;
-      palco.querySelectorAll('.escolha-carta').forEach(x => { x.disabled = true; });
-      const acertou = precoDe(esc) >= precoDe(outra);
-      botao.classList.add(acertou ? 'acerto' : 'erro');
-      responder(acertou, escapar(a.name) + ' vale <b>' + dinheiro(precoDe(a), 'USD') +
-        '</b> e ' + escapar(b.name) + ' vale <b>' + dinheiro(precoDe(b), 'USD') + '</b>.');
+      // "maior ganha" e "menor ganha" são o mesmo jogo virado do avesso.
+      const acertou = cfg.maior ? cfg.valor(esc) >= cfg.valor(outra)
+                                : cfg.valor(esc) <= cfg.valor(outra);
+      const certa = acertou ? esc : outra;
+      palco.querySelectorAll('.escolha-carta').forEach((x, i) => {
+        x.disabled = true;
+        if((i === 0 ? a : b) === certa) x.classList.add('acerto');
+      });
+      if(!acertou) botao.classList.add('erro');
+      responder(acertou, cfg.conta(a, b));
     };
   });
 }
+
+/* ---------- forma 2: olha o desenho e escolhe entre quatro ---------- */
+function rodadaQuatro(cfg){
+  const podem = cartasDoJogo.filter(c => cfg.rotulo(c));
+  if(podem.length < 8) return naoDaPraJogar(cfg.falta);
+  const certa = sortear(podem, 1)[0];
+  const certo = cfg.rotulo(certa);
+
+  /* As três erradas têm que ser diferentes da certa E entre si. Se a
+     resposta certa aparecesse duas vezes, uma delas contaria como erro. */
+  const opcoes = [certo];
+  for(const c of sortear(podem, podem.length, certa)){
+    const r = cfg.rotulo(c);
+    if(r && opcoes.indexOf(r) < 0) opcoes.push(r);
+    if(opcoes.length === 4) break;
+  }
+  if(opcoes.length < 4) return naoDaPraJogar(cfg.falta);
+  opcoes.sort(() => Math.random() - 0.5);
+
+  document.getElementById('rodada').innerHTML =
+    '<p class="pergunta-jogo">' + cfg.pergunta + '</p>' +
+    '<div class="espiadela"><img alt="Pedaço de uma carta" src="' +
+      escapar(certa.images.large || certa.images.small) + '" /></div>' +
+    '<div class="opcoes-jogo">' + opcoes.map((r, i) =>
+      '<button type="button" class="btn secundario" data-i="' + i + '">' +
+        escapar(r) + '</button>').join('') + '</div>' +
+    '<div id="resposta"></div>';
+
+  palco.querySelectorAll('.opcoes-jogo button').forEach(b => {
+    b.onclick = () => {
+      const acertou = opcoes[Number(b.dataset.i)] === certo;
+      /* Quem erra precisa ver QUAL era a certa, não só que errou. Antes
+         só o botão tocado ficava colorido, e a resposta certa continuava
+         parecendo uma opção qualquer. */
+      palco.querySelectorAll('.opcoes-jogo button').forEach((x, i) => {
+        x.disabled = true;
+        if(opcoes[i] === certo) x.classList.add('acerto');
+      });
+      if(!acertou) b.classList.add('erro');
+      // Mostrar a carta inteira é a parte que ensina: some o zoom.
+      palco.querySelector('.espiadela').classList.add('aberta');
+      responder(acertou, cfg.conta(certa));
+    };
+  });
+}
+
+function anoDe(c){
+  const d = c.set && c.set.releaseDate;
+  return d ? String(d).slice(0, 4) : '?';
+}
+function quandoSaiu(c){
+  const d = c.set && c.set.releaseDate;
+  if(!d) return null;
+  const n = Number(String(d).replace(/[^0-9]/g, ''));   // 2023/09/22 -> 20230922
+  return isNaN(n) ? null : n;
+}
+function nomeDoTipo(id){
+  const e = ENERGIAS.find(x => x.id === id);
+  return e ? e.nome : id;
+}
+function deQualColecao(c){
+  return 'da coleção <b>' + escapar((c.set && c.set.name) || '?') + '</b> (' + anoDe(c) + ')';
+}
+
+const RODADAS = {
+  nome: () => rodadaQuatro({
+    pergunta: 'Só o desenho. Que carta é essa?',
+    rotulo: c => c.name,
+    falta: 'Faltou carta com nome pra montar as quatro opções.',
+    conta: c => 'Era <b>' + escapar(c.name) + '</b>, ' + deQualColecao(c) + '.',
+  }),
+  artista: () => rodadaQuatro({
+    pergunta: 'Quem desenhou esta carta?',
+    rotulo: c => c.artist,
+    falta: 'Nenhuma dessas cartas diz quem desenhou.',
+    conta: c => 'Quem desenhou <b>' + escapar(c.name) + '</b> foi <b>' +
+      escapar(c.artist) + '</b>. A carta é ' + deQualColecao(c) + '.',
+  }),
+  tipo: () => rodadaQuatro({
+    pergunta: 'Pelo desenho: que tipo de energia é essa?',
+    rotulo: c => (c.types && c.types.length === 1) ? nomeDoTipo(c.types[0]) : '',
+    falta: 'Faltou carta de tipo único pra este jogo.',
+    conta: c => '<b>' + escapar(c.name) + '</b> é do tipo <b>' +
+      escapar(nomeDoTipo(c.types[0])) + '</b>.',
+  }),
+  preco: () => rodadaDuas({
+    pergunta: 'Qual das duas vale mais?',
+    valor: c => precoDe(c),
+    maior: true,
+    falta: 'Nenhuma dessas cartas tem preço agora.',
+    conta: (a, b) => escapar(a.name) + ' vale <b>' + dinheiro(precoDe(a), 'USD') +
+      '</b> e ' + escapar(b.name) + ' vale <b>' + dinheiro(precoDe(b), 'USD') + '</b>.',
+  }),
+  hp: () => rodadaDuas({
+    pergunta: 'Qual das duas aguenta mais? (mais HP)',
+    valor: c => { const n = parseInt(c.hp, 10); return isNaN(n) ? null : n; },
+    maior: true,
+    falta: 'Nenhuma dessas cartas mostra o HP.',
+    conta: (a, b) => escapar(a.name) + ' tem <b>' + escapar(a.hp) + ' HP</b> e ' +
+      escapar(b.name) + ' tem <b>' + escapar(b.hp) + ' HP</b>.',
+  }),
+  antiga: () => rodadaDuas({
+    pergunta: 'Qual das duas é a mais antiga?',
+    valor: quandoSaiu,
+    maior: false,   // aqui quem ganha é o número MENOR
+    falta: 'Não sei a data dessas cartas.',
+    conta: (a, b) => escapar(a.name) + ' é de <b>' + anoDe(a) + '</b> (' +
+      escapar((a.set && a.set.name) || '?') + ') e ' + escapar(b.name) + ' é de <b>' +
+      anoDe(b) + '</b> (' + escapar((b.set && b.set.name) || '?') + ').',
+  }),
+  raridade: () => rodadaDuas({
+    pergunta: 'Qual das duas é a mais rara?',
+    valor: c => nivelRaridade(c) || null,
+    maior: true,
+    falta: 'Essas cartas não dizem a raridade.',
+    conta: (a, b) => escapar(a.name) + ' é <b>' + escapar(a.rarity || '?') + '</b> e ' +
+      escapar(b.name) + ' é <b>' + escapar(b.rarity || '?') + '</b>.',
+  }),
+};
 
 /* ---------- duelo ----------
    Comparar duas cartas e calcular o dano de verdade: a fraqueza dobra, a
