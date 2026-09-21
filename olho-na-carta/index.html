@@ -411,20 +411,21 @@
   <section class="panel">
     <div class="panel-head">
       <h2>Câmera: lupa e cor do verso</h2>
-      <span class="hint">Toque na foto pra ampliar até 8×</span>
+      <span class="hint">As duas fotos na mesma luz · toque pra ampliar até 8×</span>
     </div>
     <div class="panel-body">
       <p style="font-size:14px;color:var(--ink-2)">
-        Fotografe o verso das duas cartas e eu meço a cor média de cada uma. Depois toque
-        na foto pra ampliar e olhar de perto o acento de "Pokémon", o símbolo © e a borda
-        — é onde a falsificação aparece.
+        O azul do verso é onde a falsificação mais escorrega — mas a olho nu a diferença
+        some. Fotografe o verso das duas cartas e eu meço a cor média de cada uma. Depois
+        toque na foto pra ampliar e olhar de perto o acento de "Pokémon", o símbolo © e a
+        borda.
       </p>
 
       <div class="shots">
         <div class="shot">
           <span class="label-mono">Carta suspeita</span>
           <button class="shotbtn" type="button" data-shot="a">
-            <span class="shot-ph" id="ph-a">Tirar foto do verso</span>
+            <span class="shot-ph" id="ph-a">Tirar ou escolher foto do verso</span>
             <img id="img-a" alt="Verso da carta suspeita" hidden />
           </button>
           <div class="row">
@@ -432,13 +433,13 @@
             <button class="ghost tiny" data-lupa="a" disabled>Ampliar</button>
             <button class="ghost tiny" data-trocafoto="a" hidden>Outra foto</button>
           </div>
-          <input type="file" id="cam-a" accept="image/*" capture="environment" hidden />
+          <input type="file" id="cam-a" accept="image/*" hidden />
         </div>
 
         <div class="shot">
           <span class="label-mono">Carta que você sabe ser original</span>
           <button class="shotbtn" type="button" data-shot="b">
-            <span class="shot-ph" id="ph-b">Tirar foto do verso</span>
+            <span class="shot-ph" id="ph-b">Tirar ou escolher foto do verso</span>
             <img id="img-b" alt="Verso da carta original de referência" hidden />
           </button>
           <div class="row">
@@ -446,7 +447,7 @@
             <button class="ghost tiny" data-lupa="b" disabled>Ampliar</button>
             <button class="ghost tiny" data-trocafoto="b" hidden>Outra foto</button>
           </div>
-          <input type="file" id="cam-b" accept="image/*" capture="environment" hidden />
+          <input type="file" id="cam-b" accept="image/*" hidden />
         </div>
       </div>
 
@@ -527,7 +528,7 @@
         acima é o seu chute de quanto — mude ele conforme o que você vê nas lojas daqui.
         Os dois números aparecem lado a lado, pra você nunca confundir um com o outro.
         Estado da carta (NM, played, danificada) muda tudo e a busca não sabe o estado da
-        sua.
+        sua. Confira na Liga Pokémon antes de fechar troca grande.
       </p>
     </div>
   </section>

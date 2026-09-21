@@ -2,7 +2,7 @@
    comparador de verso rodam inteiros no aparelho, então offline eles
    funcionam igual. A busca de preço precisa de internet e, sem ela, a
    página avisa e deixa você digitar o valor na mão. */
-const CACHE = 'olho-na-carta-v5';
+const CACHE = 'olho-na-carta-v6';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {
