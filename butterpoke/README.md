@@ -39,6 +39,21 @@ E um **código** que a pessoa leva na mão:
 - código de outro site, ou cortado no meio, dá um recado em português explicando —
   sem isso o navegador devolve o erro do `atob` em inglês, que não ajuda ninguém
 
+## Minha coleção
+
+Cada cartinha ganhou um ⬜ no canto oposto ao da estrela, pra marcar "eu tenho esta". Na
+tela de uma coleção aparece uma **barra de quanto falta**, com "12 de 165 · 7% completa" e
+um 🎉 quando fecha.
+
+Duas decisões:
+
+- **A conta é sobre a coleção inteira, não sobre o que está filtrado na tela.** Filtrar por
+  "holo" e ver 100% seria mentira confortável.
+- Aqui guardo **só o id** da carta, não a carta inteira como nas outras listas: é marcação
+  em massa, e uma coleção grande faria o código do perfil virar um monstro.
+
+Vai no código junto com o resto, então a coleção acompanha a pessoa pro outro aparelho.
+
 ## Cartão de treinador
 
 O perfil virado carta: fundo escolhido entre oito, símbolo, nome, três números e as
