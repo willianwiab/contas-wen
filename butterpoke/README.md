@@ -49,6 +49,23 @@ Mas a pergunta por trás — *vale a pena comprar?* — essa dá pra responder c
 já estão na mão. Virou o **terceiro modo de busca**, ao lado de "pelo número" e "pelo
 nome": escreve o nome de uma coleção e ele soma.
 
+### Caixa, ETB e blister
+
+Pediram produtos de novo, e dessa vez eu tinha deixado passar uma coisa óbvia: **caixa,
+ETB e blister são feitos de pacote**. Sabendo quanto vale um pacote, sei quanto vale a
+caixa — é multiplicação.
+
+São quatro: pacote (1), blister (3), Elite Trainer Box (9) e caixa (36). Dá pra trocar por
+botão, e **o texto digitado também escolhe**: "caixa de 151" já abre na caixa, "ETB
+Obsidian" na ETB. O preço sugerido acompanha o produto, porque ninguém paga R$25 numa
+caixa.
+
+Na ETB o site avisa que vem sleeve, dado e moeda junto, e que **acessório eu não sei
+precificar** — a conta é só das cartas.
+
+**Pelúcia e boneco continuam de fora**, e por um motivo que não muda: não existe o dado.
+Inventar preço de brinquedo seria pior que não ter.
+
 A conta é **por faixa de raridade**, não a média de tudo junto: um pacote traz 4 comuns,
 3 incomuns, 1 reverse e 1 rara, e não 10 sorteios iguais. A média de tudo junto seria
 puxada pelas raras e prometeria um pacote que não existe.
