@@ -75,6 +75,24 @@ chance anotada fica no fim.
 É a mesma ideia dos 🧸 bonecos do ButterPoke: quando o dado não existe em lugar nenhum, o
 site guarda o que a pessoa sabe, em vez de inventar.
 
+### A lista rápida, e por que ela é honesta
+
+A primeira versão tinha um problema que só apareceu quando alguém abriu: **não tinha
+nenhum item do MM2 dentro dela.** Era uma calculadora de matemática com um caderno vazio.
+Quem entrou procurando as facas e as armas do jogo não achou nada do jogo.
+
+Tentei buscar a lista: a wiki, as listas da comunidade e o próprio site da Roblox são todos
+inalcançáveis daqui. E a página do jogo na Roblox não lista os itens — eles ficam dentro
+do jogo.
+
+Então escrevi de cabeça uma lista de nomes (facas, armas e pets) e pus como **chips pra
+tocar**. O que torna isso honesto não é a lista: é o **sentido da conferência**. Está
+escrito em cima, em amarelo: *"esses nomes eu escrevi de cabeça; se tiver nome errado ou
+item que nem existe, é só não tocar"*. Quem sabe de MM2 é quem joga, não eu — e tocar num
+chip é o jogador dizendo "esse existe". Tocar de novo desfaz.
+
+O campo de escrever continua ali pro que faltar, que é muita coisa.
+
 ## A escadinha das raridades
 
 Comum → Incomum → Rara → Lendária → Única → Vintage → Godly → Ancient → Chroma.
