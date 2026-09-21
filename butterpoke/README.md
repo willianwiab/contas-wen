@@ -749,6 +749,37 @@ Os códigos viram português: 5xx é problema do lado deles, 429 é limite do di
 fora do catálogo, e falha de rede com `navigator.onLine === false` vira "teu aparelho está
 sem internet".
 
+## Dá pra usar sem internet?
+
+Perguntaram isso, e a resposta honesta era "em parte" — o service worker fazia a **página**
+abrir offline, mas abrir uma página que não mostra carta nenhuma é abrir uma casca.
+
+A regra que eu sempre segui aqui é **não guardar preço**: preço velho com cara de preço de
+hoje é mentira. Só que essa regra vale pro *preço*, não pra *carta*. Dava pra fazer muito
+mais.
+
+Agora o site guarda, no aparelho:
+
+- **as últimas 80 cartas que você abriu**, com a data. Sem internet, a busca acha essas — e
+  o aviso diz: *"o preço é do dia em que você viu, não o de hoje"*. `$4,30 no dia 21/09` é
+  verdade; o que seria mentira é `$4,30` sozinho.
+- **o baralho dos jogos** (até 400 cartas). Jogo não precisa de preço de hoje, precisa de
+  carta: os 25 jogos funcionam offline inteiros, e a tela avisa de quando é o baralho.
+- a lista de coleções e as três últimas coleções somadas, que já eram guardadas antes.
+
+E o site **avisa antes**, em vez de reclamar depois de falhar: quando a rede cai, aparece
+uma faixa dizendo o que continua funcionando — que é bastante coisa. Dá pra fechar, porque
+ela fica presa embaixo da tela.
+
+O que **não** funciona sem internet, e está escrito: preço de hoje e carta que você nunca
+abriu. Procurar uma dessas offline dá a tela de erro de sempre, não um resultado inventado.
+
+### Guardar sem estourar
+
+`localStorage` enche, e quando enche ele não avisa — estoura. Em vez de perder a lista
+inteira num erro de cota, `guardarComEspaco` vai jogando as mais velhas fora até caber. O
+baralho tenta 400 cartas e, se não couber, tenta 120.
+
 ## Quando o site dos preços cai
 
 Aconteceu no primeiro dia no ar: a pokemontcg.io devolveu **500** e a busca não
