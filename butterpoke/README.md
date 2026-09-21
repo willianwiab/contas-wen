@@ -218,6 +218,20 @@ inteira, peço com `select=` e a resposta vem pequena mesmo trazendo o triplo.
 
 Uma página que falhar não derruba o jogo: ele monta com as que vieram.
 
+**E aí eu me peguei numa mentira.** Escrevi aqui e falei em voz alta que o baralho trazia
+"carta de 1999 no meio". Não trazia: eu sorteava entre as **quarenta primeiras páginas**,
+um número que eu tinha chutado, e quarenta páginas são só a metade mais nova do banco. O
+jogo nunca mostrou uma carta antiga.
+
+Agora o site **pergunta**: a primeira resposta traz o `totalCount`, dele sai quantas
+páginas existem de verdade (são 78, não 40), e o sorteio é em cima desse número. A tela diz
+quantas coleções estão no bolso e de quantas páginas elas saíram — número na cara é mais
+difícil de eu inventar.
+
+A lista de coleções também deixou de depender de um `pageSize=250` que "dá conta hoje". Ela
+lê o `totalCount` e busca o resto se houver. Passar de 250 coleções ia fazer sumir coleção
+do site sem ninguém entender por quê.
+
 **Os jogos.** De dois viraram sete, mas o código não triplicou — porque todos caem em duas
 formas:
 
