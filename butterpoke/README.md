@@ -497,8 +497,35 @@ clara em cima de uma página escura.
 
 ### O topo
 
-Eram seis botões roxos iguais, que roubavam a atenção da busca — que é o que a pessoa vem
-fazer. Viraram contorno: continuam visíveis, param de competir.
+Passou por duas rodadas. Primeiro eram seis botões roxos iguais que roubavam a atenção da
+busca, e viraram contorno. Depois viraram **oito**, e contorno já não bastava: oito botões
+largos, um do lado do outro, são uma parede de texto.
+
+Agora são **ícone em cima, nome curto embaixo**, quatro por fileira (três em telas bem
+estreitas). Cabem em duas fileiras e leem-se de relance, em vez de exigir leitura.
+
+O resto da rodada foi tirar peso:
+
+- a caixa de busca tinha uma moldura de 3px que gritava mais alto que o conteúdo. Virou
+  superfície: fundo, sombra suave, borda de 1px
+- os três modos viraram **um trilho só**, com a aba ativa deslizando dentro — menos caixa,
+  mais "escolhe um destes"
+- o campo de busca cresceu e ganhou um anel de foco, porque é o que a pessoa vem fazer
+- a dica e o seletor de idioma ficaram menores e mais claros: são apoio, não o assunto
+
+Isso é separado do claro/escuro — modo escuro é outra coisa, e já existia.
+
+## A lista de coleções fica guardada
+
+Relato: "não consegui pegar as coleções", com a internet boa. Os dois bancos fora do ar ao
+mesmo tempo, e o site não tinha o que mostrar.
+
+A lista de coleções muda umas poucas vezes por ano, então guardar a última que deu certo
+quase não envelhece — e é a diferença entre uma tela de erro e um site que continua
+servindo. Quando os dois falham, ele mostra a lista guardada e **diz de quando ela é**.
+Abrir uma coleção ainda precisa de internet, e a tela avisa.
+
+Guardo só nome, logo e tamanho. **Preço nunca**: preço guardado envelhece e mente.
 
 ## Quando dá erro
 

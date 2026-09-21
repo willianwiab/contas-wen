@@ -67,7 +67,7 @@ body{
 .envolve{max-width:900px;margin:0 auto}
 
 /* ---------- topo ---------- */
-header{text-align:center;padding:30px 0 18px}
+header{text-align:center;padding:34px 0 22px}
 .logo{
   font-family:'Baloo 2',cursive; font-size:clamp(2.4rem,9vw,3.6rem); line-height:1;
   color:var(--asa-escura); text-shadow:3px 3px 0 var(--asa);
@@ -78,22 +78,34 @@ header{text-align:center;padding:30px 0 18px}
 .slogan{margin-top:8px;color:var(--tinta-fraca);font-size:1rem}
 
 /* ---------- busca ---------- */
+/* A caixa de busca era uma moldura de 3px que gritava mais alto que o que
+   tem dentro. Agora ela é uma superfície: fundo, sombra suave, borda fina. */
 .busca{
-  background:var(--cartao); border:3px solid var(--asa); border-radius:22px;
-  padding:20px; box-shadow:var(--sombra);
+  background:var(--cartao); border:1px solid var(--borda); border-radius:24px;
+  padding:22px 20px; box-shadow:0 10px 28px rgba(80,50,130,.10);
 }
 .modos{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+/* Os três modos são abas, não botões: viraram um trilho só, com a ativa
+   deslizando dentro dele. Menos caixa, mais "escolhe um destes". */
+.modos{background:var(--cartao2);border-radius:999px;padding:4px;gap:2px;border:1px solid var(--borda)}
 .modos button{
-  flex:1 1 120px; padding:10px 14px; border:2px solid var(--borda); background:var(--cartao);
+  flex:1 1 100px; padding:10px 12px; border:none; background:none;
   border-radius:999px; font:inherit; font-weight:600; color:var(--tinta-fraca); cursor:pointer;
+  transition:background .18s, color .18s;
 }
-.modos button[aria-pressed="true"]{background:var(--asa);border-color:var(--asa-escura);color:var(--tinta)}
+.modos button:hover{color:var(--tinta)}
+.modos button[aria-pressed="true"]{background:var(--asa);color:#fff;box-shadow:0 2px 8px rgba(80,50,130,.22)}
 .linha-busca{display:flex;gap:10px;flex-wrap:wrap}
+/* O campo é o que a pessoa vem fazer: maior, mais alto, e o contorno só
+   aparece de verdade quando ela está escrevendo nele. */
 #campo{
-  flex:1 1 200px; min-width:0; padding:16px 18px; font:inherit; font-size:1.15rem;
-  border:3px solid var(--borda); border-radius:16px; background:var(--campo); color:var(--tinta);
+  flex:1 1 200px; min-width:0; padding:18px 20px; font:inherit; font-size:1.2rem;
+  border:2px solid var(--borda); border-radius:18px; background:var(--campo); color:var(--tinta);
+  transition:border-color .15s, box-shadow .15s;
 }
-#campo:focus{outline:none;border-color:var(--asa-escura);background:var(--cartao)}
+#campo:hover{border-color:var(--asa)}
+#campo:focus{outline:none;border-color:var(--asa-escura);background:var(--cartao);
+  box-shadow:0 0 0 4px rgba(169,127,214,.22)}
 .btn{
   padding:16px 26px; border:none; border-radius:16px; font:inherit; font-weight:700;
   font-size:1.05rem; cursor:pointer; background:var(--olho); color:#fff;
@@ -102,8 +114,9 @@ header{text-align:center;padding:30px 0 18px}
 .btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--olho-sombra)}
 .btn.secundario{background:var(--asa);color:var(--tinta);box-shadow:0 5px 0 var(--asa-escura)}
 .btn.secundario:active{box-shadow:0 1px 0 var(--asa-escura)}
-.dica{margin-top:12px;font-size:.88rem;color:var(--tinta-fraca)}
-.idioma-linha{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;font-size:.9rem;font-weight:600}
+.dica{margin-top:11px;font-size:.84rem;color:var(--tinta-fraca);line-height:1.5}
+.idioma-linha{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;
+  font-size:.84rem;font-weight:600;color:var(--tinta-fraca)}
 .idioma-linha select{flex:1 1 150px;max-width:220px}
 /* Esta regra tinha sumido num ajuste anterior, e os botões do perfil
    voltaram a ficar do tamanho do texto, apertadinhos no celular. */
@@ -111,14 +124,19 @@ header{text-align:center;padding:30px 0 18px}
 /* Os seis atalhos eram seis botões roxos iguais, e roubavam a atenção da
    busca, que é o que a pessoa vem fazer. Viraram contorno: continuam
    visíveis, param de competir. */
-.atalhos{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+/* Oito botões largos viravam uma parede de texto. Ícone em cima e nome
+   curto embaixo cabem quatro por fileira e leem-se de relance. */
+.atalhos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
 .atalhos .btn{
-  flex:1 1 130px;padding:11px 8px;font-size:.88rem;font-weight:600;
-  background:var(--cartao);color:var(--asa-escura);border:2px solid var(--borda);
-  box-shadow:none;transition:border-color .15s,color .15s,transform .1s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  padding:11px 4px;font-size:.7rem;font-weight:600;line-height:1.2;text-align:center;
+  background:var(--cartao2);color:var(--tinta-fraca);border:1px solid var(--borda);
+  border-radius:16px;box-shadow:none;transition:background .15s,color .15s,transform .1s;
 }
-.atalhos .btn:hover{border-color:var(--asa);color:var(--tinta)}
+.atalhos .btn i{font-size:1.35rem;font-style:normal;line-height:1}
+.atalhos .btn:hover{background:var(--cartao3);color:var(--tinta)}
 .atalhos .btn:active{transform:translateY(2px);box-shadow:none}
+@media(max-width:400px){ .atalhos{grid-template-columns:repeat(3,1fr)} }
 /* botão de claro/escuro */
 .tema{
   position:absolute;top:16px;right:0;width:42px;height:42px;border-radius:50%;
@@ -222,8 +240,8 @@ select.escolher:focus{outline:none;border-color:var(--asa-escura)}
 
 /* ---------- carta ---------- */
 .carta{
-  margin-top:26px;background:var(--cartao);border:3px solid var(--asa);
-  border-radius:24px;padding:22px;box-shadow:var(--sombra);
+  margin-top:26px;background:var(--cartao);border:1px solid var(--borda);
+  border-radius:24px;padding:22px;box-shadow:0 10px 28px rgba(80,50,130,.10);
   display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:24px;
 }
 /* No celular a carta vira uma coluna só. O minmax(0,...) é o que impede
@@ -513,14 +531,14 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <select id="sel-idioma" class="escolher"></select>
     </div>
     <div class="atalhos">
-      <button class="btn secundario" type="button" id="btn-colecoes">📚 Ver as coleções</button>
-      <button class="btn secundario" type="button" id="btn-favoritos">⭐ Meus favoritos</button>
-      <button class="btn secundario" type="button" id="btn-album">📖 Meu álbum</button>
-      <button class="btn secundario" type="button" id="btn-todas">🗃️ Todas as cartas</button>
-      <button class="btn secundario" type="button" id="btn-desejos">💖 Quero essas</button>
-      <button class="btn secundario" type="button" id="btn-duelo">⚔️ Duelo</button>
-      <button class="btn secundario" type="button" id="btn-jogos">🎮 Jogos</button>
-      <button class="btn secundario" type="button" id="btn-perfil">👤 Meu perfil</button>
+      <button class="btn atalho" type="button" id="btn-colecoes"><i>📚</i>Coleções</button>
+      <button class="btn atalho" type="button" id="btn-favoritos"><i>⭐</i>Favoritas</button>
+      <button class="btn atalho" type="button" id="btn-album"><i>📖</i>Álbum</button>
+      <button class="btn atalho" type="button" id="btn-todas"><i>🗃️</i>Todas</button>
+      <button class="btn atalho" type="button" id="btn-desejos"><i>💖</i>Quero</button>
+      <button class="btn atalho" type="button" id="btn-duelo"><i>⚔️</i>Duelo</button>
+      <button class="btn atalho" type="button" id="btn-jogos"><i>🎮</i>Jogos</button>
+      <button class="btn atalho" type="button" id="btn-perfil"><i>👤</i>Perfil</button>
     </div>
   </section>
 
@@ -534,7 +552,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 28 — 21/09</span>
+    <br><span class="versao">versão 30 — 21/09</span>
   </footer>
 </div>
 
@@ -1237,7 +1255,9 @@ function virarFavorita(carta){ return virarNaLista(CHAVE_FAV, carta) === 'entrou
 function contarFavoritos(){
   const n = lerFavoritos().length;
   const b = document.getElementById('btn-favoritos');
-  if(b) b.textContent = n ? '⭐ Meus favoritos (' + n + ')' : '⭐ Meus favoritos';
+  // innerHTML e não textContent: o botão agora tem o ícone num <i> próprio,
+  // e escrever texto puro apagaria ele.
+  if(b) b.innerHTML = '<i>⭐</i>Favoritas' + (n ? ' (' + n + ')' : '');
 }
 
 function mostrarFavoritos(){
@@ -2563,8 +2583,33 @@ async function mostrarTodas(reiniciar){
   desenharOpcoes(ordenar(filtrar(todasCartas, '')));
 }
 
+/* ---------- as coleções guardadas ----------
+   A lista de coleções muda umas poucas vezes por ano, então guardar a
+   última que deu certo não envelhece quase nada — e é a diferença entre
+   uma tela de erro e um site que continua servindo quando a internet
+   oscila. Preço eu nunca guardo; isso aqui é só nome, logo e tamanho. */
+const CHAVE_COLECOES = 'butterpoke:colecoes';
+function guardarColecoes(l){
+  try{
+    localStorage.setItem(CHAVE_COLECOES, JSON.stringify({ quando:Date.now(), lista:l }));
+  }catch(e){}
+}
+function colecoesGuardadas(){
+  try{
+    const j = JSON.parse(localStorage.getItem(CHAVE_COLECOES) || 'null');
+    return (j && Array.isArray(j.lista) && j.lista.length) ? j : null;
+  }catch(e){ return null; }
+}
+function quantoFaz(quando){
+  const dias = Math.floor((Date.now() - quando) / 86400000);
+  if(dias <= 0) return 'hoje';
+  if(dias === 1) return 'ontem';
+  return 'faz ' + dias + ' dias';
+}
+
 async function mostrarColecoes(){
   cartaAberta = null;
+  avisoBusca = '';
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Pegando a lista de coleções…</div>';
   let colecoes = null;
   try{
@@ -2577,15 +2622,25 @@ async function mostrarColecoes(){
       colecoes = (Array.isArray(l) ? l : []).map(deSetReserva);
       colecoes.forEach(c => { c.lang = idioma; });
     }catch(e2){
-      avisoErro('Não consegui pegar as coleções',
-        { message:String(e.message || e) + ' · ' + String(e2.message || e2) }, mostrarColecoes);
-      return;
+      // Os dois fora do ar. Se eu já tive a lista um dia, ela serve agora.
+      const guardadas = colecoesGuardadas();
+      if(guardadas){
+        avisoBusca = 'Os sites de carta não responderam agora, então estas são as coleções ' +
+          'de quando deu certo pela última vez (' + escapar(quantoFaz(guardadas.quando)) + '). ' +
+          'Abrir uma delas ainda precisa de internet.';
+        colecoes = guardadas.lista;
+      }else{
+        avisoErro('Não consegui pegar as coleções',
+          { message:String(e.message || e) + ' · ' + String(e2.message || e2) }, mostrarColecoes);
+        return;
+      }
     }
   }
   if(!colecoes.length){
     palco.innerHTML = '<div class="aviso"><strong>Nenhuma coleção veio 🤔</strong>Tenta de novo.</div>';
     return;
   }
+  if(!avisoBusca) guardarColecoes(colecoes);   // só guardo o que veio fresco
   mostrarGrade(
     'Todas as ' + colecoes.length + ' coleções.',
     'Toca numa pra ver as cartas dela, da primeira à última. Estão das mais novas pras mais velhas.',
