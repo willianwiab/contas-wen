@@ -59,6 +59,33 @@ vazio sem explicação.
 
 Vai junto no código do perfil e vira um número no cartão de treinador, como todo o resto.
 
+## Deixa teu recado
+
+Pediram feedback. A primeira coisa a resolver não era o formulário, era o que o site **não
+é**: uma página parada no GitHub Pages, sem servidor, sem banco, sem caixa de entrada. Ela
+não tem pra onde mandar mensagem sozinha.
+
+O caminho fácil seria um botão "enviar" que pisca um ✅ e não manda nada pra lugar nenhum.
+Isso é a pior mentira possível aqui, porque a pessoa vai embora achando que falou com
+alguém. Então a tela **diz na cara** que não recebe recado sozinha, e faz o que dá pra
+fazer bem: monta o recado inteiro e entrega pronto.
+
+Três saídas, porque as pessoas falam por lugares diferentes:
+
+- **📋 Copiar** — cola no zap, no e-mail, onde for. Se o navegador não deixar copiar, ele
+  não finge que copiou: avisa e aponta o texto pra copiar na mão.
+- **📤 Mandar pra alguém** — o compartilhar do celular. Só aparece onde existe
+  (`navigator.share`), porque botão que não faz nada é pior que botão que não existe.
+- **🐙 Mandar pro GitHub** — abre uma issue já preenchida, título e corpo. É o único lugar
+  que de fato *recebe*, e está dito que precisa de conta.
+
+**A versão do site vai junto sem perguntar.** "O botão tal não abre" sem a versão não dá
+pra consertar — pode já estar consertado. E o rascunho fica guardado no aparelho enquanto
+não é mandado, porque escrever e perder é o jeito mais rápido de a pessoa não escrever de
+novo.
+
+Tocar de novo na mesma carinha tira a nota: quem errou o dedo tem que poder desfazer.
+
 ## Vale a pena abrir um pacote?
 
 Pediram produtos: booster, pelúcia, boneco, com preço e um veredito. **Pelúcia e boneco eu

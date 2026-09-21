@@ -470,6 +470,16 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
   background:var(--cartao2);color:var(--tinta);resize:vertical;word-break:break-all;
 }
 .codigo:focus{outline:none;border-color:var(--asa-escura)}
+.escrever{
+  width:100%;padding:12px 14px;font:inherit;font-size:1rem;line-height:1.5;
+  border:3px solid var(--borda);border-radius:14px;background:var(--cartao);
+  color:var(--tinta);resize:vertical;
+}
+.escrever:focus{outline:none;border-color:var(--asa-escura)}
+#chips-nota .chip{font-size:1.5rem;padding:8px 14px;line-height:1.1}
+#chips-nota .chip small{font-size:.62rem;font-weight:600}
+.previa{white-space:pre-wrap;background:var(--cartao2);border:2px dashed var(--borda);
+  border-radius:14px;padding:13px 15px;font-size:.93rem;line-height:1.55;margin:0}
 #chips-bicho .chip{font-size:1.3rem;padding:7px 12px}
 #chips-fundo .chip{font-size:1.2rem;padding:9px 14px;color:#fff;border-color:rgba(0,0,0,.2)}
 #chips-fundo .chip[aria-pressed="true"]{border:3px solid var(--tinta);transform:scale(1.08)}
@@ -560,6 +570,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <button class="btn atalho" type="button" id="btn-jogos"><i>🎮</i>Jogos</button>
       <button class="btn atalho" type="button" id="btn-vale"><i>📦</i>Vale a pena</button>
       <button class="btn atalho" type="button" id="btn-bonecos"><i>🧸</i>Bonecos</button>
+      <button class="btn atalho" type="button" id="btn-recado"><i>💬</i>Recado</button>
       <button class="btn atalho" type="button" id="btn-perfil"><i>👤</i>Perfil</button>
     </div>
   </section>
@@ -574,7 +585,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 32 — 21/09</span>
+    <br><span class="versao">versão 33 — 21/09</span>
   </footer>
 </div>
 
@@ -1462,6 +1473,173 @@ function mostrarBonecos(){
       (foto ? '' : ' Não achei carta desse Pokémon pra usar de foto, então ficou o desenhinho.') +
       '</span>';
   };
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- deixa teu recado ----------
+   Pediram feedback, e a primeira coisa honesta a dizer é o que este site
+   NÃO é: uma página parada, sem servidor e sem caixa de entrada. Ela não
+   tem pra onde mandar mensagem sozinha, e fingir um botão "enviar" que só
+   dá um ✅ na tela seria a pior mentira que eu poderia contar aqui.
+
+   O que dá pra fazer bem é a parte chata: montar o recado inteiro — com a
+   versão do site junto, que é o que transforma reclamação em conserto — e
+   deixar pronto pra sair pelo caminho que a pessoa já usa pra falar. */
+const CHAVE_RECADO = 'butterpoke:recado';
+const REPO_RECADO = 'https://github.com/willianwiab/contas-wen/issues/new';
+const NOTAS_RECADO = [
+  { v:'5', rotulo:'😍', sub:'amei' },
+  { v:'4', rotulo:'🙂', sub:'gostei' },
+  { v:'3', rotulo:'😐', sub:'mais ou menos' },
+  { v:'2', rotulo:'😕', sub:'faltou coisa' },
+  { v:'1', rotulo:'😠', sub:'deu ruim' },
+];
+function lerRecado(){
+  try{ return JSON.parse(localStorage.getItem(CHAVE_RECADO) || '{}') || {}; }
+  catch(e){ return {}; }
+}
+function gravarRecado(r){
+  try{ localStorage.setItem(CHAVE_RECADO, JSON.stringify(r)); }catch(e){}
+}
+function versaoDoSite(){
+  const e = document.querySelector('.versao');
+  return e ? e.textContent.trim() : 'versão desconhecida';
+}
+/* A versão vai junto sem eu perguntar, e é de propósito: "o botão tal não
+   funciona" sem a versão não dá pra consertar — pode já estar consertado. */
+function montarRecado(r){
+  const nota = NOTAS_RECADO.find(n => n.v === r.nota);
+  const linhas = ['Recado sobre o ButterPoke 🦋'];
+  if(nota) linhas.push('Achei: ' + nota.rotulo + ' ' + nota.sub + ' (' + nota.v + ' de 5)');
+  if((r.gostei || '').trim()) linhas.push('', 'O que eu mais gostei:', r.gostei.trim());
+  if((r.faltou || '').trim()) linhas.push('', 'O que faltou ou deu errado:', r.faltou.trim());
+  linhas.push('', '— ' + ((r.quem || '').trim() || 'alguém que usou o site'),
+              versaoDoSite() + ' · ' + new Date().toLocaleDateString('pt-BR'));
+  return linhas.join('\n');
+}
+function recadoVazio(r){
+  return !r.nota && !(r.gostei || '').trim() && !(r.faltou || '').trim();
+}
+
+function mostrarRecado(){
+  cartaAberta = null;
+  const r = lerRecado();
+  const temShare = !!(navigator.share);
+
+  palco.innerHTML =
+    '<section class="pergunta">' +
+      '<h2>💬 Deixa teu recado</h2>' +
+      '<p>Gostou? Faltou alguma coisa? Achou um erro? Escreve aí.</p>' +
+
+      '<p class="nota"><b>Antes, a verdade:</b> o ButterPoke é uma página parada, ' +
+      'sem servidor e sem caixa de entrada — ele <b>não consegue receber</b> teu recado ' +
+      'sozinho. Colocar um botão "enviar" que só piscasse um ✅ seria enganar você. ' +
+      'Então eu monto o recado completo aqui embaixo e <b>você manda</b> por onde quiser.</p>' +
+
+      '<div class="escolha"><h3>O que você achou do site?</h3>' +
+        chips('chips-nota', NOTAS_RECADO, r.nota || '') +
+      '</div>' +
+
+      '<div class="escolha"><h3>O que você mais gostou?</h3>' +
+        '<textarea class="escrever" id="rec-gostei" rows="3" ' +
+          'placeholder="Ex: o duelo, o álbum, o vale a pena…">' + escapar(r.gostei || '') + '</textarea>' +
+      '</div>' +
+
+      '<div class="escolha"><h3>O que faltou, ou deu errado?</h3>' +
+        '<textarea class="escrever" id="rec-faltou" rows="3" ' +
+          'placeholder="Ex: queria montar deck, tal botão não abriu…">' + escapar(r.faltou || '') + '</textarea>' +
+      '</div>' +
+
+      '<div class="escolha"><h3>Quem está falando? <small>(se quiser)</small></h3>' +
+        '<input class="escrever" id="rec-quem" maxlength="40" ' +
+          'placeholder="Teu nome ou apelido" value="' + escapar(r.quem || '') + '" />' +
+      '</div>' +
+
+      '<h3 class="titulinho">📄 Fica assim</h3>' +
+      '<p class="previa" id="rec-previa"></p>' +
+
+      '<button class="btn secundario larga" type="button" id="rec-copiar">📋 Copiar o recado</button>' +
+      (temShare
+        ? '<button class="btn secundario larga" type="button" id="rec-mandar">📤 Mandar pra alguém</button>'
+        : '') +
+      '<button class="btn secundario larga" type="button" id="rec-github">🐙 Mandar pro GitHub</button>' +
+      '<p class="nota">O <b>copiar</b> serve pra colar onde você quiser — zap, e-mail, ' +
+      'qualquer lugar. O <b>GitHub</b> é onde mora o código do site: lá o recado fica ' +
+      'guardado junto com os outros, mas precisa de conta.' +
+      ' O que você escreve aqui <b>fica no teu aparelho</b> até você mandar.</p>' +
+      '<p id="rec-aviso"></p>' +
+    '</section>';
+
+  const previa = document.getElementById('rec-previa');
+  const aviso  = document.getElementById('rec-aviso');
+  const campos = { gostei:'rec-gostei', faltou:'rec-faltou', quem:'rec-quem' };
+
+  function agora(){
+    const atual = lerRecado();
+    Object.keys(campos).forEach(k => { atual[k] = document.getElementById(campos[k]).value; });
+    return atual;
+  }
+  function redesenhar(){
+    const atual = agora();
+    gravarRecado(atual);
+    previa.textContent = recadoVazio(atual)
+      ? 'Escreve alguma coisa aí em cima que eu monto o recado aqui.'
+      : montarRecado(atual);
+  }
+  Object.keys(campos).forEach(k => { document.getElementById(campos[k]).oninput = redesenhar; });
+  ligarChips('chips-nota', v => {
+    const atual = agora();
+    // Tocar de novo na mesma carinha tira a nota: quem errou o dedo tem
+    // que conseguir desfazer sem recarregar a página.
+    atual.nota = (atual.nota === v) ? '' : v;
+    gravarRecado(atual);
+  }, mostrarRecado);
+  redesenhar();
+
+  function texto(){
+    const atual = agora();
+    if(recadoVazio(atual)){
+      aviso.innerHTML = '<span class="nota" style="display:block;border-color:var(--olho)">' +
+        '✋ Escreve alguma coisa primeiro — recado vazio não ajuda ninguém.</span>';
+      return null;
+    }
+    return montarRecado(atual);
+  }
+
+  document.getElementById('rec-copiar').onclick = async () => {
+    const t = texto();
+    if(!t) return;
+    try{
+      await navigator.clipboard.writeText(t);
+      aviso.innerHTML = '<span class="nota" style="display:block">✅ Copiado! ' +
+        'Agora cola onde você quiser mandar.</span>';
+    }catch(e){
+      // Sem permissão de copiar: mostro o texto selecionável, que é o que
+      // dá pra fazer — botão que diz "copiado" sem copiar é mentira.
+      aviso.innerHTML = '<span class="nota" style="display:block">👆 Não consegui copiar ' +
+        'sozinho. O recado está aí em cima, no quadro pontilhado — copia na mão.</span>';
+    }
+  };
+
+  const mandar = document.getElementById('rec-mandar');
+  if(mandar) mandar.onclick = async () => {
+    const t = texto();
+    if(!t) return;
+    try{ await navigator.share({ title:'Recado sobre o ButterPoke', text:t }); }
+    catch(e){ /* desistiu de compartilhar: não é erro, não falo nada */ }
+  };
+
+  document.getElementById('rec-github').onclick = () => {
+    const t = texto();
+    if(!t) return;
+    const atual = lerRecado();
+    const nota = NOTAS_RECADO.find(n => n.v === atual.nota);
+    const titulo = 'Recado' + (nota ? ' ' + nota.rotulo : '') + ': ' +
+      (((atual.faltou || '').trim() || (atual.gostei || '').trim()).slice(0, 60) || 'sobre o ButterPoke');
+    window.open(REPO_RECADO + '?title=' + encodeURIComponent(titulo) +
+                '&body=' + encodeURIComponent(t), '_blank', 'noopener');
+  };
+
   palco.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
@@ -3606,6 +3784,7 @@ document.getElementById('btn-desejos').onclick = mostrarDesejos;
 document.getElementById('btn-duelo').onclick = mostrarDuelo;
 document.getElementById('btn-jogos').onclick = abrirJogos;
 document.getElementById('btn-bonecos').onclick = mostrarBonecos;
+document.getElementById('btn-recado').onclick = mostrarRecado;
 /* O "vale a pena" já mora na barrinha de cima, mas a pessoa procurou e não
    achou: lá ele parece só mais um jeito de buscar. Aqui ele vira porta de
    entrada — liga o modo, rola até a busca e já traz as coleções na tela. */
