@@ -1,0 +1,14 @@
+{
+  "name": "RaroDex — quão raro é isso no MM2?",
+  "short_name": "RaroDex",
+  "description": "A chance de verdade de um item sair nas caixas do Murder Mystery 2, e o teu caderno de raridades.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f8ff",
+  "theme_color": "#3f6fd8",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

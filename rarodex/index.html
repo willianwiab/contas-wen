@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RaroDex — quão raro é isso no MM2?</title>
+<meta name="description" content="Calculadora de chance do Murder Mystery 2: diz a chance de verdade de um item sair nas caixas que você abrir, e guarda o teu caderno de raridades." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#3f6fd8" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="RaroDex" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* Azul de noite e dourado de item raro. Tudo que pinta alguma coisa mora
+     aqui, pra o modo escuro ser só trocar esta lista. */
+  --marca:#3f6fd8; --marca-escura:#2a4fa8; --marca-clara:#8fb0f2;
+  --ouro:#dd9022; --ouro-sombra:#a3661a;
+  --certo:#1f9d55; --errado:#d64545;
+  --creme:#f5f8ff; --creme2:#e8eeff; --creme3:#dde6ff;
+  --tinta:#1b2438; --tinta-fraca:#5c6a86; --tinta-no-ouro:#22190a;
+  --cartao:#ffffff; --cartao2:#fbfcff; --cartao3:#eef3ff;
+  --campo:#fbfcff; --vazio:#eaf0ff;
+  --borda:#d7e1f6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#6b93ee; --marca-escura:#4d74d4; --marca-clara:#9dbaf5;
+    --ouro:#f0ab4a; --ouro-sombra:#a06a18;
+    --certo:#3ecb84; --errado:#ff6b6b;
+    --creme:#0e131f; --creme2:#161d2e; --creme3:#121929;
+    --tinta:#e9eefb; --tinta-fraca:#9aa8c4; --tinta-no-ouro:#22190a;
+    --cartao:#1b2333; --cartao2:#212a3d; --cartao3:#283348;
+    --campo:#161d2b; --vazio:#242f45;
+    --borda:#334159;
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#6b93ee; --marca-escura:#4d74d4; --marca-clara:#9dbaf5;
+  --ouro:#f0ab4a; --ouro-sombra:#a06a18;
+  --certo:#3ecb84; --errado:#ff6b6b;
+  --creme:#0e131f; --creme2:#161d2e; --creme3:#121929;
+  --tinta:#e9eefb; --tinta-fraca:#9aa8c4; --tinta-no-ouro:#22190a;
+  --cartao:#1b2333; --cartao2:#212a3d; --cartao3:#283348;
+  --campo:#161d2b; --vazio:#242f45;
+  --borda:#334159;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Rubik',system-ui,sans-serif; color:var(--tinta);
+  background-color:var(--creme);
+  background-image:radial-gradient(circle at 10% 6%, var(--creme2) 0 24%, transparent 24.5%),
+                   radial-gradient(circle at 90% 74%, var(--creme3) 0 20%, transparent 20.5%);
+  background-attachment:fixed;
+  min-height:100vh; padding:0 16px 56px;
+}
+.envolve{max-width:900px;margin:0 auto}
+
+header{text-align:center;padding:34px 0 22px;position:relative}
+.logo{
+  font-family:'Baloo 2',cursive; font-size:clamp(2.3rem,8.5vw,3.4rem); line-height:1;
+  color:var(--marca-escura); text-shadow:3px 3px 0 var(--marca-clara);
+}
+.logo span{color:var(--ouro);text-shadow:3px 3px 0 var(--creme)}
+.logo .dado{height:1.02em;vertical-align:-.16em;margin-left:.12em}
+.slogan{margin-top:8px;color:var(--tinta-fraca);font-size:1rem}
+.tema{
+  position:absolute;top:16px;right:0;width:42px;height:42px;border-radius:50%;
+  border:2px solid var(--borda);background:var(--cartao);font-size:1.2rem;
+  cursor:pointer;line-height:1;padding:0;color:inherit;
+}
+.tema:hover{border-color:var(--marca)}
+
+.caixa{
+  background:var(--cartao); border:1px solid var(--borda); border-radius:24px;
+  padding:22px 20px; box-shadow:0 10px 28px rgba(30,50,110,.10);
+}
+.btn{
+  padding:14px 22px; border:none; border-radius:16px; font:inherit; font-weight:700;
+  font-size:1rem; cursor:pointer; background:var(--marca); color:#fff;
+  box-shadow:0 5px 0 var(--marca-escura); transition:transform .08s, box-shadow .08s;
+}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--marca-escura)}
+.btn.dourado{background:var(--ouro);color:var(--tinta-no-ouro);box-shadow:0 5px 0 var(--ouro-sombra)}
+.btn.dourado:active{box-shadow:0 1px 0 var(--ouro-sombra)}
+.btn.larga{margin-top:12px;width:100%;padding:13px;font-size:1rem}
+.btn.secundario{background:var(--cartao2);color:var(--tinta);border:2px solid var(--borda);box-shadow:none}
+.btn.secundario:active{transform:translateY(2px)}
+
+.atalhos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.atalhos .btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  padding:11px 4px;font-size:.7rem;font-weight:600;line-height:1.2;text-align:center;
+  background:var(--cartao2);color:var(--tinta-fraca);border:1px solid var(--borda);
+  border-radius:16px;box-shadow:none;transition:background .15s,color .15s,transform .1s;
+}
+.atalhos .btn i{font-size:1.35rem;font-style:normal;line-height:1}
+.atalhos .btn:hover{background:var(--cartao3);color:var(--tinta)}
+.atalhos .btn:active{transform:translateY(2px);box-shadow:none}
+@media(max-width:400px){ .atalhos{grid-template-columns:repeat(3,1fr)} }
+
+/* ---------- a pergunta principal ---------- */
+.perguntas{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+@media(max-width:520px){ .perguntas{grid-template-columns:1fr} }
+.campo-rotulo{display:block;font-size:.92rem;font-weight:600;margin-bottom:6px}
+.campo-rotulo small{display:block;font-weight:400;font-size:.76rem;color:var(--tinta-fraca);margin-top:1px}
+.entrada{
+  width:100%;padding:15px 16px;font:inherit;font-size:1.15rem;border:2px solid var(--borda);
+  border-radius:16px;background:var(--campo);color:var(--tinta);
+}
+.entrada:hover{border-color:var(--marca)}
+.entrada:focus{outline:none;border-color:var(--marca-escura);background:var(--cartao);
+  box-shadow:0 0 0 4px rgba(63,111,216,.20)}
+.entrada.errada{border-color:var(--errado)}
+
+.destaque{
+  margin-top:18px;background:linear-gradient(135deg,var(--ouro),var(--marca-clara));
+  border:2px solid var(--ouro-sombra);border-radius:20px;padding:18px 20px;text-align:center;
+}
+.destaque .rotulo{font-size:.8rem;font-weight:700;color:var(--tinta-no-ouro);
+  text-transform:uppercase;letter-spacing:.06em}
+.destaque .numerao{font-family:'Baloo 2',cursive;font-size:3rem;line-height:1.05;color:var(--tinta-no-ouro)}
+.destaque .abaixo{font-size:.95rem;color:var(--tinta-no-ouro);margin-top:2px;font-weight:600}
+.barra{height:14px;border-radius:999px;background:rgba(255,255,255,.55);overflow:hidden;margin-top:12px}
+.barra span{display:block;height:100%;background:var(--marca-escura);border-radius:999px}
+
+.nota{
+  margin-top:12px;background:var(--cartao2);border-left:4px solid var(--marca);
+  border-radius:0 12px 12px 0;padding:11px 14px;font-size:.87rem;
+  color:var(--tinta-fraca);line-height:1.55;
+}
+.nota b{color:var(--tinta)}
+.nota.atencao{border-left-color:var(--ouro)}
+.aviso{
+  margin-top:22px;background:var(--cartao);border:3px dashed var(--borda);border-radius:20px;
+  padding:26px 20px;text-align:center;color:var(--tinta-fraca);
+}
+.aviso strong{display:block;color:var(--tinta);font-size:1.15rem;margin-bottom:6px}
+
+.tela{margin-top:26px}
+.tela h2{font-family:'Baloo 2',cursive;font-size:1.6rem;margin-bottom:4px}
+.tela > p{color:var(--tinta-fraca);margin-bottom:14px}
+h3.titulinho{margin:22px 0 8px;font-size:1rem;color:var(--tinta-fraca);
+  text-transform:uppercase;letter-spacing:.05em}
+.escolha{margin:16px 0 0}
+.escolha h3{font-size:.95rem;margin-bottom:8px;color:var(--tinta)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  border:2px solid var(--borda);background:var(--cartao);border-radius:14px;padding:9px 13px;
+  font:inherit;font-weight:600;font-size:.9rem;color:var(--tinta-fraca);cursor:pointer;
+  text-align:left;line-height:1.25;transition:transform .1s;
+}
+.chip:hover{transform:translateY(-2px)}
+.chip[aria-pressed="true"]{background:var(--marca);border-color:var(--marca-escura);color:#fff}
+.chip small{display:block;font-weight:400;font-size:.72rem;opacity:.85;margin-top:1px}
+.escrever{
+  width:100%;padding:12px 14px;font:inherit;font-size:1rem;line-height:1.5;
+  border:2px solid var(--borda);border-radius:14px;background:var(--campo);
+  color:var(--tinta);resize:vertical;
+}
+.escrever:focus{outline:none;border-color:var(--marca-escura)}
+.codigo{
+  width:100%;padding:11px 13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:.74rem;line-height:1.5;border:2px solid var(--borda);border-radius:12px;
+  background:var(--cartao2);color:var(--tinta);resize:vertical;word-break:break-all;
+}
+.codigo:focus{outline:none;border-color:var(--marca-escura)}
+table{width:100%;border-collapse:collapse;font-size:.92rem;table-layout:fixed}
+th,td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--borda)}
+th:first-child,td:first-child{text-align:left;overflow-wrap:anywhere}
+thead th{color:var(--tinta-fraca);font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+
+/* ---------- caderno ---------- */
+.fichas{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.ficha{
+  display:flex;align-items:center;gap:11px;background:var(--cartao);border:2px solid var(--borda);
+  border-radius:16px;padding:11px 13px;
+}
+.ficha .quem{flex:1 1 auto;min-width:0}
+.ficha .quem b{display:block;font-size:1rem;overflow-wrap:anywhere}
+.ficha .quem small{display:block;color:var(--tinta-fraca);font-size:.8rem;margin-top:2px}
+.ficha .nivel{
+  flex:0 0 auto;text-align:center;background:var(--cartao3);border-radius:12px;
+  padding:7px 11px;font-weight:700;font-size:.9rem;line-height:1.2;
+}
+.ficha .nivel small{display:block;font-weight:400;font-size:.68rem;color:var(--tinta-fraca)}
+.ficha .tirar{
+  flex:0 0 auto;border:none;background:var(--vazio);color:var(--tinta-fraca);border-radius:50%;
+  width:30px;height:30px;font:inherit;font-weight:700;cursor:pointer;
+}
+.ficha .tirar:hover{background:var(--errado);color:#fff}
+.escadinha{list-style:none;display:flex;flex-direction:column;gap:7px}
+.degrau{
+  display:flex;align-items:center;gap:10px;border:2px solid var(--borda);border-radius:14px;
+  padding:10px 13px;background:var(--cartao);
+}
+.degrau .n{font-weight:700;color:var(--tinta-fraca);min-width:1.4em}
+.degrau b{flex:1 1 auto}
+.lista-fora{list-style:none;display:flex;flex-direction:column;gap:10px}
+.lista-fora a{
+  display:block;background:var(--cartao2);border:2px solid var(--borda);border-radius:16px;
+  padding:14px 16px;text-decoration:none;color:var(--tinta);font-weight:600;
+}
+.lista-fora a:hover{border-color:var(--marca)}
+.lista-fora small{display:block;font-weight:400;font-size:.82rem;color:var(--tinta-fraca);margin-top:3px}
+
+/* ---------- simulador ---------- */
+.placar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.quadro{
+  background:var(--cartao2);border:2px solid var(--borda);border-radius:16px;
+  padding:12px 10px;text-align:center;
+}
+.quadro b{display:block;font-family:'Baloo 2',cursive;font-size:1.7rem;line-height:1.1}
+.quadro small{display:block;color:var(--tinta-fraca);font-size:.75rem;margin-top:2px}
+.botoeira{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.botoeira .btn{flex:1 1 92px;padding:13px 10px;font-size:.95rem}
+.saiu{
+  margin-top:14px;border:3px solid var(--ouro);background:var(--cartao2);border-radius:18px;
+  padding:16px;text-align:center;
+}
+.saiu .grande{font-family:'Baloo 2',cursive;font-size:1.6rem;color:var(--ouro)}
+
+footer{text-align:center;margin-top:40px;color:var(--tinta-fraca);font-size:.82rem;line-height:1.6}
+.versao{
+  display:inline-block;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;
+  padding:6px 14px;font:inherit;font-size:.78rem;font-weight:600;margin-top:4px;
+  color:var(--tinta);cursor:pointer;
+}
+.versao:hover{border-color:var(--marca)}
+.faixa-nova{
+  position:fixed;left:10px;right:10px;bottom:10px;z-index:50;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:var(--marca);color:#fff;border-radius:16px;padding:12px 15px;
+  box-shadow:0 6px 24px rgba(20,40,90,.35);font-weight:600;font-size:.95rem;
+}
+.faixa-nova button{
+  font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 16px;
+  background:#fff;color:var(--marca-escura);cursor:pointer;margin-left:auto;
+}
+</style>
+</head>
+<body>
+<div class="envolve">
+
+  <header>
+    <button class="tema" type="button" id="tema" aria-label="Trocar entre claro e escuro">🌙</button>
+    <h1 class="logo">Raro<span>Dex</span><img class="dado" src="icone-limpo.svg" alt="" /></h1>
+    <p class="slogan">A chance de verdade de sair — e o teu caderno de raridades do MM2.</p>
+  </header>
+
+  <section class="caixa">
+    <h2 style="font-family:'Baloo 2',cursive;font-size:1.5rem;margin-bottom:12px">🎲 Qual a chance de sair?</h2>
+
+    <div class="perguntas">
+      <div>
+        <label class="campo-rotulo" for="chance">Chance do item
+          <small>Pode escrever <b>1 em 400</b>, <b>0,25%</b> ou <b>1/400</b></small></label>
+        <input class="entrada" id="chance" inputmode="text" placeholder="1 em 400" value="1 em 400" />
+      </div>
+      <div>
+        <label class="campo-rotulo" for="quantas">Quantas caixas você vai abrir?
+          <small>Ou quantas já abriu</small></label>
+        <input class="entrada" id="quantas" inputmode="numeric" placeholder="400" value="400" />
+      </div>
+    </div>
+
+    <div id="resposta"></div>
+
+    <div class="atalhos">
+      <button class="btn" type="button" id="btn-simular"><i>🍀</i>Simular</button>
+      <button class="btn" type="button" id="btn-caderno"><i>📓</i>Caderno</button>
+      <button class="btn" type="button" id="btn-escada"><i>🪜</i>Raridades</button>
+      <button class="btn" type="button" id="btn-onde"><i>🔎</i>Onde ver</button>
+      <button class="btn" type="button" id="btn-ajuda"><i>❓</i>Como usa</button>
+      <button class="btn" type="button" id="btn-codigo"><i>📲</i>Outro aparelho</button>
+    </div>
+  </section>
+
+  <div id="palco" aria-live="polite"></div>
+
+  <footer>
+    RaroDex · site de fã, sem ligação com o Murder Mystery 2, com o Nikilis ou com a Roblox
+    <br>A conta é matemática de verdade. As chances de cada item são as que <b>você</b> anota.
+    <br><button class="versao" type="button" id="recarregar"
+       title="Buscar a versão mais nova do site">versão 1 — 21/09 · 🔄</button>
+  </footer>
+</div>
+
+<script>
+'use strict';
+/* =========================================================================
+   RaroDex — a conta é a estrela.
+
+   Não existe banco público de chances do MM2 que eu possa ler de dentro de
+   uma página parada: as listas da comunidade são sites de HTML, não dão
+   permissão pro navegador ler de fora, e uma delas proíbe copiar os dados.
+   Então eu não copio nada de ninguém.
+
+   O que eu tenho de sobra é a parte que as listas NÃO fazem: a conta.
+   "1 em 400" não quer dizer "abre 400 e sai" — abrir 400 dá 63%. É esse
+   engano que faz criança abrir caixa a noite inteira achando que está
+   devendo. O site existe pra mostrar o número certo.
+   ========================================================================= */
+
+const palco = document.getElementById('palco');
+const inpChance = document.getElementById('chance');
+const inpQuantas = document.getElementById('quantas');
+const resposta = document.getElementById('resposta');
+
+function escapar(t){
+  return String(t ?? '').replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+function num(t){ return parseFloat(String(t).replace(',', '.')); }
+
+/* ---------- ler a chance ----------
+   Cada um escreve de um jeito: "1 em 400", "1/400", "0,25%", "0.0025".
+   Todos querem dizer a mesma coisa, então todos têm que funcionar. */
+function lerChance(txt){
+  const t = String(txt || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  if(!t) return null;
+  let m = t.match(/^([0-9]+(?:[.,][0-9]+)?) ?(?:em|in|\/|:) ?([0-9]+(?:[.,][0-9]+)?)$/);
+  if(m){
+    const a = num(m[1]), b = num(m[2]);
+    if(!(b > 0) || !(a > 0)) return null;
+    return a / b;
+  }
+  m = t.match(/^([0-9]+(?:[.,][0-9]+)?) ?%$/);
+  if(m){ const v = num(m[1]) / 100; return v > 0 ? v : null; }
+  m = t.match(/^([0-9]+(?:[.,][0-9]+)?)$/);
+  if(m){
+    const v = num(m[1]);
+    if(!(v > 0)) return null;
+    // Número solto maior que 1 só pode ser porcentagem: chance 25 não existe.
+    return v > 1 ? v / 100 : v;
+  }
+  return null;
+}
+function lerQuantas(txt){
+  const n = parseInt(String(txt || '').replace(/[^0-9]/g, ''), 10);
+  return (n >= 0 && n <= 100000000) ? n : null;
+}
+
+/* As contas. Uso log1p/expm1 em vez de Math.pow porque chance de item
+   godly é pequena, e (1-p)^n com p minúsculo perde casa decimal justo
+   onde a resposta mora. */
+function chanceEmN(p, n){
+  if(p >= 1) return n > 0 ? 1 : 0;
+  return -Math.expm1(n * Math.log1p(-p));
+}
+function azarEmN(p, n){
+  if(p >= 1) return n > 0 ? 0 : 1;
+  return Math.exp(n * Math.log1p(-p));
+}
+function caixasPara(p, alvo){
+  if(p >= 1) return 1;
+  return Math.ceil(Math.log1p(-alvo) / Math.log1p(-p));
+}
+
+function arred(x, casas){
+  const v = Math.round(x * Math.pow(10, casas)) / Math.pow(10, casas);
+  return String(v).replace('.', ',');
+}
+function pct(v){
+  const x = v * 100;
+  if(x >= 100) return '100%';
+  if(x >= 99.95) return '99,9%';
+  if(x >= 10) return arred(x, 1) + '%';
+  if(x >= 1) return arred(x, 2) + '%';
+  if(x >= 0.01) return arred(x, 3) + '%';
+  if(x > 0) return arred(x, 6) + '%';
+  return '0%';
+}
+function numeroBonito(n){
+  return Math.round(n).toLocaleString('pt-BR');
+}
+function umEm(p){
+  if(!(p > 0)) return '—';
+  const x = 1 / p;
+  return '1 em ' + (x >= 10 ? numeroBonito(x) : arred(x, 1));
+}
+
+/* ---------- a resposta ---------- */
+function responder(){
+  const p = lerChance(inpChance.value);
+  const n = lerQuantas(inpQuantas.value);
+  inpChance.classList.toggle('errada', inpChance.value.trim() !== '' && p === null);
+  inpQuantas.classList.toggle('errada', inpQuantas.value.trim() !== '' && n === null);
+
+  if(p === null || n === null){
+    resposta.innerHTML = '<p class="nota">✍️ Escreve a chance de um jeito que eu entenda — ' +
+      '<b>1 em 400</b>, <b>0,25%</b> ou <b>1/400</b> — e quantas caixas você vai abrir.</p>';
+    return;
+  }
+  if(p > 1){
+    resposta.innerHTML = '<p class="nota atencao">🤔 Essa chance deu mais que 100%. ' +
+      'Chance não passa de 100% — confere se não trocou os números de lugar.</p>';
+    return;
+  }
+
+  const sai = chanceEmN(p, n);
+  const naoSai = azarEmN(p, n);
+  const media = n * p;
+  const larguraBarra = Math.max(0.6, Math.min(100, sai * 100));
+
+  // O caso que engana todo mundo: abrir tantas caixas quanto o "1 em X".
+  const naConta = Math.round(1 / p);
+  const mostrarLicao = n >= naConta * 0.9 && n <= naConta * 1.1 && p < 0.5;
+
+  resposta.innerHTML =
+    '<div class="destaque">' +
+      '<div class="rotulo">Abrindo ' + numeroBonito(n) + ' caixa' + (n === 1 ? '' : 's') + '</div>' +
+      '<div class="numerao">' + pct(sai) + '</div>' +
+      '<div class="abaixo">de chance de sair <b>pelo menos um</b></div>' +
+      '<div class="barra"><span style="width:' + larguraBarra + '%"></span></div>' +
+    '</div>' +
+
+    '<table style="margin-top:16px">' +
+      '<tbody>' +
+      '<tr><td>Chance de <b>não sair nenhum</b></td><td>' + pct(naoSai) + '</td></tr>' +
+      '<tr><td>Chance de <b>uma caixa só</b></td><td>' + pct(p) + ' <span style="color:var(--tinta-fraca)">(' + escapar(umEm(p)) + ')</span></td></tr>' +
+      '<tr><td>Na média, sairiam</td><td>' + arred(media, 2) + '</td></tr>' +
+      '</tbody>' +
+    '</table>' +
+
+    '<h3 class="titulinho">Quantas caixas pra ter…</h3>' +
+    '<table><tbody>' +
+      [0.5, 0.9, 0.99].map(alvo =>
+        '<tr><td>' + Math.round(alvo * 100) + '% de chance</td><td>' +
+        numeroBonito(caixasPara(p, alvo)) + ' caixas</td></tr>').join('') +
+    '</tbody></table>' +
+
+    (mostrarLicao
+      ? '<p class="nota atencao"><b>Olha essa pegadinha.</b> A chance é ' + escapar(umEm(p)) +
+        ' e você abriu mais ou menos ' + numeroBonito(n) + '. Parece que "tinha que sair", né? ' +
+        'Mas dá só <b>' + pct(sai) + '</b>. Mais de uma pessoa em cada três abre essa quantidade ' +
+        'toda e <b>não tira nada</b> — e não é castigo nem azar estranho, é a conta.</p>'
+      : '') +
+
+    '<p class="nota"><b>Cada caixa esquece a anterior.</b> Abrir mil sem tirar não deixa a ' +
+    'próxima mais fácil: ela continua ' + escapar(umEm(p)) + '. Quem diz que "agora tá quase" ' +
+    'está inventando.</p>';
+}
+inpChance.oninput = responder;
+inpQuantas.oninput = responder;
+
+/* ---------- guardar coisas ---------- */
+function ler(chave, vazio){
+  try{ return JSON.parse(localStorage.getItem(chave) || 'null') || vazio; }
+  catch(e){ return vazio; }
+}
+function gravar(chave, v){
+  try{ localStorage.setItem(chave, JSON.stringify(v)); }catch(e){}
+}
+const CHAVE_CADERNO = 'rarodex:caderno';
+const CHAVE_RECORDE = 'rarodex:recorde';
+
+/* ---------- simulador ----------
+   Ler "63%" não convence ninguém. Abrir cem caixas de mentirinha e não
+   tirar nada convence na hora — e sem gastar Robux de verdade. */
+let simChance = 0.0025, simAbertas = 0, simSaiu = 0, simPrimeira = null;
+
+function mostrarSimulador(){
+  const p = lerChance(inpChance.value);
+  if(p === null || p > 1){
+    palco.innerHTML = '<div class="aviso"><strong>Escreve a chance primeiro 🎲</strong>' +
+      'Lá em cima, no campo da chance — tipo <b>1 em 400</b>. Aí eu sorteio com ela.</div>';
+    palco.scrollIntoView({ behavior:'smooth', block:'start' });
+    return;
+  }
+  if(p !== simChance){ simChance = p; simAbertas = 0; simSaiu = 0; simPrimeira = null; }
+  desenharSimulador();
+}
+function desenharSimulador(){
+  const rec = ler(CHAVE_RECORDE, {});
+  const melhor = rec.primeira;
+  palco.innerHTML =
+    '<section class="tela">' +
+      '<h2>🍀 Abrir caixa de mentirinha</h2>' +
+      '<p>Sorteio de verdade, com a chance ' + escapar(umEm(simChance)) +
+        '. Não gasta nada, não muda nada no jogo — serve pra você <b>ver</b> como a chance se comporta.</p>' +
+      '<div class="placar">' +
+        '<div class="quadro"><b>' + numeroBonito(simAbertas) + '</b><small>caixas abertas</small></div>' +
+        '<div class="quadro"><b>' + numeroBonito(simSaiu) + '</b><small>vezes que saiu</small></div>' +
+        '<div class="quadro"><b>' + (simPrimeira ? numeroBonito(simPrimeira) : '—') +
+          '</b><small>na caixa em que saiu a 1ª</small></div>' +
+      '</div>' +
+      '<div class="botoeira">' +
+        '<button class="btn" type="button" data-abrir="1">Abrir 1</button>' +
+        '<button class="btn" type="button" data-abrir="10">Abrir 10</button>' +
+        '<button class="btn dourado" type="button" data-abrir="100">Abrir 100</button>' +
+        '<button class="btn secundario" type="button" id="zerar">Zerar</button>' +
+      '</div>' +
+      '<div id="sim-recado"></div>' +
+      (melhor ? '<p class="nota">🏆 Teu recorde de sorte: a primeira saiu na caixa <b>' +
+        numeroBonito(melhor) + '</b>.</p>' : '') +
+      '<p class="nota">Quanto mais caixas você abrir aqui, mais o resultado vai chegar perto da ' +
+      'conta lá de cima. Com poucas, dá tudo e dá nada — e é exatamente assim no jogo.</p>' +
+    '</section>';
+
+  palco.querySelectorAll('[data-abrir]').forEach(b => {
+    b.onclick = () => abrirCaixas(parseInt(b.dataset.abrir, 10));
+  });
+  document.getElementById('zerar').onclick = () => {
+    simAbertas = 0; simSaiu = 0; simPrimeira = null; desenharSimulador();
+  };
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+function abrirCaixas(quantas){
+  let saiuAgora = 0;
+  for(let i = 0; i < quantas; i++){
+    simAbertas++;
+    if(Math.random() < simChance){
+      simSaiu++; saiuAgora++;
+      if(simPrimeira === null){
+        simPrimeira = simAbertas;
+        const rec = ler(CHAVE_RECORDE, {});
+        if(!rec.primeira || simPrimeira < rec.primeira) gravar(CHAVE_RECORDE, { primeira:simPrimeira });
+      }
+    }
+  }
+  desenharSimulador();
+  const recado = document.getElementById('sim-recado');
+  if(saiuAgora > 0){
+    recado.innerHTML = '<div class="saiu"><div class="grande">✨ SAIU!</div>' +
+      '<p>' + (saiuAgora === 1 ? 'Saiu uma' : 'Saíram ' + saiuAgora) +
+      ' nessas ' + numeroBonito(quantas) + ' caixas.</p></div>';
+  }else{
+    recado.innerHTML = '<p class="nota">Nada nessas ' + numeroBonito(quantas) + '. ' +
+      'Chance de isso acontecer: <b>' + pct(azarEmN(simChance, quantas)) + '</b> — ' +
+      'ou seja, normalíssimo.</p>';
+  }
+}
+
+/* ---------- caderno ----------
+   As chances de cada item eu não tenho de onde tirar, e chutar seria pior
+   que não ter. Então o caderno é da pessoa: ela vê a chance no jogo ou na
+   wiki, anota aqui, e o site faz a conta em cima do que ela anotou. */
+const TIPOS = [
+  { v:'faca', rotulo:'🔪 Faca' },
+  { v:'arma', rotulo:'🔫 Arma' },
+  { v:'pet', rotulo:'🐾 Pet' },
+  { v:'habilidade', rotulo:'✨ Habilidade' },
+  { v:'outro', rotulo:'📦 Outro' },
+];
+const ACHAR = [
+  { v:'1', rotulo:'1', sub:'vejo direto' },
+  { v:'2', rotulo:'2', sub:'vejo às vezes' },
+  { v:'3', rotulo:'3', sub:'raro de ver' },
+  { v:'4', rotulo:'4', sub:'quase nunca' },
+  { v:'5', rotulo:'5', sub:'nunca vi' },
+];
+let tipoNovo = 'faca', acharNovo = '3';
+
+function mostrarCaderno(){
+  const lista = ler(CHAVE_CADERNO, []);
+  const ordenada = lista.slice().sort((a, b) => {
+    const pa = a.chance == null ? 2 : a.chance, pb = b.chance == null ? 2 : b.chance;
+    return pa - pb;   // o mais difícil primeiro
+  });
+
+  palco.innerHTML =
+    '<section class="tela">' +
+      '<h2>📓 Meu caderno de raridades</h2>' +
+      '<p>Anota o que você descobrir: a chance, o tipo e o quanto você vê esse item por aí. ' +
+        'Fica guardado neste aparelho.</p>' +
+
+      '<div class="escolha"><h3>Qual item?</h3>' +
+        '<input class="escrever" id="cad-nome" maxlength="60" placeholder="Nome do item" /></div>' +
+      '<div class="escolha"><h3>O que é</h3>' + chips('chips-tipo', TIPOS, tipoNovo) + '</div>' +
+      '<div class="escolha"><h3>Raridade <small>(do jeito que o jogo chama)</small></h3>' +
+        '<input class="escrever" id="cad-rar" maxlength="30" list="raridades" placeholder="Ex: Godly" />' +
+        '<datalist id="raridades">' + ESCADA.map(r => '<option value="' + escapar(r) + '">').join('') +
+        '</datalist></div>' +
+      '<div class="escolha"><h3>Chance de sair <small>(se você souber)</small></h3>' +
+        '<input class="escrever" id="cad-chance" placeholder="1 em 400, 0,25%…" /></div>' +
+      '<div class="escolha"><h3>Quanto você vê esse item por aí?</h3>' +
+        chips('chips-achar', ACHAR, acharNovo) + '</div>' +
+      '<button class="btn larga" type="button" id="cad-add">➕ Guardar no caderno</button>' +
+      '<p id="cad-recado"></p>' +
+
+      '<h3 class="titulinho">O que já tem aqui' +
+        (lista.length ? ' (' + lista.length + ')' : '') + '</h3>' +
+      (ordenada.length
+        ? '<ul class="fichas">' + ordenada.map(fichaHTML).join('') + '</ul>'
+        : '<div class="aviso"><strong>Caderno vazio 📖</strong>' +
+          'Anota o primeiro aí em cima. Pode começar por aquele item que você mais quer.</div>') +
+      (ordenada.length ? '<p class="nota">Estão do <b>mais difícil pro mais fácil</b>, pela chance ' +
+        'que você anotou. Quem não tem chance anotada fica no fim.</p>' : '') +
+    '</section>';
+
+  ligarChips('chips-tipo', v => { tipoNovo = v; }, mostrarCaderno);
+  ligarChips('chips-achar', v => { acharNovo = v; }, mostrarCaderno);
+  document.getElementById('cad-add').onclick = guardarNoCaderno;
+  palco.querySelectorAll('.ficha .tirar').forEach(b => {
+    b.onclick = () => {
+      const l = ler(CHAVE_CADERNO, []).filter(x => x.id !== b.dataset.id);
+      gravar(CHAVE_CADERNO, l);
+      mostrarCaderno();
+    };
+  });
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+function fichaHTML(it){
+  const tipo = TIPOS.find(t => t.v === it.tipo);
+  const achar = ACHAR.find(a => a.v === String(it.achar));
+  return '<li class="ficha">' +
+    '<div class="quem"><b>' + escapar(it.nome) + '</b><small>' +
+      (tipo ? escapar(tipo.rotulo) : '') +
+      (it.raridade ? ' · ' + escapar(it.raridade) : '') +
+      (it.chance != null ? ' · ' + escapar(umEm(it.chance)) : ' · chance não anotada') +
+    '</small></div>' +
+    '<div class="nivel">' + (achar ? escapar(achar.rotulo) : '?') +
+      '<small>' + (achar ? escapar(achar.sub) : '') + '</small></div>' +
+    '<button class="tirar" type="button" data-id="' + escapar(it.id) + '" ' +
+      'aria-label="Tirar do caderno">✕</button>' +
+  '</li>';
+}
+function guardarNoCaderno(){
+  const nome = document.getElementById('cad-nome').value.trim();
+  const recado = document.getElementById('cad-recado');
+  if(!nome){
+    recado.innerHTML = '<span class="nota" style="display:block">✋ Escreve o nome do item.</span>';
+    return;
+  }
+  const txtChance = document.getElementById('cad-chance').value.trim();
+  const chance = txtChance ? lerChance(txtChance) : null;
+  if(txtChance && chance === null){
+    recado.innerHTML = '<span class="nota atencao" style="display:block">🤔 Não entendi essa chance. ' +
+      'Escreve tipo <b>1 em 400</b> ou <b>0,25%</b> — ou deixa em branco, que também vale.</span>';
+    return;
+  }
+  const lista = ler(CHAVE_CADERNO, []);
+  lista.push({
+    id: 'i' + Date.now() + Math.random().toString(36).slice(2, 6),
+    nome: nome,
+    tipo: tipoNovo,
+    raridade: document.getElementById('cad-rar').value.trim(),
+    chance: chance,
+    achar: acharNovo,
+    quando: Date.now(),
+  });
+  gravar(CHAVE_CADERNO, lista);
+  mostrarCaderno();
+}
+
+/* ---------- a escadinha ----------
+   Isto aqui eu escrevi de cabeça, e o jogo muda. Por isso está dito na
+   tela que pode estar errada — e o caderno deixa escrever qualquer
+   raridade, inclusive uma que não esteja nesta lista. */
+const ESCADA = ['Comum', 'Incomum', 'Rara', 'Lendária', 'Única', 'Vintage', 'Godly', 'Ancient', 'Chroma'];
+function mostrarEscada(){
+  palco.innerHTML =
+    '<section class="tela">' +
+      '<h2>🪜 A escadinha das raridades</h2>' +
+      '<p>Do mais comum pro mais difícil.</p>' +
+      '<ol class="escadinha">' + ESCADA.map((r, i) =>
+        '<li class="degrau"><span class="n">' + (i + 1) + '</span><b>' + escapar(r) + '</b></li>').join('') +
+      '</ol>' +
+      '<p class="nota atencao"><b>Confere antes de confiar.</b> Essa ordem eu escrevi de cabeça, ' +
+      'e o MM2 muda com atualização. Se estiver errada ou faltando alguma, me fala que eu arrumo — ' +
+      'e no caderno você pode escrever qualquer raridade, mesmo que não esteja nesta lista.</p>' +
+      '<p class="nota">Raridade não é a mesma coisa que <b>chance</b>. A raridade é a etiqueta que ' +
+      'o jogo dá; a chance é o número que diz quantas caixas, em média, até sair. Item da mesma ' +
+      'etiqueta pode ter chance bem diferente.</p>' +
+    '</section>';
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- onde ver as chances ----------
+   As listas da comunidade são o lugar certo pra ver número atualizado. Eu
+   mando pra lá em vez de copiar: copiar dado dos outros pro meu site seria
+   pegar carona no trabalho deles, e uma delas proíbe isso na cara. */
+const FORA = [
+  { url:'https://murder-mystery-2.fandom.com/wiki/Murder_Mystery_2_Wiki',
+    nome:'Wiki do Murder Mystery 2',
+    sub:'Feita pelos jogadores. É onde costuma estar a chance de cada caixa e de cada item.' },
+  { url:'https://www.roblox.com/games/66654135/Murder-Mystery-2',
+    nome:'O jogo na Roblox',
+    sub:'Às vezes a própria caixa mostra a chance na hora de abrir. Vale conferir lá primeiro.' },
+];
+function mostrarOnde(){
+  palco.innerHTML =
+    '<section class="tela">' +
+      '<h2>🔎 Onde ver as chances</h2>' +
+      '<p>Eu não tenho os números — e não copio os de ninguém. Estes são os lugares onde eles ficam.</p>' +
+      '<ul class="lista-fora">' + FORA.map(f =>
+        '<li><a href="' + escapar(f.url) + '" target="_blank" rel="noopener noreferrer">' +
+          escapar(f.nome) + '<small>' + escapar(f.sub) + '</small></a></li>').join('') +
+      '</ul>' +
+      '<p class="nota"><b>Por que não copio?</b> As listas de chance e de valor são trabalho da ' +
+      'comunidade, e tem lista que proíbe copiar. Além disso, número copiado envelhece: eu ia te ' +
+      'mostrar uma chance de meses atrás com cara de chance de hoje. Melhor te levar na fonte.</p>' +
+      '<p class="nota">Achou o número? Anota no <b>📓 caderno</b> que ele fica guardado aqui e ' +
+      'entra nas contas.</p>' +
+    '</section>';
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- como usa ---------- */
+function mostrarAjuda(){
+  palco.innerHTML =
+    '<section class="tela">' +
+      '<h2>❓ Como usa</h2>' +
+      '<h3 class="titulinho">O engano que esse site existe pra desfazer</h3>' +
+      '<p class="nota atencao">Se a chance é <b>1 em 400</b>, muita gente acha que abrindo 400 ' +
+      'caixas o item <b>tem</b> que sair. Não tem. Abrindo 400 dá <b>63%</b>. ' +
+      'Em cada 100 pessoas que abrirem 400 caixas, umas 37 não vão tirar nada. ' +
+      'Não é azar, não é castigo, não é "conta amaldiçoada": é a conta.</p>' +
+      '<h3 class="titulinho">Os três jeitos de escrever a chance</h3>' +
+      '<table><tbody>' +
+        '<tr><td><b>1 em 400</b></td><td>o jeito do jogo</td></tr>' +
+        '<tr><td><b>1/400</b></td><td>o mesmo, mais curto</td></tr>' +
+        '<tr><td><b>0,25%</b></td><td>o mesmo, em porcentagem</td></tr>' +
+      '</tbody></table>' +
+      '<h3 class="titulinho">Os botões</h3>' +
+      '<table><tbody>' +
+        '<tr><td>🍀 <b>Simular</b></td><td>abre caixa de mentirinha com a tua chance</td></tr>' +
+        '<tr><td>📓 <b>Caderno</b></td><td>tuas anotações de chance e raridade</td></tr>' +
+        '<tr><td>🪜 <b>Raridades</b></td><td>a escadinha, do comum ao Chroma</td></tr>' +
+        '<tr><td>🔎 <b>Onde ver</b></td><td>os lugares que têm os números</td></tr>' +
+        '<tr><td>📲 <b>Outro aparelho</b></td><td>leva teu caderno pro celular novo</td></tr>' +
+      '</tbody></table>' +
+      '<h3 class="titulinho">Uma coisa que não muda</h3>' +
+      '<p class="nota">A caixa não tem memória. Abriu mil sem tirar? A próxima continua com a ' +
+      'mesma chance de sempre. Ninguém "está devendo" pra você.</p>' +
+    '</section>';
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- levar pro outro aparelho ----------
+   Sem servidor, o caderno mora só neste celular. O código é a ponte: um
+   texto que a pessoa manda pra si mesma e cola do outro lado. */
+function fazerCodigo(){
+  const dados = { caderno: ler(CHAVE_CADERNO, []), recorde: ler(CHAVE_RECORDE, {}) };
+  return 'RD1.' + btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
+}
+function lerCodigo(txt){
+  const t = String(txt || '').trim();
+  if(!t) throw new Error('Cola o código primeiro.');
+  if(t.indexOf('RD1.') !== 0) throw new Error('Esse código não é do RaroDex — ele começa com RD1.');
+  let dados;
+  try{ dados = JSON.parse(decodeURIComponent(escape(atob(t.slice(4))))); }
+  catch(e){ throw new Error('O código veio quebrado. Confere se copiou ele inteirinho.'); }
+  if(!dados || !Array.isArray(dados.caderno)) throw new Error('Esse código não tem caderno dentro.');
+  return dados;
+}
+function mostrarCodigo(){
+  const quantos = ler(CHAVE_CADERNO, []).length;
+  palco.innerHTML =
+    '<section class="tela">' +
+      '<h2>📲 Levar pro outro aparelho</h2>' +
+      '<p>Teu caderno mora neste celular. Este código é a mudança.</p>' +
+      '<h3 class="titulinho">🔑 Meu código</h3>' +
+      '<p class="nota">Guarda ' + quantos + ' item' + (quantos === 1 ? '' : 's') + ' do caderno. ' +
+        '<b>Não tem senha nenhuma dentro</b> — é só a tua lista.</p>' +
+      '<textarea id="codigo" class="codigo" readonly rows="3">' + escapar(fazerCodigo()) + '</textarea>' +
+      '<button class="btn secundario larga" type="button" id="copiar">📋 Copiar meu código</button>' +
+      '<h3 class="titulinho">📥 Colar um código</h3>' +
+      '<p class="nota">O caderno de lá <b>se junta</b> com o daqui. Nada é apagado.</p>' +
+      '<textarea id="colar" class="codigo" rows="3" placeholder="Cola o código aqui…"></textarea>' +
+      '<button class="btn secundario larga" type="button" id="trazer">📥 Trazer pra cá</button>' +
+      '<p id="cod-recado"></p>' +
+    '</section>';
+
+  const recado = document.getElementById('cod-recado');
+  document.getElementById('copiar').onclick = async () => {
+    const area = document.getElementById('codigo');
+    try{
+      await navigator.clipboard.writeText(area.value);
+      recado.innerHTML = '<span class="nota" style="display:block">✅ Copiado! Agora cola no outro aparelho.</span>';
+    }catch(e){
+      area.select();
+      recado.innerHTML = '<span class="nota" style="display:block">👆 Não consegui copiar sozinho. ' +
+        'O código já está selecionado — copia na mão.</span>';
+    }
+  };
+  document.getElementById('trazer').onclick = () => {
+    let dados;
+    try{ dados = lerCodigo(document.getElementById('colar').value); }
+    catch(e){
+      recado.innerHTML = '<span class="nota atencao" style="display:block">❌ ' + escapar(e.message) + '</span>';
+      return;
+    }
+    const meu = ler(CHAVE_CADERNO, []);
+    const tenho = new Set(meu.map(x => (x.nome || '').toLowerCase()));
+    let entraram = 0;
+    dados.caderno.forEach(x => {
+      if(x && x.nome && !tenho.has(String(x.nome).toLowerCase())){
+        meu.push(x); tenho.add(String(x.nome).toLowerCase()); entraram++;
+      }
+    });
+    gravar(CHAVE_CADERNO, meu);
+    recado.innerHTML = '<span class="nota" style="display:block">✅ Chegaram <b>' + entraram +
+      '</b> item' + (entraram === 1 ? '' : 's') + ' novo' + (entraram === 1 ? '' : 's') + '. ' +
+      (entraram < dados.caderno.length ? 'O resto você já tinha.' : '') + '</span>';
+  };
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- pecinhas compartilhadas ---------- */
+function chips(id, itens, ativo){
+  return '<div class="chips" id="' + id + '">' + itens.map(i =>
+    '<button type="button" class="chip" data-v="' + escapar(i.v) + '" ' +
+      'aria-pressed="' + (i.v === ativo) + '">' + escapar(i.rotulo) +
+      (i.sub ? '<small>' + escapar(i.sub) + '</small>' : '') +
+    '</button>').join('') + '</div>';
+}
+function ligarChips(id, aoEscolher, redesenhar){
+  const caixa = document.getElementById(id);
+  if(!caixa) return;
+  caixa.querySelectorAll('.chip').forEach(b => {
+    b.onclick = () => { aoEscolher(b.dataset.v); redesenhar(); };
+  });
+}
+
+/* ---------- claro e escuro ----------
+   Sem escolha salva, segue o aparelho. Com escolha salva, ela manda. */
+const btTema = document.getElementById('tema');
+const corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){
+  const t = document.documentElement.getAttribute('data-tema');
+  if(t) return t === 'escuro';
+  return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function aplicarTema(t){
+  if(t) document.documentElement.setAttribute('data-tema', t);
+  else document.documentElement.removeAttribute('data-tema');
+  const escuro = estaEscuro();
+  btTema.textContent = escuro ? '☀️' : '🌙';
+  if(corDaBarra) corDaBarra.setAttribute('content', escuro ? '#0e131f' : '#3f6fd8');
+}
+try{ aplicarTema(localStorage.getItem('rarodex:tema')); }catch(e){ aplicarTema(null); }
+btTema.onclick = () => {
+  const novo = estaEscuro() ? 'claro' : 'escuro';
+  try{ localStorage.setItem('rarodex:tema', novo); }catch(e){}
+  aplicarTema(novo);
+};
+
+/* ---------- "não atualizou o site" ----------
+   Mesma saída de emergência do ButterPoke, e pelo mesmo motivo: quando a
+   pessoa desconfia que está vendo a versão velha, ela precisa de um botão,
+   não de uma explicação. */
+const btRecarregar = document.getElementById('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{
+    if(window.caches){
+      const nomes = await caches.keys();
+      await Promise.all(nomes.map(n => caches.delete(n)));
+    }
+  }catch(e){}
+  try{
+    if(navigator.serviceWorker){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.update().catch(() => {})));
+    }
+  }catch(e){}
+  const u = new URL(location.href);
+  u.searchParams.set('v', Date.now());
+  location.replace(u.toString());
+};
+try{
+  if(new URL(location.href).searchParams.has('v')){
+    const limpo = new URL(location.href);
+    limpo.searchParams.delete('v');
+    history.replaceState(null, '', limpo.pathname + limpo.search + limpo.hash);
+  }
+}catch(e){}
+
+function avisarVersaoNova(){
+  if(document.querySelector('.faixa-nova')) return;
+  const f = document.createElement('div');
+  f.className = 'faixa-nova';
+  f.innerHTML = '<span>✨ Chegou versão nova do RaroDex!</span><button type="button">Carregar</button>';
+  f.querySelector('button').onclick = () => location.reload();
+  document.body.appendChild(f);
+}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(jaTinha) avisarVersaoNova();
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' })
+      .then(r => { setTimeout(() => r.update().catch(() => {}), 3000); })
+      .catch(() => {});
+  });
+}
+
+/* ---------- ligar os botões ---------- */
+document.getElementById('btn-simular').onclick = mostrarSimulador;
+document.getElementById('btn-caderno').onclick = mostrarCaderno;
+document.getElementById('btn-escada').onclick  = mostrarEscada;
+document.getElementById('btn-onde').onclick    = mostrarOnde;
+document.getElementById('btn-ajuda').onclick   = mostrarAjuda;
+document.getElementById('btn-codigo').onclick  = mostrarCodigo;
+
+responder();
+</script>
+</body>
+</html>
