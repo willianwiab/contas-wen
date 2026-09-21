@@ -445,12 +445,13 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <button type="button" id="modo-nome" aria-pressed="false">🔤 Pelo nome</button>
     </div>
     <form class="linha-busca" id="formulario">
-      <input id="campo" inputmode="numeric" autocomplete="off"
-             placeholder="Ex: 25" aria-label="Número da carta" />
+      <input id="campo" inputmode="text" autocomplete="off"
+             placeholder="Ex: 25 ou 25/185" aria-label="Número da carta" />
       <button class="btn" type="submit">Procurar</button>
     </form>
     <p class="dica" id="dica">
-      O número fica no cantinho de baixo da carta — em <b>25/185</b>, o número é o <b>25</b>.
+      O número fica no cantinho de baixo da carta. Pode digitar <b>o completo</b>
+      (<b>25/185</b>) pra achar a carta exata, ou só o <b>25</b> pra ver todas.
     </p>
     <div class="idioma-linha">
       <label for="sel-idioma">🌐 Idioma da carta:</label>
@@ -476,7 +477,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 22 — 21/09</span>
+    <br><span class="versao">versão 23 — 21/09</span>
   </footer>
 </div>
 
@@ -559,9 +560,10 @@ function trocarModo(novo){
   btnNum.setAttribute('aria-pressed', novo === 'numero');
   btnNome.setAttribute('aria-pressed', novo === 'nome');
   if(novo === 'numero'){
-    campo.placeholder = 'Ex: 25';
-    campo.inputMode = 'numeric';
-    dica.innerHTML = 'O número fica no cantinho de baixo da carta — em <b>25/185</b>, o número é o <b>25</b>.';
+    campo.placeholder = 'Ex: 25 ou 25/185';
+    campo.inputMode = 'text';   // a barra do 25/185 não existe no teclado numérico
+    dica.innerHTML = 'O número fica no cantinho de baixo da carta. Pode digitar <b>o completo</b> ' +
+      '(<b>25/185</b>) pra achar a carta exata, ou só o <b>25</b> pra ver todas.';
   }else{
     campo.placeholder = 'Ex: Pikachu';
     campo.inputMode = 'text';
@@ -600,16 +602,36 @@ function url(q, pag, ordenada){
          (ordenada ? '&orderBy=-set.releaseDate' : '') + '&page=' + pag;
 }
 
+/* "10/124" é como o número vem impresso na carta: o 10 é ela, o 124 é o
+   tamanho da coleção. Com os dois, a busca sai de umas duzentas cartas
+   "número 10" pra quase sempre uma só. */
+function partesDoNumero(valor){
+  const m = String(valor).match(/^\s*([0-9A-Za-z]+)\s*\/\s*([0-9]+)\s*$/);
+  return m ? { numero:m[1], total:m[2] } : null;
+}
+
 /* As consultas, da mais certeira pra mais ampla. Uma que responde vazio não
    encerra a busca: a próxima é mais aberta e pode achar. */
 function tentativas(valor){
   if(modo === 'numero'){
+    const par = partesDoNumero(valor);
+    if(par){
+      const so = consultaNumero(par.numero);
+      /* printedTotal é o número impresso na carta; total conta as secretas.
+         Carta 125/124 existe, então preciso dos dois. E a última tentativa
+         larga o /124: achar demais é melhor que não achar nada. */
+      return [
+        { monta: pag => url(so + ' set.printedTotal:' + par.total, pag, true) },
+        { monta: pag => url(so + ' set.total:' + par.total, pag, true) },
+        { monta: pag => url(so, pag, true), frouxa: par },
+      ];
+    }
     const q = consultaNumero(valor);
     const cru = 'number:' + valor.replace(/[^0-9A-Za-z]/g, '');
     return [
-      pag => url(q, pag, true),
-      pag => url(q, pag, false),
-      pag => url(cru, pag, false),
+      { monta: pag => url(q, pag, true) },
+      { monta: pag => url(q, pag, false) },
+      { monta: pag => url(cru, pag, false) },
     ];
   }
   /* Procurar "Imakuni" com name:"Imakuni*" não acha "Dance! Neo Imakuni?",
@@ -619,9 +641,9 @@ function tentativas(valor){
   const comeca = 'name:"' + aspas(valor) + '*"';
   const solto  = valor.replace(/[^0-9A-Za-z ]/g, '').trim();
   return [
-    pag => url(comeca, pag, true),
-    pag => url('name:*' + solto + '*', pag, false),
-    pag => url('name:' + solto, pag, false),
+    { monta: pag => url(comeca, pag, true) },
+    { monta: pag => url('name:*' + solto + '*', pag, false) },
+    { monta: pag => url('name:' + solto, pag, false) },
   ];
 }
 
@@ -760,7 +782,8 @@ function deTcgdex(c){
 }
 async function buscarReserva(valor){
   const url = modo === 'numero'
-    ? '/cards?localId=' + encodeURIComponent(valor.replace(/^0+/, '') || valor)
+    ? '/cards?localId=' + encodeURIComponent(
+        ((partesDoNumero(valor) || {}).numero || valor).replace(/^0+/, '') || valor)
     : '/cards?name='    + encodeURIComponent(valor);
   const lista = await pedirReserva(url);
   if(!Array.isArray(lista)) throw new Error('resposta fora do esperado');
@@ -788,7 +811,8 @@ async function buscar(valor, caiuProIngles){
   const soReserva = langBusca !== 'en';
 
   // Três consultas no site principal, da mais caprichada pra mais simples.
-  for(const monta of (soReserva ? [] : tentativas(valor))){
+  for(const tentativa of (soReserva ? [] : tentativas(valor))){
+    const monta = tentativa.monta;
     try{
       const dados = await pedirJSON(monta(1));
       const primeira = dados.data || [];
@@ -797,6 +821,13 @@ async function buscar(valor, caiuProIngles){
       principalRespondeu = true;
       if(primeira.length === 0){ ninguemConhece = true; continue; }
       ninguemConhece = false;
+      /* Se cheguei aqui pela consulta que largou o /124, a pessoa precisa
+         saber: ela pediu uma carta e recebeu duzentas. */
+      if(tentativa.frouxa){
+        avisoBusca = 'Não achei nenhuma carta <b>' + escapar(tentativa.frouxa.numero) + '/' +
+          escapar(tentativa.frouxa.total) + '</b> exatamente. Estas são <b>todas as número ' +
+          escapar(tentativa.frouxa.numero) + '</b> — confere o total no cantinho da tua.';
+      }
       const total = dados.totalCount || primeira.length;
       return receber(await todasAsPaginas(monta, primeira, total), valor, total);
     }catch(e){
