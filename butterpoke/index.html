@@ -301,6 +301,19 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 .quadrinho span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--tinta-fraca)}
 .quadrinho b{font-size:.98rem}
 .conto{margin-top:11px;font-size:.85rem;font-style:italic;color:var(--tinta-fraca);line-height:1.5}
+/* ---------- duelo ---------- */
+.duelo{display:flex;align-items:center;gap:10px;margin:6px 0 18px}
+.lutador{flex:1 1 0;min-width:0;text-align:center}
+.lutador img{width:100%;max-width:190px;border-radius:12px;aspect-ratio:245/342;
+  object-fit:cover;background:var(--vazio);border:3px solid var(--asa)}
+.lutador b{display:block;margin-top:7px;font-size:.98rem;line-height:1.2}
+.lutador span{font-size:.82rem;color:var(--tinta-fraca)}
+.versus{font-family:'Baloo 2',cursive;font-size:1.6rem;color:var(--olho);flex:0 0 auto}
+.placar{margin-bottom:6px}
+.placar td:first-child{color:var(--tinta-fraca);font-size:.86rem}
+.placar th{font-size:.78rem}
+.conta-dano{margin-top:5px;font-size:.8rem;color:var(--tinta-fraca);line-height:1.45}
+@media(max-width:520px){ .lutador img{max-width:none} .versus{font-size:1.1rem} }
 /* ---------- álbum ---------- */
 .folha{
   display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:var(--cartao);
@@ -463,6 +476,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <button class="btn secundario" type="button" id="btn-album">📖 Meu álbum</button>
       <button class="btn secundario" type="button" id="btn-todas">🗃️ Todas as cartas</button>
       <button class="btn secundario" type="button" id="btn-desejos">💖 Quero essas</button>
+      <button class="btn secundario" type="button" id="btn-duelo">⚔️ Duelo</button>
       <button class="btn secundario" type="button" id="btn-perfil">👤 Meu perfil</button>
     </div>
   </section>
@@ -477,7 +491,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 24 — 21/09</span>
+    <br><span class="versao">versão 25 — 21/09</span>
   </footer>
 </div>
 
@@ -1096,6 +1110,7 @@ const CHAVE_FAV = 'butterpoke:favoritos';
 const CHAVE_TOP3 = 'butterpoke:preferidas';
 const CHAVE_DESEJO = 'butterpoke:desejos';
 const CHAVE_TENHO = 'butterpoke:tenho';
+const CHAVE_DUELO = 'butterpoke:duelo';
 const MAX_TOP3 = 3;
 
 /* ---------- o que eu já tenho ----------
@@ -1185,6 +1200,152 @@ function mostrarFavoritos(){
     'Toca numa pra ver o preço de hoje. Ficam guardadas só neste aparelho.',
     l, mostrarCarta, 'carta', 'Nome da carta…', 'nome');
   gradeAtual.ehFavoritos = true;
+}
+
+/* ---------- duelo ----------
+   Comparar duas cartas e calcular o dano de verdade: a fraqueza dobra, a
+   resistência desconta. É a conta que se faz na mesa, e ninguém faz de
+   cabeça direito. */
+function numeroDano(d){
+  const n = parseInt(String(d || '').replace(/[^0-9]/g, ''), 10);
+  return isNaN(n) ? null : n;
+}
+function danoContra(ataque, atacante, defensor){
+  const base = numeroDano(ataque.damage);
+  if(base === null) return null;
+  let total = base;
+  const contas = [];
+  const tipo = (atacante.types || [])[0];
+  if(!tipo) return { base:base, total:total, contas:contas, tipo:null };
+
+  const fraq = (defensor.weaknesses || []).find(w => w.type === tipo);
+  if(fraq){
+    const v = String(fraq.value || '×2');
+    if(/[×x]/i.test(v)){
+      const m = parseFloat(v.replace(/[^0-9.]/g, '')) || 2;
+      total *= m;
+      contas.push('fraqueza ' + v + ' → ' + total);
+    }else{
+      const m = parseInt(v.replace(/[^0-9-]/g, ''), 10) || 0;
+      total += m;
+      contas.push('fraqueza ' + v + ' → ' + total);
+    }
+  }
+  const res = (defensor.resistances || []).find(r => r.type === tipo);
+  if(res){
+    const m = parseInt(String(res.value).replace(/[^0-9-]/g, ''), 10) || 0;
+    total += m;
+    if(total < 0) total = 0;
+    contas.push('resistência ' + res.value + ' → ' + total);
+  }
+  return { base:base, total:total, contas:contas, tipo:tipo };
+}
+
+function duelo(a, b){
+  const golpes = (at, de) => (at.attacks || []).map(k => {
+    const d = danoContra(k, at, de);
+    const hp = parseInt(de.hp, 10);
+    const quantos = (d && d.total > 0 && hp) ? Math.ceil(hp / d.total) : null;
+    return '<div class="golpe"><div class="cabeca">' + bolinhas(k.cost) +
+        '<b>' + escapar(k.name || '') + '</b>' +
+        (d ? '<span class="dano">' + d.total + '</span>' : '') +
+      '</div>' +
+      (d && d.contas.length
+        ? '<p class="conta-dano">' + escapar(String(d.base)) + ' de base · ' +
+          d.contas.map(escapar).join(' · ') + '</p>'
+        : (d ? '<p class="conta-dano">' + d.base + ' de base, sem fraqueza nem resistência</p>' : '')) +
+      (quantos
+        ? '<p class="conta-dano"><b>' + quantos + (quantos === 1 ? ' golpe' : ' golpes') +
+          '</b> pra derrubar ' + escapar(de.name || '') + '</p>'
+        : '') +
+    '</div>';
+  }).join('') || '<p class="nota">Essa carta não tem ataque.</p>';
+
+  const linha = (rotulo, x, y, melhor) => {
+    const marca = v => melhor && v === melhor ? ' <b>👑</b>' : '';
+    return '<tr><td>' + rotulo + '</td><td>' + x + marca(x) + '</td><td>' + y + marca(y) + '</td></tr>';
+  };
+  const hpA = parseInt(a.hp, 10) || 0, hpB = parseInt(b.hp, 10) || 0;
+  const pA = precoPrincipal(a), pB = precoPrincipal(b);
+  const vA = pA ? pA.valor : null, vB = pB ? pB.valor : null;
+  const forte = at => Math.max.apply(null, [0].concat((at.attacks || []).map(k => numeroDano(k.damage) || 0)));
+
+  return '<section class="pergunta">' +
+    '<h2>⚔️ Duelo</h2>' +
+    '<p>Os dois lado a lado, com o dano já contando fraqueza e resistência.</p>' +
+    '<div class="duelo">' +
+      [a, b].map(c =>
+        '<div class="lutador">' +
+          '<img alt="' + escapar(c.name) + '" src="' +
+            escapar((c.images && (c.images.large || c.images.small)) || '') + '" />' +
+          '<b>' + escapar(c.name) + '</b>' +
+          '<span>' + ((c.types || []).map(t => (EMOJI_ENERGIA[t] || '')).join('') || '—') +
+            ' · ' + (parseInt(c.hp, 10) || '—') + ' HP</span>' +
+        '</div>').join('<div class="versus">VS</div>') +
+    '</div>' +
+    '<table class="placar"><thead><tr><th></th><th>' + escapar(a.name) + '</th>' +
+      '<th>' + escapar(b.name) + '</th></tr></thead><tbody>' +
+      linha('Vida (HP)', hpA || '—', hpB || '—', Math.max(hpA, hpB) || null) +
+      linha('Golpe mais forte', forte(a) || '—', forte(b) || '—', Math.max(forte(a), forte(b)) || null) +
+      linha('Preço', dinheiro(vA, pA && pA.moeda), dinheiro(vB, pB && pB.moeda),
+            (vA != null && vB != null) ? dinheiro(Math.max(vA, vB), (vA > vB ? pA : pB).moeda) : null) +
+      linha('Raridade', escapar(nomeRaridade(a.rarity)) || '—', escapar(nomeRaridade(b.rarity)) || '—', null) +
+    '</tbody></table>' +
+    '<h3 class="titulinho">' + escapar(a.name) + ' batendo em ' + escapar(b.name) + '</h3>' + golpes(a, b) +
+    '<h3 class="titulinho">' + escapar(b.name) + ' batendo em ' + escapar(a.name) + '</h3>' + golpes(b, a) +
+    '<p class="nota">A conta é a do jogo: a <b>fraqueza</b> multiplica (ou soma) e a ' +
+    '<b>resistência</b> desconta. Ataque com efeito de texto — "mais 30 se…" — não entra, ' +
+    'porque eu não sei se a condição valeu.</p>' +
+    '<button class="btn secundario larga" type="button" id="limpar-duelo">🗑️ Tirar as duas do duelo</button>' +
+  '</section>';
+}
+
+function mostrarDuelo(){
+  cartaAberta = null; voltarPraLista = null;
+  const l = lerLista(CHAVE_DUELO);
+  if(l.length < 2){
+    palco.innerHTML = '<div class="aviso"><strong>⚔️ Faltam cartas pro duelo</strong>' +
+      'Você escolheu ' + l.length + ' de 2. Abre uma carta e toca em ' +
+      '<b>"Pôr no duelo"</b>. Com duas, eu mostro quem bate mais forte, quem tem mais vida ' +
+      'e quantos golpes cada uma precisa pra derrubar a outra.' +
+      (l.length ? '<br><br><b>Já escolhida:</b> ' + escapar(l[0].name) : '') + '</div>';
+    return;
+  }
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>Buscando as duas cartas…</div>';
+  // As guardadas têm só a identidade; o duelo precisa de HP, ataques e fraqueza.
+  Promise.all(l.slice(0, 2).map(c => cartaCheia(c))).then(dois => {
+    if(dois.some(x => !x)){
+      avisoErro('Não consegui montar o duelo', { message:'faltou uma das cartas' }, mostrarDuelo);
+      return;
+    }
+    palco.innerHTML = duelo(dois[0], dois[1]);
+    document.getElementById('limpar-duelo').onclick = () => {
+      gravarLista(CHAVE_DUELO, []);
+      mostrarDuelo();
+    };
+    palco.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+}
+
+/* Pega a carta inteira a partir da identidade guardada, tentando os dois
+   bancos — é o mesmo caminho do abrirFavorito, mas devolvendo em vez de
+   desenhar. */
+async function cartaCheia(c){
+  /* __soIdentidade é o que marca uma carta guardada, e é o único sinal
+     confiável: a identidade guarda o HP, então checar c.hp fazia o duelo
+     achar que já tinha tudo e nunca buscar os ataques. */
+  if(!c.__soIdentidade) return c;
+  if(c.fonte !== 'reserva'){
+    try{
+      const d = await pedirJSON(API + '/' + encodeURIComponent(c.id));
+      if(d && d.data) return d.data;
+    }catch(e){}
+  }
+  try{
+    const cheia = deTcgdex(await pedirReserva('/cards/' + encodeURIComponent(c.id), c.lang));
+    if(cheia && cheia.name) return cheia;
+  }catch(e){}
+  return c;   // sem os dados do jogo, mas com nome e foto
 }
 
 function mostrarDesejos(){
@@ -2511,6 +2672,12 @@ function desenharCarta(){
             'style="padding:10px 18px;font-size:.95rem">' +
             (tenhoEssa(carta.id) ? '✅ Eu tenho essa' : '⬜ Marcar que eu tenho') +
           '</button>' +
+          (carta.supertype === 'Pokémon'
+            ? '<button class="btn secundario" type="button" id="duelo" ' +
+              'style="padding:10px 18px;font-size:.95rem">' +
+              (naLista(CHAVE_DUELO, carta.id) ? '⚔️ Está no duelo' : '⚔️ Pôr no duelo') +
+            '</button>'
+            : '') +
           '<button class="btn secundario" type="button" id="pref" ' +
             'style="padding:10px 18px;font-size:.95rem">' +
             (naLista(CHAVE_TOP3, carta.id) ? '🥇 É uma das 3 preferidas' : '🥇 Pôr nas 3 preferidas') +
@@ -2565,6 +2732,20 @@ function desenharCarta(){
   const bt = document.getElementById('tenho-carta');
   if(bt) bt.onclick = () => {
     bt.textContent = virarTenho(carta.id) ? '✅ Eu tenho essa' : '⬜ Marcar que eu tenho';
+  };
+
+  const bd = document.getElementById('duelo');
+  if(bd) bd.onclick = () => {
+    const fim = virarNaLista(CHAVE_DUELO, carta, 2);
+    if(fim === 'cheio'){
+      bd.textContent = '⚔️ Já tem 2! Vê o duelo';
+      setTimeout(() => { bd.textContent = '⚔️ Pôr no duelo'; }, 3000);
+      return;
+    }
+    const quantas = lerLista(CHAVE_DUELO).length;
+    bd.textContent = fim === 'entrou'
+      ? (quantas === 2 ? '⚔️ Prontos! Toca em Duelo' : '⚔️ Está no duelo (falta 1)')
+      : '⚔️ Pôr no duelo';
   };
 
   const pref = document.getElementById('pref');
@@ -2708,6 +2889,7 @@ document.getElementById('btn-favoritos').onclick = mostrarFavoritos;
 document.getElementById('btn-album').onclick = () => { paginaAlbum = 0; mostrarAlbum(); };
 document.getElementById('btn-todas').onclick = () => mostrarTodas(true);
 document.getElementById('btn-desejos').onclick = mostrarDesejos;
+document.getElementById('btn-duelo').onclick = mostrarDuelo;
 document.getElementById('btn-perfil').onclick = mostrarPerfil;
 saudacao();
 contarFavoritos();

@@ -39,6 +39,22 @@ E um **código** que a pessoa leva na mão:
 - código de outro site, ou cortado no meio, dá um recado em português explicando —
   sem isso o navegador devolve o erro do `atob` em inglês, que não ajuda ninguém
 
+## Duelo
+
+Duas cartas lado a lado, com o dano **calculado como no jogo**: a fraqueza multiplica (ou
+soma) e a resistência desconta. Mostra quantos golpes cada uma precisa pra derrubar a
+outra, e põe 👑 em quem ganha cada linha do placar — vida, golpe mais forte, preço.
+
+A conta que ninguém faz de cabeça direito: Charizard bate 180, o Blastoise resiste a fogo
+(−30), dá **150**. O Blastoise bate 130, mas o Charizard é fraco a água (×2), dá **260**.
+
+Ataque com efeito de texto ("mais 30 se…") entra só pelo valor base, e a tela diz isso:
+eu não sei se a condição valeu.
+
+Um defeito que o teste pegou: `cartaCheia` decidia "já tenho os dados" olhando `c.hp` — e a
+identidade guardada **tem** HP. O duelo mostrava vida e nenhum ataque. Agora a checagem é
+`__soIdentidade`, que é o que de fato marca uma carta guardada.
+
 ## Minha coleção
 
 Cada cartinha ganhou um ⬜ no canto oposto ao da estrela, pra marcar "eu tenho esta". Na
