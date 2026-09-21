@@ -33,7 +33,14 @@ com alerta quando tem carta cara sem graduação ou quando um lado é uma carta 
 monte. As cartas que você já tem viram botão de atalho.
 
 **Trocas que você já fez.** Fechou a troca, ela vira uma linha: data, com quem, o que
-saiu, o que entrou, e a diferença. Com o tempo vira sua memória de quem é quem.
+saiu, o que entrou, e a diferença. Em cima de tudo, o saldo desde o começo — o de uma
+troca sozinha diz pouco, porque todo mundo perde uma aqui e ganha outra ali; o que mostra
+se você está aprendendo a negociar é a soma.
+
+**A coleção inteira.** Escolhe a coleção e vê as cartas dela em grade, as que você tem
+coloridas e as que faltam apagadas. Toca numa pra marcar. Em cima: quantas de quantas, e
+quanto vale a sua parte contra a coleção toda. Depois de baixada uma vez ela funciona
+offline — que é quando você está na loja, sem sinal, decidindo se compra.
 
 **Onde trocar.** As lojas com Liga Pokémon perto de Santo André, com endereço e horário.
 
@@ -73,6 +80,13 @@ costuma cobrar mais.
 A cotação do dólar e do euro **você digita**, e ela fica guardada no aparelho. Eu não
 tenho de onde buscar câmbio aqui, e deixar um número fixo no código envelheceria em um
 mês e viraria mentira sem ninguém perceber.
+
+O mesmo vale pro ajuste de loja brasileira. Loja daqui cobra mais que o mercado lá fora,
+mas quanto mais depende da loja, da carta e do mês — não existe número certo pra embutir.
+Então ele é um campo que você regula, e a tela mostra **os dois preços lado a lado**: o de
+fora, que é o dado real, e o estimado daqui, que é o seu chute em cima dele. Mostrar só o
+ajustado esconderia que é chute; mostrar só o de fora daria um número que não é o que você
+vai pagar na loja.
 
 A busca pelo código manda o filtro do total da coleção numa consulta separada da
 principal. A máquina onde isso foi escrito não alcança a API, então não deu pra confirmar

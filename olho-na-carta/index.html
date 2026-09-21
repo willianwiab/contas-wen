@@ -256,6 +256,43 @@
   .flag.quero { background: var(--accent-soft); color: var(--accent); }
   .flag.tenho { background: var(--good-bg); color: var(--good); }
 
+  /* ---- preço com dois números ---- */
+  .pr-fora { display: block; font-family: var(--mono); font-size: 11px; color: var(--ink-3); font-weight: 500; }
+
+  /* ---- coleção ---- */
+  select {
+    width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--line-strong);
+    border-radius: 9px; padding: 9px 11px;
+  }
+  .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 7px; }
+  .grade button {
+    padding: 0; background: transparent; border: 0; border-radius: 6px;
+    position: relative; line-height: 0; overflow: hidden;
+  }
+  .grade img { width: 100%; display: block; border-radius: 6px; }
+  .grade .falta img { opacity: .24; filter: grayscale(1); }
+  .grade .tem { outline: 2px solid var(--good); outline-offset: -2px; border-radius: 6px; }
+  .grade .marca {
+    position: absolute; right: 3px; bottom: 3px;
+    background: var(--good); color: #fff;
+    font-family: var(--mono); font-size: 9px; font-weight: 600;
+    border-radius: 3px; padding: 0 3px; line-height: 1.5;
+  }
+  .grade button:hover { filter: brightness(1.05); }
+
+  .resumo { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; }
+  .resumo .big { font-family: var(--mono); font-weight: 600; font-size: 19px; font-variant-numeric: tabular-nums; }
+  .resumo .lbl { font-size: 13px; color: var(--ink-3); }
+
+  /* ---- saldo geral ---- */
+  .saldo-geral {
+    display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline;
+    border-radius: 12px; padding: 13px 15px; border: 1px solid transparent;
+  }
+  .saldo-geral .n { font-family: var(--mono); font-weight: 600; font-size: 22px; font-variant-numeric: tabular-nums; }
+  .saldo-geral .d { font-size: 13px; }
+
   /* ---- carteira ---- */
   .cards { display: flex; flex-direction: column; }
   .cardrow { display: grid; grid-template-columns: 38px 1fr auto auto; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
@@ -421,6 +458,13 @@
           pra parar e olhar o resto.
         </p>
       </div>
+
+      <p class="ia-nota">
+        Quer que uma IA <b>olhe a foto</b> e aponte os sinais? Isso roda na
+        <a href="https://claude.ai/artifact/YDZNvJFWm41ZaCuorbL9sV" target="_blank" rel="noopener noreferrer">versão dentro do Claude</a>,
+        não aqui — IA precisa de chave paga, e num site público qualquer um veria a chave e
+        gastaria o seu dinheiro. Lá quem responde é a sua própria conta.
+      </p>
     </div>
   </section>
 
@@ -472,15 +516,34 @@
         <div class="rates">
           <label for="dolar">Dólar hoje R$ <input type="number" id="dolar" step="0.01" min="0" value="5.40" /></label>
           <label for="euro">Euro hoje R$ <input type="number" id="euro" step="0.01" min="0" value="5.90" /></label>
+          <label for="ajuste">Loja daqui cobra + <input type="number" id="ajuste" step="5" min="0" max="300" value="30" />%</label>
         </div>
         <div id="hits"></div>
       </div>
       <p style="font-size:13px;color:var(--ink-3)">
-        O preço vem do TCGplayer e do Cardmarket, convertido pela cotação que você digitou
-        — é referência de mercado lá fora, não preço de loja brasileira, que costuma ser
-        mais alto. Estado da carta (NM, played, danificada) muda tudo e a busca não sabe o
-        estado da sua.
+        O preço vem do TCGplayer e do Cardmarket, convertido pela cotação que você digitou.
+        Isso é o <b>mercado lá fora</b>; loja brasileira costuma cobrar mais, e o ajuste
+        acima é o seu chute de quanto — mude ele conforme o que você vê nas lojas daqui.
+        Os dois números aparecem lado a lado, pra você nunca confundir um com o outro.
+        Estado da carta (NM, played, danificada) muda tudo e a busca não sabe o estado da
+        sua.
       </p>
+    </div>
+  </section>
+
+  <!-- ============ COLEÇÃO ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>A coleção inteira</h2>
+      <span class="hint">Toque numa carta pra marcar que você tem</span>
+    </div>
+    <div class="panel-body">
+      <div class="search-row">
+        <select id="colecao" aria-label="Escolher coleção"></select>
+        <button id="go-colecao">Abrir</button>
+      </div>
+      <div id="colecao-resumo"></div>
+      <div id="grade"></div>
     </div>
   </section>
 
@@ -549,6 +612,7 @@
       <span class="hint">Sua memória de quem é quem</span>
     </div>
     <div class="panel-body">
+      <div id="saldo-geral"></div>
       <div id="historico"></div>
     </div>
   </section>
@@ -952,6 +1016,7 @@
     salvarCarteira();
     renderCarteira();
     renderChips();
+    renderGrade();
     return true;
   }
 
@@ -962,6 +1027,7 @@
     salvarCarteira();
     renderCarteira();
     renderChips();
+    renderGrade();
   }
 
   function linhaCarta(carta, lista) {
@@ -1241,7 +1307,34 @@
     $("historico").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
+  /* O saldo de uma troca sozinha diz pouco: todo mundo perde uma aqui e
+     ganha outra ali. O que mostra se você está aprendendo a negociar é a
+     soma de todas desde o começo. */
+  function renderSaldoGeral() {
+    var host = $("saldo-geral");
+    host.textContent = "";
+    if (!carteira.trocas.length) return;
+
+    var soma = carteira.trocas.reduce(function (s, t) { return s + (t.saldo || 0); }, 0);
+    var ganhas = carteira.trocas.filter(function (t) { return (t.saldo || 0) > 0; }).length;
+    var perdidas = carteira.trocas.filter(function (t) { return (t.saldo || 0) < 0; }).length;
+
+    var box = el("div", "saldo-geral " + (soma > 0 ? "v-good" : soma < 0 ? "v-bad" : "v-warn"));
+    box.appendChild(el("span", "n", (soma >= 0 ? "+" : "−") + BRL.format(Math.abs(soma))));
+
+    var detalhe = carteira.trocas.length + (carteira.trocas.length === 1 ? " troca" : " trocas")
+      + " · " + ganhas + " a seu favor, " + perdidas + " contra";
+    box.appendChild(el("span", "d", soma > 0
+      ? "no lucro desde que você começou — " + detalhe
+      : soma < 0
+        ? "no prejuízo desde que você começou — " + detalhe
+        : "empatado — " + detalhe));
+
+    host.appendChild(box);
+  }
+
   function renderHistorico() {
+    renderSaldoGeral();
     var host = $("historico");
     host.textContent = "";
 
@@ -1300,13 +1393,24 @@
   var buscando = false;
   var ultimaBusca = [];
 
+  var inpAjuste = $("ajuste");
+
   var rates = load("olho-cotacao", null);
   if (rates && rates.usd) inpDolar.value = rates.usd;
   if (rates && rates.eur) inpEuro.value = rates.eur;
+  if (rates && rates.ajuste != null) inpAjuste.value = rates.ajuste;
 
-  function saveRates() { save("olho-cotacao", { usd: inpDolar.value, eur: inpEuro.value }); }
-  inpDolar.addEventListener("change", function () { saveRates(); if (ultimaBusca.length) renderHits(ultimaBusca); });
-  inpEuro.addEventListener("change", function () { saveRates(); if (ultimaBusca.length) renderHits(ultimaBusca); });
+  function saveRates() {
+    save("olho-cotacao", { usd: inpDolar.value, eur: inpEuro.value, ajuste: inpAjuste.value });
+  }
+  function aoMudarCotacao() {
+    saveRates();
+    if (ultimaBusca.length) renderHits(ultimaBusca);
+    renderGrade();
+  }
+  inpDolar.addEventListener("change", aoMudarCotacao);
+  inpEuro.addEventListener("change", aoMudarCotacao);
+  inpAjuste.addEventListener("change", aoMudarCotacao);
 
   function precoPrincipal(carta) {
     var p = carta.tcgplayer && carta.tcgplayer.prices;
@@ -1331,13 +1435,28 @@
     return null;
   }
 
-  function emReais(preco) {
+  /* Dois preços, sempre os dois à vista: o de fora (que é o dado real) e o
+     estimado de loja daqui (que é um chute do Jojo em cima dele). Mostrar
+     só o segundo esconderia que ele é chute; mostrar só o primeiro daria
+     um número que não é o que ele vai pagar na loja. */
+  function emReaisFora(preco) {
     if (!preco) return null;
     var taxa = preco.moeda === "EUR"
       ? parseFloat(String(inpEuro.value).replace(",", "."))
       : parseFloat(String(inpDolar.value).replace(",", "."));
     if (!isFinite(taxa) || taxa <= 0) return null;
     return Math.round(preco.valor * taxa * 100) / 100;
+  }
+
+  function pctAjuste() {
+    var a = parseFloat(String(inpAjuste.value).replace(",", "."));
+    return isFinite(a) && a > 0 ? a : 0;
+  }
+
+  function emReais(preco) {
+    var fora = emReaisFora(preco);
+    if (fora == null) return null;
+    return Math.round(fora * (1 + pctAjuste() / 100) * 100) / 100;
   }
 
   function msg(text) {
@@ -1356,7 +1475,9 @@
 
     var box = el("div", "hits");
     cartas.forEach(function (c) {
-      var reais = emReais(precoPrincipal(c));
+      var preco = precoPrincipal(c);
+      var reais = emReais(preco);
+      var fora = emReaisFora(preco);
       var carta = {
         id: c.id,
         nome: c.name || "?",
@@ -1410,7 +1531,12 @@
 
       mid.appendChild(add);
       row.appendChild(mid);
-      row.appendChild(el("span", "hit-pr", reais != null ? BRL.format(reais) : "sem preço"));
+
+      var pr = el("span", "hit-pr", reais != null ? BRL.format(reais) : "sem preço");
+      if (reais != null && fora != null && pctAjuste() > 0) {
+        pr.appendChild(el("span", "pr-fora", "de fora " + BRL.format(fora)));
+      }
+      row.appendChild(pr);
       box.appendChild(row);
     });
     hits.appendChild(box);
@@ -1494,6 +1620,178 @@
   goBusca.addEventListener("click", buscar);
   busca.addEventListener("keydown", function (e) { if (e.key === "Enter") buscar(); });
 
+  /* ================= a coleção inteira ================= */
+  /* Uma coleção tem mais de duzentas cartas e o site delas nem sempre
+     responde. Então ela fica guardada no aparelho depois da primeira vez:
+     na mesa da loja, sem sinal, a grade continua aparecendo. Guardo três
+     coleções — o resto só ocuparia espaço. */
+  var SETS_PADRAO = [
+    ["sv3pt5", "151"],
+    ["sv4pt5", "Paldean Fates"],
+    ["swsh12pt5", "Crown Zenith"],
+    ["base1", "Base Set"]
+  ];
+  var CHAVE_SETS = "olho-sets";
+  var CHAVE_COL = "olho-colecoes";
+
+  var selColecao = $("colecao");
+  var goColecao = $("go-colecao");
+  var grade = $("grade");
+  var resumo = $("colecao-resumo");
+  var colecaoAtual = null;
+
+  function guardarColecao(id, nome, cartas) {
+    var j = load(CHAVE_COL, {}) || {};
+    j[id] = { nome: nome, quando: Date.now(), cartas: cartas };
+    var ids = Object.keys(j).sort(function (a, b) { return j[b].quando - j[a].quando; }).slice(0, 3);
+    var enxuto = {};
+    ids.forEach(function (k) { enxuto[k] = j[k]; });
+    save(CHAVE_COL, enxuto);
+  }
+
+  function montarSelect() {
+    var guardadas = load(CHAVE_COL, {}) || {};
+    var sets = load(CHAVE_SETS, null);
+    var lista = Array.isArray(sets) && sets.length
+      ? sets.map(function (s) { return [s.id, s.name + (s.printedTotal ? " (" + s.printedTotal + ")" : "")]; })
+      : SETS_PADRAO;
+
+    selColecao.textContent = "";
+    lista.forEach(function (par) {
+      var o = document.createElement("option");
+      o.value = par[0];
+      o.textContent = par[1] + (guardadas[par[0]] ? " · guardada" : "");
+      selColecao.appendChild(o);
+    });
+    selColecao.value = "sv3pt5";
+  }
+
+  /* A lista de coleções é uma chamada só e quase nunca muda: pega na
+     primeira visita com internet e fica guardada. */
+  function buscarSets() {
+    if (load(CHAVE_SETS, null)) return;
+    fetch("https://api.pokemontcg.io/v2/sets?pageSize=250&orderBy=-releaseDate&select=id,name,printedTotal",
+      { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        var d = j && j.data;
+        if (!d || !d.length) return;
+        save(CHAVE_SETS, d.map(function (s) {
+          return { id: s.id, name: s.name, printedTotal: s.printedTotal };
+        }));
+        var antes = selColecao.value;
+        montarSelect();
+        if (antes) selColecao.value = antes;
+      })
+      .catch(function () {});
+  }
+
+  function abrirColecao(id) {
+    var guardadas = load(CHAVE_COL, {}) || {};
+    if (guardadas[id]) {
+      colecaoAtual = { id: id, nome: guardadas[id].nome, cartas: guardadas[id].cartas, quando: guardadas[id].quando };
+      renderGrade();
+      return;
+    }
+
+    resumo.textContent = "";
+    resumo.appendChild(el("p", "search-msg", "Baixando a coleção… isso só acontece uma vez."));
+    grade.textContent = "";
+    goColecao.disabled = true;
+
+    fetch("https://api.pokemontcg.io/v2/cards?q=" + encodeURIComponent("set.id:" + id)
+      + "&pageSize=250&orderBy=number&select=id,name,number,set,images,tcgplayer,cardmarket",
+      { headers: { Accept: "application/json" } })
+      .then(function (r) {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
+      .then(function (j) {
+        var d = (j && j.data) || [];
+        if (!d.length) throw new Error("vazio");
+        var nome = (d[0].set && d[0].set.name) || id;
+        var cartas = d.map(function (c) {
+          return {
+            id: c.id,
+            nome: c.name || "?",
+            numero: c.number || "",
+            total: (c.set && c.set.printedTotal) || "",
+            set: nome,
+            img: (c.images && c.images.small) || "",
+            /* Guardo o preço na moeda de origem, não em reais: a cotação e
+               o ajuste mudam, e um valor em reais congelado no cache
+               envelheceria escondido. */
+            preco: precoPrincipal(c)
+          };
+        });
+        guardarColecao(id, nome, cartas);
+        colecaoAtual = { id: id, nome: nome, cartas: cartas, quando: Date.now() };
+        renderGrade();
+      })
+      .catch(function () {
+        resumo.textContent = "";
+        resumo.appendChild(el("p", "search-msg",
+          "Não consegui baixar essa coleção — falta de internet ou o site de preços fora do ar. Tente de novo mais tarde; depois de baixada uma vez, ela funciona offline."));
+      })
+      .then(function () { goColecao.disabled = false; });
+  }
+
+  function renderGrade() {
+    if (!colecaoAtual) return;
+
+    var cartas = colecaoAtual.cartas;
+    var tenho = 0, valorTenho = 0, valorTudo = 0;
+
+    grade.textContent = "";
+    var g = el("div", "grade");
+
+    cartas.forEach(function (c) {
+      var brl = emReais(c.preco);
+      if (brl != null) valorTudo += brl;
+      var temEssa = achar(carteira.tenho, c.id) >= 0;
+      if (temEssa) {
+        tenho++;
+        if (brl != null) valorTenho += brl;
+      }
+
+      var b = el("button", temEssa ? "tem" : "falta");
+      b.type = "button";
+      b.title = c.nome + " · nº " + c.numero + (brl != null ? " · " + BRL.format(brl) : "")
+        + (temEssa ? " — você tem" : " — falta");
+      b.setAttribute("aria-label", b.title);
+
+      if (c.img) {
+        var im = document.createElement("img");
+        im.src = c.img;
+        im.alt = "";
+        im.loading = "lazy";
+        b.appendChild(im);
+      } else {
+        b.appendChild(el("span", null, c.numero));
+      }
+      if (temEssa) b.appendChild(el("span", "marca", "✓"));
+
+      b.addEventListener("click", function () {
+        if (achar(carteira.tenho, c.id) >= 0) tirar("tenho", c.id);
+        else guardar("tenho", { id: c.id, nome: c.nome, numero: c.numero, total: c.total, set: c.set, img: c.img, brl: brl });
+      });
+
+      g.appendChild(b);
+    });
+
+    grade.appendChild(g);
+
+    resumo.textContent = "";
+    var r = el("div", "resumo");
+    r.appendChild(el("span", "big", tenho + " de " + cartas.length));
+    r.appendChild(el("span", "lbl", "cartas de " + colecaoAtual.nome));
+    r.appendChild(el("span", "big", BRL.format(valorTenho)));
+    r.appendChild(el("span", "lbl", "nas suas · " + BRL.format(valorTudo) + " a coleção inteira"));
+    resumo.appendChild(r);
+  }
+
+  goColecao.addEventListener("click", function () { abrirColecao(selColecao.value); });
+
   /* ================= golpes ================= */
   var TRAPS = [
     ["“Tem outro cara querendo, fecha agora”", "Pressa é a ferramenta número um do golpista. Carta boa espera você conferir. Se não pode esperar dez minutos, não vale a pena."],
@@ -1534,6 +1832,18 @@
   renderCarteira();
   renderChips();
   renderHistorico();
+  montarSelect();
+  buscarSets();
+  /* Se alguma coleção já foi baixada, abre a mais recente sozinha: quem
+     guardou uma quer vê-la, não apertar um botão pra ela voltar. */
+  (function () {
+    var g = load(CHAVE_COL, {}) || {};
+    var ids = Object.keys(g).sort(function (a, b) { return g[b].quando - g[a].quando; });
+    if (ids.length) {
+      selColecao.value = ids[0];
+      abrirColecao(ids[0]);
+    }
+  })();
   renderSide("da");
   renderSide("recebe");
   recalc();
