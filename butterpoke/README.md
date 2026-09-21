@@ -400,6 +400,36 @@ mercado americano) e do **Cardmarket** (em euro, mercado europeu). O site mostra
 - um valor aproximado em reais, usando a cotação do dólar que você digita lá embaixo
   (fica guardada no aparelho). É chute pra dar noção — o preço oficial é o de lá.
 
+## Quando dá erro
+
+Um relato de uso: *"Não consegui abrir essa favorita 📡 — HTTP 500"*. Duas coisas erradas
+ali, e nenhuma era o visual.
+
+**A primeira: desistir cedo demais.** Erro 500 é soluço do servidor deles, não pedido
+errado meu — e `pedirJSON` agora tenta de novo uma vez, meio segundo depois. Só isso
+resolve a maior parte. O 429 fica de fora da regra: ali insistir só piora.
+
+**A segunda: abrir uma favorita tinha um caminho só.** Agora tem três — o catálogo
+principal, o reserva, e a busca pelo nome (que pega o caso do id ter mudado). E se os três
+falharem, **a carta aparece assim mesmo**, do jeito que foi guardada, com um recado
+dizendo que o preço de hoje não veio. O nome e a foto eu já tenho; uma carta sem preço é
+melhor que uma tela de erro.
+
+**A terceira, que o meu próprio teste pegou:** com o principal fora do ar e o reserva
+respondendo vazio, a tela dizia "procurei nos dois e nenhum tem". Mentira — um deles nunca
+respondeu, e pode muito bem ter a carta. Agora esse caso tem tela própria.
+
+### A tela de erro
+
+Antes era um parágrafo vermelho com `HTTP 500` no fim, que não diz nada a ninguém. Agora
+responde as três perguntas que a pessoa realmente tem: **o que houve, de quem é a culpa, e
+o que fazer agora** — com botão de **tentar de novo** e o detalhe técnico guardado atrás
+de um "detalhe técnico" pra quem quiser.
+
+Os códigos viram português: 5xx é problema do lado deles, 429 é limite do dia, 404 é carta
+fora do catálogo, e falha de rede com `navigator.onLine === false` vira "teu aparelho está
+sem internet".
+
 ## Quando o site dos preços cai
 
 Aconteceu no primeiro dia no ar: a pokemontcg.io devolveu **500** e a busca não
