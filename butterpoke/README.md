@@ -39,6 +39,26 @@ E um **código** que a pessoa leva na mão:
 - código de outro site, ou cortado no meio, dá um recado em português explicando —
   sem isso o navegador devolve o erro do `atob` em inglês, que não ajuda ninguém
 
+## Meus bonecos
+
+Pediram pelúcia, boneco e brinquedo com preço — três vezes. Respondi "não dá" três vezes,
+e na terceira parei pra pensar direito.
+
+**Catálogo de brinquedo não existe** em lugar nenhum que eu alcance, e inventar preço seria
+mentir. Isso não mudou. Mas quem tem o dado é a **própria pessoa**: ela vê o boneco na
+loja, sabe quanto custa, sabe qual Pokémon é. Então o site parou de fingir que sabe e
+passou a guardar o que ela sabe.
+
+Cada boneco tem nome, tipo (pelúcia, boneco, chaveiro, outro), qual Pokémon é, quanto
+custou e quanto ela acha que vale hoje. A lista soma os dois totais e marca com ▲ verde ou
+▼ vermelho quem subiu ou caiu.
+
+**A foto, essa eu consigo**: é a arte de uma carta do mesmo Pokémon. Quando não acho carta
+com aquele nome, fica o emoji do tipo — e a tela diz por quê, em vez de deixar um quadrado
+vazio sem explicação.
+
+Vai junto no código do perfil e vira um número no cartão de treinador, como todo o resto.
+
 ## Vale a pena abrir um pacote?
 
 Pediram produtos: booster, pelúcia, boneco, com preço e um veredito. **Pelúcia e boneco eu
