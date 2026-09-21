@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>JOGO DO NADA</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap');
+:root{
+  --bg:#0a0a15;
+  --bg2:#14142b;
+  --fg:#fafafa;
+  --mute:#7c7c99;
+  --accent:#c6ff3d;
+  --danger:#ff3355;
+  --portal:#a855f7;
+  --pink:#ff4dc4;
+  --amber:#ffc857;
+}
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{overflow:hidden;height:100vh;width:100vw;font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--fg);touch-action:none;-webkit-font-smoothing:antialiased}
+#cena{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:background .5s;background:radial-gradient(ellipse at 50% 30%,#1a1a3a 0%,var(--bg) 60%,var(--bg) 100%)}
+#cena.bravo{background:radial-gradient(ellipse at 50% 30%,#3a0f1a 0%,#1a0510 100%)}
+#cena.muitobravo{background:radial-gradient(ellipse at 50% 30%,#5a0018 0%,#200008 100%);animation:tremer .1s infinite}
+#cena.fogo{background:linear-gradient(to top,#4a1500 0%,#0a0000 100%)}
+@keyframes tremer{0%,100%{transform:translate(0,0)}25%{transform:translate(-3px,2px)}50%{transform:translate(3px,-2px)}75%{transform:translate(-2px,-3px)}}
+
+#npc{font-size:6rem;margin-bottom:1rem;transition:transform .2s}
+#npc.bravo{animation:pulse .3s infinite}
+@keyframes pulse{0%,100%{transform:scale(1.15)}50%{transform:scale(1.25)}}
+
+#balao{background:var(--fg);color:var(--bg);padding:1.1rem 1.6rem;border-radius:24px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.15rem;max-width:85%;text-align:center;position:relative;margin-bottom:2rem;min-height:3.5rem;display:flex;align-items:center;justify-content:center;visibility:hidden;letter-spacing:-.01em;line-height:1.3;box-shadow:0 20px 40px -10px rgba(0,0,0,.4)}
+#balao.on{visibility:visible}
+#balao::after{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);border:14px solid transparent;border-bottom-color:var(--fg)}
+#balao.gritando{background:var(--danger);color:var(--fg);animation:tremer .1s infinite;letter-spacing:.02em;font-weight:700}
+#balao.gritando::after{border-bottom-color:var(--danger)}
+
+#logo{display:flex;gap:.4rem;padding:1.1rem 1.7rem;border-radius:32px;background:linear-gradient(135deg,var(--portal),var(--pink));box-shadow:0 20px 50px -10px rgba(168,85,247,.6),inset 0 1px 0 rgba(255,255,255,.2);transition:all .4s cubic-bezier(.4,0,.2,1)}
+#logo.prata{background:linear-gradient(135deg,#e8e8ef,#8b8b9d,#f5f5fa);box-shadow:0 20px 50px -10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.8),inset 0 -2px 4px rgba(0,0,0,.2)}
+#logo.fogo{background:linear-gradient(135deg,#ff4500,#ffb800,#ff2200);animation:fogoAnim .3s infinite;box-shadow:0 0 60px rgba(255,100,0,.8)}
+#logo.obsidian{background:linear-gradient(135deg,#0a0015,#1a0033,#000);box-shadow:0 0 30px var(--portal),inset 0 0 15px #000}
+#logo.obsidian.desmontada{background:transparent;box-shadow:none;padding:0}
+.letra.solta{position:fixed;z-index:150;background:linear-gradient(135deg,#0a0015,#1a0033,#000)!important;color:#c9a0ff!important;text-shadow:0 0 8px var(--portal)!important;box-shadow:0 0 20px var(--portal);cursor:grab;padding:.5rem 1rem;border-radius:18px;touch-action:none}
+.letra.solta.dragging{cursor:grabbing;transform:scale(1.15);z-index:200}
+#portal{position:fixed;pointer-events:none;z-index:99;display:none;border-radius:50%;background:radial-gradient(circle,#e9d5ff 0%,var(--portal) 40%,#2a0055 80%,transparent 100%);animation:portalPulse 1s infinite;box-shadow:0 0 80px var(--portal),inset 0 0 40px var(--fg)}
+#portal.on{display:block;pointer-events:auto;cursor:pointer}
+#portal.on::after{content:'ENTRAR';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.25em;color:var(--fg);font-size:1.1rem;text-shadow:0 2px 10px #000;animation:piscar 1s infinite}
+@keyframes piscar{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes portalPulse{0%,100%{filter:brightness(1) hue-rotate(0)}50%{filter:brightness(1.4) hue-rotate(30deg)}}
+@keyframes fogoAnim{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4) hue-rotate(-10deg)}}
+.letra{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:3.5rem;color:var(--fg);cursor:pointer;padding:.3rem .8rem;border-radius:18px;transition:transform .15s,background .2s;letter-spacing:-.03em;line-height:1}
+.letra:active{transform:scale(.8) rotate(5deg)}
+.letra:hover{background:rgba(255,255,255,.15)}
+#logo.prata .letra{color:#2a2a3f;text-shadow:0 1px 0 rgba(255,255,255,.8)}
+#logo.fogo .letra{color:var(--fg);text-shadow:0 0 10px #ff0,0 0 20px #f80}
+
+#fogueira{font-size:5rem;position:fixed;cursor:grab;filter:drop-shadow(0 0 20px #f80);animation:tremeluz .5s infinite;display:none;touch-action:none;z-index:100}
+#fogueira.on{display:block}
+#fogueira.dragging{cursor:grabbing;transform:scale(1.2)}
+@keyframes tremeluz{0%,100%{transform:scale(1)}50%{transform:scale(1.1) rotate(-3deg)}}
+#fogueira.dragging{animation:none}
+
+#dica{position:fixed;bottom:1rem;left:0;right:0;text-align:center;color:var(--mute);font-size:.8rem;padding:0 1rem;font-family:'JetBrains Mono',monospace;letter-spacing:.05em}
+#contador{position:fixed;top:1rem;right:1rem;color:var(--mute);font-size:.85rem;font-family:'JetBrains Mono',monospace;letter-spacing:.05em;background:rgba(20,20,43,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:.4rem .8rem;border-radius:100px;border:1px solid rgba(255,255,255,.08)}
+#tituloTop{position:fixed;top:1rem;left:1rem;color:var(--mute);font-size:.85rem;font-family:'JetBrains Mono',monospace;letter-spacing:.15em;text-transform:uppercase;font-weight:700}
+#tituloTop::before{content:'●';color:var(--accent);margin-right:.5rem;animation:pulseDot 2s ease-in-out infinite}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
+
+.pop{position:fixed;pointer-events:none;font-family:'Fredoka One';font-size:1.3rem;color:#ff2020;animation:popUp 1s forwards;z-index:9999;text-shadow:0 2px 4px rgba(0,0,0,.8)}
+@keyframes popUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(1.5)}}
+
+.confete{position:fixed;width:10px;height:10px;pointer-events:none;z-index:9998;animation:cair 2s forwards}
+@keyframes cair{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* ── MENU INICIAL ── */
+#menu{position:fixed;inset:0;z-index:999999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--fg);padding:2rem;overflow:hidden}
+#menu::before{content:'';position:absolute;inset:-50%;background:radial-gradient(ellipse at 30% 40%,rgba(168,85,247,.15),transparent 50%),radial-gradient(ellipse at 70% 60%,rgba(255,77,196,.1),transparent 50%);animation:menuBG 20s linear infinite}
+@keyframes menuBG{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+#menu.off{display:none}
+#menu .eyebrow{font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.4em;text-transform:uppercase;color:var(--mute);margin-bottom:2rem;position:relative;z-index:1}
+#menu .eyebrow::before{content:'▲ ';color:var(--accent)}
+#menu h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(4rem,20vw,10rem);line-height:.85;letter-spacing:-.06em;margin-bottom:.5rem;text-align:center;position:relative;z-index:1;color:var(--fg)}
+#menu h1 .void{display:block;color:var(--fg);font-style:italic;font-weight:400}
+#menu h1 .void::before{content:'"'}
+#menu h1 .void::after{content:'"'}
+#menu h1 em{font-style:normal;background:linear-gradient(135deg,var(--portal),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
+#menu .kicker{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;color:var(--mute);margin:1.5rem 0 3rem;text-align:center;max-width:32ch;line-height:1.5;font-weight:500;position:relative;z-index:1}
+#menu .kicker b{color:var(--fg);font-weight:700}
+#btnComecar{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1rem;letter-spacing:.25em;text-transform:uppercase;padding:1.25rem 3rem;border:2px solid var(--fg);border-radius:0;background:transparent;color:var(--fg);cursor:pointer;position:relative;z-index:1;transition:all .3s cubic-bezier(.4,0,.2,1);overflow:hidden}
+#btnComecar::before{content:'';position:absolute;inset:0;background:var(--accent);transform:translateY(101%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:-1}
+#btnComecar:hover{color:var(--bg);border-color:var(--accent)}
+#btnComecar:hover::before{transform:translateY(0)}
+#btnComecar::after{content:' →';transition:transform .3s}
+#btnComecar:hover::after{transform:translateX(4px);display:inline-block}
+#menu .creditos{position:absolute;bottom:1.5rem;left:0;right:0;text-align:center;opacity:.4;font-size:.7rem;font-family:'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;z-index:1}
+#menu .creditos b{color:var(--accent);font-weight:400}
+
+/* ── BOSS NADA (final) ── */
+#bossNada{position:fixed;top:50%;left:50%;width:100px;height:100px;background:radial-gradient(circle,#000 0%,#000 60%,transparent 100%);border-radius:50%;transform:translate(-50%,-50%);z-index:200000;display:none;pointer-events:none;box-shadow:0 0 100px #000,inset 0 0 50px #6B1FA2}
+#bossNada.on{display:block;animation:nadaCresce 2s forwards}
+@keyframes nadaCresce{from{width:0;height:0}to{width:80vw;height:80vw;max-width:600px;max-height:600px}}
+#bossNada.morrendo{animation:nadaMorre 2s forwards!important}
+@keyframes nadaMorre{to{width:0;height:0;opacity:0}}
+#bocaNada{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:5rem;cursor:pointer;pointer-events:auto;filter:drop-shadow(0 0 20px #ff0080);animation:bocaBate .5s infinite}
+@keyframes bocaBate{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.15)}}
+
+/* ── FASE OBJETOS ── */
+.objCai{position:fixed;font-size:2.5rem;cursor:pointer;z-index:200010;user-select:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.4))}
+.objCai.pego{animation:objSome .3s forwards}
+@keyframes objSome{to{transform:scale(2);opacity:0}}
+#hudObj{position:fixed;top:1rem;left:50%;transform:translateX(-50%);color:var(--fg);font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;letter-spacing:.1em;background:rgba(20,20,43,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:.7rem 1.2rem;border-radius:16px;z-index:200020;display:none;border:1px solid rgba(255,255,255,.1);text-align:center;line-height:1.6}
+#hudObj.on{display:block}
+
+/* ── MUNDO 2 (do outro lado do portal) ── */
+#mundoNada{position:fixed;inset:0;z-index:99999;display:none;background:radial-gradient(ellipse at center,#2a1a4a 0%,#0f0820 60%,var(--bg) 100%);overflow:hidden;align-items:center;justify-content:center;flex-direction:column}
+#mundoNada.on{display:flex;animation:entrarPortal 1s}
+@keyframes entrarPortal{from{transform:scale(0) rotate(360deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.fundoMN{position:absolute;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.5rem;letter-spacing:-.02em;opacity:.08;pointer-events:none;color:var(--fg);animation:driftBG 20s linear infinite}
+@keyframes driftBG{from{transform:translateX(-50px)}to{transform:translateX(50px)}}
+#mnMago{font-size:7rem;margin-bottom:1rem;animation:magoFlutua 3s ease-in-out infinite;filter:drop-shadow(0 0 30px var(--portal));cursor:pointer;transition:transform .2s}
+#mnMago.melado{filter:drop-shadow(0 0 30px var(--amber)) brightness(1.3)}
+#mnMago:active{transform:scale(.9)}
+.manteiga{position:fixed;font-size:3rem;cursor:grab;z-index:200;touch-action:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));transition:transform .1s}
+.manteiga.dragging{cursor:grabbing;transform:scale(1.2)}
+.manteiga.jogada{animation:manteigaJogada .5s forwards;pointer-events:none}
+@keyframes manteigaJogada{to{transform:scale(2) rotate(720deg);opacity:0}}
+.mancha{position:absolute;font-size:1.5rem;pointer-events:none;animation:manchaPop .8s forwards}
+@keyframes manchaPop{0%{transform:scale(0)}50%{transform:scale(1.5)}100%{transform:scale(1);opacity:.8}}
+
+.squishy{position:fixed;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#ffb3d9,#ff69b4 60%,#c71585);box-shadow:0 8px 20px rgba(0,0,0,.5),inset -8px -12px 20px rgba(0,0,0,.2),inset 8px 8px 15px rgba(255,255,255,.4);cursor:pointer;z-index:150;touch-action:none;transition:transform .08s;user-select:none}
+.squishy::before{content:'';position:absolute;top:20%;left:25%;width:25%;height:20%;background:rgba(255,255,255,.6);border-radius:50%;filter:blur(2px)}
+.squishy.apertando{transform:scale(1.3,.6)!important}
+.squishy.lancado{animation:squishyLanc .8s forwards}
+@keyframes squishyLanc{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-150px) rotate(180deg)}100%{transform:translateY(0) rotate(360deg)}}
+
+/* BOSS SQUISHYMAN */
+#bossWrap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:180;display:none;width:250px;height:400px}
+#bossWrap.on{display:block;animation:bossEntra 1s}
+@keyframes bossEntra{from{transform:translate(-50%,-50%) scale(0) rotate(720deg)}to{transform:translate(-50%,-50%) scale(1) rotate(0)}}
+.squishyBoss{position:absolute;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#ffb3d9,#ff69b4 60%,#c71585);box-shadow:0 4px 10px rgba(0,0,0,.5),inset -6px -8px 15px rgba(0,0,0,.2),inset 6px 6px 12px rgba(255,255,255,.4);cursor:grab;touch-action:none}
+.squishyBoss::before{content:'';position:absolute;top:20%;left:25%;width:25%;height:20%;background:rgba(255,255,255,.6);border-radius:50%;filter:blur(2px)}
+.squishyBoss.cabeca{width:90px;height:90px;top:0;left:80px}
+.squishyBoss.corpo{width:80px;height:80px;top:100px;left:85px}
+.squishyBoss.braco-e{width:55px;height:55px;top:110px;left:15px}
+.squishyBoss.braco-d{width:55px;height:55px;top:110px;left:180px}
+.squishyBoss.perna-e{width:60px;height:60px;top:200px;left:55px}
+.squishyBoss.perna-d{width:60px;height:60px;top:200px;left:135px}
+.squishyBoss.olho{width:15px;height:15px;background:#000;position:absolute;border-radius:50%;pointer-events:none;box-shadow:none}
+.squishyBoss.olho::before{display:none}
+.squishyBoss.dragging{cursor:grabbing;transform:scale(1.15);z-index:300}
+.squishyBoss.saindo{animation:squishyCai 1s forwards;pointer-events:none}
+@keyframes squishyCai{to{transform:translateY(500px) rotate(720deg);opacity:0}}
+
+#bossHUD{position:absolute;top:1rem;left:50%;transform:translateX(-50%);color:var(--fg);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;text-align:center;z-index:190;background:rgba(20,20,43,.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:.7rem 1.2rem;border-radius:16px;border:1px solid rgba(255,255,255,.1)}
+#bossHUD.on{display:block}
+#bossHUD{display:none}
+.hpBar{width:200px;height:8px;background:rgba(255,255,255,.1);border-radius:100px;margin-top:.5rem;overflow:hidden;border:none}
+.hpBar>div{height:100%;background:linear-gradient(to right,var(--danger),var(--pink));transition:width .3s;border-radius:100px}
+#bossMsg{position:absolute;bottom:5rem;left:0;right:0;text-align:center;color:var(--fg);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1rem;padding:0 1rem;z-index:190;letter-spacing:.05em}
+
+/* ── FASE FINAL: nada + pincel ── */
+#mundoNada.fasepincel{background:#f5f5f0!important;animation:none}
+#mundoNada.fasepincel .fundoMN{display:none}
+#mundoNada.fasepincel #mnMago{display:none}
+#mundoNada.fasepincel #mnBalao{background:transparent;color:#2a2a3f;box-shadow:none;font-family:'Space Grotesk',sans-serif;font-style:italic;font-weight:500}
+#mundoNada.fasepincel #mnBalao::after{display:none}
+#pintaCanvas{position:absolute;inset:0;z-index:5;cursor:crosshair;touch-action:none}
+#placa{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);font-size:5rem;cursor:pointer;z-index:20;display:none;filter:drop-shadow(0 8px 20px rgba(0,0,0,.3));transition:transform .3s}
+#placa.on{display:block}
+#placa.caindo{animation:placaCai 1.5s forwards}
+@keyframes placaCai{0%{transform:translate(-50%,-50%) rotate(0)}30%{transform:translate(-50%,-50%) rotate(-15deg)}50%{transform:translate(-50%,-50%) rotate(15deg)}100%{transform:translate(-50%,300px) rotate(720deg);opacity:0}}
+#pincel{position:fixed;font-size:3rem;cursor:grab;z-index:25;display:none;touch-action:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.4));user-select:none;transform-origin:20% 80%}
+#pincel.on{display:block}
+#pincel.dragging{cursor:grabbing}
+#paleta{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);display:none;gap:.5rem;z-index:20;background:rgba(20,20,43,.85);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);padding:.7rem;border-radius:100px;box-shadow:0 20px 40px -10px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08)}
+#paleta.on{display:flex}
+.cor{width:36px;height:36px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,.2);box-shadow:0 2px 8px rgba(0,0,0,.4);transition:all .2s cubic-bezier(.4,0,.2,1)}
+.cor:hover{transform:scale(1.15);border-color:rgba(255,255,255,.5)}
+.cor.ativa{border-color:var(--fg);transform:scale(1.2);box-shadow:0 4px 20px currentColor}
+
+/* MAGO FINAL — o mais bravo do mundo */
+#magoFinal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12rem;z-index:15;display:none;animation:tremeMuito .1s infinite;filter:drop-shadow(0 0 40px #ff0000)}
+#magoFinal.on{display:block}
+@keyframes tremeMuito{0%,100%{transform:translate(-50%,-50%) rotate(0)}25%{transform:translate(-48%,-52%) rotate(-2deg)}50%{transform:translate(-52%,-48%) rotate(2deg)}75%{transform:translate(-51%,-51%) rotate(-1deg)}}
+#magoFinal.derrotado{animation:none;filter:none;transform:translate(-50%,-50%) rotate(0)!important}
+#hpInfinito{position:fixed;top:1rem;left:50%;transform:translateX(-50%);color:var(--danger);font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;background:rgba(20,20,43,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:.7rem 1.2rem;border-radius:16px;z-index:30;display:none;text-align:center;border:1px solid rgba(255,51,85,.3);line-height:1.5}
+#hpInfinito.on{display:block}
+#dicaBigode{position:fixed;top:5.5rem;left:50%;transform:translateX(-50%);color:var(--bg);font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;z-index:30;display:none;background:var(--accent);padding:.6rem 1.2rem;border-radius:100px;box-shadow:0 8px 20px rgba(198,255,61,.3)}
+#dicaBigode.on{display:block}
+
+/* Fase espera + espada */
+#timer10min{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(5rem,20vw,10rem);color:#1a1a3a;z-index:14;display:none;letter-spacing:-.05em;line-height:1}
+#timer10min.on{display:block}
+.digito{display:inline-block;cursor:grab;transition:transform .15s;padding:0 .3rem;touch-action:none;user-select:none;color:#1a1a3a;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(5rem,20vw,10rem);line-height:1;letter-spacing:-.05em}
+.digito:hover{transform:scale(1.1);color:var(--danger)}
+.digito.solta{position:fixed;z-index:100050;color:var(--bg);background:var(--accent);border-radius:16px;box-shadow:0 20px 40px -10px rgba(198,255,61,.5)}
+.digito.dragging{cursor:grabbing;transform:scale(1.15) rotate(-3deg)}
+#espadaMontada{position:fixed;font-size:5rem;cursor:grab;z-index:100060;display:none;touch-action:none;filter:drop-shadow(0 4px 15px rgba(0,0,0,.5));user-select:none}
+#espadaMontada.on{display:block;animation:espadaBrilha 1.5s ease-out}
+@keyframes espadaBrilha{from{transform:scale(0) rotate(720deg);filter:brightness(3) drop-shadow(0 0 40px #ffff00)}to{transform:scale(1) rotate(0);filter:drop-shadow(0 4px 15px rgba(0,0,0,.5))}}
+#espadaMontada.dragging{cursor:grabbing;transform:scale(1.2)}
+@keyframes magoFlutua{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+#mnBalao{background:var(--fg);color:var(--bg);padding:1.1rem 1.6rem;border-radius:24px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.15rem;max-width:85%;text-align:center;position:relative;margin-bottom:2rem;letter-spacing:-.01em;line-height:1.3;box-shadow:0 20px 40px -10px rgba(0,0,0,.4)}
+#mnBalao::after{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);border:14px solid transparent;border-bottom-color:var(--fg)}
+#mnVoltar{padding:.7rem 1.5rem;background:transparent;color:var(--fg);border:1px solid rgba(255,255,255,.2);border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:1.5rem}
+#mnVoltar:hover{border-color:var(--fg);background:rgba(255,255,255,.05)}
+
+/* MAGO voando pro portal */
+#npc.voando{position:fixed!important;z-index:200;transition:all 1.5s cubic-bezier(.5,-.3,.5,1.3)}
+</style>
+</head>
+<body>
+
+<div id="menu">
+  <div class="eyebrow">Um jogo por Jojo — 2026</div>
+  <h1>JOGO<br><em>DO</em><br><span class="void">NADA</span></h1>
+  <p class="kicker">Você tem <b>uma tarefa</b>: não fazer nada.<br>Você vai fazer alguma coisa.</p>
+  <button id="btnComecar">Começar</button>
+  <div class="creditos">v2 <b>·</b> feito com muito nada</div>
+</div>
+
+<div id="bossNada"><div id="bocaNada">👄</div></div>
+<div id="hudObj">🎯 <span id="objCont">0</span> / 15 objetos</div>
+
+<div id="tituloTop">JOGO DO NADA</div>
+<div id="contador">Coisas feitas: 0</div>
+
+<div id="cena">
+  <div id="npc">😄</div>
+  <div id="balao"></div>
+  <div id="logo">
+    <div class="letra" data-l="J">J</div>
+    <div class="letra" data-l="O">O</div>
+    <div class="letra" data-l="G">G</div>
+    <div class="letra" data-l="O">O</div>
+  </div>
+</div>
+
+<div id="portal"></div>
+<div id="fogueira">🔥</div>
+<div id="dica">💡 dica: não faça nada</div>
+
+<div id="mundoNada">
+  <div id="mnMago">😄</div>
+  <div id="mnBalao">Não faça NADA.</div>
+  <div id="bossHUD">
+    <div>👹 SQUISHYMAN</div>
+    <div class="hpBar"><div id="bossHP"></div></div>
+  </div>
+  <div id="bossWrap">
+    <div class="squishyBoss cabeca"></div>
+    <div class="squishyBoss corpo"></div>
+    <div class="squishyBoss braco-e"></div>
+    <div class="squishyBoss braco-d"></div>
+    <div class="squishyBoss perna-e"></div>
+    <div class="squishyBoss perna-d"></div>
+  </div>
+  <div id="bossMsg"></div>
+  <button id="mnVoltar">← voltar ao início</button>
+  <canvas id="pintaCanvas"></canvas>
+  <div id="placa">🪧</div>
+  <div id="pincel">🖌️</div>
+  <div id="paleta">
+    <div class="cor ativa" style="background:#ff2020" data-c="#ff2020"></div>
+    <div class="cor" style="background:#ff8800" data-c="#ff8800"></div>
+    <div class="cor" style="background:#ffdd00" data-c="#ffdd00"></div>
+    <div class="cor" style="background:#00cc44" data-c="#00cc44"></div>
+    <div class="cor" style="background:#0088ff" data-c="#0088ff"></div>
+    <div class="cor" style="background:#8800ff" data-c="#8800ff"></div>
+    <div class="cor" style="background:#ff00cc" data-c="#ff00cc"></div>
+    <div class="cor" style="background:#000" data-c="#000"></div>
+  </div>
+  <div id="magoFinal">👿</div>
+  <div id="hpInfinito">👿 MAGO SUPREMO<br>❤️ ∞ vidas</div>
+  <div id="dicaBigode">🖌️ pinta um BIGODE na cara dele!</div>
+  <div id="timer10min"><span class="digito" data-d="1">1</span><span class="digito" data-d="0">0</span> min</div>
+  <div id="espadaMontada">🗡️</div>
+</div>
+
+<script>
+// ═══ MENU INICIAL ═══
+document.getElementById('btnComecar').onclick=()=>{
+  document.getElementById('menu').classList.add('off');
+  som(400,.1,'sine');
+  setTimeout(()=>som(600,.15,'sine'),100);
+};
+
+// ═══ SISTEMA DE SONS ═══
+let audCtx=null;
+function som(freq,dur,tipo){
+  try{
+    if(!audCtx) audCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audCtx.state==='suspended') audCtx.resume();
+    const o=audCtx.createOscillator();const g=audCtx.createGain();
+    o.frequency.value=freq;o.type=tipo||'sine';
+    g.gain.value=.15;
+    o.connect(g);g.connect(audCtx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(.001,audCtx.currentTime+dur);
+    o.stop(audCtx.currentTime+dur);
+  }catch(e){}
+}
+function somAcorde(freqs,dur){freqs.forEach((f,i)=>setTimeout(()=>som(f,dur,'sine'),i*40));}
+const SONS={
+  clique:()=>som(600+Math.random()*100,.05,'square'),
+  bravo:()=>som(150,.3,'sawtooth'),
+  portal:()=>somAcorde([200,300,500,800,1200],.15),
+  vitoria:()=>somAcorde([523,659,784,1047],.2),
+  boss:()=>som(80,.6,'sawtooth'),
+  golpe:()=>{som(800,.05,'square');setTimeout(()=>som(300,.15,'sawtooth'),50);},
+  pop:()=>som(400,.1,'triangle')
+};
+
+const cena=document.getElementById('cena');
+const npc=document.getElementById('npc');
+const balao=document.getElementById('balao');
+const logo=document.getElementById('logo');
+const fogueira=document.getElementById('fogueira');
+const contador=document.getElementById('contador');
+
+let coisas=0;
+let estadoLogo='normal';
+
+const FALAS_NORMAIS=["Não faça NADA.","Sério, para.","Você tá fazendo coisa de novo.","PARA.","Por que não escuta?","Cadê o NADA?","Faça. NADA.","Isso é o único trabalho."];
+const FALAS_BRAVAS=["AGORA VIROU PRATA. FELIZ?","TOMA A LOGO DE PRATA ENTÃO.","PARABÉNS, VOCÊ QUEBROU."];
+const FALAS_MUITO_BRAVAS=["AAAAAA","EU DISSE NADA!!!","PARA!!! PARA!!!","😡😡😡","PORQUEEE"];
+const FALAS_RESET=["NÃO! É PRA FAZER NADA, NÃO RECOMEÇAR!","Recomeçar TAMBÉM é fazer coisa!!!","VOCÊ NÃO ENTENDE MESMO NÉ","Eu literalmente falei NADA."];
+
+// AÇÕES DAS LETRAS L O G O
+const ACOES_LETRA={
+  'J':(el)=>{el.style.transform='rotate('+(Math.random()*360)+'deg) scale('+(0.8+Math.random())+')';return 'girou o J!';},
+  'L':(el)=>{el.style.transform='rotate('+(Math.random()*360)+'deg) scale('+(0.8+Math.random())+')';return 'girou o L!';},
+  'O':(el)=>{el.textContent=['O','0','◯','●','⭕','🌀','🍩'][Math.floor(Math.random()*7)];return 'trocou o O!';},
+  'G':(el)=>{el.style.color='hsl('+Math.random()*360+',100%,60%)';return 'colorbomb!';}
+};
+
+function fala(txt,gritando=false){
+  balao.textContent=txt;
+  balao.classList.add('on');
+  balao.classList.toggle('gritando',gritando);
+}
+
+function pop(txt,x,y){
+  const p=document.createElement('div');p.className='pop';p.textContent=txt;
+  p.style.left=(x-30)+'px';p.style.top=(y-30)+'px';
+  document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+}
+
+function confete(){
+  const cores=['#ff2020','#ffff00','#00ff00','#00aaff','#ff00ff','#ff8800'];
+  for(let i=0;i<20;i++){
+    const c=document.createElement('div');c.className='confete';
+    c.style.background=cores[Math.floor(Math.random()*cores.length)];
+    c.style.left=Math.random()*innerWidth+'px';c.style.top='-20px';
+    c.style.animationDelay=Math.random()*.5+'s';
+    document.body.appendChild(c);setTimeout(()=>c.remove(),2500);
+  }
+}
+
+function fezAlgo(oquefez,x,y){
+  coisas++;
+  contador.textContent='Coisas feitas: '+coisas;
+  if(x&&y) pop(oquefez,x,y);
+  SONS.clique();
+
+  if(coisas<5){
+    fala(FALAS_NORMAIS[Math.floor(Math.random()*FALAS_NORMAIS.length)]);
+    cena.className='';npc.className='';npc.textContent='😄';
+  } else if(coisas<10){
+    fala(FALAS_NORMAIS[Math.floor(Math.random()*FALAS_NORMAIS.length)]);
+    cena.className='bravo';npc.className='bravo';npc.textContent='😠';
+  } else if(coisas===10){
+    virarPrata();
+  } else if(estadoLogo==='prata'){
+    fala(FALAS_MUITO_BRAVAS[Math.floor(Math.random()*FALAS_MUITO_BRAVAS.length)],true);
+  } else if(estadoLogo==='fogo'){
+    fala("PEGOU FOGO. ÓTIMO.",true);
+  }
+}
+
+function virarPrata(){
+  estadoLogo='prata';
+  logo.className='prata';
+  logo.querySelectorAll('.letra').forEach(l=>{l.style.transform='';l.style.color='';l.textContent=l.dataset.l;});
+  fala(FALAS_BRAVAS[Math.floor(Math.random()*FALAS_BRAVAS.length)],true);
+  cena.className='muitobravo';npc.textContent='😡';
+  // fogueira aparece num canto aleatório
+  fogueira.className='on';
+  fogueira.style.left=(innerWidth-120)+'px';
+  fogueira.style.top=(innerHeight/2)+'px';
+}
+
+function derreterPrata(x,y){
+  estadoLogo='fogo';
+  logo.className='fogo';
+  pop('🔥 PEGOU FOGO!',x,y);
+  confete();
+  setTimeout(()=>{
+    // vira OBSIDIANA e as letras ficam pegáveis
+    estadoLogo='obsidian';
+    logo.className='obsidian desmontada';
+    cena.className='muitobravo';npc.className='bravo';npc.textContent='🤯';
+    fala("VIROU OBSIDIANA?! O QUE VOCÊ TÁ APRONTANDO?!",true);
+    // solta as letras nas posições atuais e deixa arrastáveis
+    logo.querySelectorAll('.letra').forEach((el,i)=>{
+      const r=el.getBoundingClientRect();
+      el.classList.add('solta');
+      el.style.left=r.left+'px';
+      el.style.top=r.top+'px';
+      document.body.appendChild(el);
+    });
+    // fogueira PERMANECE arrastável
+  },1500);
+}
+
+// LETRAS: click normal / drag quando obsidiana
+document.querySelectorAll('.letra').forEach(el=>{
+  el.addEventListener('click',(e)=>{
+    if(el.classList.contains('solta')) return; // solta = drag, não click
+    e.stopPropagation();
+    const l=el.dataset.l;
+    if(estadoLogo==='prata'){
+      fala("Não adianta! Arrasta a FOGUEIRA na LOGO!",true);
+      fezAlgo('inútil',e.clientX,e.clientY);
+      return;
+    }
+    const acao=ACOES_LETRA[l];
+    const resultado=acao?acao(el):'+1 clique';
+    fezAlgo(resultado,e.clientX,e.clientY);
+  });
+});
+
+// DRAG das LETRAS soltas (obsidiana)
+let letraArr=null,letraOff={x:0,y:0};
+function iniciarDragLetra(el,x,y){
+  if(!el.classList.contains('solta')) return;
+  letraArr=el;el.classList.add('dragging');
+  const r=el.getBoundingClientRect();
+  letraOff.x=x-r.left;letraOff.y=y-r.top;
+}
+function moverLetra(x,y){
+  if(!letraArr) return;
+  letraArr.style.left=(x-letraOff.x)+'px';
+  letraArr.style.top=(y-letraOff.y)+'px';
+  checarPortal();
+}
+function pararLetra(){if(letraArr){letraArr.classList.remove('dragging');letraArr=null;}}
+
+document.addEventListener('mousedown',(e)=>{
+  if(e.target.classList&&e.target.classList.contains('letra')&&e.target.classList.contains('solta')){
+    iniciarDragLetra(e.target,e.clientX,e.clientY);e.preventDefault();
+  }
+});
+document.addEventListener('mousemove',(e)=>moverLetra(e.clientX,e.clientY));
+document.addEventListener('mouseup',pararLetra);
+document.addEventListener('touchstart',(e)=>{
+  if(e.target.classList&&e.target.classList.contains('letra')&&e.target.classList.contains('solta')){
+    const t=e.touches[0];iniciarDragLetra(e.target,t.clientX,t.clientY);e.preventDefault();
+  }
+},{passive:false});
+document.addEventListener('touchmove',(e)=>{if(letraArr){const t=e.touches[0];moverLetra(t.clientX,t.clientY);e.preventDefault();}},{passive:false});
+document.addEventListener('touchend',pararLetra);
+
+// PORTAL: 4 letras formando quadrado + fogueira dentro
+let portalCriado=false;
+function checarPortal(){
+  if(portalCriado||estadoLogo!=='obsidian') return;
+  const letras=document.querySelectorAll('.letra.solta');
+  if(letras.length!==4) return;
+  const centros=Array.from(letras).map(l=>{
+    const r=l.getBoundingClientRect();
+    return {x:r.left+r.width/2,y:r.top+r.height/2};
+  });
+  const xs=centros.map(c=>c.x),ys=centros.map(c=>c.y);
+  const minX=Math.min(...xs),maxX=Math.max(...xs);
+  const minY=Math.min(...ys),maxY=Math.max(...ys);
+  const w=maxX-minX,h=maxY-minY;
+  // precisa ter tamanho mínimo (menor agora)
+  if(w<80||h<80) return;
+  // aproximadamente quadrado (tolerância 60%)
+  if(Math.abs(w-h)/Math.max(w,h)>.6) return;
+  // cada letra perto de UM canto diferente (tolerância maior: 60%)
+  const cantos=[{x:minX,y:minY},{x:maxX,y:minY},{x:minX,y:maxY},{x:maxX,y:maxY}];
+  const usados=new Set();
+  for(const c of centros){
+    let melhor=-1,dm=999;
+    for(let i=0;i<4;i++){
+      if(usados.has(i)) continue;
+      const d=Math.hypot(c.x-cantos[i].x,c.y-cantos[i].y);
+      if(d<dm){dm=d;melhor=i;}
+    }
+    if(melhor===-1||dm>Math.min(w,h)*.6) return;
+    usados.add(melhor);
+  }
+  // fogueira dentro?
+  const fr=fogueira.getBoundingClientRect();
+  const fcx=fr.left+fr.width/2,fcy=fr.top+fr.height/2;
+  if(fcx<minX||fcx>maxX||fcy<minY||fcy>maxY) return;
+  // PORTAL!
+  criarPortal(minX,minY,w,h);
+}
+
+function criarPortal(x,y,w,h){
+  portalCriado=true;
+  SONS.portal();
+  const p=document.getElementById('portal');
+  p.style.left=x+'px';p.style.top=y+'px';
+  p.style.width=w+'px';p.style.height=h+'px';
+  p.classList.add('on');
+  confete();confete();
+  fala("VOCÊ FEZ UM PORTAL?! ENTRA NELE!",true);
+  npc.textContent='😱';cena.className='fogo';
+  for(let i=0;i<50;i++)setTimeout(()=>pop('✨',x+Math.random()*w,y+Math.random()*h),i*30);
+  p.onclick=()=>entrarMundoNada();
+}
+
+// ═══════ MUNDO 2 (do outro lado do portal) ═══════
+const mundoNada=document.getElementById('mundoNada');
+const mnVoltar=document.getElementById('mnVoltar');
+
+function entrarMundoNada(){
+  const p=document.getElementById('portal');
+  const pr=p.getBoundingClientRect();
+  const portalCx=pr.left+pr.width/2;
+  const portalCy=pr.top+pr.height/2;
+  // mago voa pro portal
+  const nr=npc.getBoundingClientRect();
+  npc.style.left=nr.left+'px';
+  npc.style.top=nr.top+'px';
+  npc.classList.add('voando');
+  requestAnimationFrame(()=>{
+    npc.style.left=(portalCx-nr.width/2)+'px';
+    npc.style.top=(portalCy-nr.height/2)+'px';
+    npc.style.transform='scale(0.1) rotate(720deg)';
+    npc.style.opacity='0';
+  });
+  // desliga o portal pra não clicar de novo
+  p.onclick=null;p.style.pointerEvents='none';
+  // fundo com "NADA" flutuando
+  const antigos=mundoNada.querySelectorAll('.fundoMN');antigos.forEach(a=>a.remove());
+  for(let i=0;i<15;i++){
+    const bg=document.createElement('div');
+    bg.className='fundoMN';bg.textContent='NADA';
+    bg.style.left=Math.random()*90+'%';
+    bg.style.top=Math.random()*90+'%';
+    bg.style.animationDelay=Math.random()*20+'s';
+    bg.style.animationDirection=Math.random()>.5?'reverse':'normal';
+    mundoNada.appendChild(bg);
+  }
+  // depois da animação, abre o mundo 2
+  setTimeout(()=>{mundoNada.classList.add('on');},1500);
+}
+
+mnVoltar.onclick=()=>location.reload();
+
+// clicar no mago 😄 = ele fica IRRITADO e LANÇA um SQUISHY
+const mnMago=document.getElementById('mnMago');
+const mnBalao=document.getElementById('mnBalao');
+let cliquesMago=0;
+const REACOES_CLICK=[
+  {e:'😠',t:'PARA!'},
+  {e:'😡',t:'EU DISSE PRA NÃO FAZER NADA!'},
+  {e:'🤬',t:'TOMA MAIS UM SQUISHY ENTÃO!'},
+  {e:'😤',t:'CANSEI'},
+  {e:'🥴',t:'já não sei mais o que fazer com você'}
+];
+
+mnMago.addEventListener('click',(e)=>{
+  e.stopPropagation();
+  cliquesMago++;
+  const r=REACOES_CLICK[Math.min(cliquesMago-1,REACOES_CLICK.length-1)];
+  mnMago.textContent=r.e;
+  mnBalao.textContent=r.t;
+  lancarSquishy();
+  setTimeout(()=>{
+    mnMago.textContent='😄';
+    mnBalao.textContent='Não faça NADA.';
+  },2500);
+});
+
+function lancarSquishy(){
+  const s=document.createElement('div');
+  s.className='squishy';
+  const mr=mnMago.getBoundingClientRect();
+  s.style.left=(mr.left+mr.width/2-40)+'px';
+  s.style.top=(mr.top+mr.height/2-40)+'px';
+  mundoNada.appendChild(s);
+  requestAnimationFrame(()=>{
+    const destX=Math.random()*(innerWidth-120)+20;
+    const destY=innerHeight-200-Math.random()*100;
+    s.style.transition='left .8s cubic-bezier(.4,-.3,.6,1),top .8s cubic-bezier(.3,1.5,.7,1)';
+    s.style.left=destX+'px';
+    s.style.top=destY+'px';
+    setTimeout(()=>{s.style.transition='transform .08s';},800);
+  });
+  fazerSquishyApertavel(s);
+  // conta squishies na tela — 10 = boss
+  setTimeout(()=>{
+    const total=mundoNada.querySelectorAll('.squishy').length;
+    if(total>=10&&!bossAtivo) virarBoss();
+  },850);
+}
+
+// ═══ BOSS SQUISHYMAN ═══
+let bossAtivo=false;
+let bossHP=6;
+function virarBoss(){
+  bossAtivo=true;
+  SONS.boss();
+  // some com todos os squishies + mago
+  mundoNada.querySelectorAll('.squishy').forEach(s=>{
+    s.style.transition='all .6s';s.style.transform='scale(0)';s.style.opacity='0';
+    setTimeout(()=>s.remove(),600);
+  });
+  mnMago.style.transition='all .6s';
+  mnMago.style.transform='scale(0) rotate(720deg)';
+  mnMago.style.opacity='0';
+  mnBalao.textContent='😱 SOU EU?! VIREI O SQUISHYMAN?!';
+  // spawn boss
+  setTimeout(()=>{
+    document.getElementById('bossWrap').classList.add('on');
+    document.getElementById('bossHUD').style.display='block';
+    atualizarHP();
+    document.getElementById('bossMsg').textContent='ARRASTA os squishies pra FORA pra derrotar!';
+    // adiciona olhos na cabeça
+    const cab=document.querySelector('.squishyBoss.cabeca');
+    const o1=document.createElement('div');o1.className='squishyBoss olho';o1.style.top='30px';o1.style.left='20px';
+    const o2=document.createElement('div');o2.className='squishyBoss olho';o2.style.top='30px';o2.style.left='55px';
+    cab.appendChild(o1);cab.appendChild(o2);
+    // torna cada parte arrastável
+    document.querySelectorAll('.squishyBoss:not(.olho)').forEach(prepararParteBoss);
+  },700);
+}
+
+function atualizarHP(){
+  document.getElementById('bossHP').style.width=(bossHP/6*100)+'%';
+}
+
+function prepararParteBoss(el){
+  let arr=false,ox=0,oy=0,inicioX=0,inicioY=0;
+  const wrap=document.getElementById('bossWrap');
+  const iniciar=(x,y)=>{
+    arr=true;el.classList.add('dragging');
+    const r=el.getBoundingClientRect();
+    ox=x-r.left;oy=y-r.top;
+    inicioX=r.left;inicioY=r.top;
+    // tira do wrap pra poder arrastar livre
+    document.body.appendChild(el);
+    el.style.position='fixed';
+    el.style.left=r.left+'px';el.style.top=r.top+'px';
+  };
+  const mover=(x,y)=>{
+    if(!arr) return;
+    el.style.left=(x-ox)+'px';el.style.top=(y-oy)+'px';
+    // longe do centro do boss? tira!
+    const wr=wrap.getBoundingClientRect();
+    const cx=wr.left+wr.width/2,cy=wr.top+wr.height/2;
+    const er=el.getBoundingClientRect();
+    const dist=Math.hypot(er.left+er.width/2-cx,er.top+er.height/2-cy);
+    if(dist>200){arr=false;el.classList.remove('dragging');tirarSquishy(el);}
+  };
+  const parar=()=>{
+    if(!arr) return;
+    arr=false;el.classList.remove('dragging');
+    // volta pro lugar
+    el.style.transition='all .3s';
+    el.style.left=inicioX+'px';el.style.top=inicioY+'px';
+    setTimeout(()=>{
+      wrap.appendChild(el);
+      el.style.position='';el.style.left='';el.style.top='';el.style.transition='';
+    },300);
+  };
+  el.addEventListener('mousedown',(e)=>{iniciar(e.clientX,e.clientY);e.preventDefault();e.stopPropagation();});
+  el.addEventListener('touchstart',(e)=>{const t=e.touches[0];iniciar(t.clientX,t.clientY);e.preventDefault();e.stopPropagation();},{passive:false});
+  document.addEventListener('mousemove',(e)=>{if(arr)mover(e.clientX,e.clientY);});
+  document.addEventListener('touchmove',(e)=>{if(arr){const t=e.touches[0];mover(t.clientX,t.clientY);e.preventDefault();}},{passive:false});
+  document.addEventListener('mouseup',parar);
+  document.addEventListener('touchend',parar);
+}
+
+function tirarSquishy(el){
+  bossHP--;
+  atualizarHP();
+  SONS.pop();
+  el.classList.add('saindo');
+  setTimeout(()=>el.remove(),1000);
+  if(bossHP<=0) derrotarBoss();
+  else document.getElementById('bossMsg').textContent='Faltam '+bossHP+' squishies!';
+}
+
+function derrotarBoss(){
+  document.getElementById('bossWrap').classList.remove('on');
+  document.getElementById('bossHUD').style.display='none';
+  document.getElementById('bossMsg').innerHTML='🏆 VOCÊ DERROTOU O SQUISHYMAN!';
+  SONS.vitoria();
+  for(let i=0;i<40;i++)setTimeout(confete,i*50);
+  // mago volta arrependido, briga e depois some
+  setTimeout(()=>{
+    mnMago.style.transition='all .6s';
+    mnMago.style.transform='scale(1) rotate(0)';
+    mnMago.style.opacity='1';
+    mnMago.textContent='😡';
+    mnBalao.textContent='NÃO! VOCÊ FEZ COISAS DEMAIS!';
+  },1500);
+  setTimeout(()=>{mnMago.textContent='🤬';mnBalao.textContent='EU VOU EMBORA!';},3500);
+  setTimeout(()=>faseFinal(),5000);
+}
+
+// ═══ FASE FINAL: só a placa, o pincel e o vazio ═══
+function faseFinal(){
+  mundoNada.classList.add('fasepincel');
+  document.getElementById('bossMsg').textContent='';
+  mnBalao.textContent='não tem nada aqui.';
+  // sequência de diálogos curta
+  const falas=['é isso que você queria?','só... o nada.','espera. tem uma placa.','não clica na placa.'];
+  let i=0;
+  const int=setInterval(()=>{
+    if(i>=falas.length){
+      clearInterval(int);
+      document.getElementById('placa').classList.add('on');
+      mnBalao.textContent='você vai clicar né.';
+      return;
+    }
+    mnBalao.textContent=falas[i];i++;
+  },900);
+}
+
+// PLACA → cai → vira pincel
+document.getElementById('placa').addEventListener('click',(e)=>{
+  const p=e.currentTarget;
+  p.classList.add('caindo');
+  mnBalao.textContent='EU FALEI PRA NÃO CLICAR!!!';
+  setTimeout(()=>{
+    p.classList.remove('on','caindo');
+    mnBalao.textContent='...virou um pincel. genial.';
+    // spawn pincel
+    const pin=document.getElementById('pincel');
+    pin.classList.add('on');
+    pin.style.left=(innerWidth/2-25)+'px';
+    pin.style.top=(innerHeight/2-25)+'px';
+    document.getElementById('paleta').classList.add('on');
+    prepararPincel();
+    setTimeout(()=>{mnBalao.textContent='pinta o mundo então. faz o que quiser.';},2000);
+  },1500);
+});
+
+// PINCEL arrastável + pintura em canvas
+let corAtual='#ff2020';
+document.querySelectorAll('.cor').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('.cor').forEach(x=>x.classList.remove('ativa'));
+    c.classList.add('ativa');
+    corAtual=c.dataset.c;
+  });
+});
+
+function prepararPincel(){
+  const pin=document.getElementById('pincel');
+  const canvas=document.getElementById('pintaCanvas');
+  canvas.width=innerWidth;canvas.height=innerHeight;
+  const ctx=canvas.getContext('2d');
+  ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=8;
+
+  let arr=false,ultX=0,ultY=0,tracadas=0,pixelsBigode=0,magoApareceu=false,venceu=false;
+  const magoF=document.getElementById('magoFinal');
+  const hpDiv=document.getElementById('hpInfinito');
+  const dicaB=document.getElementById('dicaBigode');
+
+  function chamarMagoFinal(){
+    magoApareceu=true;
+    mnBalao.textContent='VOCÊ TÁ PINTANDO TUDO?! CHEGA!';
+    magoF.classList.add('on');
+    hpDiv.classList.add('on');
+    setTimeout(()=>{
+      mnBalao.textContent='EU TENHO VIDA INFINITA! NÃO ADIANTA!';
+      dicaB.classList.add('on');
+    },1500);
+  }
+
+  function checarBigode(x,y){
+    if(!magoApareceu||venceu) return;
+    const r=magoF.getBoundingClientRect();
+    // área do bigode: faixa horizontal embaixo dos olhos, em cima da boca
+    const bx1=r.left+r.width*0.25;
+    const bx2=r.left+r.width*0.75;
+    const by1=r.top+r.height*0.55;
+    const by2=r.top+r.height*0.72;
+    if(x>=bx1&&x<=bx2&&y>=by1&&y<=by2){
+      pixelsBigode++;
+      hpDiv.innerHTML='👿 MAGO SUPREMO<br>🖌️ bigode: '+Math.min(pixelsBigode,60)+'/60';
+      if(pixelsBigode>=60) vitoriaBigode();
+    }
+  }
+
+  function vitoriaBigode(){
+    venceu=true;
+    magoF.classList.add('derrotado');
+    magoF.textContent='🥸';
+    hpDiv.innerHTML='🏆 DERROTADO PELO BIGODE!';
+    dicaB.classList.remove('on');
+    mnBalao.textContent='...eu tinha vida infinita mas... o bigode... me venceu.';
+    for(let i=0;i<50;i++)setTimeout(confete,i*40);
+    // DESLIGA canvas e pincel pra não bloquear eventos depois
+    canvas.style.pointerEvents='none';
+    setTimeout(()=>{
+      magoF.textContent='😢';
+      mnBalao.textContent='espera 10 min pra eu me recuperar...';
+      hpDiv.style.display='none';
+      pin.style.display='none';
+      document.getElementById('paleta').style.display='none';
+      setTimeout(()=>{
+        document.getElementById('timer10min').classList.add('on');
+        setTimeout(()=>{mnBalao.textContent='...psss... o 1 e o 0 dão pra pegar 👀';},2000);
+        prepararDigitos();
+      },1200);
+    },3000);
+  }
+
+  const iniciar=(x,y)=>{
+    arr=true;pin.classList.add('dragging');
+    ultX=x;ultY=y;
+    ctx.strokeStyle=corAtual;
+    ctx.beginPath();ctx.moveTo(x,y);
+  };  const mover=(x,y)=>{
+    pin.style.left=(x-10)+'px';pin.style.top=(y-40)+'px';
+    if(!arr) return;
+    ctx.strokeStyle=corAtual;
+    ctx.lineTo(x,y);ctx.stroke();
+    ultX=x;ultY=y;
+    tracadas++;
+    if(!magoApareceu&&tracadas>=80) chamarMagoFinal();
+    checarBigode(x,y);
+  };
+  const parar=()=>{arr=false;pin.classList.remove('dragging');};
+
+  pin.addEventListener('mousedown',(e)=>{iniciar(e.clientX,e.clientY);e.preventDefault();});
+  document.addEventListener('mousemove',(e)=>mover(e.clientX,e.clientY));
+  document.addEventListener('mouseup',parar);
+  pin.addEventListener('touchstart',(e)=>{const t=e.touches[0];iniciar(t.clientX,t.clientY);e.preventDefault();},{passive:false});
+  document.addEventListener('touchmove',(e)=>{if(arr){const t=e.touches[0];mover(t.clientX,t.clientY);e.preventDefault();}},{passive:false});
+  document.addEventListener('touchend',parar);
+}
+
+// ═══ DÍGITOS 1 e 0 → ESPADA ═══
+function prepararDigitos(){
+  document.querySelectorAll('.digito').forEach(d=>{
+    let arr=false,ox=0,oy=0;
+    const iniciar=(x,y)=>{
+      arr=true;d.classList.add('dragging');
+      // solta do texto pra poder arrastar livre
+      if(!d.classList.contains('solta')){
+        const r=d.getBoundingClientRect();
+        d.classList.add('solta');
+        d.style.left=r.left+'px';d.style.top=r.top+'px';
+        d.style.fontSize=window.getComputedStyle(d).fontSize;
+        document.body.appendChild(d);
+      }
+      const r=d.getBoundingClientRect();
+      ox=x-r.left;oy=y-r.top;
+    };
+    const mover=(x,y)=>{
+      if(!arr) return;
+      d.style.left=(x-ox)+'px';d.style.top=(y-oy)+'px';
+      checarEspada();
+    };
+    const parar=()=>{arr=false;d.classList.remove('dragging');};
+    d.addEventListener('mousedown',(e)=>{iniciar(e.clientX,e.clientY);e.preventDefault();});
+    d.addEventListener('touchstart',(e)=>{const t=e.touches[0];iniciar(t.clientX,t.clientY);e.preventDefault();},{passive:false});
+    document.addEventListener('mousemove',(e)=>{if(arr)mover(e.clientX,e.clientY);});
+    document.addEventListener('touchmove',(e)=>{if(arr){const t=e.touches[0];mover(t.clientX,t.clientY);e.preventDefault();}},{passive:false});
+    document.addEventListener('mouseup',parar);
+    document.addEventListener('touchend',parar);
+  });
+}
+
+let espadaCriada=false;
+function checarEspada(){
+  if(espadaCriada) return;
+  const d1=document.querySelector('.digito[data-d="1"]');
+  const d0=document.querySelector('.digito[data-d="0"]');
+  if(!d1.classList.contains('solta')||!d0.classList.contains('solta')) return;
+  const r1=d1.getBoundingClientRect();
+  const r0=d0.getBoundingClientRect();
+  // 1 em cima do 0, próximos e alinhados
+  const alinhadoX=Math.abs((r1.left+r1.width/2)-(r0.left+r0.width/2))<40;
+  const umEmCima=r1.bottom<=r0.top+30&&r1.bottom>=r0.top-40;
+  if(alinhadoX&&umEmCima){
+    criarEspada((r0.left+r0.width/2),(r1.top+r0.bottom)/2);
+  }
+}
+
+function criarEspada(x,y){
+  espadaCriada=true;
+  document.querySelectorAll('.digito').forEach(d=>d.remove());
+  document.getElementById('timer10min').classList.remove('on');
+  const esp=document.getElementById('espadaMontada');
+  esp.classList.add('on');
+  esp.style.left=(x-40)+'px';esp.style.top=(y-40)+'px';
+  document.getElementById('mnBalao').textContent='UMA ESPADA?! COMO?! NÃOO!';
+  // arrastar espada até o mago = golpe final
+  let arr=false,ox=0,oy=0;
+  const magoF=document.getElementById('magoFinal');
+  const iniciar=(cx,cy)=>{
+    arr=true;esp.classList.add('dragging');
+    const r=esp.getBoundingClientRect();
+    ox=cx-r.left;oy=cy-r.top;
+  };
+  const mover=(cx,cy)=>{
+    if(!arr) return;
+    esp.style.left=(cx-ox)+'px';esp.style.top=(cy-oy)+'px';
+    // colidiu com o mago?
+    const er=esp.getBoundingClientRect();
+    const mr=magoF.getBoundingClientRect();
+    const bateu=!(er.right<mr.left+50||er.left>mr.right-50||er.bottom<mr.top+50||er.top>mr.bottom-50);
+    if(bateu){arr=false;esp.classList.remove('dragging');golpeFinal();}
+  };
+  const parar=()=>{arr=false;esp.classList.remove('dragging');};
+  esp.addEventListener('mousedown',(e)=>{iniciar(e.clientX,e.clientY);e.preventDefault();});
+  esp.addEventListener('touchstart',(e)=>{const t=e.touches[0];iniciar(t.clientX,t.clientY);e.preventDefault();},{passive:false});
+  document.addEventListener('mousemove',(e)=>{if(arr)mover(e.clientX,e.clientY);});
+  document.addEventListener('touchmove',(e)=>{if(arr){const t=e.touches[0];mover(t.clientX,t.clientY);e.preventDefault();}},{passive:false});
+  document.addEventListener('mouseup',parar);
+  document.addEventListener('touchend',parar);
+}
+
+function golpeFinal(){
+  const magoF=document.getElementById('magoFinal');
+  const esp=document.getElementById('espadaMontada');
+  SONS.golpe();
+  esp.style.display='none';
+  magoF.textContent='💀';
+  magoF.style.transition='all 2s';
+  magoF.style.opacity='0';
+  magoF.style.transform='translate(-50%,-50%) scale(3) rotate(360deg)';
+  document.getElementById('mnBalao').textContent='urgh... você acordou algo pior...';
+  for(let i=0;i<100;i++)setTimeout(confete,i*30);
+  // NOVO BOSS: O NADA
+  setTimeout(()=>chamarBossNada(),3000);
+}
+
+// ═══ NOVO BOSS: O NADA ═══
+let nadaVida=15;
+function chamarBossNada(){
+  document.getElementById('mnBalao').textContent='😱 O NADA ESTÁ VINDO!';
+  SONS.boss();
+  setTimeout(()=>SONS.boss(),400);
+  setTimeout(()=>SONS.boss(),800);
+  document.getElementById('bossNada').classList.add('on');
+  const boca=document.getElementById('bocaNada');
+  document.getElementById('mnBalao').textContent='clica na BOCA dele 15 vezes!';
+  boca.onclick=()=>{
+    nadaVida--;
+    som(200+Math.random()*300,.08,'square');
+    boca.textContent=nadaVida>10?'👄':nadaVida>5?'😖':'🥴';
+    document.getElementById('mnBalao').textContent='O NADA: '+nadaVida+' vidas';
+    if(nadaVida<=0) derrotarNada();
+  };
+}
+
+function derrotarNada(){
+  SONS.vitoria();
+  const bn=document.getElementById('bossNada');
+  bn.classList.add('morrendo');
+  document.getElementById('mnBalao').textContent='O NADA FOI DERROTADO';
+  for(let i=0;i<80;i++)setTimeout(confete,i*30);
+  setTimeout(()=>{bn.style.display='none';vitoriaFinalDeVerdade();},2000);
+}
+
+function vitoriaFinalDeVerdade(){
+  document.getElementById('mnBalao').innerHTML='<span style="font-family:\'Space Grotesk\';font-weight:700;font-size:2rem;letter-spacing:-.03em;line-height:1;display:block;margin-bottom:.5rem">Fim.</span><span style="font-size:.85rem;color:var(--mute);font-weight:500">Você fez tudo que podia fazer.</span>';
+  SONS.vitoria();setTimeout(()=>SONS.vitoria(),300);setTimeout(()=>SONS.vitoria(),600);setTimeout(()=>SONS.vitoria(),900);
+  for(let i=0;i<200;i++)setTimeout(confete,i*20);
+}
+
+function fazerSquishyApertavel(s){
+  const apertar=()=>{
+    s.classList.add('apertando');
+    // som satisfatório
+    try{
+      const ac=new (window.AudioContext||window.webkitAudioContext)();
+      const o=ac.createOscillator();const g=ac.createGain();
+      o.frequency.value=300+Math.random()*200;
+      o.type='sine';
+      g.gain.value=.15;
+      o.connect(g);g.connect(ac.destination);
+      o.start();
+      o.frequency.exponentialRampToValueAtTime(150,ac.currentTime+.15);
+      g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.2);
+      o.stop(ac.currentTime+.2);
+    }catch(e){}
+  };
+  const soltar=()=>s.classList.remove('apertando');
+  s.addEventListener('mousedown',apertar);
+  s.addEventListener('mouseup',soltar);
+  s.addEventListener('mouseleave',soltar);
+  s.addEventListener('touchstart',(e)=>{apertar();e.preventDefault();},{passive:false});
+  s.addEventListener('touchend',soltar);
+}
+
+// FOGUEIRA ARRASTÁVEL (mouse + touch)
+let arrastando=false,offsetX=0,offsetY=0;
+
+function iniciarDrag(x,y){
+  if(estadoLogo!=='prata'&&estadoLogo!=='obsidian') return;
+  arrastando=true;
+  fogueira.classList.add('dragging');
+  const r=fogueira.getBoundingClientRect();
+  offsetX=x-r.left-r.width/2;
+  offsetY=y-r.top-r.height/2;
+}
+function moverDrag(x,y){
+  if(!arrastando) return;
+  fogueira.style.left=(x-offsetX-40)+'px';
+  fogueira.style.top=(y-offsetY-40)+'px';
+  if(estadoLogo==='prata'){
+    const fr=fogueira.getBoundingClientRect();
+    const lr=logo.getBoundingClientRect();
+    const bateu=!(fr.right<lr.left||fr.left>lr.right||fr.bottom<lr.top||fr.top>lr.bottom);
+    if(bateu){arrastando=false;fogueira.classList.remove('dragging');derreterPrata(x,y);}
+  } else if(estadoLogo==='obsidian'){
+    checarPortal();
+  }
+}
+function pararDrag(){arrastando=false;fogueira.classList.remove('dragging');}
+
+fogueira.addEventListener('mousedown',(e)=>{iniciarDrag(e.clientX,e.clientY);e.preventDefault();});
+document.addEventListener('mousemove',(e)=>moverDrag(e.clientX,e.clientY));
+document.addEventListener('mouseup',pararDrag);
+fogueira.addEventListener('touchstart',(e)=>{const t=e.touches[0];iniciarDrag(t.clientX,t.clientY);e.preventDefault();},{passive:false});
+document.addEventListener('touchmove',(e)=>{if(arrastando){const t=e.touches[0];moverDrag(t.clientX,t.clientY);e.preventDefault();}},{passive:false});
+document.addEventListener('touchend',pararDrag);
+
+// (ajuda do NPC removida — público joga sozinho)
+const ACOES_TECLA={
+  ' ':()=>{document.body.style.background='#'+Math.floor(Math.random()*16777215).toString(16);return 'trocou cor!';},
+  'a':()=>{npc.style.transform='rotate('+(Math.random()*360)+'deg)';return 'girou ???';},
+  'b':()=>{confete();return 'confete!';},
+  'c':()=>{for(let i=0;i<10;i++)pop('✨',Math.random()*innerWidth,Math.random()*innerHeight);return 'sparkles!';},
+  'd':()=>{document.body.style.transform='rotate(180deg)';setTimeout(()=>document.body.style.transform='',500);return 'de ponta cabeça';},
+  'e':()=>{npc.textContent=['😄','👽','🤡','👻','🤖','🐸','🍕','🦖'][Math.floor(Math.random()*8)];return 'novo ???';}
+};
+document.addEventListener('keydown',(e)=>{
+  const letra=e.key.toLowerCase();
+  const acao=ACOES_TECLA[letra]||(()=>'apertou tecla');
+  fezAlgo(acao(),innerWidth/2,innerHeight/2);
+});
+</script>
+</body>
+</html>

@@ -5,6 +5,37 @@
   },
   "jogos": [
     {
+      "slug": "jogo-do-nada-jojo",
+      "nome": "Jogo do Nada",
+      "descricao": "Um emoji te dá uma tarefa só: não fazer nada. Você vai fazer alguma coisa — e aí a logo vira prata, pega fogo, vira obsidiana, as letras soltam e viram um portal pro outro mundo, onde o emoji vira o SQUISHYMAN.",
+      "comoFunciona": "O jogo conta as coisas que você faz e vai ficando mais bravo a cada uma. Aos 10 cliques a logo vira prata e aparece uma fogueira pra arrastar. Fogueira na logo = fogo = obsidiana, e aí as quatro letras soltam: põe uma em cada canto de um quadrado, com a fogueira no meio, e abre o portal. Do outro lado, cada clique no emoji lança um squishy; dez squishies e ele vira o SQUISHYMAN, que se derrota arrastando as partes dele pra longe. No fim sobra o vazio branco, uma placa que manda não clicar, e um pincel.",
+      "objetivo": "Não fazer nada. Você não vai conseguir — e é esse o jogo.",
+      "mecanicas": [
+        "Contador de 'coisas feitas' e um emoji que fica bravo a cada uma",
+        "A logo vira prata, pega fogo e vira obsidiana",
+        "Arrastar as letras pra montar um portal com a fogueira dentro",
+        "Squishies pra apertar — dez viram o chefe SQUISHYMAN",
+        "A placa que manda não clicar e vira pincel",
+        "Pintar um bigode no mago de vida infinita pra derrotar ele",
+        "Montar uma espada com o 1 e o 0 do relógio",
+        "O chefe final: O NADA"
+      ],
+      "categoria": "Brinquedo",
+      "plataforma": "Navegador",
+      "ano": 2026,
+      "status": "Publicado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": null,
+      "pontuacao": null,
+      "popularidade": 90,
+      "imagem": "assets/images/jogo-do-nada-jojo.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../jogo-do-nada-jojo/index.html",
+      "galeria": []
+    },
+    {
       "slug": "jojoos",
       "nome": "JojoOS",
       "descricao": "Um computador de mentira que funciona de verdade: área de trabalho, janelas que arrastam e esticam, barra de tarefas, menu Iniciar — e os 18 jogos do JoJo lá dentro, como programas. Com o Clipy morando num canto da mesa.",
