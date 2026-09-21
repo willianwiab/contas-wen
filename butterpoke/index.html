@@ -499,6 +499,20 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
   background:var(--asa);color:#fff;border-radius:16px;padding:12px 15px;
   box-shadow:0 6px 24px rgba(60,30,100,.3);font-weight:600;font-size:.95rem;
 }
+.sem-net{
+  position:fixed;left:10px;right:10px;bottom:10px;z-index:49;
+  background:var(--cartao);border:2px solid var(--olho);border-radius:16px;
+  padding:11px 15px;font-size:.86rem;line-height:1.5;color:var(--tinta-fraca);
+  box-shadow:0 6px 24px rgba(60,30,100,.3);
+}
+.sem-net{display:flex;align-items:flex-start;gap:10px}
+.sem-net b{color:var(--tinta)}
+.sem-net span{flex:1 1 auto}
+.sem-net button{
+  flex:0 0 auto;border:none;background:var(--vazio);color:var(--tinta-fraca);
+  border-radius:50%;width:28px;height:28px;font:inherit;font-weight:700;cursor:pointer;
+}
+.sem-net button:hover{background:var(--olho);color:#fff}
 .faixa-nova button{
   font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 16px;
   background:#fff;color:var(--asa-escura);cursor:pointer;margin-left:auto;
@@ -631,7 +645,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 37 — 21/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 38 — 21/09 · 🔄</button>
   </footer>
 </div>
 
@@ -984,6 +998,11 @@ async function buscar(valor, caiuProIngles){
   langBusca = caiuProIngles ? 'en' : idioma;
   if(location.hash && !(lerEndereco() || {}).busca) location.replace('#');
   if(!caiuProIngles) avisoBusca = '';
+  // Sem internet nem adianta bater na porta: vou direto no que eu guardei.
+  if(semInternet()){
+    const guardadas = acharNasVistas(valor);
+    if(guardadas.length) return receberGuardadas(guardadas, valor);
+  }
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a carta…</div>';
 
   const tropecos = [];
@@ -1069,8 +1088,70 @@ async function buscar(valor, caiuProIngles){
     return;
   }
 
+  // Último recurso antes da tela de erro: o que já passou por aqui.
+  const guardadas = acharNasVistas(valor);
+  if(guardadas.length) return receberGuardadas(guardadas, valor);
+
   avisoErro('Os sites de carta não responderam', { message:tropecos.join(' · ') },
     () => buscar(valor), 'Tentei nos dois lugares e nenhum atendeu.');
+}
+
+/* ---------- o site sem internet ----------
+   O service worker já fazia a página abrir offline, mas abrir uma página
+   que não consegue mostrar carta nenhuma é abrir uma casca.
+
+   Preço eu nunca guardei de propósito — preço velho com cara de preço de
+   hoje é mentira. Mas isso vale pro preço, não pra CARTA. Agora eu guardo
+   as cartas que a pessoa já abriu, junto com a data, e sem internet elas
+   voltam com a data escrita na cara. "$4,30 no dia 21/09" é verdade; o
+   que seria mentira é "$4,30" sozinho. */
+const CHAVE_VISTAS = 'butterpoke:vistas';
+const CHAVE_BARALHO = 'butterpoke:baralho';
+const MAX_VISTAS = 80;
+
+/* localStorage enche, e quando enche ele não avisa: estoura. Em vez de
+   perder tudo, vou jogando as mais velhas fora até caber. */
+function guardarComEspaco(chave, lista, maximo){
+  let l = lista.slice(0, maximo);
+  while(l.length){
+    try{ localStorage.setItem(chave, JSON.stringify(l)); return true; }
+    catch(e){ l = l.slice(0, Math.floor(l.length * 0.7)); }
+  }
+  try{ localStorage.removeItem(chave); }catch(e){}
+  return false;
+}
+function vistasGuardadas(){
+  try{
+    const j = JSON.parse(localStorage.getItem(CHAVE_VISTAS) || '[]');
+    return Array.isArray(j) ? j.filter(x => x && x.carta && x.carta.id) : [];
+  }catch(e){ return []; }
+}
+function guardarVista(carta){
+  if(!carta || !carta.id || carta.__soIdentidade) return;
+  const lista = vistasGuardadas().filter(x => x.carta.id !== carta.id);
+  lista.unshift({ quando:Date.now(), carta:carta });
+  guardarComEspaco(CHAVE_VISTAS, lista, MAX_VISTAS);
+}
+function acharNasVistas(valor){
+  const t = String(valor || '').trim().toLowerCase();
+  if(!t) return [];
+  const semZero = x => String(x || '').toLowerCase().replace(/^0+/, '');
+  const par = partesDoNumero(t);
+  return vistasGuardadas().filter(({ carta:c }) => {
+    if((c.name || '').toLowerCase().indexOf(t) >= 0) return true;
+    if(semZero(c.number) === semZero(t)) return true;
+    if(par && semZero(c.number) === semZero(par.numero)) return true;
+    return false;
+  }).map(x => x.carta);
+}
+function semInternet(){
+  return typeof navigator !== 'undefined' && navigator.onLine === false;
+}
+function receberGuardadas(cartas, valor){
+  avisoBusca = '📴 <b>Sem internet.</b> Estas são as cartas que você já abriu antes, ' +
+    'guardadas aqui no aparelho. <b>O preço é do dia em que você viu</b>, não o de hoje.';
+  receber(cartas, valor, cartas.length);
+  return true;
 }
 
 function receber(cartas, valor, total){
@@ -2011,7 +2092,21 @@ function embaralhando(vistas){
     (vistas.size ? vistas.size + ' até agora' : 'começando') + ')</div>';
 }
 
+function baralhoGuardado(){
+  try{
+    const j = JSON.parse(localStorage.getItem(CHAVE_BARALHO) || 'null');
+    return (j && Array.isArray(j.cartas) && j.cartas.length >= 12) ? j : null;
+  }catch(e){ return null; }
+}
+
 async function encherOBolso(){
+  /* Jogo não precisa de preço de hoje: precisa de carta. Então o baralho
+     guardado serve inteiro pra jogar sem internet — e no "qual vale mais"
+     eu aviso que o preço é do dia em que o baralho foi guardado. */
+  if(semInternet()){
+    const velho = baralhoGuardado();
+    if(velho){ cartasDoJogo = velho.cartas; baralhoDeQuando = velho.quando; return; }
+  }
   const vistas = new Map();
   let tropeco = null;
   if(!paginasQueExistem){
@@ -2033,9 +2128,24 @@ async function encherOBolso(){
     try{ guardarNoBolso(vistas, await pedirJSON(urlDoJogo(pag))); }
     catch(e){ tropeco = e; }   // uma página que falha não estraga o jogo
   }
-  if(!vistas.size && tropeco) throw tropeco;
+  if(!vistas.size){
+    // Nada veio. Se eu tenho um baralho de outro dia, jogar com ele é
+    // melhor que uma tela de erro — desde que eu diga que é de outro dia.
+    const velho = baralhoGuardado();
+    if(velho){ cartasDoJogo = velho.cartas; baralhoDeQuando = velho.quando; return; }
+    if(tropeco) throw tropeco;
+  }
   cartasDoJogo = [...vistas.values()];
+  baralhoDeQuando = 0;
+  try{
+    localStorage.setItem(CHAVE_BARALHO,
+      JSON.stringify({ quando:Date.now(), cartas:cartasDoJogo.slice(0, 400) }));
+  }catch(e){
+    try{ localStorage.setItem(CHAVE_BARALHO,
+      JSON.stringify({ quando:Date.now(), cartas:cartasDoJogo.slice(0, 120) })); }catch(e2){}
+  }
 }
+let baralhoDeQuando = 0;
 
 async function abrirJogos(){
   cartaAberta = null; voltarPraLista = null;
@@ -2503,6 +2613,11 @@ function rodada(){
       '<button class="btn secundario" type="button" id="sortear-jogo">🎲 Sortear um jogo</button>' +
       '<button class="btn secundario" type="button" id="trocar-baralho">🔀 Trocar as cartas</button>' +
     '</div>' +
+    (baralhoDeQuando
+      ? '<p class="nota atencao">📴 <b>Sem internet agora.</b> Estou jogando com o baralho que ' +
+        'guardei <b>' + escapar(quantoFaz(baralhoDeQuando)) + '</b>. Dá pra jogar tudo — só os ' +
+        'preços do "qual vale mais" são daquele dia.</p>'
+      : '') +
     '<p class="nota">Estou sorteando entre <b>' + cartasDoJogo.length + ' cartas</b> de <b>' +
       quantasColecoesNoBolso() + ' coleções</b>' +
       (paginasQueExistem ? ', tiradas das ' + paginasQueExistem + ' páginas do banco inteiro' : '') +
@@ -3954,6 +4069,7 @@ function mostrarCarta(carta){
   // Carta que veio do site reserva chega sem preço: busco o dela agora.
   if(carta.__faltaPreco) return abrirDoReserva(carta);
   cartaAberta = carta;
+  guardarVista(carta);   // pra ela voltar quando não tiver internet
   versaoEscolhida = versoesComPreco(carta)[0] || null;   // começa pela mais valiosa
   estadoEscolhido = 'perfeita';
   desenharCarta();
@@ -4353,6 +4469,28 @@ try{
     history.replaceState(null, '', limpo.pathname + limpo.search + limpo.hash);
   }
 }catch(e){}
+
+/* ---------- a faixa de sem internet ----------
+   Antes o site só reclamava DEPOIS de tentar e falhar. Agora ele avisa
+   antes, e diz o que continua funcionando — que é bastante coisa. */
+function mexerNaFaixaDeRede(){
+  const existe = document.querySelector('.sem-net');
+  if(!semInternet()){ if(existe) existe.remove(); return; }
+  if(existe) return;
+  const f = document.createElement('div');
+  f.className = 'sem-net';
+  f.innerHTML = '<span>📴 <b>Sem internet.</b> Ainda funcionam: as cartas que você já abriu, ' +
+    'as favoritas, o álbum, os jogos, os bonecos e o perfil. ' +
+    'Preço novo e busca de carta nova precisam voltar a ter rede.</span>' +
+    '<button type="button" aria-label="Fechar o aviso">✕</button>';
+  // Ela fica presa embaixo da tela, então precisa poder sair do caminho.
+  // Some só desta vez: se a internet voltar e cair de novo, ela volta.
+  f.querySelector('button').onclick = () => f.remove();
+  document.body.appendChild(f);
+}
+window.addEventListener('online', mexerNaFaixaDeRede);
+window.addEventListener('offline', mexerNaFaixaDeRede);
+mexerNaFaixaDeRede();
 
 function avisarVersaoNova(){
   if(document.querySelector('.faixa-nova')) return;
