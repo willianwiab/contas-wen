@@ -534,7 +534,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 27 — 21/09</span>
+    <br><span class="versao">versão 28 — 21/09</span>
   </footer>
 </div>
 
@@ -619,11 +619,11 @@ function trocarModo(novo){
   btnNome.setAttribute('aria-pressed', novo === 'nome');
   btnPacote.setAttribute('aria-pressed', novo === 'pacote');
   if(novo === 'pacote'){
-    campo.placeholder = 'Ex: 151, Obsidian, Celebrations…';
+    campo.placeholder = 'Ex: caixa de 151, ETB Obsidian…';
     campo.inputMode = 'text';
-    dica.innerHTML = 'Escreve o nome de uma <b>coleção</b> e eu somo os preços das cartas ' +
-      'dela pra dizer quanto um pacote devolve, em média. ' +
-      '<b>Pelúcia e boneco eu não tenho</b> — os bancos só guardam carta.';
+    dica.innerHTML = 'Escreve o <b>produto e a coleção</b> — "caixa de 151", "ETB Obsidian", ' +
+      '"blister Celebrations" — e eu somo os preços das cartas pra dizer quanto ele devolve. ' +
+      '<b>Pelúcia e boneco eu não tenho</b>: os bancos só guardam carta, e eu não invento preço.';
     campo.focus();
     return;
   }
@@ -1268,6 +1268,35 @@ function mostrarFavoritos(){
    é um monte de comum, umas poucas incomuns e uma rara. Por isso a conta
    é por faixa, e não a média de tudo junto — a média de tudo junto seria
    puxada pelas raras e prometeria um pacote que não existe. */
+/* Caixa, ETB e blister são feitos de pacote — então, sabendo quanto vale
+   um pacote, sei quanto vale a caixa. O que eu NÃO sei é o preço dos
+   acessórios (sleeve, dado, moeda), e por isso a conta é só das cartas. */
+const PRODUTOS = [
+  { id:'pacote', nome:'📦 Pacote', pacotes:1, custo:25,
+    re:/\b(pacote|booster pack|pack)\b/i },
+  { id:'blister', nome:'🎁 Blister (3)', pacotes:3, custo:70,
+    re:/\b(blister|triple|tr[ií]plice)\b/i },
+  { id:'etb', nome:'🧰 Elite Trainer Box (9)', pacotes:9, custo:280,
+    re:/\b(etb|elite|trainer box|caixa de treinador)\b/i,
+    extra:'A ETB vem com sleeve, dado, moeda e caixinha. Isso tem valor, mas ' +
+          'preço de acessório eu não tenho — a conta aqui é <b>só das cartas</b>.' },
+  { id:'caixa', nome:'📚 Caixa / Booster Box (36)', pacotes:36, custo:900,
+    re:/\b(caixa|box|booster box|display)\b/i },
+];
+function produtoPor(id){ return PRODUTOS.find(x => x.id === id) || PRODUTOS[0]; }
+/* Acha o produto escrito no meio do texto e devolve o resto como nome da
+   coleção: "caixa de 151" vira { produto:caixa, resto:"de 151" }. */
+function lerProduto(texto){
+  const t = String(texto || '');
+  for(const pr of PRODUTOS){
+    if(pr.re.test(t)){
+      return { produto:pr, resto:t.replace(pr.re, ' ').replace(/\b(de|do|da)\b/gi, ' ').trim() };
+    }
+  }
+  return { produto:null, resto:t.trim() };
+}
+let produtoAtual = 'pacote';
+
 const PACOTE = [
   { nome:'comuns',   quantas:4, nivel:c => nivelRaridade(c) === 1 },
   { nome:'incomuns', quantas:3, nivel:c => nivelRaridade(c) === 2 },
@@ -1317,7 +1346,9 @@ async function analisarPacote(colecao){
 
   const faixas = PACOTE.map(f => Object.assign({}, f,
     { dados: mediaDe(cartas, f.nivel, f.nome === 'reverse') }));
-  const esperado = faixas.reduce((s, f) => s + (f.dados ? f.dados.media * f.quantas : 0), 0);
+  const porPacote = faixas.reduce((s, f) => s + (f.dados ? f.dados.media * f.quantas : 0), 0);
+  const prod = produtoPor(produtoAtual);
+  const esperado = porPacote * prod.pacotes;
   const caras = comPreco.slice().sort((a, b) => precoDe(b) - precoDe(a)).slice(0, 5);
   const cotacao = parseFloat(inpCota.value) || 5.4;
 
@@ -1328,24 +1359,33 @@ async function analisarPacote(colecao){
 
   palco.innerHTML =
     '<section class="pergunta">' +
-      '<h2>📦 Vale a pena abrir ' + escapar(colecao.name) + '?</h2>' +
+      '<h2>📦 Vale a pena ' + escapar(colecao.name) + '?</h2>' +
       '<p>Somei ' + comPreco.length + ' cartas com preço, de ' + cartas.length + ' na coleção.</p>' +
 
-      '<div class="destaque">' +
-        '<div class="rotulo">Um pacote devolve, em média</div>' +
-        '<div class="preco">' + dinheiro(esperado, 'USD') + '</div>' +
-        '<div class="reais">' + escapar(soReais(esperado, 'USD') || '') + '</div>' +
-        '<div class="qual">contando 4 comuns, 3 incomuns, 1 reverse e 1 rara</div>' +
+      '<div class="escolha"><h3>Qual produto</h3>' +
+        chips('chips-produto', PRODUTOS.map(x => ({ v:x.id, rotulo:x.nome })), produtoAtual) +
       '</div>' +
 
-      '<div class="escolha"><h3>Quanto custa o pacote aí na tua loja?</h3>' +
+      '<div class="destaque">' +
+        '<div class="rotulo">' + escapar(prod.nome.replace(/^\S+\s/, '')) +
+          ' devolve, em média</div>' +
+        '<div class="preco">' + dinheiro(esperado, 'USD') + '</div>' +
+        '<div class="reais">' + escapar(soReais(esperado, 'USD') || '') + '</div>' +
+        '<div class="qual">' + prod.pacotes + (prod.pacotes === 1 ? ' pacote' : ' pacotes') +
+          ' × ' + dinheiro(porPacote, 'USD') + ' cada · 4 comuns, 3 incomuns, 1 reverse e 1 rara ' +
+          'por pacote</div>' +
+      '</div>' +
+      (prod.extra ? '<p class="nota">' + prod.extra + '</p>' : '') +
+
+      '<div class="escolha"><h3>Quanto custa aí na tua loja?</h3>' +
         '<div class="linha-preco">' +
-          '<span>R$</span><input id="preco-pacote" type="number" step="0.5" min="0" value="25" />' +
+          '<span>R$</span><input id="preco-pacote" type="number" step="0.5" min="0" value="' +
+            prod.custo + '" />' +
         '</div>' +
       '</div>' +
       '<div id="veredito-pacote"></div>' +
 
-      '<h3 class="titulinho">De onde sai a conta</h3>' +
+      '<h3 class="titulinho">De onde sai a conta, por pacote</h3>' +
       '<table><thead><tr><th>O que vem</th><th>Vale cada</th><th>Soma</th></tr></thead>' +
       '<tbody>' + linhas + '</tbody></table>' +
 
@@ -1365,9 +1405,12 @@ async function analisarPacote(colecao){
       'do que caçar em pacote. Abrir pacote é diversão, não investimento.</p>' +
     '</section>';
 
+  ligarChips('chips-produto', v => { produtoAtual = v; }, () => analisarPacote(colecao));
+
   const input = document.getElementById('preco-pacote');
   const dizer = () => {
     const custo = parseFloat(input.value);
+    const quem = prod.nome.replace(/^\S+\s/, '').replace(/\s*\(\d+\)$/, '');
     const alvo = document.getElementById('veredito-pacote');
     if(!(custo > 0)){ alvo.innerHTML = ''; return; }
     const devolve = esperado * cotacao;
@@ -1375,7 +1418,8 @@ async function analisarPacote(colecao){
     const bom = razao >= 1;
     alvo.innerHTML = '<p class="veredito ' + (bom ? 'certo' : 'errado') + '">' +
         (bom ? '🙂 Na média, sobra' : '😬 Na média, falta') + '</p>' +
-      '<p class="nota">Pagando <b>R$ ' + custo.toFixed(2).replace('.', ',') + '</b> você recebe, ' +
+      '<p class="nota">Pagando <b>R$ ' + custo.toFixed(2).replace('.', ',') + '</b> ' +
+      'nesse ' + escapar(quem.toLowerCase()) + ', você recebe, ' +
       'em média, <b>' + escapar(soReais(esperado, 'USD') || '') + '</b> em carta — ' +
       (bom ? 'mais ' : 'menos ') + 'do que pagou' +
       (bom ? '.' : ', o que é o normal: é assim que a loja ganha.') +
@@ -1396,6 +1440,10 @@ async function analisarPacote(colecao){
 /* Procura a coleção pelo nome e deixa escolher — o mesmo caminho do "ver
    as coleções", só que no fim vai pra conta em vez da lista de cartas. */
 async function buscarPacote(valor){
+  // "caixa de 151" diz duas coisas: o produto e a coleção. Separo as duas.
+  const lido = lerProduto(valor);
+  if(lido.produto) produtoAtual = lido.produto.id;
+  valor = lido.resto;
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a coleção…</div>';
   let colecoes = [];
   try{
