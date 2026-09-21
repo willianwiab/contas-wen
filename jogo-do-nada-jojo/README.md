@@ -37,6 +37,29 @@ Cada coisa destrava a próxima — e o jogo não explica nenhuma:
 | Acorda **O NADA** | espada no mago |
 | Fim | clicar 15 vezes na boca do NADA |
 
+## A segunda metade — depois do "Fim."
+
+O `Fim.` do NADA não era o fim. Num jogo em que a placa manda não clicar e o
+botão de fechar não fecha, o "acabou" também tinha que ser mentira.
+
+| O que acontece | Como se destrava |
+|---|---|
+| Sobem os **créditos** | depois do NADA cair |
+| Aparece **FECHAR O JOGO** | uns segundos de créditos |
+| O botão **não fecha** nada | apertar três vezes derruba as letras dos créditos |
+| Dez **letras caídas** e quatro vagas | com a queda |
+| **O NADA 2: O RETORNO** | escrever **NADA** de novo, arrastando as letras certas |
+| **🛡️ Escudo infinito** | tirar as 10 vidas dele clicando nas duas bocas |
+| Ele vira 🥸 e murcha | arrastar o **bigode** em cima dele — clique não passa no escudo, bigode passa |
+| Um **botão de desligar** que foge do dedo | com a morte dele |
+| **Fim de verdade** | pegar o botão três vezes: a tela apaga igual televisão velha |
+
+No fim, o jogo te mostra o número que estava contando desde o começo:
+**quantas coisas cê fez pra não fazer nada**.
+
+O bigode venceu de novo, e é de propósito: é a regra do jogo. Vida infinita não
+resolve nada contra bigode.
+
 ## O melhor pedaço
 
 O mago tem **vida infinita** e fala isso na tua cara. Não tem como tirar vida
@@ -59,7 +82,8 @@ Não guarda nada: fechou, recomeça. O botão *voltar ao início* recarrega a p�
 | Arquivo | O que faz |
 |---|---|
 | `index.html` | o jogo inteiro |
+| `teste-depois-do-fim.js` | joga sozinho as quatro fases novas, pra conferir que nenhuma travou |
 
 ---
 
-Feito pelo **JoJo**, 2026 — *v2, feito com muito nada*.
+Feito pelo **JoJo**, 2026. A segunda metade veio depois, a pedido dele — *v3, agora com o dobro de nada*.

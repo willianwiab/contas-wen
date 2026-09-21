@@ -207,6 +207,55 @@ html,body{overflow:hidden;height:100vh;width:100vw;font-family:'Space Grotesk',s
 
 /* MAGO voando pro portal */
 #npc.voando{position:fixed!important;z-index:200;transition:all 1.5s cubic-bezier(.5,-.3,.5,1.3)}
+
+/* ══ DEPOIS DO FIM — a segunda metade ══
+   Tudo daqui vive dentro de #depois, por cima de todo o resto, pra não
+   esbarrar em nada das fases de cima. */
+#depois{position:fixed;inset:0;z-index:300000;display:none;background:#f5f5f0;color:#12101c;overflow:hidden;font-family:'Space Grotesk',sans-serif}
+#depois.on{display:block}
+#dpBalao{position:absolute;bottom:1.1rem;left:50%;transform:translateX(-50%);max-width:92%;text-align:center;font-weight:600;font-size:1.05rem;font-style:italic;color:#2a2a3f;z-index:40;line-height:1.35}
+#dpConta{position:absolute;top:1rem;right:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;color:#7c7c99;z-index:40}
+
+/* os créditos que sobem — e que não são botão (mas cê vai clicar) */
+#dpCreditos{position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;align-items:center;gap:1.3rem;padding-top:100vh;animation:dpSobe 26s linear forwards;z-index:10}
+@keyframes dpSobe{to{transform:translateY(-185%)}}
+#dpCreditos div{font-weight:700;font-size:1.15rem;letter-spacing:-.01em;text-align:center;padding:0 1rem}
+#dpCreditos .grande{font-size:2.4rem;letter-spacing:-.04em}
+#dpCreditos .fraco{color:#7c7c99;font-weight:500}
+#dpFechar{position:absolute;bottom:4.2rem;left:50%;transform:translateX(-50%);z-index:30;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;padding:1rem 2rem;border:2px solid #12101c;background:#f5f5f0;color:#12101c;cursor:pointer;display:none}
+#dpFechar.on{display:block}
+
+/* as letras caídas e as quatro vagas */
+.dpLetra{position:absolute;font-weight:700;font-size:3rem;line-height:1;cursor:grab;touch-action:none;z-index:25;color:#12101c;user-select:none}
+.dpLetra.dragging{cursor:grabbing;transform:scale(1.15);color:#a855f7}
+.dpVaga{position:absolute;top:2.2rem;width:58px;height:74px;border:3px dashed #c9c9c2;border-radius:12px;z-index:20;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:2.6rem;line-height:1}
+.dpVaga.cheia{border-style:solid;border-color:#a855f7;background:#f3e8ff}
+.dpVaga.errou{animation:dpTremer .3s}
+@keyframes dpTremer{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* O NADA 2 e o escudo que não deixa clique passar */
+#dpNada2{position:absolute;top:50%;left:50%;width:0;height:0;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#000 0%,#000 62%,transparent 100%);z-index:22;transition:width .7s,height .7s;box-shadow:0 0 90px #000}
+#dpNada2 .boca{position:absolute;font-size:3rem;cursor:pointer;animation:bocaBate .5s infinite;transform:translate(-50%,-50%)}
+#dpEscudo{position:absolute;top:50%;left:50%;width:0;height:0;transform:translate(-50%,-50%);border-radius:50%;border:6px solid #7fb4ff;box-shadow:0 0 40px #7fb4ff,inset 0 0 40px #7fb4ff;z-index:23;display:none;pointer-events:none;animation:portalPulse 1s infinite}
+#dpEscudo.on{display:block}
+#dpBigode{position:absolute;font-size:3.4rem;cursor:grab;touch-action:none;z-index:35;display:none;user-select:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
+#dpBigode.on{display:block}
+#dpBigode.dragging{cursor:grabbing;transform:scale(1.2)}
+
+/* o botão de desligar, que foge do dedo */
+#dpDesligar{position:absolute;z-index:30;display:none;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;padding:1rem 1.7rem;border:none;border-radius:100px;background:#ff3355;color:#fff;cursor:pointer;box-shadow:0 10px 30px -8px rgba(255,51,85,.7);transition:left .25s cubic-bezier(.3,1.5,.6,1),top .25s cubic-bezier(.3,1.5,.6,1),transform .2s}
+#dpDesligar.on{display:block}
+
+/* a tela apagando igual televisão velha */
+#dpTV{position:absolute;inset:0;z-index:60;display:none;background:#000}
+#dpTV.on{display:block;animation:dpApaga .8s forwards}
+@keyframes dpApaga{0%{clip-path:inset(0 0 0 0)}70%{clip-path:inset(49.5% 0 49.5% 0)}100%{clip-path:inset(50% 49% 50% 49%)}}
+#dpFim{position:absolute;inset:0;z-index:70;display:none;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;background:#0a0a15;color:#fafafa;text-align:center;padding:2rem}
+#dpFim.on{display:flex}
+#dpFim h2{font-size:clamp(2.4rem,11vw,4.5rem);letter-spacing:-.05em;line-height:.9}
+#dpFim p{color:#7c7c99;font-weight:500;max-width:30ch;line-height:1.5}
+#dpFim b{color:#c6ff3d}
+#dpDeNovo{margin-top:1.2rem;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;padding:1rem 2rem;border:2px solid #fafafa;background:transparent;color:#fafafa;cursor:pointer}
 </style>
 </head>
 <body>
@@ -216,7 +265,7 @@ html,body{overflow:hidden;height:100vh;width:100vw;font-family:'Space Grotesk',s
   <h1>JOGO<br><em>DO</em><br><span class="void">NADA</span></h1>
   <p class="kicker">Você tem <b>uma tarefa</b>: não fazer nada.<br>Você vai fazer alguma coisa.</p>
   <button id="btnComecar">Começar</button>
-  <div class="creditos">v2 <b>·</b> feito com muito nada</div>
+  <div class="creditos">v3 <b>·</b> agora com o dobro de nada</div>
 </div>
 
 <div id="bossNada"><div id="bocaNada">👄</div></div>
@@ -275,6 +324,36 @@ html,body{overflow:hidden;height:100vh;width:100vw;font-family:'Space Grotesk',s
   <div id="dicaBigode">🖌️ pinta um BIGODE na cara dele!</div>
   <div id="timer10min"><span class="digito" data-d="1">1</span><span class="digito" data-d="0">0</span> min</div>
   <div id="espadaMontada">🗡️</div>
+</div>
+
+
+<div id="depois">
+  <div id="dpCreditos">
+    <div class="grande">JOGO DO NADA</div>
+    <div class="fraco">um jogo do JoJo</div>
+    <div>ideia: JoJo</div>
+    <div>programação: JoJo</div>
+    <div>o nada: o nada</div>
+    <div class="fraco">o mago não quis dar entrevista</div>
+    <div>bigode: 🥸</div>
+    <div class="fraco">nenhum squishy foi machucado</div>
+    <div>obrigado por jogar</div>
+    <div class="fraco">pode fechar agora</div>
+    <div class="grande">🫥</div>
+  </div>
+  <button id="dpFechar">Fechar o jogo</button>
+  <div id="dpNada2"></div>
+  <div id="dpEscudo"></div>
+  <div id="dpBigode">🥸</div>
+  <button id="dpDesligar">Desligar</button>
+  <div id="dpBalao"></div>
+  <div id="dpConta"></div>
+  <div id="dpTV"></div>
+  <div id="dpFim">
+    <h2>Fim de verdade.</h2>
+    <p>Cê fez <b id="dpContaFim">0</b> coisas pra não fazer nada.</p>
+    <button id="dpDeNovo">jogar de novo</button>
+  </div>
 </div>
 
 <script>
@@ -970,6 +1049,7 @@ function vitoriaFinalDeVerdade(){
   document.getElementById('mnBalao').innerHTML='<span style="font-family:\'Space Grotesk\';font-weight:700;font-size:2rem;letter-spacing:-.03em;line-height:1;display:block;margin-bottom:.5rem">Fim.</span><span style="font-size:.85rem;color:var(--mute);font-weight:500">Você fez tudo que podia fazer.</span>';
   SONS.vitoria();setTimeout(()=>SONS.vitoria(),300);setTimeout(()=>SONS.vitoria(),600);setTimeout(()=>SONS.vitoria(),900);
   for(let i=0;i<200;i++)setTimeout(confete,i*20);
+  setTimeout(comecarDepoisDoFim,4200);
 }
 
 function fazerSquishyApertavel(s){
@@ -1044,6 +1124,278 @@ document.addEventListener('keydown',(e)=>{
   const acao=ACOES_TECLA[letra]||(()=>'apertou tecla');
   fezAlgo(acao(),innerWidth/2,innerHeight/2);
 });
+
+/* ══════════════════════════════════════════════════════════════════
+   DEPOIS DO FIM — a segunda metade
+   Aquele "Fim." era mentira, que é a única coisa que combina com este
+   jogo. Daqui pra frente são quatro fases, cada uma destravando a
+   seguinte, do mesmo jeito das de cima:
+     1. os créditos que não fecham
+     2. as letras caídas — escrever NADA de novo
+     3. O NADA 2 e o escudo infinito, que só o bigode atravessa
+     4. o botão de desligar, que foge do dedo
+   ══════════════════════════════════════════════════════════════════ */
+const dp      = document.getElementById('depois');
+const dpBalao = document.getElementById('dpBalao');
+const dpConta = document.getElementById('dpConta');
+
+function dpDiz(t){ dpBalao.textContent = t; }
+function dpContar(){ coisas++; dpConta.textContent = 'Coisas feitas: ' + coisas; }
+
+/* o pop e o confete de cima moram no <body>, que fica DEBAIXO do #depois —
+   por isso estes dois nascem dentro dele, senão ninguém vê */
+function dpPop(txt,x,y){
+  const p=document.createElement('div');
+  p.className='pop';p.textContent=txt;
+  p.style.left=(x-30)+'px';p.style.top=(y-30)+'px';p.style.zIndex='50';
+  dp.appendChild(p);setTimeout(()=>p.remove(),1000);
+}
+function dpConfete(){
+  const cores=['#ff2020','#ffdd00','#00cc44','#0088ff','#ff00cc','#ff8800'];
+  for(let i=0;i<18;i++){
+    const c=document.createElement('div');c.className='confete';
+    c.style.background=cores[Math.floor(Math.random()*cores.length)];
+    c.style.left=Math.random()*innerWidth+'px';c.style.top='-20px';
+    c.style.zIndex='55';c.style.animationDelay=Math.random()*.5+'s';
+    dp.appendChild(c);setTimeout(()=>c.remove(),2500);
+  }
+}
+
+/* arrastar qualquer coisa — pointer serve pro dedo e pro mouse juntos */
+function dpArrastavel(el,aoLargar){
+  let ox=0,oy=0,pego=false;
+  el.addEventListener('pointerdown',ev=>{
+    pego=true;el.classList.add('dragging');
+    const r=el.getBoundingClientRect();
+    ox=ev.clientX-r.left;oy=ev.clientY-r.top;
+    try{el.setPointerCapture(ev.pointerId);}catch(e){}
+    ev.preventDefault();ev.stopPropagation();
+  });
+  el.addEventListener('pointermove',ev=>{
+    if(!pego) return;
+    el.style.left=(ev.clientX-ox)+'px';
+    el.style.top=(ev.clientY-oy)+'px';
+  });
+  const soltar=()=>{
+    if(!pego) return;
+    pego=false;el.classList.remove('dragging');
+    if(aoLargar) aoLargar(el);
+  };
+  el.addEventListener('pointerup',soltar);
+  el.addEventListener('pointercancel',soltar);
+}
+
+/* ── 1. os créditos que não fecham ── */
+const DP_FALAS_CRED=['ué.','os créditos não são botão.','isso também é fazer coisa, viu.','PARA DE CLICAR NOS CRÉDITOS.'];
+const DP_FALAS_FECHAR=['não fechou.','o botão de fechar não fecha. faz sentido.','tá bom. CÊ QUEM SABE.'];
+let dpCliquesCred=0, dpCliquesFechar=0;
+
+function comecarDepoisDoFim(){
+  dp.classList.add('on');
+  dpConta.textContent='Coisas feitas: '+coisas;
+  setTimeout(()=>dpDiz('acabou. pode fechar o jogo.'),2200);
+  setTimeout(()=>document.getElementById('dpFechar').classList.add('on'),5200);
+
+  document.getElementById('dpCreditos').addEventListener('click',ev=>{
+    dpContar();SONS.clique();dpPop('+1 coisa',ev.clientX,ev.clientY);
+    dpDiz(DP_FALAS_CRED[Math.min(dpCliquesCred,DP_FALAS_CRED.length-1)]);
+    dpCliquesCred++;
+  });
+  document.getElementById('dpFechar').addEventListener('click',()=>{
+    dpContar();SONS.clique();
+    dpDiz(DP_FALAS_FECHAR[Math.min(dpCliquesFechar,DP_FALAS_FECHAR.length-1)]);
+    dpCliquesFechar++;
+    if(dpCliquesFechar>=3) derrubarOsCreditos();
+  });
+}
+
+/* ── 2. as letras caídas ── */
+const DP_PALAVRA=['N','A','D','A'];
+
+function derrubarOsCreditos(){
+  document.getElementById('dpFechar').classList.remove('on');
+  document.getElementById('dpCreditos').style.display='none';
+  SONS.boss();dpConfete();
+  dpDiz('...as letras caíram todas.');
+  montarVagas();soltarLetras();
+  setTimeout(()=>dpDiz('escreve NADA com elas. arrasta.'),2400);
+}
+
+function montarVagas(){
+  const larg=58,esp=10;
+  const total=DP_PALAVRA.length*larg+(DP_PALAVRA.length-1)*esp;
+  const x0=Math.max(8,(innerWidth-total)/2);
+  DP_PALAVRA.forEach((letra,i)=>{
+    const v=document.createElement('div');
+    v.className='dpVaga';v.dataset.letra=letra;v.dataset.i=String(i);
+    v.style.left=(x0+i*(larg+esp))+'px';
+    dp.appendChild(v);
+  });
+}
+
+function soltarLetras(){
+  const sopa=['N','A','D','A','Z','Q','X','B','K','W'];
+  sopa.sort(()=>Math.random()-.5);
+  sopa.forEach(l=>{
+    const el=document.createElement('div');
+    el.className='dpLetra';el.textContent=l;el.dataset.letra=l;
+    el.style.left=(20+Math.random()*Math.max(40,innerWidth-90))+'px';
+    el.style.top=(innerHeight*0.42+Math.random()*Math.max(40,innerHeight*0.38))+'px';
+    dp.appendChild(el);
+    dpArrastavel(el,largarLetra);
+  });
+}
+
+function largarLetra(el){
+  const r=el.getBoundingClientRect();
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  let alvo=null,dmin=95;
+  dp.querySelectorAll('.dpVaga').forEach(v=>{
+    if(v.classList.contains('cheia')) return;
+    const vr=v.getBoundingClientRect();
+    const d=Math.hypot(cx-(vr.left+vr.width/2),cy-(vr.top+vr.height/2));
+    if(d<dmin){dmin=d;alvo=v;}
+  });
+  if(!alvo) return;
+  dpContar();
+  if(alvo.dataset.letra!==el.dataset.letra){
+    alvo.classList.add('errou');
+    setTimeout(()=>alvo.classList.remove('errou'),320);
+    som(120,.2,'sawtooth');
+    dpDiz('essa letra não é dessa vaga.');
+    return;
+  }
+  alvo.classList.add('cheia');
+  alvo.textContent=el.dataset.letra;
+  el.remove();
+  som(480+Number(alvo.dataset.i)*130,.12,'triangle');
+  if(dp.querySelectorAll('.dpVaga.cheia').length===DP_PALAVRA.length) setTimeout(chamarNada2,800);
+  else dpDiz('isso. continua.');
+}
+
+/* ── 3. O NADA 2 e o escudo infinito ── */
+let dpVidaNada2=10, dpEscudoLigado=false, dpNada2Morto=false, dpTamNada2=0;
+
+function chamarNada2(){
+  dp.querySelectorAll('.dpVaga,.dpLetra').forEach(x=>x.remove());
+  SONS.boss();setTimeout(()=>SONS.boss(),350);
+  dpDiz('😱 O NADA 2: O RETORNO');
+  const n=document.getElementById('dpNada2');
+  dpTamNada2=Math.min(innerWidth,innerHeight)*0.6;
+  n.style.width=dpTamNada2+'px';n.style.height=dpTamNada2+'px';
+  ['32%','68%'].forEach(esq=>{
+    const b=document.createElement('div');
+    b.className='boca';b.textContent='👄';
+    b.style.left=esq;b.style.top='44%';
+    b.addEventListener('click',baterNoNada2);
+    n.appendChild(b);
+  });
+  setTimeout(()=>dpDiz('clica nas DUAS bocas! 10 vidas.'),1500);
+}
+
+function baterNoNada2(ev){
+  if(dpEscudoLigado||dpNada2Morto) return;
+  dpVidaNada2--;dpContar();
+  som(180+Math.random()*250,.07,'square');
+  dpPop('-1',ev.clientX,ev.clientY);
+  if(dpVidaNada2<=0) ligarEscudo();
+  else dpDiz('O NADA 2: '+dpVidaNada2+' vidas');
+}
+
+function ligarEscudo(){
+  dpEscudoLigado=true;
+  const e=document.getElementById('dpEscudo');
+  e.style.width=(dpTamNada2*1.14)+'px';e.style.height=(dpTamNada2*1.14)+'px';
+  e.classList.add('on');
+  som(90,.5,'sawtooth');
+  dpDiz('🛡️ ESCUDO INFINITO — clique não passa mais.');
+  setTimeout(()=>{
+    const b=document.getElementById('dpBigode');
+    b.style.left='14px';b.style.top=(innerHeight*0.66)+'px';
+    b.classList.add('on');
+    dpArrastavel(b,largarBigode);
+    dpDiz('...mas o bigode do mago ficou caído aqui.');
+  },2100);
+  setTimeout(()=>{ if(!dpNada2Morto) dpDiz('arrasta o 🥸 bem em cima dele.'); },4000);
+}
+
+function largarBigode(el){
+  if(dpNada2Morto) return;
+  const r=el.getBoundingClientRect();
+  const n=document.getElementById('dpNada2').getBoundingClientRect();
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  if(cx<n.left||cx>n.right||cy<n.top||cy>n.bottom){ dpDiz('perto. bem EM CIMA dele.'); return; }
+  matarNada2(el);
+}
+
+function matarNada2(bigodeEl){
+  dpNada2Morto=true;
+  bigodeEl.classList.remove('on');
+  document.getElementById('dpEscudo').classList.remove('on');
+  const n=document.getElementById('dpNada2');
+  n.querySelectorAll('.boca').forEach(b=>{b.textContent='🥸';b.style.animation='none';});
+  SONS.vitoria();
+  dpDiz('O NADA 2: "...eu também não. bigode não."');
+  for(let i=0;i<4;i++) setTimeout(dpConfete,i*400);
+  setTimeout(()=>{ n.style.width='0';n.style.height='0'; setTimeout(()=>{n.innerHTML='';},900); },1700);
+  setTimeout(faseDesligar,3600);
+}
+
+/* ── 4. o botão que foge ── */
+let dpPegadas=0, dpFugaInt=null, dpUltimaFuga=0;
+
+function faseDesligar(){
+  dpDiz('sobrou um botão. esse desliga de verdade.');
+  const b=document.getElementById('dpDesligar');
+  b.classList.add('on');
+  fugirBotao();
+  b.addEventListener('click',pegarBotao);
+  dpFugaInt=setInterval(fugirBotao,1300);
+  dp.addEventListener('pointermove',ev=>{
+    if(!b.classList.contains('on')) return;
+    const r=b.getBoundingClientRect();
+    const d=Math.hypot(ev.clientX-(r.left+r.width/2),ev.clientY-(r.top+r.height/2));
+    if(d<70 && Date.now()-dpUltimaFuga>650) fugirBotao();
+  });
+  setTimeout(()=>dpDiz('pega ele. três vezes.'),1900);
+}
+
+function fugirBotao(){
+  const b=document.getElementById('dpDesligar');
+  if(!b.classList.contains('on')) return;
+  dpUltimaFuga=Date.now();
+  const r=b.getBoundingClientRect();
+  const larg=r.width||170, alt=r.height||52;
+  b.style.left=(16+Math.random()*Math.max(10,innerWidth-larg-32))+'px';
+  b.style.top=(90+Math.random()*Math.max(10,innerHeight-alt-180))+'px';
+}
+
+function pegarBotao(){
+  dpPegadas++;dpContar();
+  som(760-dpPegadas*150,.13,'square');
+  const b=document.getElementById('dpDesligar');
+  if(dpPegadas>=3){ desligarDeVerdade(); return; }
+  b.style.transform='scale('+(1+dpPegadas*.2)+')';
+  clearInterval(dpFugaInt);
+  dpFugaInt=setInterval(fugirBotao,1300+dpPegadas*800);
+  dpDiz(dpPegadas===1?'quase! ele ficou mais devagar.':'mais UMA vez!');
+  fugirBotao();
+}
+
+function desligarDeVerdade(){
+  clearInterval(dpFugaInt);
+  document.getElementById('dpDesligar').classList.remove('on');
+  dpDiz('');
+  som(220,.25,'sine');setTimeout(()=>som(110,.45,'sine'),170);
+  document.getElementById('dpTV').classList.add('on');
+  setTimeout(()=>{
+    document.getElementById('dpContaFim').textContent=coisas;
+    document.getElementById('dpFim').classList.add('on');
+    SONS.vitoria();
+  },950);
+}
+
+document.getElementById('dpDeNovo').addEventListener('click',()=>location.reload());
 </script>
 </body>
 </html>
