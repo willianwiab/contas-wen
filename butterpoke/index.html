@@ -101,6 +101,12 @@ select.escolher:focus{outline:none;border-color:var(--asa-escura)}
   display:block;width:100%;border:none;background:none;padding:10px;
   font:inherit;color:inherit;text-align:center;cursor:pointer;
 }
+.opcao .tenho{
+  position:absolute;top:7px;left:7px;width:34px;height:34px;border:none;
+  border-radius:50%;background:rgba(255,255,255,.92);cursor:pointer;
+  font-size:1rem;line-height:1;padding:0;box-shadow:0 1px 5px rgba(0,0,0,.18);
+}
+.opcao .tenho:hover{background:#fff;transform:scale(1.1)}
 .opcao .estrela{
   position:absolute;top:7px;right:7px;width:34px;height:34px;border:none;
   border-radius:50%;background:rgba(255,255,255,.92);cursor:pointer;
@@ -266,6 +272,14 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
   overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 @media(max-width:520px){ .folha{gap:7px;padding:10px} .buraco span{font-size:.64rem} }
 .mais{margin:16px auto 0;display:block}
+/* ---------- barra de quanto falta ---------- */
+.barra{margin:0 0 16px}
+.barra:empty{display:none}
+.barra-fora{height:16px;background:#fff;border:2px solid var(--borda);border-radius:999px;overflow:hidden}
+.barra-dentro{height:100%;background:linear-gradient(90deg,var(--asa),var(--asa-escura));
+  border-radius:999px;transition:width .3s}
+.barra-texto{font-size:.86rem;color:var(--tinta-fraca);margin-top:5px}
+.barra-texto b{color:var(--tinta)}
 
 /* ---------- cotação ---------- */
 .cotacao{
@@ -388,7 +402,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 19 — 20/09</span>
+    <br><span class="versao">versão 20 — 21/09</span>
   </footer>
 </div>
 
@@ -887,7 +901,28 @@ function ordenar(lista){
 const CHAVE_FAV = 'butterpoke:favoritos';
 const CHAVE_TOP3 = 'butterpoke:preferidas';
 const CHAVE_DESEJO = 'butterpoke:desejos';
+const CHAVE_TENHO = 'butterpoke:tenho';
 const MAX_TOP3 = 3;
+
+/* ---------- o que eu já tenho ----------
+   Aqui basta o id: é marcação em massa, e guardar a carta inteira de cada
+   uma faria o código do perfil virar um monstro numa coleção grande. */
+function lerTenho(){
+  try{
+    const j = JSON.parse(localStorage.getItem(CHAVE_TENHO) || '[]');
+    return Array.isArray(j) ? j : [];
+  }catch(e){ return []; }
+}
+function gravarTenho(l){
+  try{ localStorage.setItem(CHAVE_TENHO, JSON.stringify(l)); }catch(e){}
+}
+function tenhoEssa(id){ return lerTenho().indexOf(id) >= 0; }
+function virarTenho(id){
+  const l = lerTenho(), i = l.indexOf(id);
+  if(i >= 0) l.splice(i, 1); else l.push(id);
+  gravarTenho(l);
+  return i < 0;
+}
 
 function lerLista(chave){
   try{
@@ -1047,6 +1082,7 @@ function cartaoTreinador(perfil, favoritos, dono, extras){
       numero(Object.keys(colecoes).length, 'coleções') +
       numero(maisAntiga || '—', 'mais antiga') +
       numero(desejos.length, 'quer ter') +
+      (dono ? numero(lerTenho().length, 'marcadas') : '') +
     '</div>' +
     (mostrar.length
       ? '<div class="tt-cartas">' + mostrar.map(f =>
@@ -1088,7 +1124,7 @@ function saudacao(){
    precisa sobreviver a ser colado no zap sem quebrar em pedaços. */
 function fazerCodigo(){
   const tudo = { v:2, perfil:lerPerfil(), favoritos:lerFavoritos(),
-                 top3:lerLista(CHAVE_TOP3), desejos:lerLista(CHAVE_DESEJO) };
+                 top3:lerLista(CHAVE_TOP3), desejos:lerLista(CHAVE_DESEJO), tenho:lerTenho() };
   return 'BP1.' + btoa(unescape(encodeURIComponent(JSON.stringify(tudo))));
 }
 function lerCodigo(txt){
@@ -1249,6 +1285,11 @@ function mostrarPerfil(){
       if(f && f.id && !meusDesejos.some(m => m.id === f.id)) meusDesejos.push(f);
     });
     gravarLista(CHAVE_DESEJO, meusDesejos);
+    const meuTenho = lerTenho();
+    (Array.isArray(dados.tenho) ? dados.tenho : []).forEach(id => {
+      if(id && meuTenho.indexOf(id) < 0) meuTenho.push(id);
+    });
+    gravarTenho(meuTenho);
     if(dados.perfil && dados.perfil.nome && !lerPerfil().nome) gravarPerfil(dados.perfil);
     const aviso = novas
       ? 'Chegaram ' + novas + (novas === 1 ? ' carta nova.' : ' cartas novas.')
@@ -1489,6 +1530,7 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
       '<h2>' + titulo + '</h2>' +
       '<p>' + subtitulo + '</p>' +
       (avisoBusca ? '<p class="nota" style="margin:0 0 14px">🌐 ' + avisoBusca + '</p>' : '') +
+      (ehCarta ? '<div id="barra" class="barra"></div>' : '') +
       '<label class="rotulo-filtro" for="filtro">🔎 ' +
         (ehCarta ? 'Procurar pelo nome da carta' : 'Procurar coleção') + '</label>' +
       '<input id="filtro" autocomplete="off" placeholder="' + escapar(placeholder) + '" ' +
@@ -1520,6 +1562,7 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
   if(selDes) selDes.onchange = () => { desempate = selDes.value; atualizar(); };
 
   atualizar();
+  atualizarBarra();
   filtro.addEventListener('input', atualizar);
   // Se a busca deixou só uma, Enter abre ela direto.
   filtro.addEventListener('keydown', ev => {
@@ -1594,6 +1637,24 @@ function desenharOpcoes(lista){
     caixa.querySelector('.abrir').onclick = () => gradeAtual.aoClicar(c);
 
     if(!ehColecao){
+      const tenho = document.createElement('button');
+      tenho.type = 'button';
+      tenho.className = 'tenho';
+      const pintarTenho = () => {
+        const sim = tenhoEssa(c.id);
+        tenho.textContent = sim ? '✅' : '⬜';
+        tenho.title = sim ? 'Tirar de "já tenho"' : 'Marcar que eu tenho esta';
+        tenho.setAttribute('aria-label', tenho.title);
+        tenho.setAttribute('aria-pressed', sim);
+      };
+      pintarTenho();
+      tenho.onclick = () => {
+        virarTenho(c.id);
+        pintarTenho();
+        atualizarBarra();   // a barra de progresso tem que andar junto
+      };
+      caixa.appendChild(tenho);
+
       const estrela = document.createElement('button');
       estrela.type = 'button';
       estrela.className = 'estrela';
@@ -1776,6 +1837,21 @@ async function abrirColecao(colecao){
   totalReal = cartas.length;
   voltarPraLista = () => { mostrarCartasDaColecao(colecao, cartas); };
   mostrarCartasDaColecao(colecao, cartas);
+}
+
+/* Quantas desta coleção já estão marcadas. Conta sobre a lista inteira da
+   coleção, não sobre o que está filtrado na tela: senão filtrar por "holo"
+   faria a pessoa parecer dona de 100% da coleção. */
+function atualizarBarra(){
+  const alvo = document.getElementById('barra');
+  if(!alvo || !gradeAtual || !gradeAtual.lista) return;
+  const total = gradeAtual.lista.length;
+  const meus = gradeAtual.lista.filter(c => tenhoEssa(c.id)).length;
+  const pct = total ? Math.round(meus / total * 100) : 0;
+  alvo.innerHTML =
+    '<div class="barra-fora"><div class="barra-dentro" style="width:' + pct + '%"></div></div>' +
+    '<p class="barra-texto"><b>' + meus + ' de ' + total + '</b> · ' + pct + '% completa' +
+    (meus === total && total ? ' 🎉 completinha!' : (meus ? ' · faltam ' + (total - meus) : '')) + '</p>';
 }
 
 function mostrarCartasDaColecao(colecao, cartas){
@@ -2210,6 +2286,10 @@ function desenharCarta(){
           '</button>' +
           '<button class="btn secundario" type="button" id="copiar" ' +
             'style="padding:10px 18px;font-size:.95rem">🔗 Copiar link da carta</button>' +
+          '<button class="btn secundario" type="button" id="tenho-carta" ' +
+            'style="padding:10px 18px;font-size:.95rem">' +
+            (tenhoEssa(carta.id) ? '✅ Eu tenho essa' : '⬜ Marcar que eu tenho') +
+          '</button>' +
           '<button class="btn secundario" type="button" id="pref" ' +
             'style="padding:10px 18px;font-size:.95rem">' +
             (naLista(CHAVE_TOP3, carta.id) ? '🥇 É uma das 3 preferidas' : '🥇 Pôr nas 3 preferidas') +
@@ -2259,6 +2339,11 @@ function desenharCarta(){
       caixa.select();
       copiar.textContent = '👆 Copia daqui';
     }
+  };
+
+  const bt = document.getElementById('tenho-carta');
+  if(bt) bt.onclick = () => {
+    bt.textContent = virarTenho(carta.id) ? '✅ Eu tenho essa' : '⬜ Marcar que eu tenho';
   };
 
   const pref = document.getElementById('pref');
