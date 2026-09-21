@@ -1,13 +1,3 @@
-/* ============================================================
-   JOGO DO NADA — teste das 24 fases
-   Passa por todas as fases conferindo que cada uma desenha, joga
-   de verdade seis delas até o fim (clicar, aguentar, achar, segurar,
-   memória e montar), e confere o save e o "continuar da fase X".
-
-   Como rodar:
-     npm i playwright-core
-     node teste-24-fases.js
-   ============================================================ */
 const { chromium } = require('playwright-core');
 const pass=[],fail=[]; const ok=(n,c,e='')=>(c?pass:fail).push(n+(e?' → '+e:''));
 const URL='file:///home/user/contas-wen/jogo-do-nada-jojo/index.html';

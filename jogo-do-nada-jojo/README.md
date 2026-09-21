@@ -83,6 +83,24 @@ vão crescendo:
 | 💣 | **Clones e bombas** | clicar nos 😄 e não clicar nas 💣 — errou, perde três |
 | 🧠 | **Memória** | as caras do jogo viradas carta: 6 pares, depois 10 |
 
+### Três coisas que quebraram e foram consertadas
+
+**O palco comia o toque das fases antigas.** As 24 fases desenham numa camada
+que cobre a tela inteira. Parada, ela continuava lá, invisível, por cima do
+resto — e a fase de escrever NADA parava de responder ao dedo. Agora a camada só
+existe enquanto uma das 24 está rodando.
+
+**A vaga da letra era menor que o dedo.** Palavra de dez letras dava vaga de 35
+pixels, e largar a letra um dedo torto encaixava na vaga do lado: o jogo
+respondia *"essa letra não é dessa vaga"* com a letra certa na mão. Agora a
+palavra quebra em duas linhas, a vaga tem no mínimo 54 pixels, **a letra procura
+a vaga dela** (não a mais perto) e **só tocar na letra já encaixa** — arrastar
+virou escolha, não obrigação.
+
+**Letra nascia em cima de letra.** A posição era sorteada solta, então duas
+caíam no mesmo lugar e a de baixo ficava impossível de pegar. Agora elas saem
+numa grade sorteada, uma por célula — e os cacos da fase de arrastar também.
+
 ### O save
 
 Uma hora de jogo sem salvar seria maldade. Cada fase que começa fica guardada no

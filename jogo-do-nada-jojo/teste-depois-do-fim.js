@@ -77,11 +77,16 @@ const pass=[],fail=[]; const ok=(n,c,e='')=>(c?pass:fail).push(n+(e?' → '+e:''
   // 4. o botão que foge
   await p.waitForTimeout(3800);
   ok('o botão de desligar aparece', await p.isVisible('#dpDesligar'));
-  for(let i=0;i<3;i++){ await p.evaluate(()=>document.getElementById('dpDesligar').click()); await p.waitForTimeout(250); }
-  await p.waitForTimeout(1300);
-  ok('tela apaga e vem o fim de verdade', await p.isVisible('#dpFim'));
-  const fim = await p.evaluate(()=>document.getElementById('dpContaFim').textContent);
-  ok('o fim mostra as coisas feitas', Number(fim)>0, fim);
+  for(let i=0;i<2;i++){ await p.evaluate(()=>document.getElementById('dpDesligar').click()); await p.waitForTimeout(250); }
+  await p.evaluate(()=>document.getElementById('dpDesligar').click());
+  await p.waitForTimeout(500);
+  ok('a tela apaga como televisão velha', await p.isVisible('#dpTV'));
+  // e acende de novo: o jogo não desliga, começam as 24 fases
+  await p.waitForTimeout(4600);
+  const emFase = await p.evaluate(()=>({fase:faseAtual, hud:document.getElementById('dpHudTxt').textContent,
+                                        palco:document.getElementById('dpPalco').classList.contains('on')}));
+  ok('a tela acende de novo e cai na fase 1 das 24',
+     emFase.fase===0 && emFase.palco && /Fase 1 de 24/.test(emFase.hud), JSON.stringify(emFase));
   await p.screenshot({path:'/tmp/claude-0/-home-user-contas-wen/ab93acdf-a850-569c-81b8-f2cfbddcb135/scratchpad/fim.png'});
 
   console.log('PASSOU:\n- '+pass.join('\n- '));
