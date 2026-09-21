@@ -662,6 +662,7 @@
       Feche toda troca sentado na mesa da loja, com gente em volta. Quem tem pressa pra
       fechar é quem tem algo a esconder.
     </p>
+    <p class="label-mono" id="versao">versão 8 · 21/09/2026</p>
   </footer>
 
 </div>
@@ -1959,7 +1960,21 @@
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("sw.js").catch(function () {});
+      navigator.serviceWorker.register("sw.js").then(function (reg) {
+        /* Procura versão nova em toda abertura e troca assim que achar.
+           Sem isso o celular fica preso na cópia guardada, e a pessoa vê
+           uma página velha achando que o site não mudou. */
+        reg.update();
+        reg.addEventListener("updatefound", function () {
+          var novo = reg.installing;
+          if (!novo) return;
+          novo.addEventListener("statechange", function () {
+            if (novo.state === "installed" && navigator.serviceWorker.controller) {
+              location.reload();
+            }
+          });
+        });
+      }).catch(function () {});
     });
   }
 })();
