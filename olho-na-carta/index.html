@@ -265,7 +265,11 @@
     background: var(--surface-2); border: 1px solid var(--line-strong);
     border-radius: 9px; padding: 9px 11px;
   }
-  .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 7px; }
+  .grade {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 7px;
+    max-height: 46vh; overflow-y: auto;
+    padding: 2px; border: 1px solid var(--line); border-radius: 10px;
+  }
   .grade button {
     padding: 0; background: transparent; border: 0; border-radius: 6px;
     position: relative; line-height: 0; overflow: hidden;
@@ -403,7 +407,6 @@
       <div class="row"><button class="ghost tiny" data-limpar="carta">Limpar marcações</button></div>
     </div>
   </section>
-
   <!-- ============ CÂMERA + LUPA ============ -->
   <section class="panel">
     <div class="panel-head">
@@ -467,7 +470,6 @@
       </p>
     </div>
   </section>
-
   <!-- ============ ANTES DE TROCAR COM ELE ============ -->
   <section class="panel">
     <div class="panel-head">
@@ -500,7 +502,6 @@
       <div class="row"><button class="ghost tiny" data-limpar="pessoa">Limpar pra outra pessoa</button></div>
     </div>
   </section>
-
   <!-- ============ BUSCA ============ -->
   <section class="panel">
     <div class="panel-head">
@@ -530,43 +531,10 @@
       </p>
     </div>
   </section>
-
-  <!-- ============ COLEÇÃO ============ -->
-  <section class="panel">
-    <div class="panel-head">
-      <h2>A coleção inteira</h2>
-      <span class="hint">Toque numa carta pra marcar que você tem</span>
-    </div>
-    <div class="panel-body">
-      <div class="search-row">
-        <select id="colecao" aria-label="Escolher coleção"></select>
-        <button id="go-colecao">Abrir</button>
-      </div>
-      <div id="colecao-resumo"></div>
-      <div id="grade"></div>
-    </div>
-  </section>
-
-  <!-- ============ CARTEIRA ============ -->
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Minha carteira</h2>
-      <span class="hint">Fica guardada só no seu celular</span>
-    </div>
-    <div class="panel-body">
-      <div class="tabs" role="tablist">
-        <button role="tab" aria-selected="true" data-aba="tenho">Tenho</button>
-        <button role="tab" aria-selected="false" data-aba="quero">Quero</button>
-      </div>
-      <div id="lista-tenho"></div>
-      <div id="lista-quero" hidden></div>
-    </div>
-  </section>
-
   <!-- ============ BALANÇA ============ -->
   <section class="panel">
     <div class="panel-head">
-      <h2>A balança da troca</h2>
+      <h2>A troca é justa?</h2>
       <span class="hint">Exemplo preenchido — troque pelas suas cartas</span>
     </div>
     <div class="panel-body">
@@ -604,7 +572,6 @@
       </div>
     </div>
   </section>
-
   <!-- ============ HISTÓRICO ============ -->
   <section class="panel">
     <div class="panel-head">
@@ -616,7 +583,36 @@
       <div id="historico"></div>
     </div>
   </section>
-
+  <!-- ============ CARTEIRA ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Minha carteira</h2>
+      <span class="hint">Fica guardada só no seu celular</span>
+    </div>
+    <div class="panel-body">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-aba="tenho">Tenho</button>
+        <button role="tab" aria-selected="false" data-aba="quero">Quero</button>
+      </div>
+      <div id="lista-tenho"></div>
+      <div id="lista-quero" hidden></div>
+    </div>
+  </section>
+  <!-- ============ COLEÇÃO ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>A coleção inteira</h2>
+      <span class="hint">Toque numa carta pra marcar que você tem</span>
+    </div>
+    <div class="panel-body">
+      <div class="search-row">
+        <select id="colecao" aria-label="Escolher coleção"></select>
+        <button id="go-colecao">Abrir</button>
+      </div>
+      <div id="colecao-resumo"></div>
+      <div id="grade"></div>
+    </div>
+  </section>
   <!-- ============ GOLPES ============ -->
   <section class="panel">
     <div class="panel-head">
@@ -625,7 +621,6 @@
     </div>
     <div class="panel-body"><div id="traps"></div></div>
   </section>
-
   <!-- ============ LOCAIS ============ -->
   <section class="panel">
     <div class="panel-head">
