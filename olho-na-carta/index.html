@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Olho na Carta — não leve carta falsa pra casa</title>
-<meta name="description" content="Checklist de bolso pra saber se uma carta Pokémon é falsa, balança pra ver se a troca é justa, e onde trocar com segurança perto de Santo André." />
+<meta name="description" content="Checklist pra saber se uma carta Pokémon é falsa, lupa e comparador de verso pela câmera, suas cartas e lista de desejos, balança de troca com preço real e histórico de quem trocou com você." />
 <link rel="icon" type="image/svg+xml" href="icone.svg" />
 <link rel="manifest" href="manifest.webmanifest" />
 <meta name="theme-color" content="#1b3a6b" />
@@ -112,7 +112,7 @@
     padding-block: 28px 64px;
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 26px;
   }
 
   h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -.02em; }
@@ -121,12 +121,8 @@
   p { margin: 0; }
 
   .eyebrow {
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--accent);
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--accent);
   }
 
   .masthead { display: flex; flex-direction: column; gap: 12px; }
@@ -134,19 +130,14 @@
 
   .caveat {
     display: flex; gap: 12px; align-items: flex-start;
-    background: var(--accent-soft);
-    border: 1px solid var(--accent);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    font-size: 14px;
+    background: var(--accent-soft); border: 1px solid var(--accent);
+    border-radius: var(--radius); padding: 14px 16px; font-size: 14px;
   }
   .caveat .mark { font-family: var(--display); font-weight: 800; color: var(--accent); flex: none; font-size: 18px; line-height: 1.3; }
 
   .panel {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow);
   }
   .panel-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; padding: 18px 18px 0; }
   .panel-head .hint { font-size: 13px; color: var(--ink-3); }
@@ -157,13 +148,14 @@
     letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
   }
 
-  input[type="text"], input[type="number"] {
+  input[type="text"], input[type="number"], input[type="date"], textarea {
     width: 100%; font: inherit; font-size: 15px; color: var(--ink);
     background: var(--surface-2); border: 1px solid var(--line-strong);
     border-radius: 9px; padding: 9px 11px;
   }
+  textarea { min-height: 64px; resize: vertical; }
   input[type="number"] { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-  input:focus-visible, button:focus-visible, a:focus-visible {
+  input:focus-visible, button:focus-visible, a:focus-visible, textarea:focus-visible {
     outline: 2px solid var(--brand); outline-offset: 2px;
   }
 
@@ -173,26 +165,35 @@
     padding: 9px 16px; cursor: pointer;
     background: var(--brand); color: var(--on-brand);
   }
-  button:hover { filter: brightness(1.12); }
+  button:hover:not(:disabled) { filter: brightness(1.12); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
   button.ghost { background: transparent; color: var(--ink-2); border-color: var(--line-strong); font-weight: 500; }
   button.tiny { padding: 4px 9px; font-size: 13px; font-weight: 500; }
 
   .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 
-  /* ---- balança ---- */
-  .scale { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 620px) { .scale { grid-template-columns: 1fr; } }
-
-  .pan { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; display: flex; flex-direction: column; gap: 9px; }
-  .pan-rows { display: flex; flex-direction: column; gap: 8px; }
-  .pan-row { display: grid; grid-template-columns: 1fr 104px 30px; gap: 7px; align-items: center; }
-  .pan-row .rm { background: transparent; color: var(--ink-3); border: 0; padding: 0; font-size: 18px; line-height: 1; }
-  .pan-row .rm:hover { color: var(--bad); filter: none; }
-  .pan-total {
-    display: flex; justify-content: space-between; align-items: baseline;
-    border-top: 1px solid var(--line); padding-top: 9px; margin-top: 2px;
+  /* ---- abas ---- */
+  .tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); }
+  .tabs button {
+    background: transparent; color: var(--ink-3); border: 0; border-bottom: 2px solid transparent;
+    border-radius: 0; padding: 8px 12px; font-size: 14px; font-weight: 500;
   }
-  .pan-total .v { font-family: var(--mono); font-weight: 600; font-size: 17px; font-variant-numeric: tabular-nums; }
+  .tabs button[aria-selected="true"] { color: var(--brand); border-bottom-color: var(--brand); font-weight: 700; }
+
+  /* ---- checklist ---- */
+  .check { list-style: none; margin: 0; padding: 0; }
+  .check li { border-bottom: 1px solid var(--line); }
+  .check li:last-child { border-bottom: 0; }
+  .check label { display: grid; grid-template-columns: 20px 1fr; gap: 12px; padding: 11px 0; cursor: pointer; align-items: start; }
+  .check input { margin-top: 5px; width: 16px; height: 16px; accent-color: var(--brand); }
+  .check .t { font-weight: 700; font-size: 14px; }
+  .check .d { font-size: 14px; color: var(--ink-2); }
+  .check .lk { font-size: 13px; color: var(--brand); }
+  .check input:checked ~ .txt .t { text-decoration: line-through; color: var(--ink-3); }
+
+  .progress { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-3); }
+  .bar { flex: 1; height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--good); width: 0%; transition: width .25s ease; }
 
   /* ---- câmera ---- */
   .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -211,22 +212,81 @@
   .swatch-line { display: flex; align-items: center; gap: 8px; }
   .swatch { width: 22px; height: 22px; border-radius: 5px; border: 1px solid var(--line-strong); background: var(--surface-2); display: block; flex: none; }
 
-  /* ---- busca de preço ---- */
-  .search { display: flex; flex-direction: column; gap: 10px; background: var(--brand-soft); border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; }
+  /* ---- lupa ---- */
+  .lupa {
+    position: fixed; inset: 0; z-index: 90;
+    background: rgba(8, 13, 24, .94);
+    display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .lupa-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; color: #e9eef7; font-size: 14px;
+  }
+  .lupa-bar input[type="range"] { flex: 1; accent-color: #e5b256; }
+  .lupa-bar .zoomval { font-family: var(--mono); font-size: 13px; min-width: 34px; text-align: right; }
+  .lupa-bar button { background: rgba(255,255,255,.14); color: #fff; padding: 6px 12px; font-size: 14px; }
+  .lupa-stage { flex: 1; overflow: hidden; position: relative; touch-action: none; cursor: grab; }
+  .lupa-stage.dragging { cursor: grabbing; }
+  .lupa-stage img { position: absolute; top: 0; left: 0; transform-origin: 0 0; max-width: none; image-rendering: auto; }
+  .lupa-tip { color: #a9b6cb; font-size: 13px; padding: 0 14px 12px; text-align: center; }
+
+  /* ---- busca ---- */
+  .search { display: flex; flex-direction: column; gap: 10px; }
   .search-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
   .rates { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 13px; color: var(--ink-2); }
   .rates label { display: flex; align-items: center; gap: 6px; }
   .rates input { width: 84px; padding: 5px 8px; font-size: 14px; }
 
-  .hits { display: flex; flex-direction: column; gap: 0; max-height: 330px; overflow-y: auto; }
-  .hit { display: grid; grid-template-columns: 40px 1fr auto; gap: 11px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .hits { display: flex; flex-direction: column; max-height: 420px; overflow-y: auto; }
+  .hit { display: grid; grid-template-columns: 44px 1fr auto; gap: 11px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
   .hit:last-child { border-bottom: 0; }
-  .hit img { width: 40px; border-radius: 4px; display: block; background: var(--surface-2); }
+  .hit img { width: 44px; border-radius: 4px; display: block; background: var(--surface-2); cursor: zoom-in; }
   .hit-nm { font-weight: 700; font-size: 14px; line-height: 1.3; }
   .hit-sub { font-size: 12px; color: var(--ink-3); }
   .hit-pr { font-family: var(--mono); font-weight: 600; font-size: 14px; white-space: nowrap; }
-  .hit-add { display: flex; gap: 5px; margin-top: 4px; }
+  .hit-add { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
   .search-msg { font-size: 13px; color: var(--ink-2); }
+
+  .flag {
+    display: inline-block; font-family: var(--mono); font-size: 10px; font-weight: 600;
+    letter-spacing: .06em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; margin-left: 6px;
+  }
+  .flag.quero { background: var(--accent-soft); color: var(--accent); }
+  .flag.tenho { background: var(--good-bg); color: var(--good); }
+
+  /* ---- carteira ---- */
+  .cards { display: flex; flex-direction: column; }
+  .cardrow { display: grid; grid-template-columns: 38px 1fr auto auto; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .cardrow:last-child { border-bottom: 0; }
+  .cardrow img { width: 38px; border-radius: 4px; display: block; cursor: zoom-in; }
+  .cardrow .nm { font-weight: 600; font-size: 14px; line-height: 1.3; }
+  .cardrow .sub { font-size: 12px; color: var(--ink-3); font-family: var(--mono); }
+  .cardrow .pr { font-family: var(--mono); font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .cardrow .rm { background: transparent; color: var(--ink-3); border: 0; padding: 0 2px; font-size: 18px; }
+  .cardrow .rm:hover { color: var(--bad); filter: none; }
+
+  .somatotal {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: 2px solid var(--line-strong); padding-top: 10px;
+  }
+  .somatotal .v { font-family: var(--mono); font-weight: 600; font-size: 19px; font-variant-numeric: tabular-nums; }
+
+  .vazio { font-size: 14px; color: var(--ink-3); padding: 6px 0; }
+
+  /* ---- balança ---- */
+  .scale { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 620px) { .scale { grid-template-columns: 1fr; } }
+  .pan { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; display: flex; flex-direction: column; gap: 9px; }
+  .pan-rows { display: flex; flex-direction: column; gap: 8px; }
+  .pan-row { display: grid; grid-template-columns: 1fr 100px 28px; gap: 7px; align-items: center; }
+  .pan-row .rm { background: transparent; color: var(--ink-3); border: 0; padding: 0; font-size: 18px; line-height: 1; }
+  .pan-row .rm:hover { color: var(--bad); filter: none; }
+  .pan-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); padding-top: 9px; margin-top: 2px; }
+  .pan-total .v { font-family: var(--mono); font-weight: 600; font-size: 17px; font-variant-numeric: tabular-nums; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chips button { background: var(--brand-soft); color: var(--brand); border: 1px solid var(--line-strong); font-size: 12px; font-weight: 500; padding: 3px 8px; border-radius: 99px; }
 
   .verdict { display: flex; gap: 12px; align-items: flex-start; border-radius: 12px; padding: 14px 16px; border: 1px solid transparent; }
   .verdict .tag { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; flex: none; padding-top: 3px; }
@@ -237,44 +297,36 @@
   .v-warn .tag { color: var(--warn); }
   .v-bad { background: var(--bad-bg); border-color: var(--bad); }
   .v-bad .tag { color: var(--bad); }
-  .v-none { background: var(--surface-2); border-color: var(--line); }
-  .v-none .tag { color: var(--ink-3); }
 
   .alerts { display: flex; flex-direction: column; gap: 8px; }
   .alert { font-size: 14px; background: var(--warn-bg); border-left: 3px solid var(--warn); border-radius: 0 8px 8px 0; padding: 9px 12px; }
 
-  /* ---- checklist ---- */
-  .check { list-style: none; margin: 0; padding: 0; }
-  .check li { border-bottom: 1px solid var(--line); }
-  .check li:last-child { border-bottom: 0; }
-  .check label { display: grid; grid-template-columns: 20px 1fr; gap: 12px; padding: 11px 0; cursor: pointer; align-items: start; }
-  .check input { margin-top: 5px; width: 16px; height: 16px; accent-color: var(--brand); }
-  .check .t { font-weight: 700; font-size: 14px; }
-  .check .d { font-size: 14px; color: var(--ink-2); }
-  .check input:checked ~ .txt .t { text-decoration: line-through; color: var(--ink-3); }
+  /* ---- histórico ---- */
+  .troca { padding: 13px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 5px; }
+  .troca:last-child { border-bottom: 0; }
+  .troca-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .troca .quem { font-family: var(--display); font-weight: 700; font-size: 15px; }
+  .troca .quando { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .troca .linha { font-size: 13px; color: var(--ink-2); }
+  .troca .linha b { color: var(--ink); }
+  .troca .saldo { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+  .troca .saldo.mais { color: var(--good); }
+  .troca .saldo.menos { color: var(--bad); }
 
-  .progress { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-3); }
-  .bar { flex: 1; height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
-  .bar i { display: block; height: 100%; background: var(--good); width: 0%; transition: width .25s ease; }
-
-  /* ---- golpes ---- */
-  .traps { display: flex; flex-direction: column; }
-  .trap { padding: 13px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; }
-  .trap:last-child { border-bottom: 0; }
+  /* ---- golpes / locais ---- */
+  .trap, .place { padding: 13px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; }
+  .trap:last-child, .place:last-child { border-bottom: 0; }
   .trap .q { font-family: var(--display); font-weight: 700; font-size: 15px; }
-  .trap .a { font-size: 14px; color: var(--ink-2); }
-
-  /* ---- locais ---- */
-  .place { display: flex; flex-direction: column; gap: 3px; padding: 14px 0; border-bottom: 1px solid var(--line); }
-  .place:last-child { border-bottom: 0; }
+  .trap .a, .place .ad { font-size: 14px; color: var(--ink-2); }
   .place .nm { font-family: var(--display); font-weight: 700; font-size: 16px; }
-  .place .ad { font-size: 14px; color: var(--ink-2); }
   .place .mt { font-family: var(--mono); font-size: 12px; color: var(--accent); font-weight: 600; }
   .rank { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--on-brand); background: var(--brand); border-radius: 999px; padding: 2px 8px; align-self: flex-start; letter-spacing: .06em; }
   .rank.alt { background: transparent; color: var(--ink-3); border: 1px solid var(--line-strong); }
 
   footer { font-size: 13px; color: var(--ink-3); border-top: 1px solid var(--line); padding-top: 18px; display: flex; flex-direction: column; gap: 8px; }
   footer a { color: var(--brand); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
@@ -285,9 +337,8 @@
     <span class="eyebrow">Pokémon TCG · região do ABC</span>
     <h1>Olho na Carta</h1>
     <p class="lede">
-      Checklist de bolso pra não levar carta falsa pra casa, balança pra ver se a troca
-      está em pé, e onde trocar com gente que se conhece. Funciona sem internet — abre na
-      mesa da loja e usa.
+      Não levar carta falsa pra casa, não sair perdendo na troca, e lembrar de quem já
+      te passou a perna. Funciona sem internet — abre na mesa da loja e usa.
     </p>
     <div class="caveat">
       <span class="mark">!</span>
@@ -308,26 +359,25 @@
     </div>
     <div class="panel-body">
       <div class="progress">
-        <span class="bar"><i id="bar"></i></span>
-        <span id="prog" class="label-mono">0 de 10</span>
+        <span class="bar"><i id="bar-carta"></i></span>
+        <span id="prog-carta" class="label-mono">0 de 10</span>
       </div>
-      <ul class="check" id="check"></ul>
-      <div class="row">
-        <button class="ghost tiny" id="limpar">Limpar marcações</button>
-      </div>
+      <ul class="check" id="check-carta"></ul>
+      <div class="row"><button class="ghost tiny" data-limpar="carta">Limpar marcações</button></div>
     </div>
   </section>
 
-  <!-- ============ CÂMERA ============ -->
+  <!-- ============ CÂMERA + LUPA ============ -->
   <section class="panel">
     <div class="panel-head">
-      <h2>Compare o verso pela câmera</h2>
-      <span class="hint">As duas fotos na mesma luz, uma atrás da outra</span>
+      <h2>Câmera: lupa e cor do verso</h2>
+      <span class="hint">Toque na foto pra ampliar até 8×</span>
     </div>
     <div class="panel-body">
       <p style="font-size:14px;color:var(--ink-2)">
-        O azul do verso é onde a falsificação mais escorrega — mas a olho nu a diferença
-        some. Fotografe o verso das duas cartas e eu meço a cor média de cada uma.
+        Fotografe o verso das duas cartas e eu meço a cor média de cada uma. Depois toque
+        na foto pra ampliar e olhar de perto o acento de "Pokémon", o símbolo © e a borda
+        — é onde a falsificação aparece.
       </p>
 
       <div class="shots">
@@ -337,7 +387,11 @@
             <span class="shot-ph" id="ph-a">Tirar foto do verso</span>
             <img id="img-a" alt="Verso da carta suspeita" hidden />
           </button>
-          <span class="swatch-line"><i class="swatch" id="sw-a"></i><span class="label-mono" id="hex-a">—</span></span>
+          <div class="row">
+            <span class="swatch-line"><i class="swatch" id="sw-a"></i><span class="label-mono" id="hex-a">—</span></span>
+            <button class="ghost tiny" data-lupa="a" disabled>Ampliar</button>
+            <button class="ghost tiny" data-trocafoto="a" hidden>Outra foto</button>
+          </div>
           <input type="file" id="cam-a" accept="image/*" capture="environment" hidden />
         </div>
 
@@ -347,7 +401,11 @@
             <span class="shot-ph" id="ph-b">Tirar foto do verso</span>
             <img id="img-b" alt="Verso da carta original de referência" hidden />
           </button>
-          <span class="swatch-line"><i class="swatch" id="sw-b"></i><span class="label-mono" id="hex-b">—</span></span>
+          <div class="row">
+            <span class="swatch-line"><i class="swatch" id="sw-b"></i><span class="label-mono" id="hex-b">—</span></span>
+            <button class="ghost tiny" data-lupa="b" disabled>Ampliar</button>
+            <button class="ghost tiny" data-trocafoto="b" hidden>Outra foto</button>
+          </div>
           <input type="file" id="cam-b" accept="image/*" capture="environment" hidden />
         </div>
       </div>
@@ -357,12 +415,88 @@
       <div class="caveat" style="font-size:13px">
         <span class="mark">!</span>
         <p>
-          Só vale se as duas fotos forem tiradas <b>na mesma hora, na mesma luz, do mesmo
-          jeito</b>. Sombra, flash ou janela atrás mudam a cor mais do que a falsificação
-          muda. Cor igual não prova que é original — cor diferente é motivo pra parar e
-          olhar o resto.
+          A medição só vale se as duas fotos forem tiradas <b>na mesma hora, na mesma luz,
+          do mesmo jeito</b>. Sombra, flash ou janela atrás mudam a cor mais do que a
+          falsificação muda. Cor igual não prova que é original — cor diferente é motivo
+          pra parar e olhar o resto.
         </p>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ ANTES DE TROCAR COM ELE ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Antes de trocar com ele</h2>
+      <span class="hint">A reputação existe — é só procurar onde ela mora</span>
+    </div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:var(--ink-2)">
+        Nenhum site adivinha se uma pessoa é honesta, e quem tentar adivinhar vai errar
+        em algum momento — te acusando um cara de bem, ou pior, te dando confiança num
+        golpista. O que dá pra fazer é procurar a reputação onde ela realmente está.
+      </p>
+
+      <label class="field" style="display:flex;flex-direction:column;gap:6px">
+        <span class="label-mono">Com quem você vai trocar</span>
+        <input type="text" id="quem" placeholder="Nome ou apelido dele na Liga / no grupo" />
+      </label>
+
+      <div class="progress">
+        <span class="bar"><i id="bar-pessoa"></i></span>
+        <span id="prog-pessoa" class="label-mono">0 de 5</span>
+      </div>
+      <ul class="check" id="check-pessoa"></ul>
+
+      <label class="field" style="display:flex;flex-direction:column;gap:6px">
+        <span class="label-mono">O que você descobriu</span>
+        <textarea id="nota-pessoa" placeholder="Ex.: o dono da loja disse que ele vem todo sábado há uns dois anos"></textarea>
+      </label>
+
+      <div class="row"><button class="ghost tiny" data-limpar="pessoa">Limpar pra outra pessoa</button></div>
+    </div>
+  </section>
+
+  <!-- ============ BUSCA ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Procurar carta</h2>
+      <span class="hint">Pelo código do canto de baixo ou pelo nome em inglês</span>
+    </div>
+    <div class="panel-body">
+      <div class="search">
+        <div class="search-row">
+          <input type="text" id="busca" placeholder="25/111, Charizard ex, ou os dois: Charizard 4/102" />
+          <button id="go-busca">Buscar</button>
+        </div>
+        <div class="rates">
+          <label for="dolar">Dólar hoje R$ <input type="number" id="dolar" step="0.01" min="0" value="5.40" /></label>
+          <label for="euro">Euro hoje R$ <input type="number" id="euro" step="0.01" min="0" value="5.90" /></label>
+        </div>
+        <div id="hits"></div>
+      </div>
+      <p style="font-size:13px;color:var(--ink-3)">
+        O preço vem do TCGplayer e do Cardmarket, convertido pela cotação que você digitou
+        — é referência de mercado lá fora, não preço de loja brasileira, que costuma ser
+        mais alto. Estado da carta (NM, played, danificada) muda tudo e a busca não sabe o
+        estado da sua.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ CARTEIRA ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Minha carteira</h2>
+      <span class="hint">Fica guardada só no seu celular</span>
+    </div>
+    <div class="panel-body">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-aba="tenho">Tenho</button>
+        <button role="tab" aria-selected="false" data-aba="quero">Quero</button>
+      </div>
+      <div id="lista-tenho"></div>
+      <div id="lista-quero" hidden></div>
     </div>
   </section>
 
@@ -374,23 +508,12 @@
     </div>
     <div class="panel-body">
 
-      <div class="search">
-        <div class="search-row">
-          <input type="text" id="busca" placeholder="Nome em inglês ou o código da carta: 25/111" />
-          <button id="go-busca">Buscar preço</button>
-        </div>
-        <div class="rates">
-          <label for="dolar">Dólar hoje R$ <input type="number" id="dolar" step="0.01" min="0" value="5.40" /></label>
-          <label for="euro">Euro hoje R$ <input type="number" id="euro" step="0.01" min="0" value="5.90" /></label>
-        </div>
-        <div id="hits"></div>
-      </div>
-
       <div class="scale">
         <div class="pan">
           <span class="label-mono">Você dá</span>
           <div class="pan-rows" id="rows-da"></div>
-          <button class="ghost tiny" data-add="da" style="align-self:flex-start">+ carta</button>
+          <div class="chips" id="chips-da"></div>
+          <button class="ghost tiny" data-add="da" style="align-self:flex-start">+ carta em branco</button>
           <div class="pan-total">
             <span class="label-mono">Total</span>
             <span class="v" id="total-da">R$ 0,00</span>
@@ -400,7 +523,8 @@
         <div class="pan">
           <span class="label-mono">Você recebe</span>
           <div class="pan-rows" id="rows-recebe"></div>
-          <button class="ghost tiny" data-add="recebe" style="align-self:flex-start">+ carta</button>
+          <div class="chips" id="chips-recebe"></div>
+          <button class="ghost tiny" data-add="recebe" style="align-self:flex-start">+ carta em branco</button>
           <div class="pan-total">
             <span class="label-mono">Total</span>
             <span class="v" id="total-recebe">R$ 0,00</span>
@@ -411,13 +535,21 @@
       <div id="veredito"></div>
       <div class="alerts" id="alertas"></div>
 
-      <p style="font-size:13px;color:var(--ink-3)">
-        O preço vem do TCGplayer e do Cardmarket, em dólar e euro, convertido pela cotação
-        que você digitou — é <b>referência de mercado lá fora</b>, não preço de loja
-        brasileira, que costuma ser mais alto. Estado da carta (NM, played, danificada) muda
-        tudo e a busca não sabe o estado da sua. Confira na Liga Pokémon antes de fechar
-        troca grande.
-      </p>
+      <div class="row">
+        <button id="registrar">Fechei essa troca</button>
+        <button class="ghost" id="zerar">Limpar a balança</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HISTÓRICO ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Trocas que você já fez</h2>
+      <span class="hint">Sua memória de quem é quem</span>
+    </div>
+    <div class="panel-body">
+      <div id="historico"></div>
     </div>
   </section>
 
@@ -427,9 +559,7 @@
       <h2>Frase que é golpe</h2>
       <span class="hint">Se ouvir isso, desacelere</span>
     </div>
-    <div class="panel-body">
-      <div class="traps" id="traps"></div>
-    </div>
+    <div class="panel-body"><div id="traps"></div></div>
   </section>
 
   <!-- ============ LOCAIS ============ -->
@@ -438,15 +568,13 @@
       <h2>Onde trocar perto de Santo André</h2>
       <span class="hint">Ligue antes — horário de Liga muda</span>
     </div>
-    <div class="panel-body">
-      <div id="places"></div>
-    </div>
+    <div class="panel-body"><div id="places"></div></div>
   </section>
 
   <footer>
     <p>
-      Quer que alguém olhe a <b>foto</b> da carta e aponte os sinais? Tem uma versão com
-      análise por IA — ela só roda dentro do Claude, não aqui.
+      Tudo que você anota aqui fica só no seu aparelho. Não tem conta, não tem servidor,
+      ninguém mais vê — e se você limpar os dados do navegador, some.
     </p>
     <p>
       Feche toda troca sentado na mesa da loja, com gente em volta. Quem tem pressa pra
@@ -462,6 +590,7 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+  var DATA = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -480,66 +609,233 @@
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
   }
 
-  /* ================= checklist ================= */
-  var CHECKS = [
-    ["Teste da luz", "Lanterna do celular encostada atrás da carta. Original tem miolo preto por dentro e fica quase opaca; falsa deixa a luz atravessar."],
-    ["Borda de perfil", "Olhe a lateral da carta de lado. Original mostra uma linha azul-escura entre as camadas; falsa costuma ser branca ou cinza sem variação."],
-    ["Verso comparado", "Encoste numa carta que você sabe que é original. O azul da falsa sai mais escuro, mais claro ou puxado pro roxo."],
-    ["Textura e brilho", "Original é levemente áspera no dedo. Falsa costuma ser lisa e brilhante demais, quase plastificada."],
-    ["Fonte e acentos", "Confira o acento de “Pokémon”, o símbolo © e o espaçamento das letras. É onde a falsificação mais escorrega."],
-    ["Holo no lugar certo", "Foil falso brilha na carta inteira, inclusive na moldura e no texto, onde não deveria brilhar nada."],
-    ["Número da coleção", "No canto de baixo. Esse número existe mesmo nessa coleção? Confira no site oficial antes de fechar."],
-    ["Dano e custo de energia", "Leia o ataque inteiro. Valor de dano errado ou custo de energia estranho entrega a falsa na hora."],
-    ["Peso e flexão", "Falsa é mais fina e mole, ou rígida demais. Dobre de leve entre os dedos e compare com uma original."],
-    ["Tirou da sleeve?", "Se a pessoa não deixa você segurar e olhar a borda, ela está escondendo alguma coisa. Recue."]
+  /* A carteira inteira num objeto só: as três listas se leem entre si o
+     tempo todo (a busca marca o que você tem e o que quer, a balança puxa
+     do que você tem, o histórico registra o que saiu e entrou), então
+     guardar separado só criaria chance de ficarem desencontradas. */
+  var carteira = load("olho-carteira", null) || { tenho: [], quero: [], trocas: [] };
+  if (!Array.isArray(carteira.tenho)) carteira.tenho = [];
+  if (!Array.isArray(carteira.quero)) carteira.quero = [];
+  if (!Array.isArray(carteira.trocas)) carteira.trocas = [];
+
+  function salvarCarteira() { save("olho-carteira", carteira); }
+
+  /* ================= checklists ================= */
+  var CHECKS_CARTA = [
+    ["Teste da luz", "Lanterna do celular encostada atrás da carta. Original tem miolo preto por dentro e fica quase opaca; falsa deixa a luz atravessar.", null],
+    ["Borda de perfil", "Olhe a lateral da carta de lado. Original mostra uma linha azul-escura entre as camadas; falsa costuma ser branca ou cinza sem variação.", null],
+    ["Verso comparado", "Encoste numa carta que você sabe que é original. O azul da falsa sai mais escuro, mais claro ou puxado pro roxo.", null],
+    ["Textura e brilho", "Original é levemente áspera no dedo. Falsa costuma ser lisa e brilhante demais, quase plastificada.", null],
+    ["Fonte e acentos", "Confira o acento de “Pokémon”, o símbolo © e o espaçamento das letras. É onde a falsificação mais escorrega — use a lupa.", null],
+    ["Holo no lugar certo", "Foil falso brilha na carta inteira, inclusive na moldura e no texto, onde não deveria brilhar nada.", null],
+    ["Número da coleção", "No canto de baixo. Esse número existe mesmo nessa coleção? Busque o código aqui em cima pra conferir.", null],
+    ["Dano e custo de energia", "Leia o ataque inteiro. Valor de dano errado ou custo de energia estranho entrega a falsa na hora.", null],
+    ["Peso e flexão", "Falsa é mais fina e mole, ou rígida demais. Dobre de leve entre os dedos e compare com uma original.", null],
+    ["Tirou da sleeve?", "Se a pessoa não deixa você segurar e olhar a borda, ela está escondendo alguma coisa. Recue.", null]
   ];
 
-  var checkState = load("olho-check", {});
-  var checkList = $("check");
+  var CHECKS_PESSOA = [
+    ["Nota no marketplace", "É o dado mais forte que existe: avaliação de gente que negociou de verdade com ele. Procure o nome dele lá.", "https://www.ligapokemon.com.br/"],
+    ["Perguntei pro dono da loja", "“Você conhece esse cara? Ele vem sempre?” Numa Liga todo mundo se conhece — essa pergunta vale mais que qualquer site.", null],
+    ["Procurei o nome nos grupos", "Grupo de TCG tem thread de caloteiro. Se ele já aprontou com alguém, está escrito lá.", null],
+    ["Sei há quanto tempo ele aparece", "Quem some depois de uma troca não tinha reputação a perder. Frequentador antigo tem.", null],
+    ["Ele aceita trocar na mesa", "Na frente de todo mundo, dentro da loja. Quem insiste em fechar lá fora quer testemunha de menos.", null]
+  ];
 
-  function updateProgress() {
-    var done = 0;
-    for (var i = 0; i < CHECKS.length; i++) if (checkState["c" + i]) done++;
-    $("prog").textContent = done + " de " + CHECKS.length;
-    $("bar").style.width = (done / CHECKS.length * 100) + "%";
+  function montarCheck(nome, itens, chave) {
+    var estado = load(chave, {});
+    var lista = $("check-" + nome);
+    var barra = $("bar-" + nome);
+    var prog = $("prog-" + nome);
+
+    function atualizar() {
+      var done = 0;
+      for (var i = 0; i < itens.length; i++) if (estado["c" + i]) done++;
+      prog.textContent = done + " de " + itens.length;
+      barra.style.width = (done / itens.length * 100) + "%";
+    }
+
+    itens.forEach(function (c, i) {
+      var li = document.createElement("li");
+      var label = document.createElement("label");
+      var input = document.createElement("input");
+      input.type = "checkbox";
+      input.id = "chk-" + nome + "-" + i;
+      input.checked = !!estado["c" + i];
+      input.addEventListener("change", function () {
+        estado["c" + i] = input.checked;
+        save(chave, estado);
+        atualizar();
+      });
+      var txt = el("span", "txt");
+      txt.appendChild(el("span", "t", c[0]));
+      txt.appendChild(el("span", "d", " — " + c[1]));
+      if (c[2]) {
+        var a = document.createElement("a");
+        a.href = c[2];
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.className = "lk";
+        a.textContent = " abrir o site ↗";
+        a.addEventListener("click", function (e) { e.stopPropagation(); });
+        txt.appendChild(a);
+      }
+      label.appendChild(input);
+      label.appendChild(txt);
+      li.appendChild(label);
+      lista.appendChild(li);
+    });
+
+    atualizar();
+
+    return function limpar() {
+      estado = {};
+      save(chave, estado);
+      for (var i = 0; i < itens.length; i++) {
+        var box = $("chk-" + nome + "-" + i);
+        if (box) box.checked = false;
+      }
+      atualizar();
+    };
   }
 
-  CHECKS.forEach(function (c, i) {
-    var li = document.createElement("li");
-    var label = document.createElement("label");
-    var input = document.createElement("input");
-    input.type = "checkbox";
-    input.id = "chk-" + i;
-    input.checked = !!checkState["c" + i];
-    input.addEventListener("change", function () {
-      checkState["c" + i] = input.checked;
-      save("olho-check", checkState);
-      updateProgress();
-    });
-    var txt = el("span", "txt");
-    txt.appendChild(el("span", "t", c[0]));
-    txt.appendChild(el("span", "d", " — " + c[1]));
-    label.appendChild(input);
-    label.appendChild(txt);
-    li.appendChild(label);
-    checkList.appendChild(li);
-  });
-  updateProgress();
+  var limparCarta = montarCheck("carta", CHECKS_CARTA, "olho-check");
+  var limparPessoa = montarCheck("pessoa", CHECKS_PESSOA, "olho-check-pessoa");
 
-  $("limpar").addEventListener("click", function () {
-    checkState = {};
-    save("olho-check", checkState);
-    for (var i = 0; i < CHECKS.length; i++) {
-      var box = $("chk-" + i);
-      if (box) box.checked = false;
-    }
-    updateProgress();
+  /* Nome e anotação da pessoa acompanham o checklist dela. */
+  var quem = $("quem");
+  var notaPessoa = $("nota-pessoa");
+  var dadosPessoa = load("olho-pessoa", { quem: "", nota: "" });
+  quem.value = dadosPessoa.quem || "";
+  notaPessoa.value = dadosPessoa.nota || "";
+  function salvarPessoa() {
+    save("olho-pessoa", { quem: quem.value, nota: notaPessoa.value });
+  }
+  quem.addEventListener("input", salvarPessoa);
+  notaPessoa.addEventListener("input", salvarPessoa);
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-limpar]"), function (btn) {
+    btn.addEventListener("click", function () {
+      if (btn.getAttribute("data-limpar") === "carta") limparCarta();
+      else {
+        limparPessoa();
+        quem.value = "";
+        notaPessoa.value = "";
+        salvarPessoa();
+      }
+    });
   });
+
+  /* ================= lupa ================= */
+  /* A falsificação aparece em detalhe pequeno: acento, símbolo, fio da
+     borda. No tamanho que a foto cabe na tela nada disso se vê, então a
+     lupa não é enfeite — é o que torna a foto útil. */
+  var lupaEl = null;
+
+  function abrirLupa(src, titulo) {
+    fecharLupa();
+
+    var box = el("div", "lupa");
+    var bar = el("div", "lupa-bar");
+    var stage = el("div", "lupa-stage");
+    var img = document.createElement("img");
+    img.src = src;
+    img.alt = titulo || "Carta ampliada";
+    img.draggable = false;
+
+    var range = document.createElement("input");
+    range.type = "range";
+    range.min = "1";
+    range.max = "8";
+    range.step = "0.1";
+    range.value = "2";
+    range.setAttribute("aria-label", "Ampliação");
+
+    var val = el("span", "zoomval", "2.0×");
+    var fechar = el("button", null, "Fechar");
+    fechar.type = "button";
+
+    bar.appendChild(el("span", null, "Lupa"));
+    bar.appendChild(range);
+    bar.appendChild(val);
+    bar.appendChild(fechar);
+
+    stage.appendChild(img);
+    box.appendChild(bar);
+    box.appendChild(stage);
+    box.appendChild(el("div", "lupa-tip", "Arraste a imagem pra andar por ela."));
+    document.body.appendChild(box);
+    lupaEl = box;
+
+    var zoom = 2, x = 0, y = 0, base = 1;
+
+    function aplicar() {
+      img.style.transform = "translate(" + x + "px," + y + "px) scale(" + (base * zoom) + ")";
+    }
+
+    function encaixar() {
+      /* base = a escala que faz a foto inteira caber; o zoom multiplica ela. */
+      var lw = img.naturalWidth || 1, lh = img.naturalHeight || 1;
+      var sw = stage.clientWidth, sh = stage.clientHeight;
+      base = Math.min(sw / lw, sh / lh);
+      x = (sw - lw * base * zoom) / 2;
+      y = (sh - lh * base * zoom) / 2;
+      aplicar();
+    }
+
+    img.addEventListener("load", encaixar);
+    if (img.complete) encaixar();
+
+    range.addEventListener("input", function () {
+      var novo = parseFloat(range.value);
+      var sw = stage.clientWidth / 2, sh = stage.clientHeight / 2;
+      /* Ampliar mantendo o centro da tela onde está, pra não perder o
+         pedaço da carta que a pessoa estava olhando. */
+      x = sw - (sw - x) * (novo / zoom);
+      y = sh - (sh - y) * (novo / zoom);
+      zoom = novo;
+      val.textContent = novo.toFixed(1) + "×";
+      aplicar();
+    });
+
+    var arrastando = false, px = 0, py = 0;
+    stage.addEventListener("pointerdown", function (e) {
+      arrastando = true;
+      px = e.clientX;
+      py = e.clientY;
+      stage.classList.add("dragging");
+      stage.setPointerCapture(e.pointerId);
+    });
+    stage.addEventListener("pointermove", function (e) {
+      if (!arrastando) return;
+      x += e.clientX - px;
+      y += e.clientY - py;
+      px = e.clientX;
+      py = e.clientY;
+      aplicar();
+    });
+    ["pointerup", "pointercancel"].forEach(function (ev) {
+      stage.addEventListener(ev, function () {
+        arrastando = false;
+        stage.classList.remove("dragging");
+      });
+    });
+
+    fechar.addEventListener("click", fecharLupa);
+    box.addEventListener("keydown", function (e) { if (e.key === "Escape") fecharLupa(); });
+    fechar.focus();
+    document.addEventListener("keydown", escFecha);
+  }
+
+  function escFecha(e) { if (e.key === "Escape") fecharLupa(); }
+
+  function fecharLupa() {
+    if (lupaEl && lupaEl.parentNode) lupaEl.parentNode.removeChild(lupaEl);
+    lupaEl = null;
+    document.removeEventListener("keydown", escFecha);
+  }
 
   /* ================= câmera: cor do verso ================= */
-  /* Medir a cor média do miolo do verso. Ignoro as bordas da foto (mesa,
-     dedo, sombra) e fico com o retângulo central, que é onde o azul mora
-     em qualquer enquadramento razoável. */
   var cores = { a: null, b: null };
   var shotUrls = { a: null, b: null };
 
@@ -580,7 +876,7 @@
     var kind, tag, say;
     if (dist <= 18) {
       kind = "v-good"; tag = "Azul bate";
-      say = "Diferença de " + dist + " pontos de cor — dentro do que a própria luz explica. Isso não inocenta a carta: siga o checklist.";
+      say = "Diferença de " + dist + " pontos de cor — dentro do que a própria luz explica. Isso não inocenta a carta: siga o checklist e use a lupa.";
     } else if (dist <= 40) {
       kind = "v-warn"; tag = "Azul meio diferente";
       say = "Diferença de " + dist + " pontos. Pode ser sombra ou ângulo. Refaça as duas fotos juntas, na mesma luz, e veja se continua.";
@@ -598,10 +894,22 @@
   ["a", "b"].forEach(function (k) {
     var input = $("cam-" + k);
     var btn = document.querySelector('[data-shot="' + k + '"]');
+    var lupaBtn = document.querySelector('[data-lupa="' + k + '"]');
+    var trocaBtn = document.querySelector('[data-trocafoto="' + k + '"]');
     var img = $("img-" + k);
     var ph = $("ph-" + k);
+    var titulo = k === "a" ? "Carta suspeita ampliada" : "Carta de referência ampliada";
 
-    btn.addEventListener("click", function () { input.click(); });
+    function pedirFoto() { input.click(); }
+
+    btn.addEventListener("click", function () {
+      /* Com foto, tocar na própria foto abre a lupa — é o gesto que a
+         pessoa já tenta. Trocar a foto fica no botão de fora. */
+      if (shotUrls[k]) abrirLupa(shotUrls[k], titulo);
+      else pedirFoto();
+    });
+    lupaBtn.addEventListener("click", function () { if (shotUrls[k]) abrirLupa(shotUrls[k], titulo); });
+    trocaBtn.addEventListener("click", pedirFoto);
 
     input.addEventListener("change", function () {
       var f = input.files && input.files[0];
@@ -625,7 +933,107 @@
       img.hidden = false;
       ph.hidden = true;
       btn.style.borderStyle = "solid";
+      btn.title = "Tocar pra ampliar";
+      lupaBtn.disabled = false;
+      trocaBtn.hidden = false;
       input.value = "";
+    });
+  });
+
+  /* ================= carteira: tenho / quero ================= */
+  function achar(lista, id) {
+    for (var i = 0; i < lista.length; i++) if (lista[i].id === id) return i;
+    return -1;
+  }
+
+  function guardar(lista, carta) {
+    if (achar(carteira[lista], carta.id) >= 0) return false;
+    carteira[lista].push(carta);
+    salvarCarteira();
+    renderCarteira();
+    renderChips();
+    return true;
+  }
+
+  function tirar(lista, id) {
+    var i = achar(carteira[lista], id);
+    if (i < 0) return;
+    carteira[lista].splice(i, 1);
+    salvarCarteira();
+    renderCarteira();
+    renderChips();
+  }
+
+  function linhaCarta(carta, lista) {
+    var row = el("div", "cardrow");
+
+    if (carta.img) {
+      var im = document.createElement("img");
+      im.src = carta.img;
+      im.alt = carta.nome || "";
+      im.loading = "lazy";
+      im.title = "Tocar pra ampliar";
+      im.addEventListener("click", function () { abrirLupa(carta.img, carta.nome); });
+      row.appendChild(im);
+    } else {
+      row.appendChild(el("span"));
+    }
+
+    var mid = el("span");
+    mid.appendChild(el("span", "nm", carta.nome || "?"));
+    var sub = (carta.numero ? "nº " + carta.numero + (carta.total ? "/" + carta.total : "") + " · " : "") + (carta.set || "");
+    mid.appendChild(el("span", "sub", sub));
+    row.appendChild(mid);
+
+    row.appendChild(el("span", "pr", carta.brl != null ? BRL.format(carta.brl) : "—"));
+
+    var rm = el("button", "rm", "×");
+    rm.type = "button";
+    rm.setAttribute("aria-label", "Tirar " + (carta.nome || "carta") + " da lista");
+    rm.addEventListener("click", function () { tirar(lista, carta.id); });
+    row.appendChild(rm);
+
+    return row;
+  }
+
+  function renderLista(lista, host, vazio) {
+    host.textContent = "";
+    var cartas = carteira[lista];
+
+    if (!cartas.length) {
+      host.appendChild(el("p", "vazio", vazio));
+      return;
+    }
+
+    var box = el("div", "cards");
+    var soma = 0;
+    cartas.forEach(function (c) {
+      box.appendChild(linhaCarta(c, lista));
+      if (typeof c.brl === "number") soma += c.brl;
+    });
+    host.appendChild(box);
+
+    var tot = el("div", "somatotal");
+    tot.appendChild(el("span", "label-mono", cartas.length + (cartas.length === 1 ? " carta" : " cartas")));
+    tot.appendChild(el("span", "v", BRL.format(soma)));
+    host.appendChild(tot);
+  }
+
+  function renderCarteira() {
+    renderLista("tenho", $("lista-tenho"),
+      "Nenhuma carta ainda. Busque uma carta aí em cima e toque em “tenho” — depois ela aparece aqui e entra na balança com um toque.");
+    renderLista("quero", $("lista-quero"),
+      "Nenhuma carta na lista. Marque o que você procura e, quando ela aparecer numa busca, o site te avisa.");
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-aba]"), function (btn) {
+    btn.addEventListener("click", function () {
+      var aba = btn.getAttribute("data-aba");
+      Array.prototype.forEach.call(document.querySelectorAll("[data-aba]"), function (b) {
+        b.setAttribute("aria-selected", String(b === btn));
+      });
+      $("lista-tenho").hidden = aba !== "tenho";
+      $("lista-quero").hidden = aba !== "quero";
     });
   });
 
@@ -679,6 +1087,44 @@
     });
   }
 
+  function porNaBalanca(key, carta) {
+    var vazia = sides[key].filter(function (it) { return !it.nome && !it.valor; })[0];
+    var item = { nome: nomeCheio(carta), valor: carta.brl != null ? carta.brl : 0, id: carta.id };
+    if (vazia) {
+      vazia.nome = item.nome;
+      vazia.valor = item.valor;
+      vazia.id = item.id;
+    } else {
+      sides[key].push(item);
+    }
+    renderSide(key);
+    recalc();
+  }
+
+  function nomeCheio(carta) {
+    return (carta.nome || "")
+      + (carta.numero ? " nº " + carta.numero + (carta.total ? "/" + carta.total : "") : "")
+      + (carta.set ? " · " + carta.set : "");
+  }
+
+  /* As cartas que você já tem viram botão: na mesa da loja ninguém quer
+     digitar de novo o que já está guardado. */
+  function renderChips() {
+    ["da", "recebe"].forEach(function (key) {
+      var host = $("chips-" + key);
+      host.textContent = "";
+      if (!carteira.tenho.length) return;
+      host.appendChild(el("span", "label-mono", key === "da" ? "Suas cartas" : "Suas cartas"));
+      carteira.tenho.slice(0, 14).forEach(function (c) {
+        var b = el("button", null, (c.nome || "carta") + (c.numero ? " " + c.numero : ""));
+        b.type = "button";
+        b.title = "Pôr na balança";
+        b.addEventListener("click", function () { porNaBalanca(key, c); });
+        host.appendChild(b);
+      });
+    });
+  }
+
   Array.prototype.forEach.call(document.querySelectorAll("[data-add]"), function (btn) {
     btn.addEventListener("click", function () {
       var key = btn.getAttribute("data-add");
@@ -726,7 +1172,6 @@
       }
     }
 
-    /* alertas */
     var alerts = [];
     var todas = sides.da.concat(sides.recebe);
     var caras = todas.filter(function (it) { return it.valor >= 300; });
@@ -737,7 +1182,6 @@
     } else if (caras.length) {
       alerts.push("Carta acima de R$ 300 na mesa: exija graduada (PSA, CGC, Beckett) e confira o número do certificado no site da graduadora, na hora.");
     }
-
     if (sides.da.length === 1 && sides.recebe.length >= 4) {
       alerts.push("Uma carta sua por " + sides.recebe.length + " dele: o lado com muitas cartas costuma vir inflado. Confira o preço de cada uma, não só o total.");
     }
@@ -748,17 +1192,102 @@
     var box = $("alertas");
     box.textContent = "";
     alerts.forEach(function (a) { box.appendChild(el("div", "alert", a)); });
+
+    $("registrar").disabled = !(da > 0 && recebe > 0);
   }
 
-  renderSide("da");
-  renderSide("recebe");
-  recalc();
+  $("zerar").addEventListener("click", function () {
+    sides.da = [{ nome: "", valor: 0 }];
+    sides.recebe = [{ nome: "", valor: 0 }];
+    renderSide("da");
+    renderSide("recebe");
+    recalc();
+  });
+
+  /* ================= histórico ================= */
+  /* Fechar a troca move as cartas de verdade: o que saiu some do "tenho",
+     o que entrou aparece lá e sai do "quero". Uma carteira que não segue a
+     troca vira mentira na semana seguinte. */
+  $("registrar").addEventListener("click", function () {
+    var deu = sides.da.filter(function (i) { return i.nome || i.valor; });
+    var recebeu = sides.recebe.filter(function (i) { return i.nome || i.valor; });
+    if (!deu.length || !recebeu.length) return;
+
+    carteira.trocas.unshift({
+      quando: Date.now(),
+      quem: quem.value.trim(),
+      deu: deu.map(function (i) { return { nome: i.nome, valor: i.valor }; }),
+      recebeu: recebeu.map(function (i) { return { nome: i.nome, valor: i.valor }; }),
+      saldo: total("recebe") - total("da")
+    });
+
+    deu.forEach(function (i) { if (i.id) tirar("tenho", i.id); });
+    recebeu.forEach(function (i) {
+      if (i.id) tirar("quero", i.id);
+      guardar("tenho", { id: i.id || ("mao-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7)), nome: i.nome, brl: i.valor });
+    });
+
+    salvarCarteira();
+    renderCarteira();
+    renderChips();
+    renderHistorico();
+
+    sides.da = [{ nome: "", valor: 0 }];
+    sides.recebe = [{ nome: "", valor: 0 }];
+    renderSide("da");
+    renderSide("recebe");
+    recalc();
+
+    $("historico").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  function renderHistorico() {
+    var host = $("historico");
+    host.textContent = "";
+
+    if (!carteira.trocas.length) {
+      host.appendChild(el("p", "vazio",
+        "Nenhuma troca registrada. Quando você fechar uma na balança, ela vem pra cá — e com o tempo isso vira sua memória de quem é quem."));
+      return;
+    }
+
+    carteira.trocas.forEach(function (t, idx) {
+      var box = el("div", "troca");
+
+      var top = el("div", "troca-top");
+      top.appendChild(el("span", "quem", t.quem || "Sem nome anotado"));
+      top.appendChild(el("span", "quando", DATA.format(new Date(t.quando))));
+      box.appendChild(top);
+
+      function lado(rotulo, itens) {
+        var p = el("p", "linha");
+        p.appendChild(el("b", null, rotulo + ": "));
+        p.appendChild(el("span", null, itens.map(function (i) { return i.nome || "carta sem nome"; }).join(", ")));
+        return p;
+      }
+      box.appendChild(lado("Deu", t.deu));
+      box.appendChild(lado("Recebeu", t.recebeu));
+
+      var s = t.saldo || 0;
+      var saldo = el("span", "saldo " + (s >= 0 ? "mais" : "menos"),
+        (s >= 0 ? "+" : "−") + BRL.format(Math.abs(s)) + (s >= 0 ? " a seu favor" : " contra você"));
+      box.appendChild(saldo);
+
+      var rm = el("button", "ghost tiny", "Apagar");
+      rm.type = "button";
+      rm.style.alignSelf = "flex-start";
+      rm.addEventListener("click", function () {
+        carteira.trocas.splice(idx, 1);
+        salvarCarteira();
+        renderHistorico();
+      });
+      box.appendChild(rm);
+
+      host.appendChild(box);
+    });
+  }
 
   /* ================= busca de preço ================= */
-  /* Reaproveita a mesma fonte do ButterPoke: pokemontcg.io, sem chave.
-     A cotação é digitada pela pessoa e fica guardada no aparelho — eu não
-     tenho de onde buscar câmbio aqui, e chutar um número fixo envelheceria
-     mal e viraria mentira dentro de um mês. */
   var API = "https://api.pokemontcg.io/v2/cards";
   var CAMPOS = "id,name,number,rarity,set,images,tcgplayer,cardmarket";
   var ORDEM = ["normal", "holofoil", "reverseHolofoil", "1stEditionNormal", "1stEditionHolofoil", "unlimited", "unlimitedHolofoil"];
@@ -769,16 +1298,15 @@
   var busca = $("busca");
   var goBusca = $("go-busca");
   var buscando = false;
+  var ultimaBusca = [];
 
   var rates = load("olho-cotacao", null);
   if (rates && rates.usd) inpDolar.value = rates.usd;
   if (rates && rates.eur) inpEuro.value = rates.eur;
 
-  function saveRates() {
-    save("olho-cotacao", { usd: inpDolar.value, eur: inpEuro.value });
-  }
-  inpDolar.addEventListener("change", saveRates);
-  inpEuro.addEventListener("change", saveRates);
+  function saveRates() { save("olho-cotacao", { usd: inpDolar.value, eur: inpEuro.value }); }
+  inpDolar.addEventListener("change", function () { saveRates(); if (ultimaBusca.length) renderHits(ultimaBusca); });
+  inpEuro.addEventListener("change", function () { saveRates(); if (ultimaBusca.length) renderHits(ultimaBusca); });
 
   function precoPrincipal(carta) {
     var p = carta.tcgplayer && carta.tcgplayer.prices;
@@ -806,8 +1334,8 @@
   function emReais(preco) {
     if (!preco) return null;
     var taxa = preco.moeda === "EUR"
-      ? parseFloat(inpEuro.value.replace(",", "."))
-      : parseFloat(inpDolar.value.replace(",", "."));
+      ? parseFloat(String(inpEuro.value).replace(",", "."))
+      : parseFloat(String(inpDolar.value).replace(",", "."));
     if (!isFinite(taxa) || taxa <= 0) return null;
     return Math.round(preco.valor * taxa * 100) / 100;
   }
@@ -818,54 +1346,70 @@
   }
 
   function renderHits(cartas) {
+    ultimaBusca = cartas;
     hits.textContent = "";
+
     if (!cartas.length) {
       msg("Nada encontrado. Dá pra buscar pelo código do canto de baixo (25/111), pelo nome em inglês (Charizard ex) ou pelos dois juntos (Charizard 4/102).");
       return;
     }
+
     var box = el("div", "hits");
     cartas.forEach(function (c) {
-      var preco = precoPrincipal(c);
-      var reais = emReais(preco);
+      var reais = emReais(precoPrincipal(c));
+      var carta = {
+        id: c.id,
+        nome: c.name || "?",
+        numero: c.number || "",
+        total: (c.set && c.set.printedTotal) || "",
+        set: (c.set && c.set.name) || "",
+        img: (c.images && c.images.small) || "",
+        brl: reais
+      };
 
       var row = el("div", "hit");
 
-      if (c.images && c.images.small) {
+      if (carta.img) {
         var img = document.createElement("img");
-        img.src = c.images.small;
-        img.alt = c.name || "";
+        img.src = carta.img;
+        img.alt = carta.nome;
         img.loading = "lazy";
+        img.title = "Tocar pra ampliar";
+        img.addEventListener("click", function () {
+          abrirLupa((c.images && c.images.large) || carta.img, carta.nome);
+        });
         row.appendChild(img);
       } else {
         row.appendChild(el("span"));
       }
 
       var mid = el("span");
-      mid.appendChild(el("span", "hit-nm", c.name || "?"));
-      var sub = (c.number ? "nº " + c.number + (c.set && c.set.printedTotal ? "/" + c.set.printedTotal : "") + " · " : "") + (c.set && c.set.name ? c.set.name : "");
+      var nm = el("span", "hit-nm", carta.nome);
+      if (achar(carteira.quero, carta.id) >= 0) nm.appendChild(el("span", "flag quero", "você quer essa"));
+      if (achar(carteira.tenho, carta.id) >= 0) nm.appendChild(el("span", "flag tenho", "você já tem"));
+      mid.appendChild(nm);
+
+      var sub = (carta.numero ? "nº " + carta.numero + (carta.total ? "/" + carta.total : "") + " · " : "") + carta.set;
       mid.appendChild(el("span", "hit-sub", sub));
+
       var add = el("span", "hit-add");
-      ["da", "recebe"].forEach(function (key) {
-        var b = el("button", "ghost tiny", key === "da" ? "+ você dá" : "+ você recebe");
+
+      function botao(rotulo, acao, ativo) {
+        var b = el("button", "ghost tiny", rotulo);
         b.type = "button";
-        b.disabled = reais == null;
-        b.addEventListener("click", function () {
-          /* O numerinho do canto de baixo é o que diz QUAL carta é: o mesmo
-             Charizard sai em versões de preço bem diferente na mesma coleção. */
-          var nome = (c.name || "")
-            + (c.number ? " nº " + c.number + (c.set && c.set.printedTotal ? "/" + c.set.printedTotal : "") : "")
-            + (c.set && c.set.name ? " · " + c.set.name : "");
-          var vazia = sides[key].filter(function (it) { return !it.nome && !it.valor; })[0];
-          if (vazia) { vazia.nome = nome; vazia.valor = reais; }
-          else sides[key].push({ nome: nome, valor: reais });
-          renderSide(key);
-          recalc();
-        });
+        b.disabled = !ativo;
+        b.addEventListener("click", acao);
         add.appendChild(b);
-      });
+        return b;
+      }
+
+      botao("+ tenho", function () { guardar("tenho", carta); renderHits(ultimaBusca); }, true);
+      botao("+ quero", function () { guardar("quero", carta); renderHits(ultimaBusca); }, true);
+      botao("+ você dá", function () { porNaBalanca("da", carta); }, reais != null);
+      botao("+ você recebe", function () { porNaBalanca("recebe", carta); }, reais != null);
+
       mid.appendChild(add);
       row.appendChild(mid);
-
       row.appendChild(el("span", "hit-pr", reais != null ? BRL.format(reais) : "sem preço"));
       box.appendChild(row);
     });
@@ -873,16 +1417,12 @@
   }
 
   /* O código do canto de baixo (25/111) é o jeito mais curto de dizer QUAL
-     carta é — mais curto que o nome, e sem depender de saber inglês. Então
-     a busca aceita as duas coisas, juntas ou separadas:
-       25/111              → carta 25 de uma coleção de 111
-       Charizard 4/102     → o nome ajuda quando o número repete entre coleções
-       25                  → só o número, e ele mostra todas as coleções */
+     carta é — mais curto que o nome, e sem depender de saber inglês. */
   var RE_CODIGO = /([A-Za-z]{0,3}\d{1,3}[a-zA-Z]?)\s*\/\s*([A-Za-z]{0,3}\d{1,3})/;
   var RE_SO_NUMERO = /^[A-Za-z]{0,3}\d{1,3}[a-zA-Z]?$/;
 
   function consultaDe(termo) {
-    var limpo = termo.replace(/"/g, "").trim();
+    var limpo = String(termo).replace(/"/g, "").trim();
     var partes = [];
     var numero = null, total = null;
 
@@ -896,18 +1436,15 @@
       limpo = "";
     }
 
-    /* Restou uma vírgula ou um "nº" solto depois de tirar o código. */
     limpo = limpo.replace(/n[º°o]\.?/gi, "").replace(/[,;·]/g, " ").trim();
 
     if (limpo) partes.push('name:"' + limpo + '*"');
     if (numero) partes.push('number:"' + numero + '"');
 
     /* Carta de galeria vem "TG05/TG30": o de baixo não é um total que dê
-       pra comparar com número, então nesse caso vale só o de cima.
-       O total entra numa consulta separada, e não na principal, porque é a
-       parte que eu não consegui testar contra a API daqui. Se ela não
-       aceitar esse filtro, a busca cai sozinha na consulta sem ele e a
-       pessoa ainda acha a carta — só com mais coleções na lista. */
+       pra comparar. E o filtro pelo total vai numa consulta separada,
+       porque é a parte que não deu pra testar contra a API — se ela não
+       aceitar, a busca cai sozinha na consulta sem ele. */
     var comTotal = null;
     if (total && /^\d+$/.test(total) && partes.length) {
       comTotal = partes.concat(["set.printedTotal:" + total]).join(" ");
@@ -941,15 +1478,12 @@
     pedir(consulta.q)
       .catch(function () { return consulta.alternativa ? null : Promise.reject(); })
       .then(function (cartas) {
-        /* Vazio pode ser "essa carta não existe" ou "a API não entendeu o
-           filtro do total". Uma segunda tentativa, só uma, resolve o
-           segundo caso sem esconder o primeiro. */
         if ((cartas === null || !cartas.length) && consulta.alternativa) return pedir(consulta.alternativa);
         return cartas;
       })
       .then(function (cartas) { renderHits(cartas || []); })
       .catch(function () {
-        msg("Não consegui buscar agora — pode ser falta de internet ou o site de preços fora do ar. Digite o valor na mão.");
+        msg("Não consegui buscar agora — pode ser falta de internet ou o site de preços fora do ar. Adicione a carta na mão pela balança.");
       })
       .then(function () {
         buscando = false;
@@ -996,7 +1530,14 @@
     places.appendChild(a);
   });
 
-  /* ================= offline ================= */
+  /* ================= boot ================= */
+  renderCarteira();
+  renderChips();
+  renderHistorico();
+  renderSide("da");
+  renderSide("recebe");
+  recalc();
+
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("sw.js").catch(function () {});
