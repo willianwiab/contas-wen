@@ -488,6 +488,14 @@ tentativa respondeu, pra ficar fácil descobrir o que houve.
 - **Ordenado pela coleção mais nova**, que é a carta que a criança provavelmente tem na mão.
 - **Sem chave de API.** A pokemontcg.io responde sem cadastro, com limite por dia.
   Se um dia estourar o limite, aparece o aviso de "deu ruim na busca".
+- **Dá pra digitar o número completo, `10/124`.** É como ele vem impresso na carta: o 10 é
+  ela, o 124 é o tamanho da coleção. Com os dois, a busca sai de umas duzentas cartas
+  "número 10" pra quase sempre uma só. A consulta usa `set.printedTotal`, e tenta também
+  `set.total` — porque carta secreta existe, e uma **125/124** é numerada acima do total
+  impresso. Quando nem assim acha, larga o `/124` e traz todas as número 10, **dizendo que
+  fez isso**: quem pediu uma carta e recebeu duzentas precisa saber por quê.
+  O campo deixou de ser `inputmode="numeric"`, senão a barra não existe no teclado do
+  celular.
 - **A busca por nome acha pedaço no meio.** `name:"Imakuni*"` não acha
   "Dance! Neo Imakuni?", porque o `*` só vale no fim: o nome tem que *começar* com o
   que se digitou. Então a segunda consulta leva estrela dos dois lados (`name:*x*`) e o
