@@ -39,6 +39,20 @@ E um **código** que a pessoa leva na mão:
 - código de outro site, ou cortado no meio, dá um recado em português explicando —
   sem isso o navegador devolve o erro do `atob` em inglês, que não ajuda ninguém
 
+## Jogos
+
+Dois, porque compartilham tudo: pegar um monte de carta, sortear e marcar ponto.
+
+**🎲 Que carta é essa?** mostra só o desenho — o zoom corta o nome de fora — e dá quatro
+nomes pra escolher. Ao responder, **o zoom sai e a carta inteira aparece**: é a parte que
+ensina, e sem ela o jogo seria só acertar ou errar.
+
+**💰 Qual vale mais?** põe duas cartas lado a lado. A explicação mostra os dois preços,
+então dá pra aprender quanto as coisas valem errando.
+
+Trocar de jogo zera o placar — misturar ponto de jogos diferentes não diria nada. O
+recorde de cada um fica guardado no aparelho, separado.
+
 ## Duelo
 
 Duas cartas lado a lado, com o dano **calculado como no jogo**: a fraqueza multiplica (ou
