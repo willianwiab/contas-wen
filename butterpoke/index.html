@@ -574,7 +574,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 31 — 21/09</span>
+    <br><span class="versao">versão 32 — 21/09</span>
   </footer>
 </div>
 
@@ -767,27 +767,42 @@ async function todasAsPaginas(monta, primeira, total){
   if(paginas <= 1) return primeira;
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
     'São ' + total + ' cartas! Buscando todas…</div>';
-  const resto = await Promise.all(
-    Array.from({ length: paginas - 1 }, (x, i) =>
-      pedirJSON(monta(i + 2)).then(d => d.data || []).catch(() => []))
-  );
-  return primeira.concat.apply(primeira, resto);
+  /* Uma de cada vez, não todas juntas. Disparar 4 pedidos gordos no mesmo
+     instante é o jeito mais rápido de o servidor deles responder erro —
+     e aí a tela inteira ia embora por causa de pressa minha. */
+  let tudo = primeira;
+  for(let i = 2; i <= paginas; i++){
+    palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
+      'São ' + total + ' cartas! Buscando… (' + i + ' de ' + paginas + ')</div>';
+    try{
+      const d = await pedirJSON(monta(i));
+      tudo = tudo.concat(d.data || []);
+    }catch(e){ break; }   // com parte já dá pra mostrar; com nada é que não dava
+  }
+  return tudo;
 }
 
 /* Erro 500 é soluço do servidor deles, não pedido errado meu: uma segunda
-   chance resolve boa parte. 429 não entra na regra — ali insistir só piora. */
-async function pedirJSON(url, jaTentei){
+   chance resolve boa parte. 429 não entra na regra — ali insistir só piora.
+
+   Quantas tentativas depende de quem chama. A busca normal tenta três
+   consultas diferentes, então ali cada uma insiste pouco (senão a pessoa
+   espera um minuto pra ver um erro). Já somar uma coleção é UMA pergunta
+   só, e perder ela joga fora a tela inteira: essa insiste mais. */
+async function pedirJSON(url, vezes, jaFoi){
+  const limite = vezes || 2;
+  const n = (jaFoi || 0) + 1;
   try{
     const r = await fetch(url, { headers:{ Accept:'application/json' } });
     if(!r.ok){ const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
     return await r.json();
   }catch(e){
     const valeInsistir = !e.status || e.status >= 500;
-    if(valeInsistir && !jaTentei){
-      // Meio segundo: dá tempo do soluço passar sem deixar a pessoa
-      // olhando pro rodinha, já que a busca tenta várias consultas.
-      await new Promise(f => setTimeout(f, 500));
-      return pedirJSON(url, true);
+    if(valeInsistir && n < limite){
+      // Meio segundo, depois dois: soluço curto some na primeira, e
+      // servidor engasgado precisa de um tempinho a mais pra respirar.
+      await new Promise(f => setTimeout(f, n === 1 ? 500 : 2000));
+      return pedirJSON(url, limite, n);
     }
     throw e;
   }
@@ -1514,18 +1529,58 @@ function mediaDe(cartas, filtro, usarReverse){
            meio: vals[Math.floor(vals.length / 2)], quantas: vals.length };
 }
 
+/* Somar uma coleção é o pedido mais pesado do site: 250 cartas inteiras por
+   página, várias páginas. Carta inteira traz ataque, texto, legalidade,
+   tudo — e pra conta eu só preciso de raridade e preço. Pedindo só isso a
+   resposta fica uns cinco sexto menor, viaja mais rápido e engasga menos.
+   É a diferença entre a conta sair e a tela de erro aparecer. */
+const SO_QUE_PRECISO = 'id,name,number,rarity,images,tcgplayer';
+const CHAVE_SOMA = 'butterpoke:soma';
+
+/* Guardo a última coleção somada. Não é pra ficar rápido: é pra quando o
+   site deles cai no meio do caminho eu ainda ter o que mostrar, dizendo
+   de quando é. Três coleções bastam — o resto só ocuparia espaço. */
+function guardarSoma(id, cartas){
+  try{
+    const j = JSON.parse(localStorage.getItem(CHAVE_SOMA) || '{}');
+    j[id] = { quando:Date.now(), cartas:cartas };
+    const ids = Object.keys(j).sort((a, b) => j[b].quando - j[a].quando).slice(0, 3);
+    const enxuto = {};
+    ids.forEach(k => { enxuto[k] = j[k]; });
+    localStorage.setItem(CHAVE_SOMA, JSON.stringify(enxuto));
+  }catch(e){}   // sem espaço? paciência, é só atalho
+}
+function somaGuardada(id){
+  try{
+    const j = JSON.parse(localStorage.getItem(CHAVE_SOMA) || '{}');
+    const um = j[id];
+    return (um && Array.isArray(um.cartas) && um.cartas.length) ? um : null;
+  }catch(e){ return null; }
+}
+
 async function analisarPacote(colecao){
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
     'Somando os preços de ' + escapar(colecao.name) + '…</div>';
   let cartas = [];
+  let deQuando = '';
   try{
     const monta = pag => API + '?q=' + encodeURIComponent('set.id:"' + aspas(colecao.id) + '"') +
-                         '&pageSize=250&page=' + pag;
-    const d = await pedirJSON(monta(1));
+                         '&select=' + SO_QUE_PRECISO + '&pageSize=250&page=' + pag;
+    // Aqui insisto mais que o normal: é uma pergunta só, e perder ela
+    // derruba a tela inteira.
+    const d = await pedirJSON(monta(1), 3);
     cartas = await todasAsPaginas(monta, d.data || [], d.totalCount || (d.data || []).length);
+    guardarSoma(colecao.id, cartas);
   }catch(e){
-    avisoErro('Não consegui somar essa coleção', e, () => analisarPacote(colecao));
-    return;
+    const velha = somaGuardada(colecao.id);
+    if(!velha){
+      avisoErro('Não consegui somar essa coleção', e, () => analisarPacote(colecao));
+      return;
+    }
+    // Tenho a mesma coleção de outro dia. Preço velho é melhor que tela de
+    // erro, desde que eu diga que é velho — senão viraria mentira.
+    cartas = velha.cartas;
+    deQuando = quantoFaz(velha.quando);
   }
   const comPreco = cartas.filter(c => precoDe(c) != null);
   if(comPreco.length < 10){
@@ -1555,6 +1610,9 @@ async function analisarPacote(colecao){
     '<section class="pergunta">' +
       '<h2>📦 Vale a pena ' + escapar(colecao.name) + '?</h2>' +
       '<p>Somei ' + comPreco.length + ' cartas com preço, de ' + cartas.length + ' na coleção.</p>' +
+      (deQuando ? '<p class="nota">📡 O site dos preços não respondeu agora, então essa conta ' +
+        'usa os preços que eu guardei <b>' + escapar(deQuando) + '</b>. Carta muda de preço ' +
+        'devagar, mas não é o de hoje.</p>' : '') +
 
       '<div class="escolha"><h3>Qual produto</h3>' +
         chips('chips-produto', PRODUTOS.map(x => ({ v:x.id, rotulo:x.nome })), produtoAtual) +
@@ -1625,7 +1683,9 @@ async function analisarPacote(colecao){
   palco.querySelectorAll('.mini').forEach(b => {
     b.onclick = () => {
       const c = caras.find(x => String(x.id) === b.dataset.id);
-      if(c){ voltarPraLista = () => analisarPacote(colecao); mostrarCarta(c); }
+      // Estas cartas vieram enxutas (só raridade e preço), então não dá pra
+      // abrir direto: busco a carta inteira pelo mesmo caminho das favoritas.
+      if(c){ voltarPraLista = () => analisarPacote(colecao); abrirFavorito(c); }
     };
   });
   palco.scrollIntoView({ behavior:'smooth', block:'start' });
@@ -1641,11 +1701,17 @@ async function buscarPacote(valor){
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a coleção…</div>';
   let colecoes = [];
   try{
-    const d = await pedirJSON(API_SETS + '?pageSize=250&orderBy=-releaseDate');
+    const d = await pedirJSON(API_SETS + '?pageSize=250&orderBy=-releaseDate', 3);
     colecoes = (d.data || []).map(deSetPrincipal);
+    guardarColecoes(colecoes);
   }catch(e){
-    avisoErro('Não consegui pegar as coleções', e, () => buscarPacote(valor));
-    return;
+    // A lista de coleções muda uma vez a cada dois meses: a guardada serve.
+    const guardadas = colecoesGuardadas();
+    if(!guardadas){
+      avisoErro('Não consegui pegar as coleções', e, () => buscarPacote(valor));
+      return;
+    }
+    colecoes = guardadas.lista;
   }
   const t = String(valor || '').trim().toLowerCase();
   const achadas = t ? colecoes.filter(c => (c.name || '').toLowerCase().includes(t)) : colecoes;

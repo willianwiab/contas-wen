@@ -85,6 +85,33 @@ Também arrumei um recado meio bobo: quando a coleção tinha pouquíssima carta
 "achei 4 cartas, mas só 4 com preço", o que não quer dizer nada. Agora fala o que é:
 achou pouca carta, e com pouca carta a conta sairia chutada.
 
+### "Não consegui somar essa coleção"
+
+O recado estava certo — o servidor deles respondia erro — mas **eu ajudava a provocar**.
+Somar uma coleção era o pedido mais pesado do site: 250 cartas *inteiras* por página,
+várias páginas, **todas disparadas no mesmo instante**. Carta inteira traz ataque, texto,
+legalidade, tudo. Pra conta eu preciso de duas coisas: raridade e preço.
+
+Quatro mudanças, da causa pro sintoma:
+
+1. **Peço só o que uso** (`select=id,name,number,rarity,images,tcgplayer`). A resposta fica
+   uma fração do tamanho: viaja mais rápido e engasga muito menos.
+2. **Uma página de cada vez**, com o contador na tela. Quatro pedidos gordos simultâneos
+   são o jeito mais rápido de levar erro — a pressa era minha.
+3. **Insisto mais nessa chamada**: três tentativas (meio segundo, depois dois), porque aqui
+   é *uma* pergunta só e perder ela derruba a tela inteira. A busca normal continua com
+   duas, senão a pessoa esperaria um minuto pra ver um erro.
+4. **Guardo a última coleção somada** (as três últimas). Se o site cair no meio, a conta
+   sai com o preço guardado e **um aviso dizendo de quando é** — preço velho é melhor que
+   tela de erro, desde que eu não finja que é o de hoje.
+
+A lista de coleções do "vale a pena" também passou a cair na lista guardada, que é o que o
+📚 Coleções já fazia. Lista de coleção muda uma vez a cada dois meses.
+
+Efeito colateral de pedir carta enxuta: o **🏆 prêmio grande** não pode mais ser aberto
+direto, porque falta metade da ficha. Ele abre pelo mesmo caminho das favoritas, que busca
+a carta inteira antes de mostrar.
+
 ### Caixa, ETB e blister
 
 Pediram produtos de novo, e dessa vez eu tinha deixado passar uma coisa óbvia: **caixa,
