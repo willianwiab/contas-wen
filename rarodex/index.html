@@ -195,6 +195,40 @@ thead th{color:var(--tinta-fraca);font-size:.8rem;text-transform:uppercase;lette
   width:30px;height:30px;font:inherit;font-weight:700;cursor:pointer;
 }
 .ficha .tirar:hover{background:var(--errado);color:#fff}
+/* Cada raridade com a sua cor. A cor é escolha minha de desenho, não dado
+   copiado de ninguém — serve pra bater o olho e saber onde está. */
+.selo{
+  display:inline-block;border-radius:999px;padding:3px 11px;font-size:.74rem;font-weight:700;
+  color:#1a1408;background:var(--tinta-fraca);
+}
+.selo.comum{background:#9aa8c4}
+.selo.incomum{background:#4ecb87}
+.selo.rara{background:#5aa2f5}
+.selo.lendaria{background:#b184f2}
+.selo.unica{background:#f2b45c}
+.selo.vintage{background:#d9ae4a}
+.selo.godly{background:#e3a03a}
+.selo.ancient{background:#e06a6a}
+.selo.chroma{background:linear-gradient(90deg,#f26a6a,#f2c14e,#4ecb87,#5aa2f5,#b184f2);color:#12161f}
+.selo.semraridade{background:var(--vazio);color:var(--tinta-fraca)}
+.grupo{margin-top:18px}
+.grupo > h4{
+  display:flex;align-items:center;gap:8px;font-size:.92rem;margin-bottom:8px;
+}
+.grupo > h4 span.conta{color:var(--tinta-fraca);font-weight:400;font-size:.82rem}
+/* A lista rápida: nomes que eu lembro, pra tocar em vez de digitar. */
+.rapida{
+  border:2px solid var(--borda);border-radius:16px;background:var(--cartao2);
+  padding:4px 14px;margin-top:14px;
+}
+.rapida summary{cursor:pointer;font-weight:700;padding:12px 0;list-style:none}
+.rapida summary::-webkit-details-marker{display:none}
+.rapida summary::before{content:'▸ ';color:var(--marca)}
+.rapida[open] summary::before{content:'▾ '}
+.rapida h5{font-size:.85rem;color:var(--tinta-fraca);margin:10px 0 6px;
+  text-transform:uppercase;letter-spacing:.04em}
+.rapida .chip{font-size:.85rem;padding:7px 11px}
+.rapida .chip.tem{background:var(--certo);border-color:var(--certo);color:#fff}
 .escadinha{list-style:none;display:flex;flex-direction:column;gap:7px}
 .degrau{
   display:flex;align-items:center;gap:10px;border:2px solid var(--borda);border-radius:14px;
@@ -251,7 +285,7 @@ footer{text-align:center;margin-top:40px;color:var(--tinta-fraca);font-size:.82r
   <header>
     <button class="tema" type="button" id="tema" aria-label="Trocar entre claro e escuro">🌙</button>
     <h1 class="logo">Raro<span>Dex</span><img class="dado" src="icone-limpo.svg" alt="" /></h1>
-    <p class="slogan">A chance de verdade de sair — e o teu caderno de raridades do MM2.</p>
+    <p class="slogan">Murder Mystery 2, do Roblox.<br>A chance de verdade de sair — e o teu caderno de facas, armas e habilidades.</p>
   </header>
 
   <section class="caixa">
@@ -288,7 +322,7 @@ footer{text-align:center;margin-top:40px;color:var(--tinta-fraca);font-size:.82r
     RaroDex · site de fã, sem ligação com o Murder Mystery 2, com o Nikilis ou com a Roblox
     <br>A conta é matemática de verdade. As chances de cada item são as que <b>você</b> anota.
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 1 — 21/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 2 — 21/09 · 🔄</button>
   </footer>
 </div>
 
@@ -558,12 +592,82 @@ const ACHAR = [
 ];
 let tipoNovo = 'faca', acharNovo = '3';
 
+/* ---------- a lista rápida ----------
+   O site estava com cara de calculadora de matemática, não de site de MM2,
+   porque não tinha NENHUM item do jogo dentro dele. E eu não consigo pegar
+   a lista de lugar nenhum: a wiki e as listas da comunidade não deixam um
+   site de fora ler os dados delas.
+
+   Então estes nomes eu escrevi de cabeça, e está dito isso na tela. O
+   truque que faz isso ser honesto: você TOCA no que existe. Se eu escrevi
+   um nome errado ou um item que nem existe, você simplesmente não toca —
+   e o campo de escrever continua lá pro que faltar. Quem sabe de MM2 é
+   você, não eu. */
+const RAPIDA = [
+  { tipo:'faca', titulo:'🔪 Facas', nomes:[
+    'Batwing','Icepiercer','Elderwood Scythe','Elderwood Blade','Harvester','Corrupt',
+    'Chill','Bioblade','Evergreen','Logchopper','Candy','Sugar','Ice Dragon','Prince',
+    'Darkbringer','Seer','Heat','Gemstone','Shark','Tides','Slasher','Split','Swirly',
+    'Deathshard','Nik\'s Scythe','Chroma Seer','Chroma Heat','Chroma Darkbringer',
+    'Chroma Gemstone','Chroma Deathshard','Chroma Shark','Chroma Slasher' ] },
+  { tipo:'arma', titulo:'🔫 Armas', nomes:[
+    'Ginger Luger','Jingle Luger','Laser','Chroma Luger','Chroma Laser','Elderwood Revolver',
+    'Snowflake','Flames','Virtual' ] },
+  { tipo:'pet', titulo:'🐾 Pets', nomes:[
+    'Corgi','Unicorn','Dragon','Fox','Cat','Panda' ] },
+];
+function nomesQueTenho(){
+  return new Set(ler(CHAVE_CADERNO, []).map(x => String(x.nome || '').toLowerCase()));
+}
+function listaRapidaHTML(){
+  const tem = nomesQueTenho();
+  return '<details class="rapida"><summary>➕ Adicionar rápido, sem digitar</summary>' +
+    '<p class="nota atencao" style="margin-top:0"><b>Confere antes de tocar.</b> ' +
+    'Esses nomes eu escrevi de cabeça — não consigo ler a lista do jogo de lugar nenhum. ' +
+    'Se tiver nome errado ou item que nem existe, <b>é só não tocar</b>. E o que faltar ' +
+    'você escreve aí em cima. Quem sabe de MM2 é você.</p>' +
+    RAPIDA.map(g =>
+      '<h5>' + escapar(g.titulo) + '</h5><div class="chips">' +
+      g.nomes.map(n =>
+        '<button type="button" class="chip' + (tem.has(n.toLowerCase()) ? ' tem' : '') + '" ' +
+          'data-rapido="' + escapar(n) + '" data-tipo="' + escapar(g.tipo) + '">' +
+          (tem.has(n.toLowerCase()) ? '✓ ' : '') + escapar(n) + '</button>').join('') +
+      '</div>').join('') +
+    '</details>';
+}
+function porRaridade(lista){
+  /* Agrupo pela raridade escrita, respeitando a ordem da escadinha. O que
+     a pessoa escreveu de um jeito diferente vira grupo próprio, em vez de
+     eu "consertar" o que ela digitou. */
+  const grupos = new Map();
+  lista.forEach(it => {
+    const chave = (it.raridade || '').trim() || 'Sem raridade anotada';
+    if(!grupos.has(chave)) grupos.set(chave, []);
+    grupos.get(chave).push(it);
+  });
+  const posicao = r => {
+    const i = ESCADA.findIndex(x => x.toLowerCase() === r.toLowerCase());
+    // A ESCADA vai do comum pro raro, então o índice MAIOR é o mais raro —
+    // eu tinha escrito 100 - i e o caderno abria com as comuns em cima.
+    if(i >= 0) return 100 + i;
+    return r === 'Sem raridade anotada' ? -1 : 50;   // raridade escrita à mão fica no meio
+  };
+  return [...grupos.entries()].sort((a, b) => posicao(b[0]) - posicao(a[0]));
+}
+function classeDoSelo(r){
+  const limpo = String(r).toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
+  return ['comum','incomum','rara','lendaria','unica','vintage','godly','ancient','chroma']
+    .indexOf(limpo) >= 0 ? limpo : 'semraridade';
+}
+
 function mostrarCaderno(){
   const lista = ler(CHAVE_CADERNO, []);
   const ordenada = lista.slice().sort((a, b) => {
     const pa = a.chance == null ? 2 : a.chance, pb = b.chance == null ? 2 : b.chance;
     return pa - pb;   // o mais difícil primeiro
   });
+  const grupos = porRaridade(ordenada);
 
   palco.innerHTML =
     '<section class="tela">' +
@@ -584,20 +688,44 @@ function mostrarCaderno(){
         chips('chips-achar', ACHAR, acharNovo) + '</div>' +
       '<button class="btn larga" type="button" id="cad-add">➕ Guardar no caderno</button>' +
       '<p id="cad-recado"></p>' +
+      listaRapidaHTML() +
 
       '<h3 class="titulinho">O que já tem aqui' +
         (lista.length ? ' (' + lista.length + ')' : '') + '</h3>' +
       (ordenada.length
-        ? '<ul class="fichas">' + ordenada.map(fichaHTML).join('') + '</ul>'
+        ? grupos.map(([raridade, itens]) =>
+            '<div class="grupo"><h4><span class="selo ' + classeDoSelo(raridade) + '">' +
+              escapar(raridade) + '</span>' +
+              '<span class="conta">' + itens.length + ' item' + (itens.length === 1 ? '' : 's') +
+            '</span></h4>' +
+            '<ul class="fichas">' + itens.map(fichaHTML).join('') + '</ul></div>').join('')
         : '<div class="aviso"><strong>Caderno vazio 📖</strong>' +
-          'Anota o primeiro aí em cima. Pode começar por aquele item que você mais quer.</div>') +
-      (ordenada.length ? '<p class="nota">Estão do <b>mais difícil pro mais fácil</b>, pela chance ' +
-        'que você anotou. Quem não tem chance anotada fica no fim.</p>' : '') +
+          'Toca em "adicionar rápido" aí em cima, ou escreve o nome do item que você mais quer.</div>') +
+      (ordenada.length ? '<p class="nota">Separados <b>por raridade</b>, e dentro de cada uma do ' +
+        '<b>mais difícil pro mais fácil</b>, pela chance que você anotou.</p>' : '') +
     '</section>';
 
   ligarChips('chips-tipo', v => { tipoNovo = v; }, mostrarCaderno);
   ligarChips('chips-achar', v => { acharNovo = v; }, mostrarCaderno);
   document.getElementById('cad-add').onclick = guardarNoCaderno;
+  palco.querySelectorAll('[data-rapido]').forEach(b => {
+    b.onclick = () => {
+      const nome = b.dataset.rapido;
+      const lista = ler(CHAVE_CADERNO, []);
+      const jaTem = lista.find(x => String(x.nome || '').toLowerCase() === nome.toLowerCase());
+      if(jaTem){
+        // Tocar de novo tira: quem tocou sem querer precisa poder desfazer.
+        gravar(CHAVE_CADERNO, lista.filter(x => x !== jaTem));
+      }else{
+        lista.push({ id:'i' + Date.now() + Math.random().toString(36).slice(2, 6),
+          nome:nome, tipo:b.dataset.tipo, raridade:'', chance:null, achar:'3', quando:Date.now() });
+        gravar(CHAVE_CADERNO, lista);
+      }
+      mostrarCaderno();
+      const aberta = palco.querySelector('.rapida');
+      if(aberta) aberta.open = true;   // não fechar debaixo do dedo da pessoa
+    };
+  });
   palco.querySelectorAll('.ficha .tirar').forEach(b => {
     b.onclick = () => {
       const l = ler(CHAVE_CADERNO, []).filter(x => x.id !== b.dataset.id);
