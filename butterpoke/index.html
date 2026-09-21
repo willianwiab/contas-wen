@@ -477,7 +477,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 23 — 21/09</span>
+    <br><span class="versao">versão 24 — 21/09</span>
   </footer>
 </div>
 
@@ -955,8 +955,35 @@ const NOME_ESPECIAL = {
   'TAG TEAM':'TAG TEAM (duas juntas)', 'Delta Species':'Delta (δ)',
 };
 function rotuloEspecial(x){ return NOME_ESPECIAL[x] || x; }
+/* O subtipo é o caminho certo, mas nem toda carta vem com ele preenchido —
+   e quando falta, a fileira inteira de "carta especial" some e parece que
+   não existe nenhuma. Por isso o nome também conta: "Charizard ex" e
+   "Pikachu VMAX" dizem o que são sem depender de campo nenhum. */
+const PELO_NOME = [
+  { re:/\bVMAX$/,            id:'VMAX' },
+  { re:/\bVSTAR$/,           id:'VSTAR' },
+  { re:/\bV-UNION$/,         id:'V-UNION' },
+  { re:/\bV$/,               id:'V' },
+  { re:/\bex$/,              id:'ex' },          // minúsculo: das novas
+  { re:/[-\s]EX$/,            id:'EX' },          // maiúsculo: das antigas
+  { re:/[-\s]GX$/,            id:'GX' },
+  { re:/^M\s/,               id:'MEGA' },
+  { re:/\bBREAK$/,           id:'BREAK' },
+  { re:/\bLEGEND$/,          id:'LEGEND' },
+  { re:/^Radiant\s/i,        id:'Radiant' },
+  { re:/^Shining\s/i,        id:'Shining' },
+  { re:/\bδ$|\bdelta\b/i,   id:'Delta Species' },
+  { re:/\bPrism Star$|◇$/,   id:'Prism Star' },
+  { re:/&\s.+\bGX$/,         id:'TAG TEAM' },
+];
 function especiaisDe(c){
-  return (c.subtypes || []).filter(x => ESPECIAIS.indexOf(x) >= 0);
+  const achados = (c.subtypes || []).filter(x => ESPECIAIS.indexOf(x) >= 0);
+  const nome = String(c.name || '').trim();
+  PELO_NOME.forEach(r => {
+    if(r.re.test(nome) && achados.indexOf(r.id) < 0) achados.push(r.id);
+  });
+  // Devolve na ordem do jogo, não na ordem em que eu achei.
+  return ESPECIAIS.filter(x => achados.indexOf(x) >= 0);
 }
 
 /* Tipos anunciados que ainda não saíram. O botão aparece mesmo sem carta
@@ -1681,12 +1708,19 @@ function mostrarGrade(titulo, subtitulo, lista, aoClicar, tipo, placeholder, ord
             .concat(lista.some(c => (c.types || []).length > 1)
               ? [{ v:'duplo', rotulo:'🔀 Dois tipos' }] : []), ''))
       : '') +
-    caixinha('Carta especial', chips('chips-especial',
-      [{ v:'', rotulo:'Todas' }]
-        .concat(ESPECIAIS.filter(x => lista.some(c => especiaisDe(c).indexOf(x) >= 0))
-          .map(x => ({ v:x, rotulo:rotuloEspecial(x) })))
-        // As que ainda não saíram vão no fim, e aparecem mesmo sem carta.
-        .concat(FUTUROS.map(f => ({ v:f.id, rotulo:f.nome }))), '')) +
+    (() => {
+      const temNaLista = ESPECIAIS.filter(x => lista.some(c => especiaisDe(c).indexOf(x) >= 0));
+      return caixinha('Carta especial', chips('chips-especial',
+        [{ v:'', rotulo:'Todas' }]
+          .concat(temNaLista.map(x => ({ v:x, rotulo:rotuloEspecial(x) })))
+          // As que ainda não saíram vão no fim, e aparecem mesmo sem carta.
+          .concat(FUTUROS.map(f => ({ v:f.id, rotulo:f.nome }))), '') +
+        // Sem isto, a fileira fica com dois botões solitários e parece quebrada.
+        (temNaLista.length ? '' :
+          '<p class="nota" style="margin-top:9px">Nenhuma carta especial nesta lista — ' +
+          'nada de EX, GX, V, VMAX e companhia. Procura por um Pokémon famoso, ' +
+          'tipo <b>Charizard</b>, que aí aparecem.</p>'));
+    })() +
     (temPreco
       ? caixinha('Preço', chips('chips-faixa', FAIXAS.map(f => ({ v:f.id, rotulo:f.nome })), ''))
       : '') +
@@ -1777,8 +1811,10 @@ function filtrar(lista, texto){
   if(artistaFiltro) saida = saida.filter(c => c.artist === artistaFiltro);
   if(especialFiltro){
     const fut = FUTUROS.find(f => f.id === especialFiltro);
+    // especiaisDe, e não c.subtypes: é a mesma função que monta os botões.
+    // Com as duas diferentes, o botão aparecia e o filtro voltava vazio.
     saida = fut ? saida.filter(c => casaComFuturo(c, fut))
-                : saida.filter(c => (c.subtypes || []).indexOf(especialFiltro) >= 0);
+                : saida.filter(c => especiaisDe(c).indexOf(especialFiltro) >= 0);
   }
   // Acima de um valor: carta sem preço não entra, porque não dá pra afirmar que passa.
   if(min > 0) saida = saida.filter(c => { const v = precoDe(c); return v != null && v >= min; });
