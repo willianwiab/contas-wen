@@ -119,6 +119,39 @@ header{text-align:center;padding:34px 0 22px;position:relative}
   box-shadow:0 0 0 4px rgba(63,111,216,.20)}
 .entrada.errada{border-color:var(--errado)}
 
+/* Os dois modos são abas de um trilho só, como no ButterPoke: menos caixa,
+   mais "escolhe um destes". */
+.modos{background:var(--cartao2);border-radius:999px;padding:4px;display:flex;gap:2px;
+  border:1px solid var(--borda);margin-bottom:14px}
+.modos button{
+  flex:1 1 120px;padding:11px 12px;border:none;background:none;border-radius:999px;
+  font:inherit;font-weight:600;color:var(--tinta-fraca);cursor:pointer;
+  transition:background .18s,color .18s;
+}
+.modos button:hover{color:var(--tinta)}
+.modos button[aria-pressed="true"]{background:var(--marca);color:#fff;
+  box-shadow:0 2px 8px rgba(30,60,140,.25)}
+.linha-busca{display:flex;gap:10px;flex-wrap:wrap}
+#campo{flex:1 1 200px;min-width:0}
+.dica{margin-top:11px;font-size:.84rem;color:var(--tinta-fraca);line-height:1.5}
+.dica b{color:var(--tinta)}
+/* A grade de itens: o mesmo papel da grade de cartas do ButterPoke — a
+   pessoa bate o olho e toca no que é o dela. */
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:6px}
+.opcao{
+  background:var(--cartao);border:2px solid var(--borda);border-radius:16px;padding:12px 10px;
+  cursor:pointer;text-align:left;font:inherit;color:var(--tinta);
+  transition:transform .12s,border-color .12s;
+}
+.opcao:hover,.opcao:focus{transform:translateY(-3px);border-color:var(--marca);outline:none}
+.opcao b{display:block;font-size:.95rem;overflow-wrap:anywhere}
+.opcao .selo{margin-top:7px}
+.opcao small{display:block;color:var(--tinta-fraca);font-size:.76rem;margin-top:5px}
+/* A ficha do item é a "carta" daqui: o item vira a estrela da tela. */
+.item h2{font-family:'Baloo 2',cursive;font-size:2rem;line-height:1.1;overflow-wrap:anywhere}
+.etiquetas{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px;align-items:center}
+.etiqueta{background:var(--cartao3);border:2px solid var(--borda);border-radius:999px;
+  padding:5px 12px;font-size:.82rem;font-weight:600}
 .destaque{
   margin-top:18px;background:linear-gradient(135deg,var(--ouro),var(--marca-clara));
   border:2px solid var(--ouro-sombra);border-radius:20px;padding:18px 20px;text-align:center;
@@ -289,8 +322,22 @@ footer{text-align:center;margin-top:40px;color:var(--tinta-fraca);font-size:.82r
   </header>
 
   <section class="caixa">
-    <h2 style="font-family:'Baloo 2',cursive;font-size:1.5rem;margin-bottom:12px">🎲 Qual a chance de sair?</h2>
+    <div class="modos" role="group" aria-label="Como procurar">
+      <button type="button" id="modo-nome" aria-pressed="true">🔤 Pelo nome</button>
+      <button type="button" id="modo-chance" aria-pressed="false">🎲 Pela chance</button>
+    </div>
 
+    <div id="area-nome">
+      <form class="linha-busca" id="formulario">
+        <input class="entrada" id="campo" autocomplete="off"
+               placeholder="Ex: Batwing" aria-label="Nome do item" />
+        <button class="btn" type="submit">Procurar</button>
+      </form>
+      <p class="dica">Escreve um pedaço do nome — <b>bat</b>, <b>chroma</b>, <b>seer</b> —
+        ou deixa em branco e aperta Procurar pra ver <b>todos</b>.</p>
+    </div>
+
+    <div id="area-chance" hidden>
     <div class="perguntas">
       <div>
         <label class="campo-rotulo" for="chance">Chance do item
@@ -305,6 +352,7 @@ footer{text-align:center;margin-top:40px;color:var(--tinta-fraca);font-size:.82r
     </div>
 
     <div id="resposta"></div>
+    </div>
 
     <div class="atalhos">
       <button class="btn" type="button" id="btn-simular"><i>🍀</i>Simular</button>
@@ -322,7 +370,7 @@ footer{text-align:center;margin-top:40px;color:var(--tinta-fraca);font-size:.82r
     RaroDex · site de fã, sem ligação com o Murder Mystery 2, com o Nikilis ou com a Roblox
     <br>A conta é matemática de verdade. As chances de cada item são as que <b>você</b> anota.
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 2 — 21/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 3 — 21/09 · 🔄</button>
   </footer>
 </div>
 
@@ -357,8 +405,13 @@ function num(t){ return parseFloat(String(t).replace(',', '.')); }
    Cada um escreve de um jeito: "1 em 400", "1/400", "0,25%", "0.0025".
    Todos querem dizer a mesma coisa, então todos têm que funcionar. */
 function lerChance(txt){
-  const t = String(txt || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  let t = String(txt || '').trim().toLowerCase().replace(/\s+/g, ' ');
   if(!t) return null;
+  /* "1 em 4.000" é como eu MOSTRO o número (ponto de milhar do pt-BR), e
+     esse texto voltava pro campo e era lido como 1 em 4 — a chance salva
+     virava mil vezes maior, calada. Aqui eu tiro o ponto só quando ele é
+     mesmo separador de milhar: 1.234.567 sim, 0.25 não. */
+  t = t.replace(/\b\d{1,3}(?:\.\d{3})+\b/g, m => m.replace(/\./g, ''));
   let m = t.match(/^([0-9]+(?:[.,][0-9]+)?) ?(?:em|in|\/|:) ?([0-9]+(?:[.,][0-9]+)?)$/);
   if(m){
     const a = num(m[1]), b = num(m[2]);
@@ -418,6 +471,13 @@ function umEm(p){
   if(!(p > 0)) return '—';
   const x = 1 / p;
   return '1 em ' + (x >= 10 ? numeroBonito(x) : arred(x, 1));
+}
+/* A mesma coisa, sem ponto de milhar: esta é a que pode voltar pra dentro
+   de um campo de texto sem o site se enganar sozinho na releitura. */
+function umEmCru(p){
+  if(!(p > 0)) return '';
+  const x = 1 / p;
+  return '1 em ' + (x >= 10 ? String(Math.round(x)) : arred(x, 1));
 }
 
 /* ---------- a resposta ---------- */
@@ -592,6 +652,262 @@ const ACHAR = [
 ];
 let tipoNovo = 'faca', acharNovo = '3';
 
+/* ---------- a lista de itens ----------
+   Esta lista veio de quem joga. Eu não consigo ler a lista do MM2 de lugar
+   nenhum daqui — a wiki, as listas da comunidade e a própria Roblox estão
+   todas fora do meu alcance, e a página do jogo não lista os itens. Então
+   ela chegou do jeito certo: um jogador mandou.
+
+   Guardo os nomes como vieram, sem "consertar" grafia. Se um estiver
+   escrito errado, quem joga vê na hora e me fala — eu corrigindo por
+   conta própria é que ia criar item que não existe.
+
+   O que a lista NÃO tem, de propósito: chance e raridade. Isso muda com
+   atualização e eu não tenho de onde tirar. Quem anota é a pessoa. */
+const ITENS_MM2 = [
+  "Alienbeam", "Amerilaser", "Australis", "BattleAxe", "BattleAxe II", "Batwing",
+  "Bioblade", "Black Marble", "Blaster", "Bloom", "Blue Elite", "Blue Marble", "Blue Seer",
+  "Boneblade", "Candleflame", "Candy", "Celestial", "Chill", "Chroma Alienbeam",
+  "Chroma Blizzard", "Chroma Boneblade", "Chroma Candleflame", "Chroma Constellation",
+  "Chroma Cookiecane", "Chroma Darkbringer", "Chroma Deathshard", "Chroma Elderwood Blade",
+  "Chroma Evergreen", "Chroma Evergun", "Chroma Fang", "Chroma Fire Bunny",
+  "Chroma Gemstone", "Chroma Gingerblade", "Chroma Heart Wand", "Chroma Heat",
+  "Chroma Lightbringer", "Chroma Ornament", "Chroma Raygun", "Chroma Saw", "Chroma Seer",
+  "Chroma Slasher", "Chroma Snow Dagger", "Chroma Snowstorm", "Chroma Sunrise",
+  "Chroma Sunset", "Chroma Sweet", "Chroma Tides", "Chroma Treat", "Clockwork",
+  "Cookieblade", "Cookiecane", "Corrupt", "Cotton Candy", "Darkbringer", "Darksword",
+  "Dartbringer", "Deathshard", "Deathspeaker", "Elderwood Blade", "Elderwood Scythe",
+  "Eternal", "Eternal II", "Eternal III", "Eternal IV", "Eternalcane", "Fang", "Flowerwood",
+  "Frostbite", "Frostsaber", "Gemstone", "Ginger Luger", "Gingerblade", "Gingerbread",
+  "Gold Vampire's Edge", "Green Elite", "Green Luger", "Green Marble", "Hallow's Blade",
+  "Hallow's Edge", "Hallowscythe", "Handsaw", "Heart Wand", "Heartblade", "Heat",
+  "Ice Dragon", "Iceblaster", "Icebreaker", "Iceflake", "Icewing", "Laser", "Lightbringer",
+  "Logchopper", "Luger", "Luger Cane", "Minty", "Nebula", "Nightblade", "Nik's Scythe",
+  "Old Glory", "Orange Marble", "Orange Seer", "Ornament", "Pearl", "Peppermint", "Phantom",
+  "Pink Marble", "Pixel", "Plasmablade", "Prismatic", "Pumpking", "Purple Marble",
+  "Purple Seer", "Rainbow", "Red Fire", "Red Luger", "Red Seer", "Sakura", "Saw", "Seer",
+  "Shark", "SharkSeeker", "Slasher", "Snow Dagger", "Snowflake", "Snowstorm", "Spider",
+  "Spirit", "Sugar", "Sweet", "Swirly Axe", "Swirly Blade", "Tides", "Traveler's Axe",
+  "Turkey", "Vampire's Axe", "Vampire's Edge", "Virtual", "Waves", "White Marble",
+  "Xenoknife", "Xmas", "Yellow Marble", "Yellow Seer"
+];
+
+function semAcento(t){
+  return String(t || '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+/* O caderno manda: se a pessoa anotou um item que não está na minha lista,
+   ele aparece na busca do mesmo jeito. A lista é ajuda, não cerca. */
+function todosOsNomes(){
+  const vistos = new Map();
+  ITENS_MM2.forEach(n => vistos.set(n.toLowerCase(), n));
+  ler(CHAVE_CADERNO, []).forEach(it => {
+    const n = String(it.nome || '').trim();
+    if(n && !vistos.has(n.toLowerCase())) vistos.set(n.toLowerCase(), n);
+  });
+  return [...vistos.values()].sort((a, b) => semAcento(a).localeCompare(semAcento(b)));
+}
+function dadosDoItem(nome){
+  const achado = ler(CHAVE_CADERNO, [])
+    .find(x => String(x.nome || '').toLowerCase() === String(nome).toLowerCase());
+  return achado || { nome:nome, tipo:'', raridade:'', chance:null, achar:'' };
+}
+
+const campo = document.getElementById('campo');
+const areaNome = document.getElementById('area-nome');
+const areaChance = document.getElementById('area-chance');
+const btModoNome = document.getElementById('modo-nome');
+const btModoChance = document.getElementById('modo-chance');
+
+function trocarModo(qual){
+  const pelaChance = qual === 'chance';
+  btModoNome.setAttribute('aria-pressed', String(!pelaChance));
+  btModoChance.setAttribute('aria-pressed', String(pelaChance));
+  areaNome.hidden = pelaChance;
+  areaChance.hidden = !pelaChance;
+  if(pelaChance) responder(); else campo.focus();
+}
+btModoNome.onclick = () => trocarModo('nome');
+btModoChance.onclick = () => trocarModo('chance');
+
+document.getElementById('formulario').addEventListener('submit', ev => {
+  ev.preventDefault();
+  buscarItem(campo.value.trim());
+});
+
+function buscarItem(texto){
+  const alvo = semAcento(texto);
+  const todos = todosOsNomes();
+  const achados = alvo ? todos.filter(n => semAcento(n).indexOf(alvo) >= 0) : todos;
+
+  if(!achados.length){
+    palco.innerHTML = '<div class="aviso"><strong>Não achei esse item 🤔</strong>' +
+      'Minha lista tem ' + todos.length + ' itens, e ela não está completa — ' +
+      'veio de jogador, não do jogo.<br><br>' +
+      'Podes escrever o nome do teu jeito no <b>📓 caderno</b> que ele passa a aparecer aqui.' +
+      '</div>';
+    palco.scrollIntoView({ behavior:'smooth', block:'start' });
+    return;
+  }
+  if(achados.length === 1) return mostrarItem(achados[0]);
+
+  palco.innerHTML =
+    '<section class="tela">' +
+      '<h2>' + (alvo ? 'Achei ' + achados.length + ' item' + (achados.length === 1 ? '' : 's')
+                     : 'Todos os ' + achados.length + ' itens') + '</h2>' +
+      '<p>Toca no teu pra ver a ficha dele.</p>' +
+      '<div class="grade">' + achados.map(n => {
+        const d = dadosDoItem(n);
+        const tipo = TIPOS.find(t => t.v === d.tipo);
+        return '<button type="button" class="opcao" data-item="' + escapar(n) + '">' +
+          '<b>' + escapar(n) + '</b>' +
+          (d.raridade ? '<span class="selo ' + classeDoSelo(d.raridade) + '">' +
+            escapar(d.raridade) + '</span>' : '') +
+          '<small>' + (tipo ? escapar(tipo.rotulo) + ' · ' : '') +
+            (d.chance != null ? escapar(umEm(d.chance)) : 'sem anotação') + '</small>' +
+        '</button>';
+      }).join('') + '</div>' +
+    '</section>';
+  palco.querySelectorAll('[data-item]').forEach(b => {
+    b.onclick = () => mostrarItem(b.dataset.item);
+  });
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- a ficha do item ----------
+   É a "carta" daqui: o item no meio da tela, com o que já se sabe dele em
+   cima e a conta embaixo. O que eu não sei fica como campo pra preencher,
+   não como número inventado. */
+let caixasNaFicha = 100;
+function mostrarItem(nome){
+  const d = dadosDoItem(nome);
+  const noCaderno = ler(CHAVE_CADERNO, [])
+    .some(x => String(x.nome || '').toLowerCase() === String(nome).toLowerCase());
+  const tipo = TIPOS.find(t => t.v === d.tipo);
+  const achar = ACHAR.find(a => a.v === String(d.achar));
+
+  palco.innerHTML =
+    '<section class="tela item">' +
+      '<h2>' + escapar(nome) + '</h2>' +
+      '<div class="etiquetas">' +
+        (d.raridade ? '<span class="selo ' + classeDoSelo(d.raridade) + '">' +
+          escapar(d.raridade) + '</span>' : '') +
+        (tipo ? '<span class="etiqueta">' + escapar(tipo.rotulo) + '</span>' : '') +
+        (achar ? '<span class="etiqueta">👀 ' + escapar(achar.sub) + '</span>' : '') +
+        (noCaderno ? '<span class="etiqueta">📓 no teu caderno</span>' : '') +
+      '</div>' +
+      '<div id="ficha-conta"></div>' +
+
+      '<h3 class="titulinho">O que você sabe deste</h3>' +
+      '<p class="nota">Eu não tenho a chance nem a raridade de item nenhum — isso muda com ' +
+        'atualização e não existe lista que eu consiga ler. <b>Quem anota é você</b>, e fica guardado.</p>' +
+      '<div class="escolha"><h3>O que é</h3>' + chips('f-tipo', TIPOS, d.tipo) + '</div>' +
+      '<div class="escolha"><h3>Raridade</h3>' +
+        '<input class="escrever" id="f-rar" maxlength="30" list="raridades" ' +
+          'placeholder="Ex: Godly" value="' + escapar(d.raridade || '') + '" />' +
+        '<datalist id="raridades">' + ESCADA.map(r => '<option value="' + escapar(r) + '">').join('') +
+        '</datalist></div>' +
+      '<div class="escolha"><h3>Chance de sair</h3>' +
+        '<input class="escrever" id="f-chance" placeholder="1 em 400, 0,25%…" value="' +
+          (d.chance != null ? escapar(umEmCru(d.chance)) : '') + '" /></div>' +
+      '<div class="escolha"><h3>Quanto você vê esse item por aí?</h3>' +
+        chips('f-achar', ACHAR, String(d.achar || '3')) + '</div>' +
+      '<button class="btn larga" type="button" id="f-salvar">💾 Guardar no caderno</button>' +
+      (noCaderno ? '<button class="btn secundario larga" type="button" id="f-tirar">🗑️ Tirar do caderno</button>' : '') +
+      '<p id="f-recado"></p>' +
+      '<button class="btn secundario larga" type="button" id="f-voltar">↩️ Procurar outro</button>' +
+    '</section>';
+
+  ligarChips('f-tipo', v => { rascunho.tipo = v; }, () => guardarFicha(nome, true));
+  ligarChips('f-achar', v => { rascunho.achar = v; }, () => guardarFicha(nome, true));
+  rascunho = { tipo:d.tipo || 'faca', achar:String(d.achar || '3') };
+  desenharContaDaFicha(d.chance);
+
+  document.getElementById('f-chance').oninput = () => {
+    const p = lerChance(document.getElementById('f-chance').value.trim());
+    desenharContaDaFicha(p);
+  };
+  document.getElementById('f-salvar').onclick = () => guardarFicha(nome, false);
+  document.getElementById('f-voltar').onclick = () => buscarItem(campo.value.trim());
+  const tirar = document.getElementById('f-tirar');
+  if(tirar) tirar.onclick = () => {
+    gravar(CHAVE_CADERNO, ler(CHAVE_CADERNO, [])
+      .filter(x => String(x.nome || '').toLowerCase() !== String(nome).toLowerCase()));
+    mostrarItem(nome);
+  };
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+let rascunho = { tipo:'faca', achar:'3' };
+
+function desenharContaDaFicha(p){
+  const onde = document.getElementById('ficha-conta');
+  if(!onde) return;
+  if(p === null || !(p > 0) || p > 1){
+    onde.innerHTML = '<p class="nota atencao">🎲 <b>Sem a chance eu não faço conta.</b> ' +
+      'Anota ela aí embaixo — dá pra ver no jogo ou na wiki — e a conta aparece aqui na hora.</p>';
+    return;
+  }
+  onde.innerHTML =
+    '<div class="destaque">' +
+      '<div class="rotulo">Abrindo ' + numeroBonito(caixasNaFicha) + ' caixas</div>' +
+      '<div class="numerao">' + pct(chanceEmN(p, caixasNaFicha)) + '</div>' +
+      '<div class="abaixo">de chance de sair pelo menos um</div>' +
+      '<div class="barra"><span style="width:' +
+        Math.max(0.6, Math.min(100, chanceEmN(p, caixasNaFicha) * 100)) + '%"></span></div>' +
+    '</div>' +
+    '<div class="escolha"><h3>Quantas caixas?</h3>' +
+      '<input class="escrever" id="f-caixas" inputmode="numeric" value="' + caixasNaFicha + '" /></div>' +
+    '<table style="margin-top:12px"><tbody>' +
+      '<tr><td>Chance de <b>uma caixa só</b></td><td>' + pct(p) + ' (' + escapar(umEm(p)) + ')</td></tr>' +
+      [0.5, 0.9, 0.99].map(a =>
+        '<tr><td>Pra ter ' + Math.round(a * 100) + '% de chance</td><td>' +
+        numeroBonito(caixasPara(p, a)) + ' caixas</td></tr>').join('') +
+    '</tbody></table>' +
+    '<button class="btn secundario larga" type="button" id="f-simular">🍀 Abrir caixa de mentirinha com essa chance</button>';
+
+  const cx = document.getElementById('f-caixas');
+  if(cx) cx.oninput = () => {
+    const n = lerQuantas(cx.value);
+    if(n !== null){ caixasNaFicha = n; const foco = document.activeElement === cx;
+      desenharContaDaFicha(p);
+      if(foco){ const novo = document.getElementById('f-caixas');
+        if(novo){ novo.focus(); novo.setSelectionRange(novo.value.length, novo.value.length); } } }
+  };
+  const sim = document.getElementById('f-simular');
+  if(sim) sim.onclick = () => {
+    inpChance.value = umEmCru(p);
+    simChance = p; simAbertas = 0; simSaiu = 0; simPrimeira = null;
+    desenharSimulador();
+  };
+}
+
+function guardarFicha(nome, calado){
+  const txt = document.getElementById('f-chance');
+  const chance = txt && txt.value.trim() ? lerChance(txt.value.trim()) : null;
+  const recado = document.getElementById('f-recado');
+  if(txt && txt.value.trim() && chance === null){
+    if(!calado && recado) recado.innerHTML = '<span class="nota atencao" style="display:block">' +
+      '🤔 Não entendi essa chance. Escreve tipo <b>1 em 400</b> ou <b>0,25%</b>.</span>';
+    return;
+  }
+  const lista = ler(CHAVE_CADERNO, []);
+  const i = lista.findIndex(x => String(x.nome || '').toLowerCase() === String(nome).toLowerCase());
+  const dado = {
+    id: i >= 0 ? lista[i].id : 'i' + Date.now() + Math.random().toString(36).slice(2, 6),
+    nome: nome,
+    tipo: rascunho.tipo,
+    raridade: (document.getElementById('f-rar') || {}).value ?
+      document.getElementById('f-rar').value.trim() : '',
+    chance: chance,
+    achar: rascunho.achar,
+    quando: Date.now(),
+  };
+  if(i >= 0) lista[i] = dado; else lista.push(dado);
+  gravar(CHAVE_CADERNO, lista);
+  if(calado) return mostrarItem(nome);
+  if(recado) recado.innerHTML = '<span class="nota" style="display:block">✅ Guardado no caderno!</span>';
+}
+
 /* ---------- a lista rápida ----------
    O site estava com cara de calculadora de matemática, não de site de MM2,
    porque não tinha NENHUM item do jogo dentro dele. E eu não consigo pegar
@@ -603,38 +919,29 @@ let tipoNovo = 'faca', acharNovo = '3';
    um nome errado ou um item que nem existe, você simplesmente não toca —
    e o campo de escrever continua lá pro que faltar. Quem sabe de MM2 é
    você, não eu. */
-const RAPIDA = [
-  { tipo:'faca', titulo:'🔪 Facas', nomes:[
-    'Batwing','Icepiercer','Elderwood Scythe','Elderwood Blade','Harvester','Corrupt',
-    'Chill','Bioblade','Evergreen','Logchopper','Candy','Sugar','Ice Dragon','Prince',
-    'Darkbringer','Seer','Heat','Gemstone','Shark','Tides','Slasher','Split','Swirly',
-    'Deathshard','Nik\'s Scythe','Chroma Seer','Chroma Heat','Chroma Darkbringer',
-    'Chroma Gemstone','Chroma Deathshard','Chroma Shark','Chroma Slasher' ] },
-  { tipo:'arma', titulo:'🔫 Armas', nomes:[
-    'Ginger Luger','Jingle Luger','Laser','Chroma Luger','Chroma Laser','Elderwood Revolver',
-    'Snowflake','Flames','Virtual' ] },
-  { tipo:'pet', titulo:'🐾 Pets', nomes:[
-    'Corgi','Unicorn','Dragon','Fox','Cat','Panda' ] },
-];
 function nomesQueTenho(){
   return new Set(ler(CHAVE_CADERNO, []).map(x => String(x.nome || '').toLowerCase()));
 }
 function listaRapidaHTML(){
   const tem = nomesQueTenho();
-  return '<details class="rapida"><summary>➕ Adicionar rápido, sem digitar</summary>' +
-    '<p class="nota atencao" style="margin-top:0"><b>Confere antes de tocar.</b> ' +
-    'Esses nomes eu escrevi de cabeça — não consigo ler a lista do jogo de lugar nenhum. ' +
-    'Se tiver nome errado ou item que nem existe, <b>é só não tocar</b>. E o que faltar ' +
-    'você escreve aí em cima. Quem sabe de MM2 é você.</p>' +
-    RAPIDA.map(g =>
-      '<h5>' + escapar(g.titulo) + '</h5><div class="chips">' +
-      g.nomes.map(n =>
-        '<button type="button" class="chip' + (tem.has(n.toLowerCase()) ? ' tem' : '') + '" ' +
-          'data-rapido="' + escapar(n) + '" data-tipo="' + escapar(g.tipo) + '">' +
-          (tem.has(n.toLowerCase()) ? '✓ ' : '') + escapar(n) + '</button>').join('') +
-      '</div>').join('') +
-    '</details>';
+  return '<details class="rapida"><summary>➕ Adicionar rápido, sem digitar (' +
+      ITENS_MM2.length + ' itens)</summary>' +
+    '<p class="nota" style="margin-top:0">Esta lista veio de quem joga, não do jogo — ' +
+    'então ela não está completa, e pode ter nome escrito diferente. ' +
+    'O que faltar você escreve aí em cima. ' +
+    '<b>O tipo vem do que você escolheu</b> (🔪/🔫/🐾) lá em cima — escolhe primeiro, depois toca.</p>' +
+    '<input class="escrever" id="filtro-rapida" placeholder="Filtrar: bat, chroma, seer…" ' +
+      'value="' + escapar(filtroRapida) + '" />' +
+    '<div class="chips" style="margin-top:10px">' +
+      ITENS_MM2
+        .filter(n => !filtroRapida || semAcento(n).indexOf(semAcento(filtroRapida)) >= 0)
+        .map(n =>
+          '<button type="button" class="chip' + (tem.has(n.toLowerCase()) ? ' tem' : '') + '" ' +
+            'data-rapido="' + escapar(n) + '">' +
+            (tem.has(n.toLowerCase()) ? '✓ ' : '') + escapar(n) + '</button>').join('') +
+    '</div></details>';
 }
+let filtroRapida = '';
 function porRaridade(lista){
   /* Agrupo pela raridade escrita, respeitando a ordem da escadinha. O que
      a pessoa escreveu de um jeito diferente vira grupo próprio, em vez de
@@ -718,7 +1025,7 @@ function mostrarCaderno(){
         gravar(CHAVE_CADERNO, lista.filter(x => x !== jaTem));
       }else{
         lista.push({ id:'i' + Date.now() + Math.random().toString(36).slice(2, 6),
-          nome:nome, tipo:b.dataset.tipo, raridade:'', chance:null, achar:'3', quando:Date.now() });
+          nome:nome, tipo:tipoNovo, raridade:'', chance:null, achar:acharNovo, quando:Date.now() });
         gravar(CHAVE_CADERNO, lista);
       }
       mostrarCaderno();
@@ -726,6 +1033,15 @@ function mostrarCaderno(){
       if(aberta) aberta.open = true;   // não fechar debaixo do dedo da pessoa
     };
   });
+  const filtro = document.getElementById('filtro-rapida');
+  if(filtro) filtro.oninput = () => {
+    filtroRapida = filtro.value;
+    mostrarCaderno();
+    const novo = document.getElementById('filtro-rapida');
+    const aberta = palco.querySelector('.rapida');
+    if(aberta) aberta.open = true;
+    if(novo){ novo.focus(); novo.setSelectionRange(novo.value.length, novo.value.length); }
+  };
   palco.querySelectorAll('.ficha .tirar').forEach(b => {
     b.onclick = () => {
       const l = ler(CHAVE_CADERNO, []).filter(x => x.id !== b.dataset.id);
@@ -1031,6 +1347,7 @@ document.getElementById('btn-ajuda').onclick   = mostrarAjuda;
 document.getElementById('btn-codigo').onclick  = mostrarCodigo;
 
 responder();
+trocarModo('nome');
 </script>
 </body>
 </html>
