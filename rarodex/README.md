@@ -75,23 +75,58 @@ chance anotada fica no fim.
 É a mesma ideia dos 🧸 bonecos do ButterPoke: quando o dado não existe em lugar nenhum, o
 site guarda o que a pessoa sabe, em vez de inventar.
 
-### A lista rápida, e por que ela é honesta
+### A lista de itens, e de onde ela veio
 
 A primeira versão tinha um problema que só apareceu quando alguém abriu: **não tinha
 nenhum item do MM2 dentro dela.** Era uma calculadora de matemática com um caderno vazio.
-Quem entrou procurando as facas e as armas do jogo não achou nada do jogo.
 
 Tentei buscar a lista: a wiki, as listas da comunidade e o próprio site da Roblox são todos
-inalcançáveis daqui. E a página do jogo na Roblox não lista os itens — eles ficam dentro
-do jogo.
+inalcançáveis daqui. A página do jogo na Roblox também não serve — os itens ficam dentro
+do jogo, não no catálogo.
 
-Então escrevi de cabeça uma lista de nomes (facas, armas e pets) e pus como **chips pra
-tocar**. O que torna isso honesto não é a lista: é o **sentido da conferência**. Está
-escrito em cima, em amarelo: *"esses nomes eu escrevi de cabeça; se tiver nome errado ou
-item que nem existe, é só não tocar"*. Quem sabe de MM2 é quem joga, não eu — e tocar num
-chip é o jogador dizendo "esse existe". Tocar de novo desfaz.
+Cheguei a pôr uma lista escrita **de cabeça**, com um aviso amarelo mandando conferir. Não
+era bom o bastante: ninguém deveria ter que auditar o meu chute. Aí a lista veio pelo
+caminho certo — **um jogador mandou os 143 nomes**. Guardo exatamente como vieram, sem
+"consertar" grafia: se um estiver escrito diferente, quem joga vê na hora e avisa; eu
+corrigindo por conta própria é que ia criar item que não existe.
 
-O campo de escrever continua ali pro que faltar, que é muita coisa.
+O que a lista **não** tem, de propósito: chance e raridade. Isso muda com atualização e
+eu não tenho de onde tirar. Quem anota é a pessoa.
+
+E a lista não é cerca: item que a pessoa anotar no caderno e que não esteja nela **aparece
+na busca do mesmo jeito**.
+
+## O item no meio da tela
+
+Pediram "que nem o ButterPoke", e o pedido estava certo. No ButterPoke a **carta** é a
+estrela: você digita e ela abre. Aqui a calculadora estava no lugar dela, e o item não
+existia em canto nenhum.
+
+Agora são dois modos, num trilho só:
+
+- **🔤 Pelo nome** (o que abre primeiro) — escreve um pedaço, vê a grade, toca e abre a
+  **ficha do item**. Achou um só? Abre direto, sem passo no meio.
+- **🎲 Pela chance** — a calculadora solta, pra quando você quer só fazer a conta.
+
+A ficha tem o nome grande, os selos do que você anotou, e embaixo a conta com a chance
+daquele item — com um campo pra mexer no número de caixas e ver mudando. Sem chance
+anotada, no lugar da conta vai o convite pra anotar, nunca um número inventado.
+
+### O bug que quase estragou tudo
+
+O campo da chance vinha preenchido com o que o site mostra: `1 em 4.000`. Com **ponto de
+milhar**, que é o certo em português. Só que na releitura esse ponto virava vírgula
+decimal: `4.000` = quatro. Bastava abrir um item salvo e apertar Guardar pra chance virar
+**mil vezes maior**, em silêncio.
+
+Duas correções, porque uma só não bastava:
+
+1. O que vai **pra dentro** de um campo de texto sai sem separador (`umEmCru`).
+2. O `lerChance` passou a entender ponto de milhar — mas só quando ele é mesmo separador:
+   `1.234.567` sim, `0.25` não.
+
+E um teste novo de ida e volta: tudo que o site **mostra** tem que voltar igual quando é
+lido de novo.
 
 ## A escadinha das raridades
 
