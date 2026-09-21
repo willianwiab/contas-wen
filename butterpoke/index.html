@@ -359,6 +359,26 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 }
 .linha-preco input:focus{outline:none;border-color:var(--asa-escura)}
 .fila .mini span b{color:var(--tinta);font-size:.8rem}
+/* ---------- bonecos ---------- */
+.dois-campos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 4px}
+@media(max-width:420px){ .dois-campos{grid-template-columns:1fr} }
+.dois-campos .linha-preco input{width:100%}
+#b-nome,#b-poke{
+  width:100%;padding:12px 14px;font:inherit;border:2px solid var(--borda);
+  border-radius:14px;background:var(--campo);color:var(--tinta);margin-bottom:4px;
+}
+#b-nome:focus,#b-poke:focus{outline:none;border-color:var(--asa-escura)}
+.bonecos{display:flex;flex-direction:column;gap:9px}
+.boneco{display:flex;align-items:center;gap:12px;border:1px solid var(--borda);
+  border-radius:16px;padding:9px 12px;background:var(--cartao)}
+.boneco img{width:44px;border-radius:7px;aspect-ratio:245/342;object-fit:cover;background:var(--vazio);flex:0 0 auto}
+.boneco-emoji{width:44px;height:61px;display:flex;align-items:center;justify-content:center;
+  font-size:1.7rem;background:var(--cartao3);border-radius:7px;flex:0 0 auto}
+.boneco-txt{flex:1;min-width:0}
+.boneco-txt b{display:block;font-size:.96rem;line-height:1.25}
+.boneco-txt span{display:block;font-size:.8rem;color:var(--tinta-fraca);line-height:1.5}
+.subiu{color:#2e9e4f}
+.caiu{color:var(--olho)}
 
 /* ---------- duelo ---------- */
 .duelo{display:flex;align-items:center;gap:10px;margin:6px 0 18px}
@@ -538,6 +558,8 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <button class="btn atalho" type="button" id="btn-desejos"><i>💖</i>Quero</button>
       <button class="btn atalho" type="button" id="btn-duelo"><i>⚔️</i>Duelo</button>
       <button class="btn atalho" type="button" id="btn-jogos"><i>🎮</i>Jogos</button>
+      <button class="btn atalho" type="button" id="btn-vale"><i>📦</i>Vale a pena</button>
+      <button class="btn atalho" type="button" id="btn-bonecos"><i>🧸</i>Bonecos</button>
       <button class="btn atalho" type="button" id="btn-perfil"><i>👤</i>Perfil</button>
     </div>
   </section>
@@ -552,7 +574,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 30 — 21/09</span>
+    <br><span class="versao">versão 31 — 21/09</span>
   </footer>
 </div>
 
@@ -1279,6 +1301,155 @@ function mostrarFavoritos(){
   gradeAtual.ehFavoritos = true;
 }
 
+/* ---------- meus bonecos ----------
+   Pediram pelúcia, boneco e brinquedo com preço. Catálogo disso não
+   existe em lugar nenhum que eu alcance, e inventar preço seria mentir.
+
+   Mas quem tem o dado é a própria pessoa: ela vê o boneco na loja, sabe
+   quanto custa, sabe qual Pokémon é. Então o site para de fingir que sabe
+   e passa a guardar o que ela sabe. A foto, essa eu consigo: é a arte de
+   uma carta do mesmo Pokémon. */
+const CHAVE_BONECOS = 'butterpoke:bonecos';
+const TIPOS_BONECO = [
+  { id:'pelucia',  nome:'🧸 Pelúcia' },
+  { id:'boneco',   nome:'🎎 Boneco' },
+  { id:'chaveiro', nome:'🔑 Chaveiro' },
+  { id:'outro',    nome:'🎁 Outro' },
+];
+let tipoBoneco = 'pelucia';
+
+function emojiTipo(id){
+  return ((TIPOS_BONECO.find(t => t.id === id) || TIPOS_BONECO[0]).nome.split(' ')[0]);
+}
+function lerBonecos(){ return lerLista(CHAVE_BONECOS); }
+function dinheiroBR(v){
+  return typeof v === 'number' && isFinite(v)
+    ? v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' }) : '—';
+}
+
+/* A foto vem da arte de uma carta do mesmo Pokémon. Se não achar, o
+   emoji do tipo serve — melhor um bonequinho desenhado que um quadrado
+   vazio, e ninguém precisa de foto pra saber o que comprou. */
+async function fotoDoPokemon(nome){
+  const limpo = String(nome || '').replace(/[^0-9A-Za-z ]/g, '').trim();
+  if(!limpo) return '';
+  try{
+    const d = await pedirJSON(url('name:"' + aspas(limpo) + '"', 1, false));
+    const c = (d.data || [])[0];
+    return (c && c.images && c.images.small) || '';
+  }catch(e){ return ''; }
+}
+
+function mostrarBonecos(){
+  cartaAberta = null; voltarPraLista = null;
+  const l = lerBonecos();
+  const gasto = l.reduce((s, x) => s + (Number(x.pago) || 0), 0);
+  const vale  = l.reduce((s, x) => s + (Number(x.vale) || Number(x.pago) || 0), 0);
+
+  palco.innerHTML =
+    '<section class="pergunta">' +
+      '<h2>🧸 Meus bonecos</h2>' +
+      '<p>Pelúcia, boneco, chaveiro — o que não é carta. ' +
+      '<b>Quem sabe o preço é você</b>: eu não tenho catálogo de brinquedo, ' +
+      'e não vou inventar número.</p>' +
+
+      (l.length
+        ? '<div class="quadrinhos">' +
+            '<div class="quadrinho"><span>Quantos</span><b>' + l.length + '</b></div>' +
+            '<div class="quadrinho"><span>Você pagou</span><b>' + dinheiroBR(gasto) + '</b></div>' +
+            '<div class="quadrinho"><span>Vale hoje</span><b>' + dinheiroBR(vale) + '</b></div>' +
+          '</div>'
+        : '') +
+
+      '<h3 class="titulinho">➕ Guardar um novo</h3>' +
+      '<label class="rotulo-filtro" for="b-nome">O que é</label>' +
+      '<input id="b-nome" maxlength="40" autocomplete="off" placeholder="Ex: Pelúcia grande do Pikachu" />' +
+      '<div class="escolha"><h3>Tipo</h3>' +
+        chips('chips-tipoboneco', TIPOS_BONECO.map(t => ({ v:t.id, rotulo:t.nome })), tipoBoneco) +
+      '</div>' +
+      '<label class="rotulo-filtro" for="b-poke">Qual Pokémon</label>' +
+      '<input id="b-poke" maxlength="30" autocomplete="off" placeholder="Ex: Pikachu" />' +
+      '<div class="dois-campos">' +
+        '<div><label class="rotulo-filtro" for="b-pago">Quanto custou</label>' +
+          '<div class="linha-preco"><span>R$</span>' +
+          '<input id="b-pago" type="number" step="0.5" min="0" placeholder="0" /></div></div>' +
+        '<div><label class="rotulo-filtro" for="b-vale">Quanto acha que vale</label>' +
+          '<div class="linha-preco"><span>R$</span>' +
+          '<input id="b-vale" type="number" step="0.5" min="0" placeholder="deixa em branco" /></div></div>' +
+      '</div>' +
+      '<button class="btn larga" type="button" id="b-guardar">➕ Guardar este</button>' +
+      '<p id="b-recado"></p>' +
+
+      (l.length
+        ? '<h3 class="titulinho">O que você já tem</h3>' +
+          '<div class="bonecos">' + l.map((x, i) => {
+            const p = Number(x.pago) || 0, v = Number(x.vale);
+            const subiu = isFinite(v) && v > 0 && p > 0 ? v - p : null;
+            return '<div class="boneco">' +
+              (x.foto
+                ? '<img alt="" src="' + escapar(x.foto) + '" />'
+                : '<div class="boneco-emoji">' + emojiTipo(x.tipo) + '</div>') +
+              '<div class="boneco-txt">' +
+                '<b>' + escapar(x.nome || 'Sem nome') + '</b>' +
+                '<span>' + emojiTipo(x.tipo) +
+                  (x.pokemon ? ' ' + escapar(x.pokemon) : '') + '</span>' +
+                '<span>Pagou ' + dinheiroBR(p) +
+                  (isFinite(v) && v > 0 ? ' · vale ' + dinheiroBR(v) : '') +
+                  (subiu !== null && subiu !== 0
+                    ? ' <b class="' + (subiu > 0 ? 'subiu' : 'caiu') + '">' +
+                      (subiu > 0 ? '▲ ' : '▼ ') + dinheiroBR(Math.abs(subiu)) + '</b>'
+                    : '') +
+                '</span>' +
+              '</div>' +
+              '<button type="button" class="tirar" data-i="' + i + '" ' +
+                'aria-label="Tirar ' + escapar(x.nome || '') + '">✕</button>' +
+            '</div>';
+          }).join('') + '</div>'
+        : '<p class="nota">Ainda não tem nenhum. Guarda o primeiro aí em cima — ' +
+          'ele entra no teu cartão de treinador e vai junto no teu código.</p>') +
+    '</section>';
+
+  ligarChips('chips-tipoboneco', v => { tipoBoneco = v; }, () => {
+    document.querySelectorAll('#chips-tipoboneco .chip').forEach(b =>
+      b.setAttribute('aria-pressed', b.dataset.v === tipoBoneco));
+  });
+
+  palco.querySelectorAll('.bonecos .tirar').forEach(b => {
+    b.onclick = () => {
+      const atual = lerBonecos();
+      atual.splice(Number(b.dataset.i), 1);
+      gravarLista(CHAVE_BONECOS, atual);
+      mostrarBonecos();
+    };
+  });
+
+  const guardar = document.getElementById('b-guardar');
+  guardar.onclick = async () => {
+    const nome = document.getElementById('b-nome').value.trim();
+    const poke = document.getElementById('b-poke').value.trim();
+    const pago = parseFloat(document.getElementById('b-pago').value);
+    const vale = parseFloat(document.getElementById('b-vale').value);
+    const recado = document.getElementById('b-recado');
+    if(!nome){
+      recado.innerHTML = '<span class="nota" style="display:block;border-color:var(--olho)">' +
+        '❌ Escreve o que é, pelo menos. Sem nome não dá pra reconhecer depois.</span>';
+      return;
+    }
+    guardar.disabled = true; guardar.textContent = 'Procurando a foto…';
+    const foto = await fotoDoPokemon(poke);
+    const atual = lerBonecos();
+    atual.push({ id:'b' + Date.now(), nome:nome, tipo:tipoBoneco, pokemon:poke,
+                 pago:isFinite(pago) ? pago : 0, vale:isFinite(vale) ? vale : null, foto:foto });
+    gravarLista(CHAVE_BONECOS, atual);
+    mostrarBonecos();
+    document.getElementById('b-recado').innerHTML =
+      '<span class="nota" style="display:block">✅ Guardado!' +
+      (foto ? '' : ' Não achei carta desse Pokémon pra usar de foto, então ficou o desenhinho.') +
+      '</span>';
+  };
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
 /* ---------- vale a pena abrir um pacote? ----------
    Pelúcia, boneco e brinquedo eu não tenho de onde tirar: os dois bancos
    são catálogos de CARTA. Mas a pergunta por trás — "vale a pena comprar?"
@@ -1359,8 +1530,11 @@ async function analisarPacote(colecao){
   const comPreco = cartas.filter(c => precoDe(c) != null);
   if(comPreco.length < 10){
     palco.innerHTML = '<div class="aviso"><strong>Essa coleção não tem preço suficiente 🤷</strong>' +
-      'Achei ' + cartas.length + ' cartas, mas só ' + comPreco.length + ' com preço. ' +
-      'Sem preço não dá pra fazer conta nenhuma — tenta uma coleção mais conhecida.</div>';
+      (comPreco.length >= cartas.length
+        ? 'Achei só ' + cartas.length + ' carta' + (cartas.length === 1 ? '' : 's') + ' aqui. '
+        : 'Achei ' + cartas.length + ' cartas, mas só ' + comPreco.length + ' com preço. ') +
+      'Com tão pouco preço a conta sairia chutada, e chute eu não dou — ' +
+      'tenta uma coleção mais conhecida.</div>';
     return;
   }
 
@@ -1869,6 +2043,8 @@ function cartaoTreinador(perfil, favoritos, dono, extras){
       numero(maisAntiga || '—', 'mais antiga') +
       numero(desejos.length, 'quer ter') +
       (dono ? numero(lerTenho().length, 'marcadas') : '') +
+      ((extras && extras.bonecos && extras.bonecos.length)
+        ? numero(extras.bonecos.length, 'bonecos') : '') +
     '</div>' +
     (mostrar.length
       ? '<div class="tt-cartas">' + mostrar.map(f =>
@@ -1910,7 +2086,8 @@ function saudacao(){
    precisa sobreviver a ser colado no zap sem quebrar em pedaços. */
 function fazerCodigo(){
   const tudo = { v:2, perfil:lerPerfil(), favoritos:lerFavoritos(),
-                 top3:lerLista(CHAVE_TOP3), desejos:lerLista(CHAVE_DESEJO), tenho:lerTenho() };
+                 top3:lerLista(CHAVE_TOP3), desejos:lerLista(CHAVE_DESEJO), tenho:lerTenho(),
+                 bonecos:lerBonecos() };
   return 'BP1.' + btoa(unescape(encodeURIComponent(JSON.stringify(tudo))));
 }
 function lerCodigo(txt){
@@ -1934,7 +2111,7 @@ function mostrarPerfil(){
     '<section class="pergunta">' +
       '<h2>👤 Meu perfil</h2>' +
       '<p>Fica guardado neste aparelho. Não tem senha, e não precisa.</p>' +
-      cartaoTreinador(p, favs, true, { top3:lerLista(CHAVE_TOP3), desejos:lerLista(CHAVE_DESEJO) }) +
+      cartaoTreinador(p, favs, true, { top3:lerLista(CHAVE_TOP3), desejos:lerLista(CHAVE_DESEJO), bonecos:lerBonecos() }) +
       '<label class="rotulo-filtro" for="nome-perfil">Como você quer ser chamado</label>' +
       '<input id="nome-perfil" maxlength="20" autocomplete="off" placeholder="Teu nome ou apelido" value="' +
         escapar(p.nome || '') + '" />' +
@@ -2016,7 +2193,7 @@ function mostrarPerfil(){
     }
     // Espiar não mexe em nada do que é meu — é só olhar.
     alvo.innerHTML = '<h3 class="titulinho">O cartão dele</h3>' +
-      cartaoTreinador(dados.perfil, dados.favoritos, false, { top3:dados.top3, desejos:dados.desejos }) +
+      cartaoTreinador(dados.perfil, dados.favoritos, false, { top3:dados.top3, desejos:dados.desejos, bonecos:dados.bonecos }) +
       '<p class="nota">Isto é só uma olhada. Nada disso entrou nas tuas cartas — ' +
       'pra trazer, aperta o outro botão.</p>';
     alvo.scrollIntoView({ behavior:'smooth', block:'nearest' });
@@ -2076,6 +2253,11 @@ function mostrarPerfil(){
       if(id && meuTenho.indexOf(id) < 0) meuTenho.push(id);
     });
     gravarTenho(meuTenho);
+    const meusBonecos = lerBonecos();
+    (Array.isArray(dados.bonecos) ? dados.bonecos : []).forEach(x => {
+      if(x && x.id && !meusBonecos.some(m => m.id === x.id)) meusBonecos.push(x);
+    });
+    gravarLista(CHAVE_BONECOS, meusBonecos);
     if(dados.perfil && dados.perfil.nome && !lerPerfil().nome) gravarPerfil(dados.perfil);
     const aviso = novas
       ? 'Chegaram ' + novas + (novas === 1 ? ' carta nova.' : ' cartas novas.')
@@ -3357,6 +3539,15 @@ document.getElementById('btn-todas').onclick = () => mostrarTodas(true);
 document.getElementById('btn-desejos').onclick = mostrarDesejos;
 document.getElementById('btn-duelo').onclick = mostrarDuelo;
 document.getElementById('btn-jogos').onclick = abrirJogos;
+document.getElementById('btn-bonecos').onclick = mostrarBonecos;
+/* O "vale a pena" já mora na barrinha de cima, mas a pessoa procurou e não
+   achou: lá ele parece só mais um jeito de buscar. Aqui ele vira porta de
+   entrada — liga o modo, rola até a busca e já traz as coleções na tela. */
+document.getElementById('btn-vale').onclick = () => {
+  trocarModo('pacote');
+  document.querySelector('.busca').scrollIntoView({ behavior:'smooth', block:'start' });
+  buscarPacote('');
+};
 document.getElementById('btn-perfil').onclick = mostrarPerfil;
 saudacao();
 contarFavoritos();

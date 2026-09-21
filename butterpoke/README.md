@@ -39,6 +39,26 @@ E um **código** que a pessoa leva na mão:
 - código de outro site, ou cortado no meio, dá um recado em português explicando —
   sem isso o navegador devolve o erro do `atob` em inglês, que não ajuda ninguém
 
+## Meus bonecos
+
+Pediram pelúcia, boneco e brinquedo com preço — três vezes. Respondi "não dá" três vezes,
+e na terceira parei pra pensar direito.
+
+**Catálogo de brinquedo não existe** em lugar nenhum que eu alcance, e inventar preço seria
+mentir. Isso não mudou. Mas quem tem o dado é a **própria pessoa**: ela vê o boneco na
+loja, sabe quanto custa, sabe qual Pokémon é. Então o site parou de fingir que sabe e
+passou a guardar o que ela sabe.
+
+Cada boneco tem nome, tipo (pelúcia, boneco, chaveiro, outro), qual Pokémon é, quanto
+custou e quanto ela acha que vale hoje. A lista soma os dois totais e marca com ▲ verde ou
+▼ vermelho quem subiu ou caiu.
+
+**A foto, essa eu consigo**: é a arte de uma carta do mesmo Pokémon. Quando não acho carta
+com aquele nome, fica o emoji do tipo — e a tela diz por quê, em vez de deixar um quadrado
+vazio sem explicação.
+
+Vai junto no código do perfil e vira um número no cartão de treinador, como todo o resto.
+
 ## Vale a pena abrir um pacote?
 
 Pediram produtos: booster, pelúcia, boneco, com preço e um veredito. **Pelúcia e boneco eu
@@ -48,6 +68,22 @@ brinquedo seria mentir. Isso o site diz na cara.
 Mas a pergunta por trás — *vale a pena comprar?* — essa dá pra responder com os preços que
 já estão na mão. Virou o **terceiro modo de busca**, ao lado de "pelo número" e "pelo
 nome": escreve o nome de uma coleção e ele soma.
+
+### "Cadê o vale a pena?"
+
+Ele estava lá — terceiro botão da barrinha de busca — e mesmo assim a pergunta veio. É a
+resposta certa: naquela barrinha ele parece só *mais um jeito de digitar*, e quem não sabe
+que existe não vai clicar pra descobrir. Coisa que a pessoa quer **fazer** precisa de
+porta, não de aba.
+
+Então ganhou um atalho **📦 Vale a pena** junto dos outros (Coleções, Álbum, Duelo…). Ele
+liga o modo, rola a tela até a busca e **já traz a lista de coleções** — não abre um campo
+vazio esperando que a pessoa adivinhe o que digitar. O modo na barrinha continua ali pra
+quem já sabe o nome da coleção.
+
+Também arrumei um recado meio bobo: quando a coleção tinha pouquíssima carta, ele dizia
+"achei 4 cartas, mas só 4 com preço", o que não quer dizer nada. Agora fala o que é:
+achou pouca carta, e com pouca carta a conta sairia chutada.
 
 ### Caixa, ETB e blister
 
