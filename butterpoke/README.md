@@ -205,6 +205,40 @@ então dá pra aprender quanto as coisas valem errando.
 Trocar de jogo zera o placar — misturar ponto de jogos diferentes não diria nada. O
 recorde de cada um fica guardado no aparelho, separado.
 
+### Vinte e cinco jogos — e por que não cem
+
+Pediram **cem**. Cem eu não faço, e disse isso na cara: com o que está escrito numa carta,
+passar de uns vinte e cinco vira o mesmo jogo com outro nome, e jogo repetido de chapéu
+novo é enganação. Então fiz vinte e cinco que perguntam coisas de verdade diferentes.
+
+O código não tem vinte e cinco jogos dentro. Tem **três formas e vinte e cinco receitas**:
+
+- **duas cartas, qual ganha** (12): preço, mais baratinha, mais HP, menos HP, mais antiga,
+  mais nova, mais rara, Pokédex, dano do ataque, custo de energia, custo de recuo, tamanho
+  da coleção
+- **olha o desenho e adivinha** (10): que carta é, quem desenhou, que tipo, qual raridade,
+  que coleção, que ano, quanto de HP, qual fraqueza, nome do ataque, básica ou evoluída
+- **os diferentes** (3): 🕵️ acha a intrusa, 🔀 põe em ordem, 📈 mais ou menos
+
+Cada receita diz três coisas: a pergunta, de onde sai o número (ou a etiqueta) e o que
+explicar no fim. "Mais baratinha" é "vale mais" com `maior: false` — mesma função.
+
+Como o menu passou a ter vinte e cinco, ele virou um `<details>` fechado que mostra só o
+jogo que está valendo. E tem um **🎲 Sortear um jogo** que nunca cai no mesmo de novo —
+botão que às vezes não faz nada parece botão quebrado.
+
+#### Dois bugs que o teste pegou
+
+1. O nome do jogo no menu aparecia como **`c => c.name`**. As receitas tinham `rotulo` pra
+   duas coisas diferentes — o nome do jogo e a etiqueta da carta — e o `Object.assign`
+   deixava a função por cima. A etiqueta virou `etiqueta`.
+2. **"Básica ou evoluída?" nunca montava.** Eu exigia quatro opções distintas, e esse jogo
+   só tem três respostas possíveis no mundo inteiro. Agora três bastam quando três é tudo
+   que existe.
+
+E uma linha morta que ainda por cima estouraria: um `classList.add('')` sobrando no "põe em
+ordem" — string vazia é erro, não no-op.
+
 ### Sete jogos, e mais cartas dentro deles
 
 Pediram mais jogos e mais cartas no "que carta é essa". As duas coisas eram o mesmo
