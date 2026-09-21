@@ -1316,12 +1316,9 @@
     renderChips();
     renderHistorico();
 
-    sides.da = [{ nome: "", valor: 0 }];
-    sides.recebe = [{ nome: "", valor: 0 }];
-    renderSide("da");
-    renderSide("recebe");
-    recalc();
-
+    /* A balança NÃO se limpa sozinha. Eu tinha feito isso por conta própria
+       e apaguei a troca que a pessoa acabou de digitar — quem quer limpar
+       aperta "Limpar a balança", que está logo ali do lado. */
     $("historico").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
