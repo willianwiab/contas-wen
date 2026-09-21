@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Olho na Carta — não leve carta falsa pra casa</title>
+<meta name="description" content="Checklist de bolso pra saber se uma carta Pokémon é falsa, balança pra ver se a troca é justa, e onde trocar com segurança perto de Santo André." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#1b3a6b" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" />
+<style>
+  :root {
+    --ground: #eef2f8;
+    --surface: #ffffff;
+    --surface-2: #f5f8fd;
+    --ink: #111b2e;
+    --ink-2: #46546c;
+    --ink-3: #76869f;
+    --line: #d8e0ee;
+    --line-strong: #bcc8dc;
+    --brand: #1b3a6b;
+    --brand-soft: #e4ecf9;
+    --on-brand: #ffffff;
+    --accent: #a76c05;
+    --accent-soft: #fbf0d8;
+    --good: #23694a;
+    --good-bg: #e2f2e9;
+    --warn: #9a5f06;
+    --warn-bg: #fbeed6;
+    --bad: #9e3125;
+    --bad-bg: #fae4e1;
+    --shadow: 0 1px 2px rgba(17,27,46,.06), 0 8px 24px -14px rgba(17,27,46,.28);
+    --radius: 14px;
+    --display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0b111e;
+      --surface: #141d2f;
+      --surface-2: #1a2438;
+      --ink: #e9eef7;
+      --ink-2: #a9b6cb;
+      --ink-3: #75849d;
+      --line: #27324a;
+      --line-strong: #3a4763;
+      --brand: #7aa5e6;
+      --brand-soft: #1b2740;
+      --on-brand: #0b111e;
+      --accent: #e5b256;
+      --accent-soft: #2a2314;
+      --good: #63c392;
+      --good-bg: #16301f;
+      --warn: #e0ab4c;
+      --warn-bg: #322612;
+      --bad: #ee8477;
+      --bad-bg: #351a17;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 26px -16px rgba(0,0,0,.8);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0b111e;
+    --surface: #141d2f;
+    --surface-2: #1a2438;
+    --ink: #e9eef7;
+    --ink-2: #a9b6cb;
+    --ink-3: #75849d;
+    --line: #27324a;
+    --line-strong: #3a4763;
+    --brand: #7aa5e6;
+    --brand-soft: #1b2740;
+    --on-brand: #0b111e;
+    --accent: #e5b256;
+    --accent-soft: #2a2314;
+    --good: #63c392;
+    --good-bg: #16301f;
+    --warn: #e0ab4c;
+    --warn-bg: #322612;
+    --bad: #ee8477;
+    --bad-bg: #351a17;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 26px -16px rgba(0,0,0,.8);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-text-size-adjust: 100%;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding-inline: 16px;
+    padding-block: 28px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -.02em; }
+  h1 { font-size: clamp(30px, 7vw, 44px); font-weight: 800; line-height: 1.04; }
+  h2 { font-size: 21px; font-weight: 700; }
+  p { margin: 0; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .masthead { display: flex; flex-direction: column; gap: 12px; }
+  .lede { color: var(--ink-2); max-width: 60ch; }
+
+  .caveat {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+  .caveat .mark { font-family: var(--display); font-weight: 800; color: var(--accent); flex: none; font-size: 18px; line-height: 1.3; }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .panel-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; padding: 18px 18px 0; }
+  .panel-head .hint { font-size: 13px; color: var(--ink-3); }
+  .panel-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 14px; }
+
+  .label-mono {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+  }
+
+  input[type="text"], input[type="number"] {
+    width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--line-strong);
+    border-radius: 9px; padding: 9px 11px;
+  }
+  input[type="number"] { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  input:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--brand); outline-offset: 2px;
+  }
+
+  button {
+    font-family: var(--body); font-size: 15px; font-weight: 700;
+    border-radius: 10px; border: 1px solid transparent;
+    padding: 9px 16px; cursor: pointer;
+    background: var(--brand); color: var(--on-brand);
+  }
+  button:hover { filter: brightness(1.12); }
+  button.ghost { background: transparent; color: var(--ink-2); border-color: var(--line-strong); font-weight: 500; }
+  button.tiny { padding: 4px 9px; font-size: 13px; font-weight: 500; }
+
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+  /* ---- balança ---- */
+  .scale { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 620px) { .scale { grid-template-columns: 1fr; } }
+
+  .pan { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; display: flex; flex-direction: column; gap: 9px; }
+  .pan-rows { display: flex; flex-direction: column; gap: 8px; }
+  .pan-row { display: grid; grid-template-columns: 1fr 104px 30px; gap: 7px; align-items: center; }
+  .pan-row .rm { background: transparent; color: var(--ink-3); border: 0; padding: 0; font-size: 18px; line-height: 1; }
+  .pan-row .rm:hover { color: var(--bad); filter: none; }
+  .pan-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: 1px solid var(--line); padding-top: 9px; margin-top: 2px;
+  }
+  .pan-total .v { font-family: var(--mono); font-weight: 600; font-size: 17px; font-variant-numeric: tabular-nums; }
+
+  /* ---- câmera ---- */
+  .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 560px) { .shots { grid-template-columns: 1fr; } }
+  .shot { display: flex; flex-direction: column; gap: 7px; }
+  .shotbtn {
+    width: 100%; height: 200px; padding: 0; overflow: hidden;
+    background: var(--surface-2); color: var(--ink-3);
+    border: 2px dashed var(--line-strong); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500; font-size: 14px;
+  }
+  .shotbtn:hover { filter: none; border-color: var(--brand); color: var(--brand); }
+  .shotbtn img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .shot-ph { padding: 10px; text-align: center; }
+  .swatch-line { display: flex; align-items: center; gap: 8px; }
+  .swatch { width: 22px; height: 22px; border-radius: 5px; border: 1px solid var(--line-strong); background: var(--surface-2); display: block; flex: none; }
+
+  /* ---- busca de preço ---- */
+  .search { display: flex; flex-direction: column; gap: 10px; background: var(--brand-soft); border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; }
+  .search-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .rates { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 13px; color: var(--ink-2); }
+  .rates label { display: flex; align-items: center; gap: 6px; }
+  .rates input { width: 84px; padding: 5px 8px; font-size: 14px; }
+
+  .hits { display: flex; flex-direction: column; gap: 0; max-height: 330px; overflow-y: auto; }
+  .hit { display: grid; grid-template-columns: 40px 1fr auto; gap: 11px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .hit:last-child { border-bottom: 0; }
+  .hit img { width: 40px; border-radius: 4px; display: block; background: var(--surface-2); }
+  .hit-nm { font-weight: 700; font-size: 14px; line-height: 1.3; }
+  .hit-sub { font-size: 12px; color: var(--ink-3); }
+  .hit-pr { font-family: var(--mono); font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .hit-add { display: flex; gap: 5px; margin-top: 4px; }
+  .search-msg { font-size: 13px; color: var(--ink-2); }
+
+  .verdict { display: flex; gap: 12px; align-items: flex-start; border-radius: 12px; padding: 14px 16px; border: 1px solid transparent; }
+  .verdict .tag { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; flex: none; padding-top: 3px; }
+  .verdict .say { font-size: 15px; }
+  .v-good { background: var(--good-bg); border-color: var(--good); }
+  .v-good .tag { color: var(--good); }
+  .v-warn { background: var(--warn-bg); border-color: var(--warn); }
+  .v-warn .tag { color: var(--warn); }
+  .v-bad { background: var(--bad-bg); border-color: var(--bad); }
+  .v-bad .tag { color: var(--bad); }
+  .v-none { background: var(--surface-2); border-color: var(--line); }
+  .v-none .tag { color: var(--ink-3); }
+
+  .alerts { display: flex; flex-direction: column; gap: 8px; }
+  .alert { font-size: 14px; background: var(--warn-bg); border-left: 3px solid var(--warn); border-radius: 0 8px 8px 0; padding: 9px 12px; }
+
+  /* ---- checklist ---- */
+  .check { list-style: none; margin: 0; padding: 0; }
+  .check li { border-bottom: 1px solid var(--line); }
+  .check li:last-child { border-bottom: 0; }
+  .check label { display: grid; grid-template-columns: 20px 1fr; gap: 12px; padding: 11px 0; cursor: pointer; align-items: start; }
+  .check input { margin-top: 5px; width: 16px; height: 16px; accent-color: var(--brand); }
+  .check .t { font-weight: 700; font-size: 14px; }
+  .check .d { font-size: 14px; color: var(--ink-2); }
+  .check input:checked ~ .txt .t { text-decoration: line-through; color: var(--ink-3); }
+
+  .progress { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-3); }
+  .bar { flex: 1; height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--good); width: 0%; transition: width .25s ease; }
+
+  /* ---- golpes ---- */
+  .traps { display: flex; flex-direction: column; }
+  .trap { padding: 13px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; }
+  .trap:last-child { border-bottom: 0; }
+  .trap .q { font-family: var(--display); font-weight: 700; font-size: 15px; }
+  .trap .a { font-size: 14px; color: var(--ink-2); }
+
+  /* ---- locais ---- */
+  .place { display: flex; flex-direction: column; gap: 3px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .place:last-child { border-bottom: 0; }
+  .place .nm { font-family: var(--display); font-weight: 700; font-size: 16px; }
+  .place .ad { font-size: 14px; color: var(--ink-2); }
+  .place .mt { font-family: var(--mono); font-size: 12px; color: var(--accent); font-weight: 600; }
+  .rank { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--on-brand); background: var(--brand); border-radius: 999px; padding: 2px 8px; align-self: flex-start; letter-spacing: .06em; }
+  .rank.alt { background: transparent; color: var(--ink-3); border: 1px solid var(--line-strong); }
+
+  footer { font-size: 13px; color: var(--ink-3); border-top: 1px solid var(--line); padding-top: 18px; display: flex; flex-direction: column; gap: 8px; }
+  footer a { color: var(--brand); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <span class="eyebrow">Pokémon TCG · região do ABC</span>
+    <h1>Olho na Carta</h1>
+    <p class="lede">
+      Checklist de bolso pra não levar carta falsa pra casa, balança pra ver se a troca
+      está em pé, e onde trocar com gente que se conhece. Funciona sem internet — abre na
+      mesa da loja e usa.
+    </p>
+    <div class="caveat">
+      <span class="mark">!</span>
+      <p>
+        <b>Não existe teste único que prove que uma carta é original.</b> O que existe é
+        uma pilha de sinais: se três ou quatro falharem, recue. Acima de
+        <b>R$&nbsp;300</b>, exija carta graduada (PSA, CGC, Beckett) e confira o número do
+        certificado no site da graduadora, na hora, pelo celular.
+      </p>
+    </div>
+  </header>
+
+  <!-- ============ CHECKLIST ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>O teste na mão</h2>
+      <span class="hint">Marque conforme for conferindo</span>
+    </div>
+    <div class="panel-body">
+      <div class="progress">
+        <span class="bar"><i id="bar"></i></span>
+        <span id="prog" class="label-mono">0 de 10</span>
+      </div>
+      <ul class="check" id="check"></ul>
+      <div class="row">
+        <button class="ghost tiny" id="limpar">Limpar marcações</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CÂMERA ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Compare o verso pela câmera</h2>
+      <span class="hint">As duas fotos na mesma luz, uma atrás da outra</span>
+    </div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:var(--ink-2)">
+        O azul do verso é onde a falsificação mais escorrega — mas a olho nu a diferença
+        some. Fotografe o verso das duas cartas e eu meço a cor média de cada uma.
+      </p>
+
+      <div class="shots">
+        <div class="shot">
+          <span class="label-mono">Carta suspeita</span>
+          <button class="shotbtn" type="button" data-shot="a">
+            <span class="shot-ph" id="ph-a">Tirar foto do verso</span>
+            <img id="img-a" alt="Verso da carta suspeita" hidden />
+          </button>
+          <span class="swatch-line"><i class="swatch" id="sw-a"></i><span class="label-mono" id="hex-a">—</span></span>
+          <input type="file" id="cam-a" accept="image/*" capture="environment" hidden />
+        </div>
+
+        <div class="shot">
+          <span class="label-mono">Carta que você sabe ser original</span>
+          <button class="shotbtn" type="button" data-shot="b">
+            <span class="shot-ph" id="ph-b">Tirar foto do verso</span>
+            <img id="img-b" alt="Verso da carta original de referência" hidden />
+          </button>
+          <span class="swatch-line"><i class="swatch" id="sw-b"></i><span class="label-mono" id="hex-b">—</span></span>
+          <input type="file" id="cam-b" accept="image/*" capture="environment" hidden />
+        </div>
+      </div>
+
+      <div id="cor-out"></div>
+
+      <div class="caveat" style="font-size:13px">
+        <span class="mark">!</span>
+        <p>
+          Só vale se as duas fotos forem tiradas <b>na mesma hora, na mesma luz, do mesmo
+          jeito</b>. Sombra, flash ou janela atrás mudam a cor mais do que a falsificação
+          muda. Cor igual não prova que é original — cor diferente é motivo pra parar e
+          olhar o resto.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BALANÇA ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>A balança da troca</h2>
+      <span class="hint">Exemplo preenchido — troque pelas suas cartas</span>
+    </div>
+    <div class="panel-body">
+
+      <div class="search">
+        <div class="search-row">
+          <input type="text" id="busca" placeholder="Buscar carta pelo nome em inglês: Charizard ex" />
+          <button id="go-busca">Buscar preço</button>
+        </div>
+        <div class="rates">
+          <label for="dolar">Dólar hoje R$ <input type="number" id="dolar" step="0.01" min="0" value="5.40" /></label>
+          <label for="euro">Euro hoje R$ <input type="number" id="euro" step="0.01" min="0" value="5.90" /></label>
+        </div>
+        <div id="hits"></div>
+      </div>
+
+      <div class="scale">
+        <div class="pan">
+          <span class="label-mono">Você dá</span>
+          <div class="pan-rows" id="rows-da"></div>
+          <button class="ghost tiny" data-add="da" style="align-self:flex-start">+ carta</button>
+          <div class="pan-total">
+            <span class="label-mono">Total</span>
+            <span class="v" id="total-da">R$ 0,00</span>
+          </div>
+        </div>
+
+        <div class="pan">
+          <span class="label-mono">Você recebe</span>
+          <div class="pan-rows" id="rows-recebe"></div>
+          <button class="ghost tiny" data-add="recebe" style="align-self:flex-start">+ carta</button>
+          <div class="pan-total">
+            <span class="label-mono">Total</span>
+            <span class="v" id="total-recebe">R$ 0,00</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="veredito"></div>
+      <div class="alerts" id="alertas"></div>
+
+      <p style="font-size:13px;color:var(--ink-3)">
+        O preço vem do TCGplayer e do Cardmarket, em dólar e euro, convertido pela cotação
+        que você digitou — é <b>referência de mercado lá fora</b>, não preço de loja
+        brasileira, que costuma ser mais alto. Estado da carta (NM, played, danificada) muda
+        tudo e a busca não sabe o estado da sua. Confira na Liga Pokémon antes de fechar
+        troca grande.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ GOLPES ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Frase que é golpe</h2>
+      <span class="hint">Se ouvir isso, desacelere</span>
+    </div>
+    <div class="panel-body">
+      <div class="traps" id="traps"></div>
+    </div>
+  </section>
+
+  <!-- ============ LOCAIS ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Onde trocar perto de Santo André</h2>
+      <span class="hint">Ligue antes — horário de Liga muda</span>
+    </div>
+    <div class="panel-body">
+      <div id="places"></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      Quer que alguém olhe a <b>foto</b> da carta e aponte os sinais? Tem uma versão com
+      análise por IA — ela só roda dentro do Claude, não aqui.
+    </p>
+    <p>
+      Feche toda troca sentado na mesa da loja, com gente em volta. Quem tem pressa pra
+      fechar é quem tem algo a esconder.
+    </p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function load(key, fallback) {
+    try {
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (e) { return fallback; }
+  }
+  function save(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+  }
+
+  /* ================= checklist ================= */
+  var CHECKS = [
+    ["Teste da luz", "Lanterna do celular encostada atrás da carta. Original tem miolo preto por dentro e fica quase opaca; falsa deixa a luz atravessar."],
+    ["Borda de perfil", "Olhe a lateral da carta de lado. Original mostra uma linha azul-escura entre as camadas; falsa costuma ser branca ou cinza sem variação."],
+    ["Verso comparado", "Encoste numa carta que você sabe que é original. O azul da falsa sai mais escuro, mais claro ou puxado pro roxo."],
+    ["Textura e brilho", "Original é levemente áspera no dedo. Falsa costuma ser lisa e brilhante demais, quase plastificada."],
+    ["Fonte e acentos", "Confira o acento de “Pokémon”, o símbolo © e o espaçamento das letras. É onde a falsificação mais escorrega."],
+    ["Holo no lugar certo", "Foil falso brilha na carta inteira, inclusive na moldura e no texto, onde não deveria brilhar nada."],
+    ["Número da coleção", "No canto de baixo. Esse número existe mesmo nessa coleção? Confira no site oficial antes de fechar."],
+    ["Dano e custo de energia", "Leia o ataque inteiro. Valor de dano errado ou custo de energia estranho entrega a falsa na hora."],
+    ["Peso e flexão", "Falsa é mais fina e mole, ou rígida demais. Dobre de leve entre os dedos e compare com uma original."],
+    ["Tirou da sleeve?", "Se a pessoa não deixa você segurar e olhar a borda, ela está escondendo alguma coisa. Recue."]
+  ];
+
+  var checkState = load("olho-check", {});
+  var checkList = $("check");
+
+  function updateProgress() {
+    var done = 0;
+    for (var i = 0; i < CHECKS.length; i++) if (checkState["c" + i]) done++;
+    $("prog").textContent = done + " de " + CHECKS.length;
+    $("bar").style.width = (done / CHECKS.length * 100) + "%";
+  }
+
+  CHECKS.forEach(function (c, i) {
+    var li = document.createElement("li");
+    var label = document.createElement("label");
+    var input = document.createElement("input");
+    input.type = "checkbox";
+    input.id = "chk-" + i;
+    input.checked = !!checkState["c" + i];
+    input.addEventListener("change", function () {
+      checkState["c" + i] = input.checked;
+      save("olho-check", checkState);
+      updateProgress();
+    });
+    var txt = el("span", "txt");
+    txt.appendChild(el("span", "t", c[0]));
+    txt.appendChild(el("span", "d", " — " + c[1]));
+    label.appendChild(input);
+    label.appendChild(txt);
+    li.appendChild(label);
+    checkList.appendChild(li);
+  });
+  updateProgress();
+
+  $("limpar").addEventListener("click", function () {
+    checkState = {};
+    save("olho-check", checkState);
+    for (var i = 0; i < CHECKS.length; i++) {
+      var box = $("chk-" + i);
+      if (box) box.checked = false;
+    }
+    updateProgress();
+  });
+
+  /* ================= câmera: cor do verso ================= */
+  /* Medir a cor média do miolo do verso. Ignoro as bordas da foto (mesa,
+     dedo, sombra) e fico com o retângulo central, que é onde o azul mora
+     em qualquer enquadramento razoável. */
+  var cores = { a: null, b: null };
+  var shotUrls = { a: null, b: null };
+
+  function corMedia(img) {
+    var L = 120;
+    var cv = document.createElement("canvas");
+    cv.width = L;
+    cv.height = L;
+    var cx = cv.getContext("2d", { willReadFrequently: true });
+    if (!cx) return null;
+    cx.drawImage(img, 0, 0, L, L);
+    var d;
+    try { d = cx.getImageData(Math.round(L * .2), Math.round(L * .2), Math.round(L * .6), Math.round(L * .6)).data; }
+    catch (e) { return null; }
+    var r = 0, g = 0, b = 0, n = 0;
+    for (var i = 0; i < d.length; i += 4) {
+      if (d[i + 3] < 200) continue;
+      r += d[i]; g += d[i + 1]; b += d[i + 2]; n++;
+    }
+    if (!n) return null;
+    return { r: Math.round(r / n), g: Math.round(g / n), b: Math.round(b / n) };
+  }
+
+  function hex(c) {
+    return "#" + [c.r, c.g, c.b].map(function (v) {
+      return ("0" + v.toString(16)).slice(-2);
+    }).join("").toUpperCase();
+  }
+
+  function compararCores() {
+    var out = $("cor-out");
+    out.textContent = "";
+    if (!cores.a || !cores.b) return;
+
+    var dr = cores.a.r - cores.b.r, dg = cores.a.g - cores.b.g, db = cores.a.b - cores.b.b;
+    var dist = Math.round(Math.sqrt(dr * dr + dg * dg + db * db));
+
+    var kind, tag, say;
+    if (dist <= 18) {
+      kind = "v-good"; tag = "Azul bate";
+      say = "Diferença de " + dist + " pontos de cor — dentro do que a própria luz explica. Isso não inocenta a carta: siga o checklist.";
+    } else if (dist <= 40) {
+      kind = "v-warn"; tag = "Azul meio diferente";
+      say = "Diferença de " + dist + " pontos. Pode ser sombra ou ângulo. Refaça as duas fotos juntas, na mesma luz, e veja se continua.";
+    } else {
+      kind = "v-bad"; tag = "Azul não bate";
+      say = "Diferença de " + dist + " pontos — grande demais pra ser só luz, se as fotos foram tiradas juntas. Pare e confira borda, brilho e o teste da luz.";
+    }
+
+    var box = el("div", "verdict " + kind);
+    box.appendChild(el("span", "tag", tag));
+    box.appendChild(el("p", "say", say));
+    out.appendChild(box);
+  }
+
+  ["a", "b"].forEach(function (k) {
+    var input = $("cam-" + k);
+    var btn = document.querySelector('[data-shot="' + k + '"]');
+    var img = $("img-" + k);
+    var ph = $("ph-" + k);
+
+    btn.addEventListener("click", function () { input.click(); });
+
+    input.addEventListener("change", function () {
+      var f = input.files && input.files[0];
+      if (!f) return;
+      if (shotUrls[k]) URL.revokeObjectURL(shotUrls[k]);
+      shotUrls[k] = URL.createObjectURL(f);
+      img.onload = function () {
+        var c = corMedia(img);
+        cores[k] = c;
+        var sw = $("sw-" + k);
+        var hx = $("hex-" + k);
+        if (c) {
+          sw.style.background = hex(c);
+          hx.textContent = hex(c);
+        } else {
+          hx.textContent = "não deu pra medir";
+        }
+        compararCores();
+      };
+      img.src = shotUrls[k];
+      img.hidden = false;
+      ph.hidden = true;
+      btn.style.borderStyle = "solid";
+      input.value = "";
+    });
+  });
+
+  /* ================= balança ================= */
+  var sides = {
+    da: [{ nome: "Charizard ex SAR (151)", valor: 250 }],
+    recebe: [{ nome: "Mew ex SAR (151)", valor: 180 }, { nome: "Pikachu ex (151)", valor: 45 }]
+  };
+
+  function renderSide(key) {
+    var host = $("rows-" + key);
+    host.textContent = "";
+    sides[key].forEach(function (item, i) {
+      var row = el("div", "pan-row");
+
+      var nome = document.createElement("input");
+      nome.type = "text";
+      nome.id = "nome-" + key + "-" + i;
+      nome.placeholder = "Nome da carta";
+      nome.value = item.nome;
+      nome.addEventListener("input", function () { item.nome = nome.value; recalc(); });
+
+      var valor = document.createElement("input");
+      valor.type = "number";
+      valor.id = "valor-" + key + "-" + i;
+      valor.min = "0";
+      valor.step = "1";
+      valor.inputMode = "decimal";
+      valor.placeholder = "R$";
+      valor.value = item.valor === 0 ? "" : String(item.valor);
+      valor.addEventListener("input", function () {
+        var v = parseFloat(valor.value.replace(",", "."));
+        item.valor = isFinite(v) && v > 0 ? v : 0;
+        recalc();
+      });
+
+      var rm = el("button", "rm", "×");
+      rm.type = "button";
+      rm.setAttribute("aria-label", "Remover " + (item.nome || "carta"));
+      rm.addEventListener("click", function () {
+        sides[key].splice(i, 1);
+        if (!sides[key].length) sides[key].push({ nome: "", valor: 0 });
+        renderSide(key);
+        recalc();
+      });
+
+      row.appendChild(nome);
+      row.appendChild(valor);
+      row.appendChild(rm);
+      host.appendChild(row);
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-add]"), function (btn) {
+    btn.addEventListener("click", function () {
+      var key = btn.getAttribute("data-add");
+      sides[key].push({ nome: "", valor: 0 });
+      renderSide(key);
+      recalc();
+    });
+  });
+
+  function total(key) {
+    return sides[key].reduce(function (s, it) { return s + (it.valor || 0); }, 0);
+  }
+
+  function verdictBox(kind, tag, say) {
+    var box = el("div", "verdict " + kind);
+    box.appendChild(el("span", "tag", tag));
+    box.appendChild(el("p", "say", say));
+    return box;
+  }
+
+  function recalc() {
+    var da = total("da");
+    var recebe = total("recebe");
+    $("total-da").textContent = BRL.format(da);
+    $("total-recebe").textContent = BRL.format(recebe);
+
+    var out = $("veredito");
+    out.textContent = "";
+
+    if (da <= 0 || recebe <= 0) {
+      out.appendChild(verdictBox("v-none", "Faltou preço",
+        "Coloque o valor dos dois lados pra eu pesar. Pesquise cada carta no marketplace da Liga Pokémon."));
+    } else {
+      var maior = Math.max(da, recebe);
+      var dif = recebe - da;
+      var pct = Math.round(Math.abs(dif) / maior * 100);
+      var difTxt = BRL.format(Math.abs(dif));
+
+      if (pct <= 10) {
+        out.appendChild(verdictBox("v-good", "Troca equilibrada",
+          "Diferença de " + difTxt + " (" + pct + "%). Está em pé — se as cartas forem originais e o estado bater com o combinado."));
+      } else if (dif > 0) {
+        out.appendChild(verdictBox("v-good", "Vantagem sua",
+          "Você recebe " + difTxt + " a mais (" + pct + "%). Vantagem grande demais é motivo pra desconfiar: pergunte por que ele topa isso."));
+      } else {
+        out.appendChild(verdictBox("v-bad", "Você sai perdendo",
+          "Você entrega " + difTxt + " a mais (" + pct + "%). Peça uma carta de troco ou recuse."));
+      }
+    }
+
+    /* alertas */
+    var alerts = [];
+    var todas = sides.da.concat(sides.recebe);
+    var caras = todas.filter(function (it) { return it.valor >= 300; });
+    var absurdas = todas.filter(function (it) { return it.valor >= 5000; });
+
+    if (absurdas.length) {
+      alerts.push("Tem carta de " + BRL.format(absurdas[0].valor) + " nessa troca. Carta desse valor quase nunca aparece numa troca casual — trate como falsa até provarem o contrário, com graduação e certificado conferido.");
+    } else if (caras.length) {
+      alerts.push("Carta acima de R$ 300 na mesa: exija graduada (PSA, CGC, Beckett) e confira o número do certificado no site da graduadora, na hora.");
+    }
+
+    if (sides.da.length === 1 && sides.recebe.length >= 4) {
+      alerts.push("Uma carta sua por " + sides.recebe.length + " dele: o lado com muitas cartas costuma vir inflado. Confira o preço de cada uma, não só o total.");
+    }
+    if (sides.recebe.length === 1 && sides.da.length >= 4) {
+      alerts.push("Você entrega " + sides.da.length + " cartas por uma só. Some com calma e confira se cada valor seu está certo.");
+    }
+
+    var box = $("alertas");
+    box.textContent = "";
+    alerts.forEach(function (a) { box.appendChild(el("div", "alert", a)); });
+  }
+
+  renderSide("da");
+  renderSide("recebe");
+  recalc();
+
+  /* ================= busca de preço ================= */
+  /* Reaproveita a mesma fonte do ButterPoke: pokemontcg.io, sem chave.
+     A cotação é digitada pela pessoa e fica guardada no aparelho — eu não
+     tenho de onde buscar câmbio aqui, e chutar um número fixo envelheceria
+     mal e viraria mentira dentro de um mês. */
+  var API = "https://api.pokemontcg.io/v2/cards";
+  var CAMPOS = "id,name,number,rarity,set,images,tcgplayer,cardmarket";
+  var ORDEM = ["normal", "holofoil", "reverseHolofoil", "1stEditionNormal", "1stEditionHolofoil", "unlimited", "unlimitedHolofoil"];
+
+  var inpDolar = $("dolar");
+  var inpEuro = $("euro");
+  var hits = $("hits");
+  var busca = $("busca");
+  var goBusca = $("go-busca");
+  var buscando = false;
+
+  var rates = load("olho-cotacao", null);
+  if (rates && rates.usd) inpDolar.value = rates.usd;
+  if (rates && rates.eur) inpEuro.value = rates.eur;
+
+  function saveRates() {
+    save("olho-cotacao", { usd: inpDolar.value, eur: inpEuro.value });
+  }
+  inpDolar.addEventListener("change", saveRates);
+  inpEuro.addEventListener("change", saveRates);
+
+  function precoPrincipal(carta) {
+    var p = carta.tcgplayer && carta.tcgplayer.prices;
+    if (p) {
+      var chaves = Object.keys(p).sort(function (a, b) {
+        var ia = ORDEM.indexOf(a), ib = ORDEM.indexOf(b);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+      });
+      for (var i = 0; i < chaves.length; i++) {
+        var q = p[chaves[i]];
+        var v = q && (q.market != null ? q.market : (q.mid != null ? q.mid : q.low));
+        if (typeof v === "number" && v > 0) return { valor: v, moeda: "USD" };
+      }
+    }
+    var cm = carta.cardmarket && carta.cardmarket.prices;
+    if (cm) {
+      var w = cm.trendPrice != null ? cm.trendPrice
+        : (cm.averageSellPrice != null ? cm.averageSellPrice
+        : (cm.avg30 != null ? cm.avg30 : cm.lowPrice));
+      if (typeof w === "number" && w > 0) return { valor: w, moeda: "EUR" };
+    }
+    return null;
+  }
+
+  function emReais(preco) {
+    if (!preco) return null;
+    var taxa = preco.moeda === "EUR"
+      ? parseFloat(inpEuro.value.replace(",", "."))
+      : parseFloat(inpDolar.value.replace(",", "."));
+    if (!isFinite(taxa) || taxa <= 0) return null;
+    return Math.round(preco.valor * taxa * 100) / 100;
+  }
+
+  function msg(text) {
+    hits.textContent = "";
+    hits.appendChild(el("p", "search-msg", text));
+  }
+
+  function renderHits(cartas) {
+    hits.textContent = "";
+    if (!cartas.length) {
+      msg("Nada com esse nome. O nome da carta na busca é em inglês — tente “Charizard”, “Pikachu”, “Mew ex”.");
+      return;
+    }
+    var box = el("div", "hits");
+    cartas.forEach(function (c) {
+      var preco = precoPrincipal(c);
+      var reais = emReais(preco);
+
+      var row = el("div", "hit");
+
+      if (c.images && c.images.small) {
+        var img = document.createElement("img");
+        img.src = c.images.small;
+        img.alt = c.name || "";
+        img.loading = "lazy";
+        row.appendChild(img);
+      } else {
+        row.appendChild(el("span"));
+      }
+
+      var mid = el("span");
+      mid.appendChild(el("span", "hit-nm", c.name || "?"));
+      var sub = (c.set && c.set.name ? c.set.name : "") + (c.number ? " · nº " + c.number : "");
+      mid.appendChild(el("span", "hit-sub", sub));
+      var add = el("span", "hit-add");
+      ["da", "recebe"].forEach(function (key) {
+        var b = el("button", "ghost tiny", key === "da" ? "+ você dá" : "+ você recebe");
+        b.type = "button";
+        b.disabled = reais == null;
+        b.addEventListener("click", function () {
+          var nome = (c.name || "") + (c.set && c.set.name ? " (" + c.set.name + ")" : "");
+          var vazia = sides[key].filter(function (it) { return !it.nome && !it.valor; })[0];
+          if (vazia) { vazia.nome = nome; vazia.valor = reais; }
+          else sides[key].push({ nome: nome, valor: reais });
+          renderSide(key);
+          recalc();
+        });
+        add.appendChild(b);
+      });
+      mid.appendChild(add);
+      row.appendChild(mid);
+
+      row.appendChild(el("span", "hit-pr", reais != null ? BRL.format(reais) : "sem preço"));
+      box.appendChild(row);
+    });
+    hits.appendChild(box);
+  }
+
+  function buscar() {
+    var termo = busca.value.trim();
+    if (!termo || buscando) return;
+    buscando = true;
+    goBusca.disabled = true;
+    msg("Procurando…");
+
+    var url = API + "?q=" + encodeURIComponent('name:"' + termo.replace(/"/g, "") + '*"')
+      + "&pageSize=12&orderBy=-set.releaseDate&select=" + CAMPOS;
+
+    fetch(url, { headers: { Accept: "application/json" } })
+      .then(function (r) {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
+      .then(function (j) { renderHits((j && j.data) || []); })
+      .catch(function () {
+        msg("Não consegui buscar agora — pode ser falta de internet ou o site de preços fora do ar. Digite o valor na mão.");
+      })
+      .then(function () {
+        buscando = false;
+        goBusca.disabled = false;
+      });
+  }
+
+  goBusca.addEventListener("click", buscar);
+  busca.addEventListener("keydown", function (e) { if (e.key === "Enter") buscar(); });
+
+  /* ================= golpes ================= */
+  var TRAPS = [
+    ["“Tem outro cara querendo, fecha agora”", "Pressa é a ferramenta número um do golpista. Carta boa espera você conferir. Se não pode esperar dez minutos, não vale a pena."],
+    ["“Não precisa tirar da sleeve”", "A sleeve esconde borda, textura e brilho — exatamente os três sinais que entregam falsificação. Sempre tire."],
+    ["“Eu te mando depois, confia”", "Troca é mão e mão, na hora, na mesa. Nunca entregue a sua carta primeiro."],
+    ["“Essa é japonesa, por isso é diferente”", "Carta japonesa é diferente de verdade, mas é desculpa comum pra justificar impressão ruim. Compare com uma japonesa original, não com uma brasileira."],
+    ["“Já foi avaliada, pode confiar”", "Avaliação só vale com laudo que você confere. E se quem avaliou é amigo de quem vende, não vale nada."],
+    ["“Vamos fechar lá fora, aqui é cheio”", "Nunca. Toda troca acontece dentro da loja, na mesa, com gente em volta. Quem quer sair quer testemunha de menos."]
+  ];
+
+  var traps = $("traps");
+  TRAPS.forEach(function (t) {
+    var d = el("div", "trap");
+    d.appendChild(el("span", "q", t[0]));
+    d.appendChild(el("span", "a", t[1]));
+    traps.appendChild(d);
+  });
+
+  /* ================= locais ================= */
+  var PLACES = [
+    ["Mais seguro", false, "CHQ Cards", "Rua Oratório, 340, sobreloja — Bangu, Santo André · (11) 4432-1653", "Liga Pokémon · sábado, 13h30–17h"],
+    ["Mais movimento", true, "Comics Games", "Rua Goitacazes, 436, Centro — São Caetano do Sul", "Liga Pokémon · quarta 15h–19h e sábado 10h30–16h"],
+    ["Mais perto", true, "Ri Happy — Grand Plaza Shopping", "Av. Industrial, 600, lojas 73 e 74 — Bairro Jardim, Santo André", "Ponto oficial de Liga · bom pra comprar, fraco pra trocar"],
+    ["Eventual", true, "Atrium Shopping", "Vila Homero Thon, Santo André", "Encontros “Cartas na Mesa” · acompanhe a agenda do shopping"]
+  ];
+
+  var places = $("places");
+  PLACES.forEach(function (p) {
+    var a = el("article", "place");
+    a.appendChild(el("span", "rank" + (p[1] ? " alt" : ""), p[0]));
+    a.appendChild(el("span", "nm", p[2]));
+    a.appendChild(el("span", "ad", p[3]));
+    a.appendChild(el("span", "mt", p[4]));
+    places.appendChild(a);
+  });
+
+  /* ================= offline ================= */
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>

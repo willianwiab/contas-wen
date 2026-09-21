@@ -1,0 +1,14 @@
+{
+  "name": "Olho na Carta — não leve carta falsa pra casa",
+  "short_name": "Olho na Carta",
+  "description": "Checklist pra saber se uma carta Pokémon é falsa, comparador de verso pela câmera, balança de troca com preço de verdade e onde trocar perto de Santo André.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef2f8",
+  "theme_color": "#1b3a6b",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
