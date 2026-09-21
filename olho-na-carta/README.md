@@ -97,7 +97,13 @@ coleções na lista.
 ## Onde ficam os seus dados
 
 No seu aparelho, no `localStorage`, e em lugar nenhum mais. Não tem conta, não tem
-servidor, ninguém além de você vê. Se limpar os dados do navegador, some.
+servidor, ninguém além de você vê.
+
+E é justamente por isso que existe o **Salvar uma cópia**: um site que guarda meses de
+coleção e histórico só no navegador é um site que perde meses de coleção e histórico, no
+dia que a pessoa limpa os dados ou troca de celular. Sem conta e sem servidor, o backup
+tem que ser um arquivo na mão do dono. O botão baixa um `.json` com tudo; o de restaurar
+lê ele de volta, avisando antes que vai substituir o que está no aparelho.
 
 ## O que ele não faz
 

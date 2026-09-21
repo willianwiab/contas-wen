@@ -613,6 +613,28 @@
       <div id="grade"></div>
     </div>
   </section>
+  <!-- ============ DADOS ============ -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Salvar uma cópia</h2>
+      <span class="hint">Pra não perder tudo se trocar de celular</span>
+    </div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:var(--ink-2)">
+        Sua coleção, sua lista de desejos e seu histórico moram só neste navegador. Se
+        você limpar os dados, trocar de aparelho ou desinstalar, <b>some tudo</b>. Salve
+        uma cópia de vez em quando e guarde no seu Drive ou mande pra você mesmo no
+        WhatsApp.
+      </p>
+      <div class="row">
+        <button id="baixar">Salvar cópia</button>
+        <button class="ghost" id="restaurar-btn">Restaurar de uma cópia</button>
+        <input type="file" id="restaurar" accept="application/json,.json" hidden />
+      </div>
+      <div id="dados-msg"></div>
+    </div>
+  </section>
+
   <!-- ============ GOLPES ============ -->
   <section class="panel">
     <div class="panel-head">
@@ -1786,6 +1808,100 @@
   }
 
   goColecao.addEventListener("click", function () { abrirColecao(selColecao.value); });
+
+  /* ================= salvar e restaurar ================= */
+  /* Um site que guarda meses de coleção e histórico só no navegador é um
+     site que perde meses de coleção e histórico. Sem conta e sem servidor,
+     o backup tem que ser um arquivo na mão da pessoa. */
+  var CHAVES = ["olho-carteira", "olho-check", "olho-check-pessoa", "olho-pessoa",
+                "olho-cotacao", "olho-colecoes", "olho-sets"];
+
+  var dadosMsg = $("dados-msg");
+  function aviso(texto, ruim) {
+    dadosMsg.textContent = "";
+    var p = el("p", ruim ? "err" : "search-msg", texto);
+    if (!ruim) p.style.color = "var(--good)";
+    dadosMsg.appendChild(p);
+  }
+
+  $("baixar").addEventListener("click", function () {
+    var pacote = { site: "olho-na-carta", versao: 1, quando: new Date().toISOString(), dados: {} };
+    var achou = 0;
+    CHAVES.forEach(function (k) {
+      try {
+        var v = localStorage.getItem(k);
+        if (v != null) { pacote.dados[k] = v; achou++; }
+      } catch (e) {}
+    });
+
+    if (!achou) { aviso("Ainda não tem nada pra salvar. Marque umas cartas primeiro.", true); return; }
+
+    var hoje = new Date();
+    var nome = "olho-na-carta-" + hoje.getFullYear()
+      + "-" + ("0" + (hoje.getMonth() + 1)).slice(-2)
+      + "-" + ("0" + hoje.getDate()).slice(-2) + ".json";
+
+    try {
+      var blob = new Blob([JSON.stringify(pacote)], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = nome;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      aviso("Cópia salva como " + nome + ". Guarde num lugar que você ache depois.");
+    } catch (e) {
+      aviso("Não consegui salvar o arquivo neste navegador.", true);
+    }
+  });
+
+  $("restaurar-btn").addEventListener("click", function () { $("restaurar").click(); });
+
+  $("restaurar").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    this.value = "";
+    if (!f) return;
+
+    var leitor = new FileReader();
+    leitor.onload = function () {
+      var pacote;
+      try { pacote = JSON.parse(String(leitor.result)); }
+      catch (e) { aviso("Esse arquivo não é uma cópia do Olho na Carta.", true); return; }
+
+      if (!pacote || pacote.site !== "olho-na-carta" || !pacote.dados) {
+        aviso("Esse arquivo não é uma cópia do Olho na Carta.", true);
+        return;
+      }
+
+      /* Restaurar apaga o que está aqui agora — quem tem carta marcada no
+         aparelho precisa saber disso antes, não depois. */
+      var quantas = 0;
+      try {
+        var c = JSON.parse(pacote.dados["olho-carteira"] || "{}");
+        quantas = (c.tenho || []).length;
+      } catch (e) {}
+
+      var pergunta = "Isso vai substituir tudo que está guardado neste aparelho"
+        + (quantas ? ", trocando pela cópia de " + quantas + (quantas === 1 ? " carta" : " cartas") : "")
+        + ". Continuar?";
+      if (!window.confirm(pergunta)) return;
+
+      var ok = 0;
+      CHAVES.forEach(function (k) {
+        try {
+          if (pacote.dados[k] != null) { localStorage.setItem(k, pacote.dados[k]); ok++; }
+          else localStorage.removeItem(k);
+        } catch (e) {}
+      });
+
+      aviso("Restaurado. Recarregando a página…");
+      setTimeout(function () { location.reload(); }, 700);
+    };
+    leitor.onerror = function () { aviso("Não consegui ler esse arquivo.", true); };
+    leitor.readAsText(f);
+  });
 
   /* ================= golpes ================= */
   var TRAPS = [
