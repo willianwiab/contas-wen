@@ -631,8 +631,8 @@
 
   /* ================= balança ================= */
   var sides = {
-    da: [{ nome: "Charizard ex SAR (151)", valor: 250 }],
-    recebe: [{ nome: "Mew ex SAR (151)", valor: 180 }, { nome: "Pikachu ex (151)", valor: 45 }]
+    da: [{ nome: "Charizard ex nº 199/165 · 151", valor: 250 }],
+    recebe: [{ nome: "Mew ex nº 193/165 · 151", valor: 180 }, { nome: "Pikachu ex nº 178/165 · 151", valor: 45 }]
   };
 
   function renderSide(key) {
@@ -644,7 +644,7 @@
       var nome = document.createElement("input");
       nome.type = "text";
       nome.id = "nome-" + key + "-" + i;
-      nome.placeholder = "Nome da carta";
+      nome.placeholder = "Nome e número da carta";
       nome.value = item.nome;
       nome.addEventListener("input", function () { item.nome = nome.value; recalc(); });
 
@@ -708,10 +708,7 @@
     var out = $("veredito");
     out.textContent = "";
 
-    if (da <= 0 || recebe <= 0) {
-      out.appendChild(verdictBox("v-none", "Faltou preço",
-        "Coloque o valor dos dois lados pra eu pesar. Pesquise cada carta no marketplace da Liga Pokémon."));
-    } else {
+    if (da > 0 && recebe > 0) {
       var maior = Math.max(da, recebe);
       var dif = recebe - da;
       var pct = Math.round(Math.abs(dif) / maior * 100);
@@ -845,7 +842,7 @@
 
       var mid = el("span");
       mid.appendChild(el("span", "hit-nm", c.name || "?"));
-      var sub = (c.set && c.set.name ? c.set.name : "") + (c.number ? " · nº " + c.number : "");
+      var sub = (c.number ? "nº " + c.number + (c.set && c.set.printedTotal ? "/" + c.set.printedTotal : "") + " · " : "") + (c.set && c.set.name ? c.set.name : "");
       mid.appendChild(el("span", "hit-sub", sub));
       var add = el("span", "hit-add");
       ["da", "recebe"].forEach(function (key) {
@@ -853,7 +850,11 @@
         b.type = "button";
         b.disabled = reais == null;
         b.addEventListener("click", function () {
-          var nome = (c.name || "") + (c.set && c.set.name ? " (" + c.set.name + ")" : "");
+          /* O numerinho do canto de baixo é o que diz QUAL carta é: o mesmo
+             Charizard sai em versões de preço bem diferente na mesma coleção. */
+          var nome = (c.name || "")
+            + (c.number ? " nº " + c.number + (c.set && c.set.printedTotal ? "/" + c.set.printedTotal : "") : "")
+            + (c.set && c.set.name ? " · " + c.set.name : "");
           var vazia = sides[key].filter(function (it) { return !it.nome && !it.valor; })[0];
           if (vazia) { vazia.nome = nome; vazia.valor = reais; }
           else sides[key].push({ nome: nome, valor: reais });
