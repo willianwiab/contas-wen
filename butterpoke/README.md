@@ -400,6 +400,34 @@ mercado americano) e do **Cardmarket** (em euro, mercado europeu). O site mostra
 - um valor aproximado em reais, usando a cotação do dólar que você digita lá embaixo
   (fica guardada no aparelho). É chute pra dar noção — o preço oficial é o de lá.
 
+## Claro e escuro
+
+O site era branco brilhante, e ele é usado de noite, no quarto. Agora tem modo escuro.
+
+Ele **segue o aparelho** por padrão. O botão 🌙/☀️ no canto do topo manda mais alto que o
+aparelho a partir do momento em que a pessoa aperta — quem apertou quis aquilo, e o
+sistema não tem que discordar depois.
+
+Pra isso, **toda cor virou token**. Antes havia trinta e nove cores soltas no meio do CSS,
+e modo escuro com cor solta é caça ao tesouro. Agora o tema escuro é só a mesma lista de
+nomes com outros valores.
+
+Duas coisas que só apareceram olhando a tela escura de verdade:
+
+- o ícone da Butterfree tem um fundo claro, que some no modo claro e vira uma **caixa
+  branca** no escuro. O `icone.svg` continua com fundo (ícone de aplicativo sem fundo fica
+  feio na tela do celular) e o cabeçalho passou a usar um `icone-limpo.svg` sem ele.
+- o campo do dólar não declarava fundo, então o navegador punha branco — e o número ficava
+  **branco no branco**. Todo campo agora declara o seu.
+
+A barra do navegador no celular (`theme-color`) acompanha o tema, senão fica uma faixa
+clara em cima de uma página escura.
+
+### O topo
+
+Eram seis botões roxos iguais, que roubavam a atenção da busca — que é o que a pessoa vem
+fazer. Viraram contorno: continuam visíveis, param de competir.
+
 ## Quando dá erro
 
 Um relato de uso: *"Não consegui abrir essa favorita 📡 — HTTP 500"*. Duas coisas erradas

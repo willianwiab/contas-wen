@@ -17,17 +17,50 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
 :root{
-  /* As cores são as da Butterfree: asa lilás, corpo roxo e o olho vermelhão. */
-  --asa:#a97fd6; --asa-escura:#7b52ab; --creme:#faf7ff;
-  --olho:#e3350d; --tinta:#2e2140; --tinta-fraca:#6f6288;
-  --cartao:#ffffff; --borda:#e5daf7; --sombra:0 6px 0 #d9c9f2;
+  /* As cores são as da Butterfree: asa lilás, corpo roxo e o olho vermelhão.
+     Tudo que pinta alguma coisa mora aqui, pra o modo escuro ser só trocar
+     esta lista — sem caçar cor solta no meio do CSS. */
+  --asa:#a97fd6; --asa-escura:#7b52ab; --asa-clara:#c9a8ef;
+  --olho:#e3350d; --olho-sombra:#a8250a;
+  --creme:#faf7ff; --creme2:#efe4ff; --creme3:#e6d8fb;
+  --tinta:#2e2140; --tinta-fraca:#6f6288; --tinta-no-asa:#3d2a5c;
+  --cartao:#ffffff; --cartao2:#fdfbff; --cartao3:#f5edff;
+  --campo:#fcfaff; --vazio:#f2eafc;
+  --borda:#e5daf7; --sombra:0 6px 0 #d9c9f2; --sombra-cor:#d9c9f2;
+  --erro-borda:#f5b3a4; --erro-fundo:#fff6f4; --erro-sombra:#fadcd4; --erro-code:#fdf3f1;
 }
+/* ---------- modo escuro ----------
+   Mesma lista de cores, outros valores. Segue o aparelho por padrão, e o
+   botão do canto manda mais alto que o aparelho quando a pessoa escolhe. */
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --asa:#b48ce0; --asa-escura:#8f63c4; --asa-clara:#caa9ef;
+    --olho:#ff5c3c; --olho-sombra:#8e2008;
+    --creme:#15111e; --creme2:#211a31; --creme3:#1b1528;
+    --tinta:#f1ebff; --tinta-fraca:#a89bc3; --tinta-no-asa:#1b1229;
+    --cartao:#241d34; --cartao2:#2b2340; --cartao3:#332748;
+    --campo:#1d1729; --vazio:#2f2647;
+    --borda:#3e3259; --sombra:0 6px 0 #15111e; --sombra-cor:#15111e;
+    --erro-borda:#8f4436; --erro-fundo:#2b1d1a; --erro-sombra:#1a1210; --erro-code:#241714;
+  }
+}
+:root[data-tema="escuro"]{
+  --asa:#b48ce0; --asa-escura:#8f63c4; --asa-clara:#caa9ef;
+  --olho:#ff5c3c; --olho-sombra:#8e2008;
+  --creme:#15111e; --creme2:#211a31; --creme3:#1b1528;
+  --tinta:#f1ebff; --tinta-fraca:#a89bc3; --tinta-no-asa:#1b1229;
+  --cartao:#241d34; --cartao2:#2b2340; --cartao3:#332748;
+  --campo:#1d1729; --vazio:#2f2647;
+  --borda:#3e3259; --sombra:0 6px 0 #15111e; --sombra-cor:#15111e;
+  --erro-borda:#8f4436; --erro-fundo:#2b1d1a; --erro-sombra:#1a1210; --erro-code:#241714;
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:'Rubik',system-ui,sans-serif; color:var(--tinta);
-  background:var(--creme);
-  background-image:radial-gradient(circle at 12% 8%, #efe4ff 0 22%, transparent 22.5%),
-                   radial-gradient(circle at 88% 72%, #e6d8fb 0 18%, transparent 18.5%);
+  background-color:var(--creme);
+  background-image:radial-gradient(circle at 12% 8%, var(--creme2) 0 22%, transparent 22.5%),
+                   radial-gradient(circle at 88% 72%, var(--creme3) 0 18%, transparent 18.5%);
   background-attachment:fixed;
   min-height:100vh; padding:0 16px 56px;
 }
@@ -39,7 +72,7 @@ header{text-align:center;padding:30px 0 18px}
   font-family:'Baloo 2',cursive; font-size:clamp(2.4rem,9vw,3.6rem); line-height:1;
   color:var(--asa-escura); text-shadow:3px 3px 0 var(--asa);
 }
-.logo span{color:var(--olho);text-shadow:3px 3px 0 #fff}
+.logo span{color:var(--olho);text-shadow:3px 3px 0 var(--creme)}
 /* A Butterfree desenhada, em vez do emoji — o emoji sai laranja e briga com o roxo. */
 .logo .bicho{height:1.15em;vertical-align:-.22em;margin-left:.12em}
 .slogan{margin-top:8px;color:var(--tinta-fraca);font-size:1rem}
@@ -51,22 +84,22 @@ header{text-align:center;padding:30px 0 18px}
 }
 .modos{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .modos button{
-  flex:1 1 140px; padding:10px 14px; border:2px solid var(--borda); background:#fff;
+  flex:1 1 140px; padding:10px 14px; border:2px solid var(--borda); background:var(--cartao);
   border-radius:999px; font:inherit; font-weight:600; color:var(--tinta-fraca); cursor:pointer;
 }
 .modos button[aria-pressed="true"]{background:var(--asa);border-color:var(--asa-escura);color:var(--tinta)}
 .linha-busca{display:flex;gap:10px;flex-wrap:wrap}
 #campo{
   flex:1 1 200px; min-width:0; padding:16px 18px; font:inherit; font-size:1.15rem;
-  border:3px solid var(--borda); border-radius:16px; background:#fcfaff; color:var(--tinta);
+  border:3px solid var(--borda); border-radius:16px; background:var(--campo); color:var(--tinta);
 }
-#campo:focus{outline:none;border-color:var(--asa-escura);background:#fff}
+#campo:focus{outline:none;border-color:var(--asa-escura);background:var(--cartao)}
 .btn{
   padding:16px 26px; border:none; border-radius:16px; font:inherit; font-weight:700;
   font-size:1.05rem; cursor:pointer; background:var(--olho); color:#fff;
-  box-shadow:0 5px 0 #a8250a; transition:transform .08s, box-shadow .08s;
+  box-shadow:0 5px 0 var(--olho-sombra); transition:transform .08s, box-shadow .08s;
 }
-.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #a8250a}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--olho-sombra)}
 .btn.secundario{background:var(--asa);color:var(--tinta);box-shadow:0 5px 0 var(--asa-escura)}
 .btn.secundario:active{box-shadow:0 1px 0 var(--asa-escura)}
 .dica{margin-top:12px;font-size:.88rem;color:var(--tinta-fraca)}
@@ -75,11 +108,28 @@ header{text-align:center;padding:30px 0 18px}
 /* Esta regra tinha sumido num ajuste anterior, e os botões do perfil
    voltaram a ficar do tamanho do texto, apertadinhos no celular. */
 .btn.larga{margin-top:12px;width:100%;padding:13px;font-size:1rem}
-.atalhos{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
-.atalhos .btn{flex:1 1 150px;padding:12px 10px;font-size:.95rem}
+/* Os seis atalhos eram seis botões roxos iguais, e roubavam a atenção da
+   busca, que é o que a pessoa vem fazer. Viraram contorno: continuam
+   visíveis, param de competir. */
+.atalhos{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.atalhos .btn{
+  flex:1 1 130px;padding:11px 8px;font-size:.88rem;font-weight:600;
+  background:var(--cartao);color:var(--asa-escura);border:2px solid var(--borda);
+  box-shadow:none;transition:border-color .15s,color .15s,transform .1s;
+}
+.atalhos .btn:hover{border-color:var(--asa);color:var(--tinta)}
+.atalhos .btn:active{transform:translateY(2px);box-shadow:none}
+/* botão de claro/escuro */
+.tema{
+  position:absolute;top:16px;right:0;width:42px;height:42px;border-radius:50%;
+  border:2px solid var(--borda);background:var(--cartao);font-size:1.2rem;
+  cursor:pointer;line-height:1;padding:0;color:inherit;
+}
+.tema:hover{border-color:var(--asa)}
+header{position:relative}
 .rotulo-filtro{display:block;font-size:.9rem;font-weight:600;margin:0 0 6px}
 .mais-opcoes{
-  border:2px solid var(--borda);border-radius:16px;background:#fff;
+  border:2px solid var(--borda);border-radius:16px;background:var(--cartao);
   padding:4px 14px;margin:0 0 16px;
 }
 .mais-opcoes summary{
@@ -91,7 +141,7 @@ header{text-align:center;padding:30px 0 18px}
 .mais-opcoes .escolha{margin:0 0 14px}
 select.escolher{
   width:100%;max-width:340px;padding:10px 12px;font:inherit;border:2px solid var(--borda);
-  border-radius:12px;background:#fff;color:var(--tinta);cursor:pointer;
+  border-radius:12px;background:var(--cartao);color:var(--tinta);cursor:pointer;
 }
 select.escolher:focus{outline:none;border-color:var(--asa-escura)}
 /* A estrela fica por cima da cartinha; por isso a opção virou caixa com
@@ -103,34 +153,34 @@ select.escolher:focus{outline:none;border-color:var(--asa-escura)}
 }
 .opcao .tenho{
   position:absolute;top:7px;left:7px;width:34px;height:34px;border:none;
-  border-radius:50%;background:rgba(255,255,255,.92);cursor:pointer;
+  border-radius:50%;background:var(--cartao);cursor:pointer;
   font-size:1rem;line-height:1;padding:0;box-shadow:0 1px 5px rgba(0,0,0,.18);
 }
-.opcao .tenho:hover{background:#fff;transform:scale(1.1)}
+.opcao .tenho:hover{filter:brightness(1.06);transform:scale(1.1)}
 .opcao .estrela{
   position:absolute;top:7px;right:7px;width:34px;height:34px;border:none;
-  border-radius:50%;background:rgba(255,255,255,.92);cursor:pointer;
+  border-radius:50%;background:var(--cartao);cursor:pointer;
   font-size:1.05rem;line-height:1;padding:0;box-shadow:0 1px 5px rgba(0,0,0,.18);
 }
-.opcao .estrela:hover{background:#fff;transform:scale(1.1)}
+.opcao .estrela:hover{filter:brightness(1.06);transform:scale(1.1)}
 /* O logo da coleção é deitado e cada um tem um formato; não dá pra tratar
    como carta em pé, senão estica tudo. */
 .opcao.colecao img{aspect-ratio:auto;height:72px;object-fit:contain;background:transparent;padding:4px}
 
 /* ---------- avisos ---------- */
 .aviso{
-  margin-top:22px;background:#fff;border:3px dashed var(--borda);border-radius:20px;
+  margin-top:22px;background:var(--cartao);border:3px dashed var(--borda);border-radius:20px;
   padding:26px 20px;text-align:center;color:var(--tinta-fraca);
 }
 .aviso strong{display:block;color:var(--tinta);font-size:1.15rem;margin-bottom:6px}
-.aviso.ruim{border-color:#f5b3a4;background:#fff6f4}
+.aviso.ruim{border-color:var(--erro-borda);background:var(--erro-fundo)}
 /* ---------- tela de erro ----------
    Antes era um parágrafo vermelho com "HTTP 500" no fim. Agora tem cara de
    recado: o que houve, de quem é a culpa, um botão pra tentar de novo, e o
    detalhe técnico guardado pra quem quiser abrir. */
 .erro{
-  margin-top:22px;background:#fff;border:3px solid #f5b3a4;border-radius:22px;
-  padding:26px 20px;text-align:center;box-shadow:0 6px 0 #fadcd4;
+  margin-top:22px;background:var(--cartao);border:3px solid var(--erro-borda);border-radius:22px;
+  padding:26px 20px;text-align:center;box-shadow:0 6px 0 var(--erro-sombra);
 }
 .erro-cara{font-size:2.8rem;line-height:1;margin-bottom:10px}
 .erro strong{display:block;font-family:'Baloo 2',cursive;font-size:1.5rem;color:var(--tinta);margin-bottom:8px}
@@ -141,7 +191,7 @@ select.escolher:focus{outline:none;border-color:var(--asa-escura)}
 .erro-detalhe{margin-top:16px;text-align:left;max-width:460px;margin-left:auto;margin-right:auto}
 .erro-detalhe summary{cursor:pointer;font-size:.8rem;color:var(--tinta-fraca);padding:5px 0}
 .erro-detalhe code{
-  display:block;margin-top:6px;padding:9px 11px;background:#fdf3f1;border-radius:9px;
+  display:block;margin-top:6px;padding:9px 11px;background:var(--erro-code);border-radius:9px;
   font-size:.74rem;color:var(--tinta-fraca);word-break:break-word;line-height:1.5;
 }
 .girando{
@@ -156,7 +206,7 @@ select.escolher:focus{outline:none;border-color:var(--asa-escura)}
 .pergunta p{color:var(--tinta-fraca);margin-bottom:14px}
 #filtro{
   width:100%;padding:13px 16px;font:inherit;border:3px solid var(--borda);
-  border-radius:14px;background:#fff;color:var(--tinta);margin-bottom:16px;
+  border-radius:14px;background:var(--cartao);color:var(--tinta);margin-bottom:16px;
 }
 #filtro:focus{outline:none;border-color:var(--asa-escura)}
 .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
@@ -166,7 +216,7 @@ select.escolher:focus{outline:none;border-color:var(--asa-escura)}
   transition:transform .12s,border-color .12s;
 }
 .opcao:hover,.opcao:focus{transform:translateY(-4px);border-color:var(--asa-escura);outline:none}
-.opcao img{width:100%;border-radius:10px;display:block;background:#f2eafc;aspect-ratio:245/342}
+.opcao img{width:100%;border-radius:10px;display:block;background:var(--vazio);aspect-ratio:245/342}
 .opcao b{display:block;margin-top:8px;font-size:.98rem}
 .opcao small{display:block;color:var(--tinta-fraca);font-size:.8rem;margin-top:2px}
 
@@ -189,26 +239,26 @@ select.escolher:focus{outline:none;border-color:var(--asa-escura)}
   thead th{font-size:.72rem}
   .modos button{flex:1 1 120px;padding:10px 8px;font-size:.92rem}
 }
-.carta .foto{width:100%;align-self:start;border-radius:14px;display:block;background:#f2eafc;aspect-ratio:245/342;object-fit:contain}
+.carta .foto{width:100%;align-self:start;border-radius:14px;display:block;background:var(--vazio);aspect-ratio:245/342;object-fit:contain}
 .carta h2{font-family:'Baloo 2',cursive;font-size:1.9rem;line-height:1.1}
 .etiquetas{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px}
-.etiqueta{background:#f5edff;border:2px solid var(--borda);border-radius:999px;padding:5px 12px;font-size:.82rem;font-weight:600}
+.etiqueta{background:var(--cartao3);border:2px solid var(--borda);border-radius:999px;padding:5px 12px;font-size:.82rem;font-weight:600}
 .etiqueta.pais{background:var(--asa);border-color:var(--asa-escura);color:#fff}
-.etiqueta.forte{background:var(--olho);border-color:#a8250a;color:#fff}
+.etiqueta.forte{background:var(--olho);border-color:var(--olho-sombra);color:#fff}
 .de-onde{font-size:.82rem;color:var(--tinta-fraca);margin:-8px 0 16px;line-height:1.45}
 .de-onde b{color:var(--tinta)}
 .destaque{
-  background:linear-gradient(135deg,var(--asa),#c9a8ef);border-radius:18px;
+  background:linear-gradient(135deg,var(--asa),var(--asa-clara));border-radius:18px;
   padding:16px 18px;border:2px solid var(--asa-escura);
 }
-.destaque .rotulo{font-size:.82rem;font-weight:600;color:#3d2a5c;text-transform:uppercase;letter-spacing:.06em}
+.destaque .rotulo{font-size:.82rem;font-weight:600;color:var(--tinta-no-asa);text-transform:uppercase;letter-spacing:.06em}
 .destaque .preco{font-family:'Baloo 2',cursive;font-size:2.4rem;line-height:1.1;color:var(--tinta)}
-.destaque .reais{font-size:1.05rem;font-weight:600;color:#3d2a5c}
+.destaque .reais{font-size:1.05rem;font-weight:600;color:var(--tinta-no-asa)}
 .destaque .crua{
-  margin-top:8px;font-size:.88rem;color:#3d2a5c;background:rgba(255,255,255,.55);
+  margin-top:8px;font-size:.88rem;color:var(--tinta-no-asa);background:rgba(255,255,255,.55);
   padding:7px 11px;border-radius:10px;display:inline-block;
 }
-.destaque .qual{font-size:.85rem;color:#3d2a5c;margin-top:6px}
+.destaque .qual{font-size:.85rem;color:var(--tinta-no-asa);margin-top:6px}
 h3.titulinho{margin:22px 0 8px;font-size:1rem;color:var(--tinta-fraca);text-transform:uppercase;letter-spacing:.05em}
 table{width:100%;max-width:100%;border-collapse:collapse;font-size:.92rem;table-layout:fixed}
 th,td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--borda)}
@@ -222,7 +272,7 @@ thead th{color:var(--tinta-fraca);font-size:.8rem;text-transform:uppercase;lette
 .escolha h3{font-size:.95rem;margin-bottom:8px;color:var(--tinta)}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{
-  border:2px solid var(--borda);background:#fff;border-radius:14px;padding:9px 14px;
+  border:2px solid var(--borda);background:var(--cartao);border-radius:14px;padding:9px 14px;
   font:inherit;font-weight:600;font-size:.92rem;color:var(--tinta-fraca);cursor:pointer;
   text-align:left;line-height:1.25;transition:transform .1s;
 }
@@ -230,14 +280,14 @@ thead th{color:var(--tinta-fraca);font-size:.8rem;text-transform:uppercase;lette
 .chip[aria-pressed="true"]{background:var(--asa);border-color:var(--asa-escura);color:#fff}
 .chip small{display:block;font-weight:400;font-size:.72rem;opacity:.8;margin-top:1px}
 .nota{
-  margin-top:10px;font-size:.84rem;color:var(--tinta-fraca);background:#f7f2ff;
+  margin-top:10px;font-size:.84rem;color:var(--tinta-fraca);background:var(--cartao2);
   border-left:4px solid var(--asa);padding:10px 12px;border-radius:0 10px 10px 0;
 }
 .nota b{color:var(--tinta)}
 td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 /* ---------- ficha do jogo ---------- */
 .evolui{font-size:.9rem;color:var(--tinta-fraca);margin-bottom:10px}
-.golpe{border:2px solid var(--borda);border-radius:14px;padding:11px 13px;margin-bottom:9px;background:#fdfbff}
+.golpe{border:2px solid var(--borda);border-radius:14px;padding:11px 13px;margin-bottom:9px;background:var(--cartao2)}
 .golpe .cabeca{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .golpe .cabeca b{font-size:1rem}
 .golpe p{margin-top:6px;font-size:.86rem;color:var(--tinta-fraca);line-height:1.45}
@@ -247,7 +297,7 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
   background:var(--asa);color:#fff;border-radius:999px;padding:3px 9px}
 .dano{margin-left:auto;font-family:'Baloo 2',cursive;font-size:1.4rem;color:var(--olho)}
 .quadrinhos{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 4px}
-.quadrinho{flex:1 1 105px;border:2px solid var(--borda);border-radius:13px;padding:9px 11px;background:#fff}
+.quadrinho{flex:1 1 105px;border:2px solid var(--borda);border-radius:13px;padding:9px 11px;background:var(--cartao)}
 .quadrinho span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--tinta-fraca)}
 .quadrinho b{font-size:.98rem}
 .conto{margin-top:11px;font-size:.85rem;font-style:italic;color:var(--tinta-fraca);line-height:1.5}
@@ -259,15 +309,15 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
   max-width:660px;margin:0 auto;
 }
 .buraco{
-  border:2px dashed var(--borda);border-radius:12px;background:#faf7ff;padding:7px;
+  border:2px dashed var(--borda);border-radius:12px;background:var(--creme);padding:7px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   aspect-ratio:245/342;font:inherit;color:inherit;overflow:hidden;
 }
-.buraco.cheio{border-style:solid;background:#fff;cursor:pointer;transition:transform .12s}
+.buraco.cheio{border-style:solid;background:var(--cartao);cursor:pointer;transition:transform .12s}
 .buraco.cheio:hover{transform:translateY(-4px);border-color:var(--asa-escura)}
 /* flex-basis 0 é o que faz o buraco obedecer o aspect-ratio: com basis auto
    a altura natural da imagem entra na conta e estoura a folha por baixo. */
-.buraco img{width:100%;border-radius:8px;flex:1 1 0;min-height:0;object-fit:contain;background:#f2eafc}
+.buraco img{width:100%;border-radius:8px;flex:1 1 0;min-height:0;object-fit:contain;background:var(--vazio)}
 .buraco span{font-size:.72rem;font-weight:600;margin-top:5px;line-height:1.2;
   overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .buraco .vazio{color:var(--tinta-fraca);font-weight:400;font-style:italic}
@@ -282,12 +332,12 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 }
 .fila{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}
 .mini{
-  flex:0 0 108px;border:2px solid var(--borda);border-radius:12px;background:#fff;
+  flex:0 0 108px;border:2px solid var(--borda);border-radius:12px;background:var(--cartao);
   padding:7px;cursor:pointer;font:inherit;color:inherit;transition:transform .12s;
 }
 .mini:hover{transform:translateY(-4px);border-color:var(--asa-escura)}
 .mini img{width:100%;border-radius:8px;display:block;aspect-ratio:245/342;
-  object-fit:cover;background:#f2eafc}
+  object-fit:cover;background:var(--vazio)}
 .mini span{display:block;font-size:.68rem;color:var(--tinta-fraca);margin-top:4px;line-height:1.2;
   overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 @media(max-width:520px){ .folha{gap:7px;padding:10px} .buraco span{font-size:.64rem} }
@@ -295,7 +345,7 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 /* ---------- barra de quanto falta ---------- */
 .barra{margin:0 0 16px}
 .barra:empty{display:none}
-.barra-fora{height:16px;background:#fff;border:2px solid var(--borda);border-radius:999px;overflow:hidden}
+.barra-fora{height:16px;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;overflow:hidden}
 .barra-dentro{height:100%;background:linear-gradient(90deg,var(--asa),var(--asa-escura));
   border-radius:999px;transition:width .3s}
 .barra-texto{font-size:.86rem;color:var(--tinta-fraca);margin-top:5px}
@@ -303,26 +353,29 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 
 /* ---------- cotação ---------- */
 .cotacao{
-  margin-top:24px;background:#fff;border:2px solid var(--borda);border-radius:16px;
+  margin-top:24px;background:var(--cartao);border:2px solid var(--borda);border-radius:16px;
   padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.9rem;color:var(--tinta-fraca);
 }
-.cotacao input{width:90px;padding:8px 10px;font:inherit;border:2px solid var(--borda);border-radius:10px;color:var(--tinta)}
+/* Sem fundo declarado, o navegador põe branco — e no modo escuro o número
+   ficava branco no branco. */
+.cotacao input{width:90px;padding:8px 10px;font:inherit;border:2px solid var(--borda);
+  border-radius:10px;color:var(--tinta);background:var(--campo)}
 footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85rem;line-height:1.7}
 /* O número da versão existe pra responder "tá vendo a nova ou a velha?"
    sem ninguém ter que adivinhar. */
-.versao{display:inline-block;background:#fff;border:2px solid var(--borda);border-radius:999px;
+.versao{display:inline-block;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;
   padding:3px 12px;font-size:.78rem;font-weight:600;margin-top:4px}
 .cracha{display:inline-block;background:var(--asa);color:#fff;border-radius:999px;
   padding:5px 15px;font-weight:700;font-size:.95rem;margin-top:8px}
 #nome-perfil{
   width:100%;max-width:340px;padding:12px 14px;font:inherit;border:3px solid var(--borda);
-  border-radius:14px;background:#fff;color:var(--tinta);margin-bottom:6px;
+  border-radius:14px;background:var(--cartao);color:var(--tinta);margin-bottom:6px;
 }
 #nome-perfil:focus{outline:none;border-color:var(--asa-escura)}
 .codigo{
   width:100%;padding:11px 13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
   font-size:.74rem;line-height:1.5;border:2px solid var(--borda);border-radius:12px;
-  background:#fdfbff;color:var(--tinta);resize:vertical;word-break:break-all;
+  background:var(--cartao2);color:var(--tinta);resize:vertical;word-break:break-all;
 }
 .codigo:focus{outline:none;border-color:var(--asa-escura)}
 #chips-bicho .chip{font-size:1.3rem;padding:7px 12px}
@@ -368,8 +421,8 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 .opcional{font-weight:400;color:var(--tinta-fraca);font-size:.82rem}
 .lista-tirar{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 .tirar-item{display:flex;align-items:center;gap:11px;border:2px solid var(--borda);
-  border-radius:13px;padding:7px 11px;background:#fff}
-.tirar-item img{width:36px;border-radius:5px;aspect-ratio:245/342;object-fit:cover;background:#f2eafc}
+  border-radius:13px;padding:7px 11px;background:var(--cartao)}
+.tirar-item img{width:36px;border-radius:5px;aspect-ratio:245/342;object-fit:cover;background:var(--vazio)}
 .tirar-item b{flex:1;min-width:0;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tirar{border:none;background:var(--olho);color:#fff;border-radius:50%;width:30px;height:30px;
   font-size:.9rem;cursor:pointer;flex:0 0 auto}
@@ -380,7 +433,8 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 <div class="envolve">
 
   <header>
-    <h1 class="logo">Butter<span>Poke</span><img class="bicho" src="icone.svg" alt="" /></h1>
+    <button class="tema" type="button" id="tema" aria-label="Trocar entre claro e escuro">🌙</button>
+    <h1 class="logo">Butter<span>Poke</span><img class="bicho" src="icone-limpo.svg" alt="" /></h1>
     <p class="slogan">Digita o número da carta e eu te digo quanto ela vale.</p>
     <p id="saudacao"></p>
   </header>
@@ -422,7 +476,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 21 — 21/09</span>
+    <br><span class="versao">versão 22 — 21/09</span>
   </footer>
 </div>
 
@@ -2530,6 +2584,34 @@ function escapar(t){
   return String(t ?? '').replace(/[&<>"']/g, c =>
     ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
+
+/* ---------- claro e escuro ----------
+   Sem escolha salva, segue o aparelho. Com escolha salva, ela manda —
+   quem apertou o botão quis aquilo, e o aparelho não tem que discordar. */
+const btTema = document.getElementById('tema');
+const corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){
+  const t = document.documentElement.getAttribute('data-tema');
+  if(t) return t === 'escuro';
+  return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function aplicarTema(t){
+  if(t) document.documentElement.setAttribute('data-tema', t);
+  else document.documentElement.removeAttribute('data-tema');
+  const escuro = estaEscuro();
+  btTema.textContent = escuro ? '☀️' : '🌙';
+  btTema.title = escuro ? 'Mudar pro modo claro' : 'Mudar pro modo escuro';
+  // A barra do navegador no celular acompanha, senão fica uma faixa clara
+  // em cima de uma página escura.
+  if(corDaBarra) corDaBarra.setAttribute('content', escuro ? '#15111e' : '#a97fd6');
+}
+try{ aplicarTema(localStorage.getItem('butterpoke:tema')); }
+catch(e){ aplicarTema(null); }
+btTema.onclick = () => {
+  const novo = estaEscuro() ? 'claro' : 'escuro';
+  try{ localStorage.setItem('butterpoke:tema', novo); }catch(e){}
+  aplicarTema(novo);
+};
 
 const selIdioma = document.getElementById('sel-idioma');
 selIdioma.innerHTML = IDIOMAS.map(i =>
