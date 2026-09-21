@@ -601,7 +601,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 35 — 21/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 36 — 21/09 · 🔄</button>
   </footer>
 </div>
 
@@ -1895,8 +1895,7 @@ async function buscarPacote(valor){
   palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a coleção…</div>';
   let colecoes = [];
   try{
-    const d = await pedirJSON(API_SETS + '?pageSize=250&orderBy=-releaseDate', 3);
-    colecoes = (d.data || []).map(deSetPrincipal);
+    colecoes = await todasAsColecoes(3);
     guardarColecoes(colecoes);
   }catch(e){
     // A lista de coleções muda uma vez a cada dois meses: a guardada serve.
@@ -1962,27 +1961,52 @@ function sortear(lista, quantas, fora){
    uma página só. */
 const CAMPOS_JOGO = 'id,name,images,supertype,rarity,hp,types,artist,set,tcgplayer';
 const PAGINAS_JOGO = 3;
+/* Quantas páginas existem de verdade. Eu tinha chutado 40, e chute virou
+   mentira: 40 páginas são só a metade mais nova do banco, então o jogo
+   nunca mostrava carta antiga — mesmo eu tendo dito que mostrava. Agora
+   pergunto ao banco e sorteio em cima do número certo. */
+let paginasQueExistem = 0;
 
-/* Antes eu pegava sempre a página 1 das mais novas: as mesmas 250 cartas,
-   sempre, e depois de uns minutos já não tinha graça. Agora sorteio as
-   páginas — o baralho muda a cada vez, e entra carta velha também. */
+function urlDoJogo(pag){
+  return API + '?select=' + CAMPOS_JOGO + '&pageSize=250&orderBy=-set.releaseDate&page=' + pag;
+}
+function guardarNoBolso(vistas, dados){
+  ((dados && dados.data) || []).forEach(c => {
+    if(c.name && c.images && (c.images.large || c.images.small) && c.supertype === 'Pokémon')
+      vistas.set(c.id, c);
+  });
+}
+function embaralhando(vistas){
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
+    'Embaralhando as cartas… (' +
+    (vistas.size ? vistas.size + ' até agora' : 'começando') + ')</div>';
+}
+
 async function encherOBolso(){
-  const escolhidas = new Set();
-  while(escolhidas.size < PAGINAS_JOGO) escolhidas.add(1 + Math.floor(Math.random() * 40));
   const vistas = new Map();
   let tropeco = null;
-  for(const pag of escolhidas){
-    palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
-      'Embaralhando as cartas… (' +
-      (vistas.size ? vistas.size + ' até agora' : 'começando') + ')</div>';
+
+  // Primeira vez: a resposta diz quantas cartas existem, e é dela que sai
+  // o tamanho do sorteio. As cartas dessa página também entram no bolso.
+  if(!paginasQueExistem){
+    embaralhando(vistas);
     try{
-      const d = await pedirJSON(API + '?select=' + CAMPOS_JOGO +
-        '&pageSize=250&orderBy=-set.releaseDate&page=' + pag);
-      ((d && d.data) || []).forEach(c => {
-        if(c.name && c.images && (c.images.large || c.images.small) && c.supertype === 'Pokémon')
-          vistas.set(c.id, c);
-      });
-    }catch(e){ tropeco = e; }   // uma página que falha não estraga o jogo
+      const d = await pedirJSON(urlDoJogo(1));
+      paginasQueExistem = Math.max(1, Math.ceil((d.totalCount || 250) / 250));
+      guardarNoBolso(vistas, d);
+    }catch(e){ tropeco = e; paginasQueExistem = 40; }   // sem saber, o chute velho
+  }
+
+  const escolhidas = new Set();
+  const quantas = Math.min(PAGINAS_JOGO, paginasQueExistem);
+  let voltas = 0;
+  while(escolhidas.size < quantas && voltas++ < 200){
+    escolhidas.add(1 + Math.floor(Math.random() * paginasQueExistem));
+  }
+  for(const pag of escolhidas){
+    embaralhando(vistas);
+    try{ guardarNoBolso(vistas, await pedirJSON(urlDoJogo(pag))); }
+    catch(e){ tropeco = e; }   // uma página que falha não estraga o jogo
   }
   if(!vistas.size && tropeco) throw tropeco;
   cartasDoJogo = [...vistas.values()];
@@ -2018,6 +2042,11 @@ const JOGOS = [
   { v:'tipo',     rotulo:'⚡ Que tipo é essa?' },
 ];
 
+function quantasColecoesNoBolso(){
+  const nomes = new Set();
+  cartasDoJogo.forEach(c => { if(c.set && c.set.name) nomes.add(c.set.name); });
+  return nomes.size;
+}
 function cabecalhoJogo(){
   const r = lerRecordes()[jogoAtual] || 0;
   return '<div class="placar-jogo">' +
@@ -2033,8 +2062,10 @@ function cabecalhoJogo(){
 function rodada(){
   palco.innerHTML = '<section class="pergunta"><h2>🎮 Jogos</h2>' + cabecalhoJogo() +
     '<div id="rodada"></div>' +
-    '<p class="nota">Estou sorteando entre <b>' + cartasDoJogo.length + ' cartas</b>. ' +
-      'Cansou de ver as mesmas? Troca o baralho.</p>' +
+    '<p class="nota">Estou sorteando entre <b>' + cartasDoJogo.length + ' cartas</b> de <b>' +
+      quantasColecoesNoBolso() + ' coleções</b>' +
+      (paginasQueExistem ? ', tiradas das ' + paginasQueExistem + ' páginas do banco inteiro' : '') +
+      '. Cansou de ver as mesmas? Troca o baralho.</p>' +
     '<button class="btn secundario larga" type="button" id="trocar-baralho">' +
       '🔀 Trocar as cartas</button>' +
     '</section>';
@@ -3180,6 +3211,24 @@ async function mostrarTodas(reiniciar){
    última que deu certo não envelhece quase nada — e é a diferença entre
    uma tela de erro e um site que continua servindo quando a internet
    oscila. Preço eu nunca guardo; isso aqui é só nome, logo e tamanho. */
+/* pageSize=250 dava conta hoje, mas "dá conta hoje" é o tipo de coisa que
+   quebra calada no dia em que passar de 250 — e aí sumiria coleção do
+   site sem ninguém entender por quê. Agora eu leio o totalCount e busco o
+   resto, se houver. */
+async function todasAsColecoes(vezes){
+  const d = await pedirJSON(API_SETS + '?pageSize=250&orderBy=-releaseDate&page=1', vezes);
+  let lista = (d.data || []).slice();
+  const total = d.totalCount || lista.length;
+  const paginas = Math.ceil(total / 250);
+  for(let pag = 2; pag <= paginas && pag <= 10; pag++){
+    try{
+      const outra = await pedirJSON(API_SETS + '?pageSize=250&orderBy=-releaseDate&page=' + pag);
+      lista = lista.concat(outra.data || []);
+    }catch(e){ break; }   // com parte da lista ainda dá pra usar o site
+  }
+  return lista.map(deSetPrincipal);
+}
+
 const CHAVE_COLECOES = 'butterpoke:colecoes';
 function guardarColecoes(l){
   try{
@@ -3206,8 +3255,7 @@ async function mostrarColecoes(){
   let colecoes = null;
   try{
     if(idioma !== 'en') throw new Error('idioma ' + idioma + ': só o reserva tem');
-    const d = await pedirJSON(API_SETS + '?pageSize=250&orderBy=-releaseDate');
-    colecoes = (d.data || []).map(deSetPrincipal);
+    colecoes = await todasAsColecoes();
   }catch(e){
     try{
       const l = await pedirReserva('/sets');
