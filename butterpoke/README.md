@@ -205,6 +205,88 @@ então dá pra aprender quanto as coisas valem errando.
 Trocar de jogo zera o placar — misturar ponto de jogos diferentes não diria nada. O
 recorde de cada um fica guardado no aparelho, separado.
 
+### Vinte e cinco jogos — e por que não cem
+
+Pediram **cem**. Cem eu não faço, e disse isso na cara: com o que está escrito numa carta,
+passar de uns vinte e cinco vira o mesmo jogo com outro nome, e jogo repetido de chapéu
+novo é enganação. Então fiz vinte e cinco que perguntam coisas de verdade diferentes.
+
+O código não tem vinte e cinco jogos dentro. Tem **três formas e vinte e cinco receitas**:
+
+- **duas cartas, qual ganha** (12): preço, mais baratinha, mais HP, menos HP, mais antiga,
+  mais nova, mais rara, Pokédex, dano do ataque, custo de energia, custo de recuo, tamanho
+  da coleção
+- **olha o desenho e adivinha** (10): que carta é, quem desenhou, que tipo, qual raridade,
+  que coleção, que ano, quanto de HP, qual fraqueza, nome do ataque, básica ou evoluída
+- **os diferentes** (3): 🕵️ acha a intrusa, 🔀 põe em ordem, 📈 mais ou menos
+
+Cada receita diz três coisas: a pergunta, de onde sai o número (ou a etiqueta) e o que
+explicar no fim. "Mais baratinha" é "vale mais" com `maior: false` — mesma função.
+
+Como o menu passou a ter vinte e cinco, ele virou um `<details>` fechado que mostra só o
+jogo que está valendo. E tem um **🎲 Sortear um jogo** que nunca cai no mesmo de novo —
+botão que às vezes não faz nada parece botão quebrado.
+
+#### Dois bugs que o teste pegou
+
+1. O nome do jogo no menu aparecia como **`c => c.name`**. As receitas tinham `rotulo` pra
+   duas coisas diferentes — o nome do jogo e a etiqueta da carta — e o `Object.assign`
+   deixava a função por cima. A etiqueta virou `etiqueta`.
+2. **"Básica ou evoluída?" nunca montava.** Eu exigia quatro opções distintas, e esse jogo
+   só tem três respostas possíveis no mundo inteiro. Agora três bastam quando três é tudo
+   que existe.
+
+E uma linha morta que ainda por cima estouraria: um `classList.add('')` sobrando no "põe em
+ordem" — string vazia é erro, não no-op.
+
+### Sete jogos, e mais cartas dentro deles
+
+Pediram mais jogos e mais cartas no "que carta é essa". As duas coisas eram o mesmo
+problema por baixo.
+
+**As cartas.** Eu pegava sempre a página 1 das coleções mais novas: as mesmas 250 cartas,
+toda vez. Depois de uns minutos já eram conhecidas. Agora eu **sorteio três páginas** entre
+as quarenta primeiras, o que traz umas 750 cartas e mistura coleção velha com nova — e tem
+um botão **🔀 Trocar as cartas** pra quem cansou. Como o jogo usa oito campos e não a carta
+inteira, peço com `select=` e a resposta vem pequena mesmo trazendo o triplo.
+
+Uma página que falhar não derruba o jogo: ele monta com as que vieram.
+
+**E aí eu me peguei numa mentira.** Escrevi aqui e falei em voz alta que o baralho trazia
+"carta de 1999 no meio". Não trazia: eu sorteava entre as **quarenta primeiras páginas**,
+um número que eu tinha chutado, e quarenta páginas são só a metade mais nova do banco. O
+jogo nunca mostrou uma carta antiga.
+
+Agora o site **pergunta**: a primeira resposta traz o `totalCount`, dele sai quantas
+páginas existem de verdade (são 78, não 40), e o sorteio é em cima desse número. A tela diz
+quantas coleções estão no bolso e de quantas páginas elas saíram — número na cara é mais
+difícil de eu inventar.
+
+A lista de coleções também deixou de depender de um `pageSize=250` que "dá conta hoje". Ela
+lê o `totalCount` e busca o resto se houver. Passar de 250 coleções ia fazer sumir coleção
+do site sem ninguém entender por quê.
+
+**Os jogos.** De dois viraram sete, mas o código não triplicou — porque todos caem em duas
+formas:
+
+- **duas cartas, qual ganha**: 💰 vale mais, ❤️ mais HP, 📅 mais antiga, 💎 mais rara
+- **olha o desenho e escolhe entre quatro**: 🎲 que carta é essa, 🎨 quem desenhou,
+  ⚡ que tipo é
+
+São duas funções, `rodadaDuas` e `rodadaQuatro`, e cada jogo é só uma receitinha: qual é a
+pergunta, de onde sai o número (ou o rótulo), e o que explicar no fim. "Mais antiga" é
+"mais cara" virada do avesso — mesma função, `maior: false`.
+
+O zoom da espiadela ganhou um segundo emprego: ele esconde o nome lá em cima **e a linha do
+ilustrador lá embaixo**, que é o que torna o 🎨 possível. Sem ele seria ler o rodapé.
+
+Dois cuidados que dão trabalho e não aparecem:
+
+- as três opções erradas têm que ser diferentes da certa **e entre si** — senão a resposta
+  certa apareceria duas vezes e uma delas contaria como erro;
+- quando a pessoa erra, **a certa fica verde**. Antes só o botão tocado ficava colorido, e
+  quem errava não via qual era a resposta.
+
 ## Duelo
 
 Duas cartas lado a lado, com o dano **calculado como no jogo**: a fraqueza multiplica (ou
