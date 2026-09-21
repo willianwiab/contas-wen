@@ -301,6 +301,40 @@ td .sub{display:block;font-size:.74rem;color:var(--tinta-fraca);font-weight:400}
 .quadrinho span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--tinta-fraca)}
 .quadrinho b{font-size:.98rem}
 .conto{margin-top:11px;font-size:.85rem;font-style:italic;color:var(--tinta-fraca);line-height:1.5}
+/* ---------- jogos ---------- */
+.placar-jogo{display:flex;gap:9px;margin:2px 0 16px}
+.placar-jogo div{flex:1 1 0;background:var(--cartao);border:2px solid var(--borda);
+  border-radius:14px;padding:10px 6px;text-align:center}
+.placar-jogo b{display:block;font-family:'Baloo 2',cursive;font-size:1.7rem;line-height:1;color:var(--asa-escura)}
+.placar-jogo span{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--tinta-fraca)}
+.pergunta-jogo{font-weight:600;margin-bottom:12px;font-size:1.05rem}
+/* A espiadela corta a carta e dá zoom no desenho: o nome fica de fora.
+   Ao responder, o zoom sai e a carta inteira aparece — é o que ensina. */
+.espiadela{
+  width:100%;max-width:290px;margin:0 auto 16px;aspect-ratio:1/1;overflow:hidden;
+  border-radius:16px;border:3px solid var(--asa);background:var(--vazio);
+}
+.espiadela img{width:100%;height:100%;object-fit:cover;object-position:center 34%;
+  transform:scale(2.1);transition:transform .45s,object-position .45s}
+.espiadela.aberta{aspect-ratio:245/342;max-width:230px}
+.espiadela.aberta img{transform:none;object-position:center}
+.opcoes-jogo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px}
+.opcoes-jogo .btn{padding:13px 10px;font-size:.95rem}
+.opcoes-jogo .btn[disabled]{opacity:.55}
+.acerto{outline:4px solid #2e9e4f;outline-offset:2px;opacity:1 !important}
+.erro{outline:4px solid var(--olho);outline-offset:2px;opacity:1 !important}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:8px}
+.escolha-carta{
+  border:3px solid var(--borda);border-radius:16px;background:var(--cartao);padding:9px;
+  cursor:pointer;font:inherit;color:inherit;transition:transform .12s,border-color .12s;
+}
+.escolha-carta:hover:not([disabled]){transform:translateY(-4px);border-color:var(--asa)}
+.escolha-carta img{width:100%;border-radius:10px;aspect-ratio:245/342;object-fit:cover;background:var(--vazio)}
+.escolha-carta b{display:block;margin-top:7px;font-size:.92rem;line-height:1.2}
+.veredito{font-family:'Baloo 2',cursive;font-size:1.6rem;margin:16px 0 4px;text-align:center}
+.veredito.certo{color:#2e9e4f}
+.veredito.errado{color:var(--olho)}
+
 /* ---------- duelo ---------- */
 .duelo{display:flex;align-items:center;gap:10px;margin:6px 0 18px}
 .lutador{flex:1 1 0;min-width:0;text-align:center}
@@ -477,6 +511,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <button class="btn secundario" type="button" id="btn-todas">🗃️ Todas as cartas</button>
       <button class="btn secundario" type="button" id="btn-desejos">💖 Quero essas</button>
       <button class="btn secundario" type="button" id="btn-duelo">⚔️ Duelo</button>
+      <button class="btn secundario" type="button" id="btn-jogos">🎮 Jogos</button>
       <button class="btn secundario" type="button" id="btn-perfil">👤 Meu perfil</button>
     </div>
   </section>
@@ -491,7 +526,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 25 — 21/09</span>
+    <br><span class="versao">versão 26 — 21/09</span>
   </footer>
 </div>
 
@@ -1200,6 +1235,151 @@ function mostrarFavoritos(){
     'Toca numa pra ver o preço de hoje. Ficam guardadas só neste aparelho.',
     l, mostrarCarta, 'carta', 'Nome da carta…', 'nome');
   gradeAtual.ehFavoritos = true;
+}
+
+/* ---------- jogos ----------
+   Dois, porque compartilham tudo: pegar um monte de carta, sortear e
+   marcar ponto. "Que carta é essa?" esconde o nome dando zoom no desenho;
+   "Qual vale mais?" usa os preços que já estão na mão. */
+const CHAVE_RECORDE = 'butterpoke:recordes';
+let cartasDoJogo = [];
+let jogoAtual = 'nome';
+let pontos = 0, seguidas = 0;
+
+function lerRecordes(){
+  try{ return JSON.parse(localStorage.getItem(CHAVE_RECORDE) || '{}') || {}; }
+  catch(e){ return {}; }
+}
+function guardarRecorde(jogo, valor){
+  const r = lerRecordes();
+  if(!r[jogo] || valor > r[jogo]){
+    r[jogo] = valor;
+    try{ localStorage.setItem(CHAVE_RECORDE, JSON.stringify(r)); }catch(e){}
+  }
+}
+function sortear(lista, quantas, fora){
+  const pool = lista.filter(c => !fora || c.id !== fora.id);
+  const saida = [];
+  while(saida.length < quantas && pool.length){
+    saida.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+  }
+  return saida;
+}
+
+async function abrirJogos(){
+  cartaAberta = null; voltarPraLista = null;
+  pontos = 0; seguidas = 0;
+  if(cartasDoJogo.length < 12){
+    palco.innerHTML = '<div class="aviso"><div class="girando"></div>Preparando o jogo…</div>';
+    try{
+      const d = await pedirJSON(API + '?pageSize=250&orderBy=-set.releaseDate&page=1');
+      cartasDoJogo = ((d && d.data) || []).filter(c =>
+        c.name && c.images && (c.images.large || c.images.small) && c.supertype === 'Pokémon');
+    }catch(e){
+      avisoErro('Não consegui preparar o jogo', e, abrirJogos);
+      return;
+    }
+  }
+  if(cartasDoJogo.length < 12){
+    palco.innerHTML = '<div class="aviso"><strong>Vieram poucas cartas 🤔</strong>' +
+      'Preciso de pelo menos doze pra sortear sem repetir. Tenta de novo daqui a pouco.</div>';
+    return;
+  }
+  rodada();
+}
+
+function cabecalhoJogo(){
+  const r = lerRecordes()[jogoAtual] || 0;
+  return '<div class="placar-jogo">' +
+      '<div><b>' + pontos + '</b><span>pontos</span></div>' +
+      '<div><b>' + seguidas + '</b><span>seguidas</span></div>' +
+      '<div><b>' + r + '</b><span>recorde</span></div>' +
+    '</div>' +
+    '<div class="escolha" style="margin:0 0 16px"><h3>Qual jogo</h3>' +
+      chips('chips-jogo', [
+        { v:'nome',  rotulo:'🎲 Que carta é essa?' },
+        { v:'preco', rotulo:'💰 Qual vale mais?' },
+      ], jogoAtual) +
+    '</div>';
+}
+
+function rodada(){
+  palco.innerHTML = '<section class="pergunta"><h2>🎮 Jogos</h2>' + cabecalhoJogo() +
+    '<div id="rodada"></div></section>';
+  ligarChips('chips-jogo', v => { jogoAtual = v; pontos = 0; seguidas = 0; }, rodada);
+  (jogoAtual === 'preco' ? rodadaPreco : rodadaNome)();
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function responder(acertou, explicacao){
+  if(acertou){ pontos++; seguidas++; guardarRecorde(jogoAtual, seguidas); }
+  else seguidas = 0;
+  const alvo = document.getElementById('resposta');
+  alvo.innerHTML =
+    '<p class="veredito ' + (acertou ? 'certo' : 'errado') + '">' +
+      (acertou ? '✅ Acertou!' : '❌ Essa não') + '</p>' +
+    '<p class="nota">' + explicacao + '</p>' +
+    '<button class="btn larga" type="button" id="proxima">▶ Próxima</button>';
+  document.getElementById('proxima').onclick = rodada;
+}
+
+function rodadaNome(){
+  const certa = sortear(cartasDoJogo, 1)[0];
+  const opcoes = sortear(cartasDoJogo, 3, certa).concat([certa]);
+  opcoes.sort(() => Math.random() - 0.5);
+  document.getElementById('rodada').innerHTML =
+    '<p class="pergunta-jogo">Só o desenho. Que carta é essa?</p>' +
+    '<div class="espiadela"><img alt="Pedaço de uma carta" src="' +
+      escapar(certa.images.large || certa.images.small) + '" /></div>' +
+    '<div class="opcoes-jogo">' + opcoes.map((c, i) =>
+      '<button type="button" class="btn secundario" data-i="' + i + '">' +
+        escapar(c.name) + '</button>').join('') + '</div>' +
+    '<div id="resposta"></div>';
+  palco.querySelectorAll('.opcoes-jogo button').forEach(b => {
+    b.onclick = () => {
+      const escolhida = opcoes[Number(b.dataset.i)];
+      palco.querySelectorAll('.opcoes-jogo button').forEach(x => { x.disabled = true; });
+      const acertou = escolhida.id === certa.id;
+      b.classList.add(acertou ? 'acerto' : 'erro');
+      // Mostrar a carta inteira é a parte que ensina: some o zoom.
+      palco.querySelector('.espiadela').classList.add('aberta');
+      responder(acertou, 'Era <b>' + escapar(certa.name) + '</b>, da coleção ' +
+        escapar((certa.set && certa.set.name) || '?') + '.');
+    };
+  });
+}
+
+function rodadaPreco(){
+  const comPreco = cartasDoJogo.filter(c => precoDe(c) != null);
+  if(comPreco.length < 4){
+    document.getElementById('rodada').innerHTML =
+      '<p class="nota">Nenhuma dessas cartas tem preço agora, então não dá pra jogar este. ' +
+      'Tenta o 🎲 Que carta é essa?</p>';
+    return;
+  }
+  let a, b, voltas = 0;
+  do{ const dois = sortear(comPreco, 2); a = dois[0]; b = dois[1]; voltas++; }
+  while(a && b && precoDe(a) === precoDe(b) && voltas < 20);   // empate não dá jogo
+  document.getElementById('rodada').innerHTML =
+    '<p class="pergunta-jogo">Qual das duas vale mais?</p>' +
+    '<div class="duas">' + [a, b].map((c, i) =>
+      '<button type="button" class="escolha-carta" data-i="' + i + '">' +
+        '<img alt="' + escapar(c.name) + '" src="' +
+          escapar((c.images && (c.images.large || c.images.small)) || '') + '" />' +
+        '<b>' + escapar(c.name) + '</b>' +
+      '</button>').join('') + '</div>' +
+    '<div id="resposta"></div>';
+  palco.querySelectorAll('.escolha-carta').forEach(botao => {
+    botao.onclick = () => {
+      const esc = Number(botao.dataset.i) === 0 ? a : b;
+      const outra = esc === a ? b : a;
+      palco.querySelectorAll('.escolha-carta').forEach(x => { x.disabled = true; });
+      const acertou = precoDe(esc) >= precoDe(outra);
+      botao.classList.add(acertou ? 'acerto' : 'erro');
+      responder(acertou, escapar(a.name) + ' vale <b>' + dinheiro(precoDe(a), 'USD') +
+        '</b> e ' + escapar(b.name) + ' vale <b>' + dinheiro(precoDe(b), 'USD') + '</b>.');
+    };
+  });
 }
 
 /* ---------- duelo ----------
@@ -2890,6 +3070,7 @@ document.getElementById('btn-album').onclick = () => { paginaAlbum = 0; mostrarA
 document.getElementById('btn-todas').onclick = () => mostrarTodas(true);
 document.getElementById('btn-desejos').onclick = mostrarDesejos;
 document.getElementById('btn-duelo').onclick = mostrarDuelo;
+document.getElementById('btn-jogos').onclick = abrirJogos;
 document.getElementById('btn-perfil').onclick = mostrarPerfil;
 saudacao();
 contarFavoritos();
