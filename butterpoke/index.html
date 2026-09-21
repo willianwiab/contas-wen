@@ -558,6 +558,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
       <button class="btn atalho" type="button" id="btn-desejos"><i>💖</i>Quero</button>
       <button class="btn atalho" type="button" id="btn-duelo"><i>⚔️</i>Duelo</button>
       <button class="btn atalho" type="button" id="btn-jogos"><i>🎮</i>Jogos</button>
+      <button class="btn atalho" type="button" id="btn-vale"><i>📦</i>Vale a pena</button>
       <button class="btn atalho" type="button" id="btn-bonecos"><i>🧸</i>Bonecos</button>
       <button class="btn atalho" type="button" id="btn-perfil"><i>👤</i>Perfil</button>
     </div>
@@ -1529,8 +1530,11 @@ async function analisarPacote(colecao){
   const comPreco = cartas.filter(c => precoDe(c) != null);
   if(comPreco.length < 10){
     palco.innerHTML = '<div class="aviso"><strong>Essa coleção não tem preço suficiente 🤷</strong>' +
-      'Achei ' + cartas.length + ' cartas, mas só ' + comPreco.length + ' com preço. ' +
-      'Sem preço não dá pra fazer conta nenhuma — tenta uma coleção mais conhecida.</div>';
+      (comPreco.length >= cartas.length
+        ? 'Achei só ' + cartas.length + ' carta' + (cartas.length === 1 ? '' : 's') + ' aqui. '
+        : 'Achei ' + cartas.length + ' cartas, mas só ' + comPreco.length + ' com preço. ') +
+      'Com tão pouco preço a conta sairia chutada, e chute eu não dou — ' +
+      'tenta uma coleção mais conhecida.</div>';
     return;
   }
 
@@ -3536,6 +3540,14 @@ document.getElementById('btn-desejos').onclick = mostrarDesejos;
 document.getElementById('btn-duelo').onclick = mostrarDuelo;
 document.getElementById('btn-jogos').onclick = abrirJogos;
 document.getElementById('btn-bonecos').onclick = mostrarBonecos;
+/* O "vale a pena" já mora na barrinha de cima, mas a pessoa procurou e não
+   achou: lá ele parece só mais um jeito de buscar. Aqui ele vira porta de
+   entrada — liga o modo, rola até a busca e já traz as coleções na tela. */
+document.getElementById('btn-vale').onclick = () => {
+  trocarModo('pacote');
+  document.querySelector('.busca').scrollIntoView({ behavior:'smooth', block:'start' });
+  buscarPacote('');
+};
 document.getElementById('btn-perfil').onclick = mostrarPerfil;
 saudacao();
 contarFavoritos();

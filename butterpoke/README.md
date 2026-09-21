@@ -69,6 +69,22 @@ Mas a pergunta por trás — *vale a pena comprar?* — essa dá pra responder c
 já estão na mão. Virou o **terceiro modo de busca**, ao lado de "pelo número" e "pelo
 nome": escreve o nome de uma coleção e ele soma.
 
+### "Cadê o vale a pena?"
+
+Ele estava lá — terceiro botão da barrinha de busca — e mesmo assim a pergunta veio. É a
+resposta certa: naquela barrinha ele parece só *mais um jeito de digitar*, e quem não sabe
+que existe não vai clicar pra descobrir. Coisa que a pessoa quer **fazer** precisa de
+porta, não de aba.
+
+Então ganhou um atalho **📦 Vale a pena** junto dos outros (Coleções, Álbum, Duelo…). Ele
+liga o modo, rola a tela até a busca e **já traz a lista de coleções** — não abre um campo
+vazio esperando que a pessoa adivinhe o que digitar. O modo na barrinha continua ali pra
+quem já sabe o nome da coleção.
+
+Também arrumei um recado meio bobo: quando a coleção tinha pouquíssima carta, ele dizia
+"achei 4 cartas, mas só 4 com preço", o que não quer dizer nada. Agora fala o que é:
+achou pouca carta, e com pouca carta a conta sairia chutada.
+
 ### Caixa, ETB e blister
 
 Pediram produtos de novo, e dessa vez eu tinha deixado passar uma coisa óbvia: **caixa,
