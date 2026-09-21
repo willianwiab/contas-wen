@@ -92,7 +92,7 @@ html,body{overflow:hidden;height:100vh;width:100vw;font-family:'Space Grotesk',s
 #btnComecar:hover::before{transform:translateY(0)}
 #btnComecar::after{content:' →';transition:transform .3s}
 #btnComecar:hover::after{transform:translateX(4px);display:inline-block}
-#menu .creditos{position:absolute;bottom:1.5rem;left:0;right:0;text-align:center;opacity:.4;font-size:.7rem;font-family:'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;z-index:1}
+#menu .creditos{position:absolute;bottom:1.5rem;left:0;right:0;text-align:center;opacity:.4;font-size:.7rem;font-family:'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;z-index:1;pointer-events:none}
 #menu .creditos b{color:var(--accent);font-weight:400}
 
 /* ── BOSS NADA (final) ── */
@@ -256,6 +256,38 @@ html,body{overflow:hidden;height:100vh;width:100vw;font-family:'Space Grotesk',s
 #dpFim p{color:#7c7c99;font-weight:500;max-width:30ch;line-height:1.5}
 #dpFim b{color:#c6ff3d}
 #dpDeNovo{margin-top:1.2rem;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;padding:1rem 2rem;border:2px solid #fafafa;background:transparent;color:#fafafa;cursor:pointer}
+
+/* ══ AS 24 FASES — o motor ══ */
+#dpPalco{position:absolute;inset:0;z-index:26}
+#dpHud{position:absolute;top:0;left:0;right:0;z-index:45;display:none;padding:.7rem 1rem .5rem;background:rgba(245,245,240,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#dpHudTxt{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#12101c}
+#dpHudTrilho{height:6px;border-radius:100px;background:#dededa;margin-top:.45rem;overflow:hidden}
+#dpHudBarra{height:100%;width:0;border-radius:100px;background:linear-gradient(to right,#a855f7,#ff4dc4);transition:width .4s}
+.dpTitulo{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);text-align:center;font-weight:700;font-size:1.5rem;letter-spacing:-.02em;z-index:40;padding:0 1.5rem;animation:dpEntraTit .5s}
+.dpTitulo b{display:block;font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.3em;color:#a855f7;margin-bottom:.5rem}
+@keyframes dpEntraTit{from{opacity:0;transform:translate(-50%,-30%)}to{opacity:1;transform:translate(-50%,-50%)}}
+.dpPlacar{position:absolute;top:4.6rem;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#12101c;background:#ffe27a;padding:.45rem 1rem;border-radius:100px;white-space:nowrap}
+.dpRelogio{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);font-weight:700;font-size:clamp(4.5rem,24vw,9rem);letter-spacing:-.05em;color:#12101c;line-height:1}
+.dpRelogio.errou2{color:#ff3355;animation:dpTremer .3s}
+.dpTentacao{position:absolute;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.85rem;padding:.8rem 1.2rem;border:none;border-radius:100px;background:#ff3355;color:#fff;cursor:pointer;box-shadow:0 8px 20px -6px rgba(255,51,85,.6);animation:pulse .6s infinite}
+.dpAlvo{position:absolute;font-size:4rem;background:none;border:none;cursor:pointer;line-height:1;padding:.2rem;transition:left .18s,top .18s,font-size .2s}
+.dpItem{position:absolute;font-size:2.6rem;cursor:grab;touch-action:none;user-select:none;line-height:1}
+.dpItem.dragging{cursor:grabbing;transform:scale(1.2)}
+.dpCesto{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;border:5px dashed #12101c;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+.dpPads{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dpPad{font-size:3.4rem;background:none;border:none;cursor:pointer;line-height:1;opacity:.45;transition:opacity .12s,transform .12s}
+.dpPad.aceso{opacity:1;transform:scale(1.18)}
+.dpGrade{position:absolute;top:52%;left:50%;transform:translate(-50%,-50%);display:grid;gap:4px;width:min(92vw,430px);z-index:28}
+.dpCelula{aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
+.dpCarta{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.9rem;background:#12101c;border-radius:10px;cursor:pointer;line-height:1}
+.dpCarta.aberta{background:#f3e8ff;border:2px solid #a855f7}
+.dpSegurar{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1rem;letter-spacing:.2em;padding:2rem 2.6rem;border:none;border-radius:100px;background:#12101c;color:#fafafa;cursor:pointer;touch-action:none}
+.dpSegurar.apertado{background:#a855f7;transform:translate(-50%,-50%) scale(.94)}
+.dpBarra{position:absolute;top:62%;left:50%;transform:translateX(-50%);width:min(70vw,280px);height:12px;border-radius:100px;background:#dededa;overflow:hidden}
+.dpBarraCheia{height:100%;width:0;border-radius:100px;background:linear-gradient(to right,#a855f7,#ff4dc4);transition:width .1s linear}
+.dpFujao{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.85rem;letter-spacing:.15em;padding:1rem 1.6rem;border:none;border-radius:100px;background:#a855f7;color:#fff;cursor:pointer;box-shadow:0 10px 26px -8px rgba(168,85,247,.7);transition:left .22s cubic-bezier(.3,1.5,.6,1),top .22s cubic-bezier(.3,1.5,.6,1)}
+.dpBolha{position:absolute;font-size:2.8rem;background:none;border:none;cursor:pointer;line-height:1;animation:dpEntraTit .25s}
+#btnContinuar{display:none;z-index:3;margin-top:1rem;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;padding:1rem 2rem;border:2px solid #c6ff3d;background:transparent;color:#c6ff3d;cursor:pointer;position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -265,7 +297,8 @@ html,body{overflow:hidden;height:100vh;width:100vw;font-family:'Space Grotesk',s
   <h1>JOGO<br><em>DO</em><br><span class="void">NADA</span></h1>
   <p class="kicker">Você tem <b>uma tarefa</b>: não fazer nada.<br>Você vai fazer alguma coisa.</p>
   <button id="btnComecar">Começar</button>
-  <div class="creditos">v3 <b>·</b> agora com o dobro de nada</div>
+  <button id="btnContinuar"></button>
+  <div class="creditos">v4 <b>·</b> uma hora de nada</div>
 </div>
 
 <div id="bossNada"><div id="bocaNada">👄</div></div>
@@ -346,6 +379,8 @@ html,body{overflow:hidden;height:100vh;width:100vw;font-family:'Space Grotesk',s
   <div id="dpEscudo"></div>
   <div id="dpBigode">🥸</div>
   <button id="dpDesligar">Desligar</button>
+  <div id="dpPalco"></div>
+  <div id="dpHud"><div id="dpHudTxt"></div><div id="dpHudTrilho"><div id="dpHudBarra"></div></div></div>
   <div id="dpBalao"></div>
   <div id="dpConta"></div>
   <div id="dpTV"></div>
@@ -1388,14 +1423,409 @@ function desligarDeVerdade(){
   dpDiz('');
   som(220,.25,'sine');setTimeout(()=>som(110,.45,'sine'),170);
   document.getElementById('dpTV').classList.add('on');
-  setTimeout(()=>{
-    document.getElementById('dpContaFim').textContent=coisas;
-    document.getElementById('dpFim').classList.add('on');
-    SONS.vitoria();
-  },950);
+  setTimeout(acenderDeNovo,1400);
 }
 
 document.getElementById('dpDeNovo').addEventListener('click',()=>location.reload());
+
+/* ══════════════════════════════════════════════════════════════════
+   AS 24 FASES — o pedido foi "prolonga pra uma hora"
+   Uma hora não se faz com uma fase comprida: se faz com fase CURTA e
+   VARIADA, senão vira espera. Então aqui embaixo tem um motor pequeno
+   e dez brincadeiras diferentes; as 24 fases são só uma lista dizendo
+   qual brincadeira e de que tamanho.
+
+   E tem SAVE: perder uma hora porque fechou a aba seria maldade. A
+   tela de começo ganha um "continuar da fase X".
+   ══════════════════════════════════════════════════════════════════ */
+let palco     = document.getElementById('dpPalco');
+const dpHud   = document.getElementById('dpHud');
+const hudTxt  = document.getElementById('dpHudTxt');
+const hudBarra= document.getElementById('dpHudBarra');
+const CHAVE_SAVE = 'jogoDoNadaJoJo';
+
+/* os relógios da fase morrem junto com ela, senão a fase velha fica
+   cuspindo bolha por cima da nova */
+let cronos=[], ouvintes=[];
+function tempo(fn,ms){const t=setTimeout(fn,ms);cronos.push(['t',t]);return t;}
+function ritmo(fn,ms){const t=setInterval(fn,ms);cronos.push(['i',t]);return t;}
+function limparCronos(){cronos.forEach(([k,t])=>k==='t'?clearTimeout(t):clearInterval(t));cronos=[];}
+function ouvirDoc(tipo,fn){document.addEventListener(tipo,fn);ouvintes.push([tipo,fn]);}
+/* trocar o palco por um clone é o jeito certo de garantir que nenhum
+   ouvinte da fase passada sobreviveu */
+function limparPalco(){
+  limparCronos();
+  ouvintes.forEach(([t,f])=>document.removeEventListener(t,f));ouvintes=[];
+  const fresco=palco.cloneNode(false);
+  palco.parentNode.replaceChild(fresco,palco);
+  palco=fresco;
+}
+function novo(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+/* um lugar qualquer que não fique embaixo do HUD nem do balão */
+function lugar(larg,alt){
+  larg=larg||70;alt=alt||70;
+  return {x:14+Math.random()*Math.max(10,innerWidth-larg-28),
+          y:120+Math.random()*Math.max(10,innerHeight-alt-215)};
+}
+
+/* ─────────── as brincadeiras ─────────── */
+
+/* 1. não fazer nada por N segundos — a fase mais fiel ao nome do jogo */
+const DP_TENTACOES=['NÃO APERTE','aperta aqui','prêmio!','é só um toque','ninguém vê','pode apertar'];
+function mecAguentar(seg,fim){
+  let falta=seg,acabou=false;
+  const n=novo('div','dpRelogio',String(falta));palco.appendChild(n);
+  dpDiz('não encosta em nada. nem nos botõezinhos.');
+  const zerar=()=>{
+    if(acabou||falta>=seg) { falta=seg;n.textContent=String(falta);return; }
+    falta=seg;n.textContent=String(falta);
+    n.classList.add('errou2');tempo(()=>n.classList.remove('errou2'),350);
+    som(110,.25,'sawtooth');dpContar();dpDiz('voltou pro começo!');
+  };
+  palco.addEventListener('pointerdown',zerar);
+  ouvirDoc('keydown',zerar);
+  ritmo(()=>{
+    if(acabou)return;
+    falta--;n.textContent=String(Math.max(0,falta));
+    if(falta<=0){acabou=true;dpConfete();SONS.vitoria();fim();}
+  },1000);
+  ritmo(()=>{
+    if(acabou)return;
+    const t=novo('button','dpTentacao',DP_TENTACOES[Math.floor(Math.random()*DP_TENTACOES.length)]);
+    const l=lugar(160,52);t.style.left=l.x+'px';t.style.top=l.y+'px';
+    palco.appendChild(t);tempo(()=>t.remove(),3200);
+  },4200);
+}
+
+/* 2. clicar N vezes num alvo que foge */
+function mecClicar(fig,total,fim,opt){
+  opt=opt||{};let restam=total;
+  const alvo=novo('button','dpAlvo',fig);
+  const l=lugar(90,90);alvo.style.left=l.x+'px';alvo.style.top=l.y+'px';
+  const placar=novo('div','dpPlacar','faltam '+restam);
+  palco.appendChild(alvo);palco.appendChild(placar);
+  alvo.addEventListener('click',ev=>{
+    restam--;dpContar();som(200+Math.random()*400,.05,'square');
+    dpPop('-1',ev.clientX,ev.clientY);
+    placar.textContent='faltam '+restam;
+    if(restam<=0){dpConfete();SONS.vitoria();fim();return;}
+    if(opt.foge!==false){const p=lugar(90,90);alvo.style.left=p.x+'px';alvo.style.top=p.y+'px';}
+    if(opt.encolhe) alvo.style.fontSize=Math.max(1.7,4-(total-restam)*(2.2/total))+'rem';
+  });
+}
+
+/* 3. arrastar as coisas pra dentro do buraco */
+function mecArrastar(figs,total,fim){
+  const buraco=novo('div','dpCesto','🕳️');palco.appendChild(buraco);
+  const placar=novo('div','dpPlacar','faltam '+total);palco.appendChild(placar);
+  let feitos=0;
+  for(let i=0;i<total;i++){
+    const it=novo('div','dpItem',figs[i%figs.length]);
+    const l=lugar(70,70);it.style.left=l.x+'px';it.style.top=l.y+'px';
+    palco.appendChild(it);
+    dpArrastavel(it,el=>{
+      const r=el.getBoundingClientRect(),a=buraco.getBoundingClientRect();
+      const cx=r.left+r.width/2,cy=r.top+r.height/2;
+      if(cx<a.left||cx>a.right||cy<a.top||cy>a.bottom){dpDiz('dentro do buraco!');return;}
+      el.remove();feitos++;dpContar();som(300+feitos*40,.1,'triangle');
+      placar.textContent='faltam '+(total-feitos);
+      if(feitos>=total){dpConfete();SONS.vitoria();fim();}
+    });
+  }
+  dpDiz('arrasta tudo pra dentro do buraco.');
+}
+
+/* 4. escrever uma palavra com as letras espalhadas */
+function mecMontar(palavra,fim){
+  const letras=palavra.split(''),esp=6;
+  const larg=Math.min(52,Math.floor((innerWidth-26-esp*(letras.length-1))/letras.length));
+  const x0=Math.max(8,(innerWidth-(larg*letras.length+esp*(letras.length-1)))/2);
+  letras.forEach((L,i)=>{
+    const v=novo('div','dpVaga');
+    v.dataset.letra=L;
+    v.style.left=(x0+i*(larg+esp))+'px';v.style.top='96px';
+    v.style.width=larg+'px';v.style.height=Math.round(larg*1.25)+'px';
+    v.style.fontSize=Math.round(larg*.66)+'px';
+    palco.appendChild(v);
+  });
+  const sopa=letras.concat(['Z','Q','X','K'].slice(0,Math.max(2,Math.ceil(letras.length/4))));
+  sopa.sort(()=>Math.random()-.5);
+  sopa.forEach(L=>{
+    const el=novo('div','dpLetra',L);el.dataset.letra=L;
+    const l=lugar(50,64);el.style.left=l.x+'px';el.style.top=l.y+'px';
+    palco.appendChild(el);
+    dpArrastavel(el,e2=>{
+      const r=e2.getBoundingClientRect();
+      const cx=r.left+r.width/2,cy=r.top+r.height/2;
+      let alvo=null,dmin=95;
+      palco.querySelectorAll('.dpVaga').forEach(v=>{
+        if(v.classList.contains('cheia'))return;
+        const vr=v.getBoundingClientRect();
+        const d=Math.hypot(cx-(vr.left+vr.width/2),cy-(vr.top+vr.height/2));
+        if(d<dmin){dmin=d;alvo=v;}
+      });
+      if(!alvo)return;
+      dpContar();
+      if(alvo.dataset.letra!==e2.dataset.letra){
+        alvo.classList.add('errou');tempo(()=>alvo.classList.remove('errou'),320);
+        som(120,.2,'sawtooth');dpDiz('essa letra não é dessa vaga.');return;
+      }
+      alvo.classList.add('cheia');alvo.textContent=e2.dataset.letra;e2.remove();
+      som(480,.12,'triangle');
+      if(palco.querySelectorAll('.dpVaga.cheia').length===letras.length){dpConfete();SONS.vitoria();fim();}
+    });
+  });
+  dpDiz('escreve "'+palavra+'" arrastando as letras.');
+}
+
+/* 5. olhar e repetir a sequência (erra? mostra de novo, não volta do zero) */
+const DP_PADS=['🟥','🟦','🟩','🟨'];
+function mecSequencia(maxN,fim){
+  let seq=[],vez=0,mostrando=true;
+  const caixa=novo('div','dpPads');palco.appendChild(caixa);
+  const placar=novo('div','dpPlacar','');palco.appendChild(placar);
+  const bts=DP_PADS.map((f,i)=>{
+    const b=novo('button','dpPad',f);caixa.appendChild(b);
+    b.addEventListener('click',()=>{if(!mostrando)jogada(i);});
+    return b;
+  });
+  function piscar(i,ms){
+    ms=ms||420;const b=bts[i];b.classList.add('aceso');som(300+i*130,.18,'sine');
+    tempo(()=>b.classList.remove('aceso'),ms*.7);
+  }
+  function mostrar(){
+    mostrando=true;vez=0;
+    placar.textContent='sequência de '+seq.length+' / '+maxN;
+    dpDiz('olha bem.');
+    seq.forEach((v,k)=>tempo(()=>piscar(v),650+k*600));
+    tempo(()=>{mostrando=false;dpDiz('agora cê.');},650+seq.length*600);
+  }
+  function jogada(i){
+    piscar(i,240);dpContar();
+    if(seq[vez]!==i){som(110,.3,'sawtooth');dpDiz('errou! olha de novo.');tempo(mostrar,700);return;}
+    vez++;
+    if(vez===seq.length){
+      if(seq.length>=maxN){dpConfete();SONS.vitoria();fim();return;}
+      dpDiz('isso!');tempo(()=>{seq.push(Math.floor(Math.random()*4));mostrar();},900);
+    }
+  }
+  seq.push(Math.floor(Math.random()*4));tempo(mostrar,700);
+}
+
+/* 6. achar o diferente no meio dos iguais */
+const DP_DUPLAS=[['😄','😃'],['⬛','⬜'],['🥸','😐'],['👄','👅'],['🫥','😶'],['🟣','🟪'],['🔥','🔶']];
+function mecProcurar(rodadas,fim){
+  let r=0;
+  const placar=novo('div','dpPlacar','');palco.appendChild(placar);
+  const grade=novo('div','dpGrade');palco.appendChild(grade);
+  function rodada(){
+    grade.innerHTML='';
+    const lado=4+r,qtd=lado*lado;
+    const par=DP_DUPLAS[Math.floor(Math.random()*DP_DUPLAS.length)];
+    const sorteado=Math.floor(Math.random()*qtd);
+    grade.style.gridTemplateColumns='repeat('+lado+',1fr)';
+    grade.style.fontSize=Math.max(10,Math.floor(Math.min(innerWidth-30,420)/lado*.62))+'px';
+    placar.textContent='acha o '+par[1]+' — '+(r+1)+'/'+rodadas;
+    for(let i=0;i<qtd;i++){
+      const c=novo('div','dpCelula',i===sorteado?par[1]:par[0]);
+      c.addEventListener('click',()=>{
+        dpContar();
+        if(i!==sorteado){som(110,.18,'sawtooth');dpDiz('esse não.');return;}
+        som(700,.12,'triangle');r++;
+        if(r>=rodadas){dpConfete();SONS.vitoria();fim();return;}
+        dpDiz('achou!');rodada();
+      });
+      grade.appendChild(c);
+    }
+  }
+  rodada();
+}
+
+/* 7. segurar o botão sem soltar */
+function mecSegurar(seg,fim){
+  const b=novo('button','dpSegurar','SEGURA');
+  const barra=novo('div','dpBarra'),cheio=novo('div','dpBarraCheia');
+  barra.appendChild(cheio);palco.appendChild(b);palco.appendChild(barra);
+  let t=0,ativo=false,acabou=false;
+  b.addEventListener('pointerdown',ev=>{
+    ativo=true;b.classList.add('apertado');
+    try{b.setPointerCapture(ev.pointerId);}catch(e){}
+    ev.preventDefault();
+  });
+  const solta=()=>{
+    if(!ativo||acabou)return;
+    ativo=false;b.classList.remove('apertado');
+    t=0;cheio.style.width='0%';dpDiz('soltou! começa de novo.');som(110,.2,'sawtooth');
+  };
+  b.addEventListener('pointerup',solta);b.addEventListener('pointercancel',solta);
+  ritmo(()=>{
+    if(!ativo||acabou)return;
+    t++;cheio.style.width=Math.min(100,t/(seg*10)*100)+'%';
+    if(t%10===0){dpContar();som(400+t*4,.05,'sine');}
+    if(t>=seg*10){acabou=true;ativo=false;dpConfete();SONS.vitoria();fim();}
+  },100);
+  dpDiz('segura o botão por '+seg+' segundos sem soltar.');
+}
+
+/* 8. pegar o que foge */
+function mecFugir(total,fim){
+  let pegos=0,ultima=0;
+  const b=novo('button','dpFujao','🫥 PEGA');palco.appendChild(b);
+  const placar=novo('div','dpPlacar','faltam '+total);palco.appendChild(placar);
+  const move=()=>{ultima=Date.now();const l=lugar(150,56);b.style.left=l.x+'px';b.style.top=l.y+'px';};
+  move();ritmo(move,1300);
+  palco.addEventListener('pointermove',ev=>{
+    const r=b.getBoundingClientRect();
+    const d=Math.hypot(ev.clientX-(r.left+r.width/2),ev.clientY-(r.top+r.height/2));
+    if(d<55&&Date.now()-ultima>700) move();
+  });
+  b.addEventListener('click',()=>{
+    pegos++;dpContar();som(720-pegos*60,.1,'square');
+    placar.textContent='faltam '+(total-pegos);
+    if(pegos>=total){dpConfete();SONS.vitoria();fim();return;}
+    move();
+  });
+}
+
+/* 9. clicar nos bons e não clicar nas bombas */
+function mecEvitar(total,fim){
+  let pegos=0,acabou=false;
+  const placar=novo('div','dpPlacar','faltam '+total);palco.appendChild(placar);
+  ritmo(()=>{
+    if(acabou)return;
+    const bom=Math.random()>.35;
+    const el=novo('button','dpBolha',bom?'😄':'💣');
+    const l=lugar(70,70);el.style.left=l.x+'px';el.style.top=l.y+'px';
+    palco.appendChild(el);tempo(()=>el.remove(),1500);
+    el.addEventListener('click',ev=>{
+      dpContar();el.remove();
+      if(!bom){som(90,.35,'sawtooth');pegos=Math.max(0,pegos-3);dpDiz('BOMBA! perdeu 3.');}
+      else{som(500+Math.random()*300,.07,'square');pegos++;dpPop('+1',ev.clientX,ev.clientY);}
+      placar.textContent='faltam '+Math.max(0,total-pegos);
+      if(pegos>=total&&!acabou){acabou=true;dpConfete();SONS.vitoria();fim();}
+    });
+  },700);
+  dpDiz('clica nos 😄. NÃO clica nas 💣.');
+}
+
+/* 10. jogo da memória com as caras do jogo */
+function mecMemoria(pares,fim){
+  const figs=['🥸','👹','🔥','🪧','🖌️','💀','👄','🗡️','🫥','⭐'].slice(0,pares);
+  const cartas=figs.concat(figs).sort(()=>Math.random()-.5);
+  const grade=novo('div','dpGrade');
+  grade.style.gridTemplateColumns='repeat('+Math.min(4,Math.ceil(Math.sqrt(cartas.length)))+',1fr)';
+  grade.style.gap='7px';
+  palco.appendChild(grade);
+  let virada=null,travado=false,achados=0;
+  cartas.forEach(f=>{
+    const c=novo('div','dpCarta','');c.dataset.fig=f;
+    c.addEventListener('click',()=>{
+      if(travado||c.classList.contains('aberta'))return;
+      c.classList.add('aberta');c.textContent=f;dpContar();som(420,.06,'triangle');
+      if(!virada){virada=c;return;}
+      if(virada.dataset.fig===f){
+        achados++;virada=null;som(760,.12,'sine');
+        if(achados>=pares){dpConfete();SONS.vitoria();fim();}
+        return;
+      }
+      travado=true;const a=virada;virada=null;
+      tempo(()=>{a.classList.remove('aberta');a.textContent='';
+                 c.classList.remove('aberta');c.textContent='';travado=false;},800);
+    });
+    grade.appendChild(c);
+  });
+  dpDiz('acha os '+pares+' pares.');
+}
+
+/* ─────────── as 24 fases ─────────── */
+const FASES=[
+ {nome:'O jogo não desligou', fala:'o botão voltou. e trouxe amigos.', faz:f=>mecClicar('🔌',20,f,{encolhe:true})},
+ {nome:'O NADA 3: o retorno do retorno', fala:'de novo ele.', faz:f=>mecClicar('👄',40,f)},
+ {nome:'Aguenta 30 segundos', fala:'lembra do nome do jogo?', faz:f=>mecAguentar(30,f)},
+ {nome:'Junta os cacos', fala:'o NADA quebrou em pedaço.', faz:f=>mecArrastar(['⬛','🔲','◾','▪️'],8,f)},
+ {nome:'Escreve NADA DE NOVO', fala:'as letras voltaram.', faz:f=>mecMontar('NADADENOVO',f)},
+ {nome:'Segue o bigode', fala:'olha a ordem e repete.', faz:f=>mecSequencia(5,f)},
+ {nome:'Acha o diferente', fala:'tem um que não é igual aos outros.', faz:f=>mecProcurar(4,f)},
+ {nome:'Segura dez segundos', fala:'sem soltar.', faz:f=>mecSegurar(10,f)},
+ {nome:'Quarenta e cinco segundos de nada', fala:'de novo, e mais tempo.', faz:f=>mecAguentar(45,f)},
+ {nome:'Os clones do mago', fala:'ele se copiou. e trouxe bomba.', faz:f=>mecEvitar(25,f)},
+ {nome:'A memória do nada', fala:'tudo que cê já enfrentou, virado carta.', faz:f=>mecMemoria(6,f)},
+ {nome:'O fujão', fala:'esse aqui corre.', faz:f=>mecFugir(5,f)},
+ {nome:'Cento e cinquenta cliques', fala:'esse não foge. só é muito.', faz:f=>mecClicar('🫥',150,f,{foge:false})},
+ {nome:'Um minuto inteiro de nada', fala:'sessenta segundos. sem encostar.', faz:f=>mecAguentar(60,f)},
+ {nome:'Monta O NADA', fala:'de novo as letras, menos dessa vez.', faz:f=>mecMontar('ONADA',f)},
+ {nome:'Sequência grande', fala:'agora são nove.', faz:f=>mecSequencia(9,f)},
+ {nome:'Acha o bigode', fala:'oito rodadas, e as grades crescem.', faz:f=>mecProcurar(8,f)},
+ {nome:'Segura vinte segundos', fala:'o dobro do outro.', faz:f=>mecSegurar(20,f)},
+ {nome:'A memória grande', fala:'dez pares agora.', faz:f=>mecMemoria(10,f)},
+ {nome:'Cinquenta clones', fala:'mais clone, mais bomba.', faz:f=>mecEvitar(50,f)},
+ {nome:'Escreve NAO FAZ NADA', fala:'a frase inteira.', faz:f=>mecMontar('NAOFAZNADA',f)},
+ {nome:'O último NADA', fala:'duzentos e cinquenta. boa sorte.', faz:f=>mecClicar('⚫',250,f,{foge:false})},
+ {nome:'O fujão fujão', fala:'oito vezes. ele aprendeu.', faz:f=>mecFugir(8,f)},
+ {nome:'Dois minutos de nada', fala:'a última. cento e vinte segundos.', faz:f=>mecAguentar(120,f)}
+];
+
+/* ─────────── o motor ─────────── */
+let faseAtual=0;
+function guardar(){try{localStorage.setItem(CHAVE_SAVE,JSON.stringify({fase:faseAtual,coisas:coisas}));}catch(e){}}
+function lerSave(){try{return JSON.parse(localStorage.getItem(CHAVE_SAVE)||'null');}catch(e){return null;}}
+
+function iniciarFase(i){
+  faseAtual=i;guardar();limparPalco();
+  const f=FASES[i];
+  dpHud.style.display='block';
+  hudTxt.textContent='Fase '+(i+1)+' de '+FASES.length+' · '+f.nome;
+  hudBarra.style.width=(i/FASES.length*100)+'%';
+  const cartao=novo('div','dpTitulo');
+  cartao.innerHTML='<b>Fase '+(i+1)+'</b>';
+  cartao.appendChild(document.createTextNode(f.nome));
+  palco.appendChild(cartao);
+  dpDiz(f.fala||'');
+  tempo(()=>{cartao.remove();f.faz(()=>proximaFase());},1600);
+}
+function proximaFase(){
+  limparCronos();
+  hudBarra.style.width=((faseAtual+1)/FASES.length*100)+'%';
+  dpDiz('passou! 🎉');
+  const prox=faseAtual+1;
+  setTimeout(()=>{ if(prox>=FASES.length) fimDeVerdade(); else iniciarFase(prox); },1500);
+}
+function fimDeVerdade(){
+  limparPalco();
+  try{localStorage.removeItem(CHAVE_SAVE);}catch(e){}
+  dpHud.style.display='none';dpDiz('');
+  document.getElementById('dpContaFim').textContent=coisas;
+  document.getElementById('dpFim').classList.add('on');
+  SONS.vitoria();setTimeout(()=>SONS.vitoria(),400);
+}
+
+/* a tela que apagou volta a acender: o jogo não desliga */
+function acenderDeNovo(){
+  const tv=document.getElementById('dpTV');
+  tv.classList.remove('on');tv.style.animation='none';
+  document.getElementById('dpCreditos').style.display='none';
+  som(180,.3,'sine');
+  dpDiz('...o jogo não desligou.');
+  setTimeout(()=>dpDiz('era só a tela. ainda tem 24 fases.'),1800);
+  setTimeout(()=>iniciarFase(0),3400);
+}
+
+/* continuar de onde parou — uma hora de jogo sem save seria maldade */
+(function(){
+  const s=lerSave();
+  if(!s||typeof s.fase!=='number'||s.fase<0||s.fase>=FASES.length) return;
+  const b=document.getElementById('btnContinuar');
+  b.textContent='Continuar da fase '+(s.fase+1);
+  b.style.display='block';
+  b.addEventListener('click',()=>{
+    document.getElementById('menu').classList.add('off');
+    coisas=s.coisas||0;
+    dp.classList.add('on');
+    document.getElementById('dpCreditos').style.display='none';
+    dpConta.textContent='Coisas feitas: '+coisas;
+    iniciarFase(s.fase);
+  });
+})();
 </script>
 </body>
 </html>

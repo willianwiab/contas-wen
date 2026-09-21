@@ -60,6 +60,38 @@ No fim, o jogo te mostra o número que estava contando desde o começo:
 O bigode venceu de novo, e é de propósito: é a regra do jogo. Vida infinita não
 resolve nada contra bigode.
 
+## As 24 fases — a hora de jogo
+
+Depois que a tela apaga como televisão velha, ela **acende de novo**: o jogo não
+desliga. Daí começam **24 fases**, que levam mais ou menos **uma hora** pra
+atravessar.
+
+Uma hora não se faz com uma fase comprida — isso vira espera. Se faz com fase
+**curta e variada**. São dez brincadeiras diferentes, repetidas em tamanhos que
+vão crescendo:
+
+| | A brincadeira | O que cê faz |
+|---|---|---|
+| ⏳ | **Aguentar** | não encostar em nada por 30s, 45s, 60s e 120s — com botõezinhos aparecendo só pra te tentar. É a fase mais fiel ao nome do jogo |
+| 👆 | **Clicar** | bater num alvo que foge e encolhe: 20, 40, 150, 250 vezes |
+| 🕳️ | **Arrastar** | jogar os cacos do NADA dentro do buraco |
+| 🔤 | **Montar** | escrever NADADENOVO, ONADA e NAOFAZNADA com as letras espalhadas (tem letra errada no meio) |
+| 🟥 | **Sequência** | olhar a ordem que pisca e repetir — até 5, depois até 9 |
+| 🔎 | **Achar o diferente** | um 😃 no meio dos 😄, numa grade que cresce a cada rodada |
+| ✊ | **Segurar** | segurar o botão 10s e 20s sem soltar. Soltou, zerou |
+| 🏃 | **Pegar o fujão** | ele corre do dedo e muda de lugar sozinho |
+| 💣 | **Clones e bombas** | clicar nos 😄 e não clicar nas 💣 — errou, perde três |
+| 🧠 | **Memória** | as caras do jogo viradas carta: 6 pares, depois 10 |
+
+### O save
+
+Uma hora de jogo sem salvar seria maldade. Cada fase que começa fica guardada no
+aparelho, e a tela de começo ganha um **"continuar da fase X"**. Chegou no fim de
+verdade, o save se apaga sozinho — pra quem quiser fazer tudo de novo.
+
+O rodapé mostra **fase X de 24** e uma barrinha enchendo, pra cê saber quanto
+falta em vez de adivinhar.
+
 ## O melhor pedaço
 
 O mago tem **vida infinita** e fala isso na tua cara. Não tem como tirar vida
@@ -82,8 +114,9 @@ Não guarda nada: fechou, recomeça. O botão *voltar ao início* recarrega a p�
 | Arquivo | O que faz |
 |---|---|
 | `index.html` | o jogo inteiro |
-| `teste-depois-do-fim.js` | joga sozinho as quatro fases novas, pra conferir que nenhuma travou |
+| `teste-depois-do-fim.js` | joga sozinho as quatro fases da segunda metade |
+| `teste-24-fases.js` | passa pelas 24 fases e confere o save |
 
 ---
 
-Feito pelo **JoJo**, 2026. A segunda metade veio depois, a pedido dele — *v3, agora com o dobro de nada*.
+Feito pelo **JoJo**, 2026. A segunda metade veio depois, a pedido dele — *v4, uma hora de nada*.
