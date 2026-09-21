@@ -3,7 +3,7 @@
    seria pior do que preço nenhum. */
 /* O número sobe sempre que eu quero que todo mundo largue o que estava
    guardado. Quem estava com versão velha pega a nova na primeira visita. */
-const CACHE = 'butterpoke-v37';
+const CACHE = 'butterpoke-v38';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg', './icone-limpo.svg'];
 
 self.addEventListener('install', ev => {
