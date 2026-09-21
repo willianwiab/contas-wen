@@ -59,6 +59,26 @@ vazio sem explicação.
 
 Vai junto no código do perfil e vira um número no cartão de treinador, como todo o resto.
 
+## "Não atualizou o site"
+
+Isso voltou vezes demais, e **eu não achei a causa**. Montei um servidor igual ao do
+GitHub Pages — com o mesmo `Cache-Control: max-age=600` — abri o site, troquei o arquivo
+por baixo e voltei. Pegou a versão nova. Testei com o `sw.js` antigo e com o novo: os dois
+pegaram. A explicação fácil ("é o cache do celular") **não se sustentou no teste**.
+
+Então não escrevi "consertado" em lugar nenhum. O que dá pra fazer sem saber a causa é
+tirar o assunto das mãos de quem usa:
+
+- **O número da versão no rodapé virou botão.** Aperta e ele apaga tudo que está guardado,
+  manda o service worker se atualizar e reabre num endereço novo (`?v=...`, que o navegador
+  é obrigado a buscar). Depois limpa esse `?v=` da barra, senão o link sairia com lixo
+  quando alguém mandasse pro amigo. É a saída de emergência, e funciona mesmo sem eu saber
+  de onde vem o problema.
+- **Faixa de "chegou versão nova"** quando o service worker troca com o site aberto. Só
+  aparece se já havia um antes — na primeira visita a troca não é novidade, é o normal.
+- **`cache:'reload'`** ao buscar a página, e `updateViaCache:'none'` ao registrar o
+  `sw.js`. Cinto de segurança, não conserto comprovado.
+
 ## Deixa teu recado
 
 Pediram feedback. A primeira coisa a resolver não era o formulário, era o que o site **não
