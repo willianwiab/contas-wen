@@ -456,7 +456,21 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 /* O número da versão existe pra responder "tá vendo a nova ou a velha?"
    sem ninguém ter que adivinhar. */
 .versao{display:inline-block;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;
-  padding:3px 12px;font-size:.78rem;font-weight:600;margin-top:4px}
+  padding:6px 14px;font:inherit;font-size:.78rem;font-weight:600;margin-top:4px;
+  color:var(--tinta);cursor:pointer}
+.versao:hover{border-color:var(--asa)}
+/* A faixa de "chegou versão nova" fica presa embaixo: em celular ninguém
+   rola até o rodapé pra descobrir que tem novidade. */
+.faixa-nova{
+  position:fixed;left:10px;right:10px;bottom:10px;z-index:50;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:var(--asa);color:#fff;border-radius:16px;padding:12px 15px;
+  box-shadow:0 6px 24px rgba(60,30,100,.3);font-weight:600;font-size:.95rem;
+}
+.faixa-nova button{
+  font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 16px;
+  background:#fff;color:var(--asa-escura);cursor:pointer;margin-left:auto;
+}
 .cracha{display:inline-block;background:var(--asa);color:#fff;border-radius:999px;
   padding:5px 15px;font-weight:700;font-size:.95rem;margin-top:8px}
 #nome-perfil{
@@ -585,7 +599,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.85r
 
   <footer>
     ButterPoke · preços das APIs públicas pokemontcg.io e tcgdex.net (TCGplayer e Cardmarket)
-    <br><span class="versao">versão 33 — 21/09</span>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 34 — 21/09 · 🔄</button>
   </footer>
 </div>
 
@@ -3811,8 +3825,79 @@ window.addEventListener('hashchange', () => {
 });
 
 campo.focus();
-if('serviceWorker' in navigator)
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+/* ---------- "não atualizou o site" ----------
+   Isso apareceu vezes demais, e eu NÃO descobri a causa: montei um
+   servidor igualzinho ao do GitHub (com o mesmo "guarde por 10 minutos"),
+   troquei o arquivo e o site pegou a versão nova nas duas versões do
+   sw.js. Ou seja: a explicação fácil — "é o cache do celular" — não se
+   sustentou no teste.
+
+   Sem saber a causa, o que dá pra fazer é tirar o assunto das mãos da
+   pessoa. Três coisas:
+
+   1) O número da versão virou BOTÃO. Aperta e ele joga fora tudo que está
+      guardado e abre num endereço novinho — endereço diferente o navegador
+      é obrigado a buscar de novo. É a saída de emergência, e funciona
+      mesmo sem eu saber de onde vinha o problema.
+   2) Quando chega versão nova com a pessoa de site aberto, aparece uma
+      faixa avisando. Antes ela só ia descobrir por acaso.
+   3) O sw.js pede a página sem passar pelo cache do navegador — cinto de
+      segurança, não conserto comprovado. */
+const btRecarregar = document.getElementById('recarregar');
+if(btRecarregar) btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{
+    if(window.caches){
+      const nomes = await caches.keys();
+      await Promise.all(nomes.map(n => caches.delete(n)));
+    }
+  }catch(e){}
+  try{
+    if(navigator.serviceWorker){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.update().catch(() => {})));
+    }
+  }catch(e){}
+  const u = new URL(location.href);
+  u.searchParams.set('v', Date.now());   // endereço novo = busca obrigatória
+  location.replace(u.toString());
+};
+
+/* O ?v=... só serviu pra forçar a busca; deixar ele na barra faria a
+   pessoa mandar esse link pros amigos com lixo dentro. */
+try{
+  if(new URL(location.href).searchParams.has('v')){
+    const limpo = new URL(location.href);
+    limpo.searchParams.delete('v');
+    history.replaceState(null, '', limpo.pathname + limpo.search + limpo.hash);
+  }
+}catch(e){}
+
+function avisarVersaoNova(){
+  if(document.querySelector('.faixa-nova')) return;
+  const f = document.createElement('div');
+  f.className = 'faixa-nova';
+  f.innerHTML = '<span>✨ Chegou versão nova do ButterPoke!</span>' +
+                '<button type="button">Carregar</button>';
+  f.querySelector('button').onclick = () => location.reload();
+  document.body.appendChild(f);
+}
+
+if('serviceWorker' in navigator){
+  // Se já havia um controlando, uma troca depois quer dizer versão nova.
+  // Na primeira visita não há nada antes, e aí a troca não é novidade.
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(jaTinha) avisarVersaoNova();
+  });
+  window.addEventListener('load', () => {
+    // updateViaCache:'none' — o próprio sw.js não pode vir do cache, senão
+    // o aviso de versão nova chegaria com horas de atraso.
+    navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' })
+      .then(r => { setTimeout(() => r.update().catch(() => {}), 3000); })
+      .catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
