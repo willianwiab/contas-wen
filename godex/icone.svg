@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="GOdex">
+  <rect width="64" height="64" rx="14" fill="#e4eff9"/>
+  <circle cx="32" cy="32" r="23" fill="#fbfdff" stroke="#16283a" stroke-width="3.5"/>
+  <path d="M9 32a23 23 0 0 1 46 0z" fill="#2f74c0" stroke="#16283a" stroke-width="3.5"/>
+  <line x1="9" y1="32" x2="55" y2="32" stroke="#16283a" stroke-width="3.5"/>
+  <circle cx="32" cy="32" r="8" fill="#fff" stroke="#16283a" stroke-width="3.5"/>
+  <circle cx="32" cy="32" r="3" fill="#dda31f"/>
+</svg>

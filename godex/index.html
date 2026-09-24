@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GOdex — quais Pokémon você já tem?</title>
+<meta name="description" content="Marca quais Pokémon você já pegou no Pokémon GO, com shiny, sombroso, sortudo, fundo de evento e fantasia — e vê qual é o mais raro da tua coleção." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#2f74c0" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="GOdex" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://raw.githubusercontent.com" />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* Azul de mapa e dourado de bola. Tudo que pinta alguma coisa mora aqui,
+     pra o modo escuro ser só trocar esta lista. */
+  --marca:#2f74c0; --marca-escura:#1d5595; --marca-clara:#8fc0ee;
+  --ouro:#dda31f; --ouro-sombra:#a3760f;
+  --certo:#1f9d55; --errado:#d64545;
+  --creme:#f3f8fd; --creme2:#e4eff9; --creme3:#d9e9f7;
+  --tinta:#16283a; --tinta-fraca:#5a7288; --tinta-no-ouro:#221a06;
+  --cartao:#ffffff; --cartao2:#fafcfe; --cartao3:#eaf3fb;
+  --campo:#fafcfe; --vazio:#e7f0f9;
+  --borda:#cfe1f2;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#5f9de0; --marca-escura:#3f7ec4; --marca-clara:#9cc5ef;
+    --ouro:#f0b93f; --ouro-sombra:#9c7615;
+    --certo:#3ecb84; --errado:#ff6b6b;
+    --creme:#0c1420; --creme2:#141f2f; --creme3:#101927;
+    --tinta:#e7effa; --tinta-fraca:#94a9c0; --tinta-no-ouro:#221a06;
+    --cartao:#18242f; --cartao2:#1f2c3b; --cartao3:#263547;
+    --campo:#141d29; --vazio:#233245;
+    --borda:#314459;
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#5f9de0; --marca-escura:#3f7ec4; --marca-clara:#9cc5ef;
+  --ouro:#f0b93f; --ouro-sombra:#9c7615;
+  --certo:#3ecb84; --errado:#ff6b6b;
+  --creme:#0c1420; --creme2:#141f2f; --creme3:#101927;
+  --tinta:#e7effa; --tinta-fraca:#94a9c0; --tinta-no-ouro:#221a06;
+  --cartao:#18242f; --cartao2:#1f2c3b; --cartao3:#263547;
+  --campo:#141d29; --vazio:#233245;
+  --borda:#314459;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Rubik',system-ui,sans-serif; color:var(--tinta);
+  background-color:var(--creme);
+  background-image:radial-gradient(circle at 8% 5%, var(--creme2) 0 26%, transparent 26.5%),
+                   radial-gradient(circle at 92% 76%, var(--creme3) 0 20%, transparent 20.5%);
+  background-attachment:fixed;
+  min-height:100vh; padding:0 16px 56px;
+}
+.envolve{max-width:960px;margin:0 auto}
+
+header{text-align:center;padding:32px 0 20px;position:relative}
+.logo{
+  font-family:'Baloo 2',cursive; font-size:clamp(2.3rem,8.5vw,3.4rem); line-height:1;
+  color:var(--marca-escura); text-shadow:3px 3px 0 var(--marca-clara);
+}
+.logo span{color:var(--ouro);text-shadow:3px 3px 0 var(--creme)}
+.logo .bola{height:1em;vertical-align:-.16em;margin-left:.12em}
+.slogan{margin-top:8px;color:var(--tinta-fraca);font-size:1rem}
+.tema{
+  position:absolute;top:14px;right:0;width:42px;height:42px;border-radius:50%;
+  border:2px solid var(--borda);background:var(--cartao);font-size:1.2rem;
+  cursor:pointer;line-height:1;padding:0;color:inherit;
+}
+.tema:hover{border-color:var(--marca)}
+
+.caixa{
+  background:var(--cartao); border:1px solid var(--borda); border-radius:24px;
+  padding:20px; box-shadow:0 10px 28px rgba(20,60,110,.10);
+}
+.btn{
+  padding:14px 22px; border:none; border-radius:16px; font:inherit; font-weight:700;
+  font-size:1rem; cursor:pointer; background:var(--marca); color:#fff;
+  box-shadow:0 5px 0 var(--marca-escura); transition:transform .08s, box-shadow .08s;
+}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--marca-escura)}
+.btn.dourado{background:var(--ouro);color:var(--tinta-no-ouro);box-shadow:0 5px 0 var(--ouro-sombra)}
+.btn.dourado:active{box-shadow:0 1px 0 var(--ouro-sombra)}
+.btn.larga{margin-top:12px;width:100%;padding:13px;font-size:1rem}
+.btn.secundario{background:var(--cartao2);color:var(--tinta);border:2px solid var(--borda);box-shadow:none}
+.btn.secundario:active{transform:translateY(2px)}
+
+.linha-busca{display:flex;gap:10px;flex-wrap:wrap}
+.entrada{
+  flex:1 1 200px;min-width:0;width:100%;padding:15px 16px;font:inherit;font-size:1.1rem;
+  border:2px solid var(--borda);border-radius:16px;background:var(--campo);color:var(--tinta);
+}
+.entrada:hover{border-color:var(--marca)}
+.entrada:focus{outline:none;border-color:var(--marca-escura);background:var(--cartao);
+  box-shadow:0 0 0 4px rgba(47,116,192,.2)}
+.dica{margin-top:10px;font-size:.84rem;color:var(--tinta-fraca);line-height:1.5}
+.dica b{color:var(--tinta)}
+
+.atalhos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.atalhos .btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  padding:11px 4px;font-size:.7rem;font-weight:600;line-height:1.2;text-align:center;
+  background:var(--cartao2);color:var(--tinta-fraca);border:1px solid var(--borda);
+  border-radius:16px;box-shadow:none;transition:background .15s,color .15s,transform .1s;
+}
+.atalhos .btn i{font-size:1.35rem;font-style:normal;line-height:1}
+.atalhos .btn:hover{background:var(--cartao3);color:var(--tinta)}
+.atalhos .btn:active{transform:translateY(2px);box-shadow:none}
+@media(max-width:400px){ .atalhos{grid-template-columns:repeat(3,1fr)} }
+
+/* ---------- a grade de Pokémon ---------- */
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:9px;margin-top:6px}
+.bicho{
+  position:relative;background:var(--cartao);border:2px solid var(--borda);border-radius:16px;
+  padding:6px 4px 9px;cursor:pointer;text-align:center;font:inherit;color:var(--tinta);
+  transition:transform .12s,border-color .12s;
+}
+.bicho:hover,.bicho:focus{transform:translateY(-3px);border-color:var(--marca);outline:none}
+.bicho.tenho{border-color:var(--certo);background:var(--cartao3)}
+.bicho img{width:100%;max-width:76px;aspect-ratio:1;display:block;margin:0 auto;
+  image-rendering:pixelated;background:transparent}
+.bicho .num{display:block;font-size:.68rem;color:var(--tinta-fraca);font-weight:600}
+.bicho b{display:block;font-size:.78rem;line-height:1.2;overflow-wrap:anywhere;text-transform:capitalize}
+.bicho .marcas{position:absolute;top:4px;right:4px;font-size:.72rem;line-height:1.1;
+  display:flex;flex-direction:column;gap:1px}
+.bicho .visto{position:absolute;top:4px;left:5px;font-size:.8rem}
+
+/* ---------- a ficha ---------- */
+.ficha-topo{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.retrato{
+  flex:0 0 auto;width:132px;height:132px;border-radius:20px;background:var(--cartao3);
+  border:2px solid var(--borda);display:flex;align-items:center;justify-content:center;
+}
+.retrato img{width:112px;height:112px;image-rendering:pixelated}
+.ficha-topo .quem{flex:1 1 180px;min-width:0}
+.ficha-topo h2{font-family:'Baloo 2',cursive;font-size:2rem;line-height:1.1;text-transform:capitalize}
+.numdex{font-family:'Baloo 2',cursive;font-size:1.1rem;color:var(--tinta-fraca)}
+.etiquetas{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.etiqueta{background:var(--cartao3);border:2px solid var(--borda);border-radius:999px;
+  padding:4px 11px;font-size:.8rem;font-weight:600}
+.etiqueta.lenda{background:var(--ouro);border-color:var(--ouro-sombra);color:var(--tinta-no-ouro)}
+.tipo{border-radius:999px;padding:4px 11px;font-size:.8rem;font-weight:700;color:#fff;
+  text-transform:capitalize}
+
+.escolha{margin:18px 0 0}
+.escolha h3{font-size:.95rem;margin-bottom:8px;color:var(--tinta)}
+.escolha h3 small{font-weight:400;color:var(--tinta-fraca)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  border:2px solid var(--borda);background:var(--cartao);border-radius:14px;padding:9px 13px;
+  font:inherit;font-weight:600;font-size:.9rem;color:var(--tinta-fraca);cursor:pointer;
+  text-align:left;line-height:1.25;transition:transform .1s;
+}
+.chip:hover{transform:translateY(-2px)}
+.chip[aria-pressed="true"]{background:var(--marca);border-color:var(--marca-escura);color:#fff}
+.chip small{display:block;font-weight:400;font-size:.72rem;opacity:.85;margin-top:1px}
+
+.destaque{
+  margin-top:18px;background:linear-gradient(135deg,var(--ouro),var(--marca-clara));
+  border:2px solid var(--ouro-sombra);border-radius:20px;padding:18px 20px;text-align:center;
+}
+.destaque .rotulo{font-size:.8rem;font-weight:700;color:var(--tinta-no-ouro);
+  text-transform:uppercase;letter-spacing:.06em}
+.destaque .numerao{font-family:'Baloo 2',cursive;font-size:2.6rem;line-height:1.05;color:var(--tinta-no-ouro)}
+.destaque .abaixo{font-size:.95rem;color:var(--tinta-no-ouro);margin-top:2px;font-weight:600}
+
+.nota{
+  margin-top:12px;background:var(--cartao2);border-left:4px solid var(--marca);
+  border-radius:0 12px 12px 0;padding:11px 14px;font-size:.87rem;
+  color:var(--tinta-fraca);line-height:1.55;
+}
+.nota b{color:var(--tinta)}
+.nota.atencao{border-left-color:var(--ouro)}
+.aviso{
+  margin-top:22px;background:var(--cartao);border:3px dashed var(--borda);border-radius:20px;
+  padding:26px 20px;text-align:center;color:var(--tinta-fraca);
+}
+.aviso strong{display:block;color:var(--tinta);font-size:1.15rem;margin-bottom:6px}
+.girando{
+  width:42px;height:42px;margin:0 auto 14px;border-radius:50%;
+  border:6px solid var(--borda);border-top-color:var(--marca);animation:gira .8s linear infinite;
+}
+@keyframes gira{to{transform:rotate(360deg)}}
+
+.tela{margin-top:26px}
+.tela h2{font-family:'Baloo 2',cursive;font-size:1.6rem;margin-bottom:4px}
+.tela > p{color:var(--tinta-fraca);margin-bottom:14px}
+h3.titulinho{margin:22px 0 8px;font-size:1rem;color:var(--tinta-fraca);
+  text-transform:uppercase;letter-spacing:.05em}
+.placar{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px}
+.quadro{background:var(--cartao2);border:2px solid var(--borda);border-radius:16px;
+  padding:12px 10px;text-align:center}
+.quadro b{display:block;font-family:'Baloo 2',cursive;font-size:1.7rem;line-height:1.1}
+.quadro small{display:block;color:var(--tinta-fraca);font-size:.74rem;margin-top:2px}
+.barrinha{height:12px;border-radius:999px;background:var(--vazio);overflow:hidden;margin-top:12px}
+.barrinha span{display:block;height:100%;background:var(--certo);border-radius:999px}
+
+.ranque{list-style:none;display:flex;flex-direction:column;gap:8px}
+.ranque li{
+  display:flex;align-items:center;gap:11px;background:var(--cartao);border:2px solid var(--borda);
+  border-radius:16px;padding:9px 12px;
+}
+.ranque .pos{font-family:'Baloo 2',cursive;font-size:1.3rem;color:var(--tinta-fraca);min-width:1.6em;text-align:center}
+.ranque img{width:46px;height:46px;image-rendering:pixelated;flex:0 0 auto}
+.ranque .quem{flex:1 1 auto;min-width:0}
+.ranque .quem b{display:block;text-transform:capitalize;overflow-wrap:anywhere}
+.ranque .quem small{display:block;color:var(--tinta-fraca);font-size:.76rem;margin-top:1px}
+.ranque .pontos{font-weight:700;color:var(--ouro-sombra);white-space:nowrap}
+
+.codigo{
+  width:100%;padding:11px 13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:.74rem;line-height:1.5;border:2px solid var(--borda);border-radius:12px;
+  background:var(--cartao2);color:var(--tinta);resize:vertical;word-break:break-all;
+}
+.codigo:focus{outline:none;border-color:var(--marca-escura)}
+table{width:100%;border-collapse:collapse;font-size:.92rem;table-layout:fixed}
+th,td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--borda)}
+th:first-child,td:first-child{text-align:left;overflow-wrap:anywhere}
+thead th{color:var(--tinta-fraca);font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+
+footer{text-align:center;margin-top:40px;color:var(--tinta-fraca);font-size:.82rem;line-height:1.6}
+.versao{
+  display:inline-block;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;
+  padding:6px 14px;font:inherit;font-size:.78rem;font-weight:600;margin-top:4px;
+  color:var(--tinta);cursor:pointer;
+}
+.versao:hover{border-color:var(--marca)}
+.faixa-nova{
+  position:fixed;left:10px;right:10px;bottom:10px;z-index:50;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:var(--marca);color:#fff;border-radius:16px;padding:12px 15px;
+  box-shadow:0 6px 24px rgba(10,40,90,.35);font-weight:600;font-size:.95rem;
+}
+.faixa-nova button{
+  font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 16px;
+  background:#fff;color:var(--marca-escura);cursor:pointer;margin-left:auto;
+}
+</style>
+</head>
+<body>
+<div class="envolve">
+
+  <header>
+    <button class="tema" type="button" id="tema" aria-label="Trocar entre claro e escuro">🌙</button>
+    <h1 class="logo">GO<span>dex</span><img class="bola" src="icone-limpo.svg" alt="" /></h1>
+    <p class="slogan">Marca quais Pokémon você já pegou no GO — com shiny, sombroso,
+      sortudo, fundo e fantasia.</p>
+  </header>
+
+  <section class="caixa">
+    <form class="linha-busca" id="formulario">
+      <input class="entrada" id="campo" autocomplete="off"
+             placeholder="Nome ou número: pikachu, 25…" aria-label="Nome ou número do Pokémon" />
+      <button class="btn" type="submit">Procurar</button>
+    </form>
+    <p class="dica">Escreve um pedaço do nome (<b>chari</b>), o número da Pokédex
+      (<b>25</b>), ou deixa em branco pra ver <b>todos</b>.</p>
+
+    <div class="atalhos">
+      <button class="btn" type="button" id="btn-minha"><i>🎒</i>Minha dex</button>
+      <button class="btn" type="button" id="btn-raros"><i>💎</i>Mais raros</button>
+      <button class="btn" type="button" id="btn-variacoes"><i>✨</i>Variações</button>
+      <button class="btn" type="button" id="btn-numeros"><i>📊</i>Números</button>
+      <button class="btn" type="button" id="btn-codigo"><i>📲</i>Outro aparelho</button>
+      <button class="btn" type="button" id="btn-ajuda"><i>❓</i>Como usa</button>
+    </div>
+  </section>
+
+  <div id="palco" aria-live="polite"></div>
+
+  <footer>
+    GOdex · site de fã, sem ligação com a Niantic, a Nintendo ou a The Pokémon Company
+    <br>Nomes, números e figurinhas vêm da <b>PokéAPI</b>, que é pública e de graça
+    <br><button class="versao" type="button" id="recarregar"
+       title="Buscar a versão mais nova do site">versão 1 — 24/09 · 🔄</button>
+  </footer>
+</div>
+
+<script>
+'use strict';
+/* =========================================================================
+   GOdex — a tua Pokédex do Pokémon GO.
+
+   De onde vêm os dados: a PokéAPI (pokeapi.co), que é pública, de graça e
+   deixa um site de fora ler. Dela vem o que é FATO do Pokémon: número da
+   Pokédex, nome, tipos, figurinha normal e shiny, se é lendário ou mítico,
+   e a taxa de captura dos jogos clássicos.
+
+   O que ela NÃO tem, e eu não invento: nada específico do Pokémon GO.
+   Quem é regional, quem sai em raid, quem já teve shiny liberado, quanto
+   de CP — isso não existe em API pública nenhuma que eu possa ler. Essa
+   parte quem sabe é você, e é por isso que as variações são marcadas à
+   mão. Você marca, o site conta e organiza.
+   ========================================================================= */
+
+const API = 'https://pokeapi.co/api/v2';
+const FIGURA = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
+const palco = document.getElementById('palco');
+const campo = document.getElementById('campo');
+
+function escapar(t){
+  return String(t ?? '').replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+function semAcento(t){
+  return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+function ler(chave, vazio){
+  try{ return JSON.parse(localStorage.getItem(chave) || 'null') || vazio; }
+  catch(e){ return vazio; }
+}
+function gravar(chave, v){
+  try{ localStorage.setItem(chave, JSON.stringify(v)); return true; }catch(e){ return false; }
+}
+function quantoFaz(quando){
+  const dias = Math.floor((Date.now() - quando) / 86400000);
+  if(dias <= 0) return 'hoje';
+  if(dias === 1) return 'ontem';
+  return 'faz ' + dias + ' dias';
+}
+function semInternet(){
+  return typeof navigator !== 'undefined' && navigator.onLine === false;
+}
+
+/* Erro de rede é soluço na maioria das vezes: uma segunda chance resolve
+   boa parte, e a pessoa nem percebe que houve. */
+async function pedirJSON(url, jaTentei){
+  try{
+    const r = await fetch(url, { headers:{ Accept:'application/json' } });
+    if(!r.ok){ const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
+    return await r.json();
+  }catch(e){
+    if((!e.status || e.status >= 500) && !jaTentei){
+      await new Promise(f => setTimeout(f, 600));
+      return pedirJSON(url, true);
+    }
+    throw e;
+  }
+}
+function explicarErro(e){
+  if(semInternet()) return 'O teu aparelho está sem internet agora. ' +
+    'Liga o wi-fi ou os dados e tenta de novo.';
+  if(e && e.status >= 500) return 'A PokéAPI está com problema do lado dela — ' +
+    'não é culpa tua. Costuma voltar sozinha em alguns minutos.';
+  if(e && e.status === 404) return 'Esse Pokémon não está na PokéAPI.';
+  return 'Não consegui chegar na PokéAPI. Pode ser a tua internet ou o site dela.';
+}
+function avisoErro(titulo, e, tentarDeNovo){
+  palco.innerHTML =
+    '<div class="aviso"><div style="font-size:2.6rem;line-height:1">😵‍💫</div>' +
+      '<strong>' + escapar(titulo) + '</strong>' +
+      '<p>' + explicarErro(e) + '</p>' +
+      '<button class="btn larga" type="button" id="de-novo">🔄 Tentar de novo</button>' +
+      '<details style="margin-top:14px;text-align:left"><summary style="cursor:pointer;font-size:.8rem">' +
+        'Detalhe técnico</summary><code style="display:block;margin-top:6px;font-size:.74rem">' +
+        escapar((e && e.message) || String(e)) + '</code></details>' +
+    '</div>';
+  const b = document.getElementById('de-novo');
+  if(b) b.onclick = tentarDeNovo;
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- a lista de todos ----------
+   Uma chamada só traz os mais de mil de uma vez, e a figurinha é endereço
+   direto (não é outra chamada). Guardo a lista: ela muda uma vez por ano,
+   quando sai geração nova, e guardada o site abre sem internet. */
+const CHAVE_LISTA = 'godex:lista';
+const CHAVE_DEX = 'godex:dex';
+const CHAVE_FICHAS = 'godex:fichas';
+let todos = [];
+
+function idDaUrl(url){
+  const m = String(url || '').match(/\/(\d+)\/?$/);
+  return m ? Number(m[1]) : 0;
+}
+function figuraDe(id, shiny){
+  return FIGURA + (shiny ? 'shiny/' : '') + id + '.png';
+}
+function numeroBonito(n){ return '#' + String(n).padStart(4, '0').replace(/^0(?=\d{3})/, ''); }
+
+async function pegarTodos(){
+  if(todos.length) return todos;
+  const guardada = ler(CHAVE_LISTA, null);
+  if(guardada && Array.isArray(guardada.lista) && guardada.lista.length){
+    todos = guardada.lista;
+    if(semInternet()) return todos;   // offline: o guardado é o que tem
+  }
+  try{
+    const d = await pedirJSON(API + '/pokemon-species?limit=2000');
+    const lista = (d.results || [])
+      .map(x => ({ id:idDaUrl(x.url), nome:x.name }))
+      .filter(x => x.id > 0)
+      .sort((a, b) => a.id - b.id);
+    if(lista.length){
+      todos = lista;
+      gravar(CHAVE_LISTA, { quando:Date.now(), lista:lista });
+    }
+  }catch(e){
+    if(!todos.length) throw e;   // sem lista guardada, não dá pra seguir
+  }
+  return todos;
+}
+
+/* ---------- o que é meu ----------
+   Um Pokémon meu é um número e um punhado de marcas. Guardo num objeto
+   com o número de chave, que é o jeito de achar rápido sem varrer lista. */
+const VARIACOES = [
+  { v:'tenho',      rotulo:'✅ Tenho',        peso:0,  curto:'✅' },
+  { v:'shiny',      rotulo:'✨ Shiny',        peso:40, curto:'✨' },
+  { v:'sombroso',   rotulo:'🌑 Sombroso',     peso:12, curto:'🌑' },
+  { v:'purificado', rotulo:'💜 Purificado',   peso:10, curto:'💜' },
+  { v:'sortudo',    rotulo:'🍀 Sortudo',      peso:14, curto:'🍀' },
+  { v:'fantasia',   rotulo:'🎩 Fantasia',     peso:18, curto:'🎩' },
+  { v:'fundo',      rotulo:'🖼️ Fundo de evento', peso:10, curto:'🖼️' },
+  { v:'perfeito',   rotulo:'💯 100% (IV)',    peso:35, curto:'💯' },
+  { v:'regional',   rotulo:'🌍 Regional',     peso:30, curto:'🌍' },
+  { v:'evento',     rotulo:'📅 Só em evento', peso:16, curto:'📅' },
+  { v:'quero',      rotulo:'💖 Quero pegar',  peso:0,  curto:'💖' },
+];
+const SO_MARCAS = VARIACOES.filter(x => x.v !== 'tenho' && x.v !== 'quero');
+
+function lerDex(){ return ler(CHAVE_DEX, {}) || {}; }
+function marcasDe(id){ return lerDex()[id] || {}; }
+function temMarca(id, v){ return !!marcasDe(id)[v]; }
+function virarMarca(id, v){
+  const dex = lerDex();
+  const m = Object.assign({}, dex[id] || {});
+  m[v] = !m[v];
+  // Marcar uma variação quer dizer que você tem: exigir os dois cliques
+  // seria só uma chance a mais de a pessoa esquecer um deles.
+  if(m[v] && v !== 'quero') m.tenho = true;
+  if(v === 'tenho' && !m.tenho){
+    // Destenho apaga as variações junto: variação de Pokémon que você não
+    // tem não quer dizer nada.
+    SO_MARCAS.forEach(x => { delete m[x.v]; });
+  }
+  if(m.tenho) delete m.quero;   // já tem, não "quer"
+  if(Object.keys(m).filter(k => m[k]).length) dex[id] = m; else delete dex[id];
+  gravar(CHAVE_DEX, dex);
+}
+function quantosTenho(){
+  const dex = lerDex();
+  return Object.keys(dex).filter(id => dex[id].tenho).length;
+}
+function contarMarca(v){
+  const dex = lerDex();
+  return Object.keys(dex).filter(id => dex[id][v]).length;
+}
+
+/* ---------- a ficha de cada um, guardada ----------
+   Tipos, lendário e taxa de captura vêm de duas chamadas por Pokémon. Isso
+   é caro pra mil bichos, então guardo cada ficha assim que busco: a
+   segunda vez que você abre o mesmo Pokémon é instantânea, e offline ele
+   continua abrindo. */
+function fichasGuardadas(){ return ler(CHAVE_FICHAS, {}) || {}; }
+function fichaGuardada(id){ return fichasGuardadas()[id] || null; }
+function guardarFicha(id, f){
+  const todas = fichasGuardadas();
+  todas[id] = f;
+  if(!gravar(CHAVE_FICHAS, todas)){
+    // Encheu: jogo metade fora, as mais antigas primeiro (ordem de chave).
+    const ids = Object.keys(todas);
+    const cortado = {};
+    ids.slice(Math.floor(ids.length / 2)).forEach(k => { cortado[k] = todas[k]; });
+    cortado[id] = f;
+    gravar(CHAVE_FICHAS, cortado);
+  }
+}
+async function pegarFicha(id){
+  const guardada = fichaGuardada(id);
+  if(guardada) return guardada;
+  const [bicho, especie] = await Promise.all([
+    pedirJSON(API + '/pokemon/' + id),
+    pedirJSON(API + '/pokemon-species/' + id),
+  ]);
+  const f = {
+    id: id,
+    nome: especie.name || bicho.name,
+    tipos: (bicho.types || []).map(t => t.type && t.type.name).filter(Boolean),
+    lendario: !!especie.is_legendary,
+    mitico: !!especie.is_mythical,
+    inicial: !!especie.is_baby,
+    captura: typeof especie.capture_rate === 'number' ? especie.capture_rate : null,
+    geracao: (especie.generation && especie.generation.name) || '',
+    altura: bicho.height || 0,
+    peso: bicho.weight || 0,
+  };
+  guardarFicha(id, f);
+  return f;
+}
+
+const COR_TIPO = {
+  normal:'#9299a1', fire:'#e8622f', water:'#3b8ede', electric:'#d9a800', grass:'#4aa84a',
+  ice:'#4fb6c4', fighting:'#bf3f38', poison:'#9350a8', ground:'#b8883a', flying:'#7b8fd6',
+  psychic:'#e0567f', bug:'#7d9c2a', rock:'#a08b4a', ghost:'#6a5aa0', dragon:'#5a48c4',
+  dark:'#5c5048', steel:'#68849b', fairy:'#d76fa8',
+};
+const NOME_TIPO = {
+  normal:'Normal', fire:'Fogo', water:'Água', electric:'Elétrico', grass:'Planta',
+  ice:'Gelo', fighting:'Lutador', poison:'Venenoso', ground:'Terra', flying:'Voador',
+  psychic:'Psíquico', bug:'Inseto', rock:'Pedra', ghost:'Fantasma', dragon:'Dragão',
+  dark:'Sombrio', steel:'Metal', fairy:'Fada',
+};
+const NOME_GERACAO = {
+  'generation-i':'1ª geração (Kanto)', 'generation-ii':'2ª (Johto)',
+  'generation-iii':'3ª (Hoenn)', 'generation-iv':'4ª (Sinnoh)',
+  'generation-v':'5ª (Unova)', 'generation-vi':'6ª (Kalos)',
+  'generation-vii':'7ª (Alola)', 'generation-viii':'8ª (Galar)',
+  'generation-ix':'9ª (Paldea)',
+};
+
+/* ---------- a grade ---------- */
+let mostrando = [];
+let limite = 60;
+
+function cartinha(p){
+  const m = marcasDe(p.id);
+  const marcas = SO_MARCAS.filter(x => m[x.v]).map(x => x.curto).join('');
+  return '<button type="button" class="bicho' + (m.tenho ? ' tenho' : '') + '" ' +
+      'data-id="' + p.id + '">' +
+    (m.tenho ? '<span class="visto">✅</span>' : (m.quero ? '<span class="visto">💖</span>' : '')) +
+    (marcas ? '<span class="marcas">' + marcas + '</span>' : '') +
+    '<img loading="lazy" alt="" src="' + figuraDe(p.id, !!m.shiny) + '" />' +
+    '<span class="num">' + numeroBonito(p.id) + '</span>' +
+    '<b>' + escapar(p.nome) + '</b>' +
+  '</button>';
+}
+
+function desenharGrade(titulo, sub, lista, vazio){
+  mostrando = lista;
+  if(!lista.length){
+    palco.innerHTML = '<div class="aviso"><strong>' + vazio.titulo + '</strong>' + vazio.texto + '</div>';
+    palco.scrollIntoView({ behavior:'smooth', block:'start' });
+    return;
+  }
+  const mostra = lista.slice(0, limite);
+  palco.innerHTML =
+    '<section class="tela"><h2>' + titulo + '</h2><p>' + sub + '</p>' +
+      '<div class="grade">' + mostra.map(cartinha).join('') + '</div>' +
+      (lista.length > mostra.length
+        ? '<button class="btn secundario larga" type="button" id="mais">⬇ Mostrar mais ' +
+          Math.min(60, lista.length - mostra.length) + '</button>'
+        : '') +
+    '</section>';
+  palco.querySelectorAll('.bicho').forEach(b => {
+    b.onclick = () => abrirBicho(Number(b.dataset.id));
+  });
+  const mais = document.getElementById('mais');
+  if(mais) mais.onclick = () => { limite += 60; desenharGrade(titulo, sub, lista, vazio); };
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+async function procurar(texto){
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>Pegando a lista…</div>';
+  let lista;
+  try{ lista = await pegarTodos(); }
+  catch(e){ avisoErro('Não consegui pegar a lista de Pokémon', e, () => procurar(texto)); return; }
+
+  const t = semAcento(texto).trim();
+  const achados = !t ? lista : lista.filter(p =>
+    semAcento(p.nome).indexOf(t) >= 0 || String(p.id) === t.replace(/^#?0*/, ''));
+  limite = 60;
+  if(achados.length === 1) return abrirBicho(achados[0].id);
+  desenharGrade(
+    t ? 'Achei ' + achados.length : 'Todos os ' + achados.length + ' Pokémon',
+    'Toca num pra abrir a ficha e marcar o que você tem.',
+    achados,
+    { titulo:'Não achei esse 🤔',
+      texto:'Escreve um pedaço do nome em inglês — <b>pika</b>, <b>chari</b>, <b>eve</b> — ' +
+            'ou o número da Pokédex.' });
+}
+
+/* ---------- a ficha ---------- */
+async function abrirBicho(id){
+  const p = (todos.find(x => x.id === id)) || { id:id, nome:'?' };
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>Abrindo ' +
+    escapar(p.nome) + '…</div>';
+  let f = fichaGuardada(id);
+  if(!f){
+    try{ f = await pegarFicha(id); }
+    catch(e){
+      // Sem a ficha eu ainda tenho número, nome e figurinha — e marcar o
+      // que você tem não depende da internet. Mostro assim mesmo.
+      f = { id:id, nome:p.nome, tipos:[], lendario:false, mitico:false,
+            captura:null, geracao:'', semDetalhe:true };
+    }
+  }
+  desenharFicha(f);
+}
+
+function desenharFicha(f){
+  const m = marcasDe(f.id);
+  const temShiny = !!m.shiny;
+  palco.innerHTML =
+    '<section class="tela">' +
+      '<div class="ficha-topo">' +
+        '<div class="retrato"><img id="retrato-img" alt="' + escapar(f.nome) + '" src="' +
+          figuraDe(f.id, temShiny) + '" /></div>' +
+        '<div class="quem">' +
+          '<div class="numdex">' + numeroBonito(f.id) + '</div>' +
+          '<h2>' + escapar(f.nome) + '</h2>' +
+          '<div class="etiquetas">' +
+            f.tipos.map(t => '<span class="tipo" style="background:' +
+              (COR_TIPO[t] || '#888') + '">' + escapar(NOME_TIPO[t] || t) + '</span>').join('') +
+            (f.mitico ? '<span class="etiqueta lenda">🌟 Mítico</span>' : '') +
+            (f.lendario ? '<span class="etiqueta lenda">👑 Lendário</span>' : '') +
+            (f.geracao ? '<span class="etiqueta">' +
+              escapar(NOME_GERACAO[f.geracao] || f.geracao) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      (f.semDetalhe
+        ? '<p class="nota atencao">📴 Não consegui pegar os detalhes deste agora (tipo, ' +
+          'lendário, taxa de captura). O número, o nome e a figurinha eu já tinha — e ' +
+          '<b>marcar o que você tem funciona do mesmo jeito</b>.</p>'
+        : '') +
+
+      '<div class="escolha"><h3>Você tem esse?</h3>' +
+        '<div class="chips" id="chips-base">' +
+          '<button type="button" class="chip" data-v="tenho" aria-pressed="' + !!m.tenho + '">' +
+            (m.tenho ? '✅ Tenho esse' : '⬜ Marcar que tenho') + '</button>' +
+          '<button type="button" class="chip" data-v="quero" aria-pressed="' + !!m.quero + '">' +
+            (m.quero ? '💖 Está na lista de quero' : '💖 Quero pegar') + '</button>' +
+        '</div></div>' +
+
+      '<div class="escolha"><h3>Variações <small>— marca as que você tem deste</small></h3>' +
+        '<div class="chips" id="chips-var">' + SO_MARCAS.map(x =>
+          '<button type="button" class="chip" data-v="' + x.v + '" aria-pressed="' +
+            !!m[x.v] + '">' + escapar(x.rotulo) + '</button>').join('') +
+        '</div></div>' +
+      '<p class="nota">Marcar qualquer variação já marca que você <b>tem</b> ele. ' +
+        'O ✨ shiny troca a figurinha aqui e na lista.</p>' +
+
+      '<h3 class="titulinho">O que a PokéAPI conta dele</h3>' +
+      '<table><tbody>' +
+        '<tr><td>Número na Pokédex</td><td>' + numeroBonito(f.id) + '</td></tr>' +
+        (f.tipos.length
+          ? '<tr><td>Tipo</td><td>' + f.tipos.map(t => escapar(NOME_TIPO[t] || t)).join(' / ') + '</td></tr>'
+          : '') +
+        (f.captura != null
+          ? '<tr><td>Taxa de captura <span style="color:var(--tinta-fraca)">(jogos clássicos)</span></td>' +
+            '<td>' + f.captura + ' de 255</td></tr>'
+          : '') +
+        (f.altura ? '<tr><td>Altura</td><td>' + (f.altura / 10).toFixed(1).replace('.', ',') + ' m</td></tr>' : '') +
+        (f.peso ? '<tr><td>Peso</td><td>' + (f.peso / 10).toFixed(1).replace('.', ',') + ' kg</td></tr>' : '') +
+      '</tbody></table>' +
+      '<p class="nota"><b>A taxa de captura é dos jogos clássicos, não do GO.</b> ' +
+        'Quanto menor, mais difícil de capturar lá. No GO os números são outros, e eles ' +
+        'não estão em nenhuma lista pública que eu consiga ler — por isso eu não invento.</p>' +
+
+      '<button class="btn secundario larga" type="button" id="voltar">↩️ Procurar outro</button>' +
+    '</section>';
+
+  palco.querySelectorAll('[data-v]').forEach(b => {
+    b.onclick = () => { virarMarca(f.id, b.dataset.v); desenharFicha(f); };
+  });
+  document.getElementById('voltar').onclick = () => procurar(campo.value.trim());
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- minha dex ---------- */
+async function minhaDex(){
+  let lista;
+  try{ lista = await pegarTodos(); }
+  catch(e){ avisoErro('Não consegui pegar a lista', e, minhaDex); return; }
+  const dex = lerDex();
+  const meus = lista.filter(p => dex[p.id] && dex[p.id].tenho);
+  limite = 60;
+  desenharGrade('🎒 Minha dex — ' + meus.length,
+    'Estes são os que você marcou. Toca num pra mexer nas variações.',
+    meus,
+    { titulo:'Tua dex está vazia 🎒',
+      texto:'Procura um Pokémon aí em cima, abre ele e toca em <b>"Marcar que tenho"</b>. ' +
+            'Ou marca uma variação direto — shiny, sombroso, sortudo… — que ele entra aqui.' });
+}
+
+/* ---------- variações ---------- */
+let varEscolhida = 'shiny';
+async function mostrarVariacoes(){
+  let lista;
+  try{ lista = await pegarTodos(); }
+  catch(e){ avisoErro('Não consegui pegar a lista', e, mostrarVariacoes); return; }
+  const dex = lerDex();
+  const daMarca = lista.filter(p => dex[p.id] && dex[p.id][varEscolhida]);
+  const escolha = SO_MARCAS.concat([{ v:'quero', rotulo:'💖 Quero pegar' }]);
+
+  palco.innerHTML =
+    '<section class="tela"><h2>✨ Variações</h2>' +
+      '<p>Escolhe uma marca pra ver quem você tem dela.</p>' +
+      '<div class="chips" id="chips-qual">' + escolha.map(x =>
+        '<button type="button" class="chip" data-v="' + x.v + '" aria-pressed="' +
+          (x.v === varEscolhida) + '">' + escapar(x.rotulo) +
+          '<small>' + contarMarca(x.v) + '</small></button>').join('') +
+      '</div>' +
+      '<div id="lista-var"></div>' +
+    '</section>';
+
+  const alvo = document.getElementById('lista-var');
+  alvo.innerHTML = daMarca.length
+    ? '<h3 class="titulinho">' + daMarca.length + ' com essa marca</h3>' +
+      '<div class="grade">' + daMarca.slice(0, 120).map(cartinha).join('') + '</div>'
+    : '<div class="aviso"><strong>Nenhum com essa marca ainda</strong>' +
+      'Abre um Pokémon e marca a variação na ficha dele.</div>';
+  alvo.querySelectorAll('.bicho').forEach(b => {
+    b.onclick = () => abrirBicho(Number(b.dataset.id));
+  });
+  palco.querySelectorAll('#chips-qual .chip').forEach(b => {
+    b.onclick = () => { varEscolhida = b.dataset.v; mostrarVariacoes(); };
+  });
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- os mais raros ----------
+   Aqui é onde eu preciso ser mais honesto do site inteiro. "Raro no
+   Pokémon GO" não é um número que exista em lugar nenhum que eu possa
+   ler. Então eu não finjo saber: eu somo coisas que EXISTEM, mostro a
+   conta aberta, e digo o que ela não sabe.
+
+   Duas metades:
+   - o que a PokéAPI garante: mítico, lendário, e a taxa de captura dos
+     jogos clássicos (quanto menor, mais difícil lá)
+   - o que VOCÊ marcou: shiny, 100%, regional, fantasia… que no GO pesam
+     muito mais do que qualquer coisa que a API saiba
+
+   A conta é minha e está escrita na tela. Não é ranking oficial de nada. */
+function pontosDeRaridade(f, m){
+  const partes = [];
+  if(f.mitico){ partes.push({ nome:'Mítico', pontos:60 }); }
+  else if(f.lendario){ partes.push({ nome:'Lendário', pontos:45 }); }
+  if(f.captura != null){
+    // 255 é o mais fácil dos jogos clássicos; 3 é dos mais difíceis.
+    const p = Math.round((255 - f.captura) / 255 * 25);
+    if(p > 0) partes.push({ nome:'Difícil de capturar nos jogos clássicos', pontos:p });
+  }
+  SO_MARCAS.forEach(x => {
+    if(m[x.v] && x.peso) partes.push({ nome:x.rotulo, pontos:x.peso });
+  });
+  return { total:partes.reduce((s, x) => s + x.pontos, 0), partes:partes };
+}
+
+async function mostrarRaros(){
+  let lista;
+  try{ lista = await pegarTodos(); }
+  catch(e){ avisoErro('Não consegui pegar a lista', e, mostrarRaros); return; }
+  const dex = lerDex();
+  const meus = lista.filter(p => dex[p.id] && dex[p.id].tenho);
+  if(!meus.length){
+    palco.innerHTML = '<div class="aviso"><strong>Marca alguns primeiro 💎</strong>' +
+      'Eu só sei ordenar o que é teu. Abre uns Pokémon e marca os que você tem.</div>';
+    palco.scrollIntoView({ behavior:'smooth', block:'start' });
+    return;
+  }
+
+  /* Cada ficha são duas chamadas. Com trezentos Pokémon isso é muita
+     coisa, então busco em fila, mostro o progresso, e o que já está
+     guardado nem sai de casa. */
+  const fichas = [];
+  let erro = null;
+  for(let i = 0; i < meus.length; i++){
+    const p = meus[i];
+    const guardada = fichaGuardada(p.id);
+    if(guardada){ fichas.push(guardada); continue; }
+    palco.innerHTML = '<div class="aviso"><div class="girando"></div>' +
+      'Pegando os dados dos teus Pokémon… (' + (i + 1) + ' de ' + meus.length + ')' +
+      '<br><small>Da segunda vez isso é instantâneo — eu guardo.</small></div>';
+    try{ fichas.push(await pegarFicha(p.id)); }
+    catch(e){
+      erro = e;
+      fichas.push({ id:p.id, nome:p.nome, tipos:[], lendario:false, mitico:false,
+                    captura:null, geracao:'', semDetalhe:true });
+    }
+  }
+
+  const ranque = fichas.map(f => {
+    const m = marcasDe(f.id);
+    return Object.assign({ f:f, m:m }, pontosDeRaridade(f, m));
+  }).sort((a, b) => b.total - a.total || a.f.id - b.f.id);
+
+  const campeao = ranque[0];
+  palco.innerHTML =
+    '<section class="tela"><h2>💎 Os mais raros que você tem</h2>' +
+      '<p>De ' + meus.length + ' Pokémon marcados.</p>' +
+      (campeao
+        ? '<div class="destaque">' +
+            '<div class="rotulo">O mais raro da tua coleção</div>' +
+            '<img style="width:110px;height:110px;image-rendering:pixelated;margin:6px 0" ' +
+              'alt="" src="' + figuraDe(campeao.f.id, !!campeao.m.shiny) + '" />' +
+            '<div class="numerao" style="text-transform:capitalize">' +
+              escapar(campeao.f.nome) + '</div>' +
+            '<div class="abaixo">' + campeao.total + ' pontos de raridade</div>' +
+          '</div>' +
+          '<p class="nota"><b>Por que ele:</b> ' +
+            campeao.partes.map(x => escapar(x.nome) + ' (+' + x.pontos + ')').join(', ') +
+            '.</p>'
+        : '') +
+
+      '<h3 class="titulinho">O ranque</h3>' +
+      '<ol class="ranque">' + ranque.slice(0, 50).map((x, i) =>
+        '<li><span class="pos">' + (i + 1) + '</span>' +
+          '<img alt="" src="' + figuraDe(x.f.id, !!x.m.shiny) + '" />' +
+          '<div class="quem"><b>' + escapar(x.f.nome) + '</b>' +
+            '<small>' + numeroBonito(x.f.id) +
+            (x.partes.length ? ' · ' + x.partes.map(y => escapar(y.nome)).join(' · ') : ' · comum') +
+            '</small></div>' +
+          '<span class="pontos">' + x.total + '</span></li>').join('') + '</ol>' +
+      (ranque.length > 50 ? '<p class="nota">Mostrando os 50 primeiros de ' + ranque.length + '.</p>' : '') +
+
+      '<h3 class="titulinho">De onde saem os pontos</h3>' +
+      '<table><thead><tr><th>O que conta</th><th>Pontos</th></tr></thead><tbody>' +
+        '<tr><td>🌟 Mítico <span style="color:var(--tinta-fraca)">(PokéAPI)</span></td><td>60</td></tr>' +
+        '<tr><td>👑 Lendário <span style="color:var(--tinta-fraca)">(PokéAPI)</span></td><td>45</td></tr>' +
+        '<tr><td>Difícil de capturar nos jogos clássicos <span style="color:var(--tinta-fraca)">(PokéAPI)</span></td><td>até 25</td></tr>' +
+        SO_MARCAS.filter(x => x.peso).map(x =>
+          '<tr><td>' + escapar(x.rotulo) + ' <span style="color:var(--tinta-fraca)">(você marcou)</span></td>' +
+          '<td>' + x.peso + '</td></tr>').join('') +
+      '</tbody></table>' +
+
+      '<p class="nota atencao"><b>Esta conta é minha, não é oficial.</b> ' +
+        '"Raro no Pokémon GO" não é um número que exista em lista pública nenhuma que eu ' +
+        'consiga ler — quem é regional, quem só aparece em raid, quem já teve shiny liberado, ' +
+        'nada disso está em API. Então eu somo o que <b>existe</b> (mítico, lendário e a taxa ' +
+        'de captura dos jogos clássicos) com o que <b>você marcou</b>, que é a parte que sabe ' +
+        'de GO de verdade. Quanto mais você marcar, mais certo fica o ranque.</p>' +
+      (erro ? '<p class="nota atencao">📴 Alguns não carregaram: ' +
+        escapar(explicarErro(erro)) + ' Eles entraram no ranque só com o que você marcou.</p>' : '') +
+    '</section>';
+
+  palco.querySelectorAll('.ranque li').forEach((li, i) => {
+    li.style.cursor = 'pointer';
+    li.onclick = () => abrirBicho(ranque[i].f.id);
+  });
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- números ---------- */
+async function mostrarNumeros(){
+  let lista;
+  try{ lista = await pegarTodos(); }
+  catch(e){ avisoErro('Não consegui pegar a lista', e, mostrarNumeros); return; }
+  const tenho = quantosTenho();
+  const total = lista.length;
+  const parte = total ? Math.round((tenho / total) * 100) : 0;
+  palco.innerHTML =
+    '<section class="tela"><h2>📊 Teus números</h2>' +
+      '<p>De ' + total + ' Pokémon que a PokéAPI conhece.</p>' +
+      '<div class="destaque">' +
+        '<div class="rotulo">Tua dex está</div>' +
+        '<div class="numerao">' + parte + '%</div>' +
+        '<div class="abaixo">' + tenho + ' de ' + total + ' marcados</div>' +
+      '</div>' +
+      '<div class="barrinha"><span style="width:' + Math.max(0.5, parte) + '%"></span></div>' +
+      '<h3 class="titulinho">Por variação</h3>' +
+      '<div class="placar">' + SO_MARCAS.concat([{ v:'quero', rotulo:'💖 Quero' }]).map(x =>
+        '<div class="quadro"><b>' + contarMarca(x.v) + '</b><small>' +
+          escapar(x.rotulo) + '</small></div>').join('') + '</div>' +
+      '<p class="nota">A conta de porcentagem usa a lista inteira da PokéAPI, que tem todas ' +
+        'as gerações. <b>O Pokémon GO não tem todos eles</b> — então 100% aqui não é o mesmo ' +
+        'que 100% no jogo, e eu não tenho como saber quais já entraram lá.</p>' +
+    '</section>';
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- levar pro outro aparelho ---------- */
+function fazerCodigo(){
+  return 'GD1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ dex:lerDex() }))));
+}
+function lerCodigo(txt){
+  const t = String(txt || '').trim();
+  if(!t) throw new Error('Cola o código primeiro.');
+  if(t.indexOf('GD1.') !== 0) throw new Error('Esse código não é do GOdex — ele começa com GD1.');
+  let dados;
+  try{ dados = JSON.parse(decodeURIComponent(escape(atob(t.slice(4))))); }
+  catch(e){ throw new Error('O código veio quebrado. Confere se copiou ele inteirinho.'); }
+  if(!dados || typeof dados.dex !== 'object') throw new Error('Esse código não tem dex dentro.');
+  return dados;
+}
+function mostrarCodigo(){
+  palco.innerHTML =
+    '<section class="tela"><h2>📲 Levar pro outro aparelho</h2>' +
+      '<p>Tua dex mora neste celular. Este código é a mudança.</p>' +
+      '<h3 class="titulinho">🔑 Meu código</h3>' +
+      '<p class="nota">Guarda os <b>' + quantosTenho() + '</b> marcados e todas as variações. ' +
+        '<b>Não tem senha nenhuma dentro</b> — é só a tua lista.</p>' +
+      '<textarea id="codigo" class="codigo" readonly rows="3">' + escapar(fazerCodigo()) + '</textarea>' +
+      '<button class="btn secundario larga" type="button" id="copiar">📋 Copiar meu código</button>' +
+      '<h3 class="titulinho">📥 Colar um código</h3>' +
+      '<p class="nota">O de lá <b>se junta</b> com o daqui. Nada é apagado.</p>' +
+      '<textarea id="colar" class="codigo" rows="3" placeholder="Cola o código aqui…"></textarea>' +
+      '<button class="btn secundario larga" type="button" id="trazer">📥 Trazer pra cá</button>' +
+      '<p id="recado"></p>' +
+    '</section>';
+  const recado = document.getElementById('recado');
+  document.getElementById('copiar').onclick = async () => {
+    const area = document.getElementById('codigo');
+    try{
+      await navigator.clipboard.writeText(area.value);
+      recado.innerHTML = '<span class="nota" style="display:block">✅ Copiado!</span>';
+    }catch(e){
+      area.select();
+      recado.innerHTML = '<span class="nota" style="display:block">👆 Não consegui copiar ' +
+        'sozinho. O código já está selecionado — copia na mão.</span>';
+    }
+  };
+  document.getElementById('trazer').onclick = () => {
+    let dados;
+    try{ dados = lerCodigo(document.getElementById('colar').value); }
+    catch(e){
+      recado.innerHTML = '<span class="nota atencao" style="display:block">❌ ' +
+        escapar(e.message) + '</span>';
+      return;
+    }
+    const meu = lerDex();
+    let novos = 0;
+    Object.keys(dados.dex).forEach(id => {
+      const deLa = dados.dex[id] || {};
+      if(!meu[id]) novos++;
+      meu[id] = Object.assign({}, meu[id] || {}, deLa);   // junta as marcas
+    });
+    gravar(CHAVE_DEX, meu);
+    recado.innerHTML = '<span class="nota" style="display:block">✅ ' +
+      (novos === 1 ? 'Chegou <b>1</b> Pokémon novo' : 'Chegaram <b>' + novos + '</b> Pokémon novos') +
+      ', e as marcas dos repetidos se juntaram.</span>';
+  };
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- como usa ---------- */
+function mostrarAjuda(){
+  palco.innerHTML =
+    '<section class="tela"><h2>❓ Como usa</h2>' +
+      '<h3 class="titulinho">O básico</h3>' +
+      '<p class="nota">Procura um Pokémon pelo nome (em inglês) ou pelo número da Pokédex, ' +
+        'abre ele e toca em <b>"Marcar que tenho"</b>. Pronto, ele entra na tua dex.</p>' +
+      '<h3 class="titulinho">As variações</h3>' +
+      '<table><tbody>' + SO_MARCAS.map(x =>
+        '<tr><td>' + escapar(x.rotulo) + '</td><td>+' + x.peso + ' de raridade</td></tr>').join('') +
+      '</tbody></table>' +
+      '<p class="nota">Marcar qualquer uma delas já marca que você tem. O ✨ shiny troca a ' +
+        'figurinha pela versão brilhante, aqui e na lista.</p>' +
+      '<h3 class="titulinho">O que eu sei e o que eu não sei</h3>' +
+      '<p class="nota"><b>Eu sei</b> (vem da PokéAPI): número, nome, tipo, figurinha normal e ' +
+        'shiny, quem é lendário e mítico, e a taxa de captura dos jogos clássicos.</p>' +
+      '<p class="nota atencao"><b>Eu não sei</b>, e não invento: nada de específico do ' +
+        'Pokémon GO. Quem é regional, quem sai em raid, quem já teve shiny liberado, CP, IV — ' +
+        'nada disso existe em lista pública que eu consiga ler. Por isso as variações são ' +
+        'marcadas por <b>você</b>: quem joga é quem sabe.</p>' +
+      '<h3 class="titulinho">Fica guardado?</h3>' +
+      '<p class="nota">Tudo no teu aparelho, sem cadastro e sem senha. Pra levar pro outro ' +
+        'celular tem o <b>📲 código</b>. Depois de abrir uma vez, o site funciona <b>sem ' +
+        'internet</b> com o que já passou por aqui.</p>' +
+    '</section>';
+  palco.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- claro e escuro ---------- */
+const btTema = document.getElementById('tema');
+const corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){
+  const t = document.documentElement.getAttribute('data-tema');
+  if(t) return t === 'escuro';
+  return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function aplicarTema(t){
+  if(t) document.documentElement.setAttribute('data-tema', t);
+  else document.documentElement.removeAttribute('data-tema');
+  const escuro = estaEscuro();
+  btTema.textContent = escuro ? '☀️' : '🌙';
+  if(corDaBarra) corDaBarra.setAttribute('content', escuro ? '#0c1420' : '#2f74c0');
+}
+try{ aplicarTema(localStorage.getItem('godex:tema')); }catch(e){ aplicarTema(null); }
+btTema.onclick = () => {
+  const novo = estaEscuro() ? 'claro' : 'escuro';
+  try{ localStorage.setItem('godex:tema', novo); }catch(e){}
+  aplicarTema(novo);
+};
+
+/* ---------- "não atualizou o site" ---------- */
+const btRecarregar = document.getElementById('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{
+    if(window.caches){
+      const nomes = await caches.keys();
+      await Promise.all(nomes.map(n => caches.delete(n)));
+    }
+  }catch(e){}
+  try{
+    if(navigator.serviceWorker){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.update().catch(() => {})));
+    }
+  }catch(e){}
+  const u = new URL(location.href);
+  u.searchParams.set('v', Date.now());
+  location.replace(u.toString());
+};
+try{
+  if(new URL(location.href).searchParams.has('v')){
+    const limpo = new URL(location.href);
+    limpo.searchParams.delete('v');
+    history.replaceState(null, '', limpo.pathname + limpo.search + limpo.hash);
+  }
+}catch(e){}
+function avisarVersaoNova(){
+  if(document.querySelector('.faixa-nova')) return;
+  const f = document.createElement('div');
+  f.className = 'faixa-nova';
+  f.innerHTML = '<span>✨ Chegou versão nova do GOdex!</span><button type="button">Carregar</button>';
+  f.querySelector('button').onclick = () => location.reload();
+  document.body.appendChild(f);
+}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(jaTinha) avisarVersaoNova();
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' })
+      .then(r => { setTimeout(() => r.update().catch(() => {}), 3000); })
+      .catch(() => {});
+  });
+}
+
+/* ---------- ligar tudo ---------- */
+document.getElementById('formulario').addEventListener('submit', ev => {
+  ev.preventDefault();
+  procurar(campo.value.trim());
+});
+document.getElementById('btn-minha').onclick     = minhaDex;
+document.getElementById('btn-raros').onclick     = mostrarRaros;
+document.getElementById('btn-variacoes').onclick = mostrarVariacoes;
+document.getElementById('btn-numeros').onclick   = mostrarNumeros;
+document.getElementById('btn-codigo').onclick    = mostrarCodigo;
+document.getElementById('btn-ajuda').onclick     = mostrarAjuda;
+
+// Abre já mostrando a dex da pessoa se ela tiver uma; senão, convida.
+if(quantosTenho()) minhaDex();
+else procurar('');
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "GOdex — quais Pokémon você já tem?",
+  "short_name": "GOdex",
+  "description": "Marca quais Pokémon você pegou no Pokémon GO, com shiny, sombroso, sortudo, fundo e fantasia, e vê qual é o mais raro da tua coleção.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f8fd",
+  "theme_color": "#2f74c0",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
