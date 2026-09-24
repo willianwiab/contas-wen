@@ -131,3 +131,10 @@ temporada e evento. Uma lista fixa ia ficar errada em poucas semanas.
 - **Amigo sem nome**: o código agora leva só a coleção. A comparação vira tabela (Pokémon,
   Shiny, Lucky, Hundo, Shadow) e três listas: 🟢 você tem e ele não, 🔵 ele tem e você não,
   🟣 os dois têm. Um código curto tipo `JOJO-7F92K` precisaria de servidor, e o site não tem.
+
+## ❤️ Favoritos
+
+Na página de cada Pokémon tem **🤍 Favoritar**. O favorito ganha um ❤️ no canto da
+cartinha, e o filtro **❤️ Favoritos** mostra só eles. É só gosto: não conta no placar nem
+marca como pego. Duas medalhas novas (1 e 10 favoritos), e o "Recomeçar do zero" apaga
+junto.

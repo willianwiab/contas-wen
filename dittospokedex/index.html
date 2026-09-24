@@ -109,6 +109,10 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .status.falta{background:var(--amarelo-fundo);color:var(--amarelo-texto)}
 .resumo{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;font-weight:600;font-size:.9rem;margin:-4px 0 10px}
 .selo{position:absolute;top:4px;right:6px;font-size:.9rem}
+.selo-fav{position:absolute;top:4px;left:6px;font-size:.9rem}
+.fav{font:inherit;font-size:1rem;font-weight:700;border-radius:99px;padding:9px 18px;cursor:pointer;margin:8px 4px 0;
+  border:2px solid #e0567a;background:var(--cartao2);color:#c23a5f}
+.fav[aria-pressed="true"]{background:#e0567a;color:#fff}
 .sem-foto{width:56px;height:56px;border-radius:50%;background:var(--creme2);display:grid;place-items:center;
   font-weight:700;color:var(--tinta-fraca);font-size:.85rem}
 .nada{text-align:center;padding:30px 10px;color:var(--tinta-fraca)}
@@ -304,7 +308,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 9 — 24/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 10 — 24/09 · 🔄</button>
   </footer>
 </div>
 
@@ -484,11 +488,14 @@ function apelido(tags){
   return '';
 }
 const especiais = ler('dittospokedex:especiais', {});
+/* ❤️ Favoritos: só gosto da pessoa, não muda placar nem "peguei". */
+const favoritos = new Set(ler('dittospokedex:favoritos', []));
 function tagsDe(id){ return especiais[id] || []; }
 
 function salvar(){
   if(typeof conferirMedalhas === 'function') setTimeout(conferirMedalhas, 0);
   gravar('dittospokedex:especiais', especiais);
+  gravar('dittospokedex:favoritos', [...favoritos]);
   gravar('dittospokedex:peguei', [...peguei]);
   gravar('dittospokedex:go', correcoesGo);
   gravar('dittospokedex:formas', [...pegueiForma]);
@@ -540,6 +547,7 @@ const FILTROS = [
   { id:'especiais', texto:'⭐ Especiais',  ok: id => tagsDe(id).length > 0 },
   { id:'shiny-tenho', texto:'✨ Shiny que tenho', ok: id => tagsDe(id).includes('shiny') },
   { id:'shiny-falta', texto:'✨ Shiny que faltam', ok: id => temNoGo(id) && !tagsDe(id).includes('shiny') },
+  { id:'favoritos', texto:'❤️ Favoritos', ok: id => favoritos.has(id) },
   { id:'peguei', texto:'✅ Peguei',          ok: id => peguei.has(id) },
   { id:'falta',  texto:'🟡 Falta pegar',        ok: id => temNoGo(id) && !peguei.has(id) },
 ];
@@ -625,7 +633,8 @@ function cartinha(id){
   /* No selo vão os dois especiais que mais valem; sem especial, o ✅. */
   const tops = tagsDe(id).map(t => TAG[t]).filter(Boolean)
     .sort((a, c) => c.pontos - a.pontos).slice(0, 2).map(t => t.emoji).join('');
-  b.innerHTML = `<span class="selo">${tops || (!noGo ? '❌' : pegou ? '✅' : '🟡')}</span>`;
+  b.innerHTML = `<span class="selo">${tops || (!noGo ? '❌' : pegou ? '✅' : '🟡')}</span>` +
+    (favoritos.has(id) ? '<span class="selo-fav">❤️</span>' : '');
   b.appendChild(f);
   b.insertAdjacentHTML('beforeend',
     `<span class="num">#${tres(id)}</span><span class="nome"></span><span class="tipos"></span>`);
@@ -684,6 +693,7 @@ function abrir(id){
     <h2 id="folha-nome"></h2>
     <div class="tipos" id="folha-tipos"></div>
     <button type="button" class="som" id="tocar">🔊 Ouvir o som</button>
+    <button type="button" class="fav" id="favorito" aria-pressed="false"></button>
     <p class="som-aviso" id="som-aviso" hidden></p>
     <p class="status ${!noGo ? 'nao' : pegou ? 'tem' : 'falta'}">${!noGo
       ? '❌ Ainda não chegou no Pokémon GO'
@@ -704,6 +714,13 @@ function abrir(id){
     </div>`;
   folha.querySelector('#folha-nome').textContent = NOMES[id-1];
   folha.querySelector('#tocar').onclick = () => tocarSom(id);
+  const btFav = folha.querySelector('#favorito');
+  btFav.setAttribute('aria-pressed', String(favoritos.has(id)));
+  btFav.textContent = favoritos.has(id) ? '❤️ Favorito!' : '🤍 Favoritar';
+  btFav.onclick = () => {
+    if(favoritos.has(id)) favoritos.delete(id); else favoritos.add(id);
+    salvar(); abrir(id); desenhar();
+  };
   if(somDe === id && !tocador.paused) marcarTocando(true);   // redesenhou no meio do som
   const img = foto(id, true);
   if(!noGo) img.classList.add('fora');
@@ -1236,6 +1253,8 @@ const MEDALHAS = [
   { id:'sh1',   icone:'🚀', nome:'Lado sombrio',    como:'Primeiro Shadow',          ok:() => contaTag('shadow') >= 1 },
   { id:'pu1',   icone:'🧼', nome:'Limpinho',        como:'Primeiro Purificado',      ok:() => contaTag('purificado') >= 1 },
   { id:'sd',    icone:'💎', nome:'Shundo!',         como:'Um shiny que é hundo',     ok:() => Object.values(especiais).some(l => l.includes('shiny') && l.includes('hundo')) },
+  { id:'fav1',  icone:'❤️', nome:'Coração',         como:'Primeiro favorito',        ok:() => favoritos.size >= 1 },
+  { id:'fav10', icone:'💞', nome:'Fã número 1',     como:'10 favoritos',             ok:() => favoritos.size >= 10 },
   { id:'dit',   icone:'🟣', nome:'Amigo do Ditto',  como:'Pegar o Ditto',            ok:() => peguei.has(132) },
   { id:'q5',    icone:'🎮', nome:'Olho bom',        como:'5 acertos seguidos no Quem é?', ok:() => (quiz.melhorSeq || 0) >= 5 },
   { id:'q15',   icone:'🧠', nome:'Enciclopédia',    como:'15 acertos seguidos no Quem é?', ok:() => (quiz.melhorSeq || 0) >= 15 },
@@ -1433,10 +1452,11 @@ btTema.onclick = () => {
    Apaga tudo que a pessoa marcou: os ✅, as formas e as correções de
    "chegou no GO". Pergunta antes, porque não tem volta. */
 document.getElementById('recomecar').onclick = () => {
-  if(!confirm('Apagar TODOS os ✅, os especiais, o recorde do Quem é?, as formas marcadas e as correções de "chegou no GO"?\n\nNão dá pra desfazer.')) return;
+  if(!confirm('Apagar TODOS os ✅, os ❤️ favoritos, os especiais, o recorde do Quem é?, as formas marcadas e as correções de "chegou no GO"?\n\nNão dá pra desfazer.')) return;
   peguei.clear();
   pegueiForma.clear();
   for(const k of Object.keys(especiais)) delete especiais[k];
+  favoritos.clear();
   for(const k of Object.keys(correcoesGo)) delete correcoesGo[k];
   quiz.recorde = 0; quiz.acertos = 0; quiz.melhorSeq = 0; gravar('dittospokedex:quiz', quiz);
   salvar(); fechar(); desenhar();
