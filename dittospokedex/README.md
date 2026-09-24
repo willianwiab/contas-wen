@@ -55,3 +55,20 @@ no `FORMAS`, no `index.html`.
 
 No rodapé tem o botão **🗑️ Recomeçar do zero**: apaga todos os ✅, as formas marcadas e
 as correções de "chegou no GO". Ele pergunta antes, porque não tem volta.
+
+## Especiais e o 🏆 Top mais raros
+
+Cada Pokémon tem uma parte **Especiais** pra marcar o que o seu tem: ✨ Shiny, 🎭 Fantasia,
+🌟 XXL, 🔹 XXS, 🧬 Clone, 🍀 Lucky, 🤝 Trocado, 💯 Hundo, 0️⃣ Nundo, 🌍 🎟️ 🎖️ fundos, e como
+pegou (🥚 ovo, 🎁 pesquisa, ⚔️ raid, 🚀 Shadow, 🧼 Purificado, 🏆 evento, 📸 Snapshot,
+🥇 movimento legado). Quem não anda junto se desmarca sozinho: Hundo e Nundo, XXL e XXS,
+Shadow e Purificado, Shadow e Lucky/Trocado (Shadow não dá pra trocar).
+
+Cada especial vale **🔥 pontos de raridade**, contados em "bits": 1 em 500 dá uns 9,
+1 em 4096 dá 12, e somar os pontos é multiplicar as chances. O Hundo tem desconto quando
+o jogo garante IV mínimo: troca lucky (12/12/12) é 1 em 64, raid/ovo/pesquisa (10/10/10)
+é 1 em 216.
+
+O **🏆 Top mais raros** tem duas abas: **Os meus** (os 20 que mais valem do que você marcou)
+e **No jogo** (as combinações famosas, medidas com a mesma régua). As chances de IV são
+conta de verdade; as de shiny e os pontos das outras coisas são chute, e o site diz isso.
