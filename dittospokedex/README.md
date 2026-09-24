@@ -36,3 +36,12 @@ existe no jogo, e o placar mentiria.
 
 Funciona sem internet depois de aberto (menos as fotos), e tem o mesmo botão de
 "buscar a versão mais nova" no rodapé que o ButterPoke e o RaroDex.
+
+## Formas
+
+Alguns Pokémon têm formas diferentes, e no GO às vezes só algumas saíram. O **Rotom** é
+o primeiro: estava com ❌ na lista, mas ele tem no GO, só que **não todas as formas**. Na
+página dele aparecem as 6 (normal, Calor, Lavagem, Gelo, Ventilador e Corte), cada uma
+com o seu ✅. Marcar uma forma também marca o Rotom como pego.
+
+Pra pôr formas em outro Pokémon é só acrescentar ele no `FORMAS`, no `index.html`.
