@@ -138,3 +138,14 @@ Na página de cada Pokémon tem **🤍 Favoritar**. O favorito ganha um ❤️ n
 cartinha, e o filtro **❤️ Favoritos** mostra só eles. É só gosto: não conta no placar nem
 marca como pego. Duas medalhas novas (1 e 10 favoritos), e o "Recomeçar do zero" apaga
 junto.
+
+## Som no iPhone
+
+O som não tocava em alguns celulares. Dois motivos: os gritos do PokeAPI são `.ogg`, que
+iPhone não toca; e quando o primeiro falhava, o site tentava o próximo sozinho, mas o
+celular só deixa tocar som no toque da pessoa, então a segunda tentativa era bloqueada.
+
+Agora o site pergunta pro navegador se ele toca `.ogg` **antes** de tocar. Se não toca, vai
+direto no `.mp3` do Pokémon Showdown (`play.pokemonshowdown.com/audio/cries/<nome>.mp3`).
+Se toca, tenta o `.ogg` novo, o `.mp3` e o `.ogg` antigo, nessa ordem. Se o celular
+bloquear o som, a tela diz pra tocar no 🔊.
