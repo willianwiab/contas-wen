@@ -158,3 +158,19 @@ um botão pro ButterPoke (pra quem gosta de TCG). Não aparece sempre:
 - nunca no meio de uma folha aberta (espera fechar o Pokémon ou o jogo);
 - no máximo uma vez a cada **3 dias** ("Agora não" só fecha);
 - **"Não, obrigado"** faz nunca mais aparecer, e ir pro ButterPoke também.
+
+## ⚡ Formas de batalha e 🧑‍🤝‍🧑 NPCs
+
+- **Formas de batalha** na página de cada Pokémon (259 têm alguma): 🔴 Dynamax, 🟣 Mega
+  (inclusive X/Y), 🟥 Gigantamax, 🟠 Primal, 🟩 Origem, 🟪 Encarnada / 🟧 Therian, 👑 Coroado,
+  🔷 Fusão, ⚫ Ultra Burst, 🌊 Battle Bond, 🟨 Cardume, 🟦 Totem, 💚 Zygarde Completo,
+  🌌 Eternamax. Cada uma com ✅ e dizendo se tem no Pokémon GO. Quais formas existem vem do
+  Pokémon Showdown; o "tem no GO" vem do masterfile do jogo (Mega/Primal pelas
+  mega-evoluções, Dynamax/Gigantamax pelas Batalhas Max, o resto pelas formas que existem lá),
+  e só aparece se o próprio Pokémon já chegou no GO. Filtro "⚡ Formas de batalha" e
+  3 medalhas novas.
+- **❓ O que é cada uma?**: página explicando todas, inclusive Tera, Movimento Z e Poder Z,
+  que são só dos jogos principais.
+- **NPCs do GO**: Professor Willow, Blanche, Candela, Spark, Rhi, os Recrutas, Arlo, Cliff,
+  Sierra e Giovanni, com o que cada um faz. E dá pra escolher o seu time, que aparece do
+  lado do placar.
