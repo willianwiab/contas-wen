@@ -180,6 +180,46 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .top .quem b{display:block}
 .top .quem span{font-size:.8rem;color:var(--tinta-fraca)}
 .top .pts{font-weight:700;white-space:nowrap;flex:none}
+.classe{display:inline-block;margin-top:6px;padding:3px 12px;border-radius:99px;font-size:.82rem;font-weight:800;color:#fff}
+.classe.l{background:linear-gradient(90deg,#d4a017,#b8741a)}
+.classe.m{background:linear-gradient(90deg,#e0569a,#8e44ad)}
+.classe.u{background:linear-gradient(90deg,#2c7be5,#1b3a8a)}
+.classe.p{background:linear-gradient(90deg,#607080,#2c3e50)}
+.poke .num .estrela{margin-left:2px}
+.ola{display:inline-block;margin:-6px 0 10px;padding:4px 12px;border-radius:99px;font-weight:700;font-size:.9rem;
+  background:var(--creme2);color:var(--marca-escura)}
+.cartao-treinador{border-radius:20px;padding:16px;color:#fff;box-shadow:0 6px 24px rgba(40,20,70,.3);text-align:left;margin:10px 0}
+.cartao-treinador .topo{display:flex;align-items:center;gap:12px}
+.cartao-treinador .bicho{font-size:2.6rem;line-height:1}
+.cartao-treinador b.nome{display:block;font-family:'Baloo 2',cursive;font-size:1.5rem;line-height:1.1}
+.cartao-treinador .sub2{font-size:.82rem;opacity:.9}
+.cartao-treinador .numeros2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.cartao-treinador .numeros2 div{background:rgba(255,255,255,.16);border-radius:12px;padding:6px;text-align:center}
+.cartao-treinador .numeros2 b{display:block;font-size:1.25rem}
+.cartao-treinador .numeros2 span{font-size:.72rem;opacity:.95}
+.cartao-treinador .favs{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
+.cartao-treinador .favs img,.cartao-treinador .favs .sem-foto{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.2);image-rendering:pixelated}
+.cartao-treinador .favs .sem-foto{font-size:.6rem;color:#fff}
+.escolhas{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.escolhas button{font:inherit;font-size:1.3rem;width:46px;height:46px;border-radius:12px;cursor:pointer;
+  border:2px solid var(--borda);background:var(--cartao2);color:#fff}
+#simbolos button{color:var(--tinta)}
+@media (max-width:430px){
+  .logo{font-size:1.45rem;gap:6px}
+  .logo img{width:34px;height:34px}
+  .cabeca-botoes{gap:5px}
+  .cabeca-botoes .botao-redondo{width:38px;height:38px;font-size:1rem}
+}
+@media (max-width:360px){
+  .logo{font-size:1.2rem}
+  .logo img{display:none}
+  .cabeca-botoes .botao-redondo{width:34px;height:34px;font-size:.9rem}
+}
+.escolhas button[aria-pressed="true"]{border-color:var(--tinta);transform:scale(1.08)}
+.conta input{width:100%;font:inherit;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta)}
+.conta textarea{width:100%;min-height:80px;font:inherit;font-size:.78rem;padding:10px;border-radius:12px;
+  border:2px solid var(--borda);background:var(--campo);color:var(--tinta);word-break:break-all}
+.conta .grande-botao{width:100%;margin-top:8px}
 .linha-botoes.dois{margin-top:8px}
 .linha-botoes.dois .transforma{font-size:.88rem;padding:11px 6px;background:var(--marca)}
 .forma .no-go{display:block;font-size:.72rem;font-weight:600;margin-top:2px}
@@ -295,10 +335,12 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
   <header>
     <h1 class="logo"><img src="icone-limpo.svg" alt="" />Ditto's<span>Pokédex</span></h1>
     <div class="cabeca-botoes">
+      <button class="botao-redondo" id="abrir-conta" type="button" title="Minha conta">👤</button>
       <button class="botao-redondo" id="modo-shiny" type="button" title="Modo shiny: todas as fotos brilhantes" aria-pressed="false">✨</button>
       <button class="botao-redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
     </div>
   </header>
+  <span class="ola" id="ola" hidden></span>
   <p class="sub">Todos os 1025 Pokémon: quem já chegou no <b>Pokémon GO</b>, quem ainda não chegou ❌, quem falta pegar 🟡 e quem você já tem ✅.</p>
 
   <section class="placar" aria-live="polite">
@@ -339,7 +381,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 13 — 24/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 14 — 24/09 · 🔄</button>
   </footer>
 </div>
 
@@ -371,6 +413,10 @@ const TIPOS_FORMA = {"19-normal":[0],"19-alola":[15,0],"20-normal":[0],"20-alola
    As formas vêm do banco do Pokémon Showdown; o "tem no GO" vem do masterfile do
    jogo (Mega, Primal, Dynamax, Gigantamax e as formas que existem lá). */
 const BATALHA = {"1":[["dynamax","🔴","Bulbasaur Dynamax",1]],"2":[["dynamax","🔴","Ivysaur Dynamax",1]],"3":[["dynamax","🔴","Venusaur Dynamax",1],["mega","🟣","Mega Venusaur",1],["gmax","🟥","Venusaur Gigantamax",1]],"4":[["dynamax","🔴","Charmander Dynamax",1]],"5":[["dynamax","🔴","Charmeleon Dynamax",1]],"6":[["dynamax","🔴","Charizard Dynamax",1],["mega-x","🟣","Mega Charizard X",1],["mega-y","🟣","Mega Charizard Y",1],["gmax","🟥","Charizard Gigantamax",1]],"7":[["dynamax","🔴","Squirtle Dynamax",1]],"8":[["dynamax","🔴","Wartortle Dynamax",1]],"9":[["dynamax","🔴","Blastoise Dynamax",1],["mega","🟣","Mega Blastoise",1],["gmax","🟥","Blastoise Gigantamax",1]],"10":[["dynamax","🔴","Caterpie Dynamax",1]],"11":[["dynamax","🔴","Metapod Dynamax",1]],"12":[["dynamax","🔴","Butterfree Dynamax",1],["gmax","🟥","Butterfree Gigantamax",1]],"15":[["mega","🟣","Mega Beedrill",1]],"18":[["mega","🟣","Mega Pidgeot",1]],"20":[["totem","🟦","Raticate Totem",0]],"25":[["dynamax","🔴","Pikachu Dynamax",1],["gmax","🟥","Pikachu Gigantamax",1]],"26":[["dynamax","🔴","Raichu Dynamax",1],["mega-x","🟣","Mega Raichu X",1],["mega-y","🟣","Mega Raichu Y",1]],"36":[["mega","🟣","Mega Clefable",0]],"52":[["dynamax","🔴","Meowth Dynamax",1],["gmax","🟥","Meowth Gigantamax",1]],"58":[["dynamax","🔴","Growlithe Dynamax",1]],"59":[["dynamax","🔴","Arcanine Dynamax",1]],"63":[["dynamax","🔴","Abra Dynamax",1]],"64":[["dynamax","🔴","Kadabra Dynamax",1]],"65":[["dynamax","🔴","Alakazam Dynamax",1],["mega","🟣","Mega Alakazam",1]],"66":[["dynamax","🔴","Machop Dynamax",1]],"67":[["dynamax","🔴","Machoke Dynamax",1]],"68":[["dynamax","🔴","Machamp Dynamax",1],["gmax","🟥","Machamp Gigantamax",1]],"71":[["mega","🟣","Mega Victreebel",1]],"80":[["mega","🟣","Mega Slowbro",1]],"92":[["dynamax","🔴","Gastly Dynamax",1]],"93":[["dynamax","🔴","Haunter Dynamax",1]],"94":[["dynamax","🔴","Gengar Dynamax",1],["mega","🟣","Mega Gengar",1],["gmax","🟥","Gengar Gigantamax",1]],"98":[["dynamax","🔴","Krabby Dynamax",1]],"99":[["dynamax","🔴","Kingler Dynamax",1],["gmax","🟥","Kingler Gigantamax",1]],"105":[["totem","🟦","Marowak Totem",0]],"106":[["dynamax","🔴","Hitmonlee Dynamax",1]],"107":[["dynamax","🔴","Hitmonchan Dynamax",1]],"111":[["dynamax","🔴","Rhyhorn Dynamax",1]],"112":[["dynamax","🔴","Rhydon Dynamax",1]],"113":[["dynamax","🔴","Chansey Dynamax",1]],"115":[["mega","🟣","Mega Kangaskhan",1]],"121":[["dynamax","🔴","Starmie Dynamax",1],["mega","🟣","Mega Starmie",1]],"125":[["dynamax","🔴","Electabuzz Dynamax",1]],"126":[["dynamax","🔴","Magmar Dynamax",1]],"127":[["mega","🟣","Mega Pinsir",1]],"129":[["dynamax","🔴","Magikarp Dynamax",1]],"130":[["dynamax","🔴","Gyarados Dynamax",1],["mega","🟣","Mega Gyarados",1]],"131":[["dynamax","🔴","Lapras Dynamax",1],["gmax","🟥","Lapras Gigantamax",1]],"133":[["dynamax","🔴","Eevee Dynamax",1],["gmax","🟥","Eevee Gigantamax",0]],"134":[["dynamax","🔴","Vaporeon Dynamax",1]],"135":[["dynamax","🔴","Jolteon Dynamax",1]],"136":[["dynamax","🔴","Flareon Dynamax",1]],"138":[["dynamax","🔴","Omanyte Dynamax",1]],"139":[["dynamax","🔴","Omastar Dynamax",1]],"140":[["dynamax","🔴","Kabuto Dynamax",1]],"141":[["dynamax","🔴","Kabutops Dynamax",1]],"142":[["mega","🟣","Mega Aerodactyl",1]],"143":[["dynamax","🔴","Snorlax Dynamax",1],["gmax","🟥","Snorlax Gigantamax",1]],"144":[["dynamax","🔴","Articuno Dynamax",1]],"145":[["dynamax","🔴","Zapdos Dynamax",1]],"146":[["dynamax","🔴","Moltres Dynamax",1]],"149":[["mega","🟣","Mega Dragonite",1]],"150":[["mega-x","🟣","Mega Mewtwo X",1],["mega-y","🟣","Mega Mewtwo Y",1]],"154":[["mega","🟣","Mega Meganium",0]],"160":[["mega","🟣","Mega Feraligatr",0]],"163":[["dynamax","🔴","Hoothoot Dynamax",1]],"164":[["dynamax","🔴","Noctowl Dynamax",1]],"181":[["mega","🟣","Mega Ampharos",1]],"196":[["dynamax","🔴","Espeon Dynamax",1]],"197":[["dynamax","🔴","Umbreon Dynamax",1]],"208":[["mega","🟣","Mega Steelix",1]],"212":[["mega","🟣","Mega Scizor",1]],"213":[["dynamax","🔴","Shuckle Dynamax",1]],"214":[["mega","🟣","Mega Heracross",1]],"215":[["dynamax","🔴","Sneasel Dynamax",1]],"227":[["mega","🟣","Mega Skarmory",1]],"229":[["mega","🟣","Mega Houndoom",1]],"236":[["dynamax","🔴","Tyrogue Dynamax",1]],"237":[["dynamax","🔴","Hitmontop Dynamax",1]],"239":[["dynamax","🔴","Elekid Dynamax",1]],"240":[["dynamax","🔴","Magby Dynamax",1]],"242":[["dynamax","🔴","Blissey Dynamax",1]],"243":[["dynamax","🔴","Raikou Dynamax",1]],"244":[["dynamax","🔴","Entei Dynamax",1]],"245":[["dynamax","🔴","Suicune Dynamax",1]],"248":[["mega","🟣","Mega Tyranitar",1]],"249":[["dynamax","🔴","Lugia Dynamax",1]],"250":[["dynamax","🔴","Ho-Oh Dynamax",1]],"254":[["mega","🟣","Mega Sceptile",1]],"257":[["mega","🟣","Mega Blaziken",1]],"260":[["mega","🟣","Mega Swampert",1]],"280":[["dynamax","🔴","Ralts Dynamax",1]],"281":[["dynamax","🔴","Kirlia Dynamax",1]],"282":[["dynamax","🔴","Gardevoir Dynamax",1],["mega","🟣","Mega Gardevoir",1]],"302":[["dynamax","🔴","Sableye Dynamax",1],["mega","🟣","Mega Sableye",1]],"303":[["mega","🟣","Mega Mawile",1]],"306":[["mega","🟣","Mega Aggron",1]],"308":[["mega","🟣","Mega Medicham",1]],"310":[["mega","🟣","Mega Manectric",1]],"319":[["mega","🟣","Mega Sharpedo",1]],"320":[["dynamax","🔴","Wailmer Dynamax",1]],"321":[["dynamax","🔴","Wailord Dynamax",1]],"323":[["mega","🟣","Mega Camerupt",1]],"328":[["dynamax","🔴","Trapinch Dynamax",1]],"329":[["dynamax","🔴","Vibrava Dynamax",1]],"330":[["dynamax","🔴","Flygon Dynamax",1]],"334":[["mega","🟣","Mega Altaria",1]],"349":[["dynamax","🔴","Feebas Dynamax",1]],"350":[["dynamax","🔴","Milotic Dynamax",1]],"354":[["mega","🟣","Mega Banette",1]],"358":[["mega","🟣","Mega Chimecho",0]],"359":[["mega","🟣","Mega Absol",1],["mega-z","🟣","Mega Absol Z",0]],"362":[["mega","🟣","Mega Glalie",1]],"363":[["dynamax","🔴","Spheal Dynamax",1]],"364":[["dynamax","🔴","Sealeo Dynamax",1]],"365":[["dynamax","🔴","Walrein Dynamax",1]],"373":[["mega","🟣","Mega Salamence",1]],"374":[["dynamax","🔴","Beldum Dynamax",1]],"375":[["dynamax","🔴","Metang Dynamax",1]],"376":[["dynamax","🔴","Metagross Dynamax",1],["mega","🟣","Mega Metagross",1]],"377":[["dynamax","🔴","Regirock Dynamax",1]],"378":[["dynamax","🔴","Regice Dynamax",1]],"379":[["dynamax","🔴","Registeel Dynamax",1]],"380":[["dynamax","🔴","Latias Dynamax",1],["mega","🟣","Mega Latias",1]],"381":[["dynamax","🔴","Latios Dynamax",1],["mega","🟣","Mega Latios",1]],"382":[["primal","🟠","Kyogre Primal",1]],"383":[["primal","🟠","Groudon Primal",1]],"384":[["mega","🟣","Mega Rayquaza",1]],"398":[["mega","🟣","Mega Staraptor",1]],"415":[["dynamax","🔴","Combee Dynamax",1]],"416":[["dynamax","🔴","Vespiquen Dynamax",1]],"428":[["mega","🟣","Mega Lopunny",1]],"445":[["mega","🟣","Mega Garchomp",1],["mega-z","🟣","Mega Garchomp Z",0]],"448":[["mega","🟣","Mega Lucario",1],["mega-z","🟣","Mega Lucario Z",0]],"460":[["mega","🟣","Mega Abomasnow",1]],"461":[["dynamax","🔴","Weavile Dynamax",1]],"464":[["dynamax","🔴","Rhyperior Dynamax",1]],"466":[["dynamax","🔴","Electivire Dynamax",1]],"467":[["dynamax","🔴","Magmortar Dynamax",1]],"470":[["dynamax","🔴","Leafeon Dynamax",1]],"471":[["dynamax","🔴","Glaceon Dynamax",1]],"475":[["dynamax","🔴","Gallade Dynamax",1],["mega","🟣","Mega Gallade",1]],"478":[["mega","🟣","Mega Froslass",0]],"483":[["origem","🟩","Dialga Forma Origem",1]],"484":[["origem","🟩","Palkia Forma Origem",1]],"485":[["mega","🟣","Mega Heatran",0]],"487":[["origem","🟩","Giratina Forma Origem",1]],"491":[["mega","🟣","Mega Darkrai",0]],"500":[["mega","🟣","Mega Emboar",0]],"519":[["dynamax","🔴","Pidove Dynamax",1]],"520":[["dynamax","🔴","Tranquill Dynamax",1]],"521":[["dynamax","🔴","Unfezant Dynamax",1]],"524":[["dynamax","🔴","Roggenrola Dynamax",1]],"525":[["dynamax","🔴","Boldore Dynamax",1]],"526":[["dynamax","🔴","Gigalith Dynamax",1]],"527":[["dynamax","🔴","Woobat Dynamax",1]],"528":[["dynamax","🔴","Swoobat Dynamax",1]],"529":[["dynamax","🔴","Drilbur Dynamax",1]],"530":[["dynamax","🔴","Excadrill Dynamax",1],["mega","🟣","Mega Excadrill",0]],"531":[["mega","🟣","Mega Audino",1]],"545":[["mega","🟣","Mega Scolipede",0]],"546":[["dynamax","🔴","Cottonee Dynamax",1]],"547":[["dynamax","🔴","Whimsicott Dynamax",1]],"554":[["dynamax","🔴","Darumaka Dynamax",1]],"555":[["dynamax","🔴","Darmanitan Dynamax",1]],"560":[["mega","🟣","Mega Scrafty",0]],"568":[["dynamax","🔴","Trubbish Dynamax",1]],"569":[["dynamax","🔴","Garbodor Dynamax",1],["gmax","🟥","Garbodor Gigantamax",1]],"604":[["mega","🟣","Mega Eelektross",0]],"609":[["mega","🟣","Mega Chandelure",0]],"615":[["dynamax","🔴","Cryogonal Dynamax",1]],"623":[["mega","🟣","Mega Golurk",0]],"633":[["dynamax","🔴","Deino Dynamax",1]],"634":[["dynamax","🔴","Zweilous Dynamax",1]],"635":[["dynamax","🔴","Hydreigon Dynamax",1]],"641":[["encarnado","🟪","Tornadus Forma Encarnada",1],["therian","🟧","Tornadus Forma Therian",1]],"642":[["encarnado","🟪","Thundurus Forma Encarnada",1],["therian","🟧","Thundurus Forma Therian",1]],"645":[["encarnado","🟪","Landorus Forma Encarnada",1],["therian","🟧","Landorus Forma Therian",1]],"646":[["fusao-black","🔷","Kyurem Negro (fusão)",1],["fusao-white","🔷","Kyurem Branco (fusão)",1]],"652":[["mega","🟣","Mega Chesnaught",1]],"655":[["mega","🟣","Mega Delphox",1]],"658":[["ash","🌊","Greninja-Ash (Battle Bond)",0],["mega","🟣","Mega Greninja",1]],"668":[["mega","🟣","Mega Pyroar",0]],"670":[["mega","🟣","Mega Floette",0]],"677":[["dynamax","🔴","Espurr Dynamax",1]],"678":[["dynamax","🔴","Meowstic Dynamax",1]],"686":[["dynamax","🔴","Inkay Dynamax",1]],"687":[["dynamax","🔴","Malamar Dynamax",1],["mega","🟣","Mega Malamar",1]],"689":[["mega","🟣","Mega Barbaracle",0]],"691":[["mega","🟣","Mega Dragalge",0]],"700":[["dynamax","🔴","Sylveon Dynamax",1]],"701":[["mega","🟣","Mega Hawlucha",0]],"718":[["completo","💚","Zygarde Completo",1],["mega","🟣","Mega Zygarde",0]],"719":[["mega","🟣","Mega Diancie",1]],"735":[["totem","🟦","Gumshoos Totem",0]],"738":[["totem","🟦","Vikavolt Totem",0]],"740":[["mega","🟣","Mega Crabominable",0]],"743":[["totem","🟦","Ribombee Totem",0]],"746":[["cardume","🟨","Wishiwashi Cardume (School)",1]],"752":[["totem","🟦","Araquanid Totem",0]],"754":[["totem","🟦","Lurantis Totem",0]],"758":[["totem","🟦","Salazzle Totem",0]],"761":[["dynamax","🔴","Bounsweet Dynamax",1]],"762":[["dynamax","🔴","Steenee Dynamax",1]],"763":[["dynamax","🔴","Tsareena Dynamax",1]],"766":[["dynamax","🔴","Passimian Dynamax",1]],"768":[["mega","🟣","Mega Golisopod",0]],"777":[["totem","🟦","Togedemaru Totem",0]],"778":[["totem","🟦","Mimikyu Totem",0]],"780":[["dynamax","🔴","Drampa Dynamax",1],["mega","🟣","Mega Drampa",0]],"784":[["totem","🟦","Kommo-o Totem",0]],"800":[["fusao-dusk","🔷","Necrozma Juba Crepuscular (fusão)",1],["fusao-dawn","🔷","Necrozma Asas da Alvorada (fusão)",1],["ultra","⚫","Ultra Necrozma (Ultra Burst)",1]],"801":[["mega","🟣","Mega Magearna",0]],"807":[["mega","🟣","Mega Zeraora",0]],"809":[["gmax","🟥","Melmetal Gigantamax",0]],"810":[["dynamax","🔴","Grookey Dynamax",1]],"811":[["dynamax","🔴","Thwackey Dynamax",1]],"812":[["dynamax","🔴","Rillaboom Dynamax",1],["gmax","🟥","Rillaboom Gigantamax",1]],"813":[["dynamax","🔴","Scorbunny Dynamax",1]],"814":[["dynamax","🔴","Raboot Dynamax",1]],"815":[["dynamax","🔴","Cinderace Dynamax",1],["gmax","🟥","Cinderace Gigantamax",1]],"816":[["dynamax","🔴","Sobble Dynamax",1]],"817":[["dynamax","🔴","Drizzile Dynamax",1]],"818":[["dynamax","🔴","Inteleon Dynamax",1],["gmax","🟥","Inteleon Gigantamax",1]],"819":[["dynamax","🔴","Skwovet Dynamax",1]],"820":[["dynamax","🔴","Greedent Dynamax",1]],"821":[["dynamax","🔴","Rookidee Dynamax",1]],"822":[["dynamax","🔴","Corvisquire Dynamax",1]],"823":[["dynamax","🔴","Corviknight Dynamax",1],["gmax","🟥","Corviknight Gigantamax",0]],"826":[["gmax","🟥","Orbeetle Gigantamax",0]],"831":[["dynamax","🔴","Wooloo Dynamax",1]],"832":[["dynamax","🔴","Dubwool Dynamax",1]],"834":[["gmax","🟥","Drednaw Gigantamax",0]],"839":[["gmax","🟥","Coalossal Gigantamax",0]],"841":[["gmax","🟥","Flapple Gigantamax",0]],"842":[["gmax","🟥","Appletun Gigantamax",0]],"844":[["gmax","🟥","Sandaconda Gigantamax",0]],"848":[["dynamax","🔴","Toxel Dynamax",1]],"849":[["dynamax","🔴","Toxtricity Dynamax",1],["gmax","🟥","Toxtricity Gigantamax",1]],"850":[["dynamax","🔴","Sizzlipede Dynamax",1]],"851":[["dynamax","🔴","Centiskorch Dynamax",1],["gmax","🟥","Centiskorch Gigantamax",0]],"856":[["dynamax","🔴","Hatenna Dynamax",1]],"857":[["dynamax","🔴","Hattrem Dynamax",1]],"858":[["dynamax","🔴","Hatterene Dynamax",1],["gmax","🟥","Hatterene Gigantamax",0]],"861":[["dynamax","🔴","Grimmsnarl Dynamax",1],["gmax","🟥","Grimmsnarl Gigantamax",1]],"869":[["gmax","🟥","Alcremie Gigantamax",0]],"870":[["dynamax","🔴","Falinks Dynamax",1],["mega","🟣","Mega Falinks",1]],"879":[["gmax","🟥","Copperajah Gigantamax",0]],"884":[["dynamax","🔴","Duraludon Dynamax",1],["gmax","🟥","Duraludon Gigantamax",0]],"888":[["coroado","👑","Zacian Coroado",1]],"889":[["coroado","👑","Zamazenta Coroado",1]],"890":[["eternamax","🌌","Eternatus Eternamax",1]],"891":[["dynamax","🔴","Kubfu Dynamax",1]],"892":[["dynamax","🔴","Urshifu Dynamax",1],["gmax","🟥","Urshifu Gigantamax",1]],"898":[["fusao-ice","🔷","Calyrex Cavaleiro de Gelo (fusão)",1],["fusao-shadow","🔷","Calyrex Cavaleiro Sombrio (fusão)",1]],"905":[["encarnado","🟪","Enamorus Forma Encarnada",1],["therian","🟧","Enamorus Forma Therian",1]],"952":[["mega","🟣","Mega Scovillain",0]],"970":[["mega","🟣","Mega Glimmora",0]],"998":[["mega","🟣","Mega Baxcalibur",0]]};
+/* Raridade de cada Pokémon (uma letra por Pokémon): l = lendário, m = mítico,
+   u = Ultra Besta, p = Paradoxo, - = comum. Das tags do Pokémon Showdown;
+   os Paradoxos 1020–1023 vieram sem tag lá e foram marcados à mão. */
+const CLASSE = '-----------------------------------------------------------------------------------------------------------------------------------------------lll---lm-------------------------------------------------------------------------------------------lll---llm-----------------------------------------------------------------------------------------------------------------------------llllllllmm---------------------------------------------------------------------------------------------lllllllllmmmmmm-----------------------------------------------------------------------------------------------------------------------------------------------lllllllllmmm------------------------------------------------------------------lllmmm--------------------------------------------------ll-----------lllllllluuuuuuulmmuuuummm------------------------------------------------------------------------------lllllmlllll------l------------------------------------------------------------------------------pppppppppppp-----llllppllpp---llll--pppplm';
 
 /* A lista escrita à mão: posição 0 é o #001. */
 const NOMES = 'Bulbasaur|Ivysaur|Venusaur|Charmander|Charmeleon|Charizard|Squirtle|Wartortle|Blastoise|Caterpie|Metapod|Butterfree|Weedle|Kakuna|Beedrill|Pidgey|Pidgeotto|Pidgeot|Rattata|Raticate|Spearow|Fearow|Ekans|Arbok|Pikachu|Raichu|Sandshrew|Sandslash|Nidoran♀|Nidorina|Nidoqueen|Nidoran♂|Nidorino|Nidoking|Clefairy|Clefable|Vulpix|Ninetales|Jigglypuff|Wigglytuff|Zubat|Golbat|Oddish|Gloom|Vileplume|Paras|Parasect|Venonat|Venomoth|Diglett|Dugtrio|Meowth|Persian|Psyduck|Golduck|Mankey|Primeape|Growlithe|Arcanine|Poliwag|Poliwhirl|Poliwrath|Abra|Kadabra|Alakazam|Machop|Machoke|Machamp|Bellsprout|Weepinbell|Victreebel|Tentacool|Tentacruel|Geodude|Graveler|Golem|Ponyta|Rapidash|Slowpoke|Slowbro|Magnemite|Magneton|Farfetch\'d|Doduo|Dodrio|Seel|Dewgong|Grimer|Muk|Shellder|Cloyster|Gastly|Haunter|Gengar|Onix|Drowzee|Hypno|Krabby|Kingler|Voltorb|Electrode|Exeggcute|Exeggutor|Cubone|Marowak|Hitmonlee|Hitmonchan|Lickitung|Koffing|Weezing|Rhyhorn|Rhydon|Chansey|Tangela|Kangaskhan|Horsea|Seadra|Goldeen|Seaking|Staryu|Starmie|Mr. Mime|Scyther|Jynx|Electabuzz|Magmar|Pinsir|Tauros|Magikarp|Gyarados|Lapras|Ditto|Eevee|Vaporeon|Jolteon|Flareon|Porygon|Omanyte|Omastar|Kabuto|Kabutops|Aerodactyl|Snorlax|Articuno|Zapdos|Moltres|Dratini|Dragonair|Dragonite|Mewtwo|Mew|Chikorita|Bayleef|Meganium|Cyndaquil|Quilava|Typhlosion|Totodile|Croconaw|Feraligatr|Sentret|Furret|Hoothoot|Noctowl|Ledyba|Ledian|Spinarak|Ariados|Crobat|Chinchou|Lanturn|Pichu|Cleffa|Igglybuff|Togepi|Togetic|Natu|Xatu|Mareep|Flaaffy|Ampharos|Bellossom|Marill|Azumarill|Sudowoodo|Politoed|Hoppip|Skiploom|Jumpluff|Aipom|Sunkern|Sunflora|Yanma|Wooper|Quagsire|Espeon|Umbreon|Murkrow|Slowking|Misdreavus|Unown|Wobbuffet|Girafarig|Pineco|Forretress|Dunsparce|Gligar|Steelix|Snubbull|Granbull|Qwilfish|Scizor|Shuckle|Heracross|Sneasel|Teddiursa|Ursaring|Slugma|Magcargo|Swinub|Piloswine|Corsola|Remoraid|Octillery|Delibird|Mantine|Skarmory|Houndour|Houndoom|Kingdra|Phanpy|Donphan|Porygon2|Stantler|Smeargle|Tyrogue|Hitmontop|Smoochum|Elekid|Magby|Miltank|Blissey|Raikou|Entei|Suicune|Larvitar|Pupitar|Tyranitar|Lugia|Ho-Oh|Celebi|Treecko|Grovyle|Sceptile|Torchic|Combusken|Blaziken|Mudkip|Marshtomp|Swampert|Poochyena|Mightyena|Zigzagoon|Linoone|Wurmple|Silcoon|Beautifly|Cascoon|Dustox|Lotad|Lombre|Ludicolo|Seedot|Nuzleaf|Shiftry|Taillow|Swellow|Wingull|Pelipper|Ralts|Kirlia|Gardevoir|Surskit|Masquerain|Shroomish|Breloom|Slakoth|Vigoroth|Slaking|Nincada|Ninjask|Shedinja|Whismur|Loudred|Exploud|Makuhita|Hariyama|Azurill|Nosepass|Skitty|Delcatty|Sableye|Mawile|Aron|Lairon|Aggron|Meditite|Medicham|Electrike|Manectric|Plusle|Minun|Volbeat|Illumise|Roselia|Gulpin|Swalot|Carvanha|Sharpedo|Wailmer|Wailord|Numel|Camerupt|Torkoal|Spoink|Grumpig|Spinda|Trapinch|Vibrava|Flygon|Cacnea|Cacturne|Swablu|Altaria|Zangoose|Seviper|Lunatone|Solrock|Barboach|Whiscash|Corphish|Crawdaunt|Baltoy|Claydol|Lileep|Cradily|Anorith|Armaldo|Feebas|Milotic|Castform|Kecleon|Shuppet|Banette|Duskull|Dusclops|Tropius|Chimecho|Absol|Wynaut|Snorunt|Glalie|Spheal|Sealeo|Walrein|Clamperl|Huntail|Gorebyss|Relicanth|Luvdisc|Bagon|Shelgon|Salamence|Beldum|Metang|Metagross|Regirock|Regice|Registeel|Latias|Latios|Kyogre|Groudon|Rayquaza|Jirachi|Deoxys|Turtwig|Grotle|Torterra|Chimchar|Monferno|Infernape|Piplup|Prinplup|Empoleon|Starly|Staravia|Staraptor|Bidoof|Bibarel|Kricketot|Kricketune|Shinx|Luxio|Luxray|Budew|Roserade|Cranidos|Rampardos|Shieldon|Bastiodon|Burmy|Wormadam|Mothim|Combee|Vespiquen|Pachirisu|Buizel|Floatzel|Cherubi|Cherrim|Shellos|Gastrodon|Ambipom|Drifloon|Drifblim|Buneary|Lopunny|Mismagius|Honchkrow|Glameow|Purugly|Chingling|Stunky|Skuntank|Bronzor|Bronzong|Bonsly|Mime Jr.|Happiny|Chatot|Spiritomb|Gible|Gabite|Garchomp|Munchlax|Riolu|Lucario|Hippopotas|Hippowdon|Skorupi|Drapion|Croagunk|Toxicroak|Carnivine|Finneon|Lumineon|Mantyke|Snover|Abomasnow|Weavile|Magnezone|Lickilicky|Rhyperior|Tangrowth|Electivire|Magmortar|Togekiss|Yanmega|Leafeon|Glaceon|Gliscor|Mamoswine|Porygon-Z|Gallade|Probopass|Dusknoir|Froslass|Rotom|Uxie|Mesprit|Azelf|Dialga|Palkia|Heatran|Regigigas|Giratina|Cresselia|Phione|Manaphy|Darkrai|Shaymin|Arceus|Victini|Snivy|Servine|Serperior|Tepig|Pignite|Emboar|Oshawott|Dewott|Samurott|Patrat|Watchog|Lillipup|Herdier|Stoutland|Purrloin|Liepard|Pansage|Simisage|Pansear|Simisear|Panpour|Simipour|Munna|Musharna|Pidove|Tranquill|Unfezant|Blitzle|Zebstrika|Roggenrola|Boldore|Gigalith|Woobat|Swoobat|Drilbur|Excadrill|Audino|Timburr|Gurdurr|Conkeldurr|Tympole|Palpitoad|Seismitoad|Throh|Sawk|Sewaddle|Swadloon|Leavanny|Venipede|Whirlipede|Scolipede|Cottonee|Whimsicott|Petilil|Lilligant|Basculin|Sandile|Krokorok|Krookodile|Darumaka|Darmanitan|Maractus|Dwebble|Crustle|Scraggy|Scrafty|Sigilyph|Yamask|Cofagrigus|Tirtouga|Carracosta|Archen|Archeops|Trubbish|Garbodor|Zorua|Zoroark|Minccino|Cinccino|Gothita|Gothorita|Gothitelle|Solosis|Duosion|Reuniclus|Ducklett|Swanna|Vanillite|Vanillish|Vanilluxe|Deerling|Sawsbuck|Emolga|Karrablast|Escavalier|Foongus|Amoonguss|Frillish|Jellicent|Alomomola|Joltik|Galvantula|Ferroseed|Ferrothorn|Klink|Klang|Klinklang|Tynamo|Eelektrik|Eelektross|Elgyem|Beheeyem|Litwick|Lampent|Chandelure|Axew|Fraxure|Haxorus|Cubchoo|Beartic|Cryogonal|Shelmet|Accelgor|Stunfisk|Mienfoo|Mienshao|Druddigon|Golett|Golurk|Pawniard|Bisharp|Bouffalant|Rufflet|Braviary|Vullaby|Mandibuzz|Heatmor|Durant|Deino|Zweilous|Hydreigon|Larvesta|Volcarona|Cobalion|Terrakion|Virizion|Tornadus|Thundurus|Reshiram|Zekrom|Landorus|Kyurem|Keldeo|Meloetta|Genesect|Chespin|Quilladin|Chesnaught|Fennekin|Braixen|Delphox|Froakie|Frogadier|Greninja|Bunnelby|Diggersby|Fletchling|Fletchinder|Talonflame|Scatterbug|Spewpa|Vivillon|Litleo|Pyroar|Flabébé|Floette|Florges|Skiddo|Gogoat|Pancham|Pangoro|Furfrou|Espurr|Meowstic|Honedge|Doublade|Aegislash|Spritzee|Aromatisse|Swirlix|Slurpuff|Inkay|Malamar|Binacle|Barbaracle|Skrelp|Dragalge|Clauncher|Clawitzer|Helioptile|Heliolisk|Tyrunt|Tyrantrum|Amaura|Aurorus|Sylveon|Hawlucha|Dedenne|Carbink|Goomy|Sliggoo|Goodra|Klefki|Phantump|Trevenant|Pumpkaboo|Gourgeist|Bergmite|Avalugg|Noibat|Noivern|Xerneas|Yveltal|Zygarde|Diancie|Hoopa|Volcanion|Rowlet|Dartrix|Decidueye|Litten|Torracat|Incineroar|Popplio|Brionne|Primarina|Pikipek|Trumbeak|Toucannon|Yungoos|Gumshoos|Grubbin|Charjabug|Vikavolt|Crabrawler|Crabominable|Oricorio|Cutiefly|Ribombee|Rockruff|Lycanroc|Wishiwashi|Mareanie|Toxapex|Mudbray|Mudsdale|Dewpider|Araquanid|Fomantis|Lurantis|Morelull|Shiinotic|Salandit|Salazzle|Stufful|Bewear|Bounsweet|Steenee|Tsareena|Comfey|Oranguru|Passimian|Wimpod|Golisopod|Sandygast|Palossand|Pyukumuku|Type: Null|Silvally|Minior|Komala|Turtonator|Togedemaru|Mimikyu|Bruxish|Drampa|Dhelmise|Jangmo-o|Hakamo-o|Kommo-o|Tapu Koko|Tapu Lele|Tapu Bulu|Tapu Fini|Cosmog|Cosmoem|Solgaleo|Lunala|Nihilego|Buzzwole|Pheromosa|Xurkitree|Celesteela|Kartana|Guzzlord|Necrozma|Magearna|Marshadow|Poipole|Naganadel|Stakataka|Blacephalon|Zeraora|Meltan|Melmetal|Grookey|Thwackey|Rillaboom|Scorbunny|Raboot|Cinderace|Sobble|Drizzile|Inteleon|Skwovet|Greedent|Rookidee|Corvisquire|Corviknight|Blipbug|Dottler|Orbeetle|Nickit|Thievul|Gossifleur|Eldegoss|Wooloo|Dubwool|Chewtle|Drednaw|Yamper|Boltund|Rolycoly|Carkol|Coalossal|Applin|Flapple|Appletun|Silicobra|Sandaconda|Cramorant|Arrokuda|Barraskewda|Toxel|Toxtricity|Sizzlipede|Centiskorch|Clobbopus|Grapploct|Sinistea|Polteageist|Hatenna|Hattrem|Hatterene|Impidimp|Morgrem|Grimmsnarl|Obstagoon|Perrserker|Cursola|Sirfetch\'d|Mr. Rime|Runerigus|Milcery|Alcremie|Falinks|Pincurchin|Snom|Frosmoth|Stonjourner|Eiscue|Indeedee|Morpeko|Cufant|Copperajah|Dracozolt|Arctozolt|Dracovish|Arctovish|Duraludon|Dreepy|Drakloak|Dragapult|Zacian|Zamazenta|Eternatus|Kubfu|Urshifu|Zarude|Regieleki|Regidrago|Glastrier|Spectrier|Calyrex|Wyrdeer|Kleavor|Ursaluna|Basculegion|Sneasler|Overqwil|Enamorus|Sprigatito|Floragato|Meowscarada|Fuecoco|Crocalor|Skeledirge|Quaxly|Quaxwell|Quaquaval|Lechonk|Oinkologne|Tarountula|Spidops|Nymble|Lokix|Pawmi|Pawmo|Pawmot|Tandemaus|Maushold|Fidough|Dachsbun|Smoliv|Dolliv|Arboliva|Squawkabilly|Nacli|Naclstack|Garganacl|Charcadet|Armarouge|Ceruledge|Tadbulb|Bellibolt|Wattrel|Kilowattrel|Maschiff|Mabosstiff|Shroodle|Grafaiai|Bramblin|Brambleghast|Toedscool|Toedscruel|Klawf|Capsakid|Scovillain|Rellor|Rabsca|Flittle|Espathra|Tinkatink|Tinkatuff|Tinkaton|Wiglett|Wugtrio|Bombirdier|Finizen|Palafin|Varoom|Revavroom|Cyclizar|Orthworm|Glimmet|Glimmora|Greavard|Houndstone|Flamigo|Cetoddle|Cetitan|Veluza|Dondozo|Tatsugiri|Annihilape|Clodsire|Farigiraf|Dudunsparce|Kingambit|Great Tusk|Scream Tail|Brute Bonnet|Flutter Mane|Slither Wing|Sandy Shocks|Iron Treads|Iron Bundle|Iron Hands|Iron Jugulis|Iron Moth|Iron Thorns|Frigibax|Arctibax|Baxcalibur|Gimmighoul|Gholdengo|Wo-Chien|Chien-Pao|Ting-Lu|Chi-Yu|Roaring Moon|Iron Valiant|Koraidon|Miraidon|Walking Wake|Iron Leaves|Dipplin|Poltchageist|Sinistcha|Okidogi|Munkidori|Fezandipiti|Ogerpon|Archaludon|Hydrapple|Gouging Fire|Raging Bolt|Iron Boulder|Iron Crown|Terapagos|Pecharunt'.split('|');
@@ -569,6 +615,15 @@ function seloTipo(t){
 /* Até dois tipos ao mesmo tempo: Água + Voador acha o Gyarados. */
 let tiposFiltro = [];
 
+/* Lendário, Mítico, Ultra Besta, Paradoxo (a letra de cada um está em CLASSE). */
+const CLASSES = {
+  l: { emoji:'⭐', nome:'Lendário' },
+  m: { emoji:'🌟', nome:'Mítico' },
+  u: { emoji:'🌀', nome:'Ultra Besta' },
+  p: { emoji:'⏳', nome:'Paradoxo' },
+};
+function contaClasse(c){ let n = 0; for(const id of peguei) if(CLASSE[id - 1] === c) n++; return n; }
+
 /* ---------- busca sem ligar pra acento, maiúscula, ponto ou traço ---------- */
 function simples(s){
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -582,6 +637,10 @@ const FILTROS = [
   { id:'tem',    texto:'Tem no GO',          ok: id => temNoGo(id) },
   { id:'nao',    texto:'❌ Não tem no GO',   ok: id => !temNoGo(id) },
   { id:'formas', texto:'🌍 Com formas',      ok: id => id in FORMAS },
+  { id:'lendarios', texto:'⭐ Lendários',     ok: id => CLASSE[id - 1] === 'l' },
+  { id:'miticos',   texto:'🌟 Míticos',       ok: id => CLASSE[id - 1] === 'm' },
+  { id:'ub',        texto:'🌀 Ultra Bestas',  ok: id => CLASSE[id - 1] === 'u' },
+  { id:'paradoxos', texto:'⏳ Paradoxos',     ok: id => CLASSE[id - 1] === 'p' },
   { id:'batalha', texto:'⚡ Formas de batalha', ok: id => id in BATALHA },
   { id:'especiais', texto:'⭐ Especiais',  ok: id => tagsDe(id).length > 0 },
   { id:'shiny-tenho', texto:'✨ Shiny que tenho', ok: id => tagsDe(id).includes('shiny') },
@@ -676,7 +735,7 @@ function cartinha(id){
     (favoritos.has(id) ? '<span class="selo-fav">❤️</span>' : '');
   b.appendChild(f);
   b.insertAdjacentHTML('beforeend',
-    `<span class="num">#${tres(id)}</span><span class="nome"></span><span class="tipos"></span>`);
+    `<span class="num">#${tres(id)}${CLASSES[CLASSE[id - 1]] ? '<span class="estrela">' + CLASSES[CLASSE[id - 1]].emoji + '</span>' : ''}</span><span class="nome"></span><span class="tipos"></span>`);
   for(const t of tiposDe(id)){
     const d = document.createElement('i');
     d.className = 'tipo'; d.style.background = TIPOS[t].cor; d.title = TIPOS[t].nome;
@@ -729,6 +788,7 @@ function abrir(id){
     <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
     <div class="arte"></div>
     <p class="num">#${tres(id)} · ${g.n}ª geração (${g.onde})</p>
+    ${CLASSES[CLASSE[id - 1]] ? `<span class="classe ${CLASSE[id - 1]}">${CLASSES[CLASSE[id - 1]].emoji} ${CLASSES[CLASSE[id - 1]].nome}</span>` : ''}
     <h2 id="folha-nome"></h2>
     <div class="tipos" id="folha-tipos"></div>
     <button type="button" class="som" id="tocar">🔊 Ouvir o som</button>
@@ -1311,6 +1371,10 @@ const MEDALHAS = [
   { id:'sh1',   icone:'🚀', nome:'Lado sombrio',    como:'Primeiro Shadow',          ok:() => contaTag('shadow') >= 1 },
   { id:'pu1',   icone:'🧼', nome:'Limpinho',        como:'Primeiro Purificado',      ok:() => contaTag('purificado') >= 1 },
   { id:'sd',    icone:'💎', nome:'Shundo!',         como:'Um shiny que é hundo',     ok:() => Object.values(especiais).some(l => l.includes('shiny') && l.includes('hundo')) },
+  { id:'lend1', icone:'⭐', nome:'Lenda!',          como:'Pegar o primeiro Lendário', ok:() => contaClasse('l') >= 1 },
+  { id:'lend10',icone:'🏛️', nome:'Caçador de Lendas', como:'Pegar 10 Lendários',     ok:() => contaClasse('l') >= 10 },
+  { id:'mit1',  icone:'🌟', nome:'Mistério',        como:'Pegar o primeiro Mítico',  ok:() => contaClasse('m') >= 1 },
+  { id:'ub1',   icone:'🌀', nome:'Do outro mundo',  como:'Pegar a primeira Ultra Besta', ok:() => contaClasse('u') >= 1 },
   { id:'mega1', icone:'🟣', nome:'Mega!',           como:'Marcar a primeira Mega',   ok:() => [...pegueiForma].some(k => /-b-mega/.test(k)) },
   { id:'dmax1', icone:'🔴', nome:'Gigante de verdade', como:'Primeiro Dynamax',       ok:() => [...pegueiForma].some(k => /-b-dynamax$/.test(k)) },
   { id:'gmax1', icone:'🟥', nome:'Gigantamax!',     como:'Primeiro Gigantamax',      ok:() => [...pegueiForma].some(k => /-b-gmax$/.test(k)) },
@@ -1625,6 +1689,183 @@ function abrirNpcs(){
 }
 document.getElementById('abrir-npcs').onclick = abrirNpcs;
 
+/* ---------- 👤 conta (igual à do ButterPoke) ----------
+   Não é cadastro de verdade: não há servidor, e sem servidor não há como
+   guardar senha com segurança. Um login de mentira seria pior que não ter.
+   Então é um perfil no aparelho, um cartão de treinador, e um código que a
+   pessoa leva na mão pro outro aparelho. Diferente do código do 🤝 Amigo,
+   este leva o nome: é pra dar pra si mesmo, não pros outros. */
+const SIMBOLOS = ['🟣', '⚡', '🔥', '💧', '🌿', '🔮', '🐉', '🌑', '⚙️', '🧚', '⭐', '👊'];
+const FUNDOS = [
+  { id:'ditto',    css:'linear-gradient(135deg,#b98ad6,#6a3f95)', emoji:'🟣' },
+  { id:'fogo',     css:'linear-gradient(135deg,#ff8f3c,#c62828)', emoji:'🔥' },
+  { id:'agua',     css:'linear-gradient(135deg,#4fa8e0,#0d47a1)', emoji:'💧' },
+  { id:'grama',    css:'linear-gradient(135deg,#66bb6a,#1b5e20)', emoji:'🌿' },
+  { id:'eletrico', css:'linear-gradient(135deg,#f9c220,#ef6c00)', emoji:'⚡' },
+  { id:'psiquico', css:'linear-gradient(135deg,#c07ae8,#4a148c)', emoji:'🔮' },
+  { id:'dragao',   css:'linear-gradient(135deg,#7e8fa8,#2c3e50)', emoji:'🐉' },
+  { id:'sombrio',  css:'linear-gradient(135deg,#4a5560,#11161c)', emoji:'🌑' },
+];
+function lerPerfil(){ const p = ler('dittospokedex:perfil', {}); return p && typeof p === 'object' ? p : {}; }
+function gravarPerfil(p){ gravar('dittospokedex:perfil', p); mostrarOla(); }
+function mostrarOla(){
+  const p = lerPerfil(), e = document.getElementById('ola');
+  e.hidden = !p.nome;
+  e.textContent = p.nome ? `${p.simbolo || '🟣'} Olá, ${p.nome}!` : '';
+}
+mostrarOla();
+
+function cartaoTreinador(){
+  const p = lerPerfil();
+  const fundo = (FUNDOS.find(f => f.id === p.fundo) || FUNDOS[0]).css;
+  const time = TIMES[ler('dittospokedex:time', '')];
+  const d = document.createElement('div');
+  d.className = 'cartao-treinador'; d.style.background = fundo;
+  const numeros = [
+    [peguei.size, 'Pokémon'], [contaTag('shiny'), 'Shiny'], [contaTag('lucky'), 'Lucky'],
+    [contaTag('hundo'), 'Hundo'], [contaClasse('l') + contaClasse('m'), 'Lendas'],
+    [MEDALHAS.filter(m => m.ok()).length, 'Medalhas'],
+  ];
+  d.innerHTML = `<div class="topo"><span class="bicho"></span><div><b class="nome"></b><span class="sub2"></span></div></div>
+    <div class="numeros2">${numeros.map(([n, r]) => `<div><b>${n}</b><span>${r}</span></div>`).join('')}</div>
+    <div class="favs"></div>`;
+  d.querySelector('.bicho').textContent = p.simbolo || '🟣';
+  d.querySelector('.nome').textContent = p.nome || 'Treinador sem nome';
+  d.querySelector('.sub2').textContent = 'Cartão de treinador' + (time ? ` · ${time.emoji} Time ${time.nome}` : '') +
+    (quiz.recorde ? ` · 🎮 recorde ${quiz.recorde}` : '');
+  const favs = [...favoritos].sort((a, b) => a - b);
+  const caixa = d.querySelector('.favs');
+  for(const id of favs.slice(0, 7)) caixa.appendChild(foto(id));
+  if(favs.length > 7){ const s = document.createElement('span'); s.className = 'sub2'; s.textContent = `+${favs.length - 7}`; caixa.appendChild(s); }
+  if(!favs.length){ const s = document.createElement('span'); s.className = 'sub2'; s.textContent = '❤️ Favorite Pokémon pra eles aparecerem aqui.'; caixa.appendChild(s); }
+  return d;
+}
+
+const PREFIXO_CONTA = 'DITTOCONTA1.';
+function fazerCodigoConta(){
+  return PREFIXO_CONTA + paraBase64(JSON.stringify({
+    perfil: lerPerfil(), time: ler('dittospokedex:time', ''),
+    peguei: [...peguei], especiais, formas: [...pegueiForma], favoritos: [...favoritos],
+    go: correcoesGo, quiz: { recorde: quiz.recorde || 0, acertos: quiz.acertos || 0, melhorSeq: quiz.melhorSeq || 0 },
+  }));
+}
+function lerCodigoConta(txt){
+  txt = String(txt || '').trim().replace(/\s+/g, '');
+  if(!txt) throw new Error('Cole o código aqui em cima.');
+  if(txt.startsWith(PREFIXO)) throw new Error('Esse é um código de 🤝 Amigo. Pra comparar, use o botão Amigo. Aqui é o código da SUA conta.');
+  if(!txt.startsWith(PREFIXO_CONTA)) throw new Error('Esse código não é de conta da Ditto\'s Pokédex. Ele começa com "DITTOCONTA1."');
+  let d;
+  try{ d = JSON.parse(deBase64(txt.slice(PREFIXO_CONTA.length))); }
+  catch(e){ throw new Error('O código chegou cortado ou com alguma letra errada. Copie de novo, inteiro.'); }
+  if(!d || typeof d !== 'object') throw new Error('O código está estragado.');
+  return d;
+}
+/* Juntar, nunca apagar: quem cola um código não espera perder o que já tinha. */
+function juntarConta(d){
+  const ids = l => (Array.isArray(l) ? l : []).map(Number).filter(n => n >= 1 && n <= TOTAL);
+  const antes = peguei.size;
+  for(const id of ids(d.peguei)) peguei.add(id);
+  for(const id of ids(d.favoritos)) favoritos.add(id);
+  for(const k of (Array.isArray(d.formas) ? d.formas : [])) if(typeof k === 'string') pegueiForma.add(k);
+  if(d.especiais && typeof d.especiais === 'object'){
+    for(const [k, l] of Object.entries(d.especiais)){
+      if(!Array.isArray(l)) continue;
+      const junto = new Set([...(especiais[k] || []), ...l.filter(t => TAG[t])]);
+      if(junto.size) especiais[k] = [...junto];
+    }
+  }
+  if(d.go && typeof d.go === 'object')
+    for(const [k, v] of Object.entries(d.go)) if(!(k in correcoesGo) && typeof v === 'boolean') correcoesGo[k] = v;
+  if(d.quiz){
+    quiz.recorde = Math.max(quiz.recorde || 0, +d.quiz.recorde || 0);
+    quiz.acertos = Math.max(quiz.acertos || 0, +d.quiz.acertos || 0);
+    quiz.melhorSeq = Math.max(quiz.melhorSeq || 0, +d.quiz.melhorSeq || 0);
+    gravar('dittospokedex:quiz', quiz);
+  }
+  const eu = lerPerfil();
+  if(d.perfil && typeof d.perfil === 'object' && !eu.nome){
+    gravarPerfil({ nome: String(d.perfil.nome || '').slice(0, 20), simbolo: d.perfil.simbolo, fundo: d.perfil.fundo });
+  }
+  if(d.time && TIMES[d.time] && !ler('dittospokedex:time', '')){ gravar('dittospokedex:time', d.time); mostrarMeuTime(); }
+  salvar(); desenhar();
+  return peguei.size - antes;
+}
+
+function abrirConta(){
+  if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  aberto = -1;
+  const p = lerPerfil();
+  folha.innerHTML = `
+    <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
+    <div class="conta" style="text-align:left">
+      <h2 id="folha-nome" style="text-align:center">👤 Minha conta</h2>
+      <p class="pequeno" style="text-align:center;margin:0">Fica guardada neste aparelho. Não tem senha, e não precisa.</p>
+      <div id="cartao"></div>
+      <div class="bloco"><h3>Como você quer ser chamado</h3>
+        <input id="nome-conta" maxlength="20" autocomplete="off" placeholder="Seu nome ou apelido" /></div>
+      <div class="bloco"><h3>Seu símbolo</h3><div class="escolhas" id="simbolos"></div></div>
+      <div class="bloco"><h3>Fundo do cartão</h3><div class="escolhas" id="fundos"></div></div>
+      <div class="bloco"><h3>🔑 Levar pra outro aparelho</h3>
+        <p class="pequeno" style="margin:0 0 6px">Este código guarda TUDO: nome, os ${peguei.size} Pokémon, especiais, formas, favoritos e o recorde.
+        Copie, mande pra você mesmo no zap e cole no outro aparelho. <b>Não dê pros outros</b>: pra comparar com amigo, use o 🤝 Amigo.</p>
+        <textarea id="codigo-conta" readonly></textarea>
+        <button type="button" class="grande-botao principal" id="copiar-conta">📋 Copiar meu código</button></div>
+      <div class="bloco"><h3>📥 Colar o código de outro aparelho</h3>
+        <p class="pequeno" style="margin:0 0 6px">O que vier <b>se junta</b> ao que já tem aqui. Nada é apagado.</p>
+        <textarea id="colar-conta" placeholder="Cole o código aqui…"></textarea>
+        <button type="button" class="grande-botao" id="trazer-conta">📥 Trazer pra cá</button>
+        <p id="recado-conta" class="pequeno"></p></div>
+    </div>`;
+  folha.querySelector('.fechar').onclick = fechar;
+  folha.querySelector('#cartao').appendChild(cartaoTreinador());
+  const nome = folha.querySelector('#nome-conta');
+  nome.value = p.nome || '';
+  const atualizar = () => {
+    folha.querySelector('#cartao').replaceChildren(cartaoTreinador());
+    folha.querySelector('#codigo-conta').value = fazerCodigoConta();
+  };
+  nome.oninput = () => { const a = lerPerfil(); a.nome = nome.value.trim(); gravarPerfil(a); atualizar(); };
+  const escolhas = (alvo, lista, atual, campo, rotulo) => {
+    const caixa = folha.querySelector(alvo);
+    for(const x of lista){
+      const b = document.createElement('button');
+      b.type = 'button';
+      const v = x.id || x;
+      b.textContent = x.emoji || x;
+      if(x.css) b.style.background = x.css;
+      b.setAttribute('aria-label', rotulo + ' ' + (x.emoji || x));
+      b.setAttribute('aria-pressed', String(v === atual));
+      b.onclick = () => {
+        const a = lerPerfil(); a[campo] = v; gravarPerfil(a);
+        for(const o of caixa.children) o.setAttribute('aria-pressed', String(o === b));
+        atualizar();
+      };
+      caixa.appendChild(b);
+    }
+  };
+  escolhas('#simbolos', SIMBOLOS, p.simbolo || '🟣', 'simbolo', 'Símbolo');
+  escolhas('#fundos', FUNDOS, p.fundo || 'ditto', 'fundo', 'Fundo');
+  folha.querySelector('#codigo-conta').value = fazerCodigoConta();
+  folha.querySelector('#copiar-conta').onclick = async ev => {
+    const b = ev.currentTarget, area = folha.querySelector('#codigo-conta');
+    try{ await navigator.clipboard.writeText(area.value); b.textContent = '✅ Copiado! Agora cola no outro aparelho'; }
+    catch(e){ area.select(); b.textContent = 'Selecionei: segure em cima e copie'; }
+  };
+  folha.querySelector('#trazer-conta').onclick = () => {
+    const recado = folha.querySelector('#recado-conta');
+    let d;
+    try{ d = lerCodigoConta(folha.querySelector('#colar-conta').value); }
+    catch(e){ recado.textContent = '❌ ' + e.message; return; }
+    const novos = juntarConta(d);
+    abrirConta();
+    folha.querySelector('#recado-conta').textContent = '✅ Pronto! ' +
+      (novos ? (novos === 1 ? 'Chegou 1 Pokémon novo.' : `Chegaram ${novos} Pokémon novos.`) : 'Nenhum Pokémon novo, você já tinha todos. O resto foi juntado.');
+  };
+  fundo.classList.add('aberto');
+  folha.querySelector('.fechar').focus();
+}
+document.getElementById('abrir-conta').onclick = abrirConta;
+
 let espera = 0;
 document.getElementById('busca').addEventListener('input', ev => {
   clearTimeout(espera);
@@ -1661,12 +1902,13 @@ btTema.onclick = () => {
    Apaga tudo que a pessoa marcou: os ✅, as formas e as correções de
    "chegou no GO". Pergunta antes, porque não tem volta. */
 document.getElementById('recomecar').onclick = () => {
-  if(!confirm('Apagar TODOS os ✅, os ❤️ favoritos, os especiais, o recorde do Quem é?, as formas marcadas e as correções de "chegou no GO"?\n\nNão dá pra desfazer.')) return;
+  if(!confirm('Apagar TODOS os ✅, a conta, os ❤️ favoritos, os especiais, o recorde do Quem é?, as formas marcadas e as correções de "chegou no GO"?\n\nNão dá pra desfazer.')) return;
   peguei.clear();
   pegueiForma.clear();
   for(const k of Object.keys(especiais)) delete especiais[k];
   favoritos.clear();
   gravar('dittospokedex:time', ''); mostrarMeuTime();
+  gravarPerfil({});
   for(const k of Object.keys(correcoesGo)) delete correcoesGo[k];
   quiz.recorde = 0; quiz.acertos = 0; quiz.melhorSeq = 0; gravar('dittospokedex:quiz', quiz);
   salvar(); fechar(); desenhar();

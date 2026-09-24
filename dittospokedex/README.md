@@ -174,3 +174,18 @@ um botão pro ButterPoke (pra quem gosta de TCG). Não aparece sempre:
 - **NPCs do GO**: Professor Willow, Blanche, Candela, Spark, Rhi, os Recrutas, Arlo, Cliff,
   Sierra e Giovanni, com o que cada um faz. E dá pra escolher o seu time, que aparece do
   lado do placar.
+
+## ⭐ Lendários e 👤 conta
+
+- **Lendários**: cada Pokémon tem a classe dele, das tags do Pokémon Showdown: ⭐ Lendário
+  (71), 🌟 Mítico (23), 🌀 Ultra Besta (11), ⏳ Paradoxo (20; os 1020–1023 vieram sem tag
+  e foram marcados à mão). Selo na página, estrelinha do lado do número, filtros e 4
+  medalhas.
+- **Conta**, igual à do ButterPoke: não é cadastro de verdade (sem servidor não dá pra
+  guardar senha com segurança, e login de mentira seria pior que não ter). É um perfil no
+  aparelho: nome, símbolo e fundo, que viram um **cartão de treinador** (Pokémon, Shiny,
+  Lucky, Hundo, Lendas, Medalhas, time, recorde e os favoritos) e um "Olá, Nome!" no topo.
+  O **código da conta** (`DITTOCONTA1.`) leva tudo pra outro aparelho, e colar **junta**,
+  nunca apaga. Esse código leva o nome, então é pra dar pra si mesmo; pra comparar com
+  amigo continua o 🤝 Amigo, que não leva nada pessoal. Colar um código de amigo no lugar
+  da conta dá recado explicando.
