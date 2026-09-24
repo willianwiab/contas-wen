@@ -25,6 +25,7 @@
   --tinta:#2a1838; --tinta-fraca:#6e5a80;
   --cartao:#ffffff; --cartao2:#fbf7fe; --campo:#fdfaff;
   --borda:#e4d4f2; --sombra:rgba(80,40,120,.12);
+  --amarelo:#e0b020; --amarelo-fundo:#fdf3d0; --amarelo-texto:#8a6500;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-tema="claro"]){
@@ -34,6 +35,7 @@
     --tinta:#f1e8fa; --tinta-fraca:#ab9bbd;
     --cartao:#231b2f; --cartao2:#2a2138; --campo:#1f182a;
     --borda:#3d3050; --sombra:rgba(0,0,0,.35);
+    --amarelo:#d6a82a; --amarelo-fundo:#3a3014; --amarelo-texto:#f0c850;
   }
 }
 :root[data-tema="escuro"]{
@@ -43,6 +45,7 @@
   --tinta:#f1e8fa; --tinta-fraca:#ab9bbd;
   --cartao:#231b2f; --cartao2:#2a2138; --campo:#1f182a;
   --borda:#3d3050; --sombra:rgba(0,0,0,.35);
+  --amarelo:#d6a82a; --amarelo-fundo:#3a3014; --amarelo-texto:#f0c850;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -102,6 +105,9 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .poke.fora{background:var(--errado-fundo);border-color:transparent}
 .poke.fora img{filter:grayscale(1);opacity:.55}
 .poke.peguei{background:var(--certo-fundo);border-color:var(--certo)}
+.poke.falta{border-color:var(--amarelo)}
+.status.falta{background:var(--amarelo-fundo);color:var(--amarelo-texto)}
+.resumo{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;font-weight:600;font-size:.9rem;margin:-4px 0 10px}
 .selo{position:absolute;top:4px;right:6px;font-size:.9rem}
 .sem-foto{width:56px;height:56px;border-radius:50%;background:var(--creme2);display:grid;place-items:center;
   font-weight:700;color:var(--tinta-fraca);font-size:.85rem}
@@ -207,6 +213,11 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
   border-radius:14px;padding:13px 6px;cursor:pointer}
 .opcoes button.certa{background:var(--certo);border-color:var(--certo);color:#fff}
 .opcoes button.errada{background:var(--errado);border-color:var(--errado);color:#fff}
+.chips.centro{justify-content:center;flex-wrap:wrap;overflow:visible;padding:6px 0 0}
+.digitar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.digitar input{grid-column:1/-1;font:inherit;font-size:1.1rem;padding:12px 14px;border-radius:14px;text-align:center;
+  border:2px solid var(--borda);background:var(--campo);color:var(--tinta)}
+.digitar input:focus{border-color:var(--marca);outline:none}
 .resultado{font-family:'Baloo 2',cursive;font-size:1.4rem;margin-top:10px;min-height:1.6em}
 /* medalhas */
 .medalhas{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;text-align:center;margin-top:10px}
@@ -225,6 +236,10 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .amigo input{width:100%;font:inherit;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);
   background:var(--campo);color:var(--tinta)}
 .amigo .grande-botao{width:100%;margin-top:8px}
+.versus{width:100%;border-collapse:collapse;margin-top:10px;text-align:center}
+.versus th,.versus td{padding:8px 6px;border-bottom:1px solid var(--borda)}
+.versus td:first-child{text-align:left;font-weight:600}
+.versus td.ganha{color:var(--certo);font-weight:800}
 .comparar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;text-align:center}
 .comparar div{background:var(--creme2);border-radius:14px;padding:10px}
 .comparar b{display:block;font-family:'Baloo 2',cursive;font-size:1.6rem}
@@ -253,7 +268,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
       <button class="botao-redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
     </div>
   </header>
-  <p class="sub">Todos os 1025 Pokémon: quem já chegou no <b>Pokémon GO</b>, quem ainda não chegou ❌, e quem você já pegou ✅.</p>
+  <p class="sub">Todos os 1025 Pokémon: quem já chegou no <b>Pokémon GO</b>, quem ainda não chegou ❌, quem falta pegar 🟡 e quem você já tem ✅.</p>
 
   <section class="placar" aria-live="polite">
     <div class="placar-linha">
@@ -278,7 +293,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
          autocomplete="off" enterkeyhint="search" />
   <div class="chips" id="filtros" role="group" aria-label="Mostrar"></div>
   <div class="chips" id="geracoes" role="group" aria-label="Geração"></div>
-  <div class="chips" id="tipos" role="group" aria-label="Tipo"></div>
+  <div class="chips" id="tipos" role="group" aria-label="Tipo (até dois)"></div>
   <p class="contagem" id="contagem"></p>
   <div class="grade" id="grade"></div>
 
@@ -289,7 +304,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 8 — 24/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 9 — 24/09 · 🔄</button>
   </footer>
 </div>
 
@@ -506,7 +521,8 @@ function seloTipo(t){
   e.textContent = `${TIPOS[t].emoji} ${TIPOS[t].nome}`;
   return e;
 }
-let tipoFiltro = -1;
+/* Até dois tipos ao mesmo tempo: Água + Voador acha o Gyarados. */
+let tiposFiltro = [];
 
 /* ---------- busca sem ligar pra acento, maiúscula, ponto ou traço ---------- */
 function simples(s){
@@ -522,8 +538,10 @@ const FILTROS = [
   { id:'nao',    texto:'❌ Não tem no GO',   ok: id => !temNoGo(id) },
   { id:'formas', texto:'🌍 Com formas',      ok: id => id in FORMAS },
   { id:'especiais', texto:'⭐ Especiais',  ok: id => tagsDe(id).length > 0 },
+  { id:'shiny-tenho', texto:'✨ Shiny que tenho', ok: id => tagsDe(id).includes('shiny') },
+  { id:'shiny-falta', texto:'✨ Shiny que faltam', ok: id => temNoGo(id) && !tagsDe(id).includes('shiny') },
   { id:'peguei', texto:'✅ Peguei',          ok: id => peguei.has(id) },
-  { id:'falta',  texto:'Falta pegar',        ok: id => temNoGo(id) && !peguei.has(id) },
+  { id:'falta',  texto:'🟡 Falta pegar',        ok: id => temNoGo(id) && !peguei.has(id) },
 ];
 let filtro = 'todos', geracao = 0, busca = '';
 
@@ -553,15 +571,20 @@ function montarChips(){
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'chip';
     b.textContent = i < 0 ? 'Todos os tipos' : `${TIPOS[i].emoji} ${TIPOS[i].nome}`;
-    b.setAttribute('aria-pressed', String(i === tipoFiltro));
-    b.onclick = () => { tipoFiltro = i; montarChips(); desenhar(); };
+    b.setAttribute('aria-pressed', String(i < 0 ? !tiposFiltro.length : tiposFiltro.includes(i)));
+    b.onclick = () => {
+      if(i < 0) tiposFiltro = [];
+      else if(tiposFiltro.includes(i)) tiposFiltro = tiposFiltro.filter(x => x !== i);
+      else tiposFiltro = [...tiposFiltro, i].slice(-2);
+      montarChips(); desenhar();
+    };
     t.appendChild(b);
   }
 }
 
 function passa(id){
   if(!FILTROS.find(x => x.id === filtro).ok(id)) return false;
-  if(tipoFiltro >= 0 && !tiposDe(id).includes(tipoFiltro)) return false;
+  if(tiposFiltro.length && !tiposFiltro.every(t => tiposDe(id).includes(t))) return false;
   if(geracao){
     const g = GERACOES[geracao - 1];
     if(id < g.de || id > g.ate) return false;
@@ -595,14 +618,14 @@ function cartinha(id){
   const b = document.createElement('button');
   b.type = 'button';
   const noGo = temNoGo(id), pegou = peguei.has(id);
-  b.className = 'poke' + (noGo ? '' : ' fora') + (pegou ? ' peguei' : '');
+  b.className = 'poke' + (noGo ? (pegou ? ' peguei' : ' falta') : ' fora');
   b.setAttribute('aria-label', `${NOMES[id-1]}, número ${id}` +
-    (noGo ? '' : ', não tem no Pokémon GO') + (pegou ? ', já peguei' : ''));
+    (!noGo ? ', não chegou no Pokémon GO' : pegou ? ', você tem' : ', falta pegar'));
   const f = document.createElement('div'); f.className = 'foto'; f.appendChild(foto(id));
   /* No selo vão os dois especiais que mais valem; sem especial, o ✅. */
   const tops = tagsDe(id).map(t => TAG[t]).filter(Boolean)
     .sort((a, c) => c.pontos - a.pontos).slice(0, 2).map(t => t.emoji).join('');
-  b.innerHTML = `<span class="selo">${tops || (pegou ? '✅' : noGo ? '' : '❌')}</span>`;
+  b.innerHTML = `<span class="selo">${tops || (!noGo ? '❌' : pegou ? '✅' : '🟡')}</span>`;
   b.appendChild(f);
   b.insertAdjacentHTML('beforeend',
     `<span class="num">#${tres(id)}</span><span class="nome"></span><span class="tipos"></span>`);
@@ -662,9 +685,11 @@ function abrir(id){
     <div class="tipos" id="folha-tipos"></div>
     <button type="button" class="som" id="tocar">🔊 Ouvir o som</button>
     <p class="som-aviso" id="som-aviso" hidden></p>
-    <p class="status ${noGo ? 'tem' : 'nao'}">${noGo
-      ? '✔ Tem no Pokémon GO'
-      : '❌ Ainda não tem no Pokémon GO'}</p>
+    <p class="status ${!noGo ? 'nao' : pegou ? 'tem' : 'falta'}">${!noGo
+      ? '❌ Ainda não chegou no Pokémon GO'
+      : pegou ? '✅ Você tem!' : '🟡 Chegou no GO, mas você ainda não tem'}</p>
+    ${noGo ? `<p class="resumo">${[['shiny', '✨ Shiny'], ['lucky', '🍀 Lucky'], ['hundo', '💯 Hundo']]
+      .map(([t, n]) => `<span>${n} ${tagsDe(id).includes(t) ? '✅' : '❌'}</span>`).join('')}</p>` : ''}
     <div class="acoes"></div>
     <div class="bloco" id="evolucoes"></div>
     <div class="bloco" id="fraquezas"></div>
@@ -1043,68 +1068,142 @@ function sortear(lista, n, fora){
   }
   return out;
 }
+/* Dificuldade: de onde sai o Pokémon, e se dá pra escolher entre quatro.
+   "Formas menos conhecidas" não dá: as fotos de forma não têm número fixo no
+   projeto das imagens. Então o difícil é o povo menos famoso (5ª geração pra
+   frente), e aí tem que digitar. */
+const DIFICULDADES = {
+  facil:   { nome:'😊 Fácil',   de:1,   ate:151,  diz:'Os 151 de Kanto, os mais famosos' },
+  medio:   { nome:'😎 Médio',   de:1,   ate:TOTAL, diz:'Qualquer um dos 1025' },
+  dificil: { nome:'🔥 Difícil', de:494, ate:TOTAL, diz:'Da 5ª geração pra frente, e tem que digitar' },
+};
+quiz.dificuldade = DIFICULDADES[quiz.dificuldade] ? quiz.dificuldade : 'facil';
+quiz.modo = quiz.modo === 'digitar' ? 'digitar' : 'escolher';
+const MARCOS = [5, 10, 20, 50];
+
+/* Aceita um errinho de digitação em nome comprido: "pikachuu" vale. */
+function distancia(a, b){
+  const d = Array.from({ length:b.length + 1 }, (_, i) => i);
+  for(let i = 1; i <= a.length; i++){
+    let ant = d[0]; d[0] = i;
+    for(let j = 1; j <= b.length; j++){
+      const t = d[j];
+      d[j] = Math.min(d[j] + 1, d[j - 1] + 1, ant + (a[i - 1] === b[j - 1] ? 0 : 1));
+      ant = t;
+    }
+  }
+  return d[b.length];
+}
+function confere(digitado, id){
+  const a = simples(digitado), b = NOMES_SIMPLES[id - 1];
+  if(!a) return false;
+  return a === b || (b.length >= 5 && distancia(a, b) <= 1);
+}
+
 function abrirQuiz(){
   if(!fundo.classList.contains('aberto')){ ultimoFoco = document.activeElement; seq = 0; pontosQuiz = 0; }
   aberto = -1;
-  const poucos = visiveis.length < 4;
-  let lista = poucos ? Array.from({ length:TOTAL }, (_, i) => i + 1) : visiveis;
+  const dif = DIFICULDADES[quiz.dificuldade];
+  const digitar = quiz.dificuldade === 'dificil' || quiz.modo === 'digitar';
+  const lista = Array.from({ length:dif.ate - dif.de + 1 }, (_, i) => dif.de + i);
   const certo = lista[Math.floor(Math.random() * lista.length)];
-  const todos = lista.length >= 4 ? lista : Array.from({ length:TOTAL }, (_, i) => i + 1);
-  const opcoes = [certo, ...sortear(todos, 3, certo)].sort(() => Math.random() - .5);
+  const opcoes = [certo, ...sortear(lista, 3, certo)].sort(() => Math.random() - .5);
   rodada = { certo, respondeu:false };
   folha.innerHTML = `
     <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
     <div class="quiz">
       <h2 id="folha-nome">🎮 Quem é esse Pokémon?</h2>
-      <div class="placar-quiz"><span>⭐ ${pontosQuiz} pontos</span><span>🔥 ${seq} seguidos</span><span>🏆 recorde ${quiz.recorde}</span></div>
+      <div class="chips centro" id="dificuldade"></div>
+      <div class="chips centro" id="modo"></div>
+      <div class="placar-quiz"></div>
       <div class="arte"></div>
       <button type="button" class="som" id="tocar">🔊 Ouvir de novo</button>
       <div class="opcoes"></div>
+      <form class="digitar" hidden>
+        <input id="palpite" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Escreva o nome…" />
+        <button type="submit" class="grande-botao principal">Responder</button>
+        <button type="button" class="grande-botao" id="nao-sei">🤷 Não sei</button>
+      </form>
       <p class="resultado" aria-live="polite"></p>
-      <button type="button" class="grande-botao principal" id="proxima" hidden>Próximo ▶</button>
-      <p class="pequeno">${poucos
-        ? 'Na tela tinha menos de 4, então sorteia entre todos os 1025.'
-        : `Sorteia entre os ${lista.length} que estão na tela. Filtre por geração ou tipo pra mudar.`}</p>
+      <button type="button" class="grande-botao principal" id="proxima" hidden>Próximo Pokémon ▶</button>
+      <p class="pequeno">${dif.diz}. Acertou: +100 pontos.</p>
     </div>`;
   folha.querySelector('.fechar').onclick = fechar;
+  desenharPlacarQuiz();
+  const cd = folha.querySelector('#dificuldade');
+  for(const [k, v] of Object.entries(DIFICULDADES)){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = v.nome;
+    b.setAttribute('aria-pressed', String(k === quiz.dificuldade));
+    b.onclick = () => { quiz.dificuldade = k; gravar('dittospokedex:quiz', quiz); pararSom(); abrirQuiz(); };
+    cd.appendChild(b);
+  }
+  const cm = folha.querySelector('#modo');
+  if(quiz.dificuldade !== 'dificil'){
+    for(const [k, t] of [['escolher', '🔘 Escolher'], ['digitar', '⌨️ Digitar']]){
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip'; b.textContent = t;
+      b.setAttribute('aria-pressed', String(k === quiz.modo));
+      b.onclick = () => { quiz.modo = k; gravar('dittospokedex:quiz', quiz); pararSom(); abrirQuiz(); };
+      cm.appendChild(b);
+    }
+  }
   folha.querySelector('.arte').appendChild(foto(certo, true, true));
   folha.querySelector('#tocar').onclick = () => tocarSom(certo);
   const caixa = folha.querySelector('.opcoes');
-  for(const x of opcoes){
-    const b = document.createElement('button');
-    b.type = 'button'; b.textContent = NOMES[x - 1];
-    b.onclick = () => responder(x, b);
-    caixa.appendChild(b);
+  if(digitar){
+    caixa.hidden = true;
+    const f = folha.querySelector('.digitar');
+    f.hidden = false;
+    f.onsubmit = ev => {
+      ev.preventDefault();
+      const v = folha.querySelector('#palpite').value;
+      if(!simples(v)) return;
+      responder(confere(v, certo), v);
+    };
+    folha.querySelector('#nao-sei').onclick = () => responder(false, '');
+  } else {
+    for(const x of opcoes){
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = NOMES[x - 1];
+      b.onclick = () => { if(x !== certo) b.classList.add('errada'); responder(x === certo, NOMES[x - 1]); };
+      caixa.appendChild(b);
+    }
   }
   folha.querySelector('#proxima').onclick = abrirQuiz;
   fundo.classList.add('aberto');
   somDe = certo; tocarSom(certo);
-  caixa.querySelector('button').focus();
+  (digitar ? folha.querySelector('#palpite') : caixa.querySelector('button')).focus();
 }
-function responder(x, botao){
+function desenharPlacarQuiz(){
+  folha.querySelector('.placar-quiz').innerHTML =
+    `<span>⭐ ${pontosQuiz} pontos</span><span>🔥 ${seq} seguidos</span><span>🏆 recorde ${quiz.recorde}</span>`;
+}
+function responder(acertou, digitado){
   if(rodada.respondeu) return;
   rodada.respondeu = true;
-  const acertou = x === rodada.certo;
+  const nome = NOMES[rodada.certo - 1];
   const arte = folha.querySelector('.quiz .arte');
   arte.classList.add('mostra');
   const s = arte.querySelector('.sem-foto'); if(s) s.textContent = '#' + tres(rodada.certo);
-  for(const b of folha.querySelectorAll('.opcoes button'))
-    if(b.textContent === NOMES[rodada.certo - 1]) b.classList.add('certa');
+  for(const b of folha.querySelectorAll('.opcoes button')) if(b.textContent === nome) b.classList.add('certa');
+  const campo = folha.querySelector('#palpite'); if(campo) campo.disabled = true;
+  for(const b of folha.querySelectorAll('.digitar button')) b.disabled = true;
   const res = folha.querySelector('.resultado');
   if(acertou){
-    seq++; pontosQuiz += 10 + Math.min(seq - 1, 10) * 2;   // sequência vale mais
-    quiz.acertos++;
-    res.textContent = seq >= 3 ? `🎉 Acertou! ${seq} seguidos!` : '🎉 Acertou!';
+    seq++; pontosQuiz += 100;
+    quiz.acertos = (quiz.acertos || 0) + 1;
+    const quase = digitado && simples(digitado) !== NOMES_SIMPLES[rodada.certo - 1];
+    res.textContent = `🎉 Acertou! +100` + (quase ? ` (é ${nome})` : '');
+    if(MARCOS.includes(seq)) brinde(`🔥 ${seq} seguidos! Que olho!`);
   } else {
-    botao.classList.add('errada');
-    res.textContent = `É o ${NOMES[rodada.certo - 1]}!`;
+    res.textContent = `❌ É o ${nome}!`;
     seq = 0;
   }
-  quiz.recorde = Math.max(quiz.recorde, pontosQuiz);
+  quiz.recorde = Math.max(quiz.recorde || 0, pontosQuiz);
   quiz.melhorSeq = Math.max(quiz.melhorSeq || 0, seq);
   gravar('dittospokedex:quiz', quiz);
-  folha.querySelector('.placar-quiz').innerHTML =
-    `<span>⭐ ${pontosQuiz} pontos</span><span>🔥 ${seq} seguidos</span><span>🏆 recorde ${quiz.recorde}</span>`;
+  desenharPlacarQuiz();
   const prox = folha.querySelector('#proxima');
   prox.hidden = false; prox.focus();
   conferirMedalhas();
@@ -1141,6 +1240,21 @@ const MEDALHAS = [
   { id:'q5',    icone:'🎮', nome:'Olho bom',        como:'5 acertos seguidos no Quem é?', ok:() => (quiz.melhorSeq || 0) >= 5 },
   { id:'q15',   icone:'🧠', nome:'Enciclopédia',    como:'15 acertos seguidos no Quem é?', ok:() => (quiz.melhorSeq || 0) >= 15 },
   { id:'q100',  icone:'🏆', nome:'Cem acertos',     como:'100 acertos no Quem é?',   ok:() => (quiz.acertos || 0) >= 100 },
+  { id:'q20',   icone:'⚡', nome:'Relâmpago',       como:'20 acertos seguidos no Quem é?', ok:() => (quiz.melhorSeq || 0) >= 20 },
+  { id:'q50',   icone:'🔥', nome:'Sequência de 50', como:'50 acertos seguidos no Quem é?', ok:() => (quiz.melhorSeq || 0) >= 50 },
+  { id:'r1000', icone:'🎯', nome:'Mil pontos',      como:'1000 pontos numa partida do Quem é?', ok:() => (quiz.recorde || 0) >= 1000 },
+  { id:'s25',   icone:'💫', nome:'Brilho demais',   como:'25 shinies',               ok:() => contaTag('shiny') >= 25 },
+  { id:'s100',  icone:'🌠', nome:'Chuva de shiny',  como:'100 shinies',              ok:() => contaTag('shiny') >= 100 },
+  { id:'l10',   icone:'🍀', nome:'Lucky Hunter',    como:'10 Lucky',                 ok:() => contaTag('lucky') >= 10 },
+  { id:'h10',   icone:'💯', nome:'Colecionador de Hundo', como:'10 Hundos',          ok:() => contaTag('hundo') >= 10 },
+  { id:'sh10',  icone:'🚀', nome:'Chefe da Rocket', como:'10 Shadow',                ok:() => contaTag('shadow') >= 10 },
+  { id:'xl',    icone:'🌟', nome:'Gigante',         como:'Primeiro XXL',             ok:() => contaTag('xxl') >= 1 },
+  { id:'xs',    icone:'🔹', nome:'Pequenininho',    como:'Primeiro XXS',             ok:() => contaTag('xxs') >= 1 },
+  { id:'fd',    icone:'🌍', nome:'Turista',         como:'Primeiro com fundo',       ok:() => ['fundo', 'fundoevento', 'gofest'].some(t => contaTag(t) >= 1) },
+  { id:'fr1',   icone:'🌴', nome:'Viajou longe',    como:'Primeira forma regional',  ok:() => [...pegueiForma].some(k => /-(alola|galar|hisui|paldea)/.test(k)) },
+  { id:'rot',   icone:'⚡', nome:'Todos os Rotom',  como:'As 6 formas do Rotom',     ok:() => ['normal', 'calor', 'lavagem', 'gelo', 'ventilador', 'corte'].every(f => pegueiForma.has('479-' + f)) },
+  { id:'eev',   icone:'🦊', nome:'Família Eevee',   como:'O Eevee e as 8 evoluções', ok:() => [133, 134, 135, 136, 196, 197, 470, 471, 700].every(id => peguei.has(id)) },
+  { id:'dex',   icone:'📚', nome:'Pokédex 100%',    como:'Todos que já chegaram no GO', ok:() => { for(let id = 1; id <= TOTAL; id++) if(temNoGo(id) && !peguei.has(id)) return false; return true; } },
 ];
 const jaTem = new Set(ler('dittospokedex:medalhas', null) || MEDALHAS.filter(m => m.ok()).map(m => m.id));
 gravar('dittospokedex:medalhas', [...jaTem]);
@@ -1157,7 +1271,7 @@ function conferirMedalhas(){
   for(const m of MEDALHAS) if(jaTem.has(m.id) && !m.ok()) jaTem.delete(m.id);
   gravar('dittospokedex:medalhas', [...jaTem]);
   if(novas.length) brinde(novas.length === 1
-    ? `🏅 Medalha nova: ${novas[0].icone} ${novas[0].nome}!`
+    ? `🏅 Medalha nova: ${novas[0].icone} ${novas[0].nome.replace(/!$/, '')}!`
     : `🏅 ${novas.length} medalhas novas!`);
 }
 function abrirMedalhas(){
@@ -1167,7 +1281,7 @@ function abrirMedalhas(){
   folha.innerHTML = `
     <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
     <h2 id="folha-nome">🏅 Medalhas</h2>
-    <p class="num">${tem} de ${MEDALHAS.length}</p>
+    <p class="num">${tem} / ${MEDALHAS.length} medalhas desbloqueadas</p>
     <div class="medalhas"></div>`;
   folha.querySelector('.fechar').onclick = fechar;
   const caixa = folha.querySelector('.medalhas');
@@ -1191,6 +1305,9 @@ document.getElementById('abrir-medalhas').onclick = abrirMedalhas;
    sobreviver ao zap. Colar o código só MOSTRA e compara: nunca mexe na
    coleção de quem colou. */
 const PREFIXO = 'DITTO1.';
+/* O código tem SÓ a coleção: quem pegou e os especiais. Nome nenhum, nada da
+   pessoa. (Um código curto tipo JOJO-7F92K precisaria de servidor pra guardar
+   a coleção do outro lado, e este site não tem.) */
 function paraBase64(txt){
   return btoa(Array.from(new TextEncoder().encode(txt), c => String.fromCharCode(c)).join(''));
 }
@@ -1200,12 +1317,7 @@ function deBase64(b){
 function fazerCodigo(){
   const bits = new Uint8Array(Math.ceil(TOTAL / 8));
   for(const id of peguei) bits[(id - 1) >> 3] |= 1 << ((id - 1) & 7);
-  const dados = {
-    n: (ler('dittospokedex:nome', '') || '').slice(0, 30),
-    p: btoa(String.fromCharCode(...bits)),
-    e: especiais,
-  };
-  return PREFIXO + paraBase64(JSON.stringify(dados));
+  return PREFIXO + paraBase64(JSON.stringify({ p: btoa(String.fromCharCode(...bits)), e: especiais }));
 }
 function lerCodigo(txt){
   txt = (txt || '').trim().replace(/\s+/g, '');
@@ -1214,39 +1326,42 @@ function lerCodigo(txt){
   let d;
   try{ d = JSON.parse(deBase64(txt.slice(PREFIXO.length))); }
   catch(e){ throw new Error('O código veio cortado ou com alguma letra errada. Peça pra copiar de novo, inteiro.'); }
-  const bits = Uint8Array.from(atob(d.p || ''), c => c.charCodeAt(0));
+  let bits;
+  try{ bits = Uint8Array.from(atob(d.p || ''), c => c.charCodeAt(0)); }
+  catch(e){ throw new Error('O código veio cortado ou com alguma letra errada. Peça pra copiar de novo, inteiro.'); }
   const pegos = new Set();
   for(let id = 1; id <= TOTAL; id++) if(bits[(id - 1) >> 3] & (1 << ((id - 1) & 7))) pegos.add(id);
-  return { nome: String(d.n || 'Seu amigo'), pegos, especiais: d.e && typeof d.e === 'object' ? d.e : {} };
+  const esp = {};
+  if(d.e && typeof d.e === 'object')
+    for(const [k, v] of Object.entries(d.e)) if(Array.isArray(v)) esp[k] = v.filter(t => TAG[t]);
+  return { pegos, especiais: esp };
 }
+function contaTagEm(esp, t){ return Object.values(esp).filter(l => l.includes(t)).length; }
 function abrirAmigo(){
   if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
   aberto = -1;
   folha.innerHTML = `
     <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
     <div class="amigo" style="text-align:left">
-      <h2 id="folha-nome" style="text-align:center">🤝 Mostrar pro amigo</h2>
+      <h2 id="folha-nome" style="text-align:center">🤝 Comparar com amigo</h2>
       <div class="bloco">
         <h3>Meu código</h3>
-        <label class="pequeno" for="meu-nome">Seu nome (aparece pro amigo):</label>
-        <input id="meu-nome" maxlength="30" autocomplete="off" />
-        <textarea id="meu-codigo" readonly style="margin-top:8px"></textarea>
+        <p class="pequeno" style="margin:0 0 6px">Só a sua coleção vai no código. Nome e nada seu vão junto.</p>
+        <textarea id="meu-codigo" readonly></textarea>
         <button type="button" class="grande-botao principal" id="copiar">📋 Copiar meu código</button>
       </div>
       <div class="bloco">
         <h3>Código do amigo</h3>
         <textarea id="codigo-amigo" placeholder="Cole aqui o código que o amigo mandou"></textarea>
-        <button type="button" class="grande-botao" id="comparar">🔍 Ver e comparar</button>
+        <button type="button" class="grande-botao" id="comparar">🔍 Comparar</button>
         <p class="erro" id="erro-amigo" hidden></p>
         <div id="resultado-amigo"></div>
       </div>
       <p class="pequeno">Colar o código do amigo só mostra a coleção dele. A sua não muda.</p>
     </div>`;
   folha.querySelector('.fechar').onclick = fechar;
-  const nome = folha.querySelector('#meu-nome'), meu = folha.querySelector('#meu-codigo');
-  nome.value = ler('dittospokedex:nome', '') || '';
+  const meu = folha.querySelector('#meu-codigo');
   meu.value = fazerCodigo();
-  nome.oninput = () => { gravar('dittospokedex:nome', nome.value.trim()); meu.value = fazerCodigo(); };
   folha.querySelector('#copiar').onclick = async ev => {
     const b = ev.currentTarget;
     try{ await navigator.clipboard.writeText(meu.value); b.textContent = '✅ Copiado! Agora cola no zap'; }
@@ -1258,26 +1373,24 @@ function abrirAmigo(){
     let a;
     try{ a = lerCodigo(folha.querySelector('#codigo-amigo').value); }
     catch(e){ erro.textContent = e.message; erro.hidden = false; return; }
-    const soEle = [...a.pegos].filter(id => !peguei.has(id));
     const soEu = [...peguei].filter(id => !a.pegos.has(id));
-    const juntos = [...a.pegos].filter(id => peguei.has(id)).length;
-    const shEle = Object.values(a.especiais).filter(l => Array.isArray(l) && l.includes('shiny')).length;
-    res.innerHTML = `
-      <div class="comparar">
-        <div><span class="nome-amigo"></span><b>${a.pegos.size}</b>pegos · ✨ ${shEle}</div>
-        <div>Você<b>${peguei.size}</b>pegos · ✨ ${contaTag('shiny')}</div>
-      </div>
-      <p class="pequeno" style="text-align:center"></p>
-      <h4 class="so-ele"></h4><p class="lista-nomes" id="lista-ele"></p>
-      <h4>Só você tem (${soEu.length})</h4><p class="lista-nomes" id="lista-eu"></p>`;
-    res.querySelector('.nome-amigo').textContent = a.nome;
-    res.querySelector('.pequeno').textContent =
-      `${juntos} vocês dois têm. ` + (a.pegos.size === peguei.size ? 'Empate! 🤝'
-        : a.pegos.size > peguei.size ? `${a.nome} está na frente 🏃` : 'Você está na frente 🏃');
-    res.querySelector('.so-ele').textContent = `Só ${a.nome} tem (${soEle.length})`;
+    const soEle = [...a.pegos].filter(id => !peguei.has(id));
+    const dois = [...peguei].filter(id => a.pegos.has(id));
+    const linhas = [['Pokémon', peguei.size, a.pegos.size],
+      ...[['shiny', '✨ Shiny'], ['lucky', '🍀 Lucky'], ['hundo', '💯 Hundo'], ['shadow', '🚀 Shadow']]
+        .map(([t, n]) => [n, contaTag(t), contaTagEm(a.especiais, t)])];
+    res.innerHTML = `<table class="versus"><thead><tr><th></th><th>Você</th><th>Amigo</th></tr></thead><tbody>${
+      linhas.map(([n, eu, ele]) => `<tr><td>${n}</td><td class="${eu > ele ? 'ganha' : ''}">${eu}</td><td class="${ele > eu ? 'ganha' : ''}">${ele}</td></tr>`).join('')
+    }</tbody></table>
+      <p class="pequeno" style="text-align:center">${peguei.size === a.pegos.size ? 'Empate! 🤝'
+        : peguei.size > a.pegos.size ? 'Você está na frente 🏃' : 'O amigo está na frente 🏃'}</p>
+      <h4>🟢 Você tem e ele não (${soEu.length})</h4><p class="lista-nomes" id="lista-eu"></p>
+      <h4>🔵 Ele tem e você não (${soEle.length})</h4><p class="lista-nomes" id="lista-ele"></p>
+      <h4>🟣 Os dois têm (${dois.length})</h4><p class="lista-nomes" id="lista-dois"></p>`;
     const nomes = l => l.length ? l.sort((x, y) => x - y).map(id => NOMES[id - 1]).join(', ') : '—';
-    res.querySelector('#lista-ele').textContent = nomes(soEle);
     res.querySelector('#lista-eu').textContent = nomes(soEu);
+    res.querySelector('#lista-ele').textContent = nomes(soEle);
+    res.querySelector('#lista-dois').textContent = nomes(dois);
   };
   fundo.classList.add('aberto');
   folha.querySelector('.fechar').focus();

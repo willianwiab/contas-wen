@@ -114,3 +114,20 @@ Estes vêm do **masterfile** do Pokémon GO, o arquivo de dados do jogo, pelo pa
 
 **Ovos não entraram**: o que sai de cada ovo não está no arquivo do jogo, muda a cada
 temporada e evento. Uma lista fixa ia ficar errada em poucas semanas.
+
+## Versão 9: coleção de verdade
+
+- **Três estados** em todo lugar: ❌ não chegou no GO, 🟡 chegou mas falta pegar, ✅ você
+  tem. Na página de cada um, o resumo "✨ Shiny · 🍀 Lucky · 💯 Hundo" com ✅ ou ❌.
+- **Quem é?** virou jogo: 😊 Fácil (Kanto), 😎 Médio (todos), 🔥 Difícil (5ª geração pra
+  frente, digitando). Dá pra escolher entre 4 ou digitar o nome, e um errinho de digitação
+  em nome comprido vale. +100 por acerto, aviso nos 5, 10, 20 e 50 seguidos, recorde
+  guardado. "Formas menos conhecidas" não deu: as fotos das formas não têm número fixo no
+  projeto das imagens.
+- **Dois tipos no filtro**: Água + Voador acha o Gyarados. Um terceiro troca o primeiro.
+- **Shiny que tenho / Shiny que faltam** nos filtros.
+- **42 medalhas** ("12 / 42 medalhas desbloqueadas"), com Lucky Hunter, Pokédex 100%,
+  Sequência de 50, Todos os Rotom, Família Eevee…
+- **Amigo sem nome**: o código agora leva só a coleção. A comparação vira tabela (Pokémon,
+  Shiny, Lucky, Hundo, Shadow) e três listas: 🟢 você tem e ele não, 🔵 ele tem e você não,
+  🟣 os dois têm. Um código curto tipo `JOJO-7F92K` precisaria de servidor, e o site não tem.
