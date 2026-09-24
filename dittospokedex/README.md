@@ -44,4 +44,9 @@ o primeiro: estava com ❌ na lista, mas ele tem no GO, só que **não todas as 
 página dele aparecem as 6 (normal, Calor, Lavagem, Gelo, Ventilador e Corte), cada uma
 com o seu ✅. Marcar uma forma também marca o Rotom como pego.
 
-Pra pôr formas em outro Pokémon é só acrescentar ele no `FORMAS`, no `index.html`.
+Também têm formas as **regionais**: 🌴 Alola, ⚔️ Galar, 🏯 Hisui e 🌺 Paldea. Cada
+Pokémon mostra a forma normal e a de cada região (o Meowth tem três: normal, Alola e
+Galar). O filtro **🌍 Com formas** mostra só eles.
+
+Pra pôr formas em outro Pokémon é só acrescentar o número no `REGIOES`, ou um item novo
+no `FORMAS`, no `index.html`.

@@ -185,7 +185,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br>A lista de quem ainda não tem no Pokémon GO foi feita à mão. Chegou um novo? Toque nele e aperte "Já chegou no GO".
     <br>Imagens: projeto PokeAPI.
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 2 — 24/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 3 — 24/09 · 🔄</button>
   </footer>
 </div>
 
@@ -244,6 +244,27 @@ const FORMAS = {
     ],
   },
 };
+/* Formas regionais: a forma normal e a de cada região, cada uma com o seu ✅.
+   O Rotom já tem a lista dele lá em cima, então ele não entra aqui. */
+const REGIOES = [
+  { id:'alola',  emoji:'🌴', nome:'Alola',
+    pokes:[19,20,26,27,28,37,38,50,51,52,53,74,75,76,88,89,103,105] },
+  { id:'galar',  emoji:'⚔️', nome:'Galar',
+    pokes:[52,77,78,79,80,83,110,122,144,145,146,199,222,263,264,554,555,562,618] },
+  { id:'hisui',  emoji:'🏯', nome:'Hisui',
+    pokes:[58,59,100,101,157,211,215,503,549,570,571,628,705,706,713,724] },
+  { id:'paldea', emoji:'🌺', nome:'Paldea',
+    pokes:[128,194] },
+];
+for(const r of REGIOES){
+  for(const id of r.pokes){
+    if(!FORMAS[id]) FORMAS[id] = {
+      aviso:'Ele tem forma regional.',
+      lista:[{ id:'normal', emoji:'⭐', nome:NOMES[id-1] + ' normal', tipo:'a forma de sempre' }],
+    };
+    FORMAS[id].lista.push({ id:r.id, emoji:r.emoji, nome:`${NOMES[id-1]} de ${r.nome}`, tipo:`forma de ${r.nome}` });
+  }
+}
 /* O Pokémon GO ganha Pokémon novo o tempo todo, e a lista escrita à mão
    envelhece. Então quem usa pode corrigir: a correção vale por cima da lista. */
 const correcoesGo = ler('dittospokedex:go', {});
@@ -270,6 +291,7 @@ const FILTROS = [
   { id:'todos',  texto:'Todos',              ok: id => true },
   { id:'tem',    texto:'Tem no GO',          ok: id => temNoGo(id) },
   { id:'nao',    texto:'❌ Não tem no GO',   ok: id => !temNoGo(id) },
+  { id:'formas', texto:'🌍 Com formas',      ok: id => id in FORMAS },
   { id:'peguei', texto:'✅ Peguei',          ok: id => peguei.has(id) },
   { id:'falta',  texto:'Falta pegar',        ok: id => temNoGo(id) && !peguei.has(id) },
 ];
