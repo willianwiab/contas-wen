@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Bolinha">
+  <!-- Uma bolinha de captura, desenhada sem a marca de ninguém: só um
+       círculo de duas metades, que é a forma que todo mundo reconhece.
+       Sem fundo, pra não virar quadrado branco no modo escuro. -->
+  <circle cx="32" cy="32" r="27" fill="#f3f8fd" stroke="#16283a" stroke-width="4"/>
+  <path d="M5 32a27 27 0 0 1 54 0z" fill="#2f74c0" stroke="#16283a" stroke-width="4"/>
+  <line x1="5" y1="32" x2="59" y2="32" stroke="#16283a" stroke-width="4"/>
+  <circle cx="32" cy="32" r="9.5" fill="#fff" stroke="#16283a" stroke-width="4"/>
+  <circle cx="32" cy="32" r="3.6" fill="#dda31f"/>
+</svg>
