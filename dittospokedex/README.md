@@ -149,3 +149,12 @@ Agora o site pergunta pro navegador se ele toca `.ogg` **antes** de tocar. Se n�
 direto no `.mp3` do Pokémon Showdown (`play.pokemonshowdown.com/audio/cries/<nome>.mp3`).
 Se toca, tenta o `.ogg` novo, o `.mp3` e o `.ogg` antigo, nessa ordem. Se o celular
 bloquear o som, a tela diz pra tocar no 🔊.
+
+## Convite pro ButterPoke
+
+Depois de **2 minutos** com o site na tela, aparece "Gostou de ver Pokémon?" com o endereço e
+um botão pro ButterPoke (pra quem gosta de TCG). Não aparece sempre:
+
+- nunca no meio de uma folha aberta (espera fechar o Pokémon ou o jogo);
+- no máximo uma vez a cada **3 dias** ("Agora não" só fecha);
+- **"Não, obrigado"** faz nunca mais aparecer, e ir pro ButterPoke também.
