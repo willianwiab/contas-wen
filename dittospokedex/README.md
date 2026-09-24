@@ -96,3 +96,21 @@ transforma!** também toca o som do Pokémon em que ele virou.
 - **🤝 Amigo**: o código `DITTO1.` guarda nome, quem pegou (um mapa de bits) e os especiais.
   Colar o código do amigo só mostra e compara; nunca mexe na sua coleção.
 - **✨ Modo shiny**: o botão lá em cima troca todas as fotos pela shiny.
+
+## Doces, parceiro e tipos das formas (do próprio Pokémon GO)
+
+Estes vêm do **masterfile** do Pokémon GO, o arquivo de dados do jogo, pelo pacote
+`pogo-masterfile-types` (atualizado junto com o jogo). Foram copiados pra dentro do
+`index.html`:
+
+- **Evoluções**: embaixo de cada Pokémon da família aparece o que precisa no GO pra chegar
+  nele: 🍬 doces, 🪨 item (Pedra Sinnoh, Pedra do Rei…), 🧲 isca, 🚶 km de parceiro,
+  ☀️ dia / 🌙 noite, ♀/♂, 🙃 celular de cabeça pra baixo (Inkay), 📜 missão, 🔄 de graça
+  se trocar. Quando o GO não tem aquela evolução, diz isso.
+- **Parceiro**: quantos km andando junto pra ganhar 1 doce.
+- **Tipos das formas**: cada forma mostra o tipo dela no GO, e avisa quando é diferente do
+  normal (o Vulpix de Alola é Gelo). O Tauros de Paldea virou três: Combate, Chamas e
+  Aquático.
+
+**Ovos não entraram**: o que sai de cada ovo não está no arquivo do jogo, muda a cada
+temporada e evento. Uma lista fixa ia ficar errada em poucas semanas.
