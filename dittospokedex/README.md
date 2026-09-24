@@ -72,3 +72,10 @@ o jogo garante IV mínimo: troca lucky (12/12/12) é 1 em 64, raid/ovo/pesquisa 
 O **🏆 Top mais raros** tem duas abas: **Os meus** (os 20 que mais valem do que você marcou)
 e **No jogo** (as combinações famosas, medidas com a mesma régua). As chances de IV são
 conta de verdade; as de shiny e os pontos das outras coisas são chute, e o site diz isso.
+
+## 🔊 O som de cada Pokémon
+
+Na página de cada Pokémon tem **🔊 Ouvir o som**: toca o grito dele, que vem do projeto
+PokeAPI (o mesmo das fotos). Se o som novo falhar, tenta o antigo; se os dois falharem,
+a tela avisa. Os arquivos são `.ogg`, que iPhone antigo pode não tocar. O **Ditto, se
+transforma!** também toca o som do Pokémon em que ele virou.
