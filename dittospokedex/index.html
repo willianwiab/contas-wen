@@ -308,7 +308,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 10 — 24/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 11 — 24/09 · 🔄</button>
   </footer>
 </div>
 
@@ -361,6 +361,9 @@ const ARTE_SHINY   = id => `https://raw.githubusercontent.com/PokeAPI/sprites/ma
    primeiros têm. Se o novo falhar, tenta o antigo. */
 const SOM        = id => `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
 const SOM_ANTIGO = id => `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/${id}.ogg`;
+/* Os mesmos gritos em .mp3, do Pokémon Showdown. iPhone não toca .ogg, e o
+   nome no Showdown é o nome sem espaço nem pontuação ("mrmime", "nidoranf"). */
+const SOM_MP3    = id => `https://play.pokemonshowdown.com/audio/cries/${NOMES_SIMPLES[id - 1]}.mp3`;
 const ARTE   = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 const tres = id => String(id).padStart(3, '0');
 
@@ -869,23 +872,40 @@ function pararSom(){
   tocador.onended = tocador.onerror = null;
   marcarTocando(false);
 }
-function tocarSom(id, antigo){
+/* Quais arquivos tentar, em ordem. Tem que decidir ANTES de tocar: o iPhone
+   só deixa tocar som no toque da pessoa, então uma segunda tentativa depois
+   de um erro já não pode tocar. Por isso quem não toca .ogg vai direto no mp3. */
+const tocaOgg = !!tocador.canPlayType && tocador.canPlayType('audio/ogg; codecs="vorbis"') !== '';
+function fontesDoSom(id){
+  return tocaOgg ? [SOM(id), SOM_MP3(id), SOM_ANTIGO(id)] : [SOM_MP3(id)];
+}
+let tentativa = 0;
+function tocarSom(id, qual = 0){
   pararSom();
   somDe = id;
   avisoSom('');
-  tocador.src = antigo ? SOM_ANTIGO(id) : SOM(id);
+  const fontes = fontesDoSom(id);
+  const minha = ++tentativa;   // se outra tentativa começou, esta não mexe em nada
+  tocador.src = fontes[qual];
   tocador.onended = () => marcarTocando(false);
-  const falhou = () => {
-    if(!antigo) return tocarSom(id, true);
+  const falhou = bloqueado => {
+    if(minha !== tentativa) return;
+    tentativa++;
+    if(!bloqueado && qual + 1 < fontes.length) return tocarSom(id, qual + 1);
     marcarTocando(false);
-    avisoSom(navigator.onLine === false
-      ? 'Sem internet, sem som. 📵'
-      : 'Não deu pra tocar o som deste. Se for iPhone, pode ser que ele não toque esse tipo de arquivo.');
+    avisoSom(bloqueado
+      ? 'O celular não deixou tocar sozinho. Toque no 🔊 que ele toca.'
+      : navigator.onLine === false
+        ? 'Sem internet, sem som. 📵'
+        : 'Não deu pra tocar o som deste. Confira se o volume está ligado.');
   };
-  tocador.onerror = falhou;
+  tocador.onerror = () => falhou(false);
   marcarTocando(true);
   const p = tocador.play();
-  if(p && p.catch) p.catch(e => { if(e && e.name !== 'AbortError') falhou(); });
+  if(p && p.catch) p.catch(e => {
+    if(!e || e.name === 'AbortError') return;
+    falhou(e.name === 'NotAllowedError');
+  });
 }
 
 /* ---------- evoluções ----------
