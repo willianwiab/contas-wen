@@ -120,6 +120,10 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .folha .arte img.fora{filter:grayscale(1);opacity:.6}
 .folha .arte .sem-foto{width:140px;height:140px;font-size:1.6rem}
 .folha h2{font-family:'Baloo 2',cursive;font-size:1.8rem;line-height:1.1}
+.som{margin-top:8px;font:inherit;font-weight:700;font-size:.95rem;border-radius:99px;padding:9px 18px;cursor:pointer;
+  border:2px solid var(--marca);background:var(--cartao2);color:var(--marca-escura)}
+.som.tocando{background:var(--marca);color:#fff}
+.som-aviso{font-size:.8rem;color:var(--errado);margin-top:6px}
 .folha .num{color:var(--tinta-fraca);font-weight:600}
 .status{margin:12px 0;padding:10px 12px;border-radius:14px;font-weight:600}
 .status.tem{background:var(--certo-fundo);color:var(--certo)}
@@ -215,7 +219,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 5 — 24/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 6 — 24/09 · 🔄</button>
   </footer>
 </div>
 
@@ -250,6 +254,11 @@ const GERACOES = [
 const SPRITE = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
 const SPRITE_SHINY = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${id}.png`;
 const ARTE_SHINY   = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${id}.png`;
+/* Os sons (o "grito" de cada Pokémon) vêm do mesmo projeto das fotos.
+   "latest" é o som dos jogos novos; "legacy", o antigo, que só os
+   primeiros têm. Se o novo falhar, tenta o antigo. */
+const SOM        = id => `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+const SOM_ANTIGO = id => `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/${id}.ogg`;
 const ARTE   = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 const tres = id => String(id).padStart(3, '0');
 
@@ -502,6 +511,7 @@ const folha = document.getElementById('folha');
 let aberto = 0, ultimoFoco = null;
 function abrir(id){
   if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  if(id !== somDe) pararSom();
   aberto = id;
   const noGo = temNoGo(id), pegou = peguei.has(id);
   const g = GERACOES.find(x => id >= x.de && id <= x.ate);
@@ -511,6 +521,8 @@ function abrir(id){
     <div class="arte"></div>
     <p class="num">#${tres(id)} · ${g.n}ª geração (${g.onde})</p>
     <h2 id="folha-nome"></h2>
+    <button type="button" class="som" id="tocar">🔊 Ouvir o som</button>
+    <p class="som-aviso" id="som-aviso" hidden></p>
     <p class="status ${noGo ? 'tem' : 'nao'}">${noGo
       ? '✔ Tem no Pokémon GO'
       : '❌ Ainda não tem no Pokémon GO'}</p>
@@ -525,6 +537,8 @@ function abrir(id){
       <button type="button" class="grande-botao" id="prox">${id < TOTAL ? '#' + tres(id + 1) : ''} ▶</button>
     </div>`;
   folha.querySelector('#folha-nome').textContent = NOMES[id-1];
+  folha.querySelector('#tocar').onclick = () => tocarSom(id);
+  if(somDe === id && !tocador.paused) marcarTocando(true);   // redesenhou no meio do som
   const img = foto(id, true);
   if(!noGo) img.classList.add('fora');
   folha.querySelector('.arte').appendChild(img);
@@ -628,7 +642,51 @@ function abrir(id){
   fundo.classList.add('aberto');
   folha.querySelector('.fechar').focus();
 }
+/* ---------- o som ----------
+   Um tocador só: apertar de novo, ou abrir outro Pokémon, para o anterior.
+   Os sons são .ogg, que iPhone antigo não toca; aí a tela avisa em vez de
+   ficar muda sem explicação. */
+const tocador = new Audio();
+tocador.preload = 'none';
+let somDe = 0;
+function botaoSom(){ return folha.querySelector('#tocar'); }
+function avisoSom(texto){
+  const a = folha.querySelector('#som-aviso');
+  if(!a) return;
+  a.hidden = !texto; a.textContent = texto || '';
+}
+function marcarTocando(sim){
+  const b = botaoSom();
+  if(!b || aberto !== somDe) return;
+  b.classList.toggle('tocando', sim);
+  b.textContent = sim ? '🔊 Tocando…' : '🔊 Ouvir o som';
+}
+function pararSom(){
+  tocador.pause();
+  tocador.onended = tocador.onerror = null;
+  marcarTocando(false);
+}
+function tocarSom(id, antigo){
+  pararSom();
+  somDe = id;
+  avisoSom('');
+  tocador.src = antigo ? SOM_ANTIGO(id) : SOM(id);
+  tocador.onended = () => marcarTocando(false);
+  const falhou = () => {
+    if(!antigo) return tocarSom(id, true);
+    marcarTocando(false);
+    avisoSom(navigator.onLine === false
+      ? 'Sem internet, sem som. 📵'
+      : 'Não deu pra tocar o som deste. Se for iPhone, pode ser que ele não toque esse tipo de arquivo.');
+  };
+  tocador.onerror = falhou;
+  marcarTocando(true);
+  const p = tocador.play();
+  if(p && p.catch) p.catch(e => { if(e && e.name !== 'AbortError') falhou(); });
+}
+
 function fechar(){
+  pararSom();
   fundo.classList.remove('aberto');
   aberto = 0;
   if(ultimoFoco && ultimoFoco.focus) ultimoFoco.focus();
@@ -647,7 +705,9 @@ document.addEventListener('keydown', ev => {
    entre os que estão na tela, que é o que ela está olhando. */
 document.getElementById('transforma').onclick = () => {
   const lista = visiveis.length ? visiveis : Array.from({ length:TOTAL }, (_, i) => i + 1);
-  abrir(lista[Math.floor(Math.random() * lista.length)]);
+  const id = lista[Math.floor(Math.random() * lista.length)];
+  abrir(id);
+  tocarSom(id);   // o Ditto virou ele, então grita que nem ele
 };
 
 /* ---------- 🏆 Top mais raros ----------
