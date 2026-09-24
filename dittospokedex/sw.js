@@ -3,7 +3,7 @@
    sem internet aparece o número no lugar da foto. */
 /* O número sobe sempre que eu quero que todo mundo largue o que estava
    guardado. Quem estava com versão velha pega a nova na primeira visita. */
-const CACHE = 'dittospokedex-v12';
+const CACHE = 'dittospokedex-v13';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg', './icone-limpo.svg'];
 
 self.addEventListener('install', ev => {
