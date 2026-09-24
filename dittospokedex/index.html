@@ -184,8 +184,10 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     Ditto's Pokédex · site de fã, sem ligação com a Nintendo, a Niantic ou The Pokémon Company
     <br>A lista de quem ainda não tem no Pokémon GO foi feita à mão. Chegou um novo? Toque nele e aperte "Já chegou no GO".
     <br>Imagens: projeto PokeAPI.
+    <br><button class="versao" type="button" id="recomecar"
+       title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 3 — 24/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 4 — 24/09 · 🔄</button>
   </footer>
 </div>
 
@@ -540,6 +542,18 @@ btTema.onclick = () => {
 
 /* ---------- "não atualizou o site" ----------
    Mesma saída de emergência do ButterPoke e do RaroDex. */
+/* ---------- recomeçar do zero ----------
+   Apaga tudo que a pessoa marcou: os ✅, as formas e as correções de
+   "chegou no GO". Pergunta antes, porque não tem volta. */
+document.getElementById('recomecar').onclick = () => {
+  if(!confirm('Apagar TODOS os ✅, as formas marcadas e as correções de "chegou no GO"?\n\nNão dá pra desfazer.')) return;
+  peguei.clear();
+  pegueiForma.clear();
+  for(const k of Object.keys(correcoesGo)) delete correcoesGo[k];
+  salvar(); fechar(); desenhar();
+  window.scrollTo({ top:0, behavior:'smooth' });
+};
+
 const btRecarregar = document.getElementById('recarregar');
 btRecarregar.onclick = async () => {
   btRecarregar.textContent = 'buscando a mais nova…';

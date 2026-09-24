@@ -50,3 +50,8 @@ Galar). O filtro **🌍 Com formas** mostra só eles.
 
 Pra pôr formas em outro Pokémon é só acrescentar o número no `REGIOES`, ou um item novo
 no `FORMAS`, no `index.html`.
+
+## Recomeçar do zero
+
+No rodapé tem o botão **🗑️ Recomeçar do zero**: apaga todos os ✅, as formas marcadas e
+as correções de "chegou no GO". Ele pergunta antes, porque não tem volta.
