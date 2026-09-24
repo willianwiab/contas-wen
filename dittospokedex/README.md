@@ -79,3 +79,20 @@ Na página de cada Pokémon tem **🔊 Ouvir o som**: toca o grito dele, que vem
 PokeAPI (o mesmo das fotos). Se o som novo falhar, tenta o antigo; se os dois falharem,
 a tela avisa. Os arquivos são `.ogg`, que iPhone antigo pode não tocar. O **Ditto, se
 transforma!** também toca o som do Pokémon em que ele virou.
+
+## Tipos, evoluções, Quem é?, medalhas, amigo e modo shiny
+
+- **Tipos e fraquezas**: cada Pokémon mostra o tipo, de quem ele leva muito dano, o que ele
+  aguenta e contra quem os golpes do tipo dele são fortes. Tem filtro por tipo. Os tipos, as
+  evoluções e a tabela vêm do banco do Pokémon Showdown (`@pkmn/dex`), copiados pra dentro
+  do `index.html`, então funciona sem internet. A conta é a dos jogos principais; no GO os
+  números mudam (o dobro vira 1,6x, "não sente nada" vira "resiste muito"), mas quem é forte
+  e quem é fraco é igual. São os tipos da forma normal: forma regional pode ter outro.
+- **Evoluções**: a família inteira, com os ramos (Eevee mostra os 8). Toque pra ir.
+- **🎮 Quem é?**: sombra preta, o som e quatro nomes. Sequência vale mais pontos, e o
+  recorde fica guardado. Sorteia entre os que estão na tela, então dá pra jogar só Kanto.
+- **🏅 Medalhas**: 27, de "Primeiro!" até "Tudo de Paldea". Quando ganha uma, aparece um
+  aviso. O "recomeçar" tira as medalhas junto.
+- **🤝 Amigo**: o código `DITTO1.` guarda nome, quem pegou (um mapa de bits) e os especiais.
+  Colar o código do amigo só mostra e compara; nunca mexe na sua coleção.
+- **✨ Modo shiny**: o botão lá em cima troca todas as fotos pela shiny.
