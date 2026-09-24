@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ditto's Pokédex — quem tem no Pokémon GO</title>
+<meta name="description" content="Os 1025 Pokémon: quais já chegaram no Pokémon GO, quais ainda não, e quais você já pegou." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#9b6cc4" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Ditto's Pokédex" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* O roxo-gosma do Ditto. Tudo que pinta alguma coisa mora aqui, pra o
+     modo escuro ser só trocar esta lista. */
+  --marca:#9b6cc4; --marca-escura:#7a4ea3; --marca-clara:#d9bff0;
+  --certo:#1f9d55; --certo-fundo:#e3f6ea; --errado:#d64545; --errado-fundo:#fde8e8;
+  --creme:#f6eefc; --creme2:#efe2fa; --creme3:#f1e6fb;
+  --tinta:#2a1838; --tinta-fraca:#6e5a80;
+  --cartao:#ffffff; --cartao2:#fbf7fe; --campo:#fdfaff;
+  --borda:#e4d4f2; --sombra:rgba(80,40,120,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#c099e6; --marca-escura:#a878d6; --marca-clara:#4a3363;
+    --certo:#3ecb84; --certo-fundo:#16321f; --errado:#ff6b6b; --errado-fundo:#3a1b1f;
+    --creme:#15101c; --creme2:#1d1628; --creme3:#1a1323;
+    --tinta:#f1e8fa; --tinta-fraca:#ab9bbd;
+    --cartao:#231b2f; --cartao2:#2a2138; --campo:#1f182a;
+    --borda:#3d3050; --sombra:rgba(0,0,0,.35);
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#c099e6; --marca-escura:#a878d6; --marca-clara:#4a3363;
+  --certo:#3ecb84; --certo-fundo:#16321f; --errado:#ff6b6b; --errado-fundo:#3a1b1f;
+  --creme:#15101c; --creme2:#1d1628; --creme3:#1a1323;
+  --tinta:#f1e8fa; --tinta-fraca:#ab9bbd;
+  --cartao:#231b2f; --cartao2:#2a2138; --campo:#1f182a;
+  --borda:#3d3050; --sombra:rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Rubik',system-ui,sans-serif; color:var(--tinta);
+  background-color:var(--creme);
+  background-image:radial-gradient(circle at 8% 5%, var(--creme2) 0 22%, transparent 22.5%),
+                   radial-gradient(circle at 92% 78%, var(--creme3) 0 20%, transparent 20.5%);
+  background-attachment:fixed; min-height:100vh;
+}
+.casca{max-width:1100px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.9rem;line-height:1;
+  display:flex;align-items:center;gap:8px;color:var(--marca-escura)}
+.logo span{color:var(--tinta)}
+.logo img{width:46px;height:46px;animation:gosma 3s ease-in-out infinite}
+@keyframes gosma{0%,100%{transform:scale(1,1)}50%{transform:scale(1.08,.92) translateY(2px)}}
+@media (prefers-reduced-motion: reduce){.logo img{animation:none}}
+.sub{color:var(--tinta-fraca);margin:6px 0 16px;font-size:.95rem}
+.botao-redondo{border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);
+  width:44px;height:44px;border-radius:50%;font-size:1.2rem;cursor:pointer;flex:none}
+
+.placar{background:var(--cartao);border:2px solid var(--borda);border-radius:20px;padding:14px 16px;
+  box-shadow:0 4px 18px var(--sombra);display:grid;gap:10px}
+.placar-linha{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.placar .grande{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:var(--marca-escura)}
+.barra{height:16px;border-radius:99px;background:var(--creme2);overflow:hidden}
+.barra i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--marca),var(--marca-escura));transition:width .4s ease}
+.numeros{display:flex;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--tinta-fraca)}
+.numeros b{color:var(--tinta)}
+
+.transforma{margin-top:12px;width:100%;border:0;border-radius:16px;padding:13px;cursor:pointer;
+  font:inherit;font-weight:700;font-size:1rem;color:#fff;background:var(--marca-escura);
+  box-shadow:0 4px 0 var(--tinta-fraca)}
+.transforma:active{transform:translateY(3px);box-shadow:0 1px 0 var(--tinta-fraca)}
+
+.busca{margin-top:14px;width:100%;font:inherit;font-size:1rem;padding:12px 16px;border-radius:14px;
+  border:2px solid var(--borda);background:var(--campo);color:var(--tinta);outline:none}
+.busca:focus{border-color:var(--marca)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font:inherit;font-size:.85rem;font-weight:600;padding:7px 12px;border-radius:99px;cursor:pointer;
+  border:2px solid var(--borda);background:var(--cartao);color:var(--tinta)}
+.chip[aria-pressed="true"]{background:var(--marca);border-color:var(--marca);color:#fff}
+.contagem{margin:10px 2px;color:var(--tinta-fraca);font-size:.88rem}
+
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.poke{position:relative;border:2px solid var(--borda);background:var(--cartao);border-radius:16px;
+  padding:6px 4px 8px;text-align:center;cursor:pointer;font:inherit;color:var(--tinta);
+  display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.poke:hover{border-color:var(--marca)}
+.poke .foto{width:72px;height:72px;display:grid;place-items:center}
+.poke img{width:72px;height:72px;image-rendering:pixelated}
+.poke .num{font-size:.72rem;color:var(--tinta-fraca);font-weight:600}
+.poke .nome{font-size:.82rem;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.poke.fora{background:var(--errado-fundo);border-color:transparent}
+.poke.fora img{filter:grayscale(1);opacity:.55}
+.poke.peguei{background:var(--certo-fundo);border-color:var(--certo)}
+.selo{position:absolute;top:4px;right:6px;font-size:.9rem}
+.sem-foto{width:56px;height:56px;border-radius:50%;background:var(--creme2);display:grid;place-items:center;
+  font-weight:700;color:var(--tinta-fraca);font-size:.85rem}
+.nada{text-align:center;padding:30px 10px;color:var(--tinta-fraca)}
+
+/* folha de detalhe */
+.fundo{position:fixed;inset:0;background:rgba(20,10,30,.55);z-index:40;display:none;
+  align-items:flex-end;justify-content:center}
+.fundo.aberto{display:flex}
+.folha{background:var(--cartao);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:18px 18px 24px;
+  max-height:92vh;overflow:auto;text-align:center;position:relative}
+@media (min-width:600px){.fundo{align-items:center}.folha{border-radius:24px}}
+.folha .fechar{position:absolute;top:12px;right:12px}
+.folha .arte{width:200px;height:200px;margin:4px auto 0;display:grid;place-items:center}
+.folha .arte img{width:200px;height:200px;object-fit:contain}
+.folha .arte img.fora{filter:grayscale(1);opacity:.6}
+.folha .arte .sem-foto{width:140px;height:140px;font-size:1.6rem}
+.folha h2{font-family:'Baloo 2',cursive;font-size:1.8rem;line-height:1.1}
+.folha .num{color:var(--tinta-fraca);font-weight:600}
+.status{margin:12px 0;padding:10px 12px;border-radius:14px;font-weight:600}
+.status.tem{background:var(--certo-fundo);color:var(--certo)}
+.status.nao{background:var(--errado-fundo);color:var(--errado)}
+.acoes{display:grid;gap:8px}
+.grande-botao{font:inherit;font-weight:700;font-size:1rem;border-radius:14px;padding:13px;cursor:pointer;
+  border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.grande-botao.principal{background:var(--certo);border-color:var(--certo);color:#fff}
+.grande-botao.principal.feito{background:var(--cartao2);color:var(--certo)}
+.pequeno{font-size:.8rem;color:var(--tinta-fraca);margin-top:10px;line-height:1.5}
+.setas{display:flex;justify-content:space-between;margin-top:12px;gap:8px}
+.setas button{flex:1}
+
+footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82rem;line-height:1.6}
+.versao{display:inline-block;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;
+  padding:6px 14px;font:inherit;font-size:.78rem;font-weight:600;margin-top:4px;color:var(--tinta);cursor:pointer}
+.versao:hover{border-color:var(--marca)}
+.faixa-nova{position:fixed;left:10px;right:10px;bottom:10px;z-index:50;display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;background:var(--marca-escura);color:#fff;border-radius:16px;padding:12px 15px;
+  box-shadow:0 6px 24px rgba(40,20,70,.35);font-weight:600;font-size:.95rem}
+.faixa-nova button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 16px;
+  background:#fff;color:var(--marca-escura);cursor:pointer;margin-left:auto}
+</style>
+</head>
+<body>
+<div class="casca">
+  <header>
+    <h1 class="logo"><img src="icone-limpo.svg" alt="" />Ditto's<span>Pokédex</span></h1>
+    <button class="botao-redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
+  </header>
+  <p class="sub">Todos os 1025 Pokémon: quem já chegou no <b>Pokémon GO</b>, quem ainda não chegou ❌, e quem você já pegou ✅.</p>
+
+  <section class="placar" aria-live="polite">
+    <div class="placar-linha">
+      <span>Você já pegou</span>
+      <span class="grande" id="placar-grande">0 de 0</span>
+    </div>
+    <div class="barra"><i id="placar-barra"></i></div>
+    <div class="numeros" id="placar-numeros"></div>
+  </section>
+
+  <button class="transforma" id="transforma" type="button">🟣 Ditto, se transforma!</button>
+
+  <input class="busca" id="busca" type="search" placeholder="Procurar por nome ou número… (ex.: pikachu, 132)"
+         autocomplete="off" enterkeyhint="search" />
+  <div class="chips" id="filtros" role="group" aria-label="Mostrar"></div>
+  <div class="chips" id="geracoes" role="group" aria-label="Geração"></div>
+  <p class="contagem" id="contagem"></p>
+  <div class="grade" id="grade"></div>
+
+  <footer>
+    Ditto's Pokédex · site de fã, sem ligação com a Nintendo, a Niantic ou The Pokémon Company
+    <br>A lista de quem ainda não tem no Pokémon GO foi feita à mão. Chegou um novo? Toque nele e aperte "Já chegou no GO".
+    <br>Imagens: projeto PokeAPI.
+    <br><button class="versao" type="button" id="recarregar"
+       title="Buscar a versão mais nova do site">versão 1 — 24/09 · 🔄</button>
+  </footer>
+</div>
+
+<div class="fundo" id="fundo">
+  <div class="folha" role="dialog" aria-modal="true" aria-labelledby="folha-nome" id="folha"></div>
+</div>
+
+<script>
+'use strict';
+/* =========================================================================
+   Ditto's Pokédex — a lista dos 1025 e quem ainda não chegou no Pokémon GO.
+   Os nomes e os ❌ vieram escritos à mão. Nada aqui busca dado de fora além
+   das imagens: o site funciona inteiro sem a PokeAPI responder.
+   ========================================================================= */
+
+/* A lista escrita à mão: posição 0 é o #001. */
+const NOMES = 'Bulbasaur|Ivysaur|Venusaur|Charmander|Charmeleon|Charizard|Squirtle|Wartortle|Blastoise|Caterpie|Metapod|Butterfree|Weedle|Kakuna|Beedrill|Pidgey|Pidgeotto|Pidgeot|Rattata|Raticate|Spearow|Fearow|Ekans|Arbok|Pikachu|Raichu|Sandshrew|Sandslash|Nidoran♀|Nidorina|Nidoqueen|Nidoran♂|Nidorino|Nidoking|Clefairy|Clefable|Vulpix|Ninetales|Jigglypuff|Wigglytuff|Zubat|Golbat|Oddish|Gloom|Vileplume|Paras|Parasect|Venonat|Venomoth|Diglett|Dugtrio|Meowth|Persian|Psyduck|Golduck|Mankey|Primeape|Growlithe|Arcanine|Poliwag|Poliwhirl|Poliwrath|Abra|Kadabra|Alakazam|Machop|Machoke|Machamp|Bellsprout|Weepinbell|Victreebel|Tentacool|Tentacruel|Geodude|Graveler|Golem|Ponyta|Rapidash|Slowpoke|Slowbro|Magnemite|Magneton|Farfetch\'d|Doduo|Dodrio|Seel|Dewgong|Grimer|Muk|Shellder|Cloyster|Gastly|Haunter|Gengar|Onix|Drowzee|Hypno|Krabby|Kingler|Voltorb|Electrode|Exeggcute|Exeggutor|Cubone|Marowak|Hitmonlee|Hitmonchan|Lickitung|Koffing|Weezing|Rhyhorn|Rhydon|Chansey|Tangela|Kangaskhan|Horsea|Seadra|Goldeen|Seaking|Staryu|Starmie|Mr. Mime|Scyther|Jynx|Electabuzz|Magmar|Pinsir|Tauros|Magikarp|Gyarados|Lapras|Ditto|Eevee|Vaporeon|Jolteon|Flareon|Porygon|Omanyte|Omastar|Kabuto|Kabutops|Aerodactyl|Snorlax|Articuno|Zapdos|Moltres|Dratini|Dragonair|Dragonite|Mewtwo|Mew|Chikorita|Bayleef|Meganium|Cyndaquil|Quilava|Typhlosion|Totodile|Croconaw|Feraligatr|Sentret|Furret|Hoothoot|Noctowl|Ledyba|Ledian|Spinarak|Ariados|Crobat|Chinchou|Lanturn|Pichu|Cleffa|Igglybuff|Togepi|Togetic|Natu|Xatu|Mareep|Flaaffy|Ampharos|Bellossom|Marill|Azumarill|Sudowoodo|Politoed|Hoppip|Skiploom|Jumpluff|Aipom|Sunkern|Sunflora|Yanma|Wooper|Quagsire|Espeon|Umbreon|Murkrow|Slowking|Misdreavus|Unown|Wobbuffet|Girafarig|Pineco|Forretress|Dunsparce|Gligar|Steelix|Snubbull|Granbull|Qwilfish|Scizor|Shuckle|Heracross|Sneasel|Teddiursa|Ursaring|Slugma|Magcargo|Swinub|Piloswine|Corsola|Remoraid|Octillery|Delibird|Mantine|Skarmory|Houndour|Houndoom|Kingdra|Phanpy|Donphan|Porygon2|Stantler|Smeargle|Tyrogue|Hitmontop|Smoochum|Elekid|Magby|Miltank|Blissey|Raikou|Entei|Suicune|Larvitar|Pupitar|Tyranitar|Lugia|Ho-Oh|Celebi|Treecko|Grovyle|Sceptile|Torchic|Combusken|Blaziken|Mudkip|Marshtomp|Swampert|Poochyena|Mightyena|Zigzagoon|Linoone|Wurmple|Silcoon|Beautifly|Cascoon|Dustox|Lotad|Lombre|Ludicolo|Seedot|Nuzleaf|Shiftry|Taillow|Swellow|Wingull|Pelipper|Ralts|Kirlia|Gardevoir|Surskit|Masquerain|Shroomish|Breloom|Slakoth|Vigoroth|Slaking|Nincada|Ninjask|Shedinja|Whismur|Loudred|Exploud|Makuhita|Hariyama|Azurill|Nosepass|Skitty|Delcatty|Sableye|Mawile|Aron|Lairon|Aggron|Meditite|Medicham|Electrike|Manectric|Plusle|Minun|Volbeat|Illumise|Roselia|Gulpin|Swalot|Carvanha|Sharpedo|Wailmer|Wailord|Numel|Camerupt|Torkoal|Spoink|Grumpig|Spinda|Trapinch|Vibrava|Flygon|Cacnea|Cacturne|Swablu|Altaria|Zangoose|Seviper|Lunatone|Solrock|Barboach|Whiscash|Corphish|Crawdaunt|Baltoy|Claydol|Lileep|Cradily|Anorith|Armaldo|Feebas|Milotic|Castform|Kecleon|Shuppet|Banette|Duskull|Dusclops|Tropius|Chimecho|Absol|Wynaut|Snorunt|Glalie|Spheal|Sealeo|Walrein|Clamperl|Huntail|Gorebyss|Relicanth|Luvdisc|Bagon|Shelgon|Salamence|Beldum|Metang|Metagross|Regirock|Regice|Registeel|Latias|Latios|Kyogre|Groudon|Rayquaza|Jirachi|Deoxys|Turtwig|Grotle|Torterra|Chimchar|Monferno|Infernape|Piplup|Prinplup|Empoleon|Starly|Staravia|Staraptor|Bidoof|Bibarel|Kricketot|Kricketune|Shinx|Luxio|Luxray|Budew|Roserade|Cranidos|Rampardos|Shieldon|Bastiodon|Burmy|Wormadam|Mothim|Combee|Vespiquen|Pachirisu|Buizel|Floatzel|Cherubi|Cherrim|Shellos|Gastrodon|Ambipom|Drifloon|Drifblim|Buneary|Lopunny|Mismagius|Honchkrow|Glameow|Purugly|Chingling|Stunky|Skuntank|Bronzor|Bronzong|Bonsly|Mime Jr.|Happiny|Chatot|Spiritomb|Gible|Gabite|Garchomp|Munchlax|Riolu|Lucario|Hippopotas|Hippowdon|Skorupi|Drapion|Croagunk|Toxicroak|Carnivine|Finneon|Lumineon|Mantyke|Snover|Abomasnow|Weavile|Magnezone|Lickilicky|Rhyperior|Tangrowth|Electivire|Magmortar|Togekiss|Yanmega|Leafeon|Glaceon|Gliscor|Mamoswine|Porygon-Z|Gallade|Probopass|Dusknoir|Froslass|Rotom|Uxie|Mesprit|Azelf|Dialga|Palkia|Heatran|Regigigas|Giratina|Cresselia|Phione|Manaphy|Darkrai|Shaymin|Arceus|Victini|Snivy|Servine|Serperior|Tepig|Pignite|Emboar|Oshawott|Dewott|Samurott|Patrat|Watchog|Lillipup|Herdier|Stoutland|Purrloin|Liepard|Pansage|Simisage|Pansear|Simisear|Panpour|Simipour|Munna|Musharna|Pidove|Tranquill|Unfezant|Blitzle|Zebstrika|Roggenrola|Boldore|Gigalith|Woobat|Swoobat|Drilbur|Excadrill|Audino|Timburr|Gurdurr|Conkeldurr|Tympole|Palpitoad|Seismitoad|Throh|Sawk|Sewaddle|Swadloon|Leavanny|Venipede|Whirlipede|Scolipede|Cottonee|Whimsicott|Petilil|Lilligant|Basculin|Sandile|Krokorok|Krookodile|Darumaka|Darmanitan|Maractus|Dwebble|Crustle|Scraggy|Scrafty|Sigilyph|Yamask|Cofagrigus|Tirtouga|Carracosta|Archen|Archeops|Trubbish|Garbodor|Zorua|Zoroark|Minccino|Cinccino|Gothita|Gothorita|Gothitelle|Solosis|Duosion|Reuniclus|Ducklett|Swanna|Vanillite|Vanillish|Vanilluxe|Deerling|Sawsbuck|Emolga|Karrablast|Escavalier|Foongus|Amoonguss|Frillish|Jellicent|Alomomola|Joltik|Galvantula|Ferroseed|Ferrothorn|Klink|Klang|Klinklang|Tynamo|Eelektrik|Eelektross|Elgyem|Beheeyem|Litwick|Lampent|Chandelure|Axew|Fraxure|Haxorus|Cubchoo|Beartic|Cryogonal|Shelmet|Accelgor|Stunfisk|Mienfoo|Mienshao|Druddigon|Golett|Golurk|Pawniard|Bisharp|Bouffalant|Rufflet|Braviary|Vullaby|Mandibuzz|Heatmor|Durant|Deino|Zweilous|Hydreigon|Larvesta|Volcarona|Cobalion|Terrakion|Virizion|Tornadus|Thundurus|Reshiram|Zekrom|Landorus|Kyurem|Keldeo|Meloetta|Genesect|Chespin|Quilladin|Chesnaught|Fennekin|Braixen|Delphox|Froakie|Frogadier|Greninja|Bunnelby|Diggersby|Fletchling|Fletchinder|Talonflame|Scatterbug|Spewpa|Vivillon|Litleo|Pyroar|Flabébé|Floette|Florges|Skiddo|Gogoat|Pancham|Pangoro|Furfrou|Espurr|Meowstic|Honedge|Doublade|Aegislash|Spritzee|Aromatisse|Swirlix|Slurpuff|Inkay|Malamar|Binacle|Barbaracle|Skrelp|Dragalge|Clauncher|Clawitzer|Helioptile|Heliolisk|Tyrunt|Tyrantrum|Amaura|Aurorus|Sylveon|Hawlucha|Dedenne|Carbink|Goomy|Sliggoo|Goodra|Klefki|Phantump|Trevenant|Pumpkaboo|Gourgeist|Bergmite|Avalugg|Noibat|Noivern|Xerneas|Yveltal|Zygarde|Diancie|Hoopa|Volcanion|Rowlet|Dartrix|Decidueye|Litten|Torracat|Incineroar|Popplio|Brionne|Primarina|Pikipek|Trumbeak|Toucannon|Yungoos|Gumshoos|Grubbin|Charjabug|Vikavolt|Crabrawler|Crabominable|Oricorio|Cutiefly|Ribombee|Rockruff|Lycanroc|Wishiwashi|Mareanie|Toxapex|Mudbray|Mudsdale|Dewpider|Araquanid|Fomantis|Lurantis|Morelull|Shiinotic|Salandit|Salazzle|Stufful|Bewear|Bounsweet|Steenee|Tsareena|Comfey|Oranguru|Passimian|Wimpod|Golisopod|Sandygast|Palossand|Pyukumuku|Type: Null|Silvally|Minior|Komala|Turtonator|Togedemaru|Mimikyu|Bruxish|Drampa|Dhelmise|Jangmo-o|Hakamo-o|Kommo-o|Tapu Koko|Tapu Lele|Tapu Bulu|Tapu Fini|Cosmog|Cosmoem|Solgaleo|Lunala|Nihilego|Buzzwole|Pheromosa|Xurkitree|Celesteela|Kartana|Guzzlord|Necrozma|Magearna|Marshadow|Poipole|Naganadel|Stakataka|Blacephalon|Zeraora|Meltan|Melmetal|Grookey|Thwackey|Rillaboom|Scorbunny|Raboot|Cinderace|Sobble|Drizzile|Inteleon|Skwovet|Greedent|Rookidee|Corvisquire|Corviknight|Blipbug|Dottler|Orbeetle|Nickit|Thievul|Gossifleur|Eldegoss|Wooloo|Dubwool|Chewtle|Drednaw|Yamper|Boltund|Rolycoly|Carkol|Coalossal|Applin|Flapple|Appletun|Silicobra|Sandaconda|Cramorant|Arrokuda|Barraskewda|Toxel|Toxtricity|Sizzlipede|Centiskorch|Clobbopus|Grapploct|Sinistea|Polteageist|Hatenna|Hattrem|Hatterene|Impidimp|Morgrem|Grimmsnarl|Obstagoon|Perrserker|Cursola|Sirfetch\'d|Mr. Rime|Runerigus|Milcery|Alcremie|Falinks|Pincurchin|Snom|Frosmoth|Stonjourner|Eiscue|Indeedee|Morpeko|Cufant|Copperajah|Dracozolt|Arctozolt|Dracovish|Arctovish|Duraludon|Dreepy|Drakloak|Dragapult|Zacian|Zamazenta|Eternatus|Kubfu|Urshifu|Zarude|Regieleki|Regidrago|Glastrier|Spectrier|Calyrex|Wyrdeer|Kleavor|Ursaluna|Basculegion|Sneasler|Overqwil|Enamorus|Sprigatito|Floragato|Meowscarada|Fuecoco|Crocalor|Skeledirge|Quaxly|Quaxwell|Quaquaval|Lechonk|Oinkologne|Tarountula|Spidops|Nymble|Lokix|Pawmi|Pawmo|Pawmot|Tandemaus|Maushold|Fidough|Dachsbun|Smoliv|Dolliv|Arboliva|Squawkabilly|Nacli|Naclstack|Garganacl|Charcadet|Armarouge|Ceruledge|Tadbulb|Bellibolt|Wattrel|Kilowattrel|Maschiff|Mabosstiff|Shroodle|Grafaiai|Bramblin|Brambleghast|Toedscool|Toedscruel|Klawf|Capsakid|Scovillain|Rellor|Rabsca|Flittle|Espathra|Tinkatink|Tinkatuff|Tinkaton|Wiglett|Wugtrio|Bombirdier|Finizen|Palafin|Varoom|Revavroom|Cyclizar|Orthworm|Glimmet|Glimmora|Greavard|Houndstone|Flamigo|Cetoddle|Cetitan|Veluza|Dondozo|Tatsugiri|Annihilape|Clodsire|Farigiraf|Dudunsparce|Kingambit|Great Tusk|Scream Tail|Brute Bonnet|Flutter Mane|Slither Wing|Sandy Shocks|Iron Treads|Iron Bundle|Iron Hands|Iron Jugulis|Iron Moth|Iron Thorns|Frigibax|Arctibax|Baxcalibur|Gimmighoul|Gholdengo|Wo-Chien|Chien-Pao|Ting-Lu|Chi-Yu|Roaring Moon|Iron Valiant|Koraidon|Miraidon|Walking Wake|Iron Leaves|Dipplin|Poltchageist|Sinistcha|Okidogi|Munkidori|Fezandipiti|Ogerpon|Archaludon|Hydrapple|Gouging Fire|Raging Bolt|Iron Boulder|Iron Crown|Terapagos|Pecharunt'.split('|');
+const FORA_DO_GO = [479,489,490,493,746,771,772,773,774,801,833,834,868,869,871,875,878,879,880,881,882,883,896,897,898,946,947,951,952,953,954,963,964,967,976,981,984,985,986,987,988,989,990,991,992,993,994,995,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1014,1015,1016,1017,1018,1020,1021,1022,1023,1024,1025];
+
+const TOTAL = NOMES.length;   // 1025
+const GERACOES = [
+  { n:1, de:1,   ate:151,  onde:'Kanto' },
+  { n:2, de:152, ate:251,  onde:'Johto' },
+  { n:3, de:252, ate:386,  onde:'Hoenn' },
+  { n:4, de:387, ate:493,  onde:'Sinnoh' },
+  { n:5, de:494, ate:649,  onde:'Unova' },
+  { n:6, de:650, ate:721,  onde:'Kalos' },
+  { n:7, de:722, ate:809,  onde:'Alola' },
+  { n:8, de:810, ate:905,  onde:'Galar' },
+  { n:9, de:906, ate:1025, onde:'Paldea' },
+];
+const SPRITE = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+const ARTE   = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+const tres = id => String(id).padStart(3, '0');
+
+/* ---------- o que fica guardado no aparelho ---------- */
+function ler(chave, vazio){
+  try{ return JSON.parse(localStorage.getItem(chave) || 'null') || vazio; }catch(e){ return vazio; }
+}
+function gravar(chave, v){
+  try{ localStorage.setItem(chave, JSON.stringify(v)); }catch(e){}
+}
+const peguei = new Set(ler('dittospokedex:peguei', []));
+/* O Pokémon GO ganha Pokémon novo o tempo todo, e a lista escrita à mão
+   envelhece. Então quem usa pode corrigir: a correção vale por cima da lista. */
+const correcoesGo = ler('dittospokedex:go', {});
+const foraDaLista = new Set(FORA_DO_GO);
+function temNoGo(id){
+  if(id in correcoesGo) return correcoesGo[id];
+  return !foraDaLista.has(id);
+}
+function salvar(){
+  gravar('dittospokedex:peguei', [...peguei]);
+  gravar('dittospokedex:go', correcoesGo);
+}
+
+/* ---------- busca sem ligar pra acento, maiúscula, ponto ou traço ---------- */
+function simples(s){
+  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/♀/g, 'f').replace(/♂/g, 'm').replace(/[^a-z0-9]/g, '');
+}
+const NOMES_SIMPLES = NOMES.map(simples);
+
+/* ---------- filtros ---------- */
+const FILTROS = [
+  { id:'todos',  texto:'Todos',              ok: id => true },
+  { id:'tem',    texto:'Tem no GO',          ok: id => temNoGo(id) },
+  { id:'nao',    texto:'❌ Não tem no GO',   ok: id => !temNoGo(id) },
+  { id:'peguei', texto:'✅ Peguei',          ok: id => peguei.has(id) },
+  { id:'falta',  texto:'Falta pegar',        ok: id => temNoGo(id) && !peguei.has(id) },
+];
+let filtro = 'todos', geracao = 0, busca = '';
+
+function montarChips(){
+  const f = document.getElementById('filtros');
+  f.innerHTML = '';
+  for(const x of FILTROS){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = x.texto;
+    b.setAttribute('aria-pressed', String(x.id === filtro));
+    b.onclick = () => { filtro = x.id; montarChips(); desenhar(); };
+    f.appendChild(b);
+  }
+  const g = document.getElementById('geracoes');
+  g.innerHTML = '';
+  for(const x of [{ n:0 }, ...GERACOES]){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip';
+    b.textContent = x.n ? `${x.n}ª · ${x.onde}` : 'Todas as gerações';
+    b.setAttribute('aria-pressed', String(x.n === geracao));
+    b.onclick = () => { geracao = x.n; montarChips(); desenhar(); };
+    g.appendChild(b);
+  }
+}
+
+function passa(id){
+  if(!FILTROS.find(x => x.id === filtro).ok(id)) return false;
+  if(geracao){
+    const g = GERACOES[geracao - 1];
+    if(id < g.de || id > g.ate) return false;
+  }
+  if(busca){
+    /* "029" é o Nidoran♀ e mais ninguém; "29" é ele e os 290 e poucos. */
+    if(/^\d+$/.test(busca)) return (busca[0] === '0' ? tres(id) : String(id)).startsWith(busca);
+    return NOMES_SIMPLES[id - 1].includes(busca);
+  }
+  return true;
+}
+
+/* ---------- a grade ---------- */
+const grade = document.getElementById('grade');
+function foto(id, grande){
+  const img = document.createElement('img');
+  img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
+  img.src = grande ? ARTE(id) : SPRITE(id);
+  /* Sem internet (ou se a imagem sumir), fica o número numa bolinha em vez
+     de um quadrado quebrado. */
+  img.onerror = () => {
+    const s = document.createElement('div');
+    s.className = 'sem-foto'; s.textContent = '#' + tres(id);
+    img.replaceWith(s);
+  };
+  return img;
+}
+function cartinha(id){
+  const b = document.createElement('button');
+  b.type = 'button';
+  const noGo = temNoGo(id), pegou = peguei.has(id);
+  b.className = 'poke' + (noGo ? '' : ' fora') + (pegou ? ' peguei' : '');
+  b.setAttribute('aria-label', `${NOMES[id-1]}, número ${id}` +
+    (noGo ? '' : ', não tem no Pokémon GO') + (pegou ? ', já peguei' : ''));
+  const f = document.createElement('div'); f.className = 'foto'; f.appendChild(foto(id));
+  b.innerHTML = `<span class="selo">${pegou ? '✅' : noGo ? '' : '❌'}</span>`;
+  b.appendChild(f);
+  b.insertAdjacentHTML('beforeend',
+    `<span class="num">#${tres(id)}</span><span class="nome"></span>`);
+  b.querySelector('.nome').textContent = NOMES[id-1];
+  b.onclick = () => abrir(id);
+  return b;
+}
+let visiveis = [];
+function desenhar(){
+  visiveis = [];
+  for(let id = 1; id <= TOTAL; id++) if(passa(id)) visiveis.push(id);
+  const frag = document.createDocumentFragment();
+  for(const id of visiveis) frag.appendChild(cartinha(id));
+  grade.innerHTML = '';
+  if(visiveis.length) grade.appendChild(frag);
+  else grade.innerHTML = '<p class="nada">Nenhum Pokémon aqui. 🟣 O Ditto procurou e não achou.</p>';
+  document.getElementById('contagem').textContent =
+    visiveis.length === 1 ? 'Mostrando 1 Pokémon' : `Mostrando ${visiveis.length} Pokémon`;
+  placar();
+}
+
+function placar(){
+  let noGo = 0, pegueiNoGo = 0;
+  for(let id = 1; id <= TOTAL; id++){
+    if(temNoGo(id)){ noGo++; if(peguei.has(id)) pegueiNoGo++; }
+  }
+  const pct = noGo ? Math.round(pegueiNoGo / noGo * 100) : 0;
+  document.getElementById('placar-grande').textContent = `${pegueiNoGo} de ${noGo}`;
+  document.getElementById('placar-barra').style.width = pct + '%';
+  document.getElementById('placar-numeros').innerHTML =
+    `<span><b>${pct}%</b> dos que tem no GO</span>·` +
+    `<span><b>${noGo}</b> tem no GO</span>·` +
+    `<span><b>${TOTAL - noGo}</b> ainda não ❌</span>`;
+}
+
+/* ---------- a folha de um Pokémon ---------- */
+const fundo = document.getElementById('fundo');
+const folha = document.getElementById('folha');
+let aberto = 0, ultimoFoco = null;
+function abrir(id){
+  if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  aberto = id;
+  const noGo = temNoGo(id), pegou = peguei.has(id);
+  const g = GERACOES.find(x => id >= x.de && id <= x.ate);
+  const corrigido = id in correcoesGo;
+  folha.innerHTML = `
+    <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
+    <div class="arte"></div>
+    <p class="num">#${tres(id)} · ${g.n}ª geração (${g.onde})</p>
+    <h2 id="folha-nome"></h2>
+    <p class="status ${noGo ? 'tem' : 'nao'}">${noGo
+      ? '✔ Tem no Pokémon GO'
+      : '❌ Ainda não tem no Pokémon GO'}</p>
+    <div class="acoes"></div>
+    <p class="pequeno">${corrigido
+      ? 'Você corrigiu este na mão. <button type="button" class="chip" id="desfazer">voltar pra lista</button>'
+      : ''}</p>
+    <div class="setas">
+      <button type="button" class="grande-botao" id="ant">◀ ${id > 1 ? '#' + tres(id - 1) : ''}</button>
+      <button type="button" class="grande-botao" id="prox">${id < TOTAL ? '#' + tres(id + 1) : ''} ▶</button>
+    </div>`;
+  folha.querySelector('#folha-nome').textContent = NOMES[id-1];
+  const img = foto(id, true);
+  if(!noGo) img.classList.add('fora');
+  folha.querySelector('.arte').appendChild(img);
+
+  const acoes = folha.querySelector('.acoes');
+  if(noGo){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'grande-botao principal' + (pegou ? ' feito' : '');
+    b.textContent = pegou ? '✅ Já peguei! (tocar desmarca)' : 'Peguei! ✅';
+    b.onclick = () => {
+      if(peguei.has(id)) peguei.delete(id); else peguei.add(id);
+      salvar(); abrir(id); desenhar();
+    };
+    acoes.appendChild(b);
+  }
+  const c = document.createElement('button');
+  c.type = 'button'; c.className = 'grande-botao';
+  c.textContent = noGo ? '❌ Na verdade ainda não tem no GO' : '🎉 Já chegou no GO!';
+  c.onclick = () => {
+    const novo = !noGo;
+    if(novo === !foraDaLista.has(id)) delete correcoesGo[id]; else correcoesGo[id] = novo;
+    if(!novo) peguei.delete(id);   // não dá pra ter pego o que não existe no jogo
+    salvar(); abrir(id); desenhar();
+  };
+  acoes.appendChild(c);
+
+  const desfazer = folha.querySelector('#desfazer');
+  if(desfazer) desfazer.onclick = () => {
+    delete correcoesGo[id];
+    if(!temNoGo(id)) peguei.delete(id);
+    salvar(); abrir(id); desenhar();
+  };
+  folha.querySelector('.fechar').onclick = fechar;
+  const ant = folha.querySelector('#ant'), prox = folha.querySelector('#prox');
+  ant.disabled = id <= 1; prox.disabled = id >= TOTAL;
+  ant.onclick = () => abrir(id - 1);
+  prox.onclick = () => abrir(id + 1);
+
+  fundo.classList.add('aberto');
+  folha.querySelector('.fechar').focus();
+}
+function fechar(){
+  fundo.classList.remove('aberto');
+  aberto = 0;
+  if(ultimoFoco && ultimoFoco.focus) ultimoFoco.focus();
+}
+fundo.addEventListener('click', ev => { if(ev.target === fundo) fechar(); });
+document.addEventListener('keydown', ev => {
+  if(!aberto) return;
+  if(ev.key === 'Escape') fechar();
+  if(ev.key === 'ArrowLeft' && aberto > 1) abrir(aberto - 1);
+  if(ev.key === 'ArrowRight' && aberto < TOTAL) abrir(aberto + 1);
+});
+
+/* ---------- Ditto, se transforma! ----------
+   Ele vira um Pokémon sorteado. Se a pessoa estiver filtrando, sorteia só
+   entre os que estão na tela, que é o que ela está olhando. */
+document.getElementById('transforma').onclick = () => {
+  const lista = visiveis.length ? visiveis : Array.from({ length:TOTAL }, (_, i) => i + 1);
+  abrir(lista[Math.floor(Math.random() * lista.length)]);
+};
+
+let espera = 0;
+document.getElementById('busca').addEventListener('input', ev => {
+  clearTimeout(espera);
+  espera = setTimeout(() => { busca = simples(ev.target.value); desenhar(); }, 150);
+});
+
+/* ---------- claro / escuro ---------- */
+const btTema = document.getElementById('tema');
+const corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){
+  const t = document.documentElement.getAttribute('data-tema');
+  if(t) return t === 'escuro';
+  return matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function aplicarTema(t){
+  if(t) document.documentElement.setAttribute('data-tema', t);
+  else document.documentElement.removeAttribute('data-tema');
+  const escuro = estaEscuro();
+  btTema.textContent = escuro ? '☀️' : '🌙';
+  if(corDaBarra) corDaBarra.setAttribute('content', escuro ? '#15101c' : '#9b6cc4');
+}
+try{ aplicarTema(localStorage.getItem('dittospokedex:tema')); }catch(e){ aplicarTema(null); }
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () =>
+  aplicarTema(document.documentElement.getAttribute('data-tema')));
+btTema.onclick = () => {
+  const novo = estaEscuro() ? 'claro' : 'escuro';
+  try{ localStorage.setItem('dittospokedex:tema', novo); }catch(e){}
+  aplicarTema(novo);
+};
+
+/* ---------- "não atualizou o site" ----------
+   Mesma saída de emergência do ButterPoke e do RaroDex. */
+const btRecarregar = document.getElementById('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{
+    if(window.caches){
+      const nomes = await caches.keys();
+      await Promise.all(nomes.map(n => caches.delete(n)));
+    }
+  }catch(e){}
+  try{
+    if(navigator.serviceWorker){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.update().catch(() => {})));
+    }
+  }catch(e){}
+  const u = new URL(location.href);
+  u.searchParams.set('v', Date.now());
+  location.replace(u.toString());
+};
+try{
+  if(new URL(location.href).searchParams.has('v')){
+    const limpo = new URL(location.href);
+    limpo.searchParams.delete('v');
+    history.replaceState(null, '', limpo.pathname + limpo.search + limpo.hash);
+  }
+}catch(e){}
+
+function avisarVersaoNova(){
+  if(document.querySelector('.faixa-nova')) return;
+  const f = document.createElement('div');
+  f.className = 'faixa-nova';
+  f.innerHTML = '<span>✨ Chegou versão nova da Ditto\'s Pokédex!</span><button type="button">Carregar</button>';
+  f.querySelector('button').onclick = () => location.reload();
+  document.body.appendChild(f);
+}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(jaTinha) avisarVersaoNova();
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' })
+      .then(r => { setTimeout(() => r.update().catch(() => {}), 3000); })
+      .catch(() => {});
+  });
+}
+
+montarChips();
+desenhar();
+</script>
+</body>
+</html>
