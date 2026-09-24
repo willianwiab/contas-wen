@@ -140,6 +140,31 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .forma .tipo{display:block;font-size:.78rem;color:var(--tinta-fraca)}
 .forma .marca{margin-left:auto;font-size:1.1rem;flex:none}
 .forma.peguei{border-color:var(--certo);background:var(--certo-fundo)}
+.especiais{margin:14px 0 4px;text-align:left}
+.especiais h3{font-family:'Baloo 2',cursive;font-size:1.15rem}
+.especiais h4{font-size:.85rem;color:var(--tinta-fraca);margin:10px 0 4px}
+.especiais .chips{flex-wrap:wrap;overflow:visible;padding:0}
+.chip[aria-pressed="true"].tag{background:var(--certo);border-color:var(--certo)}
+.pontos{margin-top:6px;padding:8px 12px;border-radius:12px;background:var(--creme2);font-weight:600;font-size:.92rem}
+.linha-botoes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.linha-botoes .transforma{margin-top:0}
+.top{text-align:left}
+.top h2{text-align:center}
+.top .abas{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0}
+.top .abas .chip{text-align:center}
+.top ol{list-style:none;display:grid;gap:6px}
+.top li{display:flex;align-items:center;gap:10px;border:2px solid var(--borda);background:var(--cartao2);
+  border-radius:14px;padding:8px 10px}
+.top li button{all:unset;display:flex;align-items:center;gap:10px;width:100%;cursor:pointer}
+.top .pos{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.2rem;width:28px;text-align:center;flex:none;color:var(--marca-escura)}
+.top .mini{width:48px;height:48px;flex:none;display:grid;place-items:center}
+.top .mini img{width:48px;height:48px;image-rendering:pixelated}
+.top .mini .sem-foto{width:40px;height:40px;font-size:.65rem}
+.top .grande-emoji{font-size:1.25rem;min-width:48px;white-space:nowrap;text-align:center;flex:none}
+.top .quem{flex:1;min-width:0}
+.top .quem b{display:block}
+.top .quem span{font-size:.8rem;color:var(--tinta-fraca)}
+.top .pts{font-weight:700;white-space:nowrap;flex:none}
 .setas{display:flex;justify-content:space-between;margin-top:12px;gap:8px}
 .setas button{flex:1}
 
@@ -171,7 +196,10 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <div class="numeros" id="placar-numeros"></div>
   </section>
 
-  <button class="transforma" id="transforma" type="button">🟣 Ditto, se transforma!</button>
+  <div class="linha-botoes">
+    <button class="transforma" id="transforma" type="button">🟣 Ditto, se transforma!</button>
+    <button class="transforma" id="abrir-top" type="button">🏆 Top mais raros</button>
+  </div>
 
   <input class="busca" id="busca" type="search" placeholder="Procurar por nome ou número… (ex.: pikachu, 132)"
          autocomplete="off" enterkeyhint="search" />
@@ -187,7 +215,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 4 — 24/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 5 — 24/09 · 🔄</button>
   </footer>
 </div>
 
@@ -220,6 +248,8 @@ const GERACOES = [
   { n:9, de:906, ate:1025, onde:'Paldea' },
 ];
 const SPRITE = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+const SPRITE_SHINY = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${id}.png`;
+const ARTE_SHINY   = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${id}.png`;
 const ARTE   = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 const tres = id => String(id).padStart(3, '0');
 
@@ -275,7 +305,74 @@ function temNoGo(id){
   if(id in correcoesGo) return correcoesGo[id];
   return !foraDaLista.has(id);
 }
+/* ---------- especiais: shiny, lucky, hundo, shadow… ----------
+   Cada Pokémon guarda a lista do que ele tem de especial. Os pontos são um
+   chute de quão difícil é, em "bits": 1 em 500 (shiny) dá uns 9, 1 em 4096
+   (hundo selvagem) dá 12. Somar os pontos é multiplicar as chances. */
+const ESPECIAIS = [
+  { grupo:'✨ Aparência', tags:[
+    { id:'shiny',   emoji:'✨', nome:'Shiny',   pontos:9 },
+    { id:'costume', emoji:'🎭', nome:'Fantasia / chapéu / acessório', pontos:4 },
+    { id:'xxl',     emoji:'🌟', nome:'XXL',     pontos:5 },
+    { id:'xxs',     emoji:'🔹', nome:'XXS',     pontos:5 },
+    { id:'clone',   emoji:'🧬', nome:'Clone',   pontos:12 },
+  ]},
+  { grupo:'🍀 Troca', tags:[
+    { id:'lucky',   emoji:'🍀', nome:'Lucky',   pontos:4 },
+    { id:'trocado', emoji:'🤝', nome:'Trocado', pontos:0 },
+  ]},
+  { grupo:'💯 IVs', tags:[
+    { id:'hundo',   emoji:'💯', nome:'100% (Hundo)', pontos:12 },
+    { id:'nundo',   emoji:'0️⃣', nome:'0% (Nundo)',   pontos:12 },
+  ]},
+  { grupo:'🌍 Fundo', tags:[
+    { id:'fundo',       emoji:'🌍', nome:'Fundo de localização', pontos:4 },
+    { id:'fundoevento', emoji:'🎟️', nome:'Fundo de evento',      pontos:5 },
+    { id:'gofest',      emoji:'🎖️', nome:'Fundo de GO Fest',     pontos:6 },
+  ]},
+  { grupo:'🏅 Como pegou', tags:[
+    { id:'ovo',        emoji:'🥚', nome:'Ovo',          pontos:0 },
+    { id:'pesquisa',   emoji:'🎁', nome:'Pesquisa',     pontos:0 },
+    { id:'raid',       emoji:'⚔️', nome:'Raid',         pontos:0 },
+    { id:'shadow',     emoji:'🚀', nome:'Shadow',       pontos:3 },
+    { id:'purificado', emoji:'🧼', nome:'Purificado',   pontos:3 },
+    { id:'evento',     emoji:'🏆', nome:'Evento',       pontos:2 },
+    { id:'snapshot',   emoji:'📸', nome:'GO Snapshot',  pontos:3 },
+    { id:'legado',     emoji:'🥇', nome:'Movimento legado', pontos:4 },
+  ]},
+];
+const TAG = {};
+for(const g of ESPECIAIS) for(const t of g.tags) TAG[t.id] = t;
+/* Quem não pode andar junto: marcar um desmarca o outro. Shadow não dá pra
+   trocar, então não vira lucky nem "trocado". */
+const BRIGAM = [['hundo','nundo'], ['xxl','xxs'], ['shadow','purificado'], ['shadow','lucky'], ['shadow','trocado']];
+
+function pontosDe(tags){
+  const t = new Set(tags);
+  let p = 0;
+  for(const x of t) p += TAG[x] ? TAG[x].pontos : 0;
+  /* O hundo fica bem mais fácil quando o jogo garante IV mínimo:
+     troca lucky (12/12/12) é 1 em 64; raid, ovo e pesquisa (10/10/10),
+     1 em 216. Selvagem continua 1 em 4096. */
+  if(t.has('hundo')){
+    if(t.has('lucky')) p -= 6;
+    else if(t.has('raid') || t.has('ovo') || t.has('pesquisa')) p -= 4;
+  }
+  return p;
+}
+function apelido(tags){
+  const t = new Set(tags);
+  if(t.has('shiny') && t.has('hundo')) return t.has('lucky') ? 'Lucky Shundo!' : 'Shundo!';
+  if(t.has('shiny') && t.has('nundo')) return 'Shiny Nundo!';
+  if(t.has('lucky') && t.has('hundo')) return 'Lucky Hundo!';
+  if(t.has('shadow') && t.has('hundo')) return 'Shadow Hundo!';
+  return '';
+}
+const especiais = ler('dittospokedex:especiais', {});
+function tagsDe(id){ return especiais[id] || []; }
+
 function salvar(){
+  gravar('dittospokedex:especiais', especiais);
   gravar('dittospokedex:peguei', [...peguei]);
   gravar('dittospokedex:go', correcoesGo);
   gravar('dittospokedex:formas', [...pegueiForma]);
@@ -283,7 +380,7 @@ function salvar(){
 
 /* ---------- busca sem ligar pra acento, maiúscula, ponto ou traço ---------- */
 function simples(s){
-  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/♀/g, 'f').replace(/♂/g, 'm').replace(/[^a-z0-9]/g, '');
 }
 const NOMES_SIMPLES = NOMES.map(simples);
@@ -294,6 +391,7 @@ const FILTROS = [
   { id:'tem',    texto:'Tem no GO',          ok: id => temNoGo(id) },
   { id:'nao',    texto:'❌ Não tem no GO',   ok: id => !temNoGo(id) },
   { id:'formas', texto:'🌍 Com formas',      ok: id => id in FORMAS },
+  { id:'especiais', texto:'⭐ Especiais',  ok: id => tagsDe(id).length > 0 },
   { id:'peguei', texto:'✅ Peguei',          ok: id => peguei.has(id) },
   { id:'falta',  texto:'Falta pegar',        ok: id => temNoGo(id) && !peguei.has(id) },
 ];
@@ -340,7 +438,8 @@ const grade = document.getElementById('grade');
 function foto(id, grande){
   const img = document.createElement('img');
   img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
-  img.src = grande ? ARTE(id) : SPRITE(id);
+  const shiny = tagsDe(id).includes('shiny');
+  img.src = grande ? (shiny ? ARTE_SHINY(id) : ARTE(id)) : (shiny ? SPRITE_SHINY(id) : SPRITE(id));
   /* Sem internet (ou se a imagem sumir), fica o número numa bolinha em vez
      de um quadrado quebrado. */
   img.onerror = () => {
@@ -358,7 +457,10 @@ function cartinha(id){
   b.setAttribute('aria-label', `${NOMES[id-1]}, número ${id}` +
     (noGo ? '' : ', não tem no Pokémon GO') + (pegou ? ', já peguei' : ''));
   const f = document.createElement('div'); f.className = 'foto'; f.appendChild(foto(id));
-  b.innerHTML = `<span class="selo">${pegou ? '✅' : noGo ? '' : '❌'}</span>`;
+  /* No selo vão os dois especiais que mais valem; sem especial, o ✅. */
+  const tops = tagsDe(id).map(t => TAG[t]).filter(Boolean)
+    .sort((a, c) => c.pontos - a.pontos).slice(0, 2).map(t => t.emoji).join('');
+  b.innerHTML = `<span class="selo">${tops || (pegou ? '✅' : noGo ? '' : '❌')}</span>`;
   b.appendChild(f);
   b.insertAdjacentHTML('beforeend',
     `<span class="num">#${tres(id)}</span><span class="nome"></span>`);
@@ -414,6 +516,7 @@ function abrir(id){
       : '❌ Ainda não tem no Pokémon GO'}</p>
     <div class="acoes"></div>
     <div class="formas" hidden></div>
+    <div class="especiais" hidden></div>
     <p class="pequeno">${corrigido
       ? 'Você corrigiu este na mão. <button type="button" class="chip" id="desfazer">voltar pra lista</button>'
       : ''}</p>
@@ -433,7 +536,7 @@ function abrir(id){
     b.className = 'grande-botao principal' + (pegou ? ' feito' : '');
     b.textContent = pegou ? '✅ Já peguei! (tocar desmarca)' : 'Peguei! ✅';
     b.onclick = () => {
-      if(peguei.has(id)) peguei.delete(id); else peguei.add(id);
+      if(peguei.has(id)){ peguei.delete(id); delete especiais[id]; } else peguei.add(id);
       salvar(); abrir(id); desenhar();
     };
     acoes.appendChild(b);
@@ -444,7 +547,7 @@ function abrir(id){
   c.onclick = () => {
     const novo = !noGo;
     if(novo === !foraDaLista.has(id)) delete correcoesGo[id]; else correcoesGo[id] = novo;
-    if(!novo) peguei.delete(id);   // não dá pra ter pego o que não existe no jogo
+    if(!novo){ peguei.delete(id); delete especiais[id]; }   // não dá pra ter pego o que não existe no jogo
     salvar(); abrir(id); desenhar();
   };
   acoes.appendChild(c);
@@ -474,6 +577,42 @@ function abrir(id){
     }
   }
 
+  if(noGo){
+    const caixa = folha.querySelector('.especiais');
+    caixa.hidden = false;
+    const tags = tagsDe(id);
+    const pts = pontosDe(tags), nome = apelido(tags);
+    caixa.innerHTML = '<h3>Especiais</h3><p class="pequeno" style="margin:0">Toque no que o seu tem. Pode marcar vários.</p>' +
+      (tags.length ? `<p class="pontos">🔥 ${pts} pontos de raridade${nome ? ' · ' + nome : ''}</p>` : '');
+    for(const g of ESPECIAIS){
+      const h = document.createElement('h4'); h.textContent = g.grupo; caixa.appendChild(h);
+      const linha = document.createElement('div'); linha.className = 'chips';
+      for(const t of g.tags){
+        const b = document.createElement('button');
+        const tem = tags.includes(t.id);
+        b.type = 'button'; b.className = 'chip tag';
+        b.setAttribute('aria-pressed', String(tem));
+        b.textContent = `${t.emoji} ${t.nome}`;
+        b.onclick = () => {
+          let novo = tagsDe(id).slice();
+          if(novo.includes(t.id)) novo = novo.filter(x => x !== t.id);
+          else {
+            for(const [a, c] of BRIGAM){
+              if(t.id === a) novo = novo.filter(x => x !== c);
+              if(t.id === c) novo = novo.filter(x => x !== a);
+            }
+            novo.push(t.id);
+            peguei.add(id);   // tem um especial, então pegou
+          }
+          if(novo.length) especiais[id] = novo; else delete especiais[id];
+          salvar(); abrir(id); desenhar();
+        };
+        linha.appendChild(b);
+      }
+      caixa.appendChild(linha);
+    }
+  }
+
   const desfazer = folha.querySelector('#desfazer');
   if(desfazer) desfazer.onclick = () => {
     delete correcoesGo[id];
@@ -498,6 +637,7 @@ fundo.addEventListener('click', ev => { if(ev.target === fundo) fechar(); });
 document.addEventListener('keydown', ev => {
   if(!aberto) return;
   if(ev.key === 'Escape') fechar();
+  if(aberto < 0) return;
   if(ev.key === 'ArrowLeft' && aberto > 1) abrir(aberto - 1);
   if(ev.key === 'ArrowRight' && aberto < TOTAL) abrir(aberto + 1);
 });
@@ -509,6 +649,80 @@ document.getElementById('transforma').onclick = () => {
   const lista = visiveis.length ? visiveis : Array.from({ length:TOTAL }, (_, i) => i + 1);
   abrir(lista[Math.floor(Math.random() * lista.length)]);
 };
+
+/* ---------- 🏆 Top mais raros ----------
+   "Os meus" ordena o que a pessoa marcou pelos pontos. "No jogo" é a mesma
+   conta aplicada nas combinações famosas, pra comparar com uma régua só. */
+const TOP_JOGO = [
+  { tags:['shiny','hundo'],          nome:'Shundo selvagem',   chance:'1 em uns 2 milhões (1/500 × 1/4096)' },
+  { tags:['shiny','nundo'],          nome:'Shiny Nundo',       chance:'1 em uns 2 milhões, igual ao Shundo' },
+  { tags:['shiny','lucky','hundo'],  nome:'Lucky Shundo',      chance:'precisa de um shiny, a troca virar lucky e ainda 1 em 64' },
+  { tags:['hundo'],                  nome:'Hundo selvagem',    chance:'1 em 4096' },
+  { tags:['nundo'],                  nome:'Nundo',             chance:'1 em 4096, só selvagem' },
+  { tags:['clone'],                  nome:'Pokémon Clone',     chance:'só apareceu num evento antigo' },
+  { tags:['shiny','xxl'],            nome:'Shiny XXL',         chance:'shiny e ainda gigante' },
+  { tags:['lucky','hundo'],          nome:'Lucky Hundo',       chance:'1 em 64 numa troca lucky' },
+  { tags:['shiny'],                  nome:'Shiny',             chance:'1 em uns 500 na rua (evento e raid mudam isso)' },
+  { tags:['raid','hundo'],           nome:'Hundo de raid',     chance:'1 em 216' },
+].map(x => ({ ...x, pontos:pontosDe(x.tags) })).sort((a, c) => c.pontos - a.pontos);
+
+let abaTop = 'meus';
+function abrirTop(){
+  if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  aberto = -1;   // folha aberta, mas não é um Pokémon: as setas não mexem
+  folha.innerHTML = `
+    <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
+    <div class="top">
+      <h2 id="folha-nome">🏆 Top mais raros</h2>
+      <div class="abas">
+        <button type="button" class="chip" data-aba="meus" aria-pressed="${abaTop === 'meus'}">Os meus</button>
+        <button type="button" class="chip" data-aba="jogo" aria-pressed="${abaTop === 'jogo'}">No jogo</button>
+      </div>
+      <ol></ol>
+      <p class="pequeno"></p>
+    </div>`;
+  folha.querySelector('.fechar').onclick = fechar;
+  for(const b of folha.querySelectorAll('[data-aba]'))
+    b.onclick = () => { abaTop = b.dataset.aba; abrirTop(); };
+  const ol = folha.querySelector('ol'), nota = folha.querySelector('.top .pequeno');
+  const emojis = tags => tags.map(t => TAG[t] ? TAG[t].emoji : '').join('');
+
+  if(abaTop === 'meus'){
+    const meus = Object.keys(especiais).map(Number)
+      .filter(id => temNoGo(id) && tagsDe(id).length)
+      .map(id => ({ id, tags:tagsDe(id), pontos:pontosDe(tagsDe(id)) }))
+      .sort((a, c) => c.pontos - a.pontos || a.id - c.id)
+      .slice(0, 20);
+    if(!meus.length){
+      ol.innerHTML = '<p class="nada">Você ainda não marcou nenhum especial. Abra um Pokémon e toque em ✨ Shiny, 🍀 Lucky, 💯 Hundo…</p>';
+    }
+    meus.forEach((m, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<button type="button"><span class="pos">${i + 1}</span><span class="mini"></span>
+        <span class="quem"><b></b><span></span></span><span class="pts">🔥 ${m.pontos}</span></button>`;
+      li.querySelector('.mini').appendChild(foto(m.id));
+      li.querySelector('b').textContent = NOMES[m.id - 1] + (apelido(m.tags) ? ' · ' + apelido(m.tags) : '');
+      li.querySelector('.quem span').textContent = emojis(m.tags);
+      li.querySelector('button').onclick = () => abrir(m.id);
+      ol.appendChild(li);
+    });
+    nota.textContent = 'Os 20 que mais valem. 🔥 são pontos de raridade: é um chute, não número oficial.';
+  } else {
+    TOP_JOGO.forEach((x, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="pos">${i + 1}</span><span class="grande-emoji"></span>
+        <span class="quem"><b></b><span></span></span><span class="pts">🔥 ${x.pontos}</span>`;
+      li.querySelector('.grande-emoji').textContent = emojis(x.tags);
+      li.querySelector('b').textContent = x.nome;
+      li.querySelector('.quem span').textContent = x.chance;
+      ol.appendChild(li);
+    });
+    nota.textContent = 'As chances de IV são conta de verdade (cada IV vai de 0 a 15). A de shiny muda muito com evento, então é "mais ou menos". Curiosidade: pela conta, o Shundo selvagem é mais raro que o Lucky Shundo.';
+  }
+  fundo.classList.add('aberto');
+  folha.querySelector('.fechar').focus();
+}
+document.getElementById('abrir-top').onclick = abrirTop;
 
 let espera = 0;
 document.getElementById('busca').addEventListener('input', ev => {
@@ -546,9 +760,10 @@ btTema.onclick = () => {
    Apaga tudo que a pessoa marcou: os ✅, as formas e as correções de
    "chegou no GO". Pergunta antes, porque não tem volta. */
 document.getElementById('recomecar').onclick = () => {
-  if(!confirm('Apagar TODOS os ✅, as formas marcadas e as correções de "chegou no GO"?\n\nNão dá pra desfazer.')) return;
+  if(!confirm('Apagar TODOS os ✅, os especiais, as formas marcadas e as correções de "chegou no GO"?\n\nNão dá pra desfazer.')) return;
   peguei.clear();
   pegueiForma.clear();
+  for(const k of Object.keys(especiais)) delete especiais[k];
   for(const k of Object.keys(correcoesGo)) delete correcoesGo[k];
   salvar(); fechar(); desenhar();
   window.scrollTo({ top:0, behavior:'smooth' });
