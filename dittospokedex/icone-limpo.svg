@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ditto's Pokédex">
+  <!-- A gosminha roxa, sem fundo: é a que vai do lado do nome, no topo. -->
+  <path d="M10 50 C4 50 4 40 9 36 C6 28 12 18 20 20 C24 10 40 10 44 19 C52 16 60 26 55 34 C62 40 58 52 50 51 C44 56 36 52 32 54 C26 56 16 56 10 50Z"
+        fill="#b98ad6" stroke="#8a5bb0" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="25" cy="33" r="2.4" fill="#2a1838"/>
+  <circle cx="39" cy="33" r="2.4" fill="#2a1838"/>
+  <path d="M24 42 Q32 47 40 42" fill="none" stroke="#2a1838" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,14 @@
+{
+  "name": "Ditto's Pokédex — quem tem no Pokémon GO",
+  "short_name": "Ditto's Pokédex",
+  "description": "Os 1025 Pokémon, quais já chegaram no Pokémon GO e quais você já pegou.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6eefc",
+  "theme_color": "#9b6cc4",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
