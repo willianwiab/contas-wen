@@ -1,0 +1,11 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 794, "h": 1123, "print": "fixed", "title": "Pôster A4" },
+    { "file": "Papel.dc.html", "x": 914, "y": 0, "w": 440, "h": 560, "title": "Direção A — Papel recortado" },
+    { "file": "Linha.dc.html", "x": 914, "y": 700, "w": 440, "h": 560, "title": "Direção B — Traço fino" }
+  ],
+  "annotations": [
+    { "id": "nota-direcoes", "x": 914, "y": 1330, "w": 440, "text": "O pôster grande é a direção vitral.\nAo lado, duas alternativas.\nMe diz qual você prefere que eu levo ela para o A4 completo." }
+  ],
+  "launch": { "view": "canvas" }
+}
