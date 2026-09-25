@@ -235,24 +235,13 @@ um botão pro ButterPoke (pra quem gosta de TCG). Não aparece sempre:
 - 3 medalhas novas, a conta leva álbum/eventos/ovos/doces, avisos empilham em vez de
   ficar um em cima do outro.
 
-## 🎛️ Vozes em todo Pokémon
+## 🎛️ Voz ligada no site todo
 
-Os 6 efeitos dos Sons esquisitos (🐿️ Esquilo, 🐢 Lento, 👹 Monstro, 🔁 Ao contrário, 🏔️ Eco,
-🤖 Robô) agora estão na página de **todos** os Pokémon, embaixo do 🔊. O recado de
-"não deu" aparece no mesmo lugar do recado do som.
+Em **Sons esquisitos** você escolhe uma voz (🐿️ Esquilo, 🐢 Lento, 👹 Monstro, 🔁 Ao contrário,
+🏔️ Eco, 🤖 Robô) e ela **fica ligada no site todo**: o 🔊 de cada Pokémon, o Quem é?, o jogo
+do som e o som automático passam a sair com ela, até voltar pro 🔊 Normal. Também dá pra
+escolher em ⚙️ Configurações. Enquanto está ligada, aparece "🎛️ Voz ligada" no topo e na
+página do Pokémon, com o botão "Voltar pro normal". Se não der pra baixar o som pra mudar
+a voz, toca normal e avisa.
 
-## O pôster do mais raro
-
-A aba **Os meus** do 🏆 Top já ordenava tudo pelos pontos, então o mais raro sempre esteve
-ali — só que escrito **do mesmo tamanho do vigésimo**. Quem abre o Top quer ver *o* mais
-raro, não procurar por ele.
-
-Agora o primeiro sai da fila e vira pôster: figura grande, o nome, o apelido quando tem
-(**Shundo!**, Lucky Hundo!…), os emojis das marcas e os pontos.
-
-E, embaixo, **de onde saiu cada ponto**: *"Shiny (+9) · 100% (Hundo) (+12)"*. Dizer só "é o
-mais raro" não ensina nada; mostrar a conta ensina — e deixa a pessoa conferir se eu somei
-direito.
-
-Ele **continua no 1º lugar da lista** atrás do pôster. Tirar de lá faria a contagem pular
-do 2 pro 1, e aí a lista mentiria sobre o tamanho dela.
+(Na versão 17 os 6 botões estavam em cada Pokémon; não era isso que foi pedido, então saíram.)
