@@ -280,6 +280,58 @@ html:root[data-cor="jigglypuff"][data-tema="escuro"]{--marca:#f07fb0;--marca-esc
 .cores{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:8px}
 .cores button{font:inherit;font-weight:700;font-size:.85rem;border-radius:14px;padding:10px 6px;color:#fff;cursor:pointer;border:3px solid transparent}
 .cores button[aria-pressed="true"]{border-color:var(--tinta)}
+.ferramentas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.ferramentas button{font:inherit;font-weight:700;border-radius:16px;padding:16px 8px;cursor:pointer;border:2px solid var(--borda);
+  background:var(--cartao2);color:var(--tinta);display:flex;flex-direction:column;align-items:center;gap:4px}
+.ferramentas button span{font-size:1.8rem}
+.ferramentas button small{font-weight:500;color:var(--tinta-fraca);font-size:.75rem}
+.form-linha{display:grid;gap:8px;margin-top:8px}
+.form-linha input,.form-linha select,.calc select,.calc input{font:inherit;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);
+  background:var(--campo);color:var(--tinta);min-width:0;width:100%}
+.form-linha .dois{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form-linha label{font-size:.8rem;color:var(--tinta-fraca);font-weight:600}
+.item{border:2px solid var(--borda);background:var(--cartao2);border-radius:14px;padding:10px 12px;margin-top:8px;text-align:left;position:relative}
+.item b{display:block;padding-right:28px}
+.item small{color:var(--tinta-fraca);display:block}
+.item .x{position:absolute;top:6px;right:8px;border:0;background:none;font-size:1.1rem;cursor:pointer;color:var(--tinta-fraca)}
+.item.agora{border-color:var(--certo)}
+.ovo-barra{height:12px;border-radius:99px;background:var(--creme2);overflow:hidden;margin:8px 0}
+.ovo-barra i{display:block;height:100%;background:linear-gradient(90deg,var(--marca),var(--marca-escura))}
+.ovo-acoes{display:flex;gap:6px;flex-wrap:wrap}
+.ovo-acoes button{font:inherit;font-weight:700;border-radius:99px;padding:6px 12px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta)}
+.ovo-acoes button.choca{background:var(--certo);border-color:var(--certo);color:#fff}
+.doces{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin-top:6px}
+.doces input{font:inherit;width:110px;padding:8px 10px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta)}
+.doces-res p{margin:4px 0;font-size:.9rem}
+.mais-acoes{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.mais-acoes button{font:inherit;font-size:.85rem;font-weight:700;border-radius:99px;padding:7px 12px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.mais-acoes button[aria-pressed="true"]{background:var(--marca);border-color:var(--marca);color:#fff}
+.lado{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.lado > div{border:2px solid var(--borda);border-radius:16px;padding:8px;background:var(--cartao2);text-align:center;min-width:0}
+.lado img,.lado .sem-foto{width:96px;height:96px;margin:0 auto}
+.lado .tipos{margin-top:4px}
+.lado .tipos .tipo{font-size:.68rem;padding:1px 7px}
+.lado dl{margin-top:6px;font-size:.82rem;text-align:left}
+.lado dt{color:var(--tinta-fraca);font-size:.72rem}
+.lado dd{font-weight:700;margin-bottom:4px}
+.veredito{margin-top:10px;padding:10px 12px;border-radius:14px;background:var(--creme2);font-weight:600;line-height:1.5}
+.regioes{display:grid;gap:8px;margin-top:10px}
+.regiao{font:inherit;text-align:left;border:2px solid var(--borda);background:var(--cartao2);border-radius:16px;padding:10px 12px;cursor:pointer;color:var(--tinta)}
+.regiao b{font-size:1.05rem}
+.regiao small{color:var(--tinta-fraca)}
+.calc .ivs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.calc .grande-pc{font-family:'Baloo 2',cursive;font-size:2.4rem;text-align:center;color:var(--marca-escura);margin-top:8px}
+.efeitos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.efeitos button{font:inherit;font-weight:700;font-size:.85rem;border-radius:14px;padding:12px 4px;cursor:pointer;border:2px solid var(--borda);
+  background:var(--cartao2);color:var(--tinta);display:flex;flex-direction:column;align-items:center;gap:2px}
+.efeitos button span{font-size:1.6rem}
+.esquisitos{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.lojas a{display:block;text-align:center;text-decoration:none;margin-top:10px}
+.lojas a.sugerida{outline:3px solid var(--certo);outline-offset:2px}
+.album-cartao{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:10px}
+.album-cartao span{aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.2);display:grid;place-items:center;overflow:hidden}
+.album-cartao img{width:100%;height:100%;image-rendering:pixelated}
+.album-cartao .sem-foto{width:100%;height:100%;font-size:.55rem;color:#fff;background:none}
 .linha-botoes.dois{margin-top:8px}
 .linha-botoes.dois .transforma{font-size:.88rem;padding:11px 6px;background:var(--marca)}
 .forma .no-go{display:block;font-size:.72rem;font-weight:600;margin-top:2px}
@@ -429,6 +481,10 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <button class="transforma" id="abrir-time" type="button">👥 Meu time de batalha</button>
     <button class="transforma" id="abrir-config" type="button">⚙️ Configurações</button>
   </div>
+  <div class="linha-botoes dois">
+    <button class="transforma" id="abrir-ferramentas" type="button">🧰 Ferramentas</button>
+    <button class="transforma" id="abrir-baixar" type="button">📲 Baixar Pokémon GO</button>
+  </div>
   <button class="do-dia" id="do-dia" type="button"></button>
 
   <input class="busca" id="busca" type="search" placeholder="Procurar por nome ou número… (ex.: pikachu, 132)"
@@ -446,7 +502,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 15 — 25/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 16 — 25/09 · 🔄</button>
   </footer>
 </div>
 
@@ -487,6 +543,10 @@ const CLASSE = '----------------------------------------------------------------
    não está no masterfile: 3,0 m é o da Pokédex. */
 const ALTURA = [7,10,20,6,11,17,5,10,16,3,7,11,3,6,10,3,11,15,3,7,3,12,20,35,4,8,6,10,4,8,13,5,9,14,6,13,6,11,5,10,8,16,5,8,12,3,10,10,15,2,7,4,10,8,17,5,10,7,19,6,10,13,9,13,15,8,15,16,7,10,17,9,16,4,10,14,10,17,12,16,3,10,8,14,18,11,17,9,12,3,15,13,16,15,88,10,16,4,13,5,12,4,20,4,10,15,14,12,6,12,10,19,11,10,22,4,12,6,13,8,11,13,15,14,11,13,15,14,9,65,25,3,3,10,8,9,8,4,10,5,13,18,21,17,16,20,18,40,22,20,4,9,12,18,5,9,17,6,11,23,8,18,7,16,10,14,5,11,18,5,12,3,3,3,3,6,2,15,6,8,14,4,4,8,12,11,4,6,8,8,3,8,12,4,14,9,10,5,20,7,5,13,15,6,12,15,11,92,6,14,5,20,6,15,9,6,18,7,8,4,11,6,6,9,9,21,17,6,14,18,5,11,6,14,12,7,14,4,6,7,12,15,19,21,20,6,12,20,52,38,6,5,9,17,4,9,19,4,7,15,5,10,4,5,3,6,10,7,12,5,12,15,5,10,13,3,7,6,12,4,8,16,5,8,4,12,8,14,20,5,8,8,6,10,15,10,23,2,10,6,11,5,6,4,9,21,6,13,6,15,4,4,7,6,3,4,17,8,18,20,145,7,19,5,7,9,11,7,11,20,4,13,4,11,13,27,10,12,4,9,6,11,5,15,10,15,7,15,6,62,3,10,6,11,8,16,20,6,12,6,7,15,8,11,14,4,17,18,10,6,6,11,15,6,12,16,17,18,19,14,20,45,35,70,3,17,4,11,22,5,9,12,4,8,17,3,6,12,5,10,3,10,5,9,14,2,9,9,16,5,13,2,5,9,3,12,4,7,11,4,5,3,9,12,4,12,4,12,9,9,5,10,2,4,10,5,13,5,6,6,5,10,7,14,19,6,7,12,8,20,8,13,7,13,14,4,12,10,10,22,11,12,17,24,20,18,16,15,19,10,8,20,25,9,16,14,22,13,3,3,3,3,54,42,17,37,45,15,4,3,15,2,32,4,6,8,33,5,10,16,5,8,15,5,11,4,9,12,4,11,6,11,6,10,6,10,6,11,3,6,12,8,16,4,9,17,4,9,3,7,11,6,12,14,5,8,15,13,14,3,5,12,4,12,25,3,7,5,11,10,7,10,15,6,13,10,3,14,6,11,14,5,17,7,12,5,14,6,19,7,16,4,5,4,7,15,3,6,10,5,13,4,11,13,6,19,4,5,10,2,6,12,22,12,1,8,6,10,3,6,6,2,12,21,5,10,3,6,10,6,10,18,5,26,11,4,8,7,9,14,16,10,28,5,16,16,5,15,5,12,14,3,8,14,18,11,16,21,19,20,15,15,32,29,15,30,14,6,15,4,7,16,4,10,15,3,6,15,4,10,3,7,12,3,3,12,6,15,1,2,11,9,17,6,21,12,3,6,8,8,17,2,8,4,8,4,15,5,13,5,18,5,13,5,10,8,25,13,27,10,8,2,3,3,8,20,2,4,15,3,7,10,20,5,15,30,58,50,7,5,17,3,7,16,4,7,18,4,6,18,3,6,11,4,7,4,5,15,6,17,6,1,2,5,8,2,4,7,10,25,3,18,3,9,2,10,6,12,5,21,3,7,12,1,15,20,5,20,5,13,3,19,23,3,4,20,3,2,9,30,39,6,12,16,18,12,19,13,2,1,34,40,12,24,18,38,92,3,55,24,10,7,6,36,55,18,15,2,25,3,7,21,3,6,14,3,7,19,3,6,2,8,22,4,4,4,6,12,4,5,6,13,3,10,3,10,3,11,28,2,3,4,22,38,8,5,13,4,16,7,30,6,16,1,2,4,6,21,4,8,15,16,8,10,8,15,16,2,3,30,3,3,13,25,14,9,3,12,12,18,23,23,20,18,5,14,30,28,29,200,6,19,18,12,21,22,20,11,18,18,24,30,13,25,16,4,9,15,4,10,16,5,12,18,5,10,3,10,2,10,3,4,9,3,3,3,5,3,6,14,6,4,6,23,6,15,16,3,12,4,14,5,11,2,7,6,12,9,19,13,3,9,2,3,2,19,4,7,7,12,12,15,13,13,10,18,16,25,7,15,6,20,16,12,45,25,120,3,12,18,32,36,20,22,12,12,14,32,23,9,6,18,13,12,16,5,8,21,1,12,15,19,27,4,20,14,25,35,35,15,4,1,2,18,10,14,12,20,18,35,52,15,16,2,3];
 const PESO = [69,130,1000,85,190,905,90,225,855,29,99,320,32,100,295,18,300,395,35,185,20,380,69,650,60,300,120,295,70,200,600,90,195,620,75,400,99,199,55,120,75,550,54,86,186,54,295,300,125,8,333,42,320,196,766,280,320,190,1550,124,200,540,195,565,480,195,705,1300,40,64,155,455,550,200,1050,3000,300,950,360,785,60,600,150,392,852,900,1200,300,300,40,1325,1,1,405,2100,324,756,65,600,104,666,25,1200,65,450,498,502,655,10,95,1150,1200,346,350,800,80,250,150,390,345,800,545,560,406,300,445,550,884,100,2350,2200,40,65,290,245,250,365,75,350,115,405,590,4600,554,526,600,33,165,2100,1220,40,64,158,1005,79,190,795,95,250,888,60,325,212,408,108,356,85,335,750,120,225,20,30,10,15,32,20,150,78,133,615,58,85,285,380,339,5,10,30,115,18,85,380,85,750,265,270,21,795,10,50,285,415,72,1258,140,648,4000,78,487,39,1180,205,540,280,88,1258,350,550,65,558,50,120,285,160,2200,505,108,350,1520,335,1200,325,712,580,210,480,60,235,214,755,468,1780,1980,1870,720,1520,2020,2160,1990,50,50,216,522,25,195,520,76,280,819,136,370,175,325,36,100,284,115,316,26,325,550,40,280,596,23,198,95,280,66,202,484,17,36,45,392,240,465,1305,55,120,12,163,405,840,864,2538,20,970,110,326,110,115,600,1200,3600,112,315,152,402,42,42,177,177,20,103,800,208,888,1300,3980,240,2200,804,306,715,50,150,153,820,513,774,12,206,403,525,1680,1540,19,236,115,328,215,1080,238,604,125,682,74,1620,8,220,23,125,150,306,1000,10,470,140,168,2565,395,876,1506,525,270,226,234,87,421,1105,1026,952,2025,5500,2300,1750,2050,400,600,3520,9500,2065,11,608,102,970,3100,62,220,550,52,230,845,20,155,249,200,315,22,255,95,305,420,12,145,315,1025,570,1495,34,65,233,55,385,39,295,335,33,93,63,299,203,12,150,55,333,44,273,39,438,6,192,380,605,1870,150,130,244,19,1080,205,560,950,1050,202,540,495,3000,120,615,230,444,270,70,240,650,505,1355,340,1800,1400,2828,1286,1386,680,380,515,255,259,425,2910,340,520,3400,1066,266,3,3,3,3,6830,3360,4300,4200,7500,856,31,14,505,21,3200,40,81,160,630,99,555,1500,59,245,946,116,270,41,147,610,101,375,105,305,110,280,135,290,233,605,21,150,290,298,795,180,1020,2600,21,105,85,404,310,125,400,870,45,170,620,555,510,25,73,205,53,585,2005,6,66,66,163,180,152,334,963,375,929,280,145,2000,118,300,140,15,765,165,810,95,320,310,1073,125,811,58,75,58,180,440,10,80,201,55,242,57,410,575,195,925,50,59,330,10,105,330,1350,316,6,143,188,1100,210,510,810,3,220,805,90,345,31,130,343,180,360,1055,85,2600,1480,77,253,110,200,355,1390,920,3300,102,700,946,105,410,90,395,580,330,173,500,1600,288,460,2500,2600,2000,630,610,3300,3450,680,3250,485,65,825,90,290,900,94,145,390,70,109,400,50,424,17,160,245,25,84,170,135,815,1,9,100,310,910,80,1360,280,35,85,20,45,530,5,155,35,50,35,470,310,960,73,815,83,353,60,210,260,2700,252,2250,235,215,22,57,28,175,1505,30,70,710,50,125,995,5050,80,850,2150,2030,3050,88,90,1950,15,160,366,43,250,830,75,175,440,12,148,260,60,142,44,105,450,70,1800,34,2,5,92,250,3,80,145,1100,9200,40,820,15,185,15,115,48,222,68,1350,32,82,214,3,760,828,120,1080,700,2500,12,1205,1005,3,199,2120,33,7,190,1850,2100,297,470,782,205,186,455,212,1,9999,2300,1200,555,3336,250,1000,9999,1,8880,2300,805,222,18,1500,8200,130,445,80,8000,50,140,900,45,90,330,40,115,452,25,60,18,160,750,80,195,408,89,199,22,25,60,430,85,1155,135,340,120,780,3105,5,10,130,76,655,180,10,300,110,400,10,1200,40,390,2,4,34,48,51,55,125,610,460,280,4,1170,582,666,3,5,620,10,38,420,5200,890,280,30,1000,6500,1900,1500,2150,1750,400,20,110,500,1100,2100,9500,120,1050,700,1450,2000,8000,445,77,951,890,2900,1100,430,605,480,41,122,312,98,307,3265,61,215,619,102,1200,40,165,10,175,25,65,410,18,23,109,149,65,119,482,24,160,1050,2400,105,850,620,4,1130,36,386,160,610,7,272,6,60,330,580,790,30,150,10,35,15,900,89,591,1128,18,54,429,602,602,350,1200,630,3100,80,450,350,150,370,450,7000,900,2200,80,560,2230,1600,392,1200,3200,80,210,40,920,600,2400,110,3807,1110,360,3030,170,300,2100,50,300,742,1522,6997,49,3800,350,3030,2400,2800,1250,44,11,22,920,122,301,398,600,930,5900,4800,1625,1560,65,3];
+/* Do masterfile do Pokémon GO: ataque, defesa e vigor base de cada Pokémon ("" = não tem
+   no arquivo) e o multiplicador de PC de cada nível inteiro, do 1 ao 51. */
+const STATS_GO = '118 111 128|151 143 155|198 189 190|116 93 118|158 126 151|223 173 186|94 121 127|126 155 153|171 207 188|55 55 128|45 80 137|167 137 155|63 50 120|46 75 128|169 130 163|85 73 120|117 105 160|166 154 195|103 70 102|161 139 146|112 60 120|182 133 163|110 97 111|167 153 155|112 96 111|193 151 155|126 120 137|182 175 181|86 89 146|117 120 172|180 173 207|105 76 130|137 111 156|204 156 191|107 108 172|178 162 216|96 109 116|169 190 177|80 41 251|156 90 295|83 73 120|161 150 181|131 112 128|153 136 155|202 167 181|121 99 111|165 146 155|100 100 155|179 143 172|109 78 67|167 134 111|92 78 120|150 136 163|122 95 137|191 162 190|148 82 120|207 138 163|136 93 146|227 166 207|101 82 120|130 123 163|182 184 207|195 82 93|232 117 120|271 167 146|137 82 172|177 125 190|234 159 207|139 61 137|172 92 163|207 135 190|97 149 120|166 209 190|132 132 120|164 164 146|211 198 190|170 127 137|207 162 163|109 98 207|177 180 216|165 121 93|223 169 137|124 115 141|158 83 111|218 140 155|85 121 163|139 177 207|135 90 190|190 172 233|116 134 102|186 256 137|186 67 102|223 107 128|261 149 155|85 232 111|89 136 155|144 193 198|181 124 102|240 181 146|109 111 120|173 173 155|107 125 155|233 149 216|90 144 137|144 186 155|224 181 137|193 197 137|108 137 207|119 141 120|174 197 163|140 127 190|222 171 233|60 128 487|183 169 163|181 165 233|129 103 102|187 156 146|123 110 128|175 147 190|137 112 102|210 184 155|192 205 120|218 170 172|223 151 163|198 158 163|206 154 163|238 182 163|198 183 181|29 85 85|237 186 216|165 174 277|91 91 134|104 114 146|205 161 277|232 182 163|246 179 163|153 136 163|155 153 111|207 201 172|148 140 102|220 186 155|221 159 190|190 169 330|192 236 207|253 185 207|251 181 207|119 91 121|163 135 156|263 198 209|300 182 214|210 210 225|92 122 128|122 155 155|168 202 190|116 93 118|158 126 151|223 173 186|117 109 137|150 142 163|205 188 198|79 73 111|148 125 198|67 88 155|145 156 225|72 118 120|107 179 146|105 73 120|161 124 172|194 178 198|106 97 181|146 137 268|77 53 85|75 79 137|69 32 207|67 116 111|139 181 146|134 89 120|192 146 163|114 79 146|145 109 172|211 169 207|169 186 181|37 93 172|112 152 225|167 176 172|174 179 207|67 94 111|91 120 146|118 183 181|136 112 146|55 55 102|185 135 181|154 94 163|75 66 146|152 143 216|261 175 163|126 240 216|175 87 155|177 180 216|167 154 155|136 91 134|60 106 382|182 133 172|108 122 137|161 205 181|131 128 225|143 184 163|148 272 181|137 85 155|212 131 207|184 138 163|236 181 172|17 396 85|234 179 190|189 146 146|142 93 155|236 144 207|118 71 120|139 191 137|90 69 137|181 138 225|118 156 146|127 69 111|197 141 181|128 90 128|148 226 163|148 226 163|152 83 128|224 144 181|194 194 181|107 98 207|214 185 207|198 180 198|192 131 177|40 83 146|64 64 111|173 207 137|153 91 128|135 101 128|151 99 128|157 193 216|129 169 496|241 195 207|235 171 251|180 235 225|115 93 137|155 133 172|251 207 225|193 310 235|239 244 214|210 210 225|124 94 120|172 120 137|223 169 172|130 87 128|163 115 155|240 141 190|126 93 137|156 133 172|208 175 225|96 61 111|171 132 172|58 80 116|142 128 186|75 59 128|60 77 137|189 98 155|60 77 137|98 162 155|71 77 120|112 119 155|173 176 190|71 77 120|134 78 172|200 121 207|106 61 120|185 124 155|106 61 120|175 174 155|79 59 99|117 90 116|237 195 169|93 87 120|192 150 172|74 110 155|241 144 155|104 92 155|159 145 190|290 166 284|80 126 104|199 112 156|153 73 1|92 42 162|134 81 197|179 137 232|99 54 176|209 114 302|36 71 137|82 215 102|84 79 137|132 127 172|141 136 137|155 141 137|121 141 137|158 198 155|198 257 172|78 107 102|121 152 155|123 78 120|215 127 172|167 129 155|147 150 155|143 166 163|143 166 163|186 131 137|80 99 172|140 159 225|171 39 128|243 83 172|136 68 277|175 87 347|119 79 155|194 136 172|151 203 172|125 122 155|171 188 190|116 116 155|162 78 128|134 99 137|205 168 190|156 74 137|221 115 172|76 132 128|141 201 181|222 124 177|196 118 177|178 153 207|178 153 207|93 82 137|151 141 242|141 99 125|224 142 160|77 124 120|140 229 155|105 150 165|152 194 200|176 100 128|222 174 181|29 85 85|192 219 216|139 139 172|161 189 155|138 65 127|218 126 162|70 162 85|124 234 120|136 163 223|175 170 181|246 120 163|41 86 216|95 95 137|162 162 190|95 90 172|137 132 207|182 176 242|133 135 111|197 179 146|211 179 146|162 203 225|81 128 125|134 93 128|172 155 163|277 168 216|96 132 120|138 176 155|257 228 190|179 309 190|179 309 190|143 285 190|228 246 190|268 212 190|270 228 205|270 228 205|284 170 213|210 210 225|345 115 137|119 110 146|157 143 181|202 188 216|113 86 127|158 105 162|222 151 183|112 102 142|150 139 162|210 186 197|101 58 120|142 94 146|234 140 198|80 73 153|162 119 188|45 74 114|160 100 184|117 64 128|159 95 155|232 156 190|91 109 120|243 185 155|218 71 167|295 109 219|76 195 102|94 286 155|53 83 120|141 180 155|185 98 172|59 83 102|149 190 172|94 172 155|132 67 146|221 114 198|108 92 128|170 153 172|103 105 183|169 143 244|205 143 181|117 80 207|180 102 312|130 105 146|156 194 163|211 187 155|243 103 225|109 82 135|172 133 174|114 94 128|121 90 160|184 132 230|43 154 149|161 213 167|124 133 137|125 142 85|25 77 225|183 91 183|169 199 137|124 84 151|172 125 169|261 193 239|137 117 286|127 78 120|236 144 172|124 118 169|201 191 239|93 151 120|180 202 172|116 76 134|211 133 195|187 136 179|96 116 135|142 170 170|105 179 128|115 105 155|178 158 207|243 171 172|238 205 172|161 181 242|241 190 251|207 184 225|249 163 181|247 172 181|225 217 198|231 156 200|216 219 163|238 205 163|185 222 181|247 146 242|264 150 198|237 195 169|135 275 155|180 254 128|171 150 172|185 159 137|156 270 181|212 212 190|270 151 181|275 211 205|280 215 189|251 213 209|287 210 221|187 225 284|152 258 260|162 162 190|210 210 225|285 198 172|210 210 225|238 238 237|210 210 225|88 107 128|122 152 155|161 204 181|115 85 163|173 106 207|235 127 242|117 85 146|159 116 181|212 157 216|98 73 128|165 139 155|107 86 128|145 126 163|206 182 198|98 73 121|187 106 162|104 94 137|206 133 181|104 94 137|206 133 181|104 94 137|206 133 181|111 92 183|183 166 253|98 80 137|144 107 158|226 146 190|118 64 128|211 136 181|121 110 146|174 143 172|226 201 198|107 85 163|161 119 167|154 85 155|255 129 242|114 163 230|134 87 181|180 134 198|243 158 233|98 78 137|128 109 181|188 150 233|172 160 260|231 153 181|96 124 128|115 162 146|205 165 181|83 99 102|100 173 120|203 175 155|71 111 120|164 176 155|119 91 128|214 155 172|189 129 172|132 69 137|155 90 155|229 158 216|153 86 172|263 114 233|201 130 181|118 128 137|188 200 172|132 132 137|163 222 163|204 167 176|95 141 116|163 237 151|134 146 144|192 197 179|213 89 146|292 139 181|96 122 137|181 164 190|153 78 120|250 127 155|98 80 146|198 130 181|98 112 128|137 153 155|176 205 172|170 83 128|208 103 163|214 148 242|84 96 158|182 132 181|118 106 113|151 138 139|218 184 174|115 100 155|198 146 190|158 127 146|137 87 137|223 187 172|97 91 170|155 139 249|115 134 146|159 178 225|138 131 338|110 98 137|201 128 172|82 155 127|158 223 179|98 121 120|150 174 155|199 214 155|105 78 111|156 130 163|217 152 198|148 100 146|221 163 181|108 98 137|169 115 155|271 182 155|154 101 130|212 123 165|284 172 183|128 74 146|233 152 216|190 218 190|72 140 137|220 120 190|144 171 240|160 98 128|258 127 163|213 170 184|127 92 153|222 154 205|154 114 128|232 176 163|195 182 216|150 97 172|232 152 225|105 139 172|129 205 242|204 129 198|217 188 151|116 93 141|159 135 176|256 188 211|156 107 146|264 189 198|192 229 209|260 192 209|192 229 209|266 164 188|266 164 188|275 211 205|275 211 205|261 182 205|246 170 245|260 192 209|250 225 225|252 199 174|110 106 148|146 156 156|201 204 204|116 102 120|171 130 153|230 189 181|122 84 121|168 114 144|223 152 176|68 72 116|112 155 198|95 80 128|145 110 158|176 155 186|63 63 116|48 89 128|176 103 190|139 112 158|221 149 200|108 120 127|136 151 144|212 244 186|123 102 165|196 146 265|145 107 167|226 146 216|164 167 181|120 114 158|166 167 179|135 139 128|188 206 153|97 272 155|110 113 186|173 150 226|109 119 158|168 163 193|98 95 142|177 165 200|96 120 123|194 205 176|109 109 137|177 207 163|108 117 137|221 171 174|115 78 127|219 168 158|158 123 151|227 191 193|124 109 184|186 163 265|203 205 216|195 153 186|164 134 167|95 285 137|101 112 128|159 176 169|220 242 207|160 179 149|125 103 125|201 154 198|122 124 127|171 219 146|117 120 146|196 240 216|83 73 120|205 175 198|250 185 246|250 185 246|203 232 239|190 285 137|261 187 173|252 216 190|102 99 169|142 139 186|210 179 186|128 79 128|174 103 163|214 175 216|120 103 137|168 145 155|232 195 190|136 59 111|159 100 146|222 146 190|122 56 134|194 113 204|115 85 132|145 161 149|254 158 184|150 104 132|231 138 219|196 145 181|110 81 120|198 146 155|117 78 128|231 140 181|46 43 128|98 110 137|114 273 137|175 121 172|214 174 225|72 117 116|126 219 169|100 64 120|192 169 172|108 119 120|154 168 155|136 80 134|228 130 169|136 95 172|226 141 260|55 69 123|78 94 141|222 195 176|165 215 139|168 192 207|222 160 225|67 74 93|218 226 181|120 118 146|178 178 198|97 224 146|184 184 216|198 198 216|116 194 155|216 165 163|165 215 155|190 145 163|177 199 146|208 145 169|231 164 186|233 179 172|102 108 128|145 162 146|222 240 181|250 181 172|259 208 172|249 215 172|189 254 172|54 57 125|54 242 125|255 191 264|255 191 264|249 210 240|236 196 216|316 85 174|330 144 195|207 199 219|323 182 139|188 99 440|251 195 219|246 225 190|265 190 207|145 133 167|263 159 177|213 298 156|315 148 142|252 177 204|118 99 130|226 190 264|122 91 137|165 134 172|239 168 225|132 79 137|170 125 163|238 163 190|132 79 137|186 113 163|262 142 172|95 86 172|160 156 260|88 67 116|129 110 169|163 192 221|46 67 93|87 157 137|156 240 155|85 82 120|172 164 172|70 104 120|148 211 155|76 97 123|159 198 176|114 85 137|213 164 207|80 90 153|197 131 170|73 91 102|114 157 190|146 198 242|71 116 120|214 144 172|178 146 242|103 123 141|202 207 176|173 163 172|118 72 121|258 127 156|97 65 120|224 140 181|118 90 137|220 158 225|121 103 137|209 162 190|134 96 120|248 189 155|98 93 123|153 133 149|237 182 149|103 69 128|145 102 163|227 139 216|180 194 212|195 162 172|253 182 155|248 176 158|212 179 190|163 237 151|90 97 128|203 203 163|193 170 163|176 161 134|76 59 102|230 155 172|222 182 225|148 195 181|208 166 155|192 121 151|140 91 176|226 126 263|195 165 207|190 166 207|175 185 207|171 185 207|239 185 172|117 61 99|163 105 169|266 170 204|254 236 192|254 236 192|278 192 268|170 112 155|254 177 225|242 215 233|250 125 190|202 101 400|246 223 225|273 146 205|162 162 225|206 145 230|253 174 172|243 181 277||259 158 190|222 171 198|281 162 179|116 99 120|157 128 156|233 153 183|112 96 167|162 134 191|207 178 232|120 86 146|162 123 172|236 159 198|81 79 144|186 153 242|70 77 111|139 166 155|81 65 107|199 144 174|95 45 128|147 82 155|232 141 172|98 90 137|159 157 179|102 126 114|159 212 149|100 89 121|137 131 141|219 189 186|185 105 193|95 108 146|105 160 155|171 212 225|92 74 120|234 185 198|239 189 181|104 73 156|184 165 240|105 75 120|221 132 172|140 108 155|230 168 190|124 70 120|199 149 160|121 64 120|228 144 146|97 149 120|166 209 190|184 185 172|118 76 137|216 130 163|86 108 121|201 178 181|105 60 102|204 127 216|85 110 137|109 145 163|155 196 198|109 52 67|205 136 111|198 172 172|90 80 172|143 144 225|123 107 128|229 168 190|205 142 172|161 219 172|187 104 134|246 177 195|105 106 137|186 195 176|227 145 193|119 80 239|208 123 347|196 139 207|176 178 312|226 166 169|220 178 242|127 151 277|209 136 260|188 150 268|238 203 225|249 209 251|139 234 251|232 190 244|280 235 146|261 193 198|244 195 198|227 216 207|266 211 148|245 177 319|249 179 214|281 196 190|250 200 225|134 86 163|173 128 207|254 168 229|140 76 128|252 190 202|186 242 198|261 167 190|194 203 321|269 221 146|280 196 233|279 171 179|263 223 205|263 223 205|233 171 203|236 194 189|173 184 190|134 96 120|225 191 174|220 191 186|238 157 186|169 208 186|219 178 173|250 215 207|216 186 235|205 208 213|235 165 245|227 195 189|221 200 189|126 165 207|164 248 186'.split('|');
+const CPM = [0.094,0.16639787,0.21573247,0.25572005,0.29024988,0.3210876,0.34921268,0.3752356,0.39956728,0.4225,0.44310755,0.4627984,0.48168495,0.49985844,0.51739395,0.5343543,0.5507927,0.5667545,0.5822789,0.5974,0.6121573,0.6265671,0.64065295,0.65443563,0.667934,0.6811649,0.69414365,0.7068842,0.7193991,0.7317,0.7377695,0.74378943,0.74976104,0.7556855,0.76156384,0.76739717,0.7731865,0.77893275,0.784637,0.7903,0.7953,0.8003,0.8053,0.8103,0.8153,0.8203,0.8253,0.8303,0.8353,0.8403,0.8453];
 
 /* A lista escrita à mão: posição 0 é o #001. */
 const NOMES = 'Bulbasaur|Ivysaur|Venusaur|Charmander|Charmeleon|Charizard|Squirtle|Wartortle|Blastoise|Caterpie|Metapod|Butterfree|Weedle|Kakuna|Beedrill|Pidgey|Pidgeotto|Pidgeot|Rattata|Raticate|Spearow|Fearow|Ekans|Arbok|Pikachu|Raichu|Sandshrew|Sandslash|Nidoran♀|Nidorina|Nidoqueen|Nidoran♂|Nidorino|Nidoking|Clefairy|Clefable|Vulpix|Ninetales|Jigglypuff|Wigglytuff|Zubat|Golbat|Oddish|Gloom|Vileplume|Paras|Parasect|Venonat|Venomoth|Diglett|Dugtrio|Meowth|Persian|Psyduck|Golduck|Mankey|Primeape|Growlithe|Arcanine|Poliwag|Poliwhirl|Poliwrath|Abra|Kadabra|Alakazam|Machop|Machoke|Machamp|Bellsprout|Weepinbell|Victreebel|Tentacool|Tentacruel|Geodude|Graveler|Golem|Ponyta|Rapidash|Slowpoke|Slowbro|Magnemite|Magneton|Farfetch\'d|Doduo|Dodrio|Seel|Dewgong|Grimer|Muk|Shellder|Cloyster|Gastly|Haunter|Gengar|Onix|Drowzee|Hypno|Krabby|Kingler|Voltorb|Electrode|Exeggcute|Exeggutor|Cubone|Marowak|Hitmonlee|Hitmonchan|Lickitung|Koffing|Weezing|Rhyhorn|Rhydon|Chansey|Tangela|Kangaskhan|Horsea|Seadra|Goldeen|Seaking|Staryu|Starmie|Mr. Mime|Scyther|Jynx|Electabuzz|Magmar|Pinsir|Tauros|Magikarp|Gyarados|Lapras|Ditto|Eevee|Vaporeon|Jolteon|Flareon|Porygon|Omanyte|Omastar|Kabuto|Kabutops|Aerodactyl|Snorlax|Articuno|Zapdos|Moltres|Dratini|Dragonair|Dragonite|Mewtwo|Mew|Chikorita|Bayleef|Meganium|Cyndaquil|Quilava|Typhlosion|Totodile|Croconaw|Feraligatr|Sentret|Furret|Hoothoot|Noctowl|Ledyba|Ledian|Spinarak|Ariados|Crobat|Chinchou|Lanturn|Pichu|Cleffa|Igglybuff|Togepi|Togetic|Natu|Xatu|Mareep|Flaaffy|Ampharos|Bellossom|Marill|Azumarill|Sudowoodo|Politoed|Hoppip|Skiploom|Jumpluff|Aipom|Sunkern|Sunflora|Yanma|Wooper|Quagsire|Espeon|Umbreon|Murkrow|Slowking|Misdreavus|Unown|Wobbuffet|Girafarig|Pineco|Forretress|Dunsparce|Gligar|Steelix|Snubbull|Granbull|Qwilfish|Scizor|Shuckle|Heracross|Sneasel|Teddiursa|Ursaring|Slugma|Magcargo|Swinub|Piloswine|Corsola|Remoraid|Octillery|Delibird|Mantine|Skarmory|Houndour|Houndoom|Kingdra|Phanpy|Donphan|Porygon2|Stantler|Smeargle|Tyrogue|Hitmontop|Smoochum|Elekid|Magby|Miltank|Blissey|Raikou|Entei|Suicune|Larvitar|Pupitar|Tyranitar|Lugia|Ho-Oh|Celebi|Treecko|Grovyle|Sceptile|Torchic|Combusken|Blaziken|Mudkip|Marshtomp|Swampert|Poochyena|Mightyena|Zigzagoon|Linoone|Wurmple|Silcoon|Beautifly|Cascoon|Dustox|Lotad|Lombre|Ludicolo|Seedot|Nuzleaf|Shiftry|Taillow|Swellow|Wingull|Pelipper|Ralts|Kirlia|Gardevoir|Surskit|Masquerain|Shroomish|Breloom|Slakoth|Vigoroth|Slaking|Nincada|Ninjask|Shedinja|Whismur|Loudred|Exploud|Makuhita|Hariyama|Azurill|Nosepass|Skitty|Delcatty|Sableye|Mawile|Aron|Lairon|Aggron|Meditite|Medicham|Electrike|Manectric|Plusle|Minun|Volbeat|Illumise|Roselia|Gulpin|Swalot|Carvanha|Sharpedo|Wailmer|Wailord|Numel|Camerupt|Torkoal|Spoink|Grumpig|Spinda|Trapinch|Vibrava|Flygon|Cacnea|Cacturne|Swablu|Altaria|Zangoose|Seviper|Lunatone|Solrock|Barboach|Whiscash|Corphish|Crawdaunt|Baltoy|Claydol|Lileep|Cradily|Anorith|Armaldo|Feebas|Milotic|Castform|Kecleon|Shuppet|Banette|Duskull|Dusclops|Tropius|Chimecho|Absol|Wynaut|Snorunt|Glalie|Spheal|Sealeo|Walrein|Clamperl|Huntail|Gorebyss|Relicanth|Luvdisc|Bagon|Shelgon|Salamence|Beldum|Metang|Metagross|Regirock|Regice|Registeel|Latias|Latios|Kyogre|Groudon|Rayquaza|Jirachi|Deoxys|Turtwig|Grotle|Torterra|Chimchar|Monferno|Infernape|Piplup|Prinplup|Empoleon|Starly|Staravia|Staraptor|Bidoof|Bibarel|Kricketot|Kricketune|Shinx|Luxio|Luxray|Budew|Roserade|Cranidos|Rampardos|Shieldon|Bastiodon|Burmy|Wormadam|Mothim|Combee|Vespiquen|Pachirisu|Buizel|Floatzel|Cherubi|Cherrim|Shellos|Gastrodon|Ambipom|Drifloon|Drifblim|Buneary|Lopunny|Mismagius|Honchkrow|Glameow|Purugly|Chingling|Stunky|Skuntank|Bronzor|Bronzong|Bonsly|Mime Jr.|Happiny|Chatot|Spiritomb|Gible|Gabite|Garchomp|Munchlax|Riolu|Lucario|Hippopotas|Hippowdon|Skorupi|Drapion|Croagunk|Toxicroak|Carnivine|Finneon|Lumineon|Mantyke|Snover|Abomasnow|Weavile|Magnezone|Lickilicky|Rhyperior|Tangrowth|Electivire|Magmortar|Togekiss|Yanmega|Leafeon|Glaceon|Gliscor|Mamoswine|Porygon-Z|Gallade|Probopass|Dusknoir|Froslass|Rotom|Uxie|Mesprit|Azelf|Dialga|Palkia|Heatran|Regigigas|Giratina|Cresselia|Phione|Manaphy|Darkrai|Shaymin|Arceus|Victini|Snivy|Servine|Serperior|Tepig|Pignite|Emboar|Oshawott|Dewott|Samurott|Patrat|Watchog|Lillipup|Herdier|Stoutland|Purrloin|Liepard|Pansage|Simisage|Pansear|Simisear|Panpour|Simipour|Munna|Musharna|Pidove|Tranquill|Unfezant|Blitzle|Zebstrika|Roggenrola|Boldore|Gigalith|Woobat|Swoobat|Drilbur|Excadrill|Audino|Timburr|Gurdurr|Conkeldurr|Tympole|Palpitoad|Seismitoad|Throh|Sawk|Sewaddle|Swadloon|Leavanny|Venipede|Whirlipede|Scolipede|Cottonee|Whimsicott|Petilil|Lilligant|Basculin|Sandile|Krokorok|Krookodile|Darumaka|Darmanitan|Maractus|Dwebble|Crustle|Scraggy|Scrafty|Sigilyph|Yamask|Cofagrigus|Tirtouga|Carracosta|Archen|Archeops|Trubbish|Garbodor|Zorua|Zoroark|Minccino|Cinccino|Gothita|Gothorita|Gothitelle|Solosis|Duosion|Reuniclus|Ducklett|Swanna|Vanillite|Vanillish|Vanilluxe|Deerling|Sawsbuck|Emolga|Karrablast|Escavalier|Foongus|Amoonguss|Frillish|Jellicent|Alomomola|Joltik|Galvantula|Ferroseed|Ferrothorn|Klink|Klang|Klinklang|Tynamo|Eelektrik|Eelektross|Elgyem|Beheeyem|Litwick|Lampent|Chandelure|Axew|Fraxure|Haxorus|Cubchoo|Beartic|Cryogonal|Shelmet|Accelgor|Stunfisk|Mienfoo|Mienshao|Druddigon|Golett|Golurk|Pawniard|Bisharp|Bouffalant|Rufflet|Braviary|Vullaby|Mandibuzz|Heatmor|Durant|Deino|Zweilous|Hydreigon|Larvesta|Volcarona|Cobalion|Terrakion|Virizion|Tornadus|Thundurus|Reshiram|Zekrom|Landorus|Kyurem|Keldeo|Meloetta|Genesect|Chespin|Quilladin|Chesnaught|Fennekin|Braixen|Delphox|Froakie|Frogadier|Greninja|Bunnelby|Diggersby|Fletchling|Fletchinder|Talonflame|Scatterbug|Spewpa|Vivillon|Litleo|Pyroar|Flabébé|Floette|Florges|Skiddo|Gogoat|Pancham|Pangoro|Furfrou|Espurr|Meowstic|Honedge|Doublade|Aegislash|Spritzee|Aromatisse|Swirlix|Slurpuff|Inkay|Malamar|Binacle|Barbaracle|Skrelp|Dragalge|Clauncher|Clawitzer|Helioptile|Heliolisk|Tyrunt|Tyrantrum|Amaura|Aurorus|Sylveon|Hawlucha|Dedenne|Carbink|Goomy|Sliggoo|Goodra|Klefki|Phantump|Trevenant|Pumpkaboo|Gourgeist|Bergmite|Avalugg|Noibat|Noivern|Xerneas|Yveltal|Zygarde|Diancie|Hoopa|Volcanion|Rowlet|Dartrix|Decidueye|Litten|Torracat|Incineroar|Popplio|Brionne|Primarina|Pikipek|Trumbeak|Toucannon|Yungoos|Gumshoos|Grubbin|Charjabug|Vikavolt|Crabrawler|Crabominable|Oricorio|Cutiefly|Ribombee|Rockruff|Lycanroc|Wishiwashi|Mareanie|Toxapex|Mudbray|Mudsdale|Dewpider|Araquanid|Fomantis|Lurantis|Morelull|Shiinotic|Salandit|Salazzle|Stufful|Bewear|Bounsweet|Steenee|Tsareena|Comfey|Oranguru|Passimian|Wimpod|Golisopod|Sandygast|Palossand|Pyukumuku|Type: Null|Silvally|Minior|Komala|Turtonator|Togedemaru|Mimikyu|Bruxish|Drampa|Dhelmise|Jangmo-o|Hakamo-o|Kommo-o|Tapu Koko|Tapu Lele|Tapu Bulu|Tapu Fini|Cosmog|Cosmoem|Solgaleo|Lunala|Nihilego|Buzzwole|Pheromosa|Xurkitree|Celesteela|Kartana|Guzzlord|Necrozma|Magearna|Marshadow|Poipole|Naganadel|Stakataka|Blacephalon|Zeraora|Meltan|Melmetal|Grookey|Thwackey|Rillaboom|Scorbunny|Raboot|Cinderace|Sobble|Drizzile|Inteleon|Skwovet|Greedent|Rookidee|Corvisquire|Corviknight|Blipbug|Dottler|Orbeetle|Nickit|Thievul|Gossifleur|Eldegoss|Wooloo|Dubwool|Chewtle|Drednaw|Yamper|Boltund|Rolycoly|Carkol|Coalossal|Applin|Flapple|Appletun|Silicobra|Sandaconda|Cramorant|Arrokuda|Barraskewda|Toxel|Toxtricity|Sizzlipede|Centiskorch|Clobbopus|Grapploct|Sinistea|Polteageist|Hatenna|Hattrem|Hatterene|Impidimp|Morgrem|Grimmsnarl|Obstagoon|Perrserker|Cursola|Sirfetch\'d|Mr. Rime|Runerigus|Milcery|Alcremie|Falinks|Pincurchin|Snom|Frosmoth|Stonjourner|Eiscue|Indeedee|Morpeko|Cufant|Copperajah|Dracozolt|Arctozolt|Dracovish|Arctovish|Duraludon|Dreepy|Drakloak|Dragapult|Zacian|Zamazenta|Eternatus|Kubfu|Urshifu|Zarude|Regieleki|Regidrago|Glastrier|Spectrier|Calyrex|Wyrdeer|Kleavor|Ursaluna|Basculegion|Sneasler|Overqwil|Enamorus|Sprigatito|Floragato|Meowscarada|Fuecoco|Crocalor|Skeledirge|Quaxly|Quaxwell|Quaquaval|Lechonk|Oinkologne|Tarountula|Spidops|Nymble|Lokix|Pawmi|Pawmo|Pawmot|Tandemaus|Maushold|Fidough|Dachsbun|Smoliv|Dolliv|Arboliva|Squawkabilly|Nacli|Naclstack|Garganacl|Charcadet|Armarouge|Ceruledge|Tadbulb|Bellibolt|Wattrel|Kilowattrel|Maschiff|Mabosstiff|Shroodle|Grafaiai|Bramblin|Brambleghast|Toedscool|Toedscruel|Klawf|Capsakid|Scovillain|Rellor|Rabsca|Flittle|Espathra|Tinkatink|Tinkatuff|Tinkaton|Wiglett|Wugtrio|Bombirdier|Finizen|Palafin|Varoom|Revavroom|Cyclizar|Orthworm|Glimmet|Glimmora|Greavard|Houndstone|Flamigo|Cetoddle|Cetitan|Veluza|Dondozo|Tatsugiri|Annihilape|Clodsire|Farigiraf|Dudunsparce|Kingambit|Great Tusk|Scream Tail|Brute Bonnet|Flutter Mane|Slither Wing|Sandy Shocks|Iron Treads|Iron Bundle|Iron Hands|Iron Jugulis|Iron Moth|Iron Thorns|Frigibax|Arctibax|Baxcalibur|Gimmighoul|Gholdengo|Wo-Chien|Chien-Pao|Ting-Lu|Chi-Yu|Roaring Moon|Iron Valiant|Koraidon|Miraidon|Walking Wake|Iron Leaves|Dipplin|Poltchageist|Sinistcha|Okidogi|Munkidori|Fezandipiti|Ogerpon|Archaludon|Hydrapple|Gouging Fire|Raging Bolt|Iron Boulder|Iron Crown|Terapagos|Pecharunt'.split('|');
@@ -647,6 +707,11 @@ const favoritos = new Set(ler('dittospokedex:favoritos', []));
 /* 🎯 Lista de desejos: some sozinho quando a pessoa pega, com comemoração. */
 const desejos = new Set(ler('dittospokedex:desejos', []));
 let desejosFeitos = +ler('dittospokedex:desejosfeitos', 0) || 0;
+/* 📸 álbum (6 no cartão), 🗓️ eventos, 🥚 ovos e 🍬 doces por família. */
+const album = ler('dittospokedex:album', []).filter(x => x >= 1 && x <= TOTAL).slice(0, 6);
+const eventos = ler('dittospokedex:eventos', []).filter(e => e && e.nome);
+const ovos = ler('dittospokedex:ovos', []).filter(o => o && o.km);
+const doces = ler('dittospokedex:doces', {});
 /* ⚙️ Configurações */
 const config = Object.assign({ somAuto:false, cor:'ditto' }, ler('dittospokedex:config', {}));
 function gravarConfig(){ gravar('dittospokedex:config', config); }
@@ -878,10 +943,16 @@ function abrir(id){
     <h2 id="folha-nome"></h2>
     <div class="tipos" id="folha-tipos"></div>
     <p class="tamanho" id="tamanho"></p>
+    <p class="tamanho" id="pc-max"></p>
     <button type="button" class="som" id="tocar">🔊 Ouvir o som</button>
     <button type="button" class="fav" id="favorito" aria-pressed="false"></button>
     <button type="button" class="desejo" id="desejo" aria-pressed="false" hidden></button>
     <button type="button" class="desejo" id="por-no-time" hidden>👥 Pôr no time</button>
+    <div class="mais-acoes">
+      <button type="button" id="por-album" aria-pressed="false"></button>
+      <button type="button" id="comparar-este">🔍 Comparar</button>
+      <button type="button" id="calc-este">🧮 Calcular PC</button>
+    </div>
     <p class="som-aviso" id="som-aviso" hidden></p>
     <p class="status ${!noGo ? 'nao' : pegou ? 'tem' : 'falta'}">${!noGo
       ? '❌ Ainda não chegou no Pokémon GO'
@@ -890,6 +961,7 @@ function abrir(id){
       .map(([t, n]) => `<span>${n} ${tagsDe(id).includes(t) ? '✅' : '❌'}</span>`).join('')}</p>` : ''}
     <div class="acoes"></div>
     <div class="bloco" id="evolucoes"></div>
+    <div class="bloco" id="doces" hidden></div>
     <div class="bloco" id="fraquezas"></div>
     <div class="bloco" id="batalha" hidden></div>
     <div class="formas" hidden></div>
@@ -911,6 +983,19 @@ function abrir(id){
     salvar(); abrir(id); desenhar();
   };
   folha.querySelector('#tamanho').textContent = textoTamanho(id);
+  if(STATS_GO[id - 1]) folha.querySelector('#pc-max').textContent =
+    `💪 PC máximo no GO: ${calcularPC(id, 40)} no nível 40 · ${calcularPC(id, 50)} no nível 50 (100%)`;
+  const btAlbum = folha.querySelector('#por-album');
+  btAlbum.setAttribute('aria-pressed', String(album.includes(id)));
+  btAlbum.textContent = album.includes(id) ? '📸 No álbum' : '📸 Pôr no álbum';
+  btAlbum.onclick = () => {
+    if(album.includes(id)) album.splice(album.indexOf(id), 1);
+    else if(album.length >= 6){ brinde('📸 O álbum já tem 6. Tire um na 👤 conta.'); return; }
+    else album.push(id);
+    gravar('dittospokedex:album', album); abrir(id);
+  };
+  folha.querySelector('#comparar-este').onclick = () => abrirComparar(id);
+  folha.querySelector('#calc-este').onclick = () => abrirCalc(id);
   const btDesejo = folha.querySelector('#desejo');
   if(noGo && !pegou){
     btDesejo.hidden = false;
@@ -968,6 +1053,7 @@ function abrir(id){
     folha.querySelector('#folha-tipos').after(pk);
   }
   desenharEvolucoes(id, folha.querySelector('#evolucoes'));
+  if(noGo) desenharDoces(id, folha.querySelector('#doces'));
   desenharFraquezas(id, folha.querySelector('#fraquezas'));
   desenharBatalha(id, noGo, folha.querySelector('#batalha'));
 
@@ -1191,6 +1277,7 @@ function desenharFraquezas(id, caixa){
 
 function fechar(){
   if(jogoAtivo){ registrarPartida(); jogoAtivo = null; }
+  if(typeof pararEsquisito === 'function') pararEsquisito();
   pararSom();
   fundo.classList.remove('aberto');
   aberto = 0;
@@ -1439,6 +1526,7 @@ const JOGOS = {
   quem:   { nome:'🎮 Quem é?',  titulo:'🎮 Quem é esse Pokémon?' },
   tipos:  { nome:'🧩 Tipo',     titulo:'🧩 Qual é o tipo?' },
   numero: { nome:'🔢 Número',   titulo:'🔢 Qual é o número?' },
+  som:    { nome:'🎵 Som',      titulo:'🎵 De quem é esse som?' },
 };
 let jogoAtivo = null;
 function registrarPartida(){
@@ -1481,6 +1569,8 @@ function abrirJogo(j){
       const t = textoTipos(lista[Math.floor(Math.random() * lista.length)]);
       if(!vistos.has(t)){ vistos.add(t); opcoes.push(t); }
     }
+  } else if(j === 'som'){
+    opcoes = [certo, ...sortear(lista, 3, certo)].map(x => NOMES[x - 1]);
   } else {
     const nums = new Set([certo]);
     while(nums.size < 4){
@@ -1489,7 +1579,7 @@ function abrirJogo(j){
     }
     opcoes = [...nums].map(n => '#' + tres(n));
   }
-  const resposta = j === 'tipos' ? textoTipos(certo) : '#' + tres(certo);
+  const resposta = j === 'tipos' ? textoTipos(certo) : j === 'som' ? NOMES[certo - 1] : '#' + tres(certo);
   opcoes.sort(() => Math.random() - .5);
   rodada = { certo, respondeu:false };
   folha.innerHTML = `
@@ -1500,6 +1590,7 @@ function abrirJogo(j){
       <div class="chips centro" id="dificuldade"></div>
       <div class="placar-quiz"></div>
       <div class="arte mostra"></div>
+      <button type="button" class="som" id="tocar" hidden>🔊 Ouvir de novo</button>
       <p class="resultado" id="pergunta"></p>
       <div class="opcoes"></div>
       <p class="resultado" aria-live="polite" id="res"></p>
@@ -1517,9 +1608,18 @@ function abrirJogo(j){
     b.onclick = () => { quiz.dificuldade = k; gravar('dittospokedex:quiz', quiz); abrirJogo(j); };
     cd.appendChild(b);
   }
-  folha.querySelector('.arte').appendChild(foto(certo, true));
+  const fotoJogo = foto(certo, true);
+  if(j === 'som'){
+    /* Só o som: a foto fica escondida até responder. */
+    fotoJogo.style.visibility = 'hidden';
+    const bt = folha.querySelector('#tocar');
+    bt.hidden = false; bt.onclick = () => tocarSom(certo);
+    somDe = certo; tocarSom(certo);
+  }
+  folha.querySelector('.arte').appendChild(fotoJogo);
   folha.querySelector('#pergunta').textContent = j === 'tipos'
-    ? `De que tipo é o ${NOMES[certo - 1]}?` : `Qual é o número do ${NOMES[certo - 1]}?`;
+    ? `De que tipo é o ${NOMES[certo - 1]}?` : j === 'som' ? 'Escute e adivinhe!'
+    : `Qual é o número do ${NOMES[certo - 1]}?`;
   const caixa = folha.querySelector('.opcoes');
   for(const o of opcoes){
     const b = document.createElement('button');
@@ -1528,12 +1628,14 @@ function abrirJogo(j){
       if(rodada.respondeu) return;
       rodada.respondeu = true;
       const acertou = o === resposta;
+      const escondida = folha.querySelector('.arte > *'); if(escondida) escondida.style.visibility = '';
       for(const x of caixa.children) if(x.textContent === resposta) x.classList.add('certa');
       if(!acertou) b.classList.add('errada');
       const res = folha.querySelector('#res');
       if(acertou){
         seq++; pontosQuiz += 100;
-        if(j === 'tipos') quiz.acertosTipos = (quiz.acertosTipos || 0) + 1;
+        if(j === 'som') quiz.acertosSom = (quiz.acertosSom || 0) + 1;
+        else if(j === 'tipos') quiz.acertosTipos = (quiz.acertosTipos || 0) + 1;
         else quiz.acertosNumero = (quiz.acertosNumero || 0) + 1;
         res.textContent = '🎉 Acertou! +100';
         if(MARCOS.includes(seq)) brinde(`🔥 ${seq} seguidos! Que olho!`);
@@ -1835,6 +1937,9 @@ const MEDALHAS = [
   { id:'mega1', icone:'🟣', nome:'Mega!',           como:'Marcar a primeira Mega',   ok:() => [...pegueiForma].some(k => /-b-mega/.test(k)) },
   { id:'dmax1', icone:'🔴', nome:'Gigante de verdade', como:'Primeiro Dynamax',       ok:() => [...pegueiForma].some(k => /-b-dynamax$/.test(k)) },
   { id:'gmax1', icone:'🟥', nome:'Gigantamax!',     como:'Primeiro Gigantamax',      ok:() => [...pegueiForma].some(k => /-b-gmax$/.test(k)) },
+  { id:'som25', icone:'🎵', nome:'Ouvido de ouro',  como:'25 acertos no De quem é esse som?', ok:() => (quiz.acertosSom || 0) >= 25 },
+  { id:'ovo1',  icone:'🐣', nome:'Chocou!',         como:'Chocar um ovo no 🥚 Meus ovos', ok:() => (+ler('dittospokedex:chocados', 0) || 0) >= 1 },
+  { id:'alb6',  icone:'📸', nome:'Álbum cheio',     como:'6 Pokémon no álbum',       ok:() => album.length >= 6 },
   { id:'des1',  icone:'🎯', nome:'Desejo realizado', como:'Pegar um da lista de desejos', ok:() => desejosFeitos >= 1 },
   { id:'des10', icone:'🌠', nome:'Gênio da lâmpada', como:'Realizar 10 desejos',      ok:() => desejosFeitos >= 10 },
   { id:'tipo25',icone:'🧩', nome:'Sabe tudo de tipo', como:'25 acertos no Qual é o tipo?', ok:() => (quiz.acertosTipos || 0) >= 25 },
@@ -1867,6 +1972,9 @@ gravar('dittospokedex:medalhas', [...jaTem]);
 function brinde(texto){
   const b = document.createElement('div');
   b.className = 'brinde'; b.setAttribute('role', 'status'); b.textContent = texto;
+  /* Vários avisos juntos: um embaixo do outro, não um em cima do outro. */
+  const ja = document.querySelectorAll('.brinde').length;
+  if(ja) b.style.top = (14 + ja * 70) + 'px';
   document.body.appendChild(b);
   setTimeout(() => b.remove(), 3500);
 }
@@ -2195,6 +2303,15 @@ function cartaoTreinador(){
   d.querySelector('.nome').textContent = p.nome || 'Treinador sem nome';
   d.querySelector('.sub2').textContent = 'Cartão de treinador' + (time ? ` · ${time.emoji} Time ${time.nome}` : '') +
     (quiz.recorde ? ` · 🎮 recorde ${quiz.recorde}` : '');
+  if(album.length){
+    const al = document.createElement('div'); al.className = 'album-cartao';
+    for(let i = 0; i < 6; i++){
+      const c = document.createElement('span');
+      if(album[i]) c.appendChild(foto(album[i]));
+      al.appendChild(c);
+    }
+    d.querySelector('.favs').before(al);
+  }
   const favs = [...favoritos].sort((a, b) => a - b);
   const caixa = d.querySelector('.favs');
   for(const id of favs.slice(0, 7)) caixa.appendChild(foto(id));
@@ -2208,7 +2325,7 @@ function fazerCodigoConta(){
   return PREFIXO_CONTA + paraBase64(JSON.stringify({
     perfil: lerPerfil(), time: ler('dittospokedex:time', ''),
     peguei: [...peguei], especiais, formas: [...pegueiForma], favoritos: [...favoritos],
-    desejos: [...desejos], times,
+    desejos: [...desejos], times, album, eventos, ovos, doces,
     go: correcoesGo, quiz: { recorde: quiz.recorde || 0, acertos: quiz.acertos || 0, melhorSeq: quiz.melhorSeq || 0 },
   }));
 }
@@ -2249,6 +2366,14 @@ function juntarConta(d){
   if(d.perfil && typeof d.perfil === 'object' && !eu.nome){
     gravarPerfil({ nome: String(d.perfil.nome || '').slice(0, 20), simbolo: d.perfil.simbolo, fundo: d.perfil.fundo });
   }
+  for(const id of ids(d.album)) if(!album.includes(id) && album.length < 6) album.push(id);
+  gravar('dittospokedex:album', album);
+  if(Array.isArray(d.eventos)) for(const e of d.eventos) if(e && e.id && e.nome && !eventos.some(x => x.id === e.id)) eventos.push(e);
+  gravar('dittospokedex:eventos', eventos);
+  if(Array.isArray(d.ovos)) for(const o of d.ovos) if(o && o.id && !ovos.some(x => x.id === o.id) && ovos.length < 9) ovos.push(o);
+  gravar('dittospokedex:ovos', ovos);
+  if(d.doces && typeof d.doces === 'object') for(const [k, v] of Object.entries(d.doces)) if(!(k in doces) && v >= 0) doces[k] = +v;
+  gravar('dittospokedex:doces', doces);
   for(const id of ids(d.desejos)) if(!peguei.has(id)) desejos.add(id);
   if(d.times && typeof d.times === 'object')
     for(const k of Object.keys(LIGAS)) if(!times[k].length && Array.isArray(d.times[k])) times[k] = ids(d.times[k]).slice(0, 3);
@@ -2374,6 +2499,10 @@ document.getElementById('recomecar').onclick = () => {
   pegueiForma.clear();
   for(const k of Object.keys(especiais)) delete especiais[k];
   favoritos.clear();
+  album.length = 0; gravar('dittospokedex:album', album);
+  eventos.length = 0; gravar('dittospokedex:eventos', eventos);
+  ovos.length = 0; gravar('dittospokedex:ovos', ovos);
+  for(const k of Object.keys(doces)) delete doces[k]; gravar('dittospokedex:doces', doces);
   desejos.clear(); desejosFeitos = 0; gravar('dittospokedex:desejosfeitos', 0);
   for(const k of Object.keys(times)) times[k] = []; gravar('dittospokedex:times', times);
   quiz.recordes = {}; quiz.historico = []; quiz.acertosTipos = 0; quiz.acertosNumero = 0;
@@ -2482,6 +2611,413 @@ aplicarCor();
 mostrarDoDia();
 document.getElementById('abrir-time').onclick = abrirTime;
 document.getElementById('abrir-config').onclick = abrirConfig;
+
+/* =========================================================================
+   Ferramentas: eventos, ovos, comparar, regiões, calculadora, sons esquisitos
+   ========================================================================= */
+const idNovo = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+function abrirFolhaSimples(html){
+  if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  if(jogoAtivo){ registrarPartida(); jogoAtivo = null; }
+  aberto = -1;
+  folha.innerHTML = `<button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>${html}`;
+  folha.querySelector('.fechar').onclick = fechar;
+  fundo.classList.add('aberto');
+  folha.querySelector('.fechar').focus();
+}
+function voltarFerramentas(){
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'chip'; b.textContent = '← Ferramentas';
+  b.onclick = abrirFerramentas;
+  folha.querySelector('.fechar').after(b);
+}
+function idPeloNome(txt){ const i = NOMES_SIMPLES.indexOf(simples(txt || '')); return i + 1; }
+function listaNomesHtml(){ return '<datalist id="lista-nomes2">' + NOMES.map(n => `<option value="${n.replace(/"/g, '&quot;')}">`).join('') + '</datalist>'; }
+
+const FERRAMENTAS = [
+  ['🗓️', 'Eventos', 'Anote os eventos do GO', () => abrirEventos()],
+  ['🥚', 'Meus ovos', 'Quantos km faltam', () => abrirOvos()],
+  ['🔍', 'Comparar', 'Dois Pokémon lado a lado', () => abrirComparar()],
+  ['🗺️', 'Regiões', 'Quantos de cada região', () => abrirRegioes()],
+  ['🧮', 'Calculadora de PC', 'E em que liga cabe', () => abrirCalc()],
+  ['🎛️', 'Sons esquisitos', 'Rápido, lento, ao contrário…', () => abrirSons()],
+];
+function abrirFerramentas(){
+  abrirFolhaSimples('<h2 id="folha-nome">🧰 Ferramentas</h2><div class="ferramentas"></div>');
+  const caixa = folha.querySelector('.ferramentas');
+  for(const [e, n, d, f] of FERRAMENTAS){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = '<span></span><b></b><small></small>';
+    b.querySelector('span').textContent = e; b.querySelector('b').textContent = n; b.querySelector('small').textContent = d;
+    b.onclick = f;
+    caixa.appendChild(b);
+  }
+}
+
+/* ---------- 🗓️ eventos ---------- */
+function hojeTexto(){ const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); }
+function dataBr(t){ const [a, m, d] = t.split('-'); return `${d}/${m}/${a.slice(2)}`; }
+function diasAte(t){ return Math.round((new Date(t + 'T12:00') - new Date(hojeTexto() + 'T12:00')) / 86400000); }
+function abrirEventos(){
+  abrirFolhaSimples(`<h2 id="folha-nome">🗓️ Eventos do GO</h2>
+    <p class="pequeno">Anote os eventos que você viu no jogo. Fica só no seu aparelho.</p>
+    <form class="form-linha" id="novo-evento">
+      <input id="ev-nome" maxlength="60" placeholder="Nome do evento (ex.: Dia Comunitário)" required />
+      <div class="dois"><label>Começa<input type="date" id="ev-ini" required /></label><label>Termina<input type="date" id="ev-fim" /></label></div>
+      <input id="ev-nota" maxlength="120" placeholder="Anotação (ex.: Pikachu shiny!)" />
+      <button type="submit" class="grande-botao principal">➕ Anotar evento</button>
+    </form>
+    <div id="lista-eventos"></div>`);
+  voltarFerramentas();
+  folha.querySelector('#ev-ini').value = hojeTexto();
+  folha.querySelector('#novo-evento').onsubmit = ev => {
+    ev.preventDefault();
+    const ini = folha.querySelector('#ev-ini').value, fim = folha.querySelector('#ev-fim').value || ini;
+    eventos.push({ id:idNovo(), nome:folha.querySelector('#ev-nome').value.trim(), inicio:ini, fim: fim < ini ? ini : fim,
+      nota:folha.querySelector('#ev-nota').value.trim() });
+    gravar('dittospokedex:eventos', eventos); abrirEventos();
+  };
+  const hoje = hojeTexto(), caixa = folha.querySelector('#lista-eventos');
+  const grupos = [
+    ['🟢 Acontecendo agora', eventos.filter(e => e.inicio <= hoje && e.fim >= hoje)],
+    ['⏳ Vão começar', eventos.filter(e => e.inicio > hoje).sort((a, b) => a.inicio < b.inicio ? -1 : 1)],
+    ['✔ Já passaram', eventos.filter(e => e.fim < hoje).sort((a, b) => a.fim > b.fim ? -1 : 1)],
+  ];
+  if(!eventos.length) caixa.innerHTML = '<p class="nada">Nenhum evento anotado ainda.</p>';
+  for(const [t, l] of grupos){
+    if(!l.length) continue;
+    const h = document.createElement('h3'); h.textContent = t; h.style.marginTop = '12px'; caixa.appendChild(h);
+    for(const e of l){
+      const d = document.createElement('div');
+      d.className = 'item' + (e.inicio <= hoje && e.fim >= hoje ? ' agora' : '');
+      d.innerHTML = '<b></b><small></small><small></small><button type="button" class="x" aria-label="Apagar">✕</button>';
+      d.querySelector('b').textContent = e.nome;
+      const n = diasAte(e.inicio), f = diasAte(e.fim);
+      d.querySelectorAll('small')[0].textContent = (e.inicio === e.fim ? dataBr(e.inicio) : `${dataBr(e.inicio)} até ${dataBr(e.fim)}`) +
+        (n > 0 ? ` · faltam ${n} ${n === 1 ? 'dia' : 'dias'}` : f >= 0 ? (f === 0 ? ' · acaba hoje!' : ` · acaba em ${f} ${f === 1 ? 'dia' : 'dias'}`) : '');
+      d.querySelectorAll('small')[1].textContent = e.nota || '';
+      d.querySelector('.x').onclick = () => { eventos.splice(eventos.indexOf(e), 1); gravar('dittospokedex:eventos', eventos); abrirEventos(); };
+      caixa.appendChild(d);
+    }
+  }
+}
+
+/* ---------- 🥚 meus ovos ---------- */
+const TIPOS_OVO = [1, 2, 5, 7, 10, 12];
+function abrirOvos(){
+  abrirFolhaSimples(`<h2 id="folha-nome">🥚 Meus ovos</h2>
+    <p class="pequeno">Anote os ovos que estão chocando (o GO deixa ter até 9). Você marca os km andados.</p>
+    <div class="chips centro" id="por-ovo"></div>
+    <div id="lista-ovos"></div>`);
+  voltarFerramentas();
+  const add = folha.querySelector('#por-ovo');
+  for(const km of TIPOS_OVO){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = `🥚 ${km} km`;
+    b.onclick = () => {
+      if(ovos.length >= 9){ brinde('🥚 Já tem 9 ovos, o máximo do jogo.'); return; }
+      ovos.push({ id:idNovo(), km, andado:0 }); gravar('dittospokedex:ovos', ovos); abrirOvos();
+    };
+    add.appendChild(b);
+  }
+  const caixa = folha.querySelector('#lista-ovos');
+  if(!ovos.length) caixa.innerHTML = '<p class="nada">Nenhum ovo. Toque num tipo de ovo aí em cima.</p>';
+  for(const o of ovos){
+    const falta = Math.max(0, o.km - o.andado);
+    const d = document.createElement('div'); d.className = 'item';
+    d.innerHTML = `<b>🥚 Ovo de ${o.km} km</b><small>${falta ? `Faltam ${numBr(falta)} km (andou ${numBr(o.andado)})` : '🐣 Pronto pra chocar!'}</small>
+      <div class="ovo-barra"><i style="width:${Math.min(100, o.andado / o.km * 100)}%"></i></div>
+      <div class="ovo-acoes"></div><button type="button" class="x" aria-label="Apagar">✕</button>`;
+    const ac = d.querySelector('.ovo-acoes');
+    const botao = (t, f, cls) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = t; if(cls) b.className = cls; b.onclick = f; ac.appendChild(b); };
+    const andar = km => { o.andado = Math.max(0, Math.min(o.km, Math.round((o.andado + km) * 10) / 10)); gravar('dittospokedex:ovos', ovos); abrirOvos(); };
+    botao('+0,5 km', () => andar(.5)); botao('+1 km', () => andar(1)); botao('−0,5', () => andar(-.5));
+    botao('🐣 Chocou!', () => {
+      ovos.splice(ovos.indexOf(o), 1); gravar('dittospokedex:ovos', ovos);
+      gravar('dittospokedex:chocados', (+ler('dittospokedex:chocados', 0) || 0) + 1);
+      brinde('🐣 Parabéns! Marque o Pokémon que nasceu.'); conferirMedalhas(); abrirOvos();
+    }, 'choca');
+    d.querySelector('.x').onclick = () => { ovos.splice(ovos.indexOf(o), 1); gravar('dittospokedex:ovos', ovos); abrirOvos(); };
+    caixa.appendChild(d);
+  }
+}
+
+/* ---------- 🍬 contador de doces ----------
+   No GO os doces são da família (o do Charmander serve pro Charizard), então
+   o número fica guardado no primeiro da família. */
+function docesPara(de, para){
+  const t = EVOLUCAO_GO[de + '>' + para];
+  const m = t && t.match(/🍬 (\d+)/);
+  return m ? +m[1] : null;
+}
+function desenharDoces(id, caixa){
+  const prox = EVOLUI_PARA[id].filter(x => docesPara(id, x) !== null);
+  if(!prox.length) return;
+  const raiz = primeiroDaFamilia(id);
+  caixa.hidden = false;
+  caixa.innerHTML = `<h3>🍬 Meus doces</h3><div class="doces"><input type="number" min="0" max="99999" inputmode="numeric" id="qtd-doces" />
+    <span class="pequeno" style="margin:0">doces de ${NOMES[raiz - 1]}</span></div><div class="doces-res"></div>`;
+  const inp = caixa.querySelector('#qtd-doces');
+  inp.value = doces[raiz] || '';
+  const conta = () => {
+    const tem = Math.max(0, parseInt(inp.value, 10) || 0);
+    caixa.querySelector('.doces-res').innerHTML = prox.map(x => {
+      const precisa = docesPara(id, x);
+      return tem >= precisa
+        ? `<p>✅ Dá pra evoluir pro <b>${NOMES[x - 1]}</b>! (precisa ${precisa}${tem >= precisa * 2 ? `, dá ${Math.floor(tem / precisa)} vezes` : ''})</p>`
+        : `<p>🍬 Pro <b>${NOMES[x - 1]}</b> faltam <b>${precisa - tem}</b> (precisa ${precisa})</p>`;
+    }).join('');
+  };
+  inp.oninput = () => { const v = parseInt(inp.value, 10); if(v >= 0) doces[raiz] = v; else delete doces[raiz]; gravar('dittospokedex:doces', doces); conta(); };
+  conta();
+}
+
+/* ---------- 🔍 comparar ---------- */
+function vantagem(a, b){
+  /* O golpe mais forte que os tipos de A fazem em B. */
+  let melhor = 0, tipo = -1;
+  for(const t of tiposDe(a)){ const m = danoEm(t, b); if(m > melhor){ melhor = m; tipo = t; } }
+  return { melhor, tipo };
+}
+function abrirComparar(a, b){
+  abrirFolhaSimples(`<h2 id="folha-nome">🔍 Comparar</h2>
+    <form class="form-linha" id="form-comparar"><div class="dois">
+      <input id="cmp-a" list="lista-nomes2" placeholder="Primeiro…" autocomplete="off" />
+      <input id="cmp-b" list="lista-nomes2" placeholder="Segundo…" autocomplete="off" /></div>
+      <button type="submit" class="grande-botao principal">🔍 Comparar</button></form>
+    ${listaNomesHtml()}<p class="erro" id="erro-cmp" hidden></p><div id="res-cmp"></div>`);
+  voltarFerramentas();
+  const ia = folha.querySelector('#cmp-a'), ib = folha.querySelector('#cmp-b');
+  if(a) ia.value = NOMES[a - 1];
+  if(b) ib.value = NOMES[b - 1];
+  folha.querySelector('#form-comparar').onsubmit = ev => {
+    ev.preventDefault();
+    const x = idPeloNome(ia.value), y = idPeloNome(ib.value), erro = folha.querySelector('#erro-cmp');
+    if(!x || !y){ erro.textContent = 'Não achei ' + (!x ? 'o primeiro' : 'o segundo') + '. Confira o nome.'; erro.hidden = false; return; }
+    abrirComparar(x, y);
+  };
+  if(!a || !b){ if(a) ib.focus(); return; }
+  const res = folha.querySelector('#res-cmp');
+  const col = id => {
+    const d = document.createElement('div');
+    d.innerHTML = '<div class="foto-cmp"></div><b></b><div class="tipos"></div><dl></dl>';
+    d.querySelector('.foto-cmp').appendChild(foto(id, true));
+    d.querySelector('b').textContent = `#${tres(id)} ${NOMES[id - 1]}`;
+    for(const t of tiposDe(id)) d.querySelector('.tipos').appendChild(seloTipo(t));
+    const fracos = TIPOS.filter((_, t) => danoEm(t, id) > 1).length;
+    const linhas = [['Altura', `${numBr(ALTURA[id - 1] / 10)} m`], ['Peso', `${numBr(PESO[id - 1] / 10)} kg`],
+      ['PC máx. (nível 50)', STATS_GO[id - 1] ? calcularPC(id, 50) : '—'], ['Fraco contra', `${fracos} tipos`],
+      ['Classe', CLASSES[CLASSE[id - 1]] ? `${CLASSES[CLASSE[id - 1]].emoji} ${CLASSES[CLASSE[id - 1]].nome}` : 'comum'],
+      ['Você tem?', peguei.has(id) ? '✅ sim' : temNoGo(id) ? '🟡 ainda não' : '❌ não tem no GO']];
+    d.querySelector('dl').innerHTML = linhas.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+    d.onclick = () => abrir(id);
+    return d;
+  };
+  const lado = document.createElement('div'); lado.className = 'lado';
+  lado.append(col(a), col(b));
+  res.appendChild(lado);
+  const va = vantagem(a, b), vb = vantagem(b, a);
+  const frase = (x, y, v) => `os golpes de ${TIPOS[v.tipo].emoji} ${TIPOS[v.tipo].nome} do ${NOMES[x - 1]} fazem ${v.melhor >= 4 ? 'QUATRO vezes' : v.melhor >= 2 ? 'o dobro de' : v.melhor < 1 ? 'pouco' : 'dano normal'}${v.melhor >= 2 ? ' dano' : ''} no ${NOMES[y - 1]}`;
+  const ver = document.createElement('p'); ver.className = 'veredito';
+  ver.textContent = va.melhor > vb.melhor ? `⚔️ Vantagem do ${NOMES[a - 1]}: ${frase(a, b, va)}.`
+    : vb.melhor > va.melhor ? `⚔️ Vantagem do ${NOMES[b - 1]}: ${frase(b, a, vb)}.`
+    : `🤝 Empate nos tipos: ${frase(a, b, va)}, e ${frase(b, a, vb)}.`;
+  res.appendChild(ver);
+}
+
+/* ---------- 🗺️ regiões ---------- */
+const REGIAO_EMOJI = ['🗻', '🏯', '🌋', '❄️', '🗽', '🗼', '🌺', '🏰', '🌵'];
+function abrirRegioes(){
+  abrirFolhaSimples('<h2 id="folha-nome">🗺️ Regiões</h2><p class="pequeno">Toque numa região pra ver só os Pokémon dela.</p><div class="regioes"></div>');
+  voltarFerramentas();
+  const caixa = folha.querySelector('.regioes');
+  GERACOES.forEach((g, i) => {
+    let tem = 0, noGo = 0;
+    for(let id = g.de; id <= g.ate; id++) if(temNoGo(id)){ noGo++; if(peguei.has(id)) tem++; }
+    const pct = noGo ? Math.round(tem / noGo * 100) : 0;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'regiao';
+    b.innerHTML = `<b>${REGIAO_EMOJI[i]} ${g.onde}</b> <small>${g.n}ª geração · #${tres(g.de)} a #${tres(g.ate)}</small>
+      <div class="ovo-barra"><i style="width:${pct}%"></i></div><small>${tem} de ${noGo} que tem no GO (${pct}%)${pct === 100 ? ' 🏅' : ''}</small>`;
+    b.onclick = () => {
+      /* Mostra a região inteira: limpa a busca e os outros filtros. */
+      geracao = g.n; filtro = 'todos'; tiposFiltro = []; busca = '';
+      document.getElementById('busca').value = '';
+      montarChips(); desenhar(); fechar(); document.getElementById('grade').scrollIntoView({ behavior:'smooth' }); };
+    caixa.appendChild(b);
+  });
+}
+
+/* ---------- 🧮 calculadora de PC ----------
+   A conta do jogo: PC = (Ataque) × √(Defesa) × √(Vigor) × CPM² ÷ 10, com
+   ataque/defesa/vigor = base + IV. Meio nível usa a média dos quadrados. */
+function cpmDe(nivel){
+  const n = Math.floor(nivel);
+  if(nivel === n) return CPM[n - 1];
+  return Math.sqrt((CPM[n - 1] ** 2 + CPM[n] ** 2) / 2);
+}
+function calcularPC(id, nivel, iv = [15, 15, 15]){
+  const [a, d, v] = STATS_GO[id - 1].split(' ').map(Number);
+  const m = cpmDe(nivel);
+  return Math.max(10, Math.floor((a + iv[0]) * Math.sqrt(d + iv[1]) * Math.sqrt(v + iv[2]) * m * m / 10));
+}
+const NIVEIS = []; for(let n = 1; n <= 51; n += .5) NIVEIS.push(n);
+function abrirCalc(id){
+  abrirFolhaSimples(`<h2 id="folha-nome">🧮 Calculadora de PC</h2>
+    <div class="calc form-linha">
+      <label>Pokémon<input id="calc-nome" list="lista-nomes2" autocomplete="off" placeholder="Nome do Pokémon…" /></label>
+      <label>Nível<select id="calc-nivel"></select></label>
+      <label>IVs (ataque · defesa · vigor), de 0 a 15</label>
+      <div class="ivs"><select id="iv-a"></select><select id="iv-d"></select><select id="iv-v"></select></div>
+      <div id="calc-res"></div>
+    </div>${listaNomesHtml()}`);
+  voltarFerramentas();
+  const nome = folha.querySelector('#calc-nome'), niv = folha.querySelector('#calc-nivel');
+  niv.innerHTML = NIVEIS.map(n => `<option value="${n}"${n === 40 ? ' selected' : ''}>${numBr(n)}${n === 51 ? ' (melhor amigo)' : ''}</option>`).join('');
+  for(const s of ['#iv-a', '#iv-d', '#iv-v'])
+    folha.querySelector(s).innerHTML = Array.from({ length:16 }, (_, i) => `<option${i === 15 ? ' selected' : ''}>${i}</option>`).join('');
+  if(id) nome.value = NOMES[id - 1];
+  const conta = () => {
+    const x = idPeloNome(nome.value), res = folha.querySelector('#calc-res');
+    if(!x){ res.innerHTML = '<p class="pequeno">Escreva o nome de um Pokémon.</p>'; return; }
+    if(!STATS_GO[x - 1]){ res.innerHTML = '<p class="pequeno">Esse Pokémon não está nos dados do GO.</p>'; return; }
+    const iv = ['#iv-a', '#iv-d', '#iv-v'].map(s => +folha.querySelector(s).value);
+    const nivel = +niv.value, pc = calcularPC(x, nivel, iv);
+    const ligas = Object.values(LIGAS).map(l => {
+      const lim = l.curto === 'Grande' ? 1500 : l.curto === 'Ultra' ? 2500 : Infinity;
+      if(calcularPC(x, 50, iv) <= lim) return `<p>✅ <b>${l.nome}</b>: cabe até no nível 50 (${calcularPC(x, 50, iv)} PC)</p>`;
+      let melhor = 0;
+      for(const n of NIVEIS) if(n <= 50 && calcularPC(x, n, iv) <= lim) melhor = n;
+      return melhor ? `<p>📏 <b>${l.nome}</b>: no máximo nível ${numBr(melhor)} (${calcularPC(x, melhor, iv)} PC)</p>`
+        : `<p>❌ <b>${l.nome}</b>: não cabe nem no nível 1</p>`;
+    }).join('');
+    res.innerHTML = `<p class="grande-pc">${pc} PC</p><p class="pequeno" style="text-align:center">${NOMES[x - 1]} nível ${numBr(nivel)}, IVs ${iv.join('/')}
+      (${Math.round((iv[0] + iv[1] + iv[2]) / 45 * 100)}%)</p><div class="analise">${ligas}</div>`;
+  };
+  for(const e of folha.querySelectorAll('.calc input, .calc select')){ e.oninput = conta; e.onchange = conta; }
+  conta();
+}
+
+/* ---------- 🎛️ sons esquisitos ----------
+   Pega o grito e mexe nele com o Web Audio: rápido, lento, ao contrário,
+   eco e robô. Precisa baixar o som (o GitHub e o Showdown deixam). Se não
+   der, o rápido e o lento ainda funcionam pelo tocador normal. */
+const ESQUISITOS = [474, 778, 201, 81, 124, 122, 202, 132, 88, 92, 719, 800];
+let audioCtx = null, fonteAtual = null;
+const buffers = new Map();
+async function bufferDo(id){
+  if(buffers.has(id)) return buffers.get(id);
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  for(const url of fontesDoSom(id)){
+    try{
+      const r = await fetch(url);
+      if(!r.ok) continue;
+      const b = await audioCtx.decodeAudioData(await r.arrayBuffer());
+      buffers.set(id, b);
+      return b;
+    }catch(e){}
+  }
+  return null;
+}
+function pararEsquisito(){ try{ if(fonteAtual) fonteAtual.stop(); }catch(e){} fonteAtual = null; }
+async function tocarEsquisito(id, efeito){
+  pararSom(); pararEsquisito();
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();   // tem que ser no toque, por causa do iPhone
+  const aviso = folha.querySelector('#aviso-sons');
+  if(aviso) aviso.textContent = '⏳ Carregando…';
+  const buf = await bufferDo(id);
+  if(!buf){
+    if(efeito === 'rapido' || efeito === 'lento'){
+      tocarSom(id);
+      tocador.preservesPitch = false; tocador.mozPreservesPitch = false; tocador.webkitPreservesPitch = false;
+      tocador.playbackRate = efeito === 'rapido' ? 1.9 : .55;
+      if(aviso) aviso.textContent = '';
+    } else if(aviso) aviso.textContent = 'Esse efeito precisa baixar o som, e não deu. Tente "Rápido" ou "Lento".';
+    return;
+  }
+  let usar = buf;
+  if(efeito === 'contrario'){
+    usar = audioCtx.createBuffer(buf.numberOfChannels, buf.length, buf.sampleRate);
+    for(let c = 0; c < buf.numberOfChannels; c++) usar.getChannelData(c).set(Array.from(buf.getChannelData(c)).reverse());
+  }
+  const src = audioCtx.createBufferSource();
+  src.buffer = usar;
+  src.playbackRate.value = efeito === 'rapido' ? 1.9 : efeito === 'lento' ? .55 : efeito === 'monstro' ? .4 : 1;
+  let saida = src;
+  if(efeito === 'eco'){
+    const atraso = audioCtx.createDelay(1), volta = audioCtx.createGain();
+    atraso.delayTime.value = .22; volta.gain.value = .55;
+    src.connect(audioCtx.destination); src.connect(atraso); atraso.connect(volta); volta.connect(atraso); atraso.connect(audioCtx.destination);
+    saida = null;
+  } else if(efeito === 'robo'){
+    const mod = audioCtx.createGain(), osc = audioCtx.createOscillator();
+    mod.gain.value = 0; osc.frequency.value = 55; osc.connect(mod.gain); osc.start();
+    src.connect(mod); mod.connect(audioCtx.destination);
+    src.onended = () => osc.stop();
+    saida = null;
+  }
+  if(saida) saida.connect(audioCtx.destination);
+  src.start();
+  fonteAtual = src;
+  if(aviso) aviso.textContent = '';
+}
+const EFEITOS = [
+  ['rapido', '🐿️', 'Esquilo'], ['lento', '🐢', 'Lento'], ['monstro', '👹', 'Monstro'],
+  ['contrario', '🔁', 'Ao contrário'], ['eco', '🏔️', 'Eco'], ['robo', '🤖', 'Robô'],
+];
+let idEsquisito = 132;
+function abrirSons(){
+  abrirFolhaSimples(`<h2 id="folha-nome">🎛️ Sons esquisitos</h2>
+    <form class="add-time" id="form-sons"><input id="sons-nome" list="lista-nomes2" autocomplete="off" placeholder="Nome do Pokémon…" /><button type="submit">Usar</button></form>
+    ${listaNomesHtml()}
+    <div class="mais-acoes"><button type="button" id="sons-sorte">🎲 Sortear</button><button type="button" id="sons-normal">🔊 Normal</button></div>
+    <p class="resultado" id="sons-quem"></p>
+    <div class="efeitos"></div>
+    <p class="pequeno" id="aviso-sons"></p>
+    <h3 style="text-align:left;margin-top:10px">🤪 Os que a gente acha mais esquisitos</h3>
+    <div class="esquisitos chips"></div>
+    <p class="pequeno">Se o celular estiver no mudo, os efeitos podem não tocar. 😉</p>`);
+  voltarFerramentas();
+  const quem = () => { folha.querySelector('#sons-quem').textContent = `🎤 ${NOMES[idEsquisito - 1]}`; };
+  quem();
+  folha.querySelector('#form-sons').onsubmit = ev => {
+    ev.preventDefault();
+    const x = idPeloNome(folha.querySelector('#sons-nome').value);
+    if(x){ idEsquisito = x; quem(); tocarSom(x); }
+  };
+  folha.querySelector('#sons-sorte').onclick = () => { idEsquisito = 1 + Math.floor(Math.random() * TOTAL); quem(); tocarEsquisito(idEsquisito, EFEITOS[Math.floor(Math.random() * EFEITOS.length)][0]); };
+  folha.querySelector('#sons-normal').onclick = () => tocarSom(idEsquisito);
+  const ef = folha.querySelector('.efeitos');
+  for(const [k, e, n] of EFEITOS){
+    const b = document.createElement('button'); b.type = 'button';
+    b.innerHTML = `<span>${e}</span>${n}`;
+    b.onclick = () => tocarEsquisito(idEsquisito, k);
+    ef.appendChild(b);
+  }
+  const es = folha.querySelector('.esquisitos');
+  for(const id of ESQUISITOS){
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = NOMES[id - 1];
+    b.onclick = () => { idEsquisito = id; quem(); tocarSom(id); };
+    es.appendChild(b);
+  }
+}
+
+/* ---------- 📲 baixar o Pokémon GO ---------- */
+function abrirBaixar(){
+  const ua = navigator.userAgent || '';
+  const iphone = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  const android = /Android/.test(ua);
+  abrirFolhaSimples(`<h2 id="folha-nome">📲 Baixar Pokémon GO</h2>
+    <p class="pequeno">O jogo oficial é de graça, da Niantic. Baixe só pelas lojas oficiais.</p>
+    <div class="lojas">
+      <a class="grande-botao principal${android ? ' sugerida' : ''}" href="https://play.google.com/store/apps/details?id=com.nianticlabs.pokemongo" target="_blank" rel="noopener">▶️ Google Play (Android)${android ? ' · o seu' : ''}</a>
+      <a class="grande-botao principal${iphone ? ' sugerida' : ''}" href="https://apps.apple.com/app/pokemon-go/id1094591345" target="_blank" rel="noopener"> App Store (iPhone)${iphone ? ' · o seu' : ''}</a>
+    </div>
+    <p class="pequeno">⚠️ Se você tem menos de 13 anos, peça pra um adulto ajudar a criar a conta.</p>`);
+}
+document.getElementById('abrir-ferramentas').onclick = abrirFerramentas;
+document.getElementById('abrir-baixar').onclick = abrirBaixar;
 
 montarChips();
 desenhar();
