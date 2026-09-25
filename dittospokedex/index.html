@@ -351,6 +351,12 @@ html:root[data-cor="jigglypuff"][data-tema="escuro"]{--marca:#f07fb0;--marca-esc
 .album-cartao span{aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.2);display:grid;place-items:center;overflow:hidden}
 .album-cartao img{width:100%;height:100%;image-rendering:pixelated}
 .album-cartao .sem-foto{width:100%;height:100%;font-size:.55rem;color:#fff;background:none}
+.vozes{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:8px}
+.vozes button{font:inherit;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:14px;
+  padding:5px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:0}
+.vozes button span{font-size:1.25rem;line-height:1.2}
+.vozes button small{font-size:.6rem;font-weight:700;color:var(--tinta-fraca);line-height:1.1;text-align:center}
+.vozes button:active{transform:scale(.94)}
 .linha-botoes.dois{margin-top:8px}
 .linha-botoes.dois .transforma{font-size:.88rem;padding:11px 6px;background:var(--marca)}
 .forma .no-go{display:block;font-size:.72rem;font-weight:600;margin-top:2px}
@@ -521,7 +527,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 17 — 25/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 18 — 25/09 · 🔄</button>
   </footer>
 </div>
 
@@ -972,6 +978,7 @@ function abrir(id){
       <button type="button" id="comparar-este">🔍 Comparar</button>
       <button type="button" id="calc-este">🧮 Calcular PC</button>
     </div>
+    <div class="vozes" id="vozes" aria-label="Mudar a voz"></div>
     <p class="som-aviso" id="som-aviso" hidden></p>
     <p class="status ${!noGo ? 'nao' : pegou ? 'tem' : 'falta'}">${!noGo
       ? '❌ Ainda não chegou no Pokémon GO'
@@ -994,6 +1001,15 @@ function abrir(id){
     </div>`;
   folha.querySelector('#folha-nome').textContent = NOMES[id-1];
   folha.querySelector('#tocar').onclick = () => tocarSom(id);
+  /* 🎛️ Os mesmos efeitos dos Sons esquisitos, em todo Pokémon. */
+  for(const [k, e, n] of EFEITOS){
+    const b = document.createElement('button');
+    b.type = 'button'; b.title = n; b.setAttribute('aria-label', 'Voz de ' + n);
+    b.innerHTML = `<span>${e}</span><small></small>`;
+    b.querySelector('small').textContent = n;
+    b.onclick = () => tocarEsquisito(id, k);
+    folha.querySelector('#vozes').appendChild(b);
+  }
   const btFav = folha.querySelector('#favorito');
   btFav.setAttribute('aria-pressed', String(favoritos.has(id)));
   btFav.textContent = favoritos.has(id) ? '❤️ Favorito!' : '🤍 Favoritar';
@@ -1747,7 +1763,7 @@ function textoTamanho(id){
   const a = ALTURA[id - 1] / 10, p = PESO[id - 1] / 10;
   const emDittos = x => x >= 10 ? Math.round(x) : numBr(Math.round(x * 10) / 10);
   const altura = a >= 1 ? `${numBr(a)} m` : `${Math.round(a * 100)} cm`;
-  return `📏 ${altura} · ⚖️ ${numBr(p)} kg — ${id === 132 ? 'é um Ditto! 🟣' : `${emDittos(a / 0.3)} Dittos de altura, ${emDittos(p / 4)} de peso`}`;
+  return `📏 ${altura} · ⚖️ ${numBr(p)} kg — ${id === 132 ? 'é um Ditto! 🟣' : `${emDittos(a / 0.3)} ${String(emDittos(a / 0.3)) === '1' ? 'Ditto' : 'Dittos'} de altura, ${emDittos(p / 4)} de peso`}`;
 }
 
 /* ---------- 🎲 Pokémon do dia ----------
@@ -2973,7 +2989,12 @@ async function tocarEsquisito(id, efeito){
   pararSom(); pararEsquisito();
   audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
   if(audioCtx.state === 'suspended') audioCtx.resume();   // tem que ser no toque, por causa do iPhone
-  const aviso = folha.querySelector('#aviso-sons');
+  /* Na página de Sons esquisitos o recado vai no #aviso-sons; na página do
+     Pokémon, no mesmo lugar do recado do 🔊. */
+  const aviso = folha.querySelector('#aviso-sons') || (() => {
+    const a = folha.querySelector('#som-aviso');
+    return a && { set textContent(t){ a.hidden = !t; a.textContent = t; } };
+  })();
   if(aviso) aviso.textContent = '⏳ Carregando…';
   const buf = await bufferDo(id);
   if(!buf){
@@ -2982,7 +3003,7 @@ async function tocarEsquisito(id, efeito){
       tocador.preservesPitch = false; tocador.mozPreservesPitch = false; tocador.webkitPreservesPitch = false;
       tocador.playbackRate = efeito === 'rapido' ? 1.9 : .55;
       if(aviso) aviso.textContent = '';
-    } else if(aviso) aviso.textContent = 'Esse efeito precisa baixar o som, e não deu. Tente "Rápido" ou "Lento".';
+    } else if(aviso) aviso.textContent = 'Não consegui baixar o som pra mudar a voz. Confira a internet, ou tente 🐿️ Esquilo e 🐢 Lento.';
     return;
   }
   let usar = buf;

@@ -235,6 +235,12 @@ um botão pro ButterPoke (pra quem gosta de TCG). Não aparece sempre:
 - 3 medalhas novas, a conta leva álbum/eventos/ovos/doces, avisos empilham em vez de
   ficar um em cima do outro.
 
+## 🎛️ Vozes em todo Pokémon
+
+Os 6 efeitos dos Sons esquisitos (🐿️ Esquilo, 🐢 Lento, 👹 Monstro, 🔁 Ao contrário, 🏔️ Eco,
+🤖 Robô) agora estão na página de **todos** os Pokémon, embaixo do 🔊. O recado de
+"não deu" aparece no mesmo lugar do recado do som.
+
 ## O pôster do mais raro
 
 A aba **Os meus** do 🏆 Top já ordenava tudo pelos pontos, então o mais raro sempre esteve
