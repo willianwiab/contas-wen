@@ -363,6 +363,31 @@ html:root[data-cor="jigglypuff"][data-tema="escuro"]{--marca:#f07fb0;--marca-esc
 .vozes button span{font-size:1.25rem;line-height:1.2}
 .vozes button small{font-size:.6rem;font-weight:700;color:var(--tinta-fraca);line-height:1.1;text-align:center}
 .vozes button:active{transform:scale(.94)}
+.notas{display:grid;gap:8px;margin-top:6px}
+.notas input,.notas textarea{font:inherit;padding:9px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);width:100%}
+.notas textarea{min-height:70px;resize:vertical}
+.notas .dois{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
+.notas small{color:var(--tinta-fraca)}
+.pintar{text-align:center}
+.pintar canvas{width:100%;max-width:340px;aspect-ratio:1;border-radius:18px;border:2px solid var(--borda);background:#fff;touch-action:none;display:block;margin:8px auto}
+.paleta{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.paleta button{width:34px;height:34px;border-radius:50%;border:3px solid var(--borda);cursor:pointer}
+.paleta button[aria-pressed="true"]{border-color:var(--tinta);transform:scale(1.12)}
+.paleta input[type=color]{width:34px;height:34px;border:0;padding:0;background:none;cursor:pointer}
+.galeria{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.galeria figure{position:relative;margin:0}
+.galeria img{width:100%;border-radius:12px;border:2px solid var(--borda);background:#fff}
+.galeria figcaption{font-size:.72rem;color:var(--tinta-fraca)}
+.galeria .x{position:absolute;top:2px;right:4px;border:0;background:rgba(255,255,255,.85);border-radius:50%;width:24px;height:24px;cursor:pointer}
+.grafico h3{margin-top:12px}
+.barra-linha{display:grid;grid-template-columns:104px 1fr 64px;align-items:center;gap:8px;margin:5px 0;font-size:.85rem}
+.barra-linha .rot{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barra-linha .trilho{height:14px;border-radius:4px;background:var(--creme2);overflow:hidden}
+.barra-linha .trilho i{display:block;height:100%;background:var(--marca);border-radius:0 4px 4px 0;min-width:0}
+.barra-linha .val{text-align:right;color:var(--tinta-fraca);font-variant-numeric:tabular-nums}
+.grafico .heroi{text-align:center;margin:6px 0}
+.grafico .heroi b{display:block;font-family:'Baloo 2',cursive;font-size:2.4rem;color:var(--marca-escura);line-height:1}
+.grafico .heroi span{color:var(--tinta-fraca);font-size:.85rem}
 .linha-botoes.dois{margin-top:8px}
 .linha-botoes.dois .transforma{font-size:.88rem;padding:11px 6px;background:var(--marca)}
 .forma .no-go{display:block;font-size:.72rem;font-weight:600;margin-top:2px}
@@ -534,7 +559,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 18 — 25/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 19 — 25/09 · 🔄</button>
   </footer>
 </div>
 
@@ -744,6 +769,9 @@ const album = ler('dittospokedex:album', []).filter(x => x >= 1 && x <= TOTAL).s
 const eventos = ler('dittospokedex:eventos', []).filter(e => e && e.nome);
 const ovos = ler('dittospokedex:ovos', []).filter(o => o && o.km);
 const doces = ler('dittospokedex:doces', {});
+/* 📝 Anotações por Pokémon: onde, quando e um texto. 🎨 Pinturas guardadas (até 6). */
+const anotacoes = ler('dittospokedex:anotacoes', {});
+const pinturas = ler('dittospokedex:pinturas', []).filter(x => x && x.img).slice(0, 6);
 /* ⚙️ Configurações */
 const config = Object.assign({ somAuto:false, cor:'ditto' }, ler('dittospokedex:config', {}));
 function gravarConfig(){ gravar('dittospokedex:config', config); }
@@ -828,6 +856,7 @@ const FILTROS = [
   { id:'shiny-falta', texto:'✨ Shiny que faltam', ok: id => temNoGo(id) && !tagsDe(id).includes('shiny') },
   { id:'favoritos', texto:'❤️ Favoritos', ok: id => favoritos.has(id) },
   { id:'desejos',   texto:'🎯 Quero pegar', ok: id => desejos.has(id) },
+  { id:'anotados',  texto:'📝 Com anotação', ok: id => !!anotacoes[id] },
   { id:'peguei', texto:'✅ Peguei',          ok: id => peguei.has(id) },
   { id:'falta',  texto:'🟡 Falta pegar',        ok: id => temNoGo(id) && !peguei.has(id) },
 ];
@@ -914,7 +943,7 @@ function cartinha(id){
   const tops = tagsDe(id).map(t => TAG[t]).filter(Boolean)
     .sort((a, c) => c.pontos - a.pontos).slice(0, 2).map(t => t.emoji).join('');
   b.innerHTML = `<span class="selo">${tops || (!noGo ? '❌' : pegou ? '✅' : '🟡')}</span>` +
-    ((favoritos.has(id) || desejos.has(id)) ? `<span class="selo-fav">${favoritos.has(id) ? '❤️' : ''}${desejos.has(id) ? '🎯' : ''}</span>` : '');
+    ((favoritos.has(id) || desejos.has(id) || anotacoes[id]) ? `<span class="selo-fav">${favoritos.has(id) ? '❤️' : ''}${desejos.has(id) ? '🎯' : ''}${anotacoes[id] ? '📝' : ''}</span>` : '');
   b.appendChild(f);
   b.insertAdjacentHTML('beforeend',
     `<span class="num">#${tres(id)}${CLASSES[CLASSE[id - 1]] ? '<span class="estrela">' + CLASSES[CLASSE[id - 1]].emoji + '</span>' : ''}</span><span class="nome"></span><span class="tipos"></span>`);
@@ -986,6 +1015,7 @@ function abrir(id){
       <button type="button" id="por-album" aria-pressed="false"></button>
       <button type="button" id="comparar-este">🔍 Comparar</button>
       <button type="button" id="calc-este">🧮 Calcular PC</button>
+      <button type="button" id="pintar-este">🎨 Pintar</button>
     </div>
 
     <p class="status ${!noGo ? 'nao' : pegou ? 'tem' : 'falta'}">${!noGo
@@ -996,6 +1026,7 @@ function abrir(id){
     <div class="acoes"></div>
     <div class="bloco" id="evolucoes"></div>
     <div class="bloco" id="doces" hidden></div>
+    <div class="bloco" id="anotacoes"></div>
     <div class="bloco" id="fraquezas"></div>
     <div class="bloco" id="batalha" hidden></div>
     <div class="formas" hidden></div>
@@ -1031,6 +1062,7 @@ function abrir(id){
   };
   folha.querySelector('#comparar-este').onclick = () => abrirComparar(id);
   folha.querySelector('#calc-este').onclick = () => abrirCalc(id);
+  folha.querySelector('#pintar-este').onclick = () => abrirPintar(id);
   const btDesejo = folha.querySelector('#desejo');
   if(noGo && !pegou){
     btDesejo.hidden = false;
@@ -1089,6 +1121,7 @@ function abrir(id){
   }
   desenharEvolucoes(id, folha.querySelector('#evolucoes'));
   if(noGo) desenharDoces(id, folha.querySelector('#doces'));
+  desenharAnotacoes(id, folha.querySelector('#anotacoes'));
   desenharFraquezas(id, folha.querySelector('#fraquezas'));
   desenharBatalha(id, noGo, folha.querySelector('#batalha'));
 
@@ -2022,6 +2055,8 @@ const MEDALHAS = [
   { id:'gmax1', icone:'🟥', nome:'Gigantamax!',     como:'Primeiro Gigantamax',      ok:() => [...pegueiForma].some(k => /-b-gmax$/.test(k)) },
   { id:'som25', icone:'🎵', nome:'Ouvido de ouro',  como:'25 acertos no De quem é esse som?', ok:() => (quiz.acertosSom || 0) >= 25 },
   { id:'ovo1',  icone:'🐣', nome:'Chocou!',         como:'Chocar um ovo no 🥚 Meus ovos', ok:() => (+ler('dittospokedex:chocados', 0) || 0) >= 1 },
+  { id:'pint1', icone:'🎨', nome:'Artista',          como:'Guardar uma pintura',      ok:() => pinturas.length >= 1 },
+  { id:'nota5', icone:'📝', nome:'Diário de treinador', como:'Anotar 5 Pokémon',     ok:() => Object.keys(anotacoes).length >= 5 },
   { id:'alb6',  icone:'📸', nome:'Álbum cheio',     como:'6 Pokémon no álbum',       ok:() => album.length >= 6 },
   { id:'des1',  icone:'🎯', nome:'Desejo realizado', como:'Pegar um da lista de desejos', ok:() => desejosFeitos >= 1 },
   { id:'des10', icone:'🌠', nome:'Gênio da lâmpada', como:'Realizar 10 desejos',      ok:() => desejosFeitos >= 10 },
@@ -2408,7 +2443,7 @@ function fazerCodigoConta(){
   return PREFIXO_CONTA + paraBase64(JSON.stringify({
     perfil: lerPerfil(), time: ler('dittospokedex:time', ''),
     peguei: [...peguei], especiais, formas: [...pegueiForma], favoritos: [...favoritos],
-    desejos: [...desejos], times, album, eventos, ovos, doces,
+    desejos: [...desejos], times, album, eventos, ovos, doces, anotacoes,
     go: correcoesGo, quiz: { recorde: quiz.recorde || 0, acertos: quiz.acertos || 0, melhorSeq: quiz.melhorSeq || 0 },
   }));
 }
@@ -2449,6 +2484,9 @@ function juntarConta(d){
   if(d.perfil && typeof d.perfil === 'object' && !eu.nome){
     gravarPerfil({ nome: String(d.perfil.nome || '').slice(0, 20), simbolo: d.perfil.simbolo, fundo: d.perfil.fundo });
   }
+  if(d.anotacoes && typeof d.anotacoes === 'object')
+    for(const [k, v] of Object.entries(d.anotacoes)) if(!anotacoes[k] && v && typeof v === 'object') anotacoes[k] = { onde:String(v.onde || '').slice(0, 60), quando:String(v.quando || '').slice(0, 10), texto:String(v.texto || '').slice(0, 300) };
+  gravar('dittospokedex:anotacoes', anotacoes);
   for(const id of ids(d.album)) if(!album.includes(id) && album.length < 6) album.push(id);
   gravar('dittospokedex:album', album);
   if(Array.isArray(d.eventos)) for(const e of d.eventos) if(e && e.id && e.nome && !eventos.some(x => x.id === e.id)) eventos.push(e);
@@ -2476,6 +2514,8 @@ function abrirConta(){
       <h2 id="folha-nome" style="text-align:center">👤 Minha conta</h2>
       <p class="pequeno" style="text-align:center;margin:0">Fica guardada neste aparelho. Não tem senha, e não precisa.</p>
       <div id="cartao"></div>
+      <button type="button" class="grande-botao principal" id="compartilhar-cartao">📤 Compartilhar meu cartão</button>
+      <p class="pequeno" id="recado-cartao"></p>
       <div class="bloco"><h3>Como você quer ser chamado</h3>
         <input id="nome-conta" maxlength="20" autocomplete="off" placeholder="Seu nome ou apelido" /></div>
       <div class="bloco"><h3>Seu símbolo</h3><div class="escolhas" id="simbolos"></div></div>
@@ -2493,6 +2533,7 @@ function abrirConta(){
     </div>`;
   folha.querySelector('.fechar').onclick = fechar;
   folha.querySelector('#cartao').appendChild(cartaoTreinador());
+  folha.querySelector('#compartilhar-cartao').onclick = compartilharCartao;
   const nome = folha.querySelector('#nome-conta');
   nome.value = p.nome || '';
   const atualizar = () => {
@@ -2583,6 +2624,8 @@ document.getElementById('recomecar').onclick = () => {
   for(const k of Object.keys(especiais)) delete especiais[k];
   favoritos.clear();
   album.length = 0; gravar('dittospokedex:album', album);
+  for(const k of Object.keys(anotacoes)) delete anotacoes[k]; gravar('dittospokedex:anotacoes', anotacoes);
+  pinturas.length = 0; gravar('dittospokedex:pinturas', pinturas);
   eventos.length = 0; gravar('dittospokedex:eventos', eventos);
   ovos.length = 0; gravar('dittospokedex:ovos', ovos);
   for(const k of Object.keys(doces)) delete doces[k]; gravar('dittospokedex:doces', doces);
@@ -2724,6 +2767,8 @@ const FERRAMENTAS = [
   ['🗺️', 'Regiões', 'Quantos de cada região', () => abrirRegioes()],
   ['🧮', 'Calculadora de PC', 'E em que liga cabe', () => abrirCalc()],
   ['🎛️', 'Sons esquisitos', 'Rápido, lento, ao contrário…', () => abrirSons()],
+  ['🎨', 'Pintar Pokémon', 'Pinte a sombra do seu jeito', () => abrirPintar()],
+  ['📊', 'Gráfico da coleção', 'Quantos de cada tipo e geração', () => abrirGrafico()],
 ];
 function abrirFerramentas(){
   abrirFolhaSimples('<h2 id="folha-nome">🧰 Ferramentas</h2><div class="ferramentas"></div>');
@@ -3133,6 +3178,312 @@ function mostrarVozLigada(alvoFolha){
 }
 mostrarVozLigada();
 document.getElementById('abrir-ferramentas').onclick = abrirFerramentas;
+
+/* ---------- 📝 anotações ---------- */
+function desenharAnotacoes(id, caixa){
+  const a = anotacoes[id] || {};
+  caixa.innerHTML = `<h3>📝 Anotações</h3><div class="notas">
+    <div class="dois"><input id="nota-onde" maxlength="60" placeholder="Onde peguei (ex.: praça)" /><input id="nota-quando" type="date" aria-label="Quando peguei" /></div>
+    <textarea id="nota-texto" maxlength="300" placeholder="O que aconteceu? (ex.: fugiu 3 vezes!)"></textarea>
+    <small id="nota-ok"></small></div>`;
+  const onde = caixa.querySelector('#nota-onde'), quando = caixa.querySelector('#nota-quando'), texto = caixa.querySelector('#nota-texto');
+  onde.value = a.onde || ''; quando.value = a.quando || ''; texto.value = a.texto || '';
+  let t = 0;
+  const guardar = () => {
+    clearTimeout(t);
+    t = setTimeout(() => {
+      const n = { onde:onde.value.trim(), quando:quando.value, texto:texto.value.trim() };
+      if(n.onde || n.quando || n.texto) anotacoes[id] = n; else delete anotacoes[id];
+      gravar('dittospokedex:anotacoes', anotacoes);
+      caixa.querySelector('#nota-ok').textContent = '✔ Guardado';
+      conferirMedalhas();
+      /* redesenha só a cartinha dele, pra não perder o que está sendo digitado */
+      const velha = [...document.querySelectorAll('.poke')].find(b => b.querySelector('.num') && b.querySelector('.num').textContent.startsWith('#' + tres(id)));
+      if(velha) velha.replaceWith(cartinha(id));
+    }, 400);
+  };
+  for(const e of [onde, quando, texto]){ e.oninput = guardar; e.onchange = guardar; }
+}
+
+/* ---------- 📊 gráfico da coleção ----------
+   Uma barra por tipo e por geração: quantos você tem dos que existem no GO.
+   É magnitude, então uma cor só; o nome e o número ficam escritos do lado. */
+function abrirGrafico(){
+  abrirFolhaSimples('<div class="grafico" style="text-align:left"><h2 id="folha-nome" style="text-align:center">📊 Gráfico da coleção</h2><div id="graf"></div></div>');
+  voltarFerramentas();
+  const g = folha.querySelector('#graf');
+  let tem = 0, noGo = 0;
+  for(let id = 1; id <= TOTAL; id++) if(temNoGo(id)){ noGo++; if(peguei.has(id)) tem++; }
+  g.innerHTML = `<p class="heroi"><b>${noGo ? Math.round(tem / noGo * 100) : 0}%</b><span>${tem} de ${noGo} Pokémon que tem no GO</span></p>`;
+  const secao = (titulo, linhas) => {
+    const h = document.createElement('h3'); h.textContent = titulo; g.appendChild(h);
+    for(const [rot, n, total] of linhas){
+      const d = document.createElement('div'); d.className = 'barra-linha';
+      const pct = total ? n / total * 100 : 0;
+      d.title = `${rot}: ${n} de ${total} (${Math.round(pct)}%)`;
+      d.innerHTML = `<span class="rot"></span><span class="trilho"><i style="width:${pct}%"></i></span><span class="val">${n}/${total}</span>`;
+      d.querySelector('.rot').textContent = rot;
+      g.appendChild(d);
+    }
+  };
+  secao('Por tipo', TIPOS.map((t, i) => {
+    let n = 0, total = 0;
+    for(let id = 1; id <= TOTAL; id++) if(temNoGo(id) && tiposDe(id).includes(i)){ total++; if(peguei.has(id)) n++; }
+    return [`${t.emoji} ${t.nome}`, n, total];
+  }));
+  secao('Por geração', GERACOES.map((x, i) => {
+    let n = 0, total = 0;
+    for(let id = x.de; id <= x.ate; id++) if(temNoGo(id)){ total++; if(peguei.has(id)) n++; }
+    return [`${REGIAO_EMOJI[i]} ${x.onde}`, n, total];
+  }));
+  const extras = [['⭐ Lendários', 'l'], ['🌟 Míticos', 'm'], ['🌀 Ultra Bestas', 'u'], ['⏳ Paradoxos', 'p']].map(([r, c]) => {
+    let n = 0, total = 0;
+    for(let id = 1; id <= TOTAL; id++) if(temNoGo(id) && CLASSE[id - 1] === c){ total++; if(peguei.has(id)) n++; }
+    return [r, n, total];
+  }).filter(x => x[2]);
+  if(extras.length) secao('Especiais', extras);
+}
+
+/* ---------- 🎨 pintar Pokémon ----------
+   A foto vira uma sombra clarinha com contorno, e a tinta só pega dentro dela
+   (a forma do Pokémon vira uma máscara). Sem internet, pinta o Ditto. */
+const CORES_TINTA = ['#e53935', '#fb8c00', '#fdd835', '#43a047', '#1e88e5', '#8e24aa', '#ec407a', '#6d4c41', '#212121', '#9e9e9e', '#ffffff', '#b98ad6'];
+function formaDitto(ctx, L){
+  ctx.beginPath();
+  const k = L / 64;
+  ctx.moveTo(10*k, 50*k);
+  ctx.bezierCurveTo(4*k, 50*k, 4*k, 40*k, 9*k, 36*k); ctx.bezierCurveTo(6*k, 28*k, 12*k, 18*k, 20*k, 20*k);
+  ctx.bezierCurveTo(24*k, 10*k, 40*k, 10*k, 44*k, 19*k); ctx.bezierCurveTo(52*k, 16*k, 60*k, 26*k, 55*k, 34*k);
+  ctx.bezierCurveTo(62*k, 40*k, 58*k, 52*k, 50*k, 51*k); ctx.bezierCurveTo(44*k, 56*k, 36*k, 52*k, 32*k, 54*k);
+  ctx.bezierCurveTo(26*k, 56*k, 16*k, 56*k, 10*k, 50*k); ctx.closePath();
+}
+function abrirPintar(id){
+  if(!id) id = pokemonDoDia();
+  abrirFolhaSimples(`<div class="pintar"><h2 id="folha-nome">🎨 Pintar Pokémon</h2>
+    <form class="add-time" id="form-pintar"><input id="pintar-nome" list="lista-nomes2" autocomplete="off" placeholder="Qual Pokémon pintar?" /><button type="submit">Pintar</button></form>
+    ${listaNomesHtml()}
+    <p class="resultado" id="pintando"></p>
+    <canvas id="tela" width="640" height="640" aria-label="Tela de pintura"></canvas>
+    <div class="paleta" id="paleta"></div>
+    <div class="mais-acoes" id="pinceis"></div>
+    <div class="mais-acoes">
+      <button type="button" id="pintar-tudo">🪣 Pintar tudo</button><button type="button" id="espiar">👀 Ver original</button>
+      <button type="button" id="desfazer-p">↩️ Desfazer</button><button type="button" id="limpar-p">🗑️ Limpar</button>
+    </div>
+    <div class="mais-acoes"><button type="button" id="guardar-p">📚 Guardar</button><button type="button" id="baixar-p">💾 Salvar imagem</button></div>
+    <p class="pequeno" id="recado-p"></p>
+    <h3 style="text-align:left">📚 Minhas pinturas</h3><div class="galeria" id="galeria"></div></div>`);
+  voltarFerramentas();
+  folha.querySelector('#pintando').textContent = `Pintando: ${NOMES[id - 1]}`;
+  folha.querySelector('#form-pintar').onsubmit = ev => { ev.preventDefault(); const x = idPeloNome(folha.querySelector('#pintar-nome').value); if(x) abrirPintar(x); };
+  const tela = folha.querySelector('#tela'), ctx = tela.getContext('2d'), L = 640;
+  const novo = () => { const c = document.createElement('canvas'); c.width = c.height = L; return c; };
+  const mascara = novo(), base = novo(), tinta = novo(), junta = novo();
+  let original = null, espiando = false, semFoto = false;
+  let cor = CORES_TINTA[0], grossura = 28, borracha = false;
+  const historico = [];
+  function montarBase(){
+    const b = base.getContext('2d'), m = mascara.getContext('2d');
+    b.clearRect(0, 0, L, L); m.clearRect(0, 0, L, L);
+    if(original){ m.drawImage(original, 20, 20, L - 40, L - 40); }
+    else { m.fillStyle = '#000'; formaDitto(m, L); m.fill(); }
+    /* contorno: a forma em cinza escuro, deslocada pros lados; por cima, a forma clarinha */
+    const sombra = novo(), sc = sombra.getContext('2d');
+    sc.drawImage(mascara, 0, 0); sc.globalCompositeOperation = 'source-in'; sc.fillStyle = '#5c5470'; sc.fillRect(0, 0, L, L);
+    for(const [dx, dy] of [[-3,0],[3,0],[0,-3],[0,3],[-2,-2],[2,2],[-2,2],[2,-2]]) b.drawImage(sombra, dx, dy);
+    const claro = novo(), cc = claro.getContext('2d');
+    cc.drawImage(mascara, 0, 0); cc.globalCompositeOperation = 'source-in'; cc.fillStyle = '#efe9f5'; cc.fillRect(0, 0, L, L);
+    b.drawImage(claro, 0, 0);
+  }
+  function desenharTela(){
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, L, L);
+    if(espiando && original){ ctx.drawImage(original, 20, 20, L - 40, L - 40); return; }
+    ctx.drawImage(base, 0, 0);
+    const j = junta.getContext('2d');
+    j.globalCompositeOperation = 'source-over'; j.clearRect(0, 0, L, L); j.drawImage(tinta, 0, 0);
+    j.globalCompositeOperation = 'destination-in'; j.drawImage(mascara, 0, 0);
+    ctx.drawImage(junta, 0, 0);
+  }
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => { original = img; montarBase(); desenharTela(); };
+  img.onerror = () => {
+    semFoto = true; montarBase(); desenharTela();
+    folha.querySelector('#recado-p').textContent = 'Não deu pra carregar a foto (sem internet?). Enquanto isso, pinte o Ditto! 🟣';
+  };
+  img.src = ARTE(id);
+  montarBase(); desenharTela();
+
+  /* paleta e pincéis */
+  const pal = folha.querySelector('#paleta');
+  const marcarCor = alvo => { for(const b of pal.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b === alvo)); };
+  for(const c of CORES_TINTA){
+    const b = document.createElement('button'); b.type = 'button'; b.style.background = c; b.setAttribute('aria-label', 'Cor ' + c);
+    b.setAttribute('aria-pressed', String(c === cor));
+    b.onclick = () => { cor = c; borracha = false; marcarCor(b); marcarPincel(); };
+    pal.appendChild(b);
+  }
+  const livre = document.createElement('input'); livre.type = 'color'; livre.value = '#00bcd4'; livre.setAttribute('aria-label', 'Escolher outra cor');
+  livre.oninput = () => { cor = livre.value; borracha = false; marcarCor(null); marcarPincel(); };
+  pal.appendChild(livre);
+  const pin = folha.querySelector('#pinceis');
+  const PINCEIS = [['Fino', 10], ['Médio', 28], ['Grosso', 60], ['🧽 Borracha', -1]];
+  function marcarPincel(){ for(const b of pin.children) b.setAttribute('aria-pressed', String(b.dataset.v == (borracha ? -1 : grossura))); }
+  for(const [n, v] of PINCEIS){
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = n; b.dataset.v = v;
+    b.onclick = () => { if(v < 0) borracha = true; else { borracha = false; grossura = v; } marcarPincel(); };
+    pin.appendChild(b);
+  }
+  marcarPincel();
+
+  /* desenhar com o dedo */
+  const t = tinta.getContext('2d');
+  let ultimo = null;
+  const ponto = ev => { const r = tela.getBoundingClientRect(); return [(ev.clientX - r.left) * L / r.width, (ev.clientY - r.top) * L / r.height]; };
+  const guardarPasso = () => { historico.push(t.getImageData(0, 0, L, L)); if(historico.length > 15) historico.shift(); };
+  const traço = (a, b) => {
+    t.globalCompositeOperation = borracha ? 'destination-out' : 'source-over';
+    t.strokeStyle = cor; t.lineWidth = borracha ? 40 : grossura; t.lineCap = t.lineJoin = 'round';
+    t.beginPath(); t.moveTo(a[0], a[1]); t.lineTo(b[0], b[1]); t.stroke();
+  };
+  tela.onpointerdown = ev => { ev.preventDefault(); tela.setPointerCapture(ev.pointerId); guardarPasso(); ultimo = ponto(ev); traço(ultimo, ultimo); desenharTela(); };
+  tela.onpointermove = ev => { if(!ultimo) return; const p = ponto(ev); traço(ultimo, p); ultimo = p; desenharTela(); };
+  tela.onpointerup = tela.onpointercancel = () => { ultimo = null; };
+
+  folha.querySelector('#pintar-tudo').onclick = () => { guardarPasso(); t.globalCompositeOperation = 'source-over'; t.fillStyle = cor; t.fillRect(0, 0, L, L); desenharTela(); };
+  folha.querySelector('#limpar-p').onclick = () => { guardarPasso(); t.clearRect(0, 0, L, L); desenharTela(); };
+  folha.querySelector('#desfazer-p').onclick = () => { const h = historico.pop(); if(h){ t.putImageData(h, 0, 0); desenharTela(); } };
+  const espiar = folha.querySelector('#espiar');
+  espiar.onpointerdown = () => { if(!original) return; espiando = true; desenharTela(); };
+  espiar.onpointerup = espiar.onpointerleave = () => { espiando = false; desenharTela(); };
+  espiar.onclick = () => { if(!original) folha.querySelector('#recado-p').textContent = 'Sem a foto, não dá pra ver o original.'; };
+
+  /* salvar: a imagem pintada, com o nome embaixo */
+  function imagemFinal(tam){
+    const c = document.createElement('canvas'); c.width = c.height = tam;
+    const x = c.getContext('2d');
+    x.drawImage(tela, 0, 0, tam, tam);
+    x.fillStyle = '#5c5470'; x.font = `bold ${Math.round(tam / 20)}px Rubik, sans-serif`; x.textAlign = 'center';
+    x.fillText(`${semFoto ? 'Ditto' : NOMES[id - 1]} · Ditto's Pokédex`, tam / 2, tam - tam / 30);
+    return c.toDataURL('image/png');
+  }
+  const recado = folha.querySelector('#recado-p');
+  folha.querySelector('#baixar-p').onclick = () => {
+    try{
+      const a = document.createElement('a'); a.href = imagemFinal(640); a.download = `pintura-${NOMES_SIMPLES[(semFoto ? 132 : id) - 1]}.png`;
+      document.body.appendChild(a); a.click(); a.remove();
+      recado.textContent = '💾 Imagem salva! Procure nos downloads.';
+    }catch(e){ recado.textContent = 'O celular não deixou salvar essa imagem.'; }
+  };
+  folha.querySelector('#guardar-p').onclick = () => {
+    try{
+      const dado = imagemFinal(240);
+      pinturas.unshift({ id: semFoto ? 132 : id, img: dado, d: Date.now() });
+      pinturas.splice(6);
+      gravar('dittospokedex:pinturas', pinturas);
+      recado.textContent = '📚 Guardada! (ficam as 6 mais novas)';
+      conferirMedalhas(); mostrarGaleria();
+    }catch(e){ recado.textContent = 'Não deu pra guardar essa pintura.'; }
+  };
+  function mostrarGaleria(){
+    const g = folha.querySelector('#galeria');
+    g.innerHTML = pinturas.length ? '' : '<p class="pequeno">Nenhuma pintura guardada ainda.</p>';
+    pinturas.forEach((pt, i) => {
+      const f = document.createElement('figure');
+      f.innerHTML = '<img alt="" /><figcaption></figcaption><button type="button" class="x" aria-label="Apagar pintura">✕</button>';
+      f.querySelector('img').src = pt.img;
+      f.querySelector('figcaption').textContent = NOMES[pt.id - 1];
+      f.querySelector('.x').onclick = () => { pinturas.splice(i, 1); gravar('dittospokedex:pinturas', pinturas); mostrarGaleria(); };
+      g.appendChild(f);
+    });
+  }
+  mostrarGaleria();
+}
+
+/* ---------- 📤 compartilhar o cartão de treinador ----------
+   Desenha o cartão num canvas (sem biblioteca) e manda pelo "compartilhar"
+   do celular; onde não tem, baixa a imagem. */
+function carregarImg(src){
+  return new Promise(ok => {
+    const i = new Image(); i.crossOrigin = 'anonymous';
+    const t = setTimeout(() => ok(null), 4000);
+    i.onload = () => { clearTimeout(t); ok(i); };
+    i.onerror = () => { clearTimeout(t); ok(null); };
+    i.src = src;
+  });
+}
+/* Celular antigo sem roundRect: desenha o retângulo reto mesmo. */
+if(window.CanvasRenderingContext2D && !CanvasRenderingContext2D.prototype.roundRect)
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h){ this.rect(x, y, w, h); };
+async function imagemDoCartao(){
+  const p = lerPerfil(), W = 800, H = 1000;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  const cores = ((FUNDOS.find(f => f.id === p.fundo) || FUNDOS[0]).css.match(/#[0-9a-f]{6}/gi)) || ['#b98ad6', '#6a3f95'];
+  const gr = x.createLinearGradient(0, 0, W, H); gr.addColorStop(0, cores[0]); gr.addColorStop(1, cores[1] || cores[0]);
+  x.fillStyle = gr; x.beginPath(); x.roundRect(0, 0, W, H, 48); x.fill();
+  x.fillStyle = '#fff'; x.textBaseline = 'alphabetic';
+  x.font = '110px sans-serif'; x.fillText(p.simbolo || '🟣', 50, 170);
+  x.font = 'bold 64px Rubik, sans-serif'; x.fillText((p.nome || 'Treinador sem nome').slice(0, 20), 200, 125);
+  const time = TIMES[ler('dittospokedex:time', '')];
+  x.font = '30px Rubik, sans-serif'; x.globalAlpha = .92;
+  x.fillText('Cartão de treinador' + (time ? ` · ${time.emoji} Time ${time.nome}` : ''), 200, 172);
+  x.globalAlpha = 1;
+  const nums = [[peguei.size, 'Pokémon'], [contaTag('shiny'), 'Shiny'], [contaTag('lucky'), 'Lucky'],
+    [contaTag('hundo'), 'Hundo'], [contaClasse('l') + contaClasse('m'), 'Lendas'], [MEDALHAS.filter(m => m.ok()).length, 'Medalhas']];
+  nums.forEach(([n, r], i) => {
+    const cx = 50 + (i % 3) * 240, cy = 230 + Math.floor(i / 3) * 170;
+    x.fillStyle = 'rgba(255,255,255,.18)'; x.beginPath(); x.roundRect(cx, cy, 220, 150, 24); x.fill();
+    x.fillStyle = '#fff'; x.textAlign = 'center';
+    x.font = 'bold 64px Rubik, sans-serif'; x.fillText(String(n), cx + 110, cy + 82);
+    x.font = '28px Rubik, sans-serif'; x.fillText(r, cx + 110, cy + 125);
+    x.textAlign = 'left';
+  });
+  const mostrar = (album.length ? album : [...favoritos].sort((a, b) => a - b)).slice(0, 6);
+  x.font = 'bold 32px Rubik, sans-serif';
+  x.fillText(album.length ? '📸 Meu álbum' : mostrar.length ? '❤️ Favoritos' : '', 50, 620);
+  if(!mostrar.length){
+    x.font = '30px Rubik, sans-serif'; x.textAlign = 'center'; x.globalAlpha = .9;
+    x.fillText('Monte o 📸 álbum ou favorite ❤️', W / 2, 720);
+    x.fillText('pra seus Pokémon aparecerem aqui!', W / 2, 765);
+    x.globalAlpha = 1; x.textAlign = 'left';
+  }
+  const fotos = await Promise.all(mostrar.map(id => carregarImg((modoShiny || tagsDe(id).includes('shiny')) ? SPRITE_SHINY(id) : SPRITE(id))));
+  mostrar.forEach((id, i) => {
+    const cx = 50 + (i % 3) * 240, cy = 645 + Math.floor(i / 3) * 150;
+    x.fillStyle = 'rgba(255,255,255,.18)'; x.beginPath(); x.roundRect(cx, cy, 220, 135, 24); x.fill();
+    x.fillStyle = '#fff';
+    if(fotos[i]){ x.imageSmoothingEnabled = false; x.drawImage(fotos[i], cx + 50, cy - 5, 120, 120); }
+    else { x.font = 'bold 34px Rubik, sans-serif'; x.textAlign = 'center'; x.fillText('#' + tres(id), cx + 110, cy + 70); x.textAlign = 'left'; }
+    x.font = '22px Rubik, sans-serif'; x.textAlign = 'center'; x.fillText(NOMES[id - 1], cx + 110, cy + 125); x.textAlign = 'left';
+  });
+  x.font = '26px Rubik, sans-serif'; x.globalAlpha = .9; x.textAlign = 'center';
+  x.fillText("🟣 Ditto's Pokédex", W / 2, H - 30);
+  return c;
+}
+async function compartilharCartao(){
+  const recado = folha.querySelector('#recado-cartao'), bt = folha.querySelector('#compartilhar-cartao');
+  bt.disabled = true; recado.textContent = '⏳ Montando a imagem…';
+  try{
+    const c = await imagemDoCartao();
+    const blob = await new Promise((ok, erro) => { try{ c.toBlob(b => b ? ok(b) : erro(new Error('vazio')), 'image/png'); }catch(e){ erro(e); } });
+    const nome = `cartao-de-treinador-${simples(lerPerfil().nome || '') || 'ditto'}.png`;
+    const arquivo = new File([blob], nome, { type:'image/png' });
+    if(navigator.canShare && navigator.canShare({ files:[arquivo] })){
+      try{ await navigator.share({ files:[arquivo], title:'Meu cartão de treinador' }); recado.textContent = '📤 Pronto!'; }
+      catch(e){ recado.textContent = e && e.name === 'AbortError' ? '' : 'Não deu pra compartilhar. Tente de novo.'; }
+    } else {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = nome; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      recado.textContent = '💾 Imagem salva! Agora é só mandar no zap.';
+    }
+  }catch(e){
+    recado.textContent = 'Não deu pra montar a imagem do cartão.';
+  }
+  bt.disabled = false;
+}
 document.getElementById('abrir-baixar').onclick = abrirBaixar;
 
 montarChips();

@@ -245,3 +245,20 @@ página do Pokémon, com o botão "Voltar pro normal". Se não der pra baixar o 
 a voz, toca normal e avisa.
 
 (Na versão 17 os 6 botões estavam em cada Pokémon; não era isso que foi pedido, então saíram.)
+
+## Versão 19: pintar, anotações, gráfico e cartão pra compartilhar
+
+- **🎨 Pintar Pokémon** (Ferramentas, ou "🎨 Pintar" na página do Pokémon): a foto vira uma
+  sombra clarinha com contorno e a tinta só pega dentro dela (a forma do Pokémon vira
+  máscara). 12 cores + qualquer outra, 3 pincéis, borracha, 🪣 pintar tudo, 👀 ver o
+  original segurando o botão, desfazer, limpar, 💾 salvar a imagem e 📚 guardar (as 6
+  mais novas ficam no aparelho). Sem internet, pinta o Ditto.
+- **📝 Anotações** na página de cada Pokémon: onde, quando e o que aconteceu. Guarda
+  sozinho, põe 📝 na cartinha e tem o filtro "📝 Com anotação".
+- **📊 Gráfico da coleção** (Ferramentas): quanto você tem de cada tipo, geração e dos
+  especiais, contando só os que já chegaram no GO. Uma cor só (é quantidade), com o nome
+  e o número escritos do lado de cada barra.
+- **📤 Compartilhar o cartão** (👤 Conta): desenha o cartão numa imagem (nome, símbolo,
+  time, números e o álbum ou os favoritos) e abre o "compartilhar" do celular; onde não
+  tem, baixa a imagem.
+- 2 medalhas novas; a conta leva as anotações; o "Recomeçar" apaga anotações e pinturas.
