@@ -220,6 +220,66 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .conta textarea{width:100%;min-height:80px;font:inherit;font-size:.78rem;padding:10px;border-radius:12px;
   border:2px solid var(--borda);background:var(--campo);color:var(--tinta);word-break:break-all}
 .conta .grande-botao{width:100%;margin-top:8px}
+/* Temas de cor: só trocam a cor de destaque (o fundo continua o do claro/escuro). */
+html:root[data-cor="pikachu"]{--marca:#b8860b;--marca-escura:#8a6400;--marca-clara:#f5d76e}
+@media (prefers-color-scheme: dark){html:root[data-cor="pikachu"]:not([data-tema="claro"]){--marca:#e3b341;--marca-escura:#9c7400;--marca-clara:#6b5620}}
+html:root[data-cor="pikachu"][data-tema="escuro"]{--marca:#e3b341;--marca-escura:#9c7400;--marca-clara:#6b5620}
+html:root[data-cor="charizard"]{--marca:#e0602a;--marca-escura:#b8441a;--marca-clara:#f7b08a}
+@media (prefers-color-scheme: dark){html:root[data-cor="charizard"]:not([data-tema="claro"]){--marca:#ff8a50;--marca-escura:#c2501f;--marca-clara:#6b3520}}
+html:root[data-cor="charizard"][data-tema="escuro"]{--marca:#ff8a50;--marca-escura:#c2501f;--marca-clara:#6b3520}
+html:root[data-cor="squirtle"]{--marca:#3b82c4;--marca-escura:#1f5f99;--marca-clara:#9cc9ef}
+@media (prefers-color-scheme: dark){html:root[data-cor="squirtle"]:not([data-tema="claro"]){--marca:#6aaee8;--marca-escura:#2a6fb0;--marca-clara:#1f3f5f}}
+html:root[data-cor="squirtle"][data-tema="escuro"]{--marca:#6aaee8;--marca-escura:#2a6fb0;--marca-clara:#1f3f5f}
+html:root[data-cor="bulbasaur"]{--marca:#3f9a5b;--marca-escura:#2a7342;--marca-clara:#9fd8ae}
+@media (prefers-color-scheme: dark){html:root[data-cor="bulbasaur"]:not([data-tema="claro"]){--marca:#6cc488;--marca-escura:#2f8a4f;--marca-clara:#1f4a2e}}
+html:root[data-cor="bulbasaur"][data-tema="escuro"]{--marca:#6cc488;--marca-escura:#2f8a4f;--marca-clara:#1f4a2e}
+html:root[data-cor="gengar"]{--marca:#7a4fb0;--marca-escura:#56348a;--marca-clara:#c3a6e6}
+@media (prefers-color-scheme: dark){html:root[data-cor="gengar"]:not([data-tema="claro"]){--marca:#a57ee0;--marca-escura:#6a44a8;--marca-clara:#3a2a55}}
+html:root[data-cor="gengar"][data-tema="escuro"]{--marca:#a57ee0;--marca-escura:#6a44a8;--marca-clara:#3a2a55}
+html:root[data-cor="jigglypuff"]{--marca:#d9578f;--marca-escura:#b03a6f;--marca-clara:#f5b3cf}
+@media (prefers-color-scheme: dark){html:root[data-cor="jigglypuff"]:not([data-tema="claro"]){--marca:#f07fb0;--marca-escura:#b8457a;--marca-clara:#5a2a40}}
+html:root[data-cor="jigglypuff"][data-tema="escuro"]{--marca:#f07fb0;--marca-escura:#b8457a;--marca-clara:#5a2a40}
+.do-dia{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:10px 14px;border-radius:18px;cursor:pointer;
+  font:inherit;text-align:left;color:var(--tinta);border:2px dashed var(--marca);background:var(--cartao)}
+.do-dia .mini{width:56px;height:56px;flex:none;display:grid;place-items:center}
+.do-dia .mini img{width:56px;height:56px;image-rendering:pixelated}
+.do-dia .mini .sem-foto{width:48px;height:48px;font-size:.7rem}
+.do-dia small{display:block;color:var(--tinta-fraca);font-weight:600;font-size:.78rem}
+.do-dia b{font-size:1.05rem}
+.tamanho{font-size:.85rem;color:var(--tinta-fraca);margin-top:4px}
+.desejo{font:inherit;font-size:1rem;font-weight:700;border-radius:99px;padding:9px 18px;cursor:pointer;margin:8px 4px 0;
+  border:2px solid #2f8fbf;background:var(--cartao2);color:#1f6f99}
+.desejo[aria-pressed="true"]{background:#2f8fbf;color:#fff}
+.ranking li{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:12px;background:var(--cartao2);border:2px solid var(--borda)}
+.ranking ol{list-style:none;display:grid;gap:6px;margin:6px 0 12px}
+.slots{display:grid;gap:8px;margin-top:10px}
+.slot{display:flex;align-items:center;gap:10px;border:2px dashed var(--borda);border-radius:16px;padding:8px 10px;min-height:64px;background:var(--cartao2)}
+.slot.cheio{border-style:solid}
+.slot .mini{width:48px;height:48px;flex:none;display:grid;place-items:center}
+.slot .mini img{width:48px;height:48px;image-rendering:pixelated}
+.slot .mini .sem-foto{width:40px;height:40px;font-size:.62rem}
+.slot .quem{flex:1;min-width:0}
+.slot .quem b{display:block}
+.slot .tipos{justify-content:flex-start;margin-top:2px}
+.slot .tipos .tipo{font-size:.68rem;padding:1px 7px}
+.slot button.tirar{font:inherit;border:0;background:none;font-size:1.1rem;cursor:pointer;color:var(--tinta-fraca)}
+.add-time{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.add-time input{font:inherit;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);min-width:0}
+.add-time button{font:inherit;font-weight:700;border-radius:12px;padding:0 14px;border:0;background:var(--marca-escura);color:#fff;cursor:pointer}
+.analise p{margin:6px 0;font-size:.9rem;line-height:1.5}
+.config .linha{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--borda)}
+.config .linha span{font-weight:600}
+#cfg-tema{flex-wrap:wrap}
+.folha{overflow-x:hidden}
+.slot{text-align:left}
+.config .linha small{display:block;color:var(--tinta-fraca);font-weight:400;font-size:.8rem}
+.chave{position:relative;width:54px;height:30px;border-radius:99px;border:0;background:var(--borda);cursor:pointer;flex:none}
+.chave::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.chave[aria-checked="true"]{background:var(--certo)}
+.chave[aria-checked="true"]::after{left:27px}
+.cores{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:8px}
+.cores button{font:inherit;font-weight:700;font-size:.85rem;border-radius:14px;padding:10px 6px;color:#fff;cursor:pointer;border:3px solid transparent}
+.cores button[aria-pressed="true"]{border-color:var(--tinta)}
 .linha-botoes.dois{margin-top:8px}
 .linha-botoes.dois .transforma{font-size:.88rem;padding:11px 6px;background:var(--marca)}
 .forma .no-go{display:block;font-size:.72rem;font-weight:600;margin-top:2px}
@@ -365,6 +425,11 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <button class="transforma" id="abrir-batalha" type="button">⚡ Formas de batalha</button>
     <button class="transforma" id="abrir-npcs" type="button">🧑‍🤝‍🧑 NPCs do GO</button>
   </div>
+  <div class="linha-botoes dois">
+    <button class="transforma" id="abrir-time" type="button">👥 Meu time de batalha</button>
+    <button class="transforma" id="abrir-config" type="button">⚙️ Configurações</button>
+  </div>
+  <button class="do-dia" id="do-dia" type="button"></button>
 
   <input class="busca" id="busca" type="search" placeholder="Procurar por nome ou número… (ex.: pikachu, 132)"
          autocomplete="off" enterkeyhint="search" />
@@ -381,7 +446,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 14 — 24/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 15 — 25/09 · 🔄</button>
   </footer>
 </div>
 
@@ -417,6 +482,11 @@ const BATALHA = {"1":[["dynamax","🔴","Bulbasaur Dynamax",1]],"2":[["dynamax",
    u = Ultra Besta, p = Paradoxo, - = comum. Das tags do Pokémon Showdown;
    os Paradoxos 1020–1023 vieram sem tag lá e foram marcados à mão. */
 const CLASSE = '-----------------------------------------------------------------------------------------------------------------------------------------------lll---lm-------------------------------------------------------------------------------------------lll---llm-----------------------------------------------------------------------------------------------------------------------------llllllllmm---------------------------------------------------------------------------------------------lllllllllmmmmmm-----------------------------------------------------------------------------------------------------------------------------------------------lllllllllmmm------------------------------------------------------------------lllmmm--------------------------------------------------ll-----------lllllllluuuuuuulmmuuuummm------------------------------------------------------------------------------lllllmlllll------l------------------------------------------------------------------------------pppppppppppp-----llllppllpp---llll--pppplm';
+/* Altura (em decímetros) do masterfile do Pokémon GO e peso (em hectogramas) do
+   Pokémon Showdown. Divide por 10: 17 = 1,7 m; 905 = 90,5 kg. O Basculegion (#902)
+   não está no masterfile: 3,0 m é o da Pokédex. */
+const ALTURA = [7,10,20,6,11,17,5,10,16,3,7,11,3,6,10,3,11,15,3,7,3,12,20,35,4,8,6,10,4,8,13,5,9,14,6,13,6,11,5,10,8,16,5,8,12,3,10,10,15,2,7,4,10,8,17,5,10,7,19,6,10,13,9,13,15,8,15,16,7,10,17,9,16,4,10,14,10,17,12,16,3,10,8,14,18,11,17,9,12,3,15,13,16,15,88,10,16,4,13,5,12,4,20,4,10,15,14,12,6,12,10,19,11,10,22,4,12,6,13,8,11,13,15,14,11,13,15,14,9,65,25,3,3,10,8,9,8,4,10,5,13,18,21,17,16,20,18,40,22,20,4,9,12,18,5,9,17,6,11,23,8,18,7,16,10,14,5,11,18,5,12,3,3,3,3,6,2,15,6,8,14,4,4,8,12,11,4,6,8,8,3,8,12,4,14,9,10,5,20,7,5,13,15,6,12,15,11,92,6,14,5,20,6,15,9,6,18,7,8,4,11,6,6,9,9,21,17,6,14,18,5,11,6,14,12,7,14,4,6,7,12,15,19,21,20,6,12,20,52,38,6,5,9,17,4,9,19,4,7,15,5,10,4,5,3,6,10,7,12,5,12,15,5,10,13,3,7,6,12,4,8,16,5,8,4,12,8,14,20,5,8,8,6,10,15,10,23,2,10,6,11,5,6,4,9,21,6,13,6,15,4,4,7,6,3,4,17,8,18,20,145,7,19,5,7,9,11,7,11,20,4,13,4,11,13,27,10,12,4,9,6,11,5,15,10,15,7,15,6,62,3,10,6,11,8,16,20,6,12,6,7,15,8,11,14,4,17,18,10,6,6,11,15,6,12,16,17,18,19,14,20,45,35,70,3,17,4,11,22,5,9,12,4,8,17,3,6,12,5,10,3,10,5,9,14,2,9,9,16,5,13,2,5,9,3,12,4,7,11,4,5,3,9,12,4,12,4,12,9,9,5,10,2,4,10,5,13,5,6,6,5,10,7,14,19,6,7,12,8,20,8,13,7,13,14,4,12,10,10,22,11,12,17,24,20,18,16,15,19,10,8,20,25,9,16,14,22,13,3,3,3,3,54,42,17,37,45,15,4,3,15,2,32,4,6,8,33,5,10,16,5,8,15,5,11,4,9,12,4,11,6,11,6,10,6,10,6,11,3,6,12,8,16,4,9,17,4,9,3,7,11,6,12,14,5,8,15,13,14,3,5,12,4,12,25,3,7,5,11,10,7,10,15,6,13,10,3,14,6,11,14,5,17,7,12,5,14,6,19,7,16,4,5,4,7,15,3,6,10,5,13,4,11,13,6,19,4,5,10,2,6,12,22,12,1,8,6,10,3,6,6,2,12,21,5,10,3,6,10,6,10,18,5,26,11,4,8,7,9,14,16,10,28,5,16,16,5,15,5,12,14,3,8,14,18,11,16,21,19,20,15,15,32,29,15,30,14,6,15,4,7,16,4,10,15,3,6,15,4,10,3,7,12,3,3,12,6,15,1,2,11,9,17,6,21,12,3,6,8,8,17,2,8,4,8,4,15,5,13,5,18,5,13,5,10,8,25,13,27,10,8,2,3,3,8,20,2,4,15,3,7,10,20,5,15,30,58,50,7,5,17,3,7,16,4,7,18,4,6,18,3,6,11,4,7,4,5,15,6,17,6,1,2,5,8,2,4,7,10,25,3,18,3,9,2,10,6,12,5,21,3,7,12,1,15,20,5,20,5,13,3,19,23,3,4,20,3,2,9,30,39,6,12,16,18,12,19,13,2,1,34,40,12,24,18,38,92,3,55,24,10,7,6,36,55,18,15,2,25,3,7,21,3,6,14,3,7,19,3,6,2,8,22,4,4,4,6,12,4,5,6,13,3,10,3,10,3,11,28,2,3,4,22,38,8,5,13,4,16,7,30,6,16,1,2,4,6,21,4,8,15,16,8,10,8,15,16,2,3,30,3,3,13,25,14,9,3,12,12,18,23,23,20,18,5,14,30,28,29,200,6,19,18,12,21,22,20,11,18,18,24,30,13,25,16,4,9,15,4,10,16,5,12,18,5,10,3,10,2,10,3,4,9,3,3,3,5,3,6,14,6,4,6,23,6,15,16,3,12,4,14,5,11,2,7,6,12,9,19,13,3,9,2,3,2,19,4,7,7,12,12,15,13,13,10,18,16,25,7,15,6,20,16,12,45,25,120,3,12,18,32,36,20,22,12,12,14,32,23,9,6,18,13,12,16,5,8,21,1,12,15,19,27,4,20,14,25,35,35,15,4,1,2,18,10,14,12,20,18,35,52,15,16,2,3];
+const PESO = [69,130,1000,85,190,905,90,225,855,29,99,320,32,100,295,18,300,395,35,185,20,380,69,650,60,300,120,295,70,200,600,90,195,620,75,400,99,199,55,120,75,550,54,86,186,54,295,300,125,8,333,42,320,196,766,280,320,190,1550,124,200,540,195,565,480,195,705,1300,40,64,155,455,550,200,1050,3000,300,950,360,785,60,600,150,392,852,900,1200,300,300,40,1325,1,1,405,2100,324,756,65,600,104,666,25,1200,65,450,498,502,655,10,95,1150,1200,346,350,800,80,250,150,390,345,800,545,560,406,300,445,550,884,100,2350,2200,40,65,290,245,250,365,75,350,115,405,590,4600,554,526,600,33,165,2100,1220,40,64,158,1005,79,190,795,95,250,888,60,325,212,408,108,356,85,335,750,120,225,20,30,10,15,32,20,150,78,133,615,58,85,285,380,339,5,10,30,115,18,85,380,85,750,265,270,21,795,10,50,285,415,72,1258,140,648,4000,78,487,39,1180,205,540,280,88,1258,350,550,65,558,50,120,285,160,2200,505,108,350,1520,335,1200,325,712,580,210,480,60,235,214,755,468,1780,1980,1870,720,1520,2020,2160,1990,50,50,216,522,25,195,520,76,280,819,136,370,175,325,36,100,284,115,316,26,325,550,40,280,596,23,198,95,280,66,202,484,17,36,45,392,240,465,1305,55,120,12,163,405,840,864,2538,20,970,110,326,110,115,600,1200,3600,112,315,152,402,42,42,177,177,20,103,800,208,888,1300,3980,240,2200,804,306,715,50,150,153,820,513,774,12,206,403,525,1680,1540,19,236,115,328,215,1080,238,604,125,682,74,1620,8,220,23,125,150,306,1000,10,470,140,168,2565,395,876,1506,525,270,226,234,87,421,1105,1026,952,2025,5500,2300,1750,2050,400,600,3520,9500,2065,11,608,102,970,3100,62,220,550,52,230,845,20,155,249,200,315,22,255,95,305,420,12,145,315,1025,570,1495,34,65,233,55,385,39,295,335,33,93,63,299,203,12,150,55,333,44,273,39,438,6,192,380,605,1870,150,130,244,19,1080,205,560,950,1050,202,540,495,3000,120,615,230,444,270,70,240,650,505,1355,340,1800,1400,2828,1286,1386,680,380,515,255,259,425,2910,340,520,3400,1066,266,3,3,3,3,6830,3360,4300,4200,7500,856,31,14,505,21,3200,40,81,160,630,99,555,1500,59,245,946,116,270,41,147,610,101,375,105,305,110,280,135,290,233,605,21,150,290,298,795,180,1020,2600,21,105,85,404,310,125,400,870,45,170,620,555,510,25,73,205,53,585,2005,6,66,66,163,180,152,334,963,375,929,280,145,2000,118,300,140,15,765,165,810,95,320,310,1073,125,811,58,75,58,180,440,10,80,201,55,242,57,410,575,195,925,50,59,330,10,105,330,1350,316,6,143,188,1100,210,510,810,3,220,805,90,345,31,130,343,180,360,1055,85,2600,1480,77,253,110,200,355,1390,920,3300,102,700,946,105,410,90,395,580,330,173,500,1600,288,460,2500,2600,2000,630,610,3300,3450,680,3250,485,65,825,90,290,900,94,145,390,70,109,400,50,424,17,160,245,25,84,170,135,815,1,9,100,310,910,80,1360,280,35,85,20,45,530,5,155,35,50,35,470,310,960,73,815,83,353,60,210,260,2700,252,2250,235,215,22,57,28,175,1505,30,70,710,50,125,995,5050,80,850,2150,2030,3050,88,90,1950,15,160,366,43,250,830,75,175,440,12,148,260,60,142,44,105,450,70,1800,34,2,5,92,250,3,80,145,1100,9200,40,820,15,185,15,115,48,222,68,1350,32,82,214,3,760,828,120,1080,700,2500,12,1205,1005,3,199,2120,33,7,190,1850,2100,297,470,782,205,186,455,212,1,9999,2300,1200,555,3336,250,1000,9999,1,8880,2300,805,222,18,1500,8200,130,445,80,8000,50,140,900,45,90,330,40,115,452,25,60,18,160,750,80,195,408,89,199,22,25,60,430,85,1155,135,340,120,780,3105,5,10,130,76,655,180,10,300,110,400,10,1200,40,390,2,4,34,48,51,55,125,610,460,280,4,1170,582,666,3,5,620,10,38,420,5200,890,280,30,1000,6500,1900,1500,2150,1750,400,20,110,500,1100,2100,9500,120,1050,700,1450,2000,8000,445,77,951,890,2900,1100,430,605,480,41,122,312,98,307,3265,61,215,619,102,1200,40,165,10,175,25,65,410,18,23,109,149,65,119,482,24,160,1050,2400,105,850,620,4,1130,36,386,160,610,7,272,6,60,330,580,790,30,150,10,35,15,900,89,591,1128,18,54,429,602,602,350,1200,630,3100,80,450,350,150,370,450,7000,900,2200,80,560,2230,1600,392,1200,3200,80,210,40,920,600,2400,110,3807,1110,360,3030,170,300,2100,50,300,742,1522,6997,49,3800,350,3030,2400,2800,1250,44,11,22,920,122,301,398,600,930,5900,4800,1625,1560,65,3];
 
 /* A lista escrita à mão: posição 0 é o #001. */
 const NOMES = 'Bulbasaur|Ivysaur|Venusaur|Charmander|Charmeleon|Charizard|Squirtle|Wartortle|Blastoise|Caterpie|Metapod|Butterfree|Weedle|Kakuna|Beedrill|Pidgey|Pidgeotto|Pidgeot|Rattata|Raticate|Spearow|Fearow|Ekans|Arbok|Pikachu|Raichu|Sandshrew|Sandslash|Nidoran♀|Nidorina|Nidoqueen|Nidoran♂|Nidorino|Nidoking|Clefairy|Clefable|Vulpix|Ninetales|Jigglypuff|Wigglytuff|Zubat|Golbat|Oddish|Gloom|Vileplume|Paras|Parasect|Venonat|Venomoth|Diglett|Dugtrio|Meowth|Persian|Psyduck|Golduck|Mankey|Primeape|Growlithe|Arcanine|Poliwag|Poliwhirl|Poliwrath|Abra|Kadabra|Alakazam|Machop|Machoke|Machamp|Bellsprout|Weepinbell|Victreebel|Tentacool|Tentacruel|Geodude|Graveler|Golem|Ponyta|Rapidash|Slowpoke|Slowbro|Magnemite|Magneton|Farfetch\'d|Doduo|Dodrio|Seel|Dewgong|Grimer|Muk|Shellder|Cloyster|Gastly|Haunter|Gengar|Onix|Drowzee|Hypno|Krabby|Kingler|Voltorb|Electrode|Exeggcute|Exeggutor|Cubone|Marowak|Hitmonlee|Hitmonchan|Lickitung|Koffing|Weezing|Rhyhorn|Rhydon|Chansey|Tangela|Kangaskhan|Horsea|Seadra|Goldeen|Seaking|Staryu|Starmie|Mr. Mime|Scyther|Jynx|Electabuzz|Magmar|Pinsir|Tauros|Magikarp|Gyarados|Lapras|Ditto|Eevee|Vaporeon|Jolteon|Flareon|Porygon|Omanyte|Omastar|Kabuto|Kabutops|Aerodactyl|Snorlax|Articuno|Zapdos|Moltres|Dratini|Dragonair|Dragonite|Mewtwo|Mew|Chikorita|Bayleef|Meganium|Cyndaquil|Quilava|Typhlosion|Totodile|Croconaw|Feraligatr|Sentret|Furret|Hoothoot|Noctowl|Ledyba|Ledian|Spinarak|Ariados|Crobat|Chinchou|Lanturn|Pichu|Cleffa|Igglybuff|Togepi|Togetic|Natu|Xatu|Mareep|Flaaffy|Ampharos|Bellossom|Marill|Azumarill|Sudowoodo|Politoed|Hoppip|Skiploom|Jumpluff|Aipom|Sunkern|Sunflora|Yanma|Wooper|Quagsire|Espeon|Umbreon|Murkrow|Slowking|Misdreavus|Unown|Wobbuffet|Girafarig|Pineco|Forretress|Dunsparce|Gligar|Steelix|Snubbull|Granbull|Qwilfish|Scizor|Shuckle|Heracross|Sneasel|Teddiursa|Ursaring|Slugma|Magcargo|Swinub|Piloswine|Corsola|Remoraid|Octillery|Delibird|Mantine|Skarmory|Houndour|Houndoom|Kingdra|Phanpy|Donphan|Porygon2|Stantler|Smeargle|Tyrogue|Hitmontop|Smoochum|Elekid|Magby|Miltank|Blissey|Raikou|Entei|Suicune|Larvitar|Pupitar|Tyranitar|Lugia|Ho-Oh|Celebi|Treecko|Grovyle|Sceptile|Torchic|Combusken|Blaziken|Mudkip|Marshtomp|Swampert|Poochyena|Mightyena|Zigzagoon|Linoone|Wurmple|Silcoon|Beautifly|Cascoon|Dustox|Lotad|Lombre|Ludicolo|Seedot|Nuzleaf|Shiftry|Taillow|Swellow|Wingull|Pelipper|Ralts|Kirlia|Gardevoir|Surskit|Masquerain|Shroomish|Breloom|Slakoth|Vigoroth|Slaking|Nincada|Ninjask|Shedinja|Whismur|Loudred|Exploud|Makuhita|Hariyama|Azurill|Nosepass|Skitty|Delcatty|Sableye|Mawile|Aron|Lairon|Aggron|Meditite|Medicham|Electrike|Manectric|Plusle|Minun|Volbeat|Illumise|Roselia|Gulpin|Swalot|Carvanha|Sharpedo|Wailmer|Wailord|Numel|Camerupt|Torkoal|Spoink|Grumpig|Spinda|Trapinch|Vibrava|Flygon|Cacnea|Cacturne|Swablu|Altaria|Zangoose|Seviper|Lunatone|Solrock|Barboach|Whiscash|Corphish|Crawdaunt|Baltoy|Claydol|Lileep|Cradily|Anorith|Armaldo|Feebas|Milotic|Castform|Kecleon|Shuppet|Banette|Duskull|Dusclops|Tropius|Chimecho|Absol|Wynaut|Snorunt|Glalie|Spheal|Sealeo|Walrein|Clamperl|Huntail|Gorebyss|Relicanth|Luvdisc|Bagon|Shelgon|Salamence|Beldum|Metang|Metagross|Regirock|Regice|Registeel|Latias|Latios|Kyogre|Groudon|Rayquaza|Jirachi|Deoxys|Turtwig|Grotle|Torterra|Chimchar|Monferno|Infernape|Piplup|Prinplup|Empoleon|Starly|Staravia|Staraptor|Bidoof|Bibarel|Kricketot|Kricketune|Shinx|Luxio|Luxray|Budew|Roserade|Cranidos|Rampardos|Shieldon|Bastiodon|Burmy|Wormadam|Mothim|Combee|Vespiquen|Pachirisu|Buizel|Floatzel|Cherubi|Cherrim|Shellos|Gastrodon|Ambipom|Drifloon|Drifblim|Buneary|Lopunny|Mismagius|Honchkrow|Glameow|Purugly|Chingling|Stunky|Skuntank|Bronzor|Bronzong|Bonsly|Mime Jr.|Happiny|Chatot|Spiritomb|Gible|Gabite|Garchomp|Munchlax|Riolu|Lucario|Hippopotas|Hippowdon|Skorupi|Drapion|Croagunk|Toxicroak|Carnivine|Finneon|Lumineon|Mantyke|Snover|Abomasnow|Weavile|Magnezone|Lickilicky|Rhyperior|Tangrowth|Electivire|Magmortar|Togekiss|Yanmega|Leafeon|Glaceon|Gliscor|Mamoswine|Porygon-Z|Gallade|Probopass|Dusknoir|Froslass|Rotom|Uxie|Mesprit|Azelf|Dialga|Palkia|Heatran|Regigigas|Giratina|Cresselia|Phione|Manaphy|Darkrai|Shaymin|Arceus|Victini|Snivy|Servine|Serperior|Tepig|Pignite|Emboar|Oshawott|Dewott|Samurott|Patrat|Watchog|Lillipup|Herdier|Stoutland|Purrloin|Liepard|Pansage|Simisage|Pansear|Simisear|Panpour|Simipour|Munna|Musharna|Pidove|Tranquill|Unfezant|Blitzle|Zebstrika|Roggenrola|Boldore|Gigalith|Woobat|Swoobat|Drilbur|Excadrill|Audino|Timburr|Gurdurr|Conkeldurr|Tympole|Palpitoad|Seismitoad|Throh|Sawk|Sewaddle|Swadloon|Leavanny|Venipede|Whirlipede|Scolipede|Cottonee|Whimsicott|Petilil|Lilligant|Basculin|Sandile|Krokorok|Krookodile|Darumaka|Darmanitan|Maractus|Dwebble|Crustle|Scraggy|Scrafty|Sigilyph|Yamask|Cofagrigus|Tirtouga|Carracosta|Archen|Archeops|Trubbish|Garbodor|Zorua|Zoroark|Minccino|Cinccino|Gothita|Gothorita|Gothitelle|Solosis|Duosion|Reuniclus|Ducklett|Swanna|Vanillite|Vanillish|Vanilluxe|Deerling|Sawsbuck|Emolga|Karrablast|Escavalier|Foongus|Amoonguss|Frillish|Jellicent|Alomomola|Joltik|Galvantula|Ferroseed|Ferrothorn|Klink|Klang|Klinklang|Tynamo|Eelektrik|Eelektross|Elgyem|Beheeyem|Litwick|Lampent|Chandelure|Axew|Fraxure|Haxorus|Cubchoo|Beartic|Cryogonal|Shelmet|Accelgor|Stunfisk|Mienfoo|Mienshao|Druddigon|Golett|Golurk|Pawniard|Bisharp|Bouffalant|Rufflet|Braviary|Vullaby|Mandibuzz|Heatmor|Durant|Deino|Zweilous|Hydreigon|Larvesta|Volcarona|Cobalion|Terrakion|Virizion|Tornadus|Thundurus|Reshiram|Zekrom|Landorus|Kyurem|Keldeo|Meloetta|Genesect|Chespin|Quilladin|Chesnaught|Fennekin|Braixen|Delphox|Froakie|Frogadier|Greninja|Bunnelby|Diggersby|Fletchling|Fletchinder|Talonflame|Scatterbug|Spewpa|Vivillon|Litleo|Pyroar|Flabébé|Floette|Florges|Skiddo|Gogoat|Pancham|Pangoro|Furfrou|Espurr|Meowstic|Honedge|Doublade|Aegislash|Spritzee|Aromatisse|Swirlix|Slurpuff|Inkay|Malamar|Binacle|Barbaracle|Skrelp|Dragalge|Clauncher|Clawitzer|Helioptile|Heliolisk|Tyrunt|Tyrantrum|Amaura|Aurorus|Sylveon|Hawlucha|Dedenne|Carbink|Goomy|Sliggoo|Goodra|Klefki|Phantump|Trevenant|Pumpkaboo|Gourgeist|Bergmite|Avalugg|Noibat|Noivern|Xerneas|Yveltal|Zygarde|Diancie|Hoopa|Volcanion|Rowlet|Dartrix|Decidueye|Litten|Torracat|Incineroar|Popplio|Brionne|Primarina|Pikipek|Trumbeak|Toucannon|Yungoos|Gumshoos|Grubbin|Charjabug|Vikavolt|Crabrawler|Crabominable|Oricorio|Cutiefly|Ribombee|Rockruff|Lycanroc|Wishiwashi|Mareanie|Toxapex|Mudbray|Mudsdale|Dewpider|Araquanid|Fomantis|Lurantis|Morelull|Shiinotic|Salandit|Salazzle|Stufful|Bewear|Bounsweet|Steenee|Tsareena|Comfey|Oranguru|Passimian|Wimpod|Golisopod|Sandygast|Palossand|Pyukumuku|Type: Null|Silvally|Minior|Komala|Turtonator|Togedemaru|Mimikyu|Bruxish|Drampa|Dhelmise|Jangmo-o|Hakamo-o|Kommo-o|Tapu Koko|Tapu Lele|Tapu Bulu|Tapu Fini|Cosmog|Cosmoem|Solgaleo|Lunala|Nihilego|Buzzwole|Pheromosa|Xurkitree|Celesteela|Kartana|Guzzlord|Necrozma|Magearna|Marshadow|Poipole|Naganadel|Stakataka|Blacephalon|Zeraora|Meltan|Melmetal|Grookey|Thwackey|Rillaboom|Scorbunny|Raboot|Cinderace|Sobble|Drizzile|Inteleon|Skwovet|Greedent|Rookidee|Corvisquire|Corviknight|Blipbug|Dottler|Orbeetle|Nickit|Thievul|Gossifleur|Eldegoss|Wooloo|Dubwool|Chewtle|Drednaw|Yamper|Boltund|Rolycoly|Carkol|Coalossal|Applin|Flapple|Appletun|Silicobra|Sandaconda|Cramorant|Arrokuda|Barraskewda|Toxel|Toxtricity|Sizzlipede|Centiskorch|Clobbopus|Grapploct|Sinistea|Polteageist|Hatenna|Hattrem|Hatterene|Impidimp|Morgrem|Grimmsnarl|Obstagoon|Perrserker|Cursola|Sirfetch\'d|Mr. Rime|Runerigus|Milcery|Alcremie|Falinks|Pincurchin|Snom|Frosmoth|Stonjourner|Eiscue|Indeedee|Morpeko|Cufant|Copperajah|Dracozolt|Arctozolt|Dracovish|Arctovish|Duraludon|Dreepy|Drakloak|Dragapult|Zacian|Zamazenta|Eternatus|Kubfu|Urshifu|Zarude|Regieleki|Regidrago|Glastrier|Spectrier|Calyrex|Wyrdeer|Kleavor|Ursaluna|Basculegion|Sneasler|Overqwil|Enamorus|Sprigatito|Floragato|Meowscarada|Fuecoco|Crocalor|Skeledirge|Quaxly|Quaxwell|Quaquaval|Lechonk|Oinkologne|Tarountula|Spidops|Nymble|Lokix|Pawmi|Pawmo|Pawmot|Tandemaus|Maushold|Fidough|Dachsbun|Smoliv|Dolliv|Arboliva|Squawkabilly|Nacli|Naclstack|Garganacl|Charcadet|Armarouge|Ceruledge|Tadbulb|Bellibolt|Wattrel|Kilowattrel|Maschiff|Mabosstiff|Shroodle|Grafaiai|Bramblin|Brambleghast|Toedscool|Toedscruel|Klawf|Capsakid|Scovillain|Rellor|Rabsca|Flittle|Espathra|Tinkatink|Tinkatuff|Tinkaton|Wiglett|Wugtrio|Bombirdier|Finizen|Palafin|Varoom|Revavroom|Cyclizar|Orthworm|Glimmet|Glimmora|Greavard|Houndstone|Flamigo|Cetoddle|Cetitan|Veluza|Dondozo|Tatsugiri|Annihilape|Clodsire|Farigiraf|Dudunsparce|Kingambit|Great Tusk|Scream Tail|Brute Bonnet|Flutter Mane|Slither Wing|Sandy Shocks|Iron Treads|Iron Bundle|Iron Hands|Iron Jugulis|Iron Moth|Iron Thorns|Frigibax|Arctibax|Baxcalibur|Gimmighoul|Gholdengo|Wo-Chien|Chien-Pao|Ting-Lu|Chi-Yu|Roaring Moon|Iron Valiant|Koraidon|Miraidon|Walking Wake|Iron Leaves|Dipplin|Poltchageist|Sinistcha|Okidogi|Munkidori|Fezandipiti|Ogerpon|Archaludon|Hydrapple|Gouging Fire|Raging Bolt|Iron Boulder|Iron Crown|Terapagos|Pecharunt'.split('|');
@@ -574,12 +644,26 @@ function apelido(tags){
 const especiais = ler('dittospokedex:especiais', {});
 /* ❤️ Favoritos: só gosto da pessoa, não muda placar nem "peguei". */
 const favoritos = new Set(ler('dittospokedex:favoritos', []));
+/* 🎯 Lista de desejos: some sozinho quando a pessoa pega, com comemoração. */
+const desejos = new Set(ler('dittospokedex:desejos', []));
+let desejosFeitos = +ler('dittospokedex:desejosfeitos', 0) || 0;
+/* ⚙️ Configurações */
+const config = Object.assign({ somAuto:false, cor:'ditto' }, ler('dittospokedex:config', {}));
+function gravarConfig(){ gravar('dittospokedex:config', config); }
 function tagsDe(id){ return especiais[id] || []; }
 
 function salvar(){
   if(typeof conferirMedalhas === 'function') setTimeout(conferirMedalhas, 0);
   gravar('dittospokedex:especiais', especiais);
   gravar('dittospokedex:favoritos', [...favoritos]);
+  const feitos = [...desejos].filter(id => peguei.has(id));
+  if(feitos.length){
+    for(const id of feitos) desejos.delete(id);
+    desejosFeitos += feitos.length;
+    gravar('dittospokedex:desejosfeitos', desejosFeitos);
+    setTimeout(() => brinde(`🎯 Desejo realizado: ${NOMES[feitos[0] - 1]}!`), 0);
+  }
+  gravar('dittospokedex:desejos', [...desejos]);
   gravar('dittospokedex:peguei', [...peguei]);
   gravar('dittospokedex:go', correcoesGo);
   gravar('dittospokedex:formas', [...pegueiForma]);
@@ -646,6 +730,7 @@ const FILTROS = [
   { id:'shiny-tenho', texto:'✨ Shiny que tenho', ok: id => tagsDe(id).includes('shiny') },
   { id:'shiny-falta', texto:'✨ Shiny que faltam', ok: id => temNoGo(id) && !tagsDe(id).includes('shiny') },
   { id:'favoritos', texto:'❤️ Favoritos', ok: id => favoritos.has(id) },
+  { id:'desejos',   texto:'🎯 Quero pegar', ok: id => desejos.has(id) },
   { id:'peguei', texto:'✅ Peguei',          ok: id => peguei.has(id) },
   { id:'falta',  texto:'🟡 Falta pegar',        ok: id => temNoGo(id) && !peguei.has(id) },
 ];
@@ -732,7 +817,7 @@ function cartinha(id){
   const tops = tagsDe(id).map(t => TAG[t]).filter(Boolean)
     .sort((a, c) => c.pontos - a.pontos).slice(0, 2).map(t => t.emoji).join('');
   b.innerHTML = `<span class="selo">${tops || (!noGo ? '❌' : pegou ? '✅' : '🟡')}</span>` +
-    (favoritos.has(id) ? '<span class="selo-fav">❤️</span>' : '');
+    ((favoritos.has(id) || desejos.has(id)) ? `<span class="selo-fav">${favoritos.has(id) ? '❤️' : ''}${desejos.has(id) ? '🎯' : ''}</span>` : '');
   b.appendChild(f);
   b.insertAdjacentHTML('beforeend',
     `<span class="num">#${tres(id)}${CLASSES[CLASSE[id - 1]] ? '<span class="estrela">' + CLASSES[CLASSE[id - 1]].emoji + '</span>' : ''}</span><span class="nome"></span><span class="tipos"></span>`);
@@ -779,6 +864,7 @@ const folha = document.getElementById('folha');
 let aberto = 0, ultimoFoco = null;
 function abrir(id){
   if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  const novoAberto = id !== aberto;   // só toca sozinho quando abre outro, não quando redesenha
   if(id !== somDe) pararSom();
   aberto = id;
   const noGo = temNoGo(id), pegou = peguei.has(id);
@@ -791,8 +877,11 @@ function abrir(id){
     ${CLASSES[CLASSE[id - 1]] ? `<span class="classe ${CLASSE[id - 1]}">${CLASSES[CLASSE[id - 1]].emoji} ${CLASSES[CLASSE[id - 1]].nome}</span>` : ''}
     <h2 id="folha-nome"></h2>
     <div class="tipos" id="folha-tipos"></div>
+    <p class="tamanho" id="tamanho"></p>
     <button type="button" class="som" id="tocar">🔊 Ouvir o som</button>
     <button type="button" class="fav" id="favorito" aria-pressed="false"></button>
+    <button type="button" class="desejo" id="desejo" aria-pressed="false" hidden></button>
+    <button type="button" class="desejo" id="por-no-time" hidden>👥 Pôr no time</button>
     <p class="som-aviso" id="som-aviso" hidden></p>
     <p class="status ${!noGo ? 'nao' : pegou ? 'tem' : 'falta'}">${!noGo
       ? '❌ Ainda não chegou no Pokémon GO'
@@ -821,6 +910,29 @@ function abrir(id){
     if(favoritos.has(id)) favoritos.delete(id); else favoritos.add(id);
     salvar(); abrir(id); desenhar();
   };
+  folha.querySelector('#tamanho').textContent = textoTamanho(id);
+  const btDesejo = folha.querySelector('#desejo');
+  if(noGo && !pegou){
+    btDesejo.hidden = false;
+    btDesejo.setAttribute('aria-pressed', String(desejos.has(id)));
+    btDesejo.textContent = desejos.has(id) ? '🎯 Na lista de desejos' : '🎯 Quero pegar!';
+    btDesejo.onclick = () => {
+      if(desejos.has(id)) desejos.delete(id); else desejos.add(id);
+      salvar(); abrir(id); desenhar();
+    };
+  }
+  const btTime = folha.querySelector('#por-no-time');
+  if(noGo){
+    btTime.hidden = false;
+    const t = timeDaLiga();
+    if(t.includes(id)) btTime.textContent = '👥 Está no time ' + LIGAS[ligaAtual].curto;
+    btTime.onclick = () => {
+      const r = porNoTime(id);
+      brinde(r);
+      abrir(id);
+    };
+  }
+  if(novoAberto && config.somAuto) tocarSom(id);
   if(somDe === id && !tocador.paused) marcarTocando(true);   // redesenhou no meio do som
   const img = foto(id, true);
   if(!noGo) img.classList.add('fora');
@@ -1078,6 +1190,7 @@ function desenharFraquezas(id, caixa){
 }
 
 function fechar(){
+  if(jogoAtivo){ registrarPartida(); jogoAtivo = null; }
   pararSom();
   fundo.classList.remove('aberto');
   aberto = 0;
@@ -1237,6 +1350,7 @@ function confere(digitado, id){
 
 function abrirQuiz(){
   if(!fundo.classList.contains('aberto')){ ultimoFoco = document.activeElement; seq = 0; pontosQuiz = 0; }
+  trocarJogo('quem');
   aberto = -1;
   const dif = DIFICULDADES[quiz.dificuldade];
   const digitar = quiz.dificuldade === 'dificil' || quiz.modo === 'digitar';
@@ -1248,6 +1362,7 @@ function abrirQuiz(){
     <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
     <div class="quiz">
       <h2 id="folha-nome">🎮 Quem é esse Pokémon?</h2>
+      <div class="chips centro" id="jogos"></div>
       <div class="chips centro" id="dificuldade"></div>
       <div class="chips centro" id="modo"></div>
       <div class="placar-quiz"></div>
@@ -1264,6 +1379,7 @@ function abrirQuiz(){
       <p class="pequeno">${dif.diz}. Acertou: +100 pontos.</p>
     </div>`;
   folha.querySelector('.fechar').onclick = fechar;
+  montarAbasJogos('quem');
   desenharPlacarQuiz();
   const cd = folha.querySelector('#dificuldade');
   for(const [k, v] of Object.entries(DIFICULDADES)){
@@ -1310,10 +1426,351 @@ function abrirQuiz(){
   somDe = certo; tocarSom(certo);
   (digitar ? folha.querySelector('#palpite') : caixa.querySelector('button')).focus();
 }
+function recordeDe(j){ return j === 'quem' ? (quiz.recorde || 0) : ((quiz.recordes || {})[j] || 0); }
 function desenharPlacarQuiz(){
   folha.querySelector('.placar-quiz').innerHTML =
-    `<span>⭐ ${pontosQuiz} pontos</span><span>🔥 ${seq} seguidos</span><span>🏆 recorde ${quiz.recorde}</span>`;
+    `<span>⭐ ${pontosQuiz} pontos</span><span>🔥 ${seq} seguidos</span><span>🏆 recorde ${recordeDe(jogoAtivo)}</span>`;
 }
+
+/* ---------- os três jogos e o ranking ----------
+   Uma "partida" é do abrir até fechar (ou trocar de jogo). Quando acaba, os
+   pontos vão pro histórico, que vira o ranking com data. */
+const JOGOS = {
+  quem:   { nome:'🎮 Quem é?',  titulo:'🎮 Quem é esse Pokémon?' },
+  tipos:  { nome:'🧩 Tipo',     titulo:'🧩 Qual é o tipo?' },
+  numero: { nome:'🔢 Número',   titulo:'🔢 Qual é o número?' },
+};
+let jogoAtivo = null;
+function registrarPartida(){
+  if(jogoAtivo && pontosQuiz > 0){
+    quiz.historico = (quiz.historico || []).concat({ j:jogoAtivo, p:pontosQuiz, d:Date.now() })
+      .sort((a, b) => b.p - a.p).slice(0, 60);
+    gravar('dittospokedex:quiz', quiz);
+  }
+  pontosQuiz = 0; seq = 0;
+}
+function trocarJogo(novo){
+  if(jogoAtivo !== novo) registrarPartida();
+  jogoAtivo = novo;
+}
+window.addEventListener('pagehide', registrarPartida);
+function montarAbasJogos(atual){
+  const caixa = folha.querySelector('#jogos');
+  const abas = [...Object.entries(JOGOS).map(([k, v]) => [k, v.nome]), ['ranking', '🏆 Ranking']];
+  for(const [k, nome] of abas){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = nome;
+    b.setAttribute('aria-pressed', String(k === atual));
+    b.onclick = () => { pararSom(); k === 'quem' ? abrirQuiz() : k === 'ranking' ? abrirRanking() : abrirJogo(k); };
+    caixa.appendChild(b);
+  }
+}
+function textoTipos(id){ return tiposDe(id).map(t => `${TIPOS[t].emoji} ${TIPOS[t].nome}`).join(' + '); }
+function abrirJogo(j){
+  if(!fundo.classList.contains('aberto')){ ultimoFoco = document.activeElement; seq = 0; pontosQuiz = 0; }
+  trocarJogo(j);
+  aberto = -1;
+  const dif = DIFICULDADES[quiz.dificuldade];
+  const lista = Array.from({ length:dif.ate - dif.de + 1 }, (_, i) => dif.de + i);
+  const certo = lista[Math.floor(Math.random() * lista.length)];
+  let opcoes;
+  if(j === 'tipos'){
+    const certoTxt = textoTipos(certo), vistos = new Set([certoTxt]);
+    opcoes = [certoTxt];
+    while(opcoes.length < 4){
+      const t = textoTipos(lista[Math.floor(Math.random() * lista.length)]);
+      if(!vistos.has(t)){ vistos.add(t); opcoes.push(t); }
+    }
+  } else {
+    const nums = new Set([certo]);
+    while(nums.size < 4){
+      const n = certo + (Math.random() < .5 ? -1 : 1) * (1 + Math.floor(Math.random() * 30));
+      if(n >= 1 && n <= TOTAL) nums.add(n);
+    }
+    opcoes = [...nums].map(n => '#' + tres(n));
+  }
+  const resposta = j === 'tipos' ? textoTipos(certo) : '#' + tres(certo);
+  opcoes.sort(() => Math.random() - .5);
+  rodada = { certo, respondeu:false };
+  folha.innerHTML = `
+    <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
+    <div class="quiz">
+      <h2 id="folha-nome">${JOGOS[j].titulo}</h2>
+      <div class="chips centro" id="jogos"></div>
+      <div class="chips centro" id="dificuldade"></div>
+      <div class="placar-quiz"></div>
+      <div class="arte mostra"></div>
+      <p class="resultado" id="pergunta"></p>
+      <div class="opcoes"></div>
+      <p class="resultado" aria-live="polite" id="res"></p>
+      <button type="button" class="grande-botao principal" id="proxima" hidden>Próximo ▶</button>
+      <p class="pequeno">${dif.diz.replace(', e tem que digitar', '')}. Acertou: +100 pontos.</p>
+    </div>`;
+  folha.querySelector('.fechar').onclick = fechar;
+  montarAbasJogos(j);
+  desenharPlacarQuiz();
+  const cd = folha.querySelector('#dificuldade');
+  for(const [k, v] of Object.entries(DIFICULDADES)){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = v.nome;
+    b.setAttribute('aria-pressed', String(k === quiz.dificuldade));
+    b.onclick = () => { quiz.dificuldade = k; gravar('dittospokedex:quiz', quiz); abrirJogo(j); };
+    cd.appendChild(b);
+  }
+  folha.querySelector('.arte').appendChild(foto(certo, true));
+  folha.querySelector('#pergunta').textContent = j === 'tipos'
+    ? `De que tipo é o ${NOMES[certo - 1]}?` : `Qual é o número do ${NOMES[certo - 1]}?`;
+  const caixa = folha.querySelector('.opcoes');
+  for(const o of opcoes){
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = o;
+    b.onclick = () => {
+      if(rodada.respondeu) return;
+      rodada.respondeu = true;
+      const acertou = o === resposta;
+      for(const x of caixa.children) if(x.textContent === resposta) x.classList.add('certa');
+      if(!acertou) b.classList.add('errada');
+      const res = folha.querySelector('#res');
+      if(acertou){
+        seq++; pontosQuiz += 100;
+        if(j === 'tipos') quiz.acertosTipos = (quiz.acertosTipos || 0) + 1;
+        else quiz.acertosNumero = (quiz.acertosNumero || 0) + 1;
+        res.textContent = '🎉 Acertou! +100';
+        if(MARCOS.includes(seq)) brinde(`🔥 ${seq} seguidos! Que olho!`);
+      } else {
+        res.textContent = `❌ É ${resposta}!`;
+        seq = 0;
+      }
+      quiz.recordes = quiz.recordes || {};
+      quiz.recordes[j] = Math.max(quiz.recordes[j] || 0, pontosQuiz);
+      gravar('dittospokedex:quiz', quiz);
+      desenharPlacarQuiz();
+      const prox = folha.querySelector('#proxima');
+      prox.hidden = false; prox.focus();
+      conferirMedalhas();
+    };
+    caixa.appendChild(b);
+  }
+  folha.querySelector('#proxima').onclick = () => abrirJogo(j);
+  fundo.classList.add('aberto');
+  caixa.querySelector('button').focus();
+}
+function abrirRanking(){
+  if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  registrarPartida(); jogoAtivo = null;
+  aberto = -1;
+  folha.innerHTML = `
+    <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
+    <div class="quiz ranking">
+      <h2 id="folha-nome">🏆 Ranking</h2>
+      <div class="chips centro" id="jogos"></div>
+      <div id="listas" style="text-align:left"></div>
+      <p class="pequeno">Cada partida vai do abrir o jogo até fechar ou trocar de jogo.</p>
+    </div>`;
+  folha.querySelector('.fechar').onclick = fechar;
+  montarAbasJogos('ranking');
+  const caixa = folha.querySelector('#listas');
+  const hoje = new Date().toDateString();
+  for(const [k, v] of Object.entries(JOGOS)){
+    const h = document.createElement('h3'); h.textContent = v.titulo; caixa.appendChild(h);
+    const top = (quiz.historico || []).filter(x => x.j === k).slice(0, 5);
+    const ol = document.createElement('ol');
+    if(!top.length) ol.innerHTML = '<li><span>Nenhuma partida ainda.</span></li>';
+    top.forEach((x, i) => {
+      const d = new Date(x.d);
+      const quando = d.toDateString() === hoje ? 'hoje' : d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'2-digit' });
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${['🥇', '🥈', '🥉'][i] || (i + 1) + 'º'} <b>${x.p}</b> pontos</span><span></span>`;
+      li.lastChild.textContent = quando;
+      ol.appendChild(li);
+    });
+    caixa.appendChild(ol);
+  }
+  fundo.classList.add('aberto');
+  folha.querySelector('.fechar').focus();
+}
+
+/* ---------- 📏 tamanho, em Dittos ---------- */
+function numBr(x){ return x.toLocaleString('pt-BR', { maximumFractionDigits:1 }); }
+function textoTamanho(id){
+  const a = ALTURA[id - 1] / 10, p = PESO[id - 1] / 10;
+  const emDittos = x => x >= 10 ? Math.round(x) : numBr(Math.round(x * 10) / 10);
+  const altura = a >= 1 ? `${numBr(a)} m` : `${Math.round(a * 100)} cm`;
+  return `📏 ${altura} · ⚖️ ${numBr(p)} kg — ${id === 132 ? 'é um Ditto! 🟣' : `${emDittos(a / 0.3)} Dittos de altura, ${emDittos(p / 4)} de peso`}`;
+}
+
+/* ---------- 🎲 Pokémon do dia ----------
+   O mesmo pra todo mundo no mesmo dia: o número sai da data. */
+function pokemonDoDia(data = new Date()){
+  const dia = Math.floor(Date.UTC(data.getFullYear(), data.getMonth(), data.getDate()) / 86400000);
+  let x = (dia * 2654435761) >>> 0;
+  x = ((x ^ (x >>> 15)) * 2246822519) >>> 0;
+  return (x % TOTAL) + 1;
+}
+function mostrarDoDia(){
+  const id = pokemonDoDia(), b = document.getElementById('do-dia');
+  b.innerHTML = '<span class="mini"></span><span><small>🎲 Pokémon do dia</small><b></b><span class="tipos" style="justify-content:flex-start"></span></span>';
+  b.querySelector('.mini').appendChild(foto(id));
+  b.querySelector('b').textContent = `#${tres(id)} ${NOMES[id - 1]}`;
+  for(const t of tiposDe(id)) b.querySelector('.tipos').appendChild(seloTipo(t));
+  b.onclick = () => abrir(id);
+}
+
+/* ---------- 👥 meu time de batalha (Liga de Batalha GO) ---------- */
+const LIGAS = {
+  grande: { nome:'Liga Grande', curto:'Grande', diz:'até 1500 PC' },
+  ultra:  { nome:'Liga Ultra',  curto:'Ultra',  diz:'até 2500 PC' },
+  mestra: { nome:'Liga Mestra', curto:'Mestra', diz:'sem limite de PC' },
+};
+const times = Object.assign({ grande:[], ultra:[], mestra:[] }, ler('dittospokedex:times', {}));
+for(const k of Object.keys(LIGAS)) if(!Array.isArray(times[k])) times[k] = [];
+let ligaAtual = ler('dittospokedex:liga', 'grande');
+if(!LIGAS[ligaAtual]) ligaAtual = 'grande';
+function timeDaLiga(){ return times[ligaAtual]; }
+function porNoTime(id){
+  const t = timeDaLiga(), liga = LIGAS[ligaAtual].nome;
+  if(t.includes(id)) return `${NOMES[id - 1]} já está no time da ${liga}.`;
+  if(t.length >= 3) return `O time da ${liga} já tem 3. Tire um em 👥 Meu time.`;
+  t.push(id); gravar('dittospokedex:times', times); conferirMedalhas();
+  return `👥 ${NOMES[id - 1]} entrou no time da ${liga}!`;
+}
+function abrirTime(){
+  if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  aberto = -1;
+  const t = timeDaLiga();
+  folha.innerHTML = `
+    <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
+    <h2 id="folha-nome">👥 Meu time de batalha</h2>
+    <p class="pequeno">Pra Liga de Batalha GO: três Pokémon por liga.</p>
+    <div class="chips centro" id="ligas"></div>
+    <div class="slots"></div>
+    <form class="add-time">
+      <input id="nome-time" list="lista-nomes" placeholder="Nome do Pokémon…" autocomplete="off" />
+      <button type="submit">Pôr</button>
+    </form>
+    <datalist id="lista-nomes"></datalist>
+    <p class="erro" id="erro-time" hidden></p>
+    <div class="bloco analise" id="analise"></div>`;
+  folha.querySelector('.fechar').onclick = fechar;
+  const cl = folha.querySelector('#ligas');
+  for(const [k, v] of Object.entries(LIGAS)){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = `${v.nome} (${v.diz})`;
+    b.setAttribute('aria-pressed', String(k === ligaAtual));
+    b.onclick = () => { ligaAtual = k; gravar('dittospokedex:liga', k); abrirTime(); };
+    cl.appendChild(b);
+  }
+  const slots = folha.querySelector('.slots');
+  for(let i = 0; i < 3; i++){
+    const id = t[i], d = document.createElement('div');
+    d.className = 'slot' + (id ? ' cheio' : '');
+    if(!id){ d.innerHTML = `<span class="quem" style="color:var(--tinta-fraca)">${i + 1}º lugar vazio</span>`; slots.appendChild(d); continue; }
+    d.innerHTML = '<span class="mini"></span><span class="quem"><b></b><span class="tipos"></span></span><button type="button" class="tirar" aria-label="Tirar do time">✕</button>';
+    d.querySelector('.mini').appendChild(foto(id));
+    d.querySelector('b').textContent = `${NOMES[id - 1]}`;
+    for(const x of tiposDe(id)) d.querySelector('.tipos').appendChild(seloTipo(x));
+    d.querySelector('.tirar').onclick = () => { t.splice(i, 1); gravar('dittospokedex:times', times); abrirTime(); };
+    d.querySelector('.mini').onclick = () => abrir(id);
+    slots.appendChild(d);
+  }
+  const dl = folha.querySelector('#lista-nomes');
+  dl.innerHTML = NOMES.map(n => `<option value="${n.replace(/"/g, '&quot;')}">`).join('');
+  folha.querySelector('.add-time').onsubmit = ev => {
+    ev.preventDefault();
+    const v = simples(folha.querySelector('#nome-time').value), erro = folha.querySelector('#erro-time');
+    const id = NOMES_SIMPLES.indexOf(v) + 1;
+    if(!id){ erro.textContent = 'Não achei esse Pokémon. Confira o nome.'; erro.hidden = false; return; }
+    const r = porNoTime(id);
+    abrirTime();
+    if(!r.startsWith('👥')){ const e = folha.querySelector('#erro-time'); e.textContent = r; e.hidden = false; }
+  };
+  /* O que o time teme e o que ele aguenta, somando os três. */
+  const an = folha.querySelector('#analise');
+  if(t.length){
+    const linhas = [];
+    const perigo = [], bom = [];
+    TIPOS.forEach((tp, a) => {
+      const fracos = t.filter(id => danoEm(a, id) > 1).length;
+      const aguentam = t.filter(id => danoEm(a, id) < 1).length;
+      if(fracos >= 2) perigo.push(`${tp.emoji} ${tp.nome} (${fracos} fracos)`);
+      else if(!fracos && aguentam >= 2) bom.push(`${tp.emoji} ${tp.nome}`);
+    });
+    linhas.push('<h3>🔍 Como o time está</h3>');
+    linhas.push(perigo.length ? `<p>⚠️ <b>Cuidado com:</b> ${perigo.join(', ')}.</p>` : '<p>✅ Nenhum tipo pega mais de um do time de jeito. Boa!</p>');
+    if(bom.length) linhas.push(`<p>🛡️ <b>O time aguenta bem:</b> ${bom.join(', ')}.</p>`);
+    if(t.length < 3) linhas.push('<p class="pequeno">Ponha 3 pra ver o time inteiro.</p>');
+    an.innerHTML = linhas.join('');
+  }
+  fundo.classList.add('aberto');
+  folha.querySelector('.fechar').focus();
+}
+
+/* ---------- ⚙️ configurações ---------- */
+const CORES = {
+  ditto:      { nome:'🟣 Ditto',      cor:'#9b6cc4' },
+  pikachu:    { nome:'⚡ Pikachu',    cor:'#b8860b' },
+  charizard:  { nome:'🔥 Charizard',  cor:'#e0602a' },
+  squirtle:   { nome:'💧 Squirtle',   cor:'#3b82c4' },
+  bulbasaur:  { nome:'🌿 Bulbasaur',  cor:'#3f9a5b' },
+  gengar:     { nome:'👻 Gengar',     cor:'#7a4fb0' },
+  jigglypuff: { nome:'🎤 Jigglypuff', cor:'#d9578f' },
+};
+function aplicarCor(){
+  if(!CORES[config.cor]) config.cor = 'ditto';
+  if(config.cor === 'ditto') document.documentElement.removeAttribute('data-cor');
+  else document.documentElement.setAttribute('data-cor', config.cor);
+  if(typeof aplicarTema === 'function') aplicarTema(document.documentElement.getAttribute('data-tema'));
+}
+function abrirConfig(){
+  if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  aberto = -1;
+  const temaAtual = document.documentElement.getAttribute('data-tema') || 'auto';
+  folha.innerHTML = `
+    <button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
+    <div class="config" style="text-align:left">
+      <h2 id="folha-nome" style="text-align:center">⚙️ Configurações</h2>
+      <div class="bloco"><h3>🎨 Cor do site</h3><div class="cores"></div></div>
+      <div class="bloco"><h3>🔧 Jeito do site</h3>
+        <div class="linha"><span>🔊 Tocar o som sozinho<small>Toca o grito quando você abre um Pokémon.</small></span>
+          <button type="button" class="chave" role="switch" id="cfg-som" aria-label="Tocar o som sozinho"></button></div>
+        <div class="linha"><span>✨ Modo shiny<small>Todas as fotos brilhantes.</small></span>
+          <button type="button" class="chave" role="switch" id="cfg-shiny" aria-label="Modo shiny"></button></div>
+        <div class="linha"><span>🌓 Claro ou escuro</span>
+          <span class="chips" id="cfg-tema" style="padding:0;overflow:visible"></span></div>
+      </div>
+    </div>`;
+  folha.querySelector('.fechar').onclick = fechar;
+  const cores = folha.querySelector('.cores');
+  for(const [k, v] of Object.entries(CORES)){
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = v.nome; b.style.background = v.cor;
+    b.setAttribute('aria-pressed', String(k === config.cor));
+    b.onclick = () => { config.cor = k; gravarConfig(); aplicarCor(); abrirConfig(); };
+    cores.appendChild(b);
+  }
+  const chave = (sel, ligado, mudar) => {
+    const b = folha.querySelector(sel);
+    b.setAttribute('aria-checked', String(ligado));
+    b.onclick = () => { mudar(); abrirConfig(); };
+  };
+  chave('#cfg-som', config.somAuto, () => { config.somAuto = !config.somAuto; gravarConfig(); });
+  chave('#cfg-shiny', modoShiny, () => btShiny.click());
+  const ct = folha.querySelector('#cfg-tema');
+  for(const [k, n] of [['auto', 'Automático'], ['claro', '☀️ Claro'], ['escuro', '🌙 Escuro']]){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = n;
+    b.setAttribute('aria-pressed', String(k === temaAtual));
+    b.onclick = () => {
+      const v = k === 'auto' ? null : k;
+      try{ v ? localStorage.setItem('dittospokedex:tema', v) : localStorage.removeItem('dittospokedex:tema'); }catch(e){}
+      aplicarTema(v); abrirConfig();
+    };
+    ct.appendChild(b);
+  }
+  fundo.classList.add('aberto');
+  folha.querySelector('.fechar').focus();
+}
+
 function responder(acertou, digitado){
   if(rodada.respondeu) return;
   rodada.respondeu = true;
@@ -1378,6 +1835,11 @@ const MEDALHAS = [
   { id:'mega1', icone:'🟣', nome:'Mega!',           como:'Marcar a primeira Mega',   ok:() => [...pegueiForma].some(k => /-b-mega/.test(k)) },
   { id:'dmax1', icone:'🔴', nome:'Gigante de verdade', como:'Primeiro Dynamax',       ok:() => [...pegueiForma].some(k => /-b-dynamax$/.test(k)) },
   { id:'gmax1', icone:'🟥', nome:'Gigantamax!',     como:'Primeiro Gigantamax',      ok:() => [...pegueiForma].some(k => /-b-gmax$/.test(k)) },
+  { id:'des1',  icone:'🎯', nome:'Desejo realizado', como:'Pegar um da lista de desejos', ok:() => desejosFeitos >= 1 },
+  { id:'des10', icone:'🌠', nome:'Gênio da lâmpada', como:'Realizar 10 desejos',      ok:() => desejosFeitos >= 10 },
+  { id:'tipo25',icone:'🧩', nome:'Sabe tudo de tipo', como:'25 acertos no Qual é o tipo?', ok:() => (quiz.acertosTipos || 0) >= 25 },
+  { id:'num25', icone:'🔢', nome:'Calculadora',     como:'25 acertos no Qual é o número?', ok:() => (quiz.acertosNumero || 0) >= 25 },
+  { id:'time3', icone:'👥', nome:'Time montado',    como:'Montar um time de 3',      ok:() => Object.values(times).some(t => t.length === 3) },
   { id:'fav1',  icone:'❤️', nome:'Coração',         como:'Primeiro favorito',        ok:() => favoritos.size >= 1 },
   { id:'fav10', icone:'💞', nome:'Fã número 1',     como:'10 favoritos',             ok:() => favoritos.size >= 10 },
   { id:'dit',   icone:'🟣', nome:'Amigo do Ditto',  como:'Pegar o Ditto',            ok:() => peguei.has(132) },
@@ -1746,6 +2208,7 @@ function fazerCodigoConta(){
   return PREFIXO_CONTA + paraBase64(JSON.stringify({
     perfil: lerPerfil(), time: ler('dittospokedex:time', ''),
     peguei: [...peguei], especiais, formas: [...pegueiForma], favoritos: [...favoritos],
+    desejos: [...desejos], times,
     go: correcoesGo, quiz: { recorde: quiz.recorde || 0, acertos: quiz.acertos || 0, melhorSeq: quiz.melhorSeq || 0 },
   }));
 }
@@ -1786,6 +2249,10 @@ function juntarConta(d){
   if(d.perfil && typeof d.perfil === 'object' && !eu.nome){
     gravarPerfil({ nome: String(d.perfil.nome || '').slice(0, 20), simbolo: d.perfil.simbolo, fundo: d.perfil.fundo });
   }
+  for(const id of ids(d.desejos)) if(!peguei.has(id)) desejos.add(id);
+  if(d.times && typeof d.times === 'object')
+    for(const k of Object.keys(LIGAS)) if(!times[k].length && Array.isArray(d.times[k])) times[k] = ids(d.times[k]).slice(0, 3);
+  gravar('dittospokedex:times', times);
   if(d.time && TIMES[d.time] && !ler('dittospokedex:time', '')){ gravar('dittospokedex:time', d.time); mostrarMeuTime(); }
   salvar(); desenhar();
   return peguei.size - antes;
@@ -1885,7 +2352,7 @@ function aplicarTema(t){
   else document.documentElement.removeAttribute('data-tema');
   const escuro = estaEscuro();
   btTema.textContent = escuro ? '☀️' : '🌙';
-  if(corDaBarra) corDaBarra.setAttribute('content', escuro ? '#15101c' : '#9b6cc4');
+  if(corDaBarra) corDaBarra.setAttribute('content', escuro ? '#15101c' : (CORES[config.cor] || CORES.ditto).cor);
 }
 try{ aplicarTema(localStorage.getItem('dittospokedex:tema')); }catch(e){ aplicarTema(null); }
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () =>
@@ -1907,6 +2374,9 @@ document.getElementById('recomecar').onclick = () => {
   pegueiForma.clear();
   for(const k of Object.keys(especiais)) delete especiais[k];
   favoritos.clear();
+  desejos.clear(); desejosFeitos = 0; gravar('dittospokedex:desejosfeitos', 0);
+  for(const k of Object.keys(times)) times[k] = []; gravar('dittospokedex:times', times);
+  quiz.recordes = {}; quiz.historico = []; quiz.acertosTipos = 0; quiz.acertosNumero = 0;
   gravar('dittospokedex:time', ''); mostrarMeuTime();
   gravarPerfil({});
   for(const k of Object.keys(correcoesGo)) delete correcoesGo[k];
@@ -2007,6 +2477,11 @@ if(podeConvidar()){
     if(podeConvidar()) mostrarConvite();
   }, 5000);
 }
+
+aplicarCor();
+mostrarDoDia();
+document.getElementById('abrir-time').onclick = abrirTime;
+document.getElementById('abrir-config').onclick = abrirConfig;
 
 montarChips();
 desenhar();

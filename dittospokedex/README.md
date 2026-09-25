@@ -189,3 +189,24 @@ um botão pro ButterPoke (pra quem gosta de TCG). Não aparece sempre:
   nunca apaga. Esse código leva o nome, então é pra dar pra si mesmo; pra comparar com
   amigo continua o 🤝 Amigo, que não leva nada pessoal. Colar um código de amigo no lugar
   da conta dá recado explicando.
+
+## Versão 15: tamanho, Pokémon do dia, mais jogos, desejos, time, cores e configurações
+
+- **📏 Tamanho e peso** na página de cada um, e quantos Dittos isso dá ("1,7 m · 90,5 kg —
+  5,7 Dittos de altura, 23 de peso"). Altura do masterfile do GO, peso do Showdown.
+- **🎲 Pokémon do dia**: sai da data, então é o mesmo pra todo mundo naquele dia.
+- **Jogos**: o Quem é? ganhou abas: 🧩 **Qual é o tipo?** e 🔢 **Qual é o número?**
+  (4 opções, números perto do certo pra não ficar fácil), com as mesmas dificuldades.
+- **🏆 Ranking**: cada partida (do abrir até fechar ou trocar de jogo) entra no histórico
+  com data; o ranking mostra as 5 melhores de cada jogo.
+- **🎯 Lista de desejos**: "Quero pegar!" na página, 🎯 na cartinha, filtro, e quando você
+  pega ele sai da lista com "Desejo realizado!".
+- **👥 Meu time de batalha**: 3 Pokémon por liga (Grande até 1500 PC, Ultra até 2500,
+  Mestra sem limite), dá pra pôr pelo nome ou pela página do Pokémon. O site soma o time e
+  avisa de que tipo tomar cuidado (2 ou mais fracos) e o que ele aguenta bem.
+- **⚙️ Configurações**: 🎨 cor do site (Ditto, Pikachu, Charizard, Squirtle, Bulbasaur,
+  Gengar, Jigglypuff; só troca a cor de destaque), 🔊 tocar o som sozinho ao abrir um
+  Pokémon (só quando abre outro, não quando a página redesenha), ✨ modo shiny e 🌓 claro,
+  escuro ou automático.
+- 5 medalhas novas; a conta leva desejos e times; o "Recomeçar" limpa tudo isso também
+  (as configurações ficam).
