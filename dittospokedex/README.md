@@ -210,3 +210,27 @@ um botão pro ButterPoke (pra quem gosta de TCG). Não aparece sempre:
   escuro ou automático.
 - 5 medalhas novas; a conta leva desejos e times; o "Recomeçar" limpa tudo isso também
   (as configurações ficam).
+
+## Versão 16: ferramentas, doces, álbum, jogo do som, sons esquisitos e baixar o GO
+
+- **🧰 Ferramentas** (um botão só pra não lotar a tela):
+  - 🗓️ **Eventos**: anote nome, datas e uma nota; aparece "acontecendo agora", "faltam N
+    dias" e "já passaram".
+  - 🥚 **Meus ovos**: até 9 (o máximo do jogo), com os km andados e "🐣 Chocou!".
+  - 🔍 **Comparar**: dois Pokémon lado a lado (tipo, altura, peso, PC máximo, fraquezas,
+    classe, se você tem) e quem leva vantagem nos tipos.
+  - 🗺️ **Regiões**: quanto você tem de cada uma; tocar filtra a lista por ela.
+  - 🧮 **Calculadora de PC**: a conta do jogo com os números do masterfile (base + IV,
+    multiplicador de cada nível; meio nível usa a média dos quadrados). Conferida com o
+    Mewtwo 100%: 4178 no nível 40, 4724 no 50. Diz também até que nível cabe em cada liga.
+  - 🎛️ **Sons esquisitos**: o grito com Web Audio: 🐿️ esquilo, 🐢 lento, 👹 monstro,
+    🔁 ao contrário, 🏔️ eco e 🤖 robô, mais 🎲 sortear e uma lista dos que a gente acha
+    mais esquisitos. Se não der pra baixar o som, o rápido e o lento ainda funcionam.
+- Na página de cada Pokémon: **💪 PC máximo** (nível 40 e 50), **🍬 Meus doces** (por
+  família, como no jogo, e diz se já dá pra evoluir), **📸 Pôr no álbum** (6 que aparecem
+  no cartão de treinador), 🔍 Comparar e 🧮 Calcular PC.
+- 🎵 **De quem é esse som?**: nova aba nos jogos, só com o som.
+- 📲 **Baixar Pokémon GO**: links das lojas oficiais (Google Play e App Store), com o do
+  seu celular destacado e o aviso de pedir ajuda a um adulto se tiver menos de 13 anos.
+- 3 medalhas novas, a conta leva álbum/eventos/ovos/doces, avisos empilham em vez de
+  ficar um em cima do outro.
