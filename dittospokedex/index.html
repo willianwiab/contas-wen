@@ -49,6 +49,8 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
+/* "hidden" tem que esconder mesmo quando a classe diz display:inline-block. */
+[hidden]{display:none !important}
 body{
   font-family:'Rubik',system-ui,sans-serif; color:var(--tinta);
   background-color:var(--creme);
@@ -351,6 +353,10 @@ html:root[data-cor="jigglypuff"][data-tema="escuro"]{--marca:#f07fb0;--marca-esc
 .album-cartao span{aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.2);display:grid;place-items:center;overflow:hidden}
 .album-cartao img{width:100%;height:100%;image-rendering:pixelated}
 .album-cartao .sem-foto{width:100%;height:100%;font-size:.55rem;color:#fff;background:none}
+.voz-ligada{margin-top:8px;font-size:.85rem;font-weight:700;color:var(--marca-escura)}
+.voz-ligada button,#voz-topo button{font:inherit;font-size:.8rem;font-weight:700;border-radius:99px;padding:3px 10px;margin-left:6px;cursor:pointer;
+  border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.efeitos button[aria-pressed="true"]{background:var(--marca);border-color:var(--marca);color:#fff}
 .vozes{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:8px}
 .vozes button{font:inherit;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:14px;
   padding:5px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:0}
@@ -478,6 +484,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     </div>
   </header>
   <span class="ola" id="ola" hidden></span>
+  <span class="ola" id="voz-topo" hidden></span>
   <p class="sub">Todos os 1025 Pokémon: quem já chegou no <b>Pokémon GO</b>, quem ainda não chegou ❌, quem falta pegar 🟡 e quem você já tem ✅.</p>
 
   <section class="placar" aria-live="polite">
@@ -971,6 +978,8 @@ function abrir(id){
     <p class="tamanho" id="pc-max"></p>
     <button type="button" class="som" id="tocar">🔊 Ouvir o som</button>
     <button type="button" class="fav" id="favorito" aria-pressed="false"></button>
+    <p class="voz-ligada" id="voz-ligada" hidden></p>
+    <p class="som-aviso" id="som-aviso" hidden></p>
     <button type="button" class="desejo" id="desejo" aria-pressed="false" hidden></button>
     <button type="button" class="desejo" id="por-no-time" hidden>👥 Pôr no time</button>
     <div class="mais-acoes">
@@ -978,8 +987,7 @@ function abrir(id){
       <button type="button" id="comparar-este">🔍 Comparar</button>
       <button type="button" id="calc-este">🧮 Calcular PC</button>
     </div>
-    <div class="vozes" id="vozes" aria-label="Mudar a voz"></div>
-    <p class="som-aviso" id="som-aviso" hidden></p>
+
     <p class="status ${!noGo ? 'nao' : pegou ? 'tem' : 'falta'}">${!noGo
       ? '❌ Ainda não chegou no Pokémon GO'
       : pegou ? '✅ Você tem!' : '🟡 Chegou no GO, mas você ainda não tem'}</p>
@@ -1001,15 +1009,7 @@ function abrir(id){
     </div>`;
   folha.querySelector('#folha-nome').textContent = NOMES[id-1];
   folha.querySelector('#tocar').onclick = () => tocarSom(id);
-  /* 🎛️ Os mesmos efeitos dos Sons esquisitos, em todo Pokémon. */
-  for(const [k, e, n] of EFEITOS){
-    const b = document.createElement('button');
-    b.type = 'button'; b.title = n; b.setAttribute('aria-label', 'Voz de ' + n);
-    b.innerHTML = `<span>${e}</span><small></small>`;
-    b.querySelector('small').textContent = n;
-    b.onclick = () => tocarEsquisito(id, k);
-    folha.querySelector('#vozes').appendChild(b);
-  }
+  mostrarVozLigada(folha.querySelector('#voz-ligada'));
   const btFav = folha.querySelector('#favorito');
   btFav.setAttribute('aria-pressed', String(favoritos.has(id)));
   btFav.textContent = favoritos.has(id) ? '❤️ Favorito!' : '🤍 Favoritar';
@@ -1199,6 +1199,7 @@ function marcarTocando(sim){
   b.textContent = sim ? '🔊 Tocando…' : '🔊 Ouvir o som';
 }
 function pararSom(){
+  if(typeof pararEsquisito === 'function') pararEsquisito();
   tocador.pause();
   tocador.onended = tocador.onerror = null;
   marcarTocando(false);
@@ -1211,7 +1212,14 @@ function fontesDoSom(id){
   return tocaOgg ? [SOM(id), SOM_MP3(id), SOM_ANTIGO(id)] : [SOM_MP3(id)];
 }
 let tentativa = 0;
-function tocarSom(id, qual = 0){
+/* 🎛️ A voz escolhida em Sons esquisitos fica ligada no site todo: todo som
+   passa por aqui, e só toca normal quando a voz é "normal". */
+function vozLigada(){ return config.voz && config.voz !== 'normal' && EFEITOS.some(e => e[0] === config.voz) ? config.voz : ''; }
+function tocarSom(id){
+  const v = vozLigada();
+  return v ? tocarEsquisito(id, v) : tocarSomNormal(id);
+}
+function tocarSomNormal(id, qual = 0){
   pararSom();
   somDe = id;
   avisoSom('');
@@ -1222,7 +1230,7 @@ function tocarSom(id, qual = 0){
   const falhou = bloqueado => {
     if(minha !== tentativa) return;
     tentativa++;
-    if(!bloqueado && qual + 1 < fontes.length) return tocarSom(id, qual + 1);
+    if(!bloqueado && qual + 1 < fontes.length) return tocarSomNormal(id, qual + 1);
     marcarTocando(false);
     avisoSom(bloqueado
       ? 'O celular não deixou tocar sozinho. Toque no 🔊 que ele toca.'
@@ -1900,6 +1908,8 @@ function abrirConfig(){
       <div class="bloco"><h3>🔧 Jeito do site</h3>
         <div class="linha"><span>🔊 Tocar o som sozinho<small>Toca o grito quando você abre um Pokémon.</small></span>
           <button type="button" class="chave" role="switch" id="cfg-som" aria-label="Tocar o som sozinho"></button></div>
+        <div class="linha"><span>🎛️ Voz dos Pokémon<small>Fica ligada no site todo.</small></span>
+          <span class="chips" id="cfg-voz" style="padding:0;overflow:visible;flex-wrap:wrap"></span></div>
         <div class="linha"><span>✨ Modo shiny<small>Todas as fotos brilhantes.</small></span>
           <button type="button" class="chave" role="switch" id="cfg-shiny" aria-label="Modo shiny"></button></div>
         <div class="linha"><span>🌓 Claro ou escuro</span>
@@ -1920,6 +1930,14 @@ function abrirConfig(){
     b.setAttribute('aria-checked', String(ligado));
     b.onclick = () => { mudar(); abrirConfig(); };
   };
+  const cv = folha.querySelector('#cfg-voz');
+  for(const [k, e, n] of [['normal', '🔊', 'Normal'], ...EFEITOS]){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = `${e} ${n}`;
+    b.setAttribute('aria-pressed', String((vozLigada() || 'normal') === k));
+    b.onclick = () => { escolherVoz(k); abrirConfig(); };
+    cv.appendChild(b);
+  }
   chave('#cfg-som', config.somAuto, () => { config.somAuto = !config.somAuto; gravarConfig(); });
   chave('#cfg-shiny', modoShiny, () => btShiny.click());
   const ct = folha.querySelector('#cfg-tema');
@@ -2999,11 +3017,15 @@ async function tocarEsquisito(id, efeito){
   const buf = await bufferDo(id);
   if(!buf){
     if(efeito === 'rapido' || efeito === 'lento'){
-      tocarSom(id);
+      tocarSomNormal(id);
       tocador.preservesPitch = false; tocador.mozPreservesPitch = false; tocador.webkitPreservesPitch = false;
       tocador.playbackRate = efeito === 'rapido' ? 1.9 : .55;
       if(aviso) aviso.textContent = '';
-    } else if(aviso) aviso.textContent = 'Não consegui baixar o som pra mudar a voz. Confira a internet, ou tente 🐿️ Esquilo e 🐢 Lento.';
+    } else {
+      /* Não deu pra mudar a voz: pelo menos toca o som normal. */
+      tocarSomNormal(id);
+      if(aviso) aviso.textContent = 'Não deu pra mudar a voz agora (precisa baixar o som), então tocou normal.';
+    }
     return;
   }
   let usar = buf;
@@ -3041,8 +3063,10 @@ function abrirSons(){
   abrirFolhaSimples(`<h2 id="folha-nome">🎛️ Sons esquisitos</h2>
     <form class="add-time" id="form-sons"><input id="sons-nome" list="lista-nomes2" autocomplete="off" placeholder="Nome do Pokémon…" /><button type="submit">Usar</button></form>
     ${listaNomesHtml()}
-    <div class="mais-acoes"><button type="button" id="sons-sorte">🎲 Sortear</button><button type="button" id="sons-normal">🔊 Normal</button></div>
+    <div class="mais-acoes"><button type="button" id="sons-sorte">🎲 Sortear Pokémon</button><button type="button" id="sons-tocar">▶️ Tocar</button></div>
     <p class="resultado" id="sons-quem"></p>
+    <h3 style="text-align:left">Escolha a voz</h3>
+    <p class="pequeno" style="margin:0">A voz que você escolher <b>fica ligada no site todo</b> (no 🔊 de cada Pokémon, nos jogos…) até você voltar pro Normal.</p>
     <div class="efeitos"></div>
     <p class="pequeno" id="aviso-sons"></p>
     <h3 style="text-align:left;margin-top:10px">🤪 Os que a gente acha mais esquisitos</h3>
@@ -3056,13 +3080,18 @@ function abrirSons(){
     const x = idPeloNome(folha.querySelector('#sons-nome').value);
     if(x){ idEsquisito = x; quem(); tocarSom(x); }
   };
-  folha.querySelector('#sons-sorte').onclick = () => { idEsquisito = 1 + Math.floor(Math.random() * TOTAL); quem(); tocarEsquisito(idEsquisito, EFEITOS[Math.floor(Math.random() * EFEITOS.length)][0]); };
-  folha.querySelector('#sons-normal').onclick = () => tocarSom(idEsquisito);
+  folha.querySelector('#sons-sorte').onclick = () => { idEsquisito = 1 + Math.floor(Math.random() * TOTAL); quem(); tocarSom(idEsquisito); };
+  folha.querySelector('#sons-tocar').onclick = () => tocarSom(idEsquisito);
   const ef = folha.querySelector('.efeitos');
-  for(const [k, e, n] of EFEITOS){
+  for(const [k, e, n] of [['normal', '🔊', 'Normal'], ...EFEITOS]){
     const b = document.createElement('button'); b.type = 'button';
     b.innerHTML = `<span>${e}</span>${n}`;
-    b.onclick = () => tocarEsquisito(idEsquisito, k);
+    b.setAttribute('aria-pressed', String((vozLigada() || 'normal') === k));
+    b.onclick = () => {
+      escolherVoz(k);
+      for(const o of ef.children) o.setAttribute('aria-pressed', String(o === b));
+      tocarSom(idEsquisito);
+    };
     ef.appendChild(b);
   }
   const es = folha.querySelector('.esquisitos');
@@ -3086,6 +3115,23 @@ function abrirBaixar(){
     </div>
     <p class="pequeno">⚠️ Se você tem menos de 13 anos, peça pra um adulto ajudar a criar a conta.</p>`);
 }
+function escolherVoz(k){
+  config.voz = k; gravarConfig(); mostrarVozLigada();
+}
+function nomeVoz(k){ const e = EFEITOS.find(x => x[0] === k); return e ? `${e[1]} ${e[2]}` : ''; }
+/* O aviso "voz ligada" no topo e na página do Pokémon, com o botão de tirar. */
+function mostrarVozLigada(alvoFolha){
+  const v = vozLigada();
+  for(const el of [document.getElementById('voz-topo'), alvoFolha || document.getElementById('voz-ligada')]){
+    if(!el) continue;
+    el.hidden = !v;
+    if(!v){ el.innerHTML = ''; continue; }
+    el.innerHTML = '<span></span><button type="button">Voltar pro normal</button>';
+    el.firstChild.textContent = `🎛️ Voz ligada: ${nomeVoz(v)}`;
+    el.querySelector('button').onclick = ev => { ev.stopPropagation(); escolherVoz('normal'); };
+  }
+}
+mostrarVozLigada();
 document.getElementById('abrir-ferramentas').onclick = abrirFerramentas;
 document.getElementById('abrir-baixar').onclick = abrirBaixar;
 
