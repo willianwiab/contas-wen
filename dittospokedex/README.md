@@ -240,3 +240,19 @@ um botão pro ButterPoke (pra quem gosta de TCG). Não aparece sempre:
 Os 6 efeitos dos Sons esquisitos (🐿️ Esquilo, 🐢 Lento, 👹 Monstro, 🔁 Ao contrário, 🏔️ Eco,
 🤖 Robô) agora estão na página de **todos** os Pokémon, embaixo do 🔊. O recado de
 "não deu" aparece no mesmo lugar do recado do som.
+
+## O pôster do mais raro
+
+A aba **Os meus** do 🏆 Top já ordenava tudo pelos pontos, então o mais raro sempre esteve
+ali — só que escrito **do mesmo tamanho do vigésimo**. Quem abre o Top quer ver *o* mais
+raro, não procurar por ele.
+
+Agora o primeiro sai da fila e vira pôster: figura grande, o nome, o apelido quando tem
+(**Shundo!**, Lucky Hundo!…), os emojis das marcas e os pontos.
+
+E, embaixo, **de onde saiu cada ponto**: *"Shiny (+9) · 100% (Hundo) (+12)"*. Dizer só "é o
+mais raro" não ensina nada; mostrar a conta ensina — e deixa a pessoa conferir se eu somei
+direito.
+
+Ele **continua no 1º lugar da lista** atrás do pôster. Tirar de lá faria a contagem pular
+do 2 pro 1, e aí a lista mentiria sobre o tamanho dela.

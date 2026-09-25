@@ -180,6 +180,25 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .top .quem b{display:block}
 .top .quem span{font-size:.8rem;color:var(--tinta-fraca)}
 .top .pts{font-weight:700;white-space:nowrap;flex:none}
+/* O campeão: a lista ordenada já dizia quem era o primeiro, mas dizia
+   pequeno, do mesmo tamanho do vigésimo. Quem abre o top quer ver O mais
+   raro — então ele sai da fila e vira pôster. */
+.campeao{
+  display:grid;justify-items:center;gap:2px;text-align:center;margin-bottom:12px;
+  border:3px solid var(--amarelo);border-radius:20px;padding:14px 16px;
+  background:var(--amarelo-fundo);cursor:pointer;
+}
+.campeao:hover{filter:brightness(1.03)}
+.campeao .faixa{font-size:.74rem;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--amarelo-texto)}
+.campeao .arte{width:120px;height:120px;display:grid;place-items:center}
+.campeao .arte img{width:120px;height:120px;image-rendering:pixelated}
+.campeao .arte .sem-foto{width:80px;height:80px}
+.campeao .nome{font-family:'Baloo 2',cursive;font-size:1.6rem;line-height:1.15;color:var(--tinta)}
+.campeao .apelido{font-family:'Baloo 2',cursive;font-size:1.05rem;color:var(--amarelo-texto)}
+.campeao .tags{font-size:1.3rem;letter-spacing:2px;margin-top:2px}
+.campeao .pontos{font-weight:800;color:var(--amarelo-texto);margin-top:2px}
+.campeao .porque{font-size:.78rem;color:var(--tinta-fraca);line-height:1.5;margin-top:5px}
 .classe{display:inline-block;margin-top:6px;padding:3px 12px;border-radius:99px;font-size:.82rem;font-weight:800;color:#fff}
 .classe.l{background:linear-gradient(90deg,#d4a017,#b8741a)}
 .classe.m{background:linear-gradient(90deg,#e0569a,#8e44ad)}
@@ -508,7 +527,7 @@ footer{text-align:center;margin-top:36px;color:var(--tinta-fraca);font-size:.82r
     <br><button class="versao" type="button" id="recomecar"
        title="Apagar tudo que você marcou">🗑️ Recomeçar do zero</button>
     <br><button class="versao" type="button" id="recarregar"
-       title="Buscar a versão mais nova do site">versão 17 — 25/09 · 🔄</button>
+       title="Buscar a versão mais nova do site">versão 18 — 25/09 · 🔄</button>
   </footer>
 </div>
 
@@ -1364,6 +1383,34 @@ function abrirTop(){
     if(!meus.length){
       ol.innerHTML = '<p class="nada">Você ainda não marcou nenhum especial. Abra um Pokémon e toque em ✨ Shiny, 🍀 Lucky, 💯 Hundo…</p>';
     }
+    /* O primeiro da fila vira pôster, e continua na lista no 1º lugar: tirar
+       ele de lá faria a contagem pular do 2 pro 1 e confundir. */
+    if(meus.length){
+      const rei = meus[0];
+      const card = document.createElement('div');
+      card.className = 'campeao';
+      card.setAttribute('role', 'button');
+      card.tabIndex = 0;
+      card.innerHTML = `<span class="faixa">🏆 O mais raro que você tem</span>
+        <span class="arte"></span>
+        <span class="nome"></span>
+        <span class="apelido"></span>
+        <span class="tags"></span>
+        <span class="pontos">🔥 ${rei.pontos} pontos de raridade</span>
+        <span class="porque"></span>`;
+      card.querySelector('.arte').appendChild(foto(rei.id, true));
+      card.querySelector('.nome').textContent = NOMES[rei.id - 1];
+      card.querySelector('.apelido').textContent = apelido(rei.tags);
+      card.querySelector('.tags').textContent = emojis(rei.tags);
+      /* Dizer só "é o mais raro" não ensina nada. Dizer de onde saiu cada
+         ponto ensina, e ainda deixa a pessoa conferir a minha conta. */
+      card.querySelector('.porque').textContent = 'Por quê: ' +
+        rei.tags.filter(t => TAG[t]).map(t => TAG[t].nome + (TAG[t].pontos ? ' (+' + TAG[t].pontos + ')' : '')).join(' · ');
+      const ir = () => abrir(rei.id);
+      card.onclick = ir;
+      card.onkeydown = ev => { if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); ir(); } };
+      ol.parentNode.insertBefore(card, ol);
+    }
     meus.forEach((m, i) => {
       const li = document.createElement('li');
       li.innerHTML = `<button type="button"><span class="pos">${i + 1}</span><span class="mini"></span>
@@ -1374,7 +1421,9 @@ function abrirTop(){
       li.querySelector('button').onclick = () => abrir(m.id);
       ol.appendChild(li);
     });
-    nota.textContent = 'Os 20 que mais valem. 🔥 são pontos de raridade: é um chute, não número oficial.';
+    nota.textContent = meus.length
+      ? 'O pôster é o 1º da lista. Os 20 que mais valem. 🔥 são pontos de raridade: é um chute meu, não número oficial.'
+      : 'Os 20 que mais valem. 🔥 são pontos de raridade: é um chute, não número oficial.';
   } else {
     TOP_JOGO.forEach((x, i) => {
       const li = document.createElement('li');
