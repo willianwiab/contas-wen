@@ -65,3 +65,11 @@ Cada mundo, chefe, inimigo, transformação e os Jinjos têm **🔎 Ver fotos de
 a busca de imagens do Google numa aba nova, já procurando a coisa certa ("Klungo
 Banjo-Tooie", "Banjo-Kazooie Mumbo's Mountain transformation"…) e com `safe=active`.
 As imagens continuam fora do site; quem quiser guarda um print em **📷 Minha foto**.
+
+## 📸 Foto de verdade nas transformações
+
+As transformações também ganharam **📷 Minha foto** (antes só mundos, chefes e inimigos
+tinham). E no topo tem um "📸 Como pôr a foto de verdade do jogo": tocar em 🔎, baixar a
+imagem (ou tirar print) e pôr em 📷. O site continua não trazendo imagem do jogo, porque
+elas são da Rare e da Nintendo e o site é aberto; a foto que a pessoa põe fica só no
+aparelho dela.
