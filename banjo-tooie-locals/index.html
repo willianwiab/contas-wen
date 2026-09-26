@@ -58,6 +58,10 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 @media (max-width:420px){.logo{font-size:1.35rem}.logo img{width:36px;height:36px}}
 .sub{color:var(--tinta-fraca);margin:6px 0 14px;font-size:.95rem;line-height:1.5}
 
+.como-foto{background:var(--cartao);border:2px solid var(--ouro);border-radius:16px;padding:10px 14px;margin-bottom:12px;font-size:.9rem;line-height:1.5}
+.como-foto summary{font-weight:800;cursor:pointer}
+.como-foto ol{margin:8px 0 6px 20px}
+.como-foto p{color:var(--tinta-fraca);font-size:.82rem}
 .abas{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .abas button{font:inherit;font-weight:800;border-radius:16px;padding:12px 6px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);line-height:1.2}
 .abas button small{display:block;font-weight:500;font-size:.75rem;color:var(--tinta-fraca)}
@@ -115,7 +119,9 @@ a.btn-foto{display:inline-block;text-decoration:none}
 .lugar{border:2px solid var(--borda);background:var(--cartao2);border-radius:14px;padding:10px 12px}
 .lugar b{display:block}
 .lugar span{font-size:.86rem;color:var(--tinta-fraca);line-height:1.5}
-.lugar.chefe{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
+.lugar.chefe{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px}
+.lugar.chefe > span:nth-child(2){min-width:0;overflow-wrap:anywhere}
+@media (max-width:360px){ .lugar.chefe{gap:6px;padding:8px} .lugar .bicho{font-size:1.4rem} .lugar .bicho img{width:44px;height:44px} .lugar .cam,.lugar .venci{font-size:.72rem;padding:5px 7px} }
 .lugar .bicho{font-size:1.8rem}
 .lugar small{display:block;font-size:.78rem;color:var(--marca);font-weight:700}
 .lugar .venci{font:inherit;font-size:.8rem;font-weight:700;border-radius:99px;padding:6px 10px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);white-space:nowrap}
@@ -179,6 +185,15 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.82r
   </header>
   <p class="sub">Todos os mundos do <b>Banjo-Kazooie</b> e do <b>Banjo-Tooie</b>: quantos quebra-cabeças (Jiggies) precisa pra abrir, se é fácil ou difícil, transformações, chefes e o seu progresso. 🐻🐦</p>
 
+  <details class="como-foto">
+    <summary>📸 Como pôr a foto de verdade do jogo</summary>
+    <ol>
+      <li>Toque em <b>🔎 Fotos</b> no mundo, chefe, inimigo ou transformação.</li>
+      <li>Na foto que você gostar, segure em cima e toque em <b>“Baixar imagem”</b> (ou tire um print).</li>
+      <li>Volte aqui e toque em <b>📷 Minha foto</b>. Pronto: ela aparece no lugar do desenho!</li>
+    </ol>
+    <p>As fotos do jogo são da Rare e da Nintendo, por isso o site não vem com elas. A que você põe fica só no seu aparelho.</p>
+  </details>
   <div class="abas" role="tablist">
     <button type="button" role="tab" id="aba-bk">Banjo-Kazooie<small>1998 · Nintendo 64</small></button>
     <button type="button" role="tab" id="aba-bt">Banjo-Tooie<small>2000 · Nintendo 64</small></button>
@@ -205,7 +220,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.82r
     Banjo Tooie Locals · site de fã, sem ligação com a Rare, a Microsoft ou a Nintendo
     <br>Os números foram escritos de memória por quem fez o site. Achou um errado? Avise!
     <br>A dificuldade é opinião de jogador, não número oficial. O seu progresso fica só neste aparelho.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 4 — 26/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 5 — 26/09 · 🔄</button>
   </footer>
 </div>
 
@@ -549,15 +564,23 @@ function desenhar(){
     const k = 'trans-' + i, p = prog(jogo, k);
     const d = document.createElement('div'); d.className = 'lugar chefe';
     d.innerHTML = '<span class="bicho"></span><span><b></b><small></small><span class="txt"></span></span>';
-    d.querySelector('.bicho').textContent = x.emoji;
+    const kf = `${jogo}-trans-${i}`, fx = fotos.get(kf);
+    if(fx) d.querySelector('.bicho').appendChild(imgFoto(fx, '')); else d.querySelector('.bicho').textContent = x.emoji;
     d.querySelector('b').textContent = x.nome;
     d.querySelector('small').textContent = `📍 ${x.onde} · 💰 ${x.custo}`;
+    const cam = document.createElement('button'); cam.type = 'button'; cam.className = 'cam';
+    cam.textContent = fx ? '🗑️ Minha foto' : '📷 Minha foto';
+    cam.setAttribute('aria-label', fx ? `Tirar a foto de ${x.nome}` : `Pôr uma foto de ${x.nome}`);
+    cam.onclick = async () => {
+      if(fx){ if(confirm('Tirar a foto?')){ gravarFoto(kf, null); desenhar(); } return; }
+      const f = await escolherFoto(); if(f){ gravarFoto(kf, f); desenhar(); }
+    };
     d.querySelector('.txt').textContent = x.texto;
     const b = document.createElement('button'); b.type = 'button'; b.className = 'venci';
     b.setAttribute('aria-pressed', String(!!p.z)); b.textContent = p.z ? '✅ Já virei' : '🪄 Já virei?';
     b.onclick = () => { p.z = !p.z; salvarProg(jogo, k, p); desenhar(); };
     const ac = document.createElement('span'); ac.className = 'acoes-ch';
-    ac.append(b, linkFotos(`${J.nome} ${x.onde} ${x.nome === 'Dragon Kazooie' ? 'Dragon Kazooie' : 'transformation'}`, '🔎 Fotos', 'cam'));
+    ac.append(b, linkFotos(`${J.nome} ${x.onde} ${x.nome === 'Dragon Kazooie' ? 'Dragon Kazooie' : 'transformation'}`, '🔎 Fotos', 'cam'), cam);
     d.appendChild(ac);
     tr.appendChild(d);
   });
