@@ -42,3 +42,19 @@ Imagens de verdade do jogo (prints, arte oficial) não entram: são da Rare/Nint
 - **📷 Suas fotos**: em cada mundo, chefe e inimigo dá pra pôr uma foto sua (um print do
   jogo, uma foto da TV). Ela é diminuída pra 640 px e fica **só no aparelho**, no
   IndexedDB (o localStorage é pequeno demais pra foto). Tirar a foto volta o desenho.
+
+## Transformações, Jinjos e onde achei cada Jiggy
+
+- **🪄 Transformações** dos dois jogos, com "já virei":
+  - Kazooie (💀 Mumbo, com Mumbo Tokens): cupim 5, crocodilo 10, morsa 15, abóbora 20,
+    abelha 25.
+  - Tooie (🐾 Humba Wumba, com um Glowbo por mundo): Stony, Detonator, Van, Submarino,
+    T-Rex, Máquina de lavar, Bola de neve, Abelha e a Dragon Kazooie (Mega-Glowbo).
+- **🟡 Jinjos**: no Kazooie, 5 por mundo (azul, verde, laranja, rosa, amarelo), um toque em
+  cada bolinha; no Tooie, as 9 famílias (branco 1, laranja 2, amarelo 3, marrom 4, verde 5,
+  vermelho 6, azul 7, roxo 8, preto 9 = 45), com contador e "🏠 completa!". O total entra no
+  resumo lá em cima.
+- **🧩 Onde achei**: na página do mundo, as 10 peças, cada uma com "peguei" e um campo pra
+  escrever onde achou. O lugar exato de cada Jiggy e Jinjo **não** vem pronto: são quase
+  200 lugares, e escrever de memória ia ter erro. Quem joga anota os próprios achados.
+  Quem já tinha marcado um número na versão anterior ganha essas peças já marcadas.
