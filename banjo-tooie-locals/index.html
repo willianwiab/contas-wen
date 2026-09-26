@@ -82,7 +82,20 @@ h2.secao{font-family:'Baloo 2',cursive;font-size:1.3rem;margin:18px 0 8px}
 .mundos{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
 .mundo{font:inherit;text-align:left;color:var(--tinta);cursor:pointer;border:2px solid var(--borda);background:var(--cartao);border-radius:18px;overflow:hidden;
   box-shadow:0 3px 12px var(--sombra);display:flex;flex-direction:column}
-.mundo .topo{display:flex;align-items:center;gap:10px;padding:12px 14px;color:#fff}
+.mundo .topo{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#fff}
+/* cenário desenhado de cada mundo: céu, chão e as coisas do mundo em emoji */
+.cena{position:relative;height:120px;overflow:hidden}
+.cena .chao{position:absolute;left:-10%;right:-10%;bottom:-40%;height:70%;border-radius:50% 50% 0 0}
+.cena .chao.plano{border-radius:0;bottom:0;height:28%;left:0;right:0}
+.cena .chao.agua{border-radius:0;bottom:0;height:38%;left:0;right:0;opacity:.9}
+.cena i{position:absolute;font-style:normal;line-height:1;transform:translate(-50%,-50%);filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+.cena.grande{height:190px}
+.foto-jogo{width:100%;height:120px;object-fit:cover;display:block}
+.cena.grande + .foto-jogo, .foto-jogo.grande{height:200px}
+.btn-foto{font:inherit;font-size:.85rem;font-weight:700;border-radius:99px;padding:8px 14px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);margin:10px 6px 0 0}
+.lugar .bicho img{width:56px;height:56px;border-radius:50%;object-fit:cover;display:block}
+.lugar .acoes-ch{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.lugar .cam{font:inherit;font-size:.78rem;border-radius:99px;padding:5px 9px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);white-space:nowrap}
 .mundo .emoji{font-size:2rem;line-height:1}
 .mundo .topo b{font-size:1.05rem;display:block;line-height:1.2}
 .mundo .topo small{opacity:.92;font-size:.78rem}
@@ -116,7 +129,7 @@ h2.secao{font-family:'Baloo 2',cursive;font-size:1.3rem;margin:18px 0 8px}
 .folha{background:var(--cartao);width:100%;max-width:480px;border-radius:24px 24px 0 0;max-height:92vh;overflow:auto;overflow-x:hidden;position:relative}
 @media (min-width:600px){.fundo{align-items:center}.folha{border-radius:24px}}
 .folha .fechar{position:absolute;top:12px;right:12px;z-index:2}
-.folha .cabeca{padding:20px 60px 16px 18px;color:#fff}
+.folha .cabeca{padding:12px 60px 14px 18px;color:#fff}
 .folha .cabeca .emoji{font-size:2.6rem}
 .folha h3{font-family:'Baloo 2',cursive;font-size:1.6rem;line-height:1.1}
 .folha .cabeca small{opacity:.92}
@@ -168,7 +181,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.82r
     Banjo Tooie Locals · site de fã, sem ligação com a Rare, a Microsoft ou a Nintendo
     <br>Os números foram escritos de memória por quem fez o site. Achou um errado? Avise!
     <br>A dificuldade é opinião de jogador, não número oficial. O seu progresso fica só neste aparelho.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 26/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 26/09 · 🔄</button>
   </footer>
 </div>
 
@@ -287,6 +300,92 @@ const JOGOS = {
   },
 };
 
+/* ---------- 🎨 cenários desenhados ----------
+   Não são imagens do jogo (essas têm dono): é um desenho feito aqui, com céu,
+   chão e as coisas de cada mundo. [emoji, x%, y%, tamanho em px]. */
+const CENAS = {
+  mm:  { ceu:['#7cc8ff','#d8f1ff'], chao:'#5f9a34', itens:[['⛰️',22,42,56],['🌳',80,58,34],['🐜',48,72,28],['🍊',66,30,22],['🦍',86,34,30],['🏠',34,70,26]] },
+  ttc: { ceu:['#5ec2ff','#c9efff'], chao:'#2f8fcf', tipo:'agua', itens:[['🏝️',30,60,46],['🏰',70,64,30],['🦀',50,80,24],['🦈',86,82,28],['☀️',84,22,30],['⛵',14,74,26]] },
+  cc:  { ceu:['#3a4654','#6b7a88'], chao:'#3d6f6a', tipo:'agua', itens:[['🐋',50,62,60],['⛓️',22,40,30],['🦷',76,40,22],['⚙️',86,70,24],['🐟',16,80,20]] },
+  bgs: { ceu:['#6f9a5a','#c6dcaa'], chao:'#4c6b2a', tipo:'agua', itens:[['🐊',30,74,38],['🐢',70,66,34],['🐸',50,82,24],['🌿',14,54,30],['🥾',86,40,24]] },
+  fp:  { ceu:['#9fd0ff','#eef8ff'], chao:'#ffffff', itens:[['⛄',30,50,50],['🎄',74,46,46],['❄️',14,24,22],['❄️',56,18,18],['🦭',54,76,28],['🛷',86,76,24]] },
+  gv:  { ceu:['#ffc46b','#fff0c8'], chao:'#e0b060', itens:[['🔺',30,48,58],['🔺',64,56,40],['🐫',84,66,34],['🌵',12,64,28],['☀️',82,20,30]] },
+  mmm: { ceu:['#2a1f45','#5a4380'], chao:'#34284a', itens:[['🏚️',34,50,50],['🎃',70,72,30],['👻',80,36,28],['🪦',14,74,24],['🌕',86,18,26],['🦇',56,24,20]] },
+  rbb: { ceu:['#6b6660','#b0a79a'], chao:'#3b3a36', tipo:'agua', itens:[['🚢',46,56,62],['🛢️',84,76,24],['⚓',14,70,26],['💨',76,26,24]] },
+  ccw: { ceu:['#8ed36a','#fff3c4'], chao:'#5f8a36', itens:[['🌳',50,44,66],['🌸',16,40,22],['☀️',84,20,24],['🍂',82,62,22],['❄️',18,72,20],['🐝',68,30,20]] },
+  mt:  { ceu:['#8fd07a','#e6f7c8'], chao:'#4f8a2a', itens:[['🛕',42,46,56],['🗿',78,60,34],['⚽',60,78,20],['🌴',12,52,36],['🐍',24,78,20]] },
+  ggm: { ceu:['#3a2e22','#7a5a3a'], chao:'#5a4430', tipo:'plano', itens:[['⛏️',20,50,30],['🚂',56,64,48],['💎',84,40,24],['🪨',36,80,24],['💣',86,74,22]] },
+  ww:  { ceu:['#ff8ac8','#ffe0f0'], chao:'#9a4a8a', tipo:'plano', itens:[['🎡',30,46,58],['🎪',72,52,44],['🎢',86,30,26],['🚐',52,78,26],['🎈',14,24,22]] },
+  jrl: { ceu:['#3ab0e8','#c9f0ff'], chao:'#1f6fa8', tipo:'agua', itens:[['🏴‍☠️',20,40,30],['🏘️',44,50,40],['🐡',76,78,30],['🧜',56,82,26],['🐚',88,70,20]] },
+  tdl: { ceu:['#ffb36b','#fff0d0'], chao:'#7a8a3a', itens:[['🌋',50,40,60],['🦖',20,66,40],['🦕',82,64,40],['🥚',64,80,20],['🦅',80,22,24]] },
+  gi:  { ceu:['#6a6a78','#b8b8c4'], chao:'#44444e', tipo:'plano', itens:[['🏭',44,50,62],['⚙️',84,34,26],['🧺',80,72,26],['☢️',16,72,24],['💨',20,24,24]] },
+  hfp: { ceu:['#ff7b4a','#a8d8ff'], chao:'#8a4a3a', itens:[['🌋',26,46,54],['🏔️',74,46,54],['🔥',18,78,22],['❄️',84,78,22],['🐉',50,26,28]] },
+  ccl: { ceu:['#bfe0ff','#ffffff'], chao:'#e8f2ff', itens:[['☁️',20,40,50],['☁️',78,56,46],['🧀',54,62,32],['🗑️',30,76,26],['🍰',82,30,24],['🐝',56,24,20]] },
+  ck:  { ceu:['#2a2240','#6a4a8a'], chao:'#3a2f4a', itens:[['🏰',46,46,62],['🧙‍♀️',80,34,30],['⚡',18,22,24],['🌙',86,16,22],['❓',20,74,22]] },
+};
+function cenaHtml(id, grande){
+  const c = CENAS[id];
+  if(!c) return '';
+  const esc = grande ? 1.5 : 1;
+  return `<div class="cena${grande ? ' grande' : ''}" aria-hidden="true" style="background:linear-gradient(180deg,${c.ceu[0]},${c.ceu[1]})">
+    <div class="chao${c.tipo ? ' ' + c.tipo : ''}" style="background:${c.chao}"></div>
+    ${c.itens.map(([e, x, y, t]) => `<i style="left:${x}%;top:${y}%;font-size:${Math.round(t * esc)}px">${e}</i>`).join('')}</div>`;
+}
+
+/* ---------- 📷 fotos da própria pessoa ----------
+   Print do jogo, foto da TV… fica só neste aparelho (IndexedDB, que aguenta
+   foto; o localStorage é pequeno demais). */
+const fotos = new Map();
+let banco = null;
+function abrirBanco(){
+  return new Promise(ok => {
+    try{
+      const r = indexedDB.open('banjolocals', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('fotos');
+      r.onsuccess = () => { banco = r.result; ok(banco); };
+      r.onerror = () => ok(null);
+    }catch(e){ ok(null); }
+  });
+}
+async function carregarFotos(){
+  if(!await abrirBanco()) return;
+  await new Promise(ok => {
+    try{
+      const st = banco.transaction('fotos').objectStore('fotos');
+      const req = st.openCursor();
+      req.onsuccess = () => { const c = req.result; if(c){ fotos.set(c.key, c.value); c.continue(); } else ok(); };
+      req.onerror = () => ok();
+    }catch(e){ ok(); }
+  });
+}
+function gravarFoto(k, v){
+  if(v) fotos.set(k, v); else fotos.delete(k);
+  if(!banco) return;
+  try{ const st = banco.transaction('fotos', 'readwrite').objectStore('fotos'); v ? st.put(v, k) : st.delete(k); }catch(e){}
+}
+/* Escolhe uma foto, diminui (até 640 px) e devolve em JPEG. */
+function escolherFoto(){
+  return new Promise(ok => {
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+    inp.onchange = () => {
+      const f = inp.files && inp.files[0];
+      if(!f) return ok(null);
+      const url = URL.createObjectURL(f), img = new Image();
+      img.onload = () => {
+        const esc = Math.min(1, 640 / Math.max(img.width, img.height));
+        const c = document.createElement('canvas'); c.width = Math.round(img.width * esc); c.height = Math.round(img.height * esc);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        ok(c.toDataURL('image/jpeg', .82));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); ok(null); };
+      img.src = url;
+    };
+    inp.click();
+  });
+}
+function imgFoto(src, cls){ const i = document.createElement('img'); i.src = src; i.alt = ''; i.className = cls; return i; }
+
 /* ---------- progresso no aparelho ---------- */
 function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem(k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
 function gravar(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
@@ -328,7 +427,8 @@ function desenhar(){
   for(const m of lista){
     const p = prog(jogo, m.id);
     const b = document.createElement('button'); b.type = 'button'; b.className = 'mundo' + (p.z ? ' zerado' : '');
-    b.innerHTML = `<div class="topo" style="background:${m.cor}"><span class="emoji">${m.emoji}</span><span><b></b><small>${m.i + 1}º mundo${p.z ? ' · ✅ zerado' : ''}</small></span></div>
+    const fotoM = fotos.get(`${jogo}-mundo-${m.id}`);
+    b.innerHTML = (fotoM ? '' : cenaHtml(m.id)) + `<div class="topo" style="background:${m.cor}"><span class="emoji">${m.emoji}</span><span><b></b><small>${m.i + 1}º mundo${p.z ? ' · ✅ zerado' : ''}</small></span></div>
       <div class="corpo">
         <div class="par"><span>Pra abrir</span><span class="jig">🧩 ${m.jiggies} ${m.jiggies === 1 ? 'Jiggy' : 'Jiggies'}</span></div>
         <div class="par"><span>Dificuldade</span><span class="dif f${m.dif}">${DIF[m.dif]}</span></div>
@@ -337,6 +437,7 @@ function desenhar(){
         <div class="mini-barra"><i style="width:${p.j / J.porMundo * 100}%"></i></div>
       </div>`;
     b.querySelector('b').textContent = m.nome;
+    if(fotoM) b.prepend(imgFoto(fotoM, 'foto-jogo'));
     b.onclick = () => abrirMundo(m);
     ms.appendChild(b);
   }
@@ -347,7 +448,16 @@ function desenhar(){
     itens.forEach((x, i) => {
       const d = document.createElement('div'); d.className = 'lugar chefe';
       d.innerHTML = '<span class="bicho"></span><span><b></b><small></small><span class="txt"></span></span>';
-      d.querySelector('.bicho').textContent = x.emoji;
+      const kf = `${jogo}-${chefe ? 'chefe' : 'inimigo'}-${i}`, fx = fotos.get(kf);
+      if(fx) d.querySelector('.bicho').appendChild(imgFoto(fx, '')); else d.querySelector('.bicho').textContent = x.emoji;
+      const acoes = document.createElement('span'); acoes.className = 'acoes-ch';
+      const cam = document.createElement('button'); cam.type = 'button'; cam.className = 'cam';
+      cam.textContent = fx ? '🗑️ Foto' : '📷 Foto';
+      cam.setAttribute('aria-label', fx ? `Tirar a foto de ${x.nome}` : `Pôr uma foto de ${x.nome}`);
+      cam.onclick = async () => {
+        if(fx){ if(confirm('Tirar a foto?')){ gravarFoto(kf, null); desenhar(); } return; }
+        const f = await escolherFoto(); if(f){ gravarFoto(kf, f); desenhar(); }
+      };
       d.querySelector('b').textContent = x.nome;
       d.querySelector('small').textContent = '📍 ' + x.onde;
       d.querySelector('.txt').textContent = x.texto;
@@ -356,8 +466,10 @@ function desenhar(){
         const b = document.createElement('button'); b.type = 'button'; b.className = 'venci';
         b.setAttribute('aria-pressed', String(!!p.z)); b.textContent = p.z ? '✅ Venci' : '⚔️ Venci?';
         b.onclick = () => { p.z = !p.z; salvarProg(jogo, k, p); desenhar(); };
-        d.appendChild(b);
+        acoes.appendChild(b);
       }
+      acoes.appendChild(cam);
+      d.appendChild(acoes);
       cx.appendChild(d);
     });
   };
@@ -390,7 +502,8 @@ function abrirMundo(m){
   const J = JOGOS[jogo], p = prog(jogo, m.id);
   const i = J.mundos.findIndex(x => x.id === m.id);   // m pode ser uma cópia (a lista ordenada)
   folha.innerHTML = `<button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
-    <div class="cabeca" style="background:${J.mundos[i].cor}"><span class="emoji">${m.emoji}</span><h3 id="folha-nome"></h3><small>${J.nome} · ${i + 1}º mundo</small></div>
+    <div id="imagem-mundo"></div>
+    <div class="cabeca" style="background:${J.mundos[i].cor}"><h3 id="folha-nome"></h3><small>${J.nome} · ${i + 1}º mundo</small></div>
     <div class="miolo">
       <div class="ficha">
         <div><span>Pra abrir</span><b>🧩 ${m.jiggies} ${m.jiggies === 1 ? 'Jiggy' : 'Jiggies'}</b></div>
@@ -402,12 +515,23 @@ function abrirMundo(m){
       </div>
       <p class="texto"></p>
       <p class="dica">💡 <b>Dica:</b> <span></span></p>
+      <div><button type="button" class="btn-foto" id="por-foto"></button></div>
+      <p class="pequeno-foto" style="font-size:.8rem;color:var(--tinta-fraca);margin-top:6px">O desenho de cima foi feito aqui no site. Quer a imagem de verdade? Tire um print do jogo e ponha aqui: ela fica só no seu aparelho.</p>
       <div class="progresso">
         <div class="contador"><button type="button" aria-label="Menos">−</button><b>🧩 Jiggies que eu peguei aqui</b><span class="num">${p.j}/${J.porMundo}</span><button type="button" aria-label="Mais">+</button></div>
         <button type="button" class="grande-botao" id="zerar" aria-pressed="${p.z}">${p.z ? '✅ Zerei este mundo!' : '🏁 Marcar como zerado'}</button>
       </div>
     </div>`;
   folha.querySelector('#folha-nome').textContent = m.nome;
+  const km = `${jogo}-mundo-${m.id}`, fm = fotos.get(km);
+  const im = folha.querySelector('#imagem-mundo');
+  if(fm) im.appendChild(imgFoto(fm, 'foto-jogo grande')); else im.innerHTML = cenaHtml(m.id, true);
+  const bf = folha.querySelector('#por-foto');
+  bf.textContent = fm ? '🗑️ Tirar minha foto (volta o desenho)' : '📷 Pôr uma foto minha deste mundo';
+  bf.onclick = async () => {
+    if(fm){ gravarFoto(km, null); abrirMundo(m); desenhar(); return; }
+    const f = await escolherFoto(); if(f){ gravarFoto(km, f); abrirMundo(m); desenhar(); }
+  };
   folha.querySelectorAll('.ficha b')[3].textContent = m.chefe;
   folha.querySelector('.texto').textContent = m.texto;
   folha.querySelector('.dica span').textContent = m.dica;
@@ -462,6 +586,7 @@ if('serviceWorker' in navigator){
 }
 
 desenhar();
+carregarFotos().then(() => { if(fotos.size) desenhar(); });
 </script>
 </body>
 </html>

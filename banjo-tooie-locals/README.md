@@ -30,3 +30,15 @@ as portas de notas, as transformações e os chefes do Tooie. Tirei o que eu nã
 certeza (em que área da ilha fica a entrada de cada mundo do Tooie, onde o Jamjars
 aparece). Os inimigos comuns do Tooie não entraram pelo mesmo motivo, e o site avisa.
 A dificuldade é opinião de jogador.
+
+## Imagens
+
+Imagens de verdade do jogo (prints, arte oficial) não entram: são da Rare/Nintendo e o site
+é aberto. No lugar delas:
+
+- **🎨 Cenários desenhados** pra cada um dos 18 mundos, feitos aqui mesmo: céu, chão (morro,
+  água ou plano) e as coisas do mundo em emoji (o Mumbo's Mountain tem morro, cupim,
+  laranja e o Conga; o Clanker's Cavern tem a baleia, a corrente e o dente…).
+- **📷 Suas fotos**: em cada mundo, chefe e inimigo dá pra pôr uma foto sua (um print do
+  jogo, uma foto da TV). Ela é diminuída pra 640 px e fica **só no aparelho**, no
+  IndexedDB (o localStorage é pequeno demais pra foto). Tirar a foto volta o desenho.
