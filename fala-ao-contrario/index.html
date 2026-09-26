@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fala ao Contrário</title>
+<meta name="description" content="Grave a sua voz e ouça de trás pra frente. A gravação fica só no seu aparelho." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#7b4dd6" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Ao Contrário" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --marca:#7b4dd6; --marca-escura:#5a33a8; --verde:#12a38a; --verde-escuro:#0c7a67;
+  --vermelho:#d8342a; --creme:#eafaf6; --creme2:#d6f4ec; --creme3:#f0e9ff;
+  --tinta:#1f1a2e; --tinta-fraca:#5f5a70; --cartao:#ffffff; --cartao2:#f8f6ff; --borda:#dcd3f2;
+  --onda:#7b4dd6; --onda2:#12a38a; --sombra:rgba(60,30,120,.14);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#a17cf0; --marca-escura:#6a45c2; --verde:#3ed1b4; --verde-escuro:#1f9a82;
+    --vermelho:#ff6b62; --creme:#11151a; --creme2:#16211f; --creme3:#1c1728;
+    --tinta:#f1eefa; --tinta-fraca:#aaa4bd; --cartao:#1e1a2a; --cartao2:#252036; --borda:#3a3350;
+    --onda:#b594ff; --onda2:#3ed1b4; --sombra:rgba(0,0,0,.4);
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#a17cf0; --marca-escura:#6a45c2; --verde:#3ed1b4; --verde-escuro:#1f9a82;
+  --vermelho:#ff6b62; --creme:#11151a; --creme2:#16211f; --creme3:#1c1728;
+  --tinta:#f1eefa; --tinta-fraca:#aaa4bd; --cartao:#1e1a2a; --cartao2:#252036; --borda:#3a3350;
+  --onda:#b594ff; --onda2:#3ed1b4; --sombra:rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background-color:var(--creme);
+  background-image:radial-gradient(circle at 8% 5%, var(--creme2) 0 22%, transparent 22.5%),
+                   radial-gradient(circle at 92% 78%, var(--creme3) 0 20%, transparent 20.5%);
+  background-attachment:fixed;min-height:100vh}
+.casca{max-width:560px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.8rem;line-height:1.05;display:flex;align-items:center;gap:8px;color:var(--marca-escura)}
+.logo img{width:46px;height:46px}
+.logo .p{color:var(--verde-escuro);display:inline-block;transform:scaleX(-1)}
+.botao-redondo{border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);width:42px;height:42px;border-radius:50%;font-size:1.15rem;cursor:pointer;flex:none}
+@media (max-width:380px){.logo{font-size:1.4rem}.logo img{width:36px;height:36px}}
+.sub{color:var(--tinta-fraca);margin:6px 0 16px;line-height:1.5}
+
+.palco{background:var(--cartao);border:2px solid var(--borda);border-radius:24px;padding:20px 16px;text-align:center;box-shadow:0 6px 24px var(--sombra)}
+.gravar{width:150px;height:150px;border-radius:50%;border:0;cursor:pointer;font:inherit;font-weight:800;font-size:1.05rem;color:#fff;
+  background:radial-gradient(circle at 35% 30%, #ff7a70, var(--vermelho));box-shadow:0 8px 0 #9e2019, 0 12px 26px rgba(200,40,30,.35);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin:0 auto}
+.gravar span{font-size:2.6rem;line-height:1}
+.gravar:active{transform:translateY(4px);box-shadow:0 4px 0 #9e2019}
+.gravar.gravando{animation:pulsa 1s ease-in-out infinite;background:radial-gradient(circle at 35% 30%, #ffb0a8, #b41f16)}
+@keyframes pulsa{50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion: reduce){.gravar.gravando{animation:none}}
+.tempo{font-family:'Baloo 2',cursive;font-size:1.4rem;margin-top:12px;min-height:1.6em;color:var(--tinta-fraca)}
+canvas{width:100%;height:90px;display:block;margin-top:10px;border-radius:14px;background:var(--cartao2)}
+.botoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.botoes button{font:inherit;font-weight:800;font-size:1rem;border-radius:16px;padding:14px 8px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.botoes button.grande{grid-column:1 / -1;font-size:1.25rem;padding:18px;background:var(--verde);border-color:var(--verde);color:#fff;box-shadow:0 5px 0 var(--verde-escuro)}
+.botoes button.grande:active{transform:translateY(3px);box-shadow:0 2px 0 var(--verde-escuro)}
+.botoes button:disabled{opacity:.4;cursor:default}
+.recado{margin-top:12px;font-size:.9rem;line-height:1.5;color:var(--tinta-fraca)}
+.recado.erro{color:var(--vermelho);font-weight:600}
+
+.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:20px;padding:16px;margin-top:16px;box-shadow:0 4px 16px var(--sombra)}
+.cartao h2{font-family:'Baloo 2',cursive;font-size:1.35rem}
+.palavra{text-align:center;margin:10px 0}
+.palavra small{display:block;color:var(--tinta-fraca);font-size:.82rem;font-weight:600}
+.palavra b{display:block;font-family:'Baloo 2',cursive;font-size:2rem;line-height:1.1}
+.palavra .ao{color:var(--marca)}
+.mini{font:inherit;font-weight:700;border-radius:99px;padding:9px 16px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.passos{margin:8px 0 0 20px;line-height:1.6;font-size:.92rem}
+.seguro{font-size:.85rem;color:var(--tinta-fraca);line-height:1.5;margin-top:14px;text-align:center}
+
+footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.82rem;line-height:1.6}
+.versao{display:inline-block;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;padding:6px 14px;font:inherit;font-size:.78rem;font-weight:600;margin-top:4px;color:var(--tinta);cursor:pointer}
+.faixa-nova{position:fixed;left:10px;right:10px;bottom:10px;z-index:50;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--marca-escura);color:#fff;border-radius:16px;padding:12px 15px;font-weight:600}
+.faixa-nova button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 16px;background:#fff;color:var(--marca-escura);cursor:pointer;margin-left:auto}
+</style>
+</head>
+<body>
+<div class="casca">
+  <header>
+    <h1 class="logo"><img src="icone-limpo.svg" alt="" /><span>Fala ao <span class="p">Contrário</span></span></h1>
+    <button class="botao-redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
+  </header>
+  <p class="sub">Aperte o botão vermelho, fale alguma coisa e depois toque em <b>🔁 Ao contrário</b> pra ouvir de trás pra frente! 🙃</p>
+
+  <section class="palco">
+    <button class="gravar" id="gravar" type="button"><span>🎙️</span><em id="gravar-txt" style="font-style:normal">Gravar</em></button>
+    <p class="tempo" id="tempo" aria-live="polite"></p>
+    <canvas id="onda" width="1000" height="180" aria-label="Desenho da sua voz" hidden></canvas>
+    <div class="botoes">
+      <button type="button" class="grande" id="contrario" disabled>🔁 Ao contrário</button>
+      <button type="button" id="normal" disabled>▶️ Normal</button>
+      <button type="button" id="esquilo" disabled>🐿️ Esquilo ao contrário</button>
+      <button type="button" id="monstro" disabled>👹 Monstro ao contrário</button>
+      <button type="button" id="baixar" disabled>💾 Baixar</button>
+    </div>
+    <p class="recado" id="recado" aria-live="polite"></p>
+  </section>
+
+  <section class="cartao">
+    <h2>🏆 Desafio do ao contrário</h2>
+    <p class="recado" style="margin-top:4px">Grave falando a palavra <b>ao contrário</b> e depois toque em 🔁. Se você falou direitinho, sai a palavra certa!</p>
+    <div class="palavra"><small>A palavra é</small><b id="p-certa"></b></div>
+    <div class="palavra"><small>Então fale assim</small><b class="ao" id="p-ao"></b></div>
+    <div style="text-align:center"><button type="button" class="mini" id="outra">🎲 Outra palavra</button></div>
+  </section>
+
+  <section class="cartao">
+    <h2>🤔 Como funciona?</h2>
+    <ol class="passos">
+      <li>O site grava a sua voz (o celular vai pedir permissão pro microfone).</li>
+      <li>A gravação vira um monte de numerozinhos, um atrás do outro.</li>
+      <li>O site vira essa fila de números de trás pra frente e toca: a sua voz sai ao contrário!</li>
+    </ol>
+  </section>
+
+  <p class="seguro">🔒 A sua voz fica <b>só neste aparelho</b>. Nada vai pra internet, e quando você fecha a página a gravação some (a não ser que você baixe).</p>
+
+  <footer>
+    Fala ao Contrário · feito pra brincar 🙃
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 26/09 · 🔄</button>
+  </footer>
+</div>
+
+<script>
+'use strict';
+/* =========================================================================
+   Fala ao Contrário — grava a voz e toca de trás pra frente.
+   A gravação é do MediaRecorder; o Web Audio transforma em números
+   (decodeAudioData) e a gente só inverte a fila. Nada sai do aparelho.
+   ========================================================================= */
+const LIMITE_S = 12;   // grava no máximo 12 segundos
+const btGravar = document.getElementById('gravar'), txtGravar = document.getElementById('gravar-txt');
+const tempo = document.getElementById('tempo'), recado = document.getElementById('recado');
+const tela = document.getElementById('onda');
+const botoes = ['contrario', 'normal', 'esquilo', 'monstro', 'baixar'].map(id => document.getElementById(id));
+
+let ctx = null, gravador = null, pedacos = [], relogio = 0, inicio = 0;
+let normal = null, invertido = null, tocando = null;
+
+function avisar(t, erro){ recado.textContent = t; recado.classList.toggle('erro', !!erro); }
+function audio(){
+  ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+  if(ctx.state === 'suspended') ctx.resume();   // tem que ser no toque, por causa do iPhone
+  return ctx;
+}
+
+/* ---------- gravar ---------- */
+btGravar.onclick = () => gravador && gravador.state === 'recording' ? parar() : comecar();
+async function comecar(){
+  avisar('');
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder){
+    avisar('Este navegador não deixa gravar. Tente no Chrome ou no Safari atualizado.', true); return;
+  }
+  audio();
+  let stream;
+  try{ stream = await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true } }); }
+  catch(e){
+    avisar(e && e.name === 'NotAllowedError'
+      ? '🎙️ O microfone está bloqueado. Toque no cadeado perto do endereço do site e deixe usar o microfone.'
+      : 'Não achei o microfone. Veja se o celular tem um e se nenhum outro app está usando.', true);
+    return;
+  }
+  pararTudo();
+  pedacos = [];
+  try{ gravador = new MediaRecorder(stream); }
+  catch(e){ avisar('Não deu pra começar a gravar.', true); stream.getTracks().forEach(t => t.stop()); return; }
+  gravador.ondataavailable = ev => { if(ev.data && ev.data.size) pedacos.push(ev.data); };
+  gravador.onstop = async () => {
+    stream.getTracks().forEach(t => t.stop());   // desliga o microfone
+    await preparar(new Blob(pedacos, { type:gravador.mimeType || 'audio/webm' }));
+  };
+  gravador.start();
+  inicio = Date.now();
+  btGravar.classList.add('gravando'); txtGravar.textContent = 'Parar';
+  btGravar.querySelector('span').textContent = '⏹️';
+  relogio = setInterval(() => {
+    const s = (Date.now() - inicio) / 1000;
+    tempo.textContent = `🔴 Gravando… ${s.toFixed(1)}s`;
+    if(s >= LIMITE_S) parar();
+  }, 100);
+}
+function parar(){
+  clearInterval(relogio);
+  btGravar.classList.remove('gravando'); txtGravar.textContent = 'Gravar de novo';
+  btGravar.querySelector('span').textContent = '🎙️';
+  if(gravador && gravador.state === 'recording') gravador.stop();
+}
+
+/* ---------- virar ao contrário ---------- */
+async function preparar(blob){
+  tempo.textContent = '⏳ Preparando…';
+  try{
+    const dados = await blob.arrayBuffer();
+    normal = await new Promise((ok, erro) => {
+      const p = audio().decodeAudioData(dados, ok, erro);
+      if(p && p.then) p.then(ok, erro);
+    });
+  }catch(e){ tempo.textContent = ''; avisar('Não consegui entender a gravação. Tente gravar de novo.', true); return; }
+  invertido = ctx.createBuffer(normal.numberOfChannels, normal.length, normal.sampleRate);
+  for(let c = 0; c < normal.numberOfChannels; c++){
+    const origem = normal.getChannelData(c), destino = invertido.getChannelData(c);
+    for(let i = 0, n = origem.length; i < n; i++) destino[i] = origem[n - 1 - i];
+  }
+  tempo.textContent = `✅ Gravou ${normal.duration.toFixed(1)} segundos!`;
+  botoes.forEach(b => b.disabled = false);
+  desenharOnda(invertido);
+  tocar(invertido, 1);   // toca ao contrário na hora: é a graça
+}
+
+/* O desenho da voz: uma barrinha pra cada pedacinho. */
+function desenharOnda(buf){
+  tela.hidden = false;
+  const g = tela.getContext('2d'), W = tela.width, H = tela.height, d = buf.getChannelData(0);
+  const estilo = getComputedStyle(document.documentElement);
+  g.clearRect(0, 0, W, H);
+  const barras = 120, passo = Math.floor(d.length / barras) || 1;
+  let max = 0.01;
+  const alt = [];
+  for(let b = 0; b < barras; b++){
+    let soma = 0;
+    for(let i = b * passo; i < (b + 1) * passo && i < d.length; i++) soma += Math.abs(d[i]);
+    alt.push(soma / passo); max = Math.max(max, soma / passo);
+  }
+  alt.forEach((a, b) => {
+    const h = Math.max(4, a / max * (H - 20));
+    g.fillStyle = b % 2 ? estilo.getPropertyValue('--onda').trim() : estilo.getPropertyValue('--onda2').trim();
+    g.fillRect(b * (W / barras) + 1, (H - h) / 2, W / barras - 2, h);
+  });
+}
+
+function pararTudo(){ try{ if(tocando) tocando.stop(); }catch(e){} tocando = null; }
+function tocar(buf, velocidade){
+  if(!buf) return;
+  pararTudo();
+  const s = audio().createBufferSource();
+  s.buffer = buf; s.playbackRate.value = velocidade;
+  s.connect(ctx.destination); s.start();
+  tocando = s;
+}
+document.getElementById('contrario').onclick = () => tocar(invertido, 1);
+document.getElementById('normal').onclick = () => tocar(normal, 1);
+document.getElementById('esquilo').onclick = () => tocar(invertido, 1.8);
+document.getElementById('monstro').onclick = () => tocar(invertido, .6);
+
+/* ---------- baixar (WAV, que todo aparelho toca) ---------- */
+function paraWav(buf){
+  const d = buf.getChannelData(0), n = d.length, taxa = buf.sampleRate;
+  const out = new DataView(new ArrayBuffer(44 + n * 2));
+  const txt = (o, t) => { for(let i = 0; i < t.length; i++) out.setUint8(o + i, t.charCodeAt(i)); };
+  txt(0, 'RIFF'); out.setUint32(4, 36 + n * 2, true); txt(8, 'WAVE'); txt(12, 'fmt ');
+  out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, 1, true);
+  out.setUint32(24, taxa, true); out.setUint32(28, taxa * 2, true); out.setUint16(32, 2, true); out.setUint16(34, 16, true);
+  txt(36, 'data'); out.setUint32(40, n * 2, true);
+  for(let i = 0; i < n; i++){ const v = Math.max(-1, Math.min(1, d[i])); out.setInt16(44 + i * 2, v < 0 ? v * 0x8000 : v * 0x7fff, true); }
+  return new Blob([out], { type:'audio/wav' });
+}
+document.getElementById('baixar').onclick = () => {
+  if(!invertido) return;
+  const url = URL.createObjectURL(paraWav(invertido));
+  const a = document.createElement('a'); a.href = url; a.download = 'minha-voz-ao-contrario.wav';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  avisar('💾 Pronto! O arquivo foi pros downloads.');
+};
+
+/* ---------- desafio ---------- */
+const PALAVRAS = ['banana', 'bola', 'gato', 'pipoca', 'sapato', 'macaco', 'Pikachu', 'Ditto', 'bolo', 'amigo', 'escola', 'tatu',
+  'panela', 'foguete', 'dinossauro', 'chocolate', 'Banjo', 'Mario', 'tomate', 'pato', 'cavalo', 'janela', 'mamãe', 'papai'];
+let atual = -1;
+function outraPalavra(){
+  let n; do{ n = Math.floor(Math.random() * PALAVRAS.length); }while(n === atual && PALAVRAS.length > 1);
+  atual = n;
+  const p = PALAVRAS[n];
+  document.getElementById('p-certa').textContent = p;
+  document.getElementById('p-ao').textContent = [...p.toLowerCase()].reverse().join('');
+}
+document.getElementById('outra').onclick = outraPalavra;
+outraPalavra();
+
+/* ---------- claro / escuro ---------- */
+const btTema = document.getElementById('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem(k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravarLocal(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function aplicarTema(t){
+  if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema');
+  btTema.textContent = estaEscuro() ? '☀️' : '🌙';
+  if(corDaBarra) corDaBarra.setAttribute('content', estaEscuro() ? '#11151a' : '#7b4dd6');
+  if(invertido) desenharOnda(invertido);
+}
+aplicarTema(ler('aocontrario:tema', null));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => aplicarTema(document.documentElement.getAttribute('data-tema')));
+btTema.onclick = () => { const n = estaEscuro() ? 'claro' : 'escuro'; gravarLocal('aocontrario:tema', n); aplicarTema(n); };
+
+/* ---------- "não atualizou o site" ---------- */
+const btRecarregar = document.getElementById('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{ if(window.caches){ const n = await caches.keys(); await Promise.all(n.map(x => caches.delete(x))); } }catch(e){}
+  try{ if(navigator.serviceWorker){ const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(x => x.update().catch(() => {}))); } }catch(e){}
+  const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+};
+try{ if(new URL(location.href).searchParams.has('v')){ const l = new URL(location.href); l.searchParams.delete('v'); history.replaceState(null, '', l.pathname + l.search + l.hash); } }catch(e){}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(!jaTinha || document.querySelector('.faixa-nova')) return;
+    const f = document.createElement('div'); f.className = 'faixa-nova';
+    f.innerHTML = '<span>✨ Chegou versão nova!</span><button type="button">Carregar</button>';
+    f.querySelector('button').onclick = () => location.reload();
+    document.body.appendChild(f);
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); }).catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
