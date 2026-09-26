@@ -56,6 +56,9 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
   background:radial-gradient(circle at 35% 30%, #ff7a70, var(--vermelho));box-shadow:0 8px 0 #9e2019, 0 12px 26px rgba(200,40,30,.35);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin:0 auto}
 .gravar span{font-size:2.6rem;line-height:1}
+.linha-link{display:flex;gap:8px;margin-top:10px}
+.linha-link input{flex:1;min-width:0;font:inherit;font-size:.9rem;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.linha-link button{flex:none;font:inherit;font-weight:700;border-radius:12px;padding:10px 14px;cursor:pointer;border:0;background:var(--marca);color:#fff}
 .pegar{display:block;margin:14px auto 0;font:inherit;font-weight:700;border-radius:99px;padding:10px 18px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
 .gravar:active{transform:translateY(4px);box-shadow:0 4px 0 #9e2019}
 .gravar.gravando{animation:pulsa 1s ease-in-out infinite;background:radial-gradient(circle at 35% 30%, #ffb0a8, #b41f16)}
@@ -125,6 +128,10 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
     <button class="gravar" id="gravar" type="button"><span>🎙️</span><em id="gravar-txt" style="font-style:normal">Gravar</em></button>
     <button type="button" class="pegar" id="pegar">📂 Pegar um áudio do celular</button>
     <input type="file" id="arquivo" accept="audio/*,video/*" hidden />
+    <div class="linha-link">
+      <input type="url" id="link" placeholder="🔗 Cole um link de áudio (.mp3…)" inputmode="url" autocomplete="off" aria-label="Link de um áudio" />
+      <button type="button" id="ouvir-link">Ouvir</button>
+    </div>
     <p class="tempo" id="tempo" aria-live="polite"></p>
     <canvas id="onda" width="1000" height="180" aria-label="Desenho da sua voz" hidden></canvas>
     <div class="direcao" role="group" aria-label="Direção">
@@ -185,7 +192,7 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
   <section class="cartao">
     <h2>🤔 Como funciona?</h2>
     <ol class="passos">
-      <li>O site grava a sua voz (o celular vai pedir permissão pro microfone), ou você pega um áudio que já está no celular com 📂.</li>
+      <li>O site grava a sua voz (o celular vai pedir permissão pro microfone), ou você pega um áudio que já está no celular com 📂, ou cola um link de áudio 🔗.</li>
       <li>A gravação vira um monte de numerozinhos, um atrás do outro.</li>
       <li>O site vira essa fila de números de trás pra frente e toca: a sua voz sai ao contrário!</li>
       <li>Pras 200 vozes, o site mexe nos números: pula alguns (esquilo), repete (monstro), mistura com ecos (caverna) ou com uma ondinha (robô).</li>
@@ -196,7 +203,7 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 
   <footer>
     Fala ao Contrário · feito pra brincar 🙃
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 4 — 26/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 5 — 26/09 · 🔄</button>
   </footer>
 </div>
 
@@ -207,7 +214,8 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
    O microfone manda os números direto (ScriptProcessor), a gente inverte
    a fila e passa pelos efeitos das 200 vozes. Nada sai do aparelho.
    ========================================================================= */
-const LIMITE_S = 12;   // grava no máximo 12 segundos
+const LIMITE_S = 5 * 60;   // grava no máximo 5 minutos
+function fmt(s){ return s < 60 ? `${s.toFixed(1)}s` : `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`; }
 const btGravar = document.getElementById('gravar'), txtGravar = document.getElementById('gravar-txt');
 const tempo = document.getElementById('tempo'), recado = document.getElementById('recado');
 const tela = document.getElementById('onda');
@@ -276,7 +284,7 @@ async function comecar(){
   tempo.textContent = '🔴 Gravando… 0.0s';
   relogio = setInterval(() => {
     const s = (Date.now() - inicio) / 1000;
-    tempo.textContent = `🔴 Gravando… ${s.toFixed(1)}s`;
+    tempo.textContent = `🔴 Gravando… ${fmt(s)}`;
     if(s >= LIMITE_S) parar();
   }, 100);
 }
@@ -294,16 +302,18 @@ function parar(){
   if(n < taxa * 0.3){ tempo.textContent = ''; avisar('Ficou curtinho demais! Segure um pouquinho mais antes de parar.', true); return; }
   if(pico < 0.002){ tempo.textContent = ''; avisar('O microfone não mandou som nenhum. Veja se ele não está no mudo e fale pertinho.', true); document.getElementById('ajuda').open = true; return; }
   voz = aparar(tudo, taxa, pico);
-  tempo.textContent = `✅ Gravou ${(voz.length / taxa).toFixed(1)} segundos!`;
+  tempo.textContent = `✅ Gravou ${fmt(voz.length / taxa)}!`;
   prontaPraTocar();
 }
-function prontaPraTocar(){
+function prontaPraTocar(aviso){
   btTocar.disabled = btBaixar.disabled = btCompartilhar.disabled = false;
-  tocarEscolha();
+  tocarEscolha(aviso);
 }
 
 /* ---------- pegar um áudio que já está no celular ---------- */
-const MAX_ARQUIVO_S = 30;   // áudio grande demais deixa o celular lento, então pega só o começo
+const MAX_ARQUIVO_S = 10 * 60;         // até 10 minutos: mais que isso o celular trava
+const MAX_BYTES = 40 * 1024 * 1024;     // arquivo de até 40 MB
+const TAXA_ARQUIVO = 22050;             // abre numa qualidade menor pra caber na memória
 const campoArquivo = document.getElementById('arquivo');
 document.getElementById('pegar').onclick = () => {
   if(gravando) parar();
@@ -313,26 +323,53 @@ document.getElementById('pegar').onclick = () => {
 campoArquivo.onchange = async () => {
   const f = campoArquivo.files && campoArquivo.files[0];
   if(!f) return;
+  if(f.size > MAX_BYTES){ avisar('Esse arquivo é grande demais (mais de 40 MB). Escolha um menor.', true); return; }
+  try{ await abrirAudio(await f.arrayBuffer(), '📂 Pegou'); }
+  catch(e){ tempo.textContent = ''; avisar('Não consegui abrir esse arquivo. Tente outro áudio (mp3, m4a, wav, ogg…) ou um vídeo.', true); }
+};
+async function abrirAudio(dados, palavra){
   avisar(''); pararSom();
   tempo.textContent = '⏳ Abrindo o áudio…';
-  let buf;
-  try{
-    const dados = await f.arrayBuffer();
-    buf = await new Promise((ok, erro) => { const p = audio().decodeAudioData(dados, ok, erro); if(p && p.then) p.then(ok, erro); });
-  }catch(e){
-    tempo.textContent = '';
-    avisar('Não consegui abrir esse arquivo. Tente outro áudio (mp3, m4a, wav, ogg…) ou um vídeo.', true); return;
-  }
+  let C;
+  try{ C = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 1, TAXA_ARQUIVO); }catch(e){ C = audio(); }
+  const buf = await new Promise((ok, erro) => { const p = C.decodeAudioData(dados, ok, erro); if(p && p.then) p.then(ok, erro); });
   taxa = buf.sampleRate;
   const n = Math.min(buf.length, Math.floor(MAX_ARQUIVO_S * taxa)), tudo = new Float32Array(n);
   for(let c = 0; c < buf.numberOfChannels; c++){ const d = buf.getChannelData(c); for(let i = 0; i < n; i++) tudo[i] += d[i] / buf.numberOfChannels; }
   let pico = 0; for(let i = 0; i < n; i++){ const a = Math.abs(tudo[i]); if(a > pico) pico = a; }
   if(pico < 0.002){ tempo.textContent = ''; avisar('Esse áudio está em silêncio. Tente outro!', true); return; }
   voz = aparar(tudo, taxa, pico);
-  tempo.textContent = `📂 Pegou ${(voz.length / taxa).toFixed(1)} segundos!`;
-  prontaPraTocar();
-  if(buf.duration > MAX_ARQUIVO_S) avisar(`O áudio era grandão, então peguei só os primeiros ${MAX_ARQUIVO_S} segundos.`);
+  tempo.textContent = `${palavra} ${fmt(voz.length / taxa)}!`;
+  prontaPraTocar(buf.duration > MAX_ARQUIVO_S ? `O áudio era grandão, então peguei só os primeiros ${MAX_ARQUIVO_S / 60} minutos.` : '');
+}
+
+/* ---------- ouvir um link ---------- */
+const campoLink = document.getElementById('link');
+document.getElementById('ouvir-link').onclick = async () => {
+  if(gravando) parar();
+  audio(); destravar();
+  let url;
+  try{ url = new URL(campoLink.value.trim()); if(!/^https?:$/.test(url.protocol)) throw 0; }
+  catch(e){ avisar('Cole um link que começa com https://', true); return; }
+  if(/(^|\.)(youtube\.com|youtu\.be|spotify\.com|tiktok\.com|instagram\.com|kwai\.com|facebook\.com|deezer\.com|soundcloud\.com)$/i.test(url.hostname)){
+    avisar('Link de YouTube, Spotify, TikTok e parecidos não dá: esses sites não deixam outro site pegar o som. Use um link direto de um arquivo de áudio (que termina em .mp3, .wav, .ogg…) ou grave com o microfone.', true); return;
+  }
+  tempo.textContent = '⏳ Buscando o áudio…'; avisar('');
+  let dados;
+  try{
+    const r = await fetch(url.href);
+    if(!r.ok) throw 0;
+    if(+r.headers.get('content-length') > MAX_BYTES){ tempo.textContent = ''; avisar('Esse áudio é grande demais (mais de 40 MB).', true); return; }
+    dados = await r.arrayBuffer();
+    if(dados.byteLength > MAX_BYTES){ tempo.textContent = ''; avisar('Esse áudio é grande demais (mais de 40 MB).', true); return; }
+  }catch(e){
+    tempo.textContent = '';
+    avisar('Não consegui pegar esse link. Alguns sites não deixam outros sites pegarem os arquivos deles. Tente outro link, ou baixe o áudio e use 📂.', true); return;
+  }
+  try{ await abrirAudio(dados, '🔗 Pegou'); }
+  catch(e){ tempo.textContent = ''; avisar('Esse link não é de um arquivo de áudio. Tem que ser um link direto pro áudio (tipo terminando em .mp3).', true); }
 };
+campoLink.addEventListener('keydown', ev => { if(ev.key === 'Enter') document.getElementById('ouvir-link').click(); });
 
 /* ---------- a mágica: mexer nos números ---------- */
 function aparar(x, sr, pico){   // tira o silêncio do começo e do fim
@@ -512,13 +549,21 @@ function render(){
   if(r !== 1) x = velocidade(x, r);
   return normalizar(JEITOS[escolha.j].f(x, taxa));
 }
-function tocarEscolha(){
+let vez = 0;
+function tocarEscolha(aviso){
   mostrarEscolha();
   if(!voz){ avisar('🎙️ Grave a sua voz primeiro! Aí ela sai com essa voz.'); return; }
-  avisar('');
-  ultimo = render();
-  desenharOnda(ultimo);
-  tocarWav(paraWav(ultimo, taxa), true);
+  const fazer = () => {
+    ultimo = render();
+    desenharOnda(ultimo);
+    tocarWav(paraWav(ultimo, taxa), true);
+    avisar(aviso || '');
+  };
+  if(voz.length / taxa < 60){ fazer(); return; }
+  /* áudio comprido demora um pouquinho: mostra o aviso antes de fazer as contas */
+  const minha = ++vez;
+  pararSom(); avisar('⏳ Preparando a voz… (áudio comprido demora um pouquinho)');
+  setTimeout(() => { if(minha === vez) fazer(); }, 50);
 }
 btTocar.onclick = () => tocarEscolha();
 mostrarEscolha();
@@ -561,14 +606,14 @@ function atualizarBarra(){
   const dur = duracao(), agora = Math.min(player.currentTime || 0, dur), parte = dur ? agora / dur : 0;
   if(!arrastando) barra.value = Math.round(parte * 1000);
   barra.style.setProperty('--p', (barra.value / 10) + '%');
-  tempoAudio.textContent = `${agora.toFixed(1)} / ${dur.toFixed(1)}s`;
+  tempoAudio.textContent = `${fmt(agora)} / ${fmt(dur)}`;
   const tocando = !player.paused && !player.ended;
   btPausar.textContent = tocando ? '⏸️' : '▶️';
   btPausar.setAttribute('aria-label', tocando ? 'Pausar' : 'Tocar');
   if(ehVoz && ultimo) desenharOnda(ultimo, player.ended ? null : parte);
 }
 function laco(){ atualizarBarra(); if(!player.paused && !player.ended) requestAnimationFrame(laco); }
-player.addEventListener('play', () => { tocador.hidden = false; requestAnimationFrame(laco); });
+player.addEventListener('play', () => { if(player.src !== urlSom) return; tocador.hidden = false; requestAnimationFrame(laco); });   // o silêncio de destravar não conta
 ['pause', 'ended', 'seeked', 'loadedmetadata'].forEach(ev => player.addEventListener(ev, atualizarBarra));
 btPausar.onclick = () => { if(player.paused || player.ended){ const p = player.play(); if(p && p.catch) p.catch(() => {}); } else player.pause(); };
 barra.addEventListener('input', () => {
