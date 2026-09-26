@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Seu Álbum Pokémon</title>
+<meta name="description" content="O álbum das suas cartas Pokémon: quantas você tem de cada uma, as repetidas pra trocar e as que você quer, com código pra trocar com amigos." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#d63a3a" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Seu Álbum" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* Vermelho de Poké Bola e papel de fichário. Tudo que pinta mora aqui, pra
+     o modo escuro ser só trocar esta lista. */
+  --marca:#d63a3a; --marca-escura:#a82828; --marca-clara:#f6c3c3;
+  --certo:#1f9d55; --certo-fundo:#e3f6ea; --errado:#c62828;
+  --azul:#2f6fb5; --azul-fundo:#e4eefb;
+  --rosa:#c2407a; --rosa-fundo:#fbe6ef;
+  --creme:#fff4e6; --creme2:#ffe8cc; --creme3:#fff0dc;
+  --tinta:#2b2118; --tinta-fraca:#76665a;
+  --cartao:#ffffff; --cartao2:#fffaf3; --campo:#fffdf9;
+  --borda:#f0dcc4; --sombra:rgba(120,60,20,.12);
+  --pagina:#fffdf8; --bolso:#f3e6d4;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#f06262; --marca-escura:#d24848; --marca-clara:#5a2a2a;
+    --certo:#3ecb84; --certo-fundo:#16321f; --errado:#ff6b6b;
+    --azul:#7fb2ee; --azul-fundo:#1a2a40;
+    --rosa:#f08bb8; --rosa-fundo:#3a1a2a;
+    --creme:#17120e; --creme2:#221a14; --creme3:#1c1611;
+    --tinta:#f6ece2; --tinta-fraca:#b7a797;
+    --cartao:#261e18; --cartao2:#2d241d; --campo:#211a14;
+    --borda:#40332a; --sombra:rgba(0,0,0,.35);
+    --pagina:#211a14; --bolso:#2f2620;
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#f06262; --marca-escura:#d24848; --marca-clara:#5a2a2a;
+  --certo:#3ecb84; --certo-fundo:#16321f; --errado:#ff6b6b;
+  --azul:#7fb2ee; --azul-fundo:#1a2a40;
+  --rosa:#f08bb8; --rosa-fundo:#3a1a2a;
+  --creme:#17120e; --creme2:#221a14; --creme3:#1c1611;
+  --tinta:#f6ece2; --tinta-fraca:#b7a797;
+  --cartao:#261e18; --cartao2:#2d241d; --campo:#211a14;
+  --borda:#40332a; --sombra:rgba(0,0,0,.35);
+  --pagina:#211a14; --bolso:#2f2620;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+body{
+  font-family:'Rubik',system-ui,sans-serif; color:var(--tinta);
+  background-color:var(--creme);
+  background-image:radial-gradient(circle at 8% 5%, var(--creme2) 0 22%, transparent 22.5%),
+                   radial-gradient(circle at 92% 78%, var(--creme3) 0 20%, transparent 20.5%);
+  background-attachment:fixed; min-height:100vh;
+}
+.casca{max-width:900px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.75rem;line-height:1.05;display:flex;align-items:center;gap:8px;color:var(--marca-escura)}
+.logo .p{color:var(--tinta)}
+.nome-logo{display:block}
+.logo img{width:44px;height:44px;flex:none}
+.cabeca-botoes{display:flex;gap:6px}
+.botao-redondo{border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);width:42px;height:42px;border-radius:50%;font-size:1.15rem;cursor:pointer;flex:none}
+@media (max-width:480px){ .logo{font-size:1.3rem;gap:6px} .logo img{width:34px;height:34px} .botao-redondo{width:38px;height:38px;font-size:1rem} }
+@media (max-width:360px){ .logo{font-size:1.1rem} .logo img{display:none} .botao-redondo{width:34px;height:34px;font-size:.92rem} .cabeca-botoes{gap:4px} }
+.logo{min-width:0}
+.sub{color:var(--tinta-fraca);margin:6px 0 14px;font-size:.95rem}
+
+.placar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.placar div{background:var(--cartao);border:2px solid var(--borda);border-radius:16px;padding:10px 6px;text-align:center;box-shadow:0 3px 12px var(--sombra)}
+.placar b{display:block;font-family:'Baloo 2',cursive;font-size:1.6rem;line-height:1;color:var(--marca-escura)}
+.placar span{font-size:.72rem;color:var(--tinta-fraca);font-weight:600}
+
+.abas{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:14px}
+.abas button{font:inherit;font-weight:700;font-size:.92rem;border-radius:14px;padding:11px 4px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta)}
+.abas button[aria-selected="true"]{background:var(--marca);border-color:var(--marca);color:#fff}
+
+.busca{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:14px}
+.busca input{font:inherit;font-size:1rem;padding:12px 14px;border-radius:14px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);min-width:0}
+.busca input:focus{outline:none;border-color:var(--marca)}
+.busca button{font:inherit;font-weight:700;border:0;border-radius:14px;padding:0 16px;background:var(--marca-escura);color:#fff;cursor:pointer}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding-top:8px}
+.chip{font:inherit;font-size:.85rem;font-weight:600;padding:6px 12px;border-radius:99px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta)}
+.chip[aria-pressed="true"]{background:var(--marca);border-color:var(--marca);color:#fff}
+.dica{font-size:.82rem;color:var(--tinta-fraca);margin-top:6px}
+
+#palco{margin-top:14px}
+.aviso{text-align:center;padding:26px 10px;color:var(--tinta-fraca)}
+.girando{width:34px;height:34px;border-radius:50%;border:4px solid var(--borda);border-top-color:var(--marca);margin:0 auto 10px;animation:gira .8s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.girando{animation-duration:3s}}
+
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(106px,1fr));gap:10px}
+.carta{position:relative;border:0;background:none;padding:0;cursor:pointer;text-align:center;font:inherit;color:var(--tinta)}
+.carta .foto{aspect-ratio:63/88;border-radius:8px;overflow:hidden;background:var(--bolso);display:grid;place-items:center;box-shadow:0 2px 8px var(--sombra)}
+.carta img{width:100%;height:100%;object-fit:cover;display:block}
+.carta .sem{font-size:.72rem;padding:6px;color:var(--tinta-fraca);font-weight:600}
+.carta .legenda{font-size:.74rem;margin-top:4px;line-height:1.25}
+.carta .legenda b{display:block;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.carta .legenda span{color:var(--tinta-fraca)}
+.selo{position:absolute;top:-6px;right:-6px;min-width:28px;height:28px;padding:0 7px;border-radius:99px;display:grid;place-items:center;
+  font-weight:800;font-size:.85rem;color:#fff;background:var(--marca-escura);border:3px solid var(--creme)}
+.selo.quero{background:var(--rosa)}
+.selo.troca{left:-6px;right:auto;background:var(--azul)}
+.carta.tenho .foto{outline:3px solid var(--certo);outline-offset:1px}
+
+/* o fichário: 9 bolsos por página */
+.fichario{background:var(--pagina);border:2px solid var(--borda);border-radius:18px;padding:12px;box-shadow:0 4px 18px var(--sombra)}
+.fichario .grade{grid-template-columns:repeat(3,1fr)}
+.bolso-vazio{aspect-ratio:63/88;border-radius:8px;background:var(--bolso);border:2px dashed var(--borda)}
+.paginas{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+.paginas button{font:inherit;font-weight:700;border-radius:12px;padding:9px 14px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta)}
+.paginas button:disabled{opacity:.4;cursor:default}
+.paginas span{font-weight:600;color:var(--tinta-fraca);font-size:.9rem}
+.ordem{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.nada{text-align:center;padding:26px 12px;color:var(--tinta-fraca);line-height:1.6}
+
+/* folha */
+.fundo{position:fixed;inset:0;background:rgba(30,15,5,.55);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.fundo.aberto{display:flex}
+.folha{background:var(--cartao);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:16px 18px 26px;max-height:92vh;overflow:auto;overflow-x:hidden;position:relative;text-align:center}
+@media (min-width:600px){.fundo{align-items:center}.folha{border-radius:24px}}
+.folha .fechar{position:absolute;top:12px;right:12px}
+.folha h2{font-family:'Baloo 2',cursive;font-size:1.55rem;line-height:1.15;padding:0 44px}
+.folha .grande{width:min(240px,70%);margin:8px auto;aspect-ratio:63/88;border-radius:12px;overflow:hidden;background:var(--bolso);display:grid;place-items:center;box-shadow:0 6px 20px var(--sombra)}
+.folha .grande img{width:100%;height:100%;object-fit:cover}
+.info{color:var(--tinta-fraca);font-size:.9rem;margin-top:2px}
+.contador{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;margin:12px auto 0;max-width:320px;text-align:left}
+.contador button{width:44px;height:44px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);font-size:1.3rem;font-weight:800;cursor:pointer}
+.contador div b{display:block;font-size:1.05rem}
+.contador div small{color:var(--tinta-fraca)}
+.contador .num{font-family:'Baloo 2',cursive;font-size:1.6rem;text-align:center;min-width:1.5em}
+.grande-botao{display:block;width:100%;font:inherit;font-weight:700;font-size:1rem;border-radius:14px;padding:13px;cursor:pointer;margin-top:10px;
+  border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.grande-botao.principal{background:var(--marca);border-color:var(--marca);color:#fff}
+.grande-botao.rosa[aria-pressed="true"]{background:var(--rosa);border-color:var(--rosa);color:#fff}
+.bloco{text-align:left;margin-top:16px}
+.bloco h3{font-family:'Baloo 2',cursive;font-size:1.15rem}
+.pequeno{font-size:.82rem;color:var(--tinta-fraca);line-height:1.5;margin-top:6px}
+.cuidado{background:var(--creme2);border-radius:14px;padding:10px 12px;font-size:.88rem;line-height:1.5;margin-top:10px;text-align:left}
+textarea{width:100%;min-height:80px;font:inherit;font-size:.78rem;padding:10px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);word-break:break-all}
+.erro{color:var(--errado);font-weight:600;margin-top:8px}
+.bate{border-radius:16px;padding:10px 12px;margin-top:10px;text-align:left}
+.bate h4{font-size:1rem;margin-bottom:8px}
+.bate.ganha{background:var(--certo-fundo)}
+.bate.da{background:var(--azul-fundo)}
+.bate.outras{background:var(--creme2)}
+.bate .grade{grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px}
+.brinde{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:60;background:var(--marca-escura);color:#fff;padding:12px 18px;border-radius:16px;
+  font-weight:700;box-shadow:0 6px 24px rgba(60,20,10,.35);max-width:calc(100% - 32px);text-align:center}
+
+footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.82rem;line-height:1.6}
+.versao{display:inline-block;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;padding:6px 14px;font:inherit;font-size:.78rem;font-weight:600;margin-top:4px;color:var(--tinta);cursor:pointer}
+.faixa-nova{position:fixed;left:10px;right:10px;bottom:10px;z-index:50;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--marca-escura);color:#fff;
+  border-radius:16px;padding:12px 15px;box-shadow:0 6px 24px rgba(60,20,10,.35);font-weight:600;font-size:.95rem}
+.faixa-nova button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 16px;background:#fff;color:var(--marca-escura);cursor:pointer;margin-left:auto}
+</style>
+</head>
+<body>
+<div class="casca">
+  <header>
+    <h1 class="logo"><img src="icone-limpo.svg" alt="" /><span class="nome-logo">Seu Álbum <span class="p">Pokémon</span></span></h1>
+    <div class="cabeca-botoes">
+      <button class="botao-redondo" id="abrir-trocar" type="button" title="Trocar com um amigo">🤝</button>
+      <button class="botao-redondo" id="abrir-guardar" type="button" title="Guardar / levar pra outro aparelho">💾</button>
+      <button class="botao-redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
+    </div>
+  </header>
+  <p class="sub">Coloque as cartas que você tem (quantas quiser de cada), separe as repetidas pra trocar e marque as que você quer.</p>
+
+  <section class="placar" aria-live="polite">
+    <div><b id="n-cartas">0</b><span>🃏 cartas</span></div>
+    <div><b id="n-diferentes">0</b><span>📖 diferentes</span></div>
+    <div><b id="n-troca">0</b><span>🔁 pra trocar</span></div>
+    <div><b id="n-quero">0</b><span>💖 quero</span></div>
+  </section>
+
+  <div class="abas" role="tablist">
+    <button type="button" role="tab" id="aba-album" aria-selected="true">📖 Álbum</button>
+    <button type="button" role="tab" id="aba-troca" aria-selected="false">🔁 Pra trocar</button>
+    <button type="button" role="tab" id="aba-quero" aria-selected="false">💖 Quero</button>
+  </div>
+
+  <form class="busca" id="form-busca">
+    <input id="campo" type="search" autocomplete="off" enterkeyhint="search" placeholder="Nome ou número da carta (ex.: pikachu, 25/102)" />
+    <button type="submit">🔍 Achar</button>
+  </form>
+  <div class="chips" id="idiomas"></div>
+  <p class="dica">Achou a carta? Toque nela pra pôr no álbum. O número fica no cantinho de baixo da carta.</p>
+
+  <div id="palco"></div>
+
+  <footer>
+    Seu Álbum Pokémon · site de fã, sem ligação com a Nintendo ou The Pokémon Company
+    <br>As cartas vêm do Pokémon TCG API e do TCGdex. O que você marca fica só neste aparelho.
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 26/09 · 🔄</button>
+  </footer>
+</div>
+
+<div class="fundo" id="fundo">
+  <div class="folha" role="dialog" aria-modal="true" aria-labelledby="folha-nome" id="folha"></div>
+</div>
+
+<script>
+'use strict';
+/* =========================================================================
+   Seu Álbum Pokémon — as cartas que você tem, as repetidas e as que quer.
+   A busca é a mesma ideia do ButterPoke: o site principal (Pokémon TCG API,
+   em inglês) e o reserva (TCGdex, que fala português).
+
+   Sobre trocar: o pedido foi trocar "com a localização real". Isso não entra.
+   GPS aponta pra porta da casa, e quem usa isto é criança; um site de troca
+   mostrando isso pra desconhecidos é perigoso de verdade. A troca aqui é por
+   código, com amigo que a pessoa já conhece, e o código não leva nome nem
+   lugar nenhum — só as cartas.
+   ========================================================================= */
+
+/* ---------- guardar no aparelho ---------- */
+function ler(chave, vazio){
+  try{ const v = JSON.parse(localStorage.getItem(chave) || 'null'); return v == null ? vazio : v; }catch(e){ return vazio; }
+}
+function gravar(chave, v){ try{ localStorage.setItem(chave, JSON.stringify(v)); }catch(e){} }
+function escapar(t){ return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); }
+
+/* Cada carta guardada: { id, n (nome), num, set, tot, img, r (raridade), qtd, troca }.
+   "troca" é quantas daquela você topa trocar (começa nas repetidas: qtd − 1). */
+const minhas = ler('seualbum:cartas', {});
+const quero  = ler('seualbum:quero', {});
+function salvar(){ gravar('seualbum:cartas', minhas); gravar('seualbum:quero', quero); placar(); }
+function placar(){
+  const l = Object.values(minhas);
+  document.getElementById('n-cartas').textContent = l.reduce((s, c) => s + c.qtd, 0);
+  document.getElementById('n-diferentes').textContent = l.length;
+  document.getElementById('n-troca').textContent = l.reduce((s, c) => s + (c.troca || 0), 0);
+  document.getElementById('n-quero').textContent = Object.keys(quero).length;
+}
+
+/* ---------- os dois sites de cartas ---------- */
+const API = 'https://api.pokemontcg.io/v2/cards';
+const TCGDEX = 'https://api.tcgdex.net/v2';
+const IDIOMAS = [
+  { id:'en', nome:'🇺🇸 Inglês' },
+  { id:'pt', nome:'🇧🇷 Português' },
+];
+let idioma = ler('seualbum:idioma', 'en');
+if(!IDIOMAS.some(i => i.id === idioma)) idioma = 'en';
+
+async function pedirJSON(url){
+  const r = await fetch(url, { headers:{ Accept:'application/json' } });
+  if(!r.ok){ const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
+  return r.json();
+}
+/* Deixa a carta com um formato só, venha de onde vier. */
+function daApi(c){
+  const s = c.set || {};
+  return { id:c.id, n:c.name || '?', num:String(c.number || ''), set:s.name || '', tot:s.printedTotal || null,
+           img:(c.images && c.images.small) || '', r:c.rarity || '', data:s.releaseDate || '' };
+}
+function doTcgdex(c, lang){
+  return { id:`tcgdex-${lang}-${c.id}`, n:c.name || '?', num:String(c.localId || ''), set:(c.set && c.set.name) || '',
+           tot:(c.set && c.set.cardCount && c.set.cardCount.official) || null,
+           img:c.image ? c.image + '/low.png' : '', r:c.rarity || '', data:'' };
+}
+/* "25/102" vira número 25 de uma coleção de 102; "25" é só o número. */
+function partesDoNumero(t){
+  const m = String(t).trim().match(/^#?\s*([a-z]*\d+[a-z]*)\s*(?:\/\s*([a-z]*\d+))?$/i);
+  return m ? { numero:m[1].replace(/^0+(?=\d)/, ''), total:m[2] || '' } : null;
+}
+async function buscarCartas(texto){
+  const p = partesDoNumero(texto);
+  if(idioma === 'en'){
+    let q;
+    if(p){
+      q = `number:${p.numero}` + (p.total && /^\d+$/.test(p.total) ? ` set.printedTotal:${+p.total}` : '');
+    } else {
+      /* Uma palavra: "pika" já acha Pikachu (o * completa). Com espaço
+         ("mega charizard"), vai entre aspas, e aí não dá pra usar o *. */
+      const nome = texto.trim().replace(/["\\*:()]/g, '');
+      q = /\s/.test(nome) ? `name:"${nome}"` : `name:${nome}*`;
+    }
+    try{
+      const url = `${API}?q=${encodeURIComponent(q)}&pageSize=120&orderBy=-set.releaseDate&select=id,name,number,set,images,rarity`;
+      const d = await pedirJSON(url);
+      const l = (d.data || []).map(daApi);
+      if(l.length) return { lista:l, total:d.totalCount || l.length, fonte:'principal' };
+    }catch(e){ /* cai pro reserva */ }
+  }
+  /* reserva (e o português): TCGdex */
+  const lang = idioma === 'pt' ? 'pt' : 'en';
+  const url = p ? `${TCGDEX}/${lang}/cards?localId=${encodeURIComponent(p.numero)}` : `${TCGDEX}/${lang}/cards?name=${encodeURIComponent(texto.trim())}`;
+  const d = await pedirJSON(url);
+  const l = (Array.isArray(d) ? d : []).slice(0, 120).map(c => doTcgdex(c, lang));
+  return { lista:l, total:Array.isArray(d) ? d.length : l.length, fonte:'reserva' };
+}
+function explicarErro(e){
+  const m = String((e && e.message) || e || '');
+  if(navigator.onLine === false) return 'Seu aparelho está <b>sem internet</b>. O seu álbum continua aqui, mas pra achar carta nova precisa de internet.';
+  if(/HTTP 429/.test(m)) return 'O site das cartas chegou no <b>limite de buscas</b>. Espere um pouquinho e tente de novo.';
+  if(/HTTP 5\d\d/.test(m)) return 'O site das cartas está com problema <b>do lado deles</b>. Costuma voltar sozinho.';
+  return 'Não consegui falar com o site das cartas. A internet pode ter oscilado.';
+}
+
+/* ---------- desenhar cartas ---------- */
+function fotoCarta(c){
+  const d = document.createElement('div'); d.className = 'foto';
+  if(c.img){
+    const i = document.createElement('img');
+    i.loading = 'lazy'; i.decoding = 'async'; i.alt = c.n; i.src = c.img;
+    i.onerror = () => { const s = document.createElement('span'); s.className = 'sem'; s.textContent = c.n; i.replaceWith(s); };
+    d.appendChild(i);
+  } else { const s = document.createElement('span'); s.className = 'sem'; s.textContent = c.n; d.appendChild(s); }
+  return d;
+}
+function tileCarta(c, opcoes = {}){
+  const b = document.createElement('button');
+  b.type = 'button';
+  const tem = minhas[c.id];
+  b.className = 'carta' + (tem && !opcoes.semDestaque ? ' tenho' : '');
+  b.appendChild(fotoCarta(c));
+  const leg = document.createElement('div'); leg.className = 'legenda';
+  leg.innerHTML = '<b></b><span></span>';
+  leg.querySelector('b').textContent = c.n;
+  leg.querySelector('span').textContent = (c.num ? `#${c.num}${c.tot ? '/' + c.tot : ''}` : '') + (c.set ? ` · ${c.set}` : '');
+  b.appendChild(leg);
+  const selo = (txt, cls) => { const s = document.createElement('span'); s.className = 'selo' + (cls ? ' ' + cls : ''); s.textContent = txt; b.appendChild(s); };
+  if(opcoes.selo) selo(...opcoes.selo);
+  else if(tem) selo('×' + tem.qtd);
+  else if(quero[c.id]) selo('💖', 'quero');
+  if(!opcoes.selo && tem && tem.troca) selo('🔁' + tem.troca, 'troca');
+  b.setAttribute('aria-label', `${c.n}${tem ? `, você tem ${tem.qtd}` : ''}${quero[c.id] ? ', você quer' : ''}`);
+  b.onclick = () => (opcoes.clique || abrirCarta)(c);
+  return b;
+}
+
+/* ---------- abas e busca ---------- */
+const palco = document.getElementById('palco');
+let aba = 'album', ultimaBusca = null, paginaAlbum = 0, ordemAlbum = ler('seualbum:ordem', 'nova');
+function trocarAba(a){
+  aba = a; ultimaBusca = null;
+  for(const [id, k] of [['aba-album', 'album'], ['aba-troca', 'troca'], ['aba-quero', 'quero']])
+    document.getElementById(id).setAttribute('aria-selected', String(k === a));
+  desenhar();
+}
+document.getElementById('aba-album').onclick = () => trocarAba('album');
+document.getElementById('aba-troca').onclick = () => trocarAba('troca');
+document.getElementById('aba-quero').onclick = () => trocarAba('quero');
+
+function desenhar(){
+  if(ultimaBusca) return desenharBusca();
+  if(aba === 'album') return desenharAlbum();
+  const lista = aba === 'troca'
+    ? Object.values(minhas).filter(c => c.troca > 0)
+    : Object.values(quero);
+  palco.innerHTML = '';
+  if(!lista.length){
+    palco.innerHTML = `<p class="nada">${aba === 'troca'
+      ? '🔁 Nenhuma carta pra trocar ainda.<br>As repetidas entram aqui sozinhas: quando você tem 2 da mesma, 1 vai pra troca.'
+      : '💖 Nenhuma carta na lista de desejos.<br>Procure uma carta aí em cima e toque em “Quero essa”.'}</p>`;
+    return;
+  }
+  const g = document.createElement('div'); g.className = 'grade';
+  for(const c of lista.sort((a, b) => a.n.localeCompare(b.n)))
+    g.appendChild(aba === 'troca' ? tileCarta(c, { selo:['🔁' + c.troca, 'troca'] }) : tileCarta(c, { selo:['💖', 'quero'], semDestaque:true }));
+  palco.appendChild(g);
+}
+
+/* O álbum é um fichário: páginas de 9 bolsos. */
+const ORDENS = { nova:'🆕 Mais novas', nome:'🔤 Nome', qtd:'🔢 Mais repetidas' };
+function desenharAlbum(){
+  let l = Object.values(minhas);
+  palco.innerHTML = '';
+  if(!l.length){
+    palco.innerHTML = '<p class="nada">📖 Seu álbum está vazio.<br>Procure uma carta aí em cima (pelo nome ou pelo número) e toque nela pra pôr aqui!</p>';
+    return;
+  }
+  if(ordemAlbum === 'nome') l.sort((a, b) => a.n.localeCompare(b.n));
+  else if(ordemAlbum === 'qtd') l.sort((a, b) => b.qtd - a.qtd || a.n.localeCompare(b.n));
+  else l.sort((a, b) => (b.quando || 0) - (a.quando || 0));
+  const ordem = document.createElement('div'); ordem.className = 'ordem';
+  for(const [k, n] of Object.entries(ORDENS)){
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = n;
+    b.setAttribute('aria-pressed', String(k === ordemAlbum));
+    b.onclick = () => { ordemAlbum = k; gravar('seualbum:ordem', k); paginaAlbum = 0; desenharAlbum(); };
+    ordem.appendChild(b);
+  }
+  palco.appendChild(ordem);
+  const paginas = Math.max(1, Math.ceil(l.length / 9));
+  paginaAlbum = Math.min(paginaAlbum, paginas - 1);
+  const f = document.createElement('div'); f.className = 'fichario';
+  const g = document.createElement('div'); g.className = 'grade';
+  const nestas = l.slice(paginaAlbum * 9, paginaAlbum * 9 + 9);
+  for(const c of nestas) g.appendChild(tileCarta(c, { semDestaque:true }));
+  for(let i = nestas.length; i < 9; i++){ const v = document.createElement('div'); v.className = 'bolso-vazio'; g.appendChild(v); }
+  f.appendChild(g);
+  const nav = document.createElement('div'); nav.className = 'paginas';
+  nav.innerHTML = `<button type="button" id="pag-ant">◀ Antes</button><span>Página ${paginaAlbum + 1} de ${paginas}</span><button type="button" id="pag-prox">Depois ▶</button>`;
+  nav.querySelector('#pag-ant').disabled = paginaAlbum === 0;
+  nav.querySelector('#pag-prox').disabled = paginaAlbum >= paginas - 1;
+  nav.querySelector('#pag-ant').onclick = () => { paginaAlbum--; desenharAlbum(); };
+  nav.querySelector('#pag-prox').onclick = () => { paginaAlbum++; desenharAlbum(); };
+  f.appendChild(nav);
+  palco.appendChild(f);
+}
+
+const campo = document.getElementById('campo');
+let buscaAtual = 0;
+document.getElementById('form-busca').onsubmit = async ev => {
+  ev.preventDefault();
+  const t = campo.value.trim();
+  if(!t){ ultimaBusca = null; desenhar(); return; }
+  const minha = ++buscaAtual;
+  palco.innerHTML = '<div class="aviso"><div class="girando"></div>Procurando a carta…</div>';
+  try{
+    const r = await buscarCartas(t);
+    if(minha !== buscaAtual) return;
+    ultimaBusca = { texto:t, ...r };
+  }catch(e){
+    if(minha !== buscaAtual) return;
+    ultimaBusca = null;
+    palco.innerHTML = `<p class="nada">😵‍💫 ${explicarErro(e)}</p>`;
+    return;
+  }
+  desenharBusca();
+};
+function desenharBusca(){
+  const b = ultimaBusca;
+  palco.innerHTML = '';
+  const topo = document.createElement('div'); topo.className = 'ordem';
+  topo.innerHTML = '<button type="button" class="chip" id="sair-busca">✕ Voltar pro álbum</button>';
+  topo.querySelector('#sair-busca').onclick = () => { campo.value = ''; ultimaBusca = null; desenhar(); };
+  palco.appendChild(topo);
+  if(!b.lista.length){
+    palco.insertAdjacentHTML('beforeend', `<p class="nada">🔍 Não achei nenhuma carta com “${escapar(b.texto)}”.<br>Confira o nome (em ${idioma === 'pt' ? 'português' : 'inglês'}) ou use o número do cantinho da carta.</p>`);
+    return;
+  }
+  const info = document.createElement('p'); info.className = 'dica';
+  info.textContent = `${b.total > b.lista.length ? `Mostrando ${b.lista.length} de ${b.total}` : `${b.lista.length} ${b.lista.length === 1 ? 'carta' : 'cartas'}`}. Toque na sua.` +
+    (b.fonte === 'reserva' && idioma === 'en' ? ' (veio do site reserva)' : '');
+  palco.appendChild(info);
+  const g = document.createElement('div'); g.className = 'grade';
+  for(const c of b.lista) g.appendChild(tileCarta(c));
+  palco.appendChild(g);
+}
+
+const cxIdiomas = document.getElementById('idiomas');
+function montarIdiomas(){
+  cxIdiomas.innerHTML = '';
+  for(const i of IDIOMAS){
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = i.nome;
+    b.setAttribute('aria-pressed', String(i.id === idioma));
+    b.onclick = () => { idioma = i.id; gravar('seualbum:idioma', idioma); montarIdiomas(); };
+    cxIdiomas.appendChild(b);
+  }
+}
+
+/* ---------- a folha de uma carta ---------- */
+const fundo = document.getElementById('fundo'), folha = document.getElementById('folha');
+let ultimoFoco = null;
+function abrirFolha(html){
+  if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  folha.innerHTML = `<button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>${html}`;
+  folha.querySelector('.fechar').onclick = fechar;
+  fundo.classList.add('aberto');
+  folha.querySelector('.fechar').focus();
+}
+function fechar(){ fundo.classList.remove('aberto'); desenhar(); if(ultimoFoco && ultimoFoco.focus) ultimoFoco.focus(); }
+fundo.addEventListener('click', ev => { if(ev.target === fundo) fechar(); });
+document.addEventListener('keydown', ev => { if(ev.key === 'Escape' && fundo.classList.contains('aberto')) fechar(); });
+
+function limpaCarta(c){ return { id:c.id, n:c.n, num:c.num, set:c.set, tot:c.tot, img:c.img, r:c.r }; }
+function abrirCarta(c){
+  const tem = minhas[c.id];
+  abrirFolha(`<h2 id="folha-nome"></h2><p class="info" id="info-carta"></p><div class="grande"></div><div id="controles"></div>`);
+  folha.querySelector('#folha-nome').textContent = c.n;
+  folha.querySelector('#info-carta').textContent = [c.set, c.num ? `#${c.num}${c.tot ? '/' + c.tot : ''}` : '', c.r].filter(Boolean).join(' · ');
+  folha.querySelector('.grande').appendChild(fotoCarta(c).firstChild || document.createTextNode(''));
+  const ct = folha.querySelector('#controles');
+  const linha = (titulo, dica, valor, menos, mais) => {
+    const d = document.createElement('div'); d.className = 'contador';
+    d.innerHTML = `<button type="button" aria-label="Menos">−</button><div><b></b><small></small></div><span class="num"></span>`;
+    d.querySelector('b').textContent = titulo; d.querySelector('small').textContent = dica; d.querySelector('.num').textContent = valor;
+    const bm = document.createElement('button'); bm.type = 'button'; bm.textContent = '+'; bm.setAttribute('aria-label', 'Mais');
+    d.append(bm);
+    d.style.gridTemplateColumns = 'auto 1fr auto auto';
+    d.firstChild.onclick = menos; bm.onclick = mais;
+    ct.appendChild(d);
+  };
+  if(tem){
+    linha('🃏 Quantas eu tenho', 'Toque em + quando ganhar outra', tem.qtd,
+      () => { if(tem.qtd <= 1){ if(confirm(`Tirar ${c.n} do álbum?`)){ delete minhas[c.id]; salvar(); abrirCarta(c); } return; }
+              tem.qtd--; tem.troca = Math.min(tem.troca, tem.qtd); salvar(); abrirCarta(c); },
+      () => { tem.qtd++; if(tem.auto !== false) tem.troca = tem.qtd - 1; salvar(); abrirCarta(c); });
+    linha('🔁 Quantas eu troco', 'Vão pro seu código de troca', tem.troca,
+      () => { if(tem.troca > 0){ tem.troca--; tem.auto = false; salvar(); abrirCarta(c); } },
+      () => { if(tem.troca < tem.qtd){ tem.troca++; tem.auto = false; salvar(); abrirCarta(c); } });
+    const p = document.createElement('p'); p.className = 'pequeno';
+    p.textContent = tem.troca >= tem.qtd ? 'Você vai trocar todas as que tem dessa.' : tem.qtd > 1 ? 'As repetidas já vão pra troca sozinhas; mude se quiser guardar mais.' : 'Quando tiver repetida, ela vai pra troca sozinha.';
+    ct.appendChild(p);
+  } else {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'grande-botao principal'; b.textContent = '➕ Tenho essa! Pôr no álbum';
+    b.onclick = () => {
+      minhas[c.id] = { ...limpaCarta(c), qtd:1, troca:0, quando:Date.now() };
+      delete quero[c.id];
+      salvar(); brinde(`📖 ${c.n} entrou no álbum!`); abrirCarta(c);
+    };
+    ct.appendChild(b);
+    const q = document.createElement('button'); q.type = 'button'; q.className = 'grande-botao rosa';
+    q.setAttribute('aria-pressed', String(!!quero[c.id]));
+    q.textContent = quero[c.id] ? '💖 Está na lista de desejos (tocar tira)' : '💖 Quero essa!';
+    q.onclick = () => { if(quero[c.id]) delete quero[c.id]; else quero[c.id] = limpaCarta(c); salvar(); abrirCarta(c); };
+    ct.appendChild(q);
+  }
+}
+
+function brinde(texto){
+  const b = document.createElement('div');
+  b.className = 'brinde'; b.setAttribute('role', 'status'); b.textContent = texto;
+  const ja = document.querySelectorAll('.brinde').length;
+  if(ja) b.style.top = (14 + ja * 64) + 'px';
+  document.body.appendChild(b);
+  setTimeout(() => b.remove(), 3000);
+}
+
+/* ---------- 🤝 trocar ----------
+   O código leva SÓ cartas: as que você troca e as que você quer. Nada de
+   nome, nada de lugar. Colar o do amigo só mostra; não mexe no seu álbum. */
+function paraBase64(txt){ return btoa(Array.from(new TextEncoder().encode(txt), c => String.fromCharCode(c)).join('')); }
+function deBase64(b){ return new TextDecoder().decode(Uint8Array.from(atob(b), c => c.charCodeAt(0))); }
+const PREFIXO_TROCA = 'TROCA1.';
+function codigoDeTroca(){
+  const t = Object.values(minhas).filter(c => c.troca > 0).map(c => ({ ...limpaCarta(c), q:c.troca }));
+  const q = Object.values(quero).map(limpaCarta);
+  return PREFIXO_TROCA + paraBase64(JSON.stringify({ t, q }));
+}
+function cartaSegura(c){
+  if(!c || typeof c !== 'object' || typeof c.id !== 'string') return null;
+  const img = typeof c.img === 'string' && /^https:\/\/(images\.pokemontcg\.io|assets\.tcgdex\.net)\//.test(c.img) ? c.img : '';
+  return { id:c.id.slice(0, 80), n:String(c.n || '?').slice(0, 60), num:String(c.num || '').slice(0, 12), set:String(c.set || '').slice(0, 60),
+           tot:+c.tot || null, img, r:String(c.r || '').slice(0, 40), q:Math.max(1, Math.min(99, +c.q || 1)) };
+}
+function lerCodigoTroca(txt){
+  txt = String(txt || '').trim().replace(/\s+/g, '');
+  if(!txt) throw new Error('Cole o código do seu amigo aqui em cima.');
+  if(txt.startsWith(PREFIXO_CONTA)) throw new Error('Esse é um código de GUARDAR (o 💾), não de trocar. Peça o código do 🤝 pro seu amigo.');
+  if(!txt.startsWith(PREFIXO_TROCA)) throw new Error('Esse código não é do Seu Álbum Pokémon. Ele começa com "TROCA1."');
+  let d;
+  try{ d = JSON.parse(deBase64(txt.slice(PREFIXO_TROCA.length))); }
+  catch(e){ throw new Error('O código veio cortado ou com alguma letra errada. Peça pra copiar de novo, inteiro.'); }
+  return { t:(Array.isArray(d.t) ? d.t : []).map(cartaSegura).filter(Boolean), q:(Array.isArray(d.q) ? d.q : []).map(cartaSegura).filter(Boolean) };
+}
+function abrirTrocar(){
+  abrirFolha(`<h2 id="folha-nome">🤝 Trocar com amigo</h2>
+    <div class="cuidado">🛡️ <b>Troque só com quem você conhece</b> (da escola, do bairro, da família), e com um adulto sabendo.
+      O código tem só as cartas: <b>não tem seu nome nem onde você mora</b>.</div>
+    <div class="bloco"><h3>1. Meu código de troca</h3>
+      <p class="pequeno" id="resumo-meu"></p>
+      <textarea id="meu-codigo" readonly></textarea>
+      <button type="button" class="grande-botao principal" id="copiar">📋 Copiar meu código</button></div>
+    <div class="bloco"><h3>2. Código do amigo</h3>
+      <textarea id="codigo-amigo" placeholder="Cole aqui o código que o amigo mandou"></textarea>
+      <button type="button" class="grande-botao" id="comparar">🔍 Ver o que dá pra trocar</button>
+      <p class="erro" id="erro-troca" hidden></p><div id="res-troca"></div></div>`);
+  const nT = Object.values(minhas).reduce((s, c) => s + (c.troca || 0), 0), nQ = Object.keys(quero).length;
+  folha.querySelector('#resumo-meu').textContent = `Vai junto: ${nT} ${nT === 1 ? 'carta' : 'cartas'} pra trocar e ${nQ} que você quer.` +
+    (!nT && !nQ ? ' Marque repetidas ou desejos antes!' : '');
+  const meu = folha.querySelector('#meu-codigo');
+  meu.value = codigoDeTroca();
+  folha.querySelector('#copiar').onclick = async ev => {
+    const b = ev.currentTarget;
+    try{ await navigator.clipboard.writeText(meu.value); b.textContent = '✅ Copiado! Agora manda pro seu amigo'; }
+    catch(e){ meu.select(); b.textContent = 'Selecionei: segure em cima e copie'; }
+  };
+  folha.querySelector('#comparar').onclick = () => {
+    const erro = folha.querySelector('#erro-troca'), res = folha.querySelector('#res-troca');
+    erro.hidden = true; res.innerHTML = '';
+    let a;
+    try{ a = lerCodigoTroca(folha.querySelector('#codigo-amigo').value); }
+    catch(e){ erro.textContent = e.message; erro.hidden = false; return; }
+    const ganho = a.t.filter(c => quero[c.id]);
+    const dou = Object.values(minhas).filter(c => c.troca > 0 && a.q.some(x => x.id === c.id));
+    const outras = a.t.filter(c => !quero[c.id] && !minhas[c.id]);
+    const grupo = (cls, titulo, lista, selo, vazio) => {
+      const d = document.createElement('div'); d.className = 'bate ' + cls;
+      d.innerHTML = '<h4></h4>';
+      d.querySelector('h4').textContent = `${titulo} (${lista.length})`;
+      if(!lista.length){ const p = document.createElement('p'); p.className = 'pequeno'; p.textContent = vazio; d.appendChild(p); }
+      else {
+        const g = document.createElement('div'); g.className = 'grade';
+        for(const c of lista) g.appendChild(tileCarta(c, { selo:selo(c), semDestaque:true, clique:() => {} }));
+        d.appendChild(g);
+      }
+      res.appendChild(d);
+    };
+    grupo('ganha', '🎁 Ele pode te dar (você quer!)', ganho, c => ['🔁' + c.q, 'troca'], 'Nenhuma das que você quer está na troca dele.');
+    grupo('da', '📦 Você pode dar (ele quer!)', dou, c => ['🔁' + c.troca, 'troca'], 'Ele não quer nenhuma das suas repetidas.');
+    grupo('outras', '👀 Outras que ele troca (e você não tem)', outras, c => ['🔁' + c.q, 'troca'], 'Nada novo pra você na troca dele.');
+    if(ganho.length && dou.length){
+      const p = document.createElement('p'); p.className = 'cuidado';
+      p.innerHTML = '🤝 <b>Dá troca!</b> Combinem pessoalmente e troquem as cartas na mão. Depois é só mexer nas quantidades aqui.';
+      res.prepend(p);
+    }
+  };
+}
+document.getElementById('abrir-trocar').onclick = abrirTrocar;
+
+/* ---------- 💾 guardar / levar pra outro aparelho ----------
+   Tudo num código só. Colar junta com o que já tem, nunca apaga. */
+const PREFIXO_CONTA = 'ALBUMCONTA1.';
+function abrirGuardar(){
+  abrirFolha(`<h2 id="folha-nome">💾 Guardar o álbum</h2>
+    <p class="pequeno" style="text-align:center">O álbum fica neste aparelho. Pra não perder, ou pra levar pra outro, use este código.</p>
+    <div class="bloco"><h3>🔑 Meu código de guardar</h3>
+      <p class="pequeno">Mande pra você mesmo no zap. <b>Não precisa dar pros outros</b>: pra trocar, use o 🤝.</p>
+      <textarea id="codigo-conta" readonly></textarea>
+      <button type="button" class="grande-botao principal" id="copiar-conta">📋 Copiar</button></div>
+    <div class="bloco"><h3>📥 Trazer de outro aparelho</h3>
+      <p class="pequeno">O que vier se junta ao que já tem aqui. Nada é apagado.</p>
+      <textarea id="colar-conta" placeholder="Cole o código aqui…"></textarea>
+      <button type="button" class="grande-botao" id="trazer">📥 Trazer pra cá</button>
+      <p class="pequeno" id="recado-conta"></p></div>`);
+  const area = folha.querySelector('#codigo-conta');
+  area.value = PREFIXO_CONTA + paraBase64(JSON.stringify({ minhas, quero }));
+  folha.querySelector('#copiar-conta').onclick = async ev => {
+    const b = ev.currentTarget;
+    try{ await navigator.clipboard.writeText(area.value); b.textContent = '✅ Copiado!'; }
+    catch(e){ area.select(); b.textContent = 'Selecionei: segure em cima e copie'; }
+  };
+  folha.querySelector('#trazer').onclick = () => {
+    const recado = folha.querySelector('#recado-conta');
+    const txt = folha.querySelector('#colar-conta').value.trim().replace(/\s+/g, '');
+    if(txt.startsWith(PREFIXO_TROCA)){ recado.textContent = '❌ Esse é um código de TROCA. Pra ver a troca, use o 🤝.'; return; }
+    if(!txt.startsWith(PREFIXO_CONTA)){ recado.textContent = '❌ Esse código não é de guardar do Seu Álbum. Ele começa com "ALBUMCONTA1."'; return; }
+    let d;
+    try{ d = JSON.parse(deBase64(txt.slice(PREFIXO_CONTA.length))); }
+    catch(e){ recado.textContent = '❌ O código veio cortado. Copie de novo, inteiro.'; return; }
+    let novas = 0;
+    for(const c of Object.values((d && d.minhas) || {})){
+      const s = cartaSegura(c); if(!s) continue;
+      const qtd = Math.max(1, Math.min(999, +c.qtd || 1)), troca = Math.max(0, Math.min(qtd, +c.troca || 0));
+      if(minhas[s.id]){ minhas[s.id].qtd = Math.max(minhas[s.id].qtd, qtd); minhas[s.id].troca = Math.min(minhas[s.id].qtd, Math.max(minhas[s.id].troca, troca)); }
+      else { delete s.q; minhas[s.id] = { ...s, qtd, troca, quando:+c.quando || Date.now() }; novas++; }
+      delete quero[s.id];   // já tem, então não "quer" mais
+    }
+    for(const c of Object.values((d && d.quero) || {})){ const s = cartaSegura(c); if(s && !minhas[s.id]){ delete s.q; quero[s.id] = s; } }
+    salvar(); abrirGuardar();
+    folha.querySelector('#recado-conta').textContent = '✅ Pronto! ' + (novas ? (novas === 1 ? 'Chegou 1 carta nova.' : `Chegaram ${novas} cartas novas.`) : 'Nenhuma carta nova: você já tinha todas.');
+  };
+}
+document.getElementById('abrir-guardar').onclick = abrirGuardar;
+
+/* ---------- claro / escuro ---------- */
+const btTema = document.getElementById('tema');
+const corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function aplicarTema(t){
+  if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema');
+  btTema.textContent = estaEscuro() ? '☀️' : '🌙';
+  if(corDaBarra) corDaBarra.setAttribute('content', estaEscuro() ? '#17120e' : '#d63a3a');
+}
+aplicarTema(ler('seualbum:tema', null));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => aplicarTema(document.documentElement.getAttribute('data-tema')));
+btTema.onclick = () => { const n = estaEscuro() ? 'claro' : 'escuro'; gravar('seualbum:tema', n); aplicarTema(n); };
+
+/* ---------- "não atualizou o site" (a mesma saída de emergência dos outros) ---------- */
+const btRecarregar = document.getElementById('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{ if(window.caches){ const n = await caches.keys(); await Promise.all(n.map(x => caches.delete(x))); } }catch(e){}
+  try{ if(navigator.serviceWorker){ const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(x => x.update().catch(() => {}))); } }catch(e){}
+  const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+};
+try{ if(new URL(location.href).searchParams.has('v')){ const l = new URL(location.href); l.searchParams.delete('v'); history.replaceState(null, '', l.pathname + l.search + l.hash); } }catch(e){}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(!jaTinha || document.querySelector('.faixa-nova')) return;
+    const f = document.createElement('div'); f.className = 'faixa-nova';
+    f.innerHTML = '<span>✨ Chegou versão nova do Seu Álbum!</span><button type="button">Carregar</button>';
+    f.querySelector('button').onclick = () => location.reload();
+    document.body.appendChild(f);
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); }).catch(() => {});
+  });
+}
+
+montarIdiomas();
+placar();
+desenhar();
+</script>
+</body>
+</html>

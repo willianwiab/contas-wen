@@ -1,0 +1,14 @@
+{
+  "name": "Seu Álbum Pokémon",
+  "short_name": "Seu Álbum",
+  "description": "O álbum das suas cartas Pokémon: quantas você tem, as repetidas pra trocar e as que você quer.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff4e6",
+  "theme_color": "#d63a3a",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
