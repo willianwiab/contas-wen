@@ -84,6 +84,24 @@ footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.82r
 .versao{display:inline-block;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;padding:6px 14px;font:inherit;font-size:.78rem;font-weight:600;margin-top:4px;color:var(--tinta);cursor:pointer}
 .faixa-nova{position:fixed;left:10px;right:10px;bottom:10px;z-index:50;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--marca-escura);color:#fff;border-radius:16px;padding:12px 15px;font-weight:600}
 .faixa-nova button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 16px;background:#fff;color:var(--marca-escura);cursor:pointer;margin-left:auto}
+.direcao{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.direcao button,.navega button,.tamanhos button,.efeitos button{font:inherit;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:14px}
+.direcao button{font-weight:800;padding:11px 6px}
+.direcao button[aria-pressed="true"],.tamanhos button[aria-pressed="true"],.efeitos button[aria-pressed="true"]{border-color:var(--marca);background:var(--creme3);box-shadow:inset 0 0 0 2px var(--marca)}
+.placar{margin-top:10px;text-align:center;background:var(--cartao2);border:2px dashed var(--borda);border-radius:16px;padding:10px}
+.placar b{display:block;font-family:'Baloo 2',cursive;font-size:1.5rem;color:var(--marca);line-height:1.1}
+.placar span{font-size:.92rem;color:var(--tinta-fraca)}
+.cartao h3{font-size:.95rem;margin:14px 0 8px}
+.efeitos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.efeitos button{padding:8px 4px;font-size:.8rem;font-weight:600;line-height:1.2;overflow-wrap:anywhere}
+.efeitos button i{display:block;font-style:normal;font-size:1.6rem;margin-bottom:2px}
+.tamanhos{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.tamanhos button{padding:8px 2px;font-size:.74rem;font-weight:700;line-height:1.2}
+.tamanhos button i{display:block;font-style:normal;font-size:1.4rem}
+.navega{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px}
+.navega button{font-weight:700;padding:10px 4px;font-size:.88rem}
+details.ajuda summary{cursor:pointer;font-family:'Baloo 2',cursive;font-size:1.25rem;font-weight:800}
+details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 </style>
 </head>
 <body>
@@ -92,25 +110,56 @@ footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.82r
     <h1 class="logo"><img src="icone-limpo.svg" alt="" /><span>Fala ao <span class="p">Contrário</span></span></h1>
     <button class="botao-redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
   </header>
-  <p class="sub">Aperte o botão vermelho, fale alguma coisa e depois toque em <b>🔁 Ao contrário</b> pra ouvir de trás pra frente! 🙃</p>
+  <p class="sub">Aperte o botão vermelho, fale alguma coisa e ouça a sua voz <b>de trás pra frente</b>, com <b>100 vozes</b> diferentes! 🙃</p>
 
   <section class="palco">
     <button class="gravar" id="gravar" type="button"><span>🎙️</span><em id="gravar-txt" style="font-style:normal">Gravar</em></button>
     <p class="tempo" id="tempo" aria-live="polite"></p>
     <canvas id="onda" width="1000" height="180" aria-label="Desenho da sua voz" hidden></canvas>
+    <div class="direcao" role="group" aria-label="Direção">
+      <button type="button" id="dir-contrario" aria-pressed="true">🔁 Ao contrário</button>
+      <button type="button" id="dir-frente" aria-pressed="false">▶️ Pra frente</button>
+    </div>
     <div class="botoes">
-      <button type="button" class="grande" id="contrario" disabled>🔁 Ao contrário</button>
-      <button type="button" id="normal" disabled>▶️ Normal</button>
-      <button type="button" id="esquilo" disabled>🐿️ Esquilo ao contrário</button>
-      <button type="button" id="monstro" disabled>👹 Monstro ao contrário</button>
+      <button type="button" id="tocar" disabled>🔊 Tocar de novo</button>
       <button type="button" id="baixar" disabled>💾 Baixar</button>
     </div>
     <p class="recado" id="recado" aria-live="polite"></p>
   </section>
 
+  <section class="cartao" id="vozes">
+    <h2>🎭 100 vozes</h2>
+    <p class="recado" style="margin-top:4px">Escolha um <b>jeito</b> e um <b>tamanho</b>: 20 jeitos × 5 tamanhos = <b>100 vozes</b>! Tocou, já toca.</p>
+    <div class="placar"><b id="voz-num">Voz 1 de 100</b><span id="voz-nome"></span></div>
+    <h3>Jeito</h3>
+    <div class="efeitos" id="efeitos"></div>
+    <h3>Tamanho</h3>
+    <div class="tamanhos" id="tamanhos"></div>
+    <div class="navega">
+      <button type="button" id="ant">⬅️ Anterior</button>
+      <button type="button" id="sorte">🎲 Surpresa</button>
+      <button type="button" id="prox">Próxima ➡️</button>
+    </div>
+  </section>
+
+  <section class="cartao">
+    <details class="ajuda" id="ajuda">
+      <summary>😕 Não deu certo?</summary>
+      <ul>
+        <li>Quando o celular perguntar do microfone, aperte <b>“Permitir”</b>. Se apertou “Bloquear”, toque no cadeado 🔒 perto do endereço do site e libere o microfone.</li>
+        <li>Aumente o <b>volume</b> do celular.</li>
+        <li>Abra o site no <b>Chrome</b> ou no <b>Safari</b>, e não dentro de outro app (tipo WhatsApp ou YouTube).</li>
+        <li>Fale <b>pertinho</b> do celular e grave pelo menos 1 segundo.</li>
+        <li>Toque no botão da <b>versão</b> lá embaixo pra pegar o site mais novo.</li>
+      </ul>
+      <div style="text-align:center"><button type="button" class="mini" id="testar-som">🔊 Testar o som</button></div>
+      <p class="recado" style="text-align:center">Se tocar uma musiquinha, o som do celular está funcionando.</p>
+    </details>
+  </section>
+
   <section class="cartao">
     <h2>🏆 Desafio do ao contrário</h2>
-    <p class="recado" style="margin-top:4px">Grave falando a palavra <b>ao contrário</b> e depois toque em 🔁. Se você falou direitinho, sai a palavra certa!</p>
+    <p class="recado" style="margin-top:4px">Grave falando a palavra <b>ao contrário</b> e depois ouça com 🔁 Ao contrário ligado. Se você falou direitinho, sai a palavra certa!</p>
     <div class="palavra"><small>A palavra é</small><b id="p-certa"></b></div>
     <div class="palavra"><small>Então fale assim</small><b class="ao" id="p-ao"></b></div>
     <div style="text-align:center"><button type="button" class="mini" id="outra">🎲 Outra palavra</button></div>
@@ -122,6 +171,7 @@ footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.82r
       <li>O site grava a sua voz (o celular vai pedir permissão pro microfone).</li>
       <li>A gravação vira um monte de numerozinhos, um atrás do outro.</li>
       <li>O site vira essa fila de números de trás pra frente e toca: a sua voz sai ao contrário!</li>
+      <li>Pras 100 vozes, o site mexe nos números: pula alguns (esquilo), repete (monstro), mistura com ecos (caverna) ou com uma ondinha (robô).</li>
     </ol>
   </section>
 
@@ -129,7 +179,7 @@ footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.82r
 
   <footer>
     Fala ao Contrário · feito pra brincar 🙃
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 26/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 26/09 · 🔄</button>
   </footer>
 </div>
 
@@ -137,17 +187,23 @@ footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.82r
 'use strict';
 /* =========================================================================
    Fala ao Contrário — grava a voz e toca de trás pra frente.
-   A gravação é do MediaRecorder; o Web Audio transforma em números
-   (decodeAudioData) e a gente só inverte a fila. Nada sai do aparelho.
+   O microfone manda os números direto (ScriptProcessor), a gente inverte
+   a fila e passa pelos efeitos das 100 vozes. Nada sai do aparelho.
    ========================================================================= */
 const LIMITE_S = 12;   // grava no máximo 12 segundos
 const btGravar = document.getElementById('gravar'), txtGravar = document.getElementById('gravar-txt');
 const tempo = document.getElementById('tempo'), recado = document.getElementById('recado');
 const tela = document.getElementById('onda');
-const botoes = ['contrario', 'normal', 'esquilo', 'monstro', 'baixar'].map(id => document.getElementById(id));
+const btTocar = document.getElementById('tocar'), btBaixar = document.getElementById('baixar');
 
-let ctx = null, gravador = null, pedacos = [], relogio = 0, inicio = 0;
-let normal = null, invertido = null, tocando = null;
+/* O som sai por um <audio> (e não direto pelo Web Audio): assim toca mesmo com
+   o iPhone no silencioso e sai no alto-falante, não no fone de ligação. */
+const player = new Audio();
+let urlSom = null;
+
+let ctx = null, stream = null, fonte = null, proc = null, pedacos = [];
+let gravando = false, pedindo = false, relogio = 0, inicio = 0;
+let voz = null, taxa = 44100, ultimo = null;
 
 function avisar(t, erro){ recado.textContent = t; recado.classList.toggle('erro', !!erro); }
 function audio(){
@@ -155,36 +211,50 @@ function audio(){
   if(ctx.state === 'suspended') ctx.resume();   // tem que ser no toque, por causa do iPhone
   return ctx;
 }
+function tocarWav(blob){
+  if(urlSom) URL.revokeObjectURL(urlSom);
+  urlSom = URL.createObjectURL(blob);
+  player.pause(); player.src = urlSom;
+  const p = player.play();
+  if(p && p.catch) p.catch(() => avisar('Toque em 🔊 Tocar de novo pra ouvir.'));
+}
+function pararSom(){ try{ player.pause(); }catch(e){} }
+/* No toque do dedo, "destrava" o player com um silêncio, pro iPhone deixar tocar depois. */
+function destravar(){ try{ player.src = URL.createObjectURL(paraWav(new Float32Array(400), 8000)); const p = player.play(); if(p && p.catch) p.catch(() => {}); }catch(e){} }
 
-/* ---------- gravar ---------- */
-btGravar.onclick = () => gravador && gravador.state === 'recording' ? parar() : comecar();
+/* ---------- gravar (pega os números do microfone direto, sem MediaRecorder) ---------- */
+btGravar.onclick = () => gravando ? parar() : comecar();
 async function comecar(){
+  if(pedindo) return;
   avisar('');
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder){
-    avisar('Este navegador não deixa gravar. Tente no Chrome ou no Safari atualizado.', true); return;
+  if(!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !(window.AudioContext || window.webkitAudioContext)){
+    avisar('Este navegador não deixa gravar. Abra o site no Chrome ou no Safari (não dentro de outro app).', true); return;
   }
-  audio();
-  let stream;
-  try{ stream = await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true } }); }
+  const c = audio();
+  destravar();
+  pedindo = true;
+  try{ stream = await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true } }); }
   catch(e){
-    avisar(e && e.name === 'NotAllowedError'
-      ? '🎙️ O microfone está bloqueado. Toque no cadeado perto do endereço do site e deixe usar o microfone.'
-      : 'Não achei o microfone. Veja se o celular tem um e se nenhum outro app está usando.', true);
+    pedindo = false;
+    avisar(e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')
+      ? '🎙️ O microfone está bloqueado. Toque no cadeado 🔒 perto do endereço do site e deixe usar o microfone.'
+      : 'Não achei o microfone. Veja se nenhum outro app está usando ele.', true);
+    document.getElementById('ajuda').open = true;
     return;
   }
-  pararTudo();
-  pedacos = [];
-  try{ gravador = new MediaRecorder(stream); }
-  catch(e){ avisar('Não deu pra começar a gravar.', true); stream.getTracks().forEach(t => t.stop()); return; }
-  gravador.ondataavailable = ev => { if(ev.data && ev.data.size) pedacos.push(ev.data); };
-  gravador.onstop = async () => {
-    stream.getTracks().forEach(t => t.stop());   // desliga o microfone
-    await preparar(new Blob(pedacos, { type:gravador.mimeType || 'audio/webm' }));
-  };
-  gravador.start();
-  inicio = Date.now();
+  pedindo = false;
+  if(c.state === 'suspended'){ try{ await c.resume(); }catch(e){} }
+  pararSom();
+  pedacos = []; taxa = c.sampleRate;
+  fonte = c.createMediaStreamSource(stream);
+  proc = c.createScriptProcessor(4096, 1, 1);
+  const mudo = c.createGain(); mudo.gain.value = 0;   // precisa ligar na saída pra funcionar, mas sem som
+  proc.onaudioprocess = ev => { if(gravando) pedacos.push(new Float32Array(ev.inputBuffer.getChannelData(0))); };
+  fonte.connect(proc); proc.connect(mudo); mudo.connect(c.destination);
+  gravando = true; inicio = Date.now();
   btGravar.classList.add('gravando'); txtGravar.textContent = 'Parar';
   btGravar.querySelector('span').textContent = '⏹️';
+  tempo.textContent = '🔴 Gravando… 0.0s';
   relogio = setInterval(() => {
     const s = (Date.now() - inicio) / 1000;
     tempo.textContent = `🔴 Gravando… ${s.toFixed(1)}s`;
@@ -192,37 +262,186 @@ async function comecar(){
   }, 100);
 }
 function parar(){
-  clearInterval(relogio);
+  gravando = false; clearInterval(relogio);
   btGravar.classList.remove('gravando'); txtGravar.textContent = 'Gravar de novo';
   btGravar.querySelector('span').textContent = '🎙️';
-  if(gravador && gravador.state === 'recording') gravador.stop();
+  try{ fonte.disconnect(); proc.disconnect(); }catch(e){}
+  if(stream) stream.getTracks().forEach(t => t.stop());   // desliga o microfone
+  stream = null;
+  let n = 0; pedacos.forEach(p => n += p.length);
+  const tudo = new Float32Array(n); let o = 0;
+  pedacos.forEach(p => { tudo.set(p, o); o += p.length; }); pedacos = [];
+  let pico = 0; for(let i = 0; i < n; i++){ const a = Math.abs(tudo[i]); if(a > pico) pico = a; }
+  if(n < taxa * 0.3){ tempo.textContent = ''; avisar('Ficou curtinho demais! Segure um pouquinho mais antes de parar.', true); return; }
+  if(pico < 0.002){ tempo.textContent = ''; avisar('O microfone não mandou som nenhum. Veja se ele não está no mudo e fale pertinho.', true); document.getElementById('ajuda').open = true; return; }
+  voz = aparar(tudo, taxa, pico);
+  tempo.textContent = `✅ Gravou ${(voz.length / taxa).toFixed(1)} segundos!`;
+  btTocar.disabled = btBaixar.disabled = false;
+  tocarEscolha();
 }
 
-/* ---------- virar ao contrário ---------- */
-async function preparar(blob){
-  tempo.textContent = '⏳ Preparando…';
-  try{
-    const dados = await blob.arrayBuffer();
-    normal = await new Promise((ok, erro) => {
-      const p = audio().decodeAudioData(dados, ok, erro);
-      if(p && p.then) p.then(ok, erro);
-    });
-  }catch(e){ tempo.textContent = ''; avisar('Não consegui entender a gravação. Tente gravar de novo.', true); return; }
-  invertido = ctx.createBuffer(normal.numberOfChannels, normal.length, normal.sampleRate);
-  for(let c = 0; c < normal.numberOfChannels; c++){
-    const origem = normal.getChannelData(c), destino = invertido.getChannelData(c);
-    for(let i = 0, n = origem.length; i < n; i++) destino[i] = origem[n - 1 - i];
-  }
-  tempo.textContent = `✅ Gravou ${normal.duration.toFixed(1)} segundos!`;
-  botoes.forEach(b => b.disabled = false);
-  desenharOnda(invertido);
-  tocar(invertido, 1);   // toca ao contrário na hora: é a graça
+/* ---------- a mágica: mexer nos números ---------- */
+function aparar(x, sr, pico){   // tira o silêncio do começo e do fim
+  const lim = Math.max(0.01, pico * 0.06);
+  let a = 0, b = x.length - 1;
+  while(a < b && Math.abs(x[a]) < lim) a++;
+  while(b > a && Math.abs(x[b]) < lim) b--;
+  return x.slice(Math.max(0, a - Math.floor(sr * .08)), Math.min(x.length, b + Math.floor(sr * .15)));
 }
+function inverter(x){ const n = x.length, y = new Float32Array(n); for(let i = 0; i < n; i++) y[i] = x[n - 1 - i]; return y; }
+function velocidade(x, r){   // mais rápido = mais fino; mais devagar = mais grosso
+  const n = Math.floor(x.length / r), y = new Float32Array(n);
+  for(let i = 0; i < n; i++){ const p = i * r, a = p | 0, f = p - a; y[i] = x[a] * (1 - f) + (x[a + 1] || 0) * f; }
+  return y;
+}
+function comCauda(x, s, sr){ const y = new Float32Array(x.length + Math.floor(s * sr)); y.set(x); return y; }
+function filtro(x, sr, tipo, f, q){
+  q = q || 0.707;
+  const w = 2 * Math.PI * f / sr, cs = Math.cos(w), al = Math.sin(w) / (2 * q);
+  let b0, b1, b2;
+  if(tipo === 'baixo'){ b0 = (1 - cs) / 2; b1 = 1 - cs; b2 = b0; }
+  else if(tipo === 'alto'){ b0 = (1 + cs) / 2; b1 = -(1 + cs); b2 = b0; }
+  else { b0 = al; b1 = 0; b2 = -al; }
+  const a0 = 1 + al, a1 = -2 * cs / a0, a2 = (1 - al) / a0;
+  b0 /= a0; b1 /= a0; b2 /= a0;
+  const y = new Float32Array(x.length);
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  for(let i = 0; i < x.length; i++){
+    const v = b0 * x[i] + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
+    x2 = x1; x1 = x[i]; y2 = y1; y1 = v; y[i] = v;
+  }
+  return y;
+}
+function anel(x, sr, f, mix){ const y = new Float32Array(x.length), k = 2 * Math.PI * f / sr; for(let i = 0; i < x.length; i++) y[i] = x[i] * (1 - mix + mix * Math.sin(k * i)); return y; }
+function tremolo(x, sr, f, d){ const y = new Float32Array(x.length), k = 2 * Math.PI * f / sr; for(let i = 0; i < x.length; i++) y[i] = x[i] * (1 - d / 2 + d / 2 * Math.sin(k * i)); return y; }
+function distorcer(x, k){ const y = new Float32Array(x.length), t = Math.tanh(k); for(let i = 0; i < x.length; i++) y[i] = Math.tanh(k * x[i]) / t; return y; }
+function pixel(x, bits, segura){ const y = new Float32Array(x.length), q = Math.pow(2, bits - 1); let v = 0; for(let i = 0; i < x.length; i++){ if(i % segura === 0) v = Math.round(x[i] * q) / q; y[i] = v; } return y; }
+function ruido(x, a){ const y = new Float32Array(x.length); for(let i = 0; i < x.length; i++) y[i] = x[i] + (Math.random() * 2 - 1) * a; return y; }
+function eco(x, sr, s, fb){
+  const y = comCauda(x, Math.min(2.5, s * 7), sr), D = Math.floor(s * sr);
+  for(let i = D; i < y.length; i++) y[i] += y[i - D] * fb;
+  return y;
+}
+function reverb(x, sr, tam, mix, fb){   // um monte de ecos curtinhos misturados = sala grande
+  fb = fb || 0.84;
+  const y = comCauda(x, Math.min(3, tam * 1.6), sr), k = sr / 44100 * tam, mol = new Float32Array(y.length);
+  for(const d of [1557, 1617, 1491, 1422, 1277, 1356]){
+    const D = Math.max(1, Math.floor(d * k)), buf = new Float32Array(D); let j = 0, lp = 0;
+    for(let i = 0; i < y.length; i++){ const s = buf[j]; lp = s * 0.8 + lp * 0.2; buf[j] = y[i] + lp * fb; mol[i] += s / 6; if(++j === D) j = 0; }
+  }
+  for(const d of [225, 556, 441]){
+    const D = Math.max(1, Math.floor(d * sr / 44100)), buf = new Float32Array(D); let j = 0;
+    for(let i = 0; i < y.length; i++){ const b = buf[j], e = mol[i]; mol[i] = -e + b; buf[j] = e + b * 0.5; if(++j === D) j = 0; }
+  }
+  for(let i = 0; i < y.length; i++) y[i] = y[i] * (1 - mix) + mol[i] * mix * 3;
+  return y;
+}
+function balanco(x, sr, baseMs, profMs, hz, mix, fb, fase){   // atraso que vai e volta: vibrato, coral, nave
+  const y = new Float32Array(x.length), z = new Float32Array(x.length), k = 2 * Math.PI * hz / sr;
+  fb = fb || 0; fase = fase || 0;
+  for(let i = 0; i < x.length; i++){
+    const p = i - (baseMs + profMs * Math.sin(k * i + fase)) * sr / 1000, a = Math.floor(p), f = p - a;
+    const w = a >= 0 ? z[a] * (1 - f) + z[a + 1] * f : 0;
+    z[i] = x[i] + fb * w; y[i] = x[i] * (1 - mix) + w * mix;
+  }
+  return y;
+}
+function soma(...partes){ const n = Math.max(...partes.map(p => p.length)), y = new Float32Array(n); partes.forEach(p => { for(let i = 0; i < p.length; i++) y[i] += p[i]; }); return y; }
+function normalizar(x){
+  let pico = 0; for(let i = 0; i < x.length; i++){ const a = Math.abs(x[i]); if(a > pico) pico = a; }
+  if(pico > 1e-4){ const g = 0.9 / pico; for(let i = 0; i < x.length; i++) x[i] *= g; }
+  return x;
+}
+
+/* ---------- as 100 vozes: 20 jeitos × 5 tamanhos ---------- */
+const JEITOS = [
+  { e:'🎤', n:'Voz pura',          f:(x) => x },
+  { e:'🤖', n:'Robô',              f:(x, sr) => anel(pixel(x, 8, 2), sr, 50, 1) },
+  { e:'🏔️', n:'Eco da montanha',  f:(x, sr) => eco(x, sr, .28, .5) },
+  { e:'🦇', n:'Caverna',           f:(x, sr) => reverb(x, sr, 1.2, .5) },
+  { e:'⛪', n:'Igreja gigante',    f:(x, sr) => reverb(x, sr, 2.2, .65, .9) },
+  { e:'☎️', n:'Telefone',         f:(x, sr) => distorcer(filtro(filtro(x, sr, 'alto', 500), sr, 'baixo', 3000), 2) },
+  { e:'📻', n:'Rádio velho',       f:(x, sr) => ruido(distorcer(filtro(x, sr, 'banda', 1200, .8), 3), .03) },
+  { e:'🐠', n:'Debaixo d’água',    f:(x, sr) => balanco(filtro(x, sr, 'baixo', 450), sr, 8, 3, 4, 1) },
+  { e:'👻', n:'Fantasma',          f:(x, sr) => reverb(tremolo(filtro(x, sr, 'alto', 300), sr, 3, .6), sr, 1.8, .6) },
+  { e:'👽', n:'Alienígena',        f:(x, sr) => balanco(anel(x, sr, 400, .8), sr, 3, 2, .4, .5, .6) },
+  { e:'🥶', n:'Tremendo de frio',  f:(x, sr) => tremolo(balanco(x, sr, 6, 2.5, 9, 1), sr, 9, .6) },
+  { e:'📢', n:'Megafone',          f:(x, sr) => distorcer(filtro(x, sr, 'banda', 1500, 1), 8) },
+  { e:'🎮', n:'Videogame',         f:(x) => pixel(x, 4, 6) },
+  { e:'👯', n:'Coral de clones',   f:(x, sr) => soma(x, balanco(x, sr, 22, 6, .7, 1), balanco(x, sr, 30, 8, 1.1, 1, 0, 2), balanco(x, sr, 38, 7, 1.6, 1, 0, 4)) },
+  { e:'🎵', n:'Cantor de ópera',   f:(x, sr) => reverb(balanco(x, sr, 5, 2.5, 6, 1), sr, 1, .3) },
+  { e:'📡', n:'Walkie-talkie',     f:(x, sr) => ruido(distorcer(filtro(filtro(x, sr, 'alto', 800), sr, 'baixo', 2600), 10), .04) },
+  { e:'🐉', n:'Dragão',            f:(x, sr) => reverb(filtro(distorcer(x, 6), sr, 'baixo', 1200), sr, .8, .3) },
+  { e:'🌀', n:'Falando no ventilador', f:(x, sr) => tremolo(x, sr, 18, 1) },
+  { e:'🚀', n:'Nave espacial',     f:(x, sr) => reverb(balanco(x, sr, 3, 2, .3, .6, .7), sr, .7, .25) },
+  { e:'🏟️', n:'Estádio',          f:(x, sr) => reverb(eco(x, sr, .12, .35), sr, 1.5, .4) },
+];
+const TAMANHOS = [
+  { e:'🙂', n:'Normal',  r:1 },
+  { e:'👶', n:'Bebê',    r:1.3 },
+  { e:'🐿️', n:'Esquilo', r:1.8 },
+  { e:'🧔', n:'Grandão', r:.8 },
+  { e:'👹', n:'Monstro', r:.6 },
+];
+let escolha = ler('aocontrario:voz', null);
+if(!escolha || !(escolha.j >= 0 && escolha.j < JEITOS.length) || !(escolha.t >= 0 && escolha.t < TAMANHOS.length)) escolha = { j:0, t:0, c:true };
+escolha.c = escolha.c !== false;
+
+const caixaJeitos = document.getElementById('efeitos'), caixaTamanhos = document.getElementById('tamanhos');
+JEITOS.forEach((J, i) => {
+  const b = document.createElement('button'); b.type = 'button';
+  b.innerHTML = `<i>${J.e}</i>${J.n}`;
+  b.onclick = () => { escolha.j = i; tocarEscolha(); };
+  caixaJeitos.appendChild(b);
+});
+TAMANHOS.forEach((T, i) => {
+  const b = document.createElement('button'); b.type = 'button';
+  b.innerHTML = `<i>${T.e}</i>${T.n}`;
+  b.onclick = () => { escolha.t = i; tocarEscolha(); };
+  caixaTamanhos.appendChild(b);
+});
+const numero = () => escolha.j * TAMANHOS.length + escolha.t + 1;
+function nomeDaVoz(){
+  const J = JEITOS[escolha.j], T = TAMANHOS[escolha.t];
+  return `${J.e} ${J.n} · ${T.e} ${T.n} · ${escolha.c ? '🔁 ao contrário' : '▶️ pra frente'}`;
+}
+function mostrarEscolha(){
+  document.getElementById('voz-num').textContent = `Voz ${numero()} de 100`;
+  document.getElementById('voz-nome').textContent = nomeDaVoz();
+  [...caixaJeitos.children].forEach((b, i) => b.setAttribute('aria-pressed', i === escolha.j));
+  [...caixaTamanhos.children].forEach((b, i) => b.setAttribute('aria-pressed', i === escolha.t));
+  document.getElementById('dir-contrario').setAttribute('aria-pressed', escolha.c);
+  document.getElementById('dir-frente').setAttribute('aria-pressed', !escolha.c);
+  gravarLocal('aocontrario:voz', escolha);
+}
+function irPara(n){ n = ((n - 1) % 100 + 100) % 100; escolha.j = Math.floor(n / TAMANHOS.length); escolha.t = n % TAMANHOS.length; tocarEscolha(); }
+document.getElementById('ant').onclick = () => irPara(numero() - 1);
+document.getElementById('prox').onclick = () => irPara(numero() + 1);
+document.getElementById('sorte').onclick = () => { let n; do{ n = 1 + Math.floor(Math.random() * 100); }while(n === numero()); irPara(n); };
+document.getElementById('dir-contrario').onclick = () => { escolha.c = true; tocarEscolha(); };
+document.getElementById('dir-frente').onclick = () => { escolha.c = false; tocarEscolha(); };
+
+function render(){
+  let x = escolha.c ? inverter(voz) : voz.slice();
+  const r = TAMANHOS[escolha.t].r;
+  if(r !== 1) x = velocidade(x, r);
+  return normalizar(JEITOS[escolha.j].f(x, taxa));
+}
+function tocarEscolha(){
+  mostrarEscolha();
+  if(!voz){ avisar('🎙️ Grave a sua voz primeiro! Aí ela sai com essa voz.'); return; }
+  avisar('');
+  ultimo = render();
+  desenharOnda(ultimo);
+  tocarWav(paraWav(ultimo, taxa));
+}
+btTocar.onclick = () => tocarEscolha();
+mostrarEscolha();
 
 /* O desenho da voz: uma barrinha pra cada pedacinho. */
-function desenharOnda(buf){
+function desenharOnda(d){
   tela.hidden = false;
-  const g = tela.getContext('2d'), W = tela.width, H = tela.height, d = buf.getChannelData(0);
+  const g = tela.getContext('2d'), W = tela.width, H = tela.height;
   const estilo = getComputedStyle(document.documentElement);
   g.clearRect(0, 0, W, H);
   const barras = 120, passo = Math.floor(d.length / barras) || 1;
@@ -240,23 +459,9 @@ function desenharOnda(buf){
   });
 }
 
-function pararTudo(){ try{ if(tocando) tocando.stop(); }catch(e){} tocando = null; }
-function tocar(buf, velocidade){
-  if(!buf) return;
-  pararTudo();
-  const s = audio().createBufferSource();
-  s.buffer = buf; s.playbackRate.value = velocidade;
-  s.connect(ctx.destination); s.start();
-  tocando = s;
-}
-document.getElementById('contrario').onclick = () => tocar(invertido, 1);
-document.getElementById('normal').onclick = () => tocar(normal, 1);
-document.getElementById('esquilo').onclick = () => tocar(invertido, 1.8);
-document.getElementById('monstro').onclick = () => tocar(invertido, .6);
-
 /* ---------- baixar (WAV, que todo aparelho toca) ---------- */
-function paraWav(buf){
-  const d = buf.getChannelData(0), n = d.length, taxa = buf.sampleRate;
+function paraWav(d, taxa){
+  const n = d.length;
   const out = new DataView(new ArrayBuffer(44 + n * 2));
   const txt = (o, t) => { for(let i = 0; i < t.length; i++) out.setUint8(o + i, t.charCodeAt(i)); };
   txt(0, 'RIFF'); out.setUint32(4, 36 + n * 2, true); txt(8, 'WAVE'); txt(12, 'fmt ');
@@ -266,13 +471,21 @@ function paraWav(buf){
   for(let i = 0; i < n; i++){ const v = Math.max(-1, Math.min(1, d[i])); out.setInt16(44 + i * 2, v < 0 ? v * 0x8000 : v * 0x7fff, true); }
   return new Blob([out], { type:'audio/wav' });
 }
-document.getElementById('baixar').onclick = () => {
-  if(!invertido) return;
-  const url = URL.createObjectURL(paraWav(invertido));
-  const a = document.createElement('a'); a.href = url; a.download = 'minha-voz-ao-contrario.wav';
+btBaixar.onclick = () => {
+  if(!ultimo) return;
+  const url = URL.createObjectURL(paraWav(ultimo, taxa));
+  const a = document.createElement('a'); a.href = url;
+  a.download = `voz-${numero()}-${escolha.c ? 'ao-contrario' : 'pra-frente'}.wav`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 5000);
   avisar('💾 Pronto! O arquivo foi pros downloads.');
+};
+
+/* ---------- testar o som: uma musiquinha ---------- */
+document.getElementById('testar-som').onclick = () => {
+  const sr = 22050, notas = [523, 659, 784, 1047], dur = .18, d = new Float32Array(Math.floor(sr * dur * notas.length));
+  notas.forEach((f, k) => { for(let i = 0; i < sr * dur; i++){ const t = i / sr; d[Math.floor(k * sr * dur) + i] = Math.sin(2 * Math.PI * f * t) * .5 * Math.min(1, (dur - t) * 30); } });
+  tocarWav(paraWav(d, sr));
 };
 
 /* ---------- desafio ---------- */
@@ -298,7 +511,7 @@ function aplicarTema(t){
   if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema');
   btTema.textContent = estaEscuro() ? '☀️' : '🌙';
   if(corDaBarra) corDaBarra.setAttribute('content', estaEscuro() ? '#11151a' : '#7b4dd6');
-  if(invertido) desenharOnda(invertido);
+  if(ultimo) desenharOnda(ultimo);
 }
 aplicarTema(ler('aocontrario:tema', null));
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => aplicarTema(document.documentElement.getAttribute('data-tema')));
