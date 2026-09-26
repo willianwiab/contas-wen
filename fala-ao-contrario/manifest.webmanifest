@@ -1,0 +1,14 @@
+{
+  "name": "Fala ao Contrário",
+  "short_name": "Ao Contrário",
+  "description": "Grave a sua voz e ouça de trás pra frente. Tudo fica no seu aparelho.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eafaf6",
+  "theme_color": "#7b4dd6",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
