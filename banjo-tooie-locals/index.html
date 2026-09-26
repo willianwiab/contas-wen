@@ -118,6 +118,22 @@ h2.secao{font-family:'Baloo 2',cursive;font-size:1.3rem;margin:18px 0 8px}
 .lugar small{display:block;font-size:.78rem;color:var(--marca);font-weight:700}
 .lugar .venci{font:inherit;font-size:.8rem;font-weight:700;border-radius:99px;padding:6px 10px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);white-space:nowrap}
 .lugar .venci[aria-pressed="true"]{background:var(--certo);border-color:var(--certo);color:#fff}
+.jinjos-grade{display:grid;gap:8px}
+.jinjo-linha{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--cartao);border:2px solid var(--borda);border-radius:14px;padding:8px 12px;flex-wrap:wrap}
+.jinjo-linha b{font-size:.92rem}
+.jinjo-linha .pontos{display:flex;gap:6px;flex-wrap:wrap}
+.jinjo{width:30px;height:30px;border-radius:50%;border:3px solid var(--borda);cursor:pointer;position:relative;padding:0;opacity:.35}
+.jinjo[aria-pressed="true"]{opacity:1;border-color:var(--tinta)}
+.jinjo[aria-pressed="true"]::after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:900;text-shadow:0 0 3px #000}
+.familia .contador{grid-template-columns:auto auto auto;gap:6px}
+.familia .contador button{width:36px;height:36px;font-size:1.1rem}
+.familia .contador .num{font-size:1.2rem;min-width:2.6em}
+.bolinha{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid rgba(0,0,0,.25);vertical-align:-2px;margin-right:6px}
+.jiggies-lista{display:grid;gap:6px;margin-top:8px}
+.jiggy-linha{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center}
+.jiggy-linha button{width:40px;height:40px;border-radius:10px;border:2px solid var(--borda);background:var(--cartao2);font-size:1.1rem;cursor:pointer;opacity:.45}
+.jiggy-linha button[aria-pressed="true"]{opacity:1;background:var(--ouro);border-color:var(--ouro-escuro)}
+.jiggy-linha input{font:inherit;font-size:.9rem;padding:9px 11px;border-radius:10px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);min-width:0}
 .tabela{width:100%;border-collapse:collapse;background:var(--cartao);border-radius:14px;overflow:hidden;font-size:.9rem}
 .tabela th,.tabela td{padding:8px 10px;border-bottom:1px solid var(--borda);text-align:left}
 .tabela th{background:var(--creme2)}
@@ -170,6 +186,12 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.82r
   <div class="chips" id="ordem"></div>
   <h2 class="secao">🌍 Mundos</h2>
   <div class="mundos" id="mundos"></div>
+  <h2 class="secao" id="titulo-trans"></h2>
+  <p class="sub" id="sub-trans" style="margin:0 0 8px"></p>
+  <div class="lugares" id="transformacoes"></div>
+  <h2 class="secao">🟡 Jinjos</h2>
+  <p class="sub" id="sub-jinjos" style="margin:0 0 8px"></p>
+  <div id="jinjos"></div>
   <h2 class="secao">👹 Chefes</h2>
   <div class="lugares" id="chefes"></div>
   <h2 class="secao">👾 Inimigos</h2>
@@ -181,7 +203,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.82r
     Banjo Tooie Locals · site de fã, sem ligação com a Rare, a Microsoft ou a Nintendo
     <br>Os números foram escritos de memória por quem fez o site. Achou um errado? Avise!
     <br>A dificuldade é opinião de jogador, não número oficial. O seu progresso fica só neste aparelho.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 26/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 3 — 26/09 · 🔄</button>
   </footer>
 </div>
 
@@ -240,6 +262,16 @@ const JOGOS = {
       { nome:'Portrait Chompa', emoji:'🖼️', onde:'Mad Monster Mansion', texto:'Um quadro que morde!' },
       { nome:'Zubbas', emoji:'🐝', onde:'Click Clock Wood', texto:'As abelhas. Mexa na colmeia e elas vêm atrás de você; como abelha, elas te deixam em paz.' },
     ],
+    quemTransforma:'💀 Mumbo Jumbo', comoPaga:'Com Mumbo Tokens (as caveirinhas que você acha pelos mundos).',
+    transformacoes:[
+      { nome:'Cupim', emoji:'🐜', onde:"Mumbo's Mountain", custo:'5 Mumbo Tokens', texto:'Os cupins deixam você entrar no cupinzeiro deles e subir até o topo.' },
+      { nome:'Crocodilo', emoji:'🐊', onde:'Bubblegloop Swamp', custo:'10 Mumbo Tokens', texto:'Anda na água do pântano sem ser mordido e entra no jogo de comer do Mr. Vile.' },
+      { nome:'Morsa', emoji:'🦭', onde:'Freezeezy Peak', custo:'15 Mumbo Tokens', texto:'Nada na água gelada sem perder vida e corre de trenó com o Boggy.' },
+      { nome:'Abóbora', emoji:'🎃', onde:'Mad Monster Mansion', custo:'20 Mumbo Tokens', texto:'Pequenininha: entra nos canos e em lugares apertados da mansão.' },
+      { nome:'Abelha', emoji:'🐝', onde:'Click Clock Wood', custo:'25 Mumbo Tokens', texto:'Voa pela floresta, e as abelhas Zubbas deixam você em paz.' },
+    ],
+    jinjos:{ tipo:'mundo', texto:'Em cada mundo tem 5 Jinjos, um de cada cor. Achando os 5, você ganha um Jiggy.',
+      cores:[['Azul', '#2f6fd0'], ['Verde', '#2f9d4a'], ['Laranja', '#f08a1c'], ['Rosa', '#e0569a'], ['Amarelo', '#e8c21a']] },
     tituloExtra:'🎵 Portas de notas (Covil da Gruntilda)',
     notas:[50, 180, 260, 350, 450, 640, 765, 810, 828, 846, 864, 882],
     lugares:[
@@ -285,6 +317,21 @@ const JOGOS = {
     ],
     inimigos:[],
     semInimigos:'Os inimigos comuns do Tooie ainda não estão aqui: eu não lembro os nomes com certeza, e prefiro não chutar. Se você souber, me conta que eu ponho! Os chefes, esses estão todos aí em cima.',
+    quemTransforma:'🐾 Humba Wumba', comoPaga:'Com um Glowbo (a bolinha brilhante que tem em cada mundo). Humba tem uma tenda (wigwam) em cada mundo. E o Mumbo agora também é jogável!',
+    transformacoes:[
+      { nome:'Stony (estátua)', emoji:'🗿', onde:'Mayahem Temple', custo:'1 Glowbo', texto:'Vira um Stony e pode jogar Kickball com eles.' },
+      { nome:'Detonator (dinamite)', emoji:'💣', onde:'Glitter Gulch Mine', custo:'1 Glowbo', texto:'Uma dinamite que anda e explode o que precisa explodir.' },
+      { nome:'Van', emoji:'🚐', onde:'Witchyworld', custo:'1 Glowbo', texto:'Uma van que anda pelo parque e paga a entrada das atrações.' },
+      { nome:'Submarino', emoji:'🟡', onde:"Jolly Roger's Lagoon", custo:'1 Glowbo', texto:'Vai bem fundo embaixo da água sem precisar de ar.' },
+      { nome:'T-Rex', emoji:'🦖', onde:'Terrydactyland', custo:'1 Glowbo', texto:'Um dinossauro que ruge e assusta os outros dinos. Tem o pequeno e o grandão.' },
+      { nome:'Máquina de lavar', emoji:'🧺', onde:'Grunty Industries', custo:'1 Glowbo', texto:'Uma máquina de lavar que anda pela fábrica.' },
+      { nome:'Bola de neve', emoji:'⛄', onde:'Hailfire Peaks', custo:'1 Glowbo', texto:'Uma bola de neve que rola, mas cuidado com o lado do fogo!' },
+      { nome:'Abelha', emoji:'🐝', onde:'Cloud Cuckooland', custo:'1 Glowbo', texto:'Voa pelas nuvens.' },
+      { nome:'Dragon Kazooie', emoji:'🐉', onde:"Isle o' Hags", custo:'Mega-Glowbo', texto:'A própria Kazooie vira dragão e fica mais forte! É a transformação especial do fim do jogo.' },
+    ],
+    jinjos:{ tipo:'familia', texto:'Os Jinjos se perderam! São 9 famílias, e cada família tem uma quantidade diferente (de 1 a 9). Devolvendo uma família inteira pra casa dela na Jinjo Village, você ganha um Jiggy.',
+      familias:[['Branco', '#e8e8e8', 1], ['Laranja', '#f08a1c', 2], ['Amarelo', '#e8c21a', 3], ['Marrom', '#8a5a2a', 4], ['Verde', '#2f9d4a', 5],
+                ['Vermelho', '#d8322a', 6], ['Azul', '#2f6fd0', 7], ['Roxo', '#8a3ab0', 8], ['Preto', '#2a2a2a', 9]] },
     tituloExtra:"🗺️ Isle o' Hags (a ilha que liga os mundos)",
     lugares:[
       { nome:'🌄 Spiral Mountain', texto:'Onde tudo começa de novo, um tempo depois do primeiro jogo.' },
@@ -390,6 +437,10 @@ function imgFoto(src, cls){ const i = document.createElement('img'); i.src = src
 function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem(k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
 function gravar(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 const progresso = ler('banjolocals:progresso', {});   // { "bk-mm": { j: 4, z: true } }
+function contarJinjos(J){
+  if(J.jinjos.tipo === 'mundo') return J.mundos.reduce((s, m) => s + (prog(jogo, 'jinjo-' + m.id).c || []).filter(Boolean).length, 0);
+  return J.jinjos.familias.reduce((s, [nome]) => s + (prog(jogo, 'jinjo-' + nome).j || 0), 0);
+}
 function prog(jogo, id){ return progresso[jogo + '-' + id] || { j:0, z:false }; }
 function salvarProg(jogo, id, p){ progresso[jogo + '-' + id] = p; gravar('banjolocals:progresso', progresso); }
 
@@ -408,7 +459,7 @@ function desenhar(){
   document.getElementById('resumo').innerHTML = `
     <div class="linha"><span>🧩 Seus Jiggies nos mundos</span><span class="grande">${pegos} / ${total}</span></div>
     <div class="barra"><i style="width:${total ? pegos / total * 100 : 0}%"></i></div>
-    <div class="fatos"><span>✅ <b>${zerados}</b> de ${J.mundos.length} mundos zerados</span><span>⚔️ <b>${J.chefes.filter((_, i) => prog(jogo, 'chefe-' + i).z).length}</b> de ${J.chefes.length} chefes vencidos</span></div>
+    <div class="fatos"><span>✅ <b>${zerados}</b> de ${J.mundos.length} mundos zerados</span><span>⚔️ <b>${J.chefes.filter((_, i) => prog(jogo, 'chefe-' + i).z).length}</b> de ${J.chefes.length} chefes vencidos</span><span>🟡 <b>${contarJinjos(J)}</b> de ${J.jinjos.tipo === 'mundo' ? J.mundos.length * 5 : 45} Jinjos</span></div>
     <ul class="lista-fatos">${J.fatos.map(f => `<li>${f}</li>`).join('')}</ul>
     <p class="fatos" style="margin-top:8px">${J.abrir}</p>`;
   /* ordem */
@@ -475,6 +526,55 @@ function desenhar(){
   };
   lista2('chefes', J.chefes, true);
   lista2('inimigos', J.inimigos, false);
+  /* transformações, com "já virei" */
+  document.getElementById('titulo-trans').textContent = `🪄 Transformações (${J.quemTransforma})`;
+  document.getElementById('sub-trans').textContent = J.comoPaga;
+  const tr = document.getElementById('transformacoes'); tr.innerHTML = '';
+  J.transformacoes.forEach((x, i) => {
+    const k = 'trans-' + i, p = prog(jogo, k);
+    const d = document.createElement('div'); d.className = 'lugar chefe';
+    d.innerHTML = '<span class="bicho"></span><span><b></b><small></small><span class="txt"></span></span>';
+    d.querySelector('.bicho').textContent = x.emoji;
+    d.querySelector('b').textContent = x.nome;
+    d.querySelector('small').textContent = `📍 ${x.onde} · 💰 ${x.custo}`;
+    d.querySelector('.txt').textContent = x.texto;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'venci';
+    b.setAttribute('aria-pressed', String(!!p.z)); b.textContent = p.z ? '✅ Já virei' : '🪄 Já virei?';
+    b.onclick = () => { p.z = !p.z; salvarProg(jogo, k, p); desenhar(); };
+    d.appendChild(b);
+    tr.appendChild(d);
+  });
+  /* jinjos */
+  const jn = document.getElementById('jinjos'); jn.innerHTML = '';
+  document.getElementById('sub-jinjos').textContent = J.jinjos.texto;
+  const gj = document.createElement('div'); gj.className = 'jinjos-grade';
+  if(J.jinjos.tipo === 'mundo'){
+    for(const m of J.mundos){
+      const k = 'jinjo-' + m.id, p = prog(jogo, k); p.c = p.c || [];
+      const d = document.createElement('div'); d.className = 'jinjo-linha';
+      d.innerHTML = `<b>${m.emoji} </b><span class="pontos"></span>`;
+      d.querySelector('b').append(m.nome + ` (${p.c.filter(Boolean).length}/5)`);
+      J.jinjos.cores.forEach(([nome, cor], i) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'jinjo'; b.style.background = cor;
+        b.setAttribute('aria-pressed', String(!!p.c[i])); b.setAttribute('aria-label', `Jinjo ${nome} de ${m.nome}`); b.title = `Jinjo ${nome}`;
+        b.onclick = () => { p.c[i] = !p.c[i]; salvarProg(jogo, k, p); desenhar(); };
+        d.querySelector('.pontos').appendChild(b);
+      });
+      gj.appendChild(d);
+    }
+  } else {
+    for(const [nome, cor, n] of J.jinjos.familias){
+      const k = 'jinjo-' + nome, p = prog(jogo, k); p.j = p.j || 0;
+      const d = document.createElement('div'); d.className = 'jinjo-linha familia';
+      d.innerHTML = `<b><span class="bolinha" style="background:${cor}"></span>Família ${nome}${p.j === n ? ' · 🏠 completa!' : ''}</b>
+        <div class="contador"><button type="button" aria-label="Menos">−</button><span class="num">${p.j}/${n}</span><button type="button" aria-label="Mais">+</button></div>`;
+      const [me, ma] = d.querySelectorAll('button');
+      me.onclick = () => { p.j = Math.max(0, p.j - 1); salvarProg(jogo, k, p); desenhar(); };
+      ma.onclick = () => { p.j = Math.min(n, p.j + 1); salvarProg(jogo, k, p); desenhar(); };
+      gj.appendChild(d);
+    }
+  }
+  jn.appendChild(gj);
   /* extra */
   document.getElementById('titulo-extra').textContent = J.tituloExtra;
   const ex = document.getElementById('extra'); ex.innerHTML = '';
@@ -518,7 +618,9 @@ function abrirMundo(m){
       <div><button type="button" class="btn-foto" id="por-foto"></button></div>
       <p class="pequeno-foto" style="font-size:.8rem;color:var(--tinta-fraca);margin-top:6px">O desenho de cima foi feito aqui no site. Quer a imagem de verdade? Tire um print do jogo e ponha aqui: ela fica só no seu aparelho.</p>
       <div class="progresso">
-        <div class="contador"><button type="button" aria-label="Menos">−</button><b>🧩 Jiggies que eu peguei aqui</b><span class="num">${p.j}/${J.porMundo}</span><button type="button" aria-label="Mais">+</button></div>
+        <div class="bloco-jiggies"><b>🧩 Meus Jiggies aqui: ${p.j}/${J.porMundo}</b>
+          <p style="font-size:.82rem;color:var(--tinta-fraca);margin-top:2px">Toque na peça quando pegar, e escreva onde achou (pra lembrar ou ajudar um amigo).</p>
+          <div class="jiggies-lista"></div></div>
         <button type="button" class="grande-botao" id="zerar" aria-pressed="${p.z}">${p.z ? '✅ Zerei este mundo!' : '🏁 Marcar como zerado'}</button>
       </div>
     </div>`;
@@ -535,9 +637,22 @@ function abrirMundo(m){
   folha.querySelectorAll('.ficha b')[3].textContent = m.chefe;
   folha.querySelector('.texto').textContent = m.texto;
   folha.querySelector('.dica span').textContent = m.dica;
-  const [menos, mais] = folha.querySelectorAll('.contador button');
-  menos.onclick = () => { p.j = Math.max(0, p.j - 1); salvarProg(jogo, m.id, p); abrirMundo(m); desenhar(); };
-  mais.onclick = () => { p.j = Math.min(J.porMundo, p.j + 1); if(p.j === J.porMundo) p.z = true; salvarProg(jogo, m.id, p); abrirMundo(m); desenhar(); };
+  /* 10 peças: cada uma com "peguei" e onde achou. Quem já tinha um número
+     (da versão de antes) vira as primeiras peças marcadas. */
+  if(!Array.isArray(p.s)){ p.s = Array.from({ length:J.porMundo }, (_, n) => ({ ok:n < p.j, onde:'' })); }
+  const lj = folha.querySelector('.jiggies-lista');
+  p.s.forEach((sl, n) => {
+    const l = document.createElement('div'); l.className = 'jiggy-linha';
+    l.innerHTML = `<button type="button" aria-pressed="${sl.ok}" aria-label="Jiggy ${n + 1}: ${sl.ok ? 'peguei' : 'não peguei'}">🧩</button><input maxlength="80" placeholder="Jiggy ${n + 1}: onde achei?" />`;
+    const inp = l.querySelector('input'); inp.value = sl.onde || '';
+    l.querySelector('button').onclick = () => {
+      sl.ok = !sl.ok; p.j = p.s.filter(x => x.ok).length;
+      if(p.j === J.porMundo) p.z = true;
+      salvarProg(jogo, m.id, p); abrirMundo(m); desenhar();
+    };
+    inp.oninput = () => { sl.onde = inp.value; salvarProg(jogo, m.id, p); };
+    lj.appendChild(l);
+  });
   folha.querySelector('#zerar').onclick = () => { p.z = !p.z; salvarProg(jogo, m.id, p); abrirMundo(m); desenhar(); };
   folha.querySelector('.fechar').onclick = fechar;
   fundo.classList.add('aberto');
