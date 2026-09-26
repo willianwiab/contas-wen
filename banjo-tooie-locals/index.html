@@ -95,6 +95,8 @@ h2.secao{font-family:'Baloo 2',cursive;font-size:1.3rem;margin:18px 0 8px}
 .btn-foto{font:inherit;font-size:.85rem;font-weight:700;border-radius:99px;padding:8px 14px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);margin:10px 6px 0 0}
 .lugar .bicho img{width:56px;height:56px;border-radius:50%;object-fit:cover;display:block}
 .lugar .acoes-ch{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.lugar a.cam{text-decoration:none;text-align:center}
+a.btn-foto{display:inline-block;text-decoration:none}
 .lugar .cam{font:inherit;font-size:.78rem;border-radius:99px;padding:5px 9px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);white-space:nowrap}
 .mundo .emoji{font-size:2rem;line-height:1}
 .mundo .topo b{font-size:1.05rem;display:block;line-height:1.2}
@@ -203,7 +205,7 @@ footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.82r
     Banjo Tooie Locals · site de fã, sem ligação com a Rare, a Microsoft ou a Nintendo
     <br>Os números foram escritos de memória por quem fez o site. Achou um errado? Avise!
     <br>A dificuldade é opinião de jogador, não número oficial. O seu progresso fica só neste aparelho.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 3 — 26/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 4 — 26/09 · 🔄</button>
   </footer>
 </div>
 
@@ -433,6 +435,18 @@ function escolherFoto(){
 }
 function imgFoto(src, cls){ const i = document.createElement('img'); i.src = src; i.alt = ''; i.className = cls; return i; }
 
+/* ---------- 🔎 fotos de verdade ----------
+   As imagens do jogo não moram aqui (têm dono), mas dá pra abrir a busca de
+   imagens já procurando a coisa certa, com o filtro de segurança ligado. */
+function buscaFotos(termo){ return 'https://www.google.com/search?tbm=isch&safe=active&q=' + encodeURIComponent(termo); }
+function linkFotos(termo, texto, cls){
+  const a = document.createElement('a');
+  a.href = buscaFotos(termo); a.target = '_blank'; a.rel = 'noopener';
+  a.className = cls; a.textContent = texto;
+  a.setAttribute('aria-label', 'Ver fotos de verdade: ' + termo + ' (abre a busca de imagens)');
+  return a;
+}
+
 /* ---------- progresso no aparelho ---------- */
 function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem(k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
 function gravar(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
@@ -503,7 +517,7 @@ function desenhar(){
       if(fx) d.querySelector('.bicho').appendChild(imgFoto(fx, '')); else d.querySelector('.bicho').textContent = x.emoji;
       const acoes = document.createElement('span'); acoes.className = 'acoes-ch';
       const cam = document.createElement('button'); cam.type = 'button'; cam.className = 'cam';
-      cam.textContent = fx ? '🗑️ Foto' : '📷 Foto';
+      cam.textContent = fx ? '🗑️ Minha foto' : '📷 Minha foto';
       cam.setAttribute('aria-label', fx ? `Tirar a foto de ${x.nome}` : `Pôr uma foto de ${x.nome}`);
       cam.onclick = async () => {
         if(fx){ if(confirm('Tirar a foto?')){ gravarFoto(kf, null); desenhar(); } return; }
@@ -519,6 +533,7 @@ function desenhar(){
         b.onclick = () => { p.z = !p.z; salvarProg(jogo, k, p); desenhar(); };
         acoes.appendChild(b);
       }
+      acoes.appendChild(linkFotos(`${x.nome} ${J.nome}`, '🔎 Fotos', 'cam'));
       acoes.appendChild(cam);
       d.appendChild(acoes);
       cx.appendChild(d);
@@ -541,12 +556,16 @@ function desenhar(){
     const b = document.createElement('button'); b.type = 'button'; b.className = 'venci';
     b.setAttribute('aria-pressed', String(!!p.z)); b.textContent = p.z ? '✅ Já virei' : '🪄 Já virei?';
     b.onclick = () => { p.z = !p.z; salvarProg(jogo, k, p); desenhar(); };
-    d.appendChild(b);
+    const ac = document.createElement('span'); ac.className = 'acoes-ch';
+    ac.append(b, linkFotos(`${J.nome} ${x.onde} ${x.nome === 'Dragon Kazooie' ? 'Dragon Kazooie' : 'transformation'}`, '🔎 Fotos', 'cam'));
+    d.appendChild(ac);
     tr.appendChild(d);
   });
   /* jinjos */
   const jn = document.getElementById('jinjos'); jn.innerHTML = '';
-  document.getElementById('sub-jinjos').textContent = J.jinjos.texto;
+  const sj = document.getElementById('sub-jinjos');
+  sj.textContent = J.jinjos.texto + ' ';
+  sj.appendChild(linkFotos(`Jinjo ${J.nome}`, '🔎 Ver Jinjos de verdade', 'cam'));
   const gj = document.createElement('div'); gj.className = 'jinjos-grade';
   if(J.jinjos.tipo === 'mundo'){
     for(const m of J.mundos){
@@ -615,8 +634,8 @@ function abrirMundo(m){
       </div>
       <p class="texto"></p>
       <p class="dica">💡 <b>Dica:</b> <span></span></p>
-      <div><button type="button" class="btn-foto" id="por-foto"></button></div>
-      <p class="pequeno-foto" style="font-size:.8rem;color:var(--tinta-fraca);margin-top:6px">O desenho de cima foi feito aqui no site. Quer a imagem de verdade? Tire um print do jogo e ponha aqui: ela fica só no seu aparelho.</p>
+      <div id="botoes-foto"><button type="button" class="btn-foto" id="por-foto"></button></div>
+      <p class="pequeno-foto" style="font-size:.8rem;color:var(--tinta-fraca);margin-top:6px">O desenho de cima foi feito aqui no site. Pra ver o jogo de verdade, toque em 🔎 (abre a busca de imagens). Gostou de uma? Tire print e ponha em 📷: ela fica só no seu aparelho.</p>
       <div class="progresso">
         <div class="bloco-jiggies"><b>🧩 Meus Jiggies aqui: ${p.j}/${J.porMundo}</b>
           <p style="font-size:.82rem;color:var(--tinta-fraca);margin-top:2px">Toque na peça quando pegar, e escreva onde achou (pra lembrar ou ajudar um amigo).</p>
@@ -628,6 +647,7 @@ function abrirMundo(m){
   const km = `${jogo}-mundo-${m.id}`, fm = fotos.get(km);
   const im = folha.querySelector('#imagem-mundo');
   if(fm) im.appendChild(imgFoto(fm, 'foto-jogo grande')); else im.innerHTML = cenaHtml(m.id, true);
+  folha.querySelector('#botoes-foto').prepend(linkFotos(`${m.nome} ${J.nome}`, '🔎 Ver fotos de verdade', 'btn-foto'));
   const bf = folha.querySelector('#por-foto');
   bf.textContent = fm ? '🗑️ Tirar minha foto (volta o desenho)' : '📷 Pôr uma foto minha deste mundo';
   bf.onclick = async () => {

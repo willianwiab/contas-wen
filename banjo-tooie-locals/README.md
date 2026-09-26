@@ -58,3 +58,10 @@ Imagens de verdade do jogo (prints, arte oficial) não entram: são da Rare/Nint
   escrever onde achou. O lugar exato de cada Jiggy e Jinjo **não** vem pronto: são quase
   200 lugares, e escrever de memória ia ter erro. Quem joga anota os próprios achados.
   Quem já tinha marcado um número na versão anterior ganha essas peças já marcadas.
+
+## 🔎 Fotos de verdade
+
+Cada mundo, chefe, inimigo, transformação e os Jinjos têm **🔎 Ver fotos de verdade**: abre
+a busca de imagens do Google numa aba nova, já procurando a coisa certa ("Klungo
+Banjo-Tooie", "Banjo-Kazooie Mumbo's Mountain transformation"…) e com `safe=active`.
+As imagens continuam fora do site; quem quiser guarda um print em **📷 Minha foto**.
