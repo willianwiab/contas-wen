@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Banjo Tooie Locals">
+  <!-- Igual ao limpo, com fundo: é o ícone do aparelho. -->
+  <rect width="64" height="64" rx="14" fill="#2b5ea8"/>
+  <path d="M14 14h12a6 6 0 1 1 12 0h12v12a6 6 0 1 0 0 12v12H38a6 6 0 1 0-12 0H14V38a6 6 0 1 1 0-12z"
+        fill="#f2b632" stroke="#8a5a14" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="26" cy="30" r="2.6" fill="#5a3a0e"/><circle cx="38" cy="30" r="2.6" fill="#5a3a0e"/>
+</svg>

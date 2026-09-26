@@ -1,0 +1,14 @@
+{
+  "name": "Banjo Tooie Locals",
+  "short_name": "Banjo Locals",
+  "description": "Todos os mundos do Banjo-Kazooie e do Banjo-Tooie: quantos Jiggies pra abrir, dificuldade, transformações e o seu progresso.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff6dc",
+  "theme_color": "#2b5ea8",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

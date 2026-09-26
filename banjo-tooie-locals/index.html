@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Banjo Tooie Locals</title>
+<meta name="description" content="Todos os mundos do Banjo-Kazooie e do Banjo-Tooie: quantos Jiggies precisa pra abrir, se é fácil ou difícil, transformações, chefes e o seu progresso. Funciona sem internet." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#2b5ea8" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Banjo Locals" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* Azul da bermuda do Banjo e dourado de Jiggy. */
+  --marca:#2b5ea8; --marca-escura:#1d4580; --ouro:#f2b632; --ouro-escuro:#8a5a14;
+  --certo:#1f9d55; --certo-fundo:#e3f6ea;
+  --facil:#1f9d55; --medio:#c77700; --dificil:#c62828;
+  --creme:#fff6dc; --creme2:#ffeab0; --creme3:#fff0c8;
+  --tinta:#2a2014; --tinta-fraca:#75664f;
+  --cartao:#ffffff; --cartao2:#fffbef; --borda:#f0dfb0; --sombra:rgba(110,70,10,.14);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#3f72c2; --marca-escura:#8ab4f0; --ouro:#f5c451; --ouro-escuro:#f5c451;
+    --certo:#3ecb84; --certo-fundo:#16321f;
+    --facil:#3ecb84; --medio:#f0a93a; --dificil:#ff6b6b;
+    --creme:#15120c; --creme2:#211b10; --creme3:#1b160d;
+    --tinta:#f6eedc; --tinta-fraca:#b9a988;
+    --cartao:#241e14; --cartao2:#2b2418; --borda:#43382a; --sombra:rgba(0,0,0,.35);
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#3f72c2; --marca-escura:#8ab4f0; --ouro:#f5c451; --ouro-escuro:#f5c451;
+  --certo:#3ecb84; --certo-fundo:#16321f;
+  --facil:#3ecb84; --medio:#f0a93a; --dificil:#ff6b6b;
+  --creme:#15120c; --creme2:#211b10; --creme3:#1b160d;
+  --tinta:#f6eedc; --tinta-fraca:#b9a988;
+  --cartao:#241e14; --cartao2:#2b2418; --borda:#43382a; --sombra:rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background-color:var(--creme);
+  background-image:radial-gradient(circle at 8% 5%, var(--creme2) 0 22%, transparent 22.5%),
+                   radial-gradient(circle at 92% 78%, var(--creme3) 0 20%, transparent 20.5%);
+  background-attachment:fixed;min-height:100vh}
+.casca{max-width:860px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.8rem;line-height:1.05;display:flex;align-items:center;gap:8px;color:var(--marca-escura);min-width:0}
+.logo img{width:46px;height:46px;flex:none}
+.logo .p{color:var(--ouro-escuro)}
+.botao-redondo{border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);width:42px;height:42px;border-radius:50%;font-size:1.15rem;cursor:pointer;flex:none}
+@media (max-width:420px){.logo{font-size:1.35rem}.logo img{width:36px;height:36px}}
+.sub{color:var(--tinta-fraca);margin:6px 0 14px;font-size:.95rem;line-height:1.5}
+
+.abas{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.abas button{font:inherit;font-weight:800;border-radius:16px;padding:12px 6px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);line-height:1.2}
+.abas button small{display:block;font-weight:500;font-size:.75rem;color:var(--tinta-fraca)}
+.abas button[aria-selected="true"]{background:var(--marca);border-color:var(--marca);color:#fff}
+.abas button[aria-selected="true"] small{color:#fff;opacity:.9}
+
+.resumo{margin-top:14px;background:var(--cartao);border:2px solid var(--borda);border-radius:20px;padding:14px 16px;box-shadow:0 4px 18px var(--sombra)}
+.resumo .linha{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.resumo .grande{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:var(--ouro-escuro)}
+.barra{height:14px;border-radius:99px;background:var(--creme2);overflow:hidden;margin:8px 0}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,var(--ouro),#e89a1c);border-radius:99px}
+.fatos{display:flex;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--tinta-fraca)}
+.fatos b{color:var(--tinta)}
+.fatos{column-gap:14px}
+.lista-fatos{list-style:none;margin-top:10px;display:grid;gap:4px;font-size:.88rem;color:var(--tinta-fraca)}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chip{font:inherit;font-size:.85rem;font-weight:600;padding:7px 12px;border-radius:99px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta)}
+.chip[aria-pressed="true"]{background:var(--marca);border-color:var(--marca);color:#fff}
+
+h2.secao{font-family:'Baloo 2',cursive;font-size:1.3rem;margin:18px 0 8px}
+.mundos{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.mundo{font:inherit;text-align:left;color:var(--tinta);cursor:pointer;border:2px solid var(--borda);background:var(--cartao);border-radius:18px;overflow:hidden;
+  box-shadow:0 3px 12px var(--sombra);display:flex;flex-direction:column}
+.mundo .topo{display:flex;align-items:center;gap:10px;padding:12px 14px;color:#fff}
+.mundo .emoji{font-size:2rem;line-height:1}
+.mundo .topo b{font-size:1.05rem;display:block;line-height:1.2}
+.mundo .topo small{opacity:.92;font-size:.78rem}
+.mundo .corpo{padding:10px 14px 12px;display:grid;gap:6px;font-size:.88rem}
+.mundo .par{display:flex;justify-content:space-between;gap:8px}
+.mundo .par span{color:var(--tinta-fraca)}
+.mundo.zerado{border-color:var(--certo)}
+.dif{font-weight:800}
+.dif.f1{color:var(--facil)} .dif.f2{color:var(--medio)} .dif.f3{color:var(--dificil)}
+.mini-barra{height:8px;border-radius:99px;background:var(--creme2);overflow:hidden}
+.mini-barra i{display:block;height:100%;background:var(--ouro)}
+.jig{font-weight:800;color:var(--ouro-escuro)}
+
+.lugares{display:grid;gap:8px}
+.lugar{border:2px solid var(--borda);background:var(--cartao2);border-radius:14px;padding:10px 12px}
+.lugar b{display:block}
+.lugar span{font-size:.86rem;color:var(--tinta-fraca);line-height:1.5}
+.lugar.chefe{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
+.lugar .bicho{font-size:1.8rem}
+.lugar small{display:block;font-size:.78rem;color:var(--marca);font-weight:700}
+.lugar .venci{font:inherit;font-size:.8rem;font-weight:700;border-radius:99px;padding:6px 10px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);white-space:nowrap}
+.lugar .venci[aria-pressed="true"]{background:var(--certo);border-color:var(--certo);color:#fff}
+.tabela{width:100%;border-collapse:collapse;background:var(--cartao);border-radius:14px;overflow:hidden;font-size:.9rem}
+.tabela th,.tabela td{padding:8px 10px;border-bottom:1px solid var(--borda);text-align:left}
+.tabela th{background:var(--creme2)}
+.tabela td.n{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* folha */
+.fundo{position:fixed;inset:0;background:rgba(20,15,5,.55);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.fundo.aberto{display:flex}
+.folha{background:var(--cartao);width:100%;max-width:480px;border-radius:24px 24px 0 0;max-height:92vh;overflow:auto;overflow-x:hidden;position:relative}
+@media (min-width:600px){.fundo{align-items:center}.folha{border-radius:24px}}
+.folha .fechar{position:absolute;top:12px;right:12px;z-index:2}
+.folha .cabeca{padding:20px 60px 16px 18px;color:#fff}
+.folha .cabeca .emoji{font-size:2.6rem}
+.folha h3{font-family:'Baloo 2',cursive;font-size:1.6rem;line-height:1.1}
+.folha .cabeca small{opacity:.92}
+.folha .miolo{padding:14px 18px 24px}
+.ficha{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ficha div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:8px 10px}
+.ficha div span{display:block;font-size:.75rem;color:var(--tinta-fraca);font-weight:600}
+.ficha div b{font-size:1rem}
+.texto{margin-top:12px;line-height:1.6;font-size:.95rem}
+.dica{margin-top:10px;background:var(--creme2);border-radius:14px;padding:10px 12px;font-size:.9rem;line-height:1.5}
+.progresso{margin-top:14px;display:grid;gap:10px}
+.contador{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:10px}
+.contador button{width:44px;height:44px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);font-size:1.3rem;font-weight:800;cursor:pointer}
+.contador .num{font-family:'Baloo 2',cursive;font-size:1.6rem;min-width:2.2em;text-align:center}
+.grande-botao{display:block;width:100%;font:inherit;font-weight:700;font-size:1rem;border-radius:14px;padding:13px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.grande-botao[aria-pressed="true"]{background:var(--certo);border-color:var(--certo);color:#fff}
+
+footer{text-align:center;margin-top:34px;color:var(--tinta-fraca);font-size:.82rem;line-height:1.6}
+.versao{display:inline-block;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;padding:6px 14px;font:inherit;font-size:.78rem;font-weight:600;margin-top:4px;color:var(--tinta);cursor:pointer}
+.faixa-nova{position:fixed;left:10px;right:10px;bottom:10px;z-index:50;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--marca-escura);color:#fff;border-radius:16px;padding:12px 15px;font-weight:600}
+.faixa-nova button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 16px;background:#fff;color:var(--marca-escura);cursor:pointer;margin-left:auto}
+</style>
+</head>
+<body>
+<div class="casca">
+  <header>
+    <h1 class="logo"><img src="icone-limpo.svg" alt="" /><span>Banjo <span class="p">Tooie</span> Locals</span></h1>
+    <button class="botao-redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
+  </header>
+  <p class="sub">Todos os mundos do <b>Banjo-Kazooie</b> e do <b>Banjo-Tooie</b>: quantos quebra-cabeças (Jiggies) precisa pra abrir, se é fácil ou difícil, transformações, chefes e o seu progresso. 🐻🐦</p>
+
+  <div class="abas" role="tablist">
+    <button type="button" role="tab" id="aba-bk">Banjo-Kazooie<small>1998 · Nintendo 64</small></button>
+    <button type="button" role="tab" id="aba-bt">Banjo-Tooie<small>2000 · Nintendo 64</small></button>
+  </div>
+
+  <section class="resumo" id="resumo" aria-live="polite"></section>
+  <div class="chips" id="ordem"></div>
+  <h2 class="secao">🌍 Mundos</h2>
+  <div class="mundos" id="mundos"></div>
+  <h2 class="secao">👹 Chefes</h2>
+  <div class="lugares" id="chefes"></div>
+  <h2 class="secao">👾 Inimigos</h2>
+  <div class="lugares" id="inimigos"></div>
+  <h2 class="secao" id="titulo-extra"></h2>
+  <div id="extra"></div>
+
+  <footer>
+    Banjo Tooie Locals · site de fã, sem ligação com a Rare, a Microsoft ou a Nintendo
+    <br>Os números foram escritos de memória por quem fez o site. Achou um errado? Avise!
+    <br>A dificuldade é opinião de jogador, não número oficial. O seu progresso fica só neste aparelho.
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 26/09 · 🔄</button>
+  </footer>
+</div>
+
+<div class="fundo" id="fundo"><div class="folha" role="dialog" aria-modal="true" aria-labelledby="folha-nome" id="folha"></div></div>
+
+<script>
+'use strict';
+/* =========================================================================
+   Banjo Tooie Locals — os mundos dos dois jogos, sem música (as músicas têm
+   dono; o site é só guia) e sem internet (tudo mora aqui dentro).
+   "jiggies" = quantos Jiggies o jogo pede pra abrir o mundo.
+   "dif" = 1 fácil, 2 médio, 3 difícil — opinião, não número oficial.
+   ========================================================================= */
+const JOGOS = {
+  bk: {
+    nome:'Banjo-Kazooie', totalJiggies:100, porMundo:10,
+    fatos:['🧩 100 Jiggies no total (10 em cada mundo e 10 no covil)', '🎵 900 notas musicais (100 por mundo)', '🟡 5 Jinjos em cada mundo', '💀 Mumbo transforma você em 5 mundos'],
+    abrir:'Os mundos abrem no Covil da Gruntilda: você encaixa os Jiggies no quadro do mundo, e ele abre.',
+    mundos:[
+      { id:'mm',  nome:"Mumbo's Mountain",      emoji:'⛰️', cor:'#6a8f3a', jiggies:1,  dif:1, trans:'🐜 Cupim', chefe:'Conga, o macaco das laranjas',
+        texto:'O primeiro mundo: morros, cupins gigantes e a cabana do Mumbo. É onde você aprende a jogar.', dica:'Jogue ovos no Conga e pegue a laranja dele.' },
+      { id:'ttc', nome:'Treasure Trove Cove',  emoji:'🏝️', cor:'#2f8fbf', jiggies:2,  dif:1, trans:'—', chefe:'Nipper, o caranguejo',
+        texto:'Uma praia com navio, castelo de areia e um tubarão chamado Snacker que não deixa você nadar em paz.', dica:'No castelo de areia dá pra escrever palavras com o bico (é onde os códigos secretos entram).' },
+      { id:'cc',  nome:"Clanker's Cavern",      emoji:'🐋', cor:'#5a6b7a', jiggies:5,  dif:2, trans:'—', chefe:'Clanker, a baleia de metal (não é chefe: é amigo)',
+        texto:'Um esgoto com uma baleia robô gigante presa numa corrente. Tem muita parte embaixo da água.', dica:'Solte o Clanker da corrente e entre nele pelo buraco do dente de ouro.' },
+      { id:'bgs', nome:'Bubblegloop Swamp',     emoji:'🐊', cor:'#4f7a3a', jiggies:7,  dif:2, trans:'🐊 Crocodilo', chefe:'Mr. Vile, o crocodilo guloso',
+        texto:'Um pântano cheio de água que machuca. Tem a tartaruga Tanktup e o jogo de comer do Mr. Vile.', dica:'Use as botas de pântano (Wading Boots) pra andar na água ruim.' },
+      { id:'fp',  nome:'Freezeezy Peak',        emoji:'❄️', cor:'#6aa8d8', jiggies:8,  dif:2, trans:'🦭 Morsa', chefe:'Boggy, o urso polar (corrida)',
+        texto:'Uma montanha de neve com um boneco de neve gigante e árvore de Natal. Tem corrida de trenó com o Boggy.', dica:'Como morsa, a água gelada não machuca.' },
+      { id:'gv',  nome:"Gobi's Valley",          emoji:'🐫', cor:'#d9a13a', jiggies:9,  dif:2, trans:'—', chefe:'Gobi, o camelo',
+        texto:'Um deserto com pirâmides, areia movediça e o camelo Gobi, que aparece de novo depois.', dica:'As pirâmides têm quebra-cabeças; preste atenção nos símbolos das paredes.' },
+      { id:'mmm', nome:'Mad Monster Mansion',   emoji:'🎃', cor:'#6b4a8a', jiggies:10, dif:3, trans:'🎃 Abóbora', chefe:'Motzhand, o fantasma do órgão',
+        texto:'Uma mansão mal-assombrada à noite, com cemitério, igreja e fantasmas.', dica:'Como abóbora você entra em lugares pequenos, tipo os canos.' },
+      { id:'rbb', nome:'Rusty Bucket Bay',      emoji:'🚢', cor:'#8a4a3a', jiggies:12, dif:3, trans:'—', chefe:'—',
+        texto:'Um navio enorme em água suja de óleo. A sala das máquinas é famosa por ser difícil!', dica:'Na sala das máquinas, pare os ventiladores e ande devagar.' },
+      { id:'ccw', nome:'Click Clock Wood',      emoji:'🌳', cor:'#3a8a5a', jiggies:15, dif:3, trans:'🐝 Abelha', chefe:'—',
+        texto:'Uma floresta que muda com as 4 estações: primavera, verão, outono e inverno. Cada estação tem coisas diferentes.', dica:'Muita coisa só funciona se você fizer em ordem, estação por estação.' },
+    ],
+    chefes:[
+      { nome:'Conga', emoji:'🦍', onde:"Mumbo's Mountain", texto:'Um macaco que joga laranjas em você de cima da árvore. Jogue ovos nele.' },
+      { nome:'Nipper', emoji:'🦀', onde:'Treasure Trove Cove', texto:'Um caranguejo gigante na casca. Acerte ele quando ele se mexer pra fora.' },
+      { nome:'Motzhand', emoji:'🎹', onde:'Mad Monster Mansion', texto:'O fantasma que toca o órgão da igreja. Você toca as notas certas pra ganhar o Jiggy.' },
+      { nome:'Gruntilda', emoji:'🧙‍♀️', onde:'Alto do Covil (batalha final)', texto:'A bruxa! A batalha é no alto do castelo, depois do jogo de perguntas Grunty\'s Furnace Fun.' },
+    ],
+    inimigos:[
+      { nome:'Grublins', emoji:'👺', onde:'Covil e vários mundos', texto:'Os duendes da Gruntilda. São os inimigos mais comuns.' },
+      { nome:'Ticker', emoji:'🐜', onde:"Mumbo's Mountain", texto:'Os cupins. Como cupim, você entra no cupinzeiro deles.' },
+      { nome:'Bigbutt', emoji:'🐂', onde:"Mumbo's Mountain", texto:'O touro que corre pra cima de você. Desvie!' },
+      { nome:'Snippets', emoji:'🦀', onde:'Treasure Trove Cove', texto:'Os caranguejos pequenos da praia.' },
+      { nome:'Snacker', emoji:'🦈', onde:'Treasure Trove Cove', texto:'O tubarão que ataca quando você nada longe da areia. Não dá pra vencer: fuja!' },
+      { nome:'Flibbits', emoji:'🐸', onde:'Bubblegloop Swamp', texto:'Os sapos que pulam em você no pântano.' },
+      { nome:'Sir Slush', emoji:'⛄', onde:'Freezeezy Peak', texto:'Bonecos de neve que jogam bolas de neve.' },
+      { nome:'Twinklies e Twinkly Muncher', emoji:'🎄', onde:'Freezeezy Peak', texto:'As luzinhas da árvore de Natal, e o bicho que quer comer elas. Proteja as luzinhas!' },
+      { nome:'Mum-Mums', emoji:'🧟', onde:"Gobi's Valley", texto:'As múmias do deserto.' },
+      { nome:'Limbo', emoji:'💀', onde:'Mad Monster Mansion', texto:'Os esqueletos da mansão.' },
+      { nome:'Portrait Chompa', emoji:'🖼️', onde:'Mad Monster Mansion', texto:'Um quadro que morde!' },
+      { nome:'Zubbas', emoji:'🐝', onde:'Click Clock Wood', texto:'As abelhas. Mexa na colmeia e elas vêm atrás de você; como abelha, elas te deixam em paz.' },
+    ],
+    tituloExtra:'🎵 Portas de notas (Covil da Gruntilda)',
+    notas:[50, 180, 260, 350, 450, 640, 765, 810, 828, 846, 864, 882],
+    lugares:[
+      { nome:'🌄 Spiral Mountain', texto:'Onde começa tudo: a casa do Banjo e o treino com a Bottles, a toupeira.' },
+      { nome:"🏰 Gruntilda's Lair (Covil)", texto:'O castelo da bruxa Gruntilda, que liga todos os mundos. No fim tem o Grunty\'s Furnace Fun (um jogo de perguntas) e a batalha final.' },
+    ],
+  },
+  bt: {
+    nome:'Banjo-Tooie', totalJiggies:90, porMundo:10,
+    fatos:['🧩 90 Jiggies no total (10 em cada mundo)', '🟡 Jinjos de 9 famílias pra achar', '🐾 Humba Wumba transforma você em cada mundo', '🧙 Jiggywiggy abre os mundos', '🥫 Jamjars, irmão da Bottles, ensina os golpes novos'],
+    abrir:'Os mundos abrem no templo do Jiggywiggy, na Isle o\' Hags: com Jiggies suficientes, você faz um desafio de quebra-cabeça e o mundo abre.',
+    mundos:[
+      { id:'mt',  nome:'Mayahem Temple',        emoji:'🗿', cor:'#5a8a3a', jiggies:1,  dif:1, trans:'🗿 Stony (estátua)', chefe:'Targitzan',
+        texto:'Um templo maia na selva. É o primeiro mundo, com o time de futebol de pedra (Kickball).', dica:'Como Stony dá pra jogar Kickball com os Stonies.' },
+      { id:'ggm', nome:'Glitter Gulch Mine',    emoji:'⛏️', cor:'#8a6a3a', jiggies:4,  dif:2, trans:'💣 Detonator (dinamite)', chefe:'Old King Coal',
+        texto:'Uma mina com trem, cristais e escuridão. O trem (Chuffy) vai ser importante no jogo todo.', dica:'O Old King Coal fica dentro da caldeira do trem Chuffy.' },
+      { id:'ww',  nome:'Witchyworld',           emoji:'🎡', cor:'#c24a8a', jiggies:8,  dif:2, trans:'🚐 Van', chefe:'Mr. Patch',
+        texto:'Um parque de diversões da bruxa, com áreas de faroeste, do espaço e do inferno.', dica:'Como van você paga a entrada das atrações.' },
+      { id:'jrl', nome:"Jolly Roger's Lagoon",  emoji:'🧜', cor:'#2f7fb0', jiggies:14, dif:3, trans:'🟡 Submarino', chefe:'Lord Woo Fak Fak',
+        texto:'Uma cidade de piratas e um mundo enorme embaixo da água, com Atlântida.', dica:'Aprenda a nadar rápido e o ovo de fogo embaixo da água (Sub-Aqua Egg Aiming).' },
+      { id:'tdl', nome:'Terrydactyland',        emoji:'🦖', cor:'#7a8a3a', jiggies:20, dif:3, trans:'🦖 T-Rex', chefe:'Terry, o pterodáctilo',
+        texto:'Uma terra de dinossauros com uma montanha gigante no meio. É grande e dá pra se perder.', dica:'O T-Rex pequeno e o grande assustam dinossauros diferentes.' },
+      { id:'gi',  nome:'Grunty Industries',     emoji:'🏭', cor:'#6a6a7a', jiggies:28, dif:3, trans:'🧺 Máquina de lavar', chefe:'Weldar',
+        texto:'Uma fábrica da Gruntilda com vários andares, lixo tóxico e máquinas perigosas.', dica:'Separar Banjo e Kazooie (Split-Up) ajuda muito aqui.' },
+      { id:'hfp', nome:'Hailfire Peaks',        emoji:'🌋', cor:'#c2582a', jiggies:36, dif:3, trans:'⛄ Bola de neve', chefe:'Chilly Willy e Chilli Billi',
+        texto:'Um mundo dividido em dois: um lado de fogo (vulcão) e um lado de gelo.', dica:'O que você faz de um lado às vezes muda o outro.' },
+      { id:'ccl', nome:'Cloud Cuckooland',      emoji:'☁️', cor:'#6a9ad8', jiggies:45, dif:3, trans:'🐝 Abelha', chefe:'Mingy Jongo',
+        texto:'Um mundo nas nuvens, com a lata de lixo gigante, o queijo e o bolo. É o último mundo antes do fim.', dica:'O Mingy Jongo finge ser o Mumbo. Desconfie!' },
+      { id:'ck',  nome:'Cauldron Keep',         emoji:'🧙', cor:'#4a3a6a', jiggies:55, dif:3, trans:'—', chefe:'HAG 1 e Gruntilda',
+        texto:'A torre das irmãs da bruxa. Tem o Tower of Tragedy (um programa de perguntas) e a batalha final.', dica:'Treine bem as perguntas sobre o jogo: elas caem no Tower of Tragedy.' },
+    ],
+    chefes:[
+      { nome:'Klungo', emoji:'🦎', onde:"Isle o' Hags", texto:'O ajudante da bruxa. Você luta com ele 3 vezes pela ilha, cada vez com uma poção diferente.' },
+      { nome:'Targitzan', emoji:'🗿', onde:'Mayahem Temple', texto:'Um totem de madeira que gira. Acerte os alvos dele com ovos.' },
+      { nome:'Old King Coal', emoji:'🪨', onde:'Glitter Gulch Mine', texto:'Um rei feito de carvão, dentro da caldeira do trem Chuffy.' },
+      { nome:'Mr. Patch', emoji:'🎈', onde:'Witchyworld', texto:'Um dinossauro de balão. Estoure os remendos dele com ovos.' },
+      { nome:'Lord Woo Fak Fak', emoji:'🐡', onde:"Jolly Roger's Lagoon", texto:'Um peixe gigante embaixo da água. Mire nos pontos fracos dele.' },
+      { nome:'Terry', emoji:'🦅', onde:'Terrydactyland', texto:'A mãe pterodáctilo, que acha que você roubou os filhotes dela.' },
+      { nome:'Weldar', emoji:'🔧', onde:'Grunty Industries', texto:'Uma máquina de solda gigante na fábrica.' },
+      { nome:'Chilly Willy e Chilli Billi', emoji:'🐉', onde:'Hailfire Peaks', texto:'Dois dragões: um de fogo e um de gelo. Use ovo de gelo no de fogo e ovo de fogo no de gelo.' },
+      { nome:'Mingy Jongo', emoji:'🤖', onde:'Cloud Cuckooland', texto:'Um robô disfarçado de Mumbo, na cabana dele. Surpresa!' },
+      { nome:'HAG 1', emoji:'🧙‍♀️', onde:'Cauldron Keep (batalha final)', texto:'A máquina gigante da Gruntilda e das irmãs dela. É o último chefe!' },
+    ],
+    inimigos:[],
+    semInimigos:'Os inimigos comuns do Tooie ainda não estão aqui: eu não lembro os nomes com certeza, e prefiro não chutar. Se você souber, me conta que eu ponho! Os chefes, esses estão todos aí em cima.',
+    tituloExtra:"🗺️ Isle o' Hags (a ilha que liga os mundos)",
+    lugares:[
+      { nome:'🌄 Spiral Mountain', texto:'Onde tudo começa de novo, um tempo depois do primeiro jogo.' },
+      { nome:'🏘️ Jinjo Village', texto:'A vila dos Jinjos. Cada família tem uma casa, e você devolve os Jinjos perdidos pra elas.' },
+      { nome:'🌳 Wooded Hollow', texto:'Onde fica o templo do Jiggywiggy, que abre os mundos, e o caminho pro Mayahem Temple.' },
+      { nome:'🏞️ Plateau', texto:'Um planalto no caminho do Glitter Gulch Mine.' },
+      { nome:'🌲 Pine Grove', texto:'O bosque de pinheiros, no caminho do Witchyworld.' },
+      { nome:'🧗 Cliff Top', texto:'O alto do penhasco, uma das partes mais altas da ilha.' },
+      { nome:'🏜️ Wasteland', texto:'A terra seca e cheia de buracos, perto dos últimos mundos.' },
+      { nome:'🐸 Quagmire', texto:'O brejo perto do fim, no caminho pro Cauldron Keep.' },
+      { nome:'🦎 Klungo', texto:'O ajudante da bruxa: você enfrenta ele 3 vezes pela ilha.' },
+    ],
+  },
+};
+
+/* ---------- progresso no aparelho ---------- */
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem(k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+const progresso = ler('banjolocals:progresso', {});   // { "bk-mm": { j: 4, z: true } }
+function prog(jogo, id){ return progresso[jogo + '-' + id] || { j:0, z:false }; }
+function salvarProg(jogo, id, p){ progresso[jogo + '-' + id] = p; gravar('banjolocals:progresso', progresso); }
+
+let jogo = ler('banjolocals:jogo', 'bt'); if(!JOGOS[jogo]) jogo = 'bt';
+let ordem = 'jogo';
+const DIF = ['', '🟢 Fácil', '🟠 Médio', '🔴 Difícil'];
+
+function desenhar(){
+  const J = JOGOS[jogo];
+  document.getElementById('aba-bk').setAttribute('aria-selected', String(jogo === 'bk'));
+  document.getElementById('aba-bt').setAttribute('aria-selected', String(jogo === 'bt'));
+  /* resumo */
+  let pegos = 0, zerados = 0;
+  for(const m of J.mundos){ const p = prog(jogo, m.id); pegos += p.j; if(p.z) zerados++; }
+  const total = J.mundos.length * J.porMundo;
+  document.getElementById('resumo').innerHTML = `
+    <div class="linha"><span>🧩 Seus Jiggies nos mundos</span><span class="grande">${pegos} / ${total}</span></div>
+    <div class="barra"><i style="width:${total ? pegos / total * 100 : 0}%"></i></div>
+    <div class="fatos"><span>✅ <b>${zerados}</b> de ${J.mundos.length} mundos zerados</span><span>⚔️ <b>${J.chefes.filter((_, i) => prog(jogo, 'chefe-' + i).z).length}</b> de ${J.chefes.length} chefes vencidos</span></div>
+    <ul class="lista-fatos">${J.fatos.map(f => `<li>${f}</li>`).join('')}</ul>
+    <p class="fatos" style="margin-top:8px">${J.abrir}</p>`;
+  /* ordem */
+  const cx = document.getElementById('ordem'); cx.innerHTML = '';
+  for(const [k, n] of [['jogo', '🎮 Ordem do jogo'], ['dif', '💪 Mais fácil primeiro'], ['falta', '🧩 O que falta']]){
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = n;
+    b.setAttribute('aria-pressed', String(k === ordem));
+    b.onclick = () => { ordem = k; desenhar(); };
+    cx.appendChild(b);
+  }
+  /* mundos */
+  let lista = J.mundos.map((m, i) => ({ ...m, i }));
+  if(ordem === 'dif') lista.sort((a, b) => a.dif - b.dif || a.i - b.i);
+  if(ordem === 'falta') lista.sort((a, b) => (J.porMundo - prog(jogo, b.id).j) - (J.porMundo - prog(jogo, a.id).j) || a.i - b.i);
+  const ms = document.getElementById('mundos'); ms.innerHTML = '';
+  for(const m of lista){
+    const p = prog(jogo, m.id);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'mundo' + (p.z ? ' zerado' : '');
+    b.innerHTML = `<div class="topo" style="background:${m.cor}"><span class="emoji">${m.emoji}</span><span><b></b><small>${m.i + 1}º mundo${p.z ? ' · ✅ zerado' : ''}</small></span></div>
+      <div class="corpo">
+        <div class="par"><span>Pra abrir</span><span class="jig">🧩 ${m.jiggies} ${m.jiggies === 1 ? 'Jiggy' : 'Jiggies'}</span></div>
+        <div class="par"><span>Dificuldade</span><span class="dif f${m.dif}">${DIF[m.dif]}</span></div>
+        <div class="par"><span>Transformação</span><span>${m.trans}</span></div>
+        <div class="par"><span>Seus Jiggies</span><span><b>${p.j}</b> / ${J.porMundo}</span></div>
+        <div class="mini-barra"><i style="width:${p.j / J.porMundo * 100}%"></i></div>
+      </div>`;
+    b.querySelector('b').textContent = m.nome;
+    b.onclick = () => abrirMundo(m);
+    ms.appendChild(b);
+  }
+  /* chefes (com "venci") e inimigos */
+  const lista2 = (alvo, itens, chefe) => {
+    const cx = document.getElementById(alvo); cx.innerHTML = '';
+    if(!itens.length){ const p = document.createElement('p'); p.className = 'lugar'; p.textContent = J.semInimigos || ''; cx.appendChild(p); return; }
+    itens.forEach((x, i) => {
+      const d = document.createElement('div'); d.className = 'lugar chefe';
+      d.innerHTML = '<span class="bicho"></span><span><b></b><small></small><span class="txt"></span></span>';
+      d.querySelector('.bicho').textContent = x.emoji;
+      d.querySelector('b').textContent = x.nome;
+      d.querySelector('small').textContent = '📍 ' + x.onde;
+      d.querySelector('.txt').textContent = x.texto;
+      if(chefe){
+        const k = 'chefe-' + i, p = prog(jogo, k);
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'venci';
+        b.setAttribute('aria-pressed', String(!!p.z)); b.textContent = p.z ? '✅ Venci' : '⚔️ Venci?';
+        b.onclick = () => { p.z = !p.z; salvarProg(jogo, k, p); desenhar(); };
+        d.appendChild(b);
+      }
+      cx.appendChild(d);
+    });
+  };
+  lista2('chefes', J.chefes, true);
+  lista2('inimigos', J.inimigos, false);
+  /* extra */
+  document.getElementById('titulo-extra').textContent = J.tituloExtra;
+  const ex = document.getElementById('extra'); ex.innerHTML = '';
+  if(J.notas){
+    const t = document.createElement('table'); t.className = 'tabela';
+    t.innerHTML = '<thead><tr><th>Porta</th><th style="text-align:right">Notas precisas</th></tr></thead><tbody>' +
+      J.notas.map((n, i) => `<tr><td>🚪 ${i + 1}ª porta</td><td class="n">🎵 ${n}</td></tr>`).join('') + '</tbody>';
+    ex.appendChild(t);
+    const h = document.createElement('h2'); h.className = 'secao'; h.textContent = '📍 Outros lugares'; ex.appendChild(h);
+  }
+  const lg = document.createElement('div'); lg.className = 'lugares';
+  for(const l of J.lugares){
+    const d = document.createElement('div'); d.className = 'lugar';
+    d.innerHTML = '<b></b><span></span>'; d.querySelector('b').textContent = l.nome; d.querySelector('span').textContent = l.texto;
+    lg.appendChild(d);
+  }
+  ex.appendChild(lg);
+}
+
+/* ---------- folha de um mundo ---------- */
+const fundo = document.getElementById('fundo'), folha = document.getElementById('folha');
+let ultimoFoco = null;
+function abrirMundo(m){
+  if(!fundo.classList.contains('aberto')) ultimoFoco = document.activeElement;
+  const J = JOGOS[jogo], p = prog(jogo, m.id);
+  const i = J.mundos.findIndex(x => x.id === m.id);   // m pode ser uma cópia (a lista ordenada)
+  folha.innerHTML = `<button class="botao-redondo fechar" type="button" aria-label="Fechar">✕</button>
+    <div class="cabeca" style="background:${J.mundos[i].cor}"><span class="emoji">${m.emoji}</span><h3 id="folha-nome"></h3><small>${J.nome} · ${i + 1}º mundo</small></div>
+    <div class="miolo">
+      <div class="ficha">
+        <div><span>Pra abrir</span><b>🧩 ${m.jiggies} ${m.jiggies === 1 ? 'Jiggy' : 'Jiggies'}</b></div>
+        <div><span>Dificuldade</span><b class="dif f${m.dif}">${DIF[m.dif]}</b></div>
+        <div><span>Transformação</span><b>${m.trans}</b></div>
+        <div><span>Chefe / quem manda</span><b></b></div>
+        <div><span>Jiggies no mundo</span><b>🧩 ${J.porMundo}</b></div>
+        <div><span>${i ? 'Depois de' : 'Começa o jogo'}</span><b>${i ? J.mundos[i - 1].emoji + ' ' + J.mundos[i - 1].nome : '🎮'}</b></div>
+      </div>
+      <p class="texto"></p>
+      <p class="dica">💡 <b>Dica:</b> <span></span></p>
+      <div class="progresso">
+        <div class="contador"><button type="button" aria-label="Menos">−</button><b>🧩 Jiggies que eu peguei aqui</b><span class="num">${p.j}/${J.porMundo}</span><button type="button" aria-label="Mais">+</button></div>
+        <button type="button" class="grande-botao" id="zerar" aria-pressed="${p.z}">${p.z ? '✅ Zerei este mundo!' : '🏁 Marcar como zerado'}</button>
+      </div>
+    </div>`;
+  folha.querySelector('#folha-nome').textContent = m.nome;
+  folha.querySelectorAll('.ficha b')[3].textContent = m.chefe;
+  folha.querySelector('.texto').textContent = m.texto;
+  folha.querySelector('.dica span').textContent = m.dica;
+  const [menos, mais] = folha.querySelectorAll('.contador button');
+  menos.onclick = () => { p.j = Math.max(0, p.j - 1); salvarProg(jogo, m.id, p); abrirMundo(m); desenhar(); };
+  mais.onclick = () => { p.j = Math.min(J.porMundo, p.j + 1); if(p.j === J.porMundo) p.z = true; salvarProg(jogo, m.id, p); abrirMundo(m); desenhar(); };
+  folha.querySelector('#zerar').onclick = () => { p.z = !p.z; salvarProg(jogo, m.id, p); abrirMundo(m); desenhar(); };
+  folha.querySelector('.fechar').onclick = fechar;
+  fundo.classList.add('aberto');
+  folha.querySelector('.fechar').focus();
+}
+function fechar(){ fundo.classList.remove('aberto'); if(ultimoFoco && ultimoFoco.focus) ultimoFoco.focus(); }
+fundo.addEventListener('click', ev => { if(ev.target === fundo) fechar(); });
+document.addEventListener('keydown', ev => { if(ev.key === 'Escape' && fundo.classList.contains('aberto')) fechar(); });
+
+document.getElementById('aba-bk').onclick = () => { jogo = 'bk'; gravar('banjolocals:jogo', jogo); desenhar(); };
+document.getElementById('aba-bt').onclick = () => { jogo = 'bt'; gravar('banjolocals:jogo', jogo); desenhar(); };
+
+/* ---------- claro / escuro ---------- */
+const btTema = document.getElementById('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function aplicarTema(t){
+  if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema');
+  btTema.textContent = estaEscuro() ? '☀️' : '🌙';
+  if(corDaBarra) corDaBarra.setAttribute('content', estaEscuro() ? '#15120c' : '#2b5ea8');
+}
+aplicarTema(ler('banjolocals:tema', null));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => aplicarTema(document.documentElement.getAttribute('data-tema')));
+btTema.onclick = () => { const n = estaEscuro() ? 'claro' : 'escuro'; gravar('banjolocals:tema', n); aplicarTema(n); };
+
+/* ---------- "não atualizou o site" ---------- */
+const btRecarregar = document.getElementById('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{ if(window.caches){ const n = await caches.keys(); await Promise.all(n.map(x => caches.delete(x))); } }catch(e){}
+  try{ if(navigator.serviceWorker){ const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(x => x.update().catch(() => {}))); } }catch(e){}
+  const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+};
+try{ if(new URL(location.href).searchParams.has('v')){ const l = new URL(location.href); l.searchParams.delete('v'); history.replaceState(null, '', l.pathname + l.search + l.hash); } }catch(e){}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(!jaTinha || document.querySelector('.faixa-nova')) return;
+    const f = document.createElement('div'); f.className = 'faixa-nova';
+    f.innerHTML = '<span>✨ Chegou versão nova!</span><button type="button">Carregar</button>';
+    f.querySelector('button').onclick = () => location.reload();
+    document.body.appendChild(f);
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); }).catch(() => {});
+  });
+}
+
+desenhar();
+</script>
+</body>
+</html>
