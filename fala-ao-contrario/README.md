@@ -5,7 +5,7 @@ Site pra gravar a sua voz e ouvir **de trás pra frente**.
 🔗 https://willianwiab.github.io/contas-wen/fala-ao-contrario/
 
 ## Como usar
-1. Aperte o botão vermelho e deixe o site usar o microfone.
+1. Aperte o botão vermelho e deixe o site usar o microfone — ou toque em 📂 **Pegar um áudio do celular** (mp3, m4a, wav, ogg ou vídeo; até 30 segundos).
 2. Fale alguma coisa (até 12 segundos) e aperte de novo pra parar.
 3. A voz toca ao contrário na hora. Use 🔁 **Ao contrário** / ▶️ **Pra frente** pra escolher a direção.
    - Barrinha que mostra quanto já tocou (dá pra arrastar), com ⏸️/▶️, e o desenho da voz vai ficando colorido
