@@ -102,6 +102,7 @@ footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.82r
 .tamanhos{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
 .tamanhos button{padding:8px 2px;font-size:.74rem;font-weight:700;line-height:1.2}
 .tamanhos button i{display:block;font-style:normal;font-size:1.4rem}
+@media (max-width:360px){.tamanhos{grid-template-columns:repeat(3,minmax(0,1fr))}.mesa label{grid-template-columns:7.4em minmax(0,1fr) 38px;font-size:.8rem}}
 .navega{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px}
 .navega button{font-weight:700;padding:10px 4px;font-size:.88rem}
 details.ajuda summary{cursor:pointer;font-family:'Baloo 2',cursive;font-size:1.25rem;font-weight:800}
@@ -114,6 +115,24 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 .tocador input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--cartao);border:4px solid var(--marca)}
 .tocador span{flex:none;font-size:.82rem;font-weight:700;color:var(--tinta-fraca);font-variant-numeric:tabular-nums;min-width:74px;text-align:right}
 @media (max-width:360px){.tocador span{min-width:0;font-size:.74rem}}
+.efeitos button{position:relative}
+.efeitos button .novo{position:absolute;top:3px;right:4px;font-size:.6rem;font-weight:800;background:var(--vermelho);color:#fff;border-radius:99px;padding:1px 5px}
+.procurar{width:100%;font:inherit;font-size:.9rem;padding:9px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);margin-bottom:8px}
+.titulo-mesa{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mesa{display:grid;gap:10px}
+.mesa label{display:grid;grid-template-columns:8.2em minmax(0,1fr) 44px;align-items:center;gap:10px;font-weight:700;font-size:.88rem}
+.mesa input{width:100%;accent-color:var(--marca)}
+.mesa output{text-align:right;font-variant-numeric:tabular-nums;color:var(--marca);font-weight:800}
+.botoes button.largo{grid-column:1 / -1}
+.salvos{list-style:none;display:grid;gap:8px;margin-top:10px}
+.salvos li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:10px}
+.salvos li.aberto{border-color:var(--marca)}
+.salvos b{display:block;overflow-wrap:anywhere}
+.salvos small{color:var(--tinta-fraca);font-size:.78rem;line-height:1.4;display:block}
+.salvos .acoes{display:flex;gap:6px}
+.salvos .acoes button{font:inherit;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);border-radius:10px;width:38px;height:38px;cursor:pointer;font-size:1rem}
+.salvos .acoes button.abrir{background:var(--marca);border-color:var(--marca);color:#fff}
+@media (max-width:360px){.salvos .acoes button{width:32px;height:32px;font-size:.85rem}}
 </style>
 </head>
 <body>
@@ -122,7 +141,7 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
     <h1 class="logo"><img src="icone-limpo.svg" alt="" /><span>Fala ao <span class="p">Contrário</span></span></h1>
     <button class="botao-redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
   </header>
-  <p class="sub">Aperte o botão vermelho, fale alguma coisa e ouça a sua voz <b>de trás pra frente</b>, com <b>200 vozes</b> diferentes! 🙃</p>
+  <p class="sub">Aperte o botão vermelho, fale alguma coisa e ouça a sua voz <b>de trás pra frente</b>, com <b>280 vozes</b> e uma mesa de efeitos! 🙃</p>
 
   <section class="palco">
     <button class="gravar" id="gravar" type="button"><span>🎙️</span><em id="gravar-txt" style="font-style:normal">Gravar</em></button>
@@ -145,17 +164,19 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
     </div>
     <div class="botoes">
       <button type="button" id="tocar" disabled>🔊 Tocar de novo</button>
-      <button type="button" id="baixar" disabled>💾 Baixar</button>
+      <button type="button" id="baixar" disabled>⬇️ Baixar</button>
+      <button type="button" class="largo" id="salvar" disabled>⭐ Salvar no site</button>
       <button type="button" class="grande" id="compartilhar" disabled>📤 Compartilhar a voz</button>
     </div>
     <p class="recado" id="recado" aria-live="polite"></p>
   </section>
 
   <section class="cartao" id="vozes">
-    <h2>🎭 200 vozes</h2>
-    <p class="recado" style="margin-top:4px">Escolha um <b>jeito</b> e um <b>tamanho</b>: 40 jeitos × 5 tamanhos = <b>200 vozes</b>! Tocou, já toca.</p>
-    <div class="placar"><b id="voz-num">Voz 1 de 200</b><span id="voz-nome"></span></div>
+    <h2>🎭 280 vozes</h2>
+    <p class="recado" style="margin-top:4px">Escolha um <b>jeito</b> e um <b>tamanho</b>: 56 jeitos × 5 tamanhos = <b>280 vozes</b>! Tocou, já toca.</p>
+    <div class="placar"><b id="voz-num">Voz 1 de 280</b><span id="voz-nome"></span></div>
     <h3>Jeito</h3>
+    <input type="search" class="procurar" id="procurar" placeholder="🔎 Procurar um jeito (robô, pato, DJ…)" aria-label="Procurar um jeito" />
     <div class="efeitos" id="efeitos"></div>
     <h3>Tamanho</h3>
     <div class="tamanhos" id="tamanhos"></div>
@@ -164,6 +185,16 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
       <button type="button" id="sorte">🎲 Surpresa</button>
       <button type="button" id="prox">Próxima ➡️</button>
     </div>
+    <h3 class="titulo-mesa">🎛️ Mesa de efeitos <button type="button" class="mini" id="mesa-zerar">↩️ Zerar</button></h3>
+    <p class="recado" style="margin:0 0 8px">Arraste e solte: o efeito junta com a voz escolhida.</p>
+    <div class="mesa" id="mesa"></div>
+  </section>
+
+  <section class="cartao" id="cartao-salvos">
+    <h2>⭐ Meus áudios salvos</h2>
+    <p class="recado" style="margin-top:4px">Aperte <b>⭐ Salvar no site</b> e o áudio fica guardado aqui, mesmo se fechar a página. Fica só neste aparelho.</p>
+    <ul class="salvos" id="salvos"></ul>
+    <p class="recado" id="salvos-vazio">Nenhum áudio salvo ainda.</p>
   </section>
 
   <section class="cartao">
@@ -195,15 +226,15 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
       <li>O site grava a sua voz (o celular vai pedir permissão pro microfone), ou você pega um áudio que já está no celular com 📂, ou cola um link de áudio 🔗.</li>
       <li>A gravação vira um monte de numerozinhos, um atrás do outro.</li>
       <li>O site vira essa fila de números de trás pra frente e toca: a sua voz sai ao contrário!</li>
-      <li>Pras 200 vozes, o site mexe nos números: pula alguns (esquilo), repete (monstro), mistura com ecos (caverna) ou com uma ondinha (robô).</li>
+      <li>Pras 280 vozes, o site mexe nos números: pula alguns (esquilo), repete (monstro), mistura com ecos (caverna) ou com uma ondinha (robô).</li>
     </ol>
   </section>
 
-  <p class="seguro">🔒 A sua voz fica <b>só neste aparelho</b>. Nada vai pra internet, e quando você fecha a página a gravação some (a não ser que você baixe ou compartilhe).<br>📤 Só compartilhe com quem você conhece, tipo sua família e seus amigos.</p>
+  <p class="seguro">🔒 A sua voz fica <b>só neste aparelho</b>. Nada vai pra internet, e quando você fecha a página a gravação some (a não ser que você salve ⭐, baixe ou compartilhe).<br>📤 Só compartilhe com quem você conhece, tipo sua família e seus amigos.</p>
 
   <footer>
     Fala ao Contrário · feito pra brincar 🙃
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 5 — 26/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 6 — 27/09 · 🔄</button>
   </footer>
 </div>
 
@@ -212,14 +243,14 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 /* =========================================================================
    Fala ao Contrário — grava a voz e toca de trás pra frente.
    O microfone manda os números direto (ScriptProcessor), a gente inverte
-   a fila e passa pelos efeitos das 200 vozes. Nada sai do aparelho.
+   a fila e passa pelos efeitos das 280 vozes. Nada sai do aparelho.
    ========================================================================= */
 const LIMITE_S = 5 * 60;   // grava no máximo 5 minutos
 function fmt(s){ return s < 60 ? `${s.toFixed(1)}s` : `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`; }
 const btGravar = document.getElementById('gravar'), txtGravar = document.getElementById('gravar-txt');
 const tempo = document.getElementById('tempo'), recado = document.getElementById('recado');
 const tela = document.getElementById('onda');
-const btTocar = document.getElementById('tocar'), btBaixar = document.getElementById('baixar'), btCompartilhar = document.getElementById('compartilhar');
+const btTocar = document.getElementById('tocar'), btBaixar = document.getElementById('baixar'), btCompartilhar = document.getElementById('compartilhar'), btSalvar = document.getElementById('salvar');
 
 /* O som sai por um <audio> (e não direto pelo Web Audio): assim toca mesmo com
    o iPhone no silencioso e sai no alto-falante, não no fone de ligação. */
@@ -306,7 +337,7 @@ function parar(){
   prontaPraTocar();
 }
 function prontaPraTocar(aviso){
-  btTocar.disabled = btBaixar.disabled = btCompartilhar.disabled = false;
+  btTocar.disabled = btBaixar.disabled = btCompartilhar.disabled = btSalvar.disabled = false;
   tocarEscolha(aviso);
 }
 
@@ -447,6 +478,38 @@ function gaguejar(x, sr, s){   // cada pedacinho repete duas vezes: "ga-ga-gato"
   for(let a = 0; a < x.length; a += T){ const p = x.subarray(a, Math.min(x.length, a + T)); y.set(p, o); o += p.length; if((a / T) % 2 === 0){ y.set(p, o); o += p.length; } }
   return y.slice(0, o);
 }
+/* Pedacinhos (grãos) que se sobrepõem: muda o tom sem mudar a velocidade, ou o contrário. */
+function granular(x, sr, tom, vel){
+  const L = Math.floor(sr * .06), Ho = L >> 1, Hi = Ho * vel, n = Math.floor(x.length / vel);
+  const y = new Float32Array(n + L), w = new Float32Array(L);
+  for(let i = 0; i < L; i++) w[i] = .5 - .5 * Math.cos(2 * Math.PI * i / L);
+  for(let o = 0, k = 0; o < n; o += Ho, k++){
+    const ini = k * Hi;
+    for(let i = 0; i < L; i++){
+      const p = ini + i * tom, a = p | 0;
+      if(a + 1 >= x.length) break;
+      const f = p - a; y[o + i] += (x[a] * (1 - f) + x[a + 1] * f) * w[i];
+    }
+  }
+  return y.slice(0, n);
+}
+function tocaDeJeito(x, rate){   // anda pelo som com a velocidade mudando (rate(i) diz quanto andar)
+  const y = []; let p = 0, i = 0;
+  while(p >= 0 && p < x.length - 1 && i < x.length * 3){ const a = p | 0, f = p - a; y.push(x[a] * (1 - f) + x[a + 1] * f); p += rate(p, i++); }
+  return Float32Array.from(y);
+}
+function arranhar(x, sr){   // DJ: vai pra frente e volta um pouquinho, tipo disco arranhado
+  const n = x.length, y = new Float32Array(n), A = .22 * sr, k = 2 * Math.PI * 1.3 / sr;
+  for(let i = 0; i < n; i++){
+    const p = Math.max(0, Math.min(n - 2, i + A * Math.sin(k * i))), a = p | 0, f = p - a;
+    y[i] = x[a] * (1 - f) + x[a + 1] * f;
+  }
+  return y;
+}
+function picotar(x, sr, hz){ const y = new Float32Array(x.length), k = 2 * Math.PI * hz / sr; for(let i = 0; i < x.length; i++) y[i] = x[i] * (.5 + .5 * Math.tanh(8 * Math.sin(k * i))); return y; }
+function acorde(x, sr, fs){ const y = new Float32Array(x.length), ks = fs.map(f => 2 * Math.PI * f / sr); for(let i = 0; i < x.length; i++){ let s = 0; for(const k of ks) s += Math.sin(k * i); y[i] = x[i] * s / fs.length; } return y; }
+function juntar(a, b){ const y = new Float32Array(a.length + b.length); y.set(a); y.set(b, a.length); return y; }
+function atrasar(x, sr, s){ const y = new Float32Array(x.length + Math.floor(s * sr)); y.set(x, Math.floor(s * sr)); return y; }
 function soma(...partes){ const n = Math.max(...partes.map(p => p.length)), y = new Float32Array(n); partes.forEach(p => { for(let i = 0; i < p.length; i++) y[i] += p[i]; }); return y; }
 function normalizar(x){
   let pico = 0; for(let i = 0; i < x.length; i++){ const a = Math.abs(x[i]); if(a > pico) pico = a; }
@@ -454,7 +517,7 @@ function normalizar(x){
   return x;
 }
 
-/* ---------- as 200 vozes: 40 jeitos × 5 tamanhos ---------- */
+/* ---------- as 280 vozes: 56 jeitos × 5 tamanhos (+ a mesa de efeitos) ---------- */
 const JEITOS = [
   { e:'🎤', n:'Voz pura',          f:(x) => x },
   { e:'🤖', n:'Robô',              f:(x, sr) => anel(pixel(x, 8, 2), sr, 50, 1) },
@@ -496,6 +559,22 @@ const JEITOS = [
   { e:'🧸', n:'Brinquedo quebrado', f:(x, sr) => tremolo(pixel(x, 3, 3), sr, 12, .8) },
   { e:'🚇', n:'Túnel',             f:(x, sr) => reverb(filtro(eco(x, sr, .06, .6), sr, 'baixo', 2000), sr, 1.2, .4) },
   { e:'⚡', n:'Choque elétrico',   f:(x, sr) => distorcer(tremolo(anel(x, sr, 1000, .5), sr, 25, .8), 3) },
+  { e:'💿', n:'DJ arranhando',      f:(x, sr) => arranhar(x, sr), novo:1 },
+  { e:'🫠', n:'Derretendo',         f:(x) => tocaDeJeito(x, (p) => 1 - .6 * p / x.length), novo:1 },
+  { e:'🏎️', n:'Acelerando',        f:(x) => tocaDeJeito(x, (p) => .6 + 1.6 * p / x.length), novo:1 },
+  { e:'🪃', n:'Vai e volta',        f:(x) => juntar(x, inverter(x)), novo:1 },
+  { e:'🪞', n:'Eco de trás pra frente', f:(x, sr) => inverter(reverb(inverter(x), sr, 1.6, .6)), novo:1 },
+  { e:'✂️', n:'Picotado',          f:(x, sr) => picotar(x, sr, 6), novo:1 },
+  { e:'🔔', n:'Sino de metal',      f:(x, sr) => soma(eco(x, sr, 1 / 330, .88), eco(x, sr, 1 / 495, .85), x), novo:1 },
+  { e:'👥', n:'Multidão',           f:(x, sr) => soma(x, atrasar(granular(x, sr, .82, 1), sr, .05), atrasar(granular(x, sr, 1.2, 1), sr, .09), atrasar(granular(x, sr, .95, 1), sr, .14), atrasar(granular(x, sr, 1.45, 1), sr, .2)), novo:1 },
+  { e:'🎶', n:'Harmonia',           f:(x, sr) => soma(x, granular(x, sr, 1.26, 1), granular(x, sr, 1.5, 1)), novo:1 },
+  { e:'🐭', n:'Ratinho sem pressa', f:(x, sr) => granular(x, sr, 1.8, 1), novo:1 },
+  { e:'🗿', n:'Gigante de pedra',   f:(x, sr) => reverb(granular(x, sr, .55, 1), sr, 1.2, .3), novo:1 },
+  { e:'👾', n:'Fliperama',          f:(x, sr) => pixel(granular(x, sr, 1.5, 1), 4, 4), novo:1 },
+  { e:'🐢', n:'Câmera lenta',       f:(x, sr) => granular(x, sr, 1, .5), novo:1 },
+  { e:'🏃', n:'Rapidinho',          f:(x, sr) => granular(x, sr, 1, 1.8), novo:1 },
+  { e:'🎹', n:'Robô cantor',        f:(x, sr) => acorde(x, sr, [220, 277, 330]), novo:1 },
+  { e:'🥴', n:'Tontinho',           f:(x, sr) => balanco(x, sr, 30, 25, .5, 1), novo:1 },
 ];
 const TOTAL = JEITOS.length * 5;
 const TAMANHOS = [
@@ -512,7 +591,7 @@ escolha.c = escolha.c !== false;
 const caixaJeitos = document.getElementById('efeitos'), caixaTamanhos = document.getElementById('tamanhos');
 JEITOS.forEach((J, i) => {
   const b = document.createElement('button'); b.type = 'button';
-  b.innerHTML = `<i>${J.e}</i>${J.n}`;
+  b.innerHTML = `<i>${J.e}</i>${J.n}${J.novo ? '<span class="novo">novo</span>' : ''}`;
   b.onclick = () => { escolha.j = i; tocarEscolha(); };
   caixaJeitos.appendChild(b);
 });
@@ -525,7 +604,7 @@ TAMANHOS.forEach((T, i) => {
 const numero = () => escolha.j * TAMANHOS.length + escolha.t + 1;
 function nomeDaVoz(){
   const J = JEITOS[escolha.j], T = TAMANHOS[escolha.t];
-  return `${J.e} ${J.n} · ${T.e} ${T.n} · ${escolha.c ? '🔁 ao contrário' : '▶️ pra frente'}`;
+  return `${J.e} ${J.n} · ${T.e} ${T.n} · ${escolha.c ? '🔁 ao contrário' : '▶️ pra frente'}${typeof mesa !== 'undefined' && mesaMexida() ? ' · 🎛️ mesa' : ''}`;
 }
 function mostrarEscolha(){
   document.getElementById('voz-num').textContent = `Voz ${numero()} de ${TOTAL}`;
@@ -543,11 +622,54 @@ document.getElementById('sorte').onclick = () => { let n; do{ n = 1 + Math.floor
 document.getElementById('dir-contrario').onclick = () => { escolha.c = true; tocarEscolha(); };
 document.getElementById('dir-frente').onclick = () => { escolha.c = false; tocarEscolha(); };
 
+/* procurar jeito */
+const semAcento = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+document.getElementById('procurar').addEventListener('input', ev => {
+  const q = semAcento(ev.target.value.trim());
+  [...caixaJeitos.children].forEach((b, i) => { b.hidden = !!q && !semAcento(JEITOS[i].n).includes(q); });
+});
+
+/* ---------- mesa de efeitos: botões de arrastar que somam com a voz ---------- */
+const MESA = [
+  { k:'tom',  e:'🎵', n:'Tom',        min:-12, max:12,  passo:1,  zero:0,   mostra:v => v > 0 ? `+${v}` : `${v}` },
+  { k:'vel',  e:'⏩', n:'Velocidade', min:50,  max:200, passo:10, zero:100, mostra:v => `${v}%` },
+  { k:'eco',  e:'🏔️', n:'Eco',       min:0,   max:100, passo:5,  zero:0,   mostra:v => `${v}` },
+  { k:'sala', e:'⛪', n:'Salão', min:0,  max:100, passo:5,  zero:0,   mostra:v => `${v}` },
+  { k:'robo', e:'🤖', n:'Robô',       min:0,   max:100, passo:5,  zero:0,   mostra:v => `${v}` },
+  { k:'grave', e:'🔊', n:'Grave',     min:0,   max:100, passo:5,  zero:0,   mostra:v => `${v}` },
+];
+function mesaLimpa(){ const m = {}; MESA.forEach(M => m[M.k] = M.zero); return m; }
+function arrumarMesa(m){ const l = mesaLimpa(); if(m && typeof m === 'object') MESA.forEach(M => { const v = +m[M.k]; if(isFinite(v)) l[M.k] = Math.max(M.min, Math.min(M.max, v)); }); return l; }
+let mesa = arrumarMesa(ler('aocontrario:mesa', null));
+const mesaMexida = () => MESA.some(M => mesa[M.k] !== M.zero);
+const caixaMesa = document.getElementById('mesa');
+MESA.forEach(M => {
+  const l = document.createElement('label');
+  l.innerHTML = `<span>${M.e} ${M.n}</span><input type="range" min="${M.min}" max="${M.max}" step="${M.passo}" /><output></output>`;
+  const inp = l.querySelector('input'), out = l.querySelector('output');
+  inp.addEventListener('input', () => { out.textContent = M.mostra(+inp.value); });
+  inp.addEventListener('change', () => { mesa[M.k] = +inp.value; gravarLocal('aocontrario:mesa', mesa); tocarEscolha(); });
+  caixaMesa.appendChild(l);
+});
+function mostrarMesa(){
+  MESA.forEach((M, i) => { const l = caixaMesa.children[i]; l.querySelector('input').value = mesa[M.k]; l.querySelector('output').textContent = M.mostra(mesa[M.k]); });
+}
+document.getElementById('mesa-zerar').onclick = () => { mesa = mesaLimpa(); gravarLocal('aocontrario:mesa', mesa); mostrarMesa(); tocarEscolha(); };
+mostrarMesa();
+function aplicarMesa(x){
+  if(mesa.tom || mesa.vel !== 100) x = granular(x, taxa, Math.pow(2, mesa.tom / 12), mesa.vel / 100);
+  if(mesa.grave) x = soma(x, filtro(x, taxa, 'baixo', 180).map(v => v * mesa.grave / 25));
+  if(mesa.robo) x = anel(x, taxa, 60, mesa.robo / 100);
+  if(mesa.eco) x = eco(x, taxa, .25, mesa.eco / 100 * .65);
+  if(mesa.sala) x = reverb(x, taxa, 1.4, mesa.sala / 100 * .7);
+  return x;
+}
+
 function render(){
   let x = escolha.c ? inverter(voz) : voz.slice();
   const r = TAMANHOS[escolha.t].r;
   if(r !== 1) x = velocidade(x, r);
-  return normalizar(JEITOS[escolha.j].f(x, taxa));
+  return normalizar(aplicarMesa(JEITOS[escolha.j].f(x, taxa)));
 }
 let vez = 0;
 function tocarEscolha(aviso){
@@ -642,7 +764,7 @@ function baixar(){
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
-btBaixar.onclick = () => { if(!ultimo) return; baixar(); avisar('💾 Pronto! O arquivo foi pros downloads.'); };
+btBaixar.onclick = () => { if(!ultimo) return; baixar(); avisar('⬇️ Pronto! O arquivo foi pros downloads.'); };
 
 /* ---------- compartilhar: abre a lista de apps do próprio celular ---------- */
 btCompartilhar.onclick = async () => {
@@ -668,6 +790,83 @@ document.getElementById('testar-som').onclick = () => {
   notas.forEach((f, k) => { for(let i = 0; i < sr * dur; i++){ const t = i / sr; d[Math.floor(k * sr * dur) + i] = Math.sin(2 * Math.PI * f * t) * .5 * Math.min(1, (dur - t) * 30); } });
   tocarWav(paraWav(d, sr), false);
 };
+
+/* ---------- ⭐ salvos: ficam no IndexedDB do aparelho ---------- */
+let banco = null, abertoId = null;
+function abrirBanco(){
+  if(banco) return banco;
+  banco = new Promise((ok, erro) => {
+    if(!window.indexedDB) return erro(new Error('sem indexedDB'));
+    const r = indexedDB.open('aocontrario', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('audios', { keyPath:'id', autoIncrement:true });
+    r.onsuccess = () => ok(r.result); r.onerror = () => erro(r.error);
+  });
+  banco.catch(() => { banco = null; });
+  return banco;
+}
+async function mexer(modo, fazer){
+  const db = await abrirBanco();
+  return new Promise((ok, erro) => {
+    const t = db.transaction('audios', modo), st = t.objectStore('audios'); let res;
+    const r = fazer(st); if(r) r.onsuccess = () => { res = r.result; };
+    t.oncomplete = () => ok(res); t.onerror = () => erro(t.error); t.onabort = () => erro(t.error);
+  });
+}
+const paraInt16 = x => { const y = new Int16Array(x.length); for(let i = 0; i < x.length; i++){ const v = Math.max(-1, Math.min(1, x[i])); y[i] = v < 0 ? v * 0x8000 : v * 0x7fff; } return y; };
+const deInt16 = y => { const x = new Float32Array(y.length); for(let i = 0; i < y.length; i++) x[i] = y[i] / 0x8000; return x; };
+btSalvar.onclick = async () => {
+  if(!voz) return;
+  let lista = []; try{ lista = await mexer('readonly', st => st.getAll()); }catch(e){}
+  const nome = (prompt('Qual o nome desse áudio?', `Áudio ${lista.length + 1}`) || '').trim().slice(0, 40);
+  if(!nome) return;
+  try{
+    if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+    abertoId = await mexer('readwrite', st => st.add({ nome, quando:Date.now(), taxa, dados:paraInt16(voz), escolha:{ ...escolha }, mesa:{ ...mesa } }));
+    avisar(`⭐ Salvou “${nome}”! Ele está lá embaixo em Meus áudios salvos.`);
+    mostrarSalvos();
+  }catch(e){
+    avisar(e && e.name === 'QuotaExceededError' ? 'Acabou o espaço pra salvar. Apague uns áudios salvos e tente de novo.' : 'Não deu pra salvar aqui. Tente ⬇️ Baixar.', true);
+  }
+};
+async function mostrarSalvos(){
+  const ul = document.getElementById('salvos'), vazio = document.getElementById('salvos-vazio');
+  let lista = [];
+  try{ lista = await mexer('readonly', st => st.getAll()); }catch(e){ vazio.textContent = 'Este navegador não deixa salvar. Use ⬇️ Baixar.'; return; }
+  ul.innerHTML = '';
+  vazio.hidden = lista.length > 0;
+  lista.sort((a, b) => b.quando - a.quando).forEach(a => {
+    const li = document.createElement('li'); li.classList.toggle('aberto', a.id === abertoId);
+    const J = JEITOS[a.escolha && a.escolha.j] || JEITOS[0];
+    const info = document.createElement('div');
+    const b = document.createElement('b'); b.textContent = `${J.e} ${a.nome}`;
+    const sm = document.createElement('small');
+    sm.textContent = `${fmt(a.dados.length / a.taxa)} · ${new Date(a.quando).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' })} ${new Date(a.quando).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' })}`;
+    info.append(b, sm);
+    const acoes = document.createElement('div'); acoes.className = 'acoes';
+    const bt = (t, rot, cls, fn) => { const x = document.createElement('button'); x.type = 'button'; x.textContent = t; x.title = rot; x.setAttribute('aria-label', `${rot} ${a.nome}`); if(cls) x.className = cls; x.onclick = fn; acoes.appendChild(x); };
+    bt('▶️', 'Abrir', 'abrir', () => {
+      if(gravando) parar();
+      audio(); destravar();
+      voz = deInt16(a.dados); taxa = a.taxa; abertoId = a.id;
+      if(a.escolha && JEITOS[a.escolha.j] && TAMANHOS[a.escolha.t]) escolha = { j:a.escolha.j, t:a.escolha.t, c:a.escolha.c !== false };
+      mesa = arrumarMesa(a.mesa); gravarLocal('aocontrario:mesa', mesa); mostrarMesa();
+      tempo.textContent = `⭐ ${a.nome} · ${fmt(voz.length / taxa)}`;
+      prontaPraTocar();
+      mostrarSalvos();
+      document.querySelector('.palco').scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+    bt('✏️', 'Mudar o nome de', '', async () => {
+      const n = (prompt('Novo nome:', a.nome) || '').trim().slice(0, 40); if(!n) return;
+      a.nome = n; try{ await mexer('readwrite', st => st.put(a)); }catch(e){} mostrarSalvos();
+    });
+    bt('🗑️', 'Apagar', '', async () => {
+      if(!confirm(`Apagar “${a.nome}”?`)) return;
+      try{ await mexer('readwrite', st => st.delete(a.id)); }catch(e){} if(abertoId === a.id) abertoId = null; mostrarSalvos();
+    });
+    li.append(info, acoes); ul.appendChild(li);
+  });
+}
+mostrarSalvos();
 
 /* ---------- desafio ---------- */
 const PALAVRAS = ['banana', 'bola', 'gato', 'pipoca', 'sapato', 'macaco', 'Pikachu', 'Ditto', 'bolo', 'amigo', 'escola', 'tatu',
