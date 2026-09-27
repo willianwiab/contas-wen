@@ -133,6 +133,26 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 .salvos .acoes button{font:inherit;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);border-radius:10px;width:38px;height:38px;cursor:pointer;font-size:1rem}
 .salvos .acoes button.abrir{background:var(--marca);border-color:var(--marca);color:#fff}
 @media (max-width:360px){.salvos .acoes button{width:32px;height:32px;font-size:.85rem}}
+.tocador .repetir{flex:none;width:40px;height:40px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);font-size:1.1rem;cursor:pointer}
+.tocador .repetir[aria-pressed="true"]{border-color:var(--marca);background:var(--creme3);box-shadow:inset 0 0 0 2px var(--marca)}
+.corte{display:grid;grid-template-columns:4.6em minmax(0,1fr);align-items:center;gap:10px;font-weight:700;font-size:.9rem;margin-top:8px}
+.corte input{width:100%;accent-color:var(--marca)}
+.corte-info{text-align:center;font-weight:700;color:var(--marca);margin-top:6px;font-size:.92rem}
+.botoes-corte{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.botoes-corte button{font:inherit;font-weight:700;font-size:.86rem;border-radius:14px;padding:11px 6px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.botoes-corte button:disabled{opacity:.4;cursor:default}
+.teclado{position:relative;display:flex;height:150px;margin-top:10px;touch-action:none;user-select:none;-webkit-user-select:none}
+.teclado .branca{flex:1;min-width:0;border:2px solid #c9c2dc;background:#fff;border-radius:0 0 10px 10px;margin:0 1px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-size:.7rem;font-weight:700;color:#5f5a70;cursor:pointer}
+.teclado .preta{position:absolute;top:0;width:8.5%;height:60%;background:#231d33;border-radius:0 0 8px 8px;z-index:2;cursor:pointer;transform:translateX(-50%)}
+.teclado .branca.apertada{background:#e4d8ff;border-color:var(--marca)}
+.teclado .preta.apertada{background:var(--marca)}
+.teclado-ctl .mini{padding:9px 6px;white-space:nowrap}
+.teclado-ctl{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:8px;margin-top:10px}
+.teclado-ctl span{font-weight:700;font-size:.85rem;color:var(--tinta-fraca);text-align:center;grid-column:1 / -1;order:-1}
+.juntar{margin-top:14px;border-top:2px dashed var(--borda);padding-top:10px}
+.juntar-linha{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;margin-bottom:10px}
+.juntar-linha span{font-weight:800;font-size:1.2rem}
+.juntar select{width:100%;font:inherit;font-size:.88rem;padding:9px 8px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
 </style>
 </head>
 <body>
@@ -161,6 +181,7 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
       <button type="button" class="play" id="pausar" aria-label="Pausar">⏸️</button>
       <input type="range" id="barra" min="0" max="1000" value="0" aria-label="Pedaço do áudio" />
       <span id="tempo-audio">0.0 / 0.0s</span>
+      <button type="button" class="repetir" id="repetir" aria-pressed="false" title="Repetir sem parar" aria-label="Repetir sem parar">🔂</button>
     </div>
     <div class="botoes">
       <button type="button" id="tocar" disabled>🔊 Tocar de novo</button>
@@ -169,6 +190,21 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
       <button type="button" class="grande" id="compartilhar" disabled>📤 Compartilhar a voz</button>
     </div>
     <p class="recado" id="recado" aria-live="polite"></p>
+  </section>
+
+  <section class="cartao" id="cartao-cortar" hidden>
+    <h2>✂️ Cortar o áudio</h2>
+    <p class="recado" style="margin-top:4px">Arraste as bolinhas de <b>Começo</b> e <b>Fim</b> pra escolher um pedaço.</p>
+    <canvas id="onda-corte" width="1000" height="140" aria-label="Desenho do áudio com o pedaço escolhido"></canvas>
+    <label class="corte">Começo <input type="range" id="corte-a" min="0" max="1000" value="0" /></label>
+    <label class="corte">Fim <input type="range" id="corte-b" min="0" max="1000" value="1000" /></label>
+    <p class="corte-info" id="corte-info"></p>
+    <div class="botoes-corte">
+      <button type="button" id="ouvir-pedaco">👂 Ouvir o pedaço</button>
+      <button type="button" id="so-pedaco">✂️ Ficar só com o pedaço</button>
+      <button type="button" id="pedaco-contrario">🔀 Só o pedaço ao contrário</button>
+      <button type="button" id="desfazer-corte" disabled>↩️ Desfazer</button>
+    </div>
   </section>
 
   <section class="cartao" id="vozes">
@@ -190,11 +226,31 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
     <div class="mesa" id="mesa"></div>
   </section>
 
+  <section class="cartao" id="cartao-teclado" hidden>
+    <h2>🎹 Teclado de voz</h2>
+    <p class="recado" style="margin-top:4px">Cada tecla toca a sua voz numa nota. Segure pra tocar mais tempo! No computador, use as teclas <b>A S D F G H J K</b> (e <b>W E T Y U</b> pras pretas).</p>
+    <div class="teclado" id="teclado" aria-label="Teclado de piano"></div>
+    <div class="teclado-ctl">
+      <button type="button" class="mini" id="oit-menos">⬇️ Grosso</button>
+      <span id="oit">Do meio</span>
+      <button type="button" class="mini" id="oit-mais">⬆️ Fino</button>
+    </div>
+    <div style="text-align:center;margin-top:10px"><button type="button" class="mini" id="musica">🌟 Tocar “Brilha, brilha, estrelinha”</button></div>
+  </section>
+
   <section class="cartao" id="cartao-salvos">
     <h2>⭐ Meus áudios salvos</h2>
     <p class="recado" style="margin-top:4px">Aperte <b>⭐ Salvar no site</b> e o áudio fica guardado aqui, mesmo se fechar a página. Fica só neste aparelho.</p>
     <ul class="salvos" id="salvos"></ul>
     <p class="recado" id="salvos-vazio">Nenhum áudio salvo ainda.</p>
+    <div class="juntar" id="juntar" hidden>
+      <h3>🧩 Juntar dois áudios</h3>
+      <p class="recado" style="margin:0 0 8px">Escolha qual vem primeiro e qual vem depois.</p>
+      <div class="juntar-linha">
+        <select id="junta-1" aria-label="Áudio que vem primeiro"></select><span>+</span><select id="junta-2" aria-label="Áudio que vem depois"></select>
+      </div>
+      <div style="text-align:center"><button type="button" class="mini" id="juntar-bt">🧩 Juntar e abrir</button></div>
+    </div>
   </section>
 
   <section class="cartao">
@@ -234,7 +290,7 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 
   <footer>
     Fala ao Contrário · feito pra brincar 🙃
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 6 — 27/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 7 — 27/09 · 🔄</button>
   </footer>
 </div>
 
@@ -267,9 +323,10 @@ function audio(){
   if(ctx.state === 'suspended') ctx.resume();   // tem que ser no toque, por causa do iPhone
   return ctx;
 }
-let ehVoz = false;
+let ehVoz = false, repetir = false;
 function tocarWav(blob, daVoz){
   ehVoz = !!daVoz;
+  player.loop = ehVoz && repetir;
   if(urlSom) URL.revokeObjectURL(urlSom);
   urlSom = URL.createObjectURL(blob);
   player.pause(); player.src = urlSom;
@@ -336,8 +393,11 @@ function parar(){
   tempo.textContent = `✅ Gravou ${fmt(voz.length / taxa)}!`;
   prontaPraTocar();
 }
-function prontaPraTocar(aviso){
+function prontaPraTocar(aviso, doCorte){
   btTocar.disabled = btBaixar.disabled = btCompartilhar.disabled = btSalvar.disabled = false;
+  if(!doCorte){ vozAntes = null; document.getElementById('desfazer-corte').disabled = true; }
+  document.getElementById('cartao-cortar').hidden = document.getElementById('cartao-teclado').hidden = false;
+  zerarCorte();
   tocarEscolha(aviso);
 }
 
@@ -665,8 +725,9 @@ function aplicarMesa(x){
   return x;
 }
 
-function render(){
-  let x = escolha.c ? inverter(voz) : voz.slice();
+function render(fonte){
+  const v = fonte || voz;
+  let x = escolha.c ? inverter(v) : v.slice();
   const r = TAMANHOS[escolha.t].r;
   if(r !== 1) x = velocidade(x, r);
   return normalizar(aplicarMesa(JEITOS[escolha.j].f(x, taxa)));
@@ -692,11 +753,12 @@ mostrarEscolha();
 
 /* O desenho da voz: uma barrinha pra cada pedacinho.
    O pedaço que já tocou fica colorido; o que falta fica clarinho. */
-let alturas = null, alturasDe = null;
-function desenharOnda(d, parte){
-  tela.hidden = false;
-  const g = tela.getContext('2d'), W = tela.width, H = tela.height, barras = 120;
-  if(alturasDe !== d){
+const alturasGuardadas = new WeakMap();
+function desenharOnda(d, parte){ tela.hidden = false; pintarOnda(tela, d, parte, null); }
+function pintarOnda(cv, d, parte, sel){
+  const g = cv.getContext('2d'), W = cv.width, H = cv.height, barras = 120;
+  let alturas = alturasGuardadas.get(d);
+  if(!alturas){
     const passo = Math.floor(d.length / barras) || 1; let max = 0.01;
     alturas = [];
     for(let b = 0; b < barras; b++){
@@ -704,19 +766,21 @@ function desenharOnda(d, parte){
       for(let i = b * passo; i < (b + 1) * passo && i < d.length; i++) soma += Math.abs(d[i]);
       alturas.push(soma / passo); max = Math.max(max, soma / passo);
     }
-    alturas = alturas.map(a => a / max); alturasDe = d;
+    alturas = alturas.map(a => a / max); alturasGuardadas.set(d, alturas);
   }
   const estilo = getComputedStyle(document.documentElement);
   const c1 = estilo.getPropertyValue('--onda').trim(), c2 = estilo.getPropertyValue('--onda2').trim();
   g.clearRect(0, 0, W, H);
   alturas.forEach((a, b) => {
     const h = Math.max(4, a * (H - 20));
-    g.globalAlpha = parte == null || b / barras < parte ? 1 : .3;
+    const meio = (b + .5) / barras;
+    g.globalAlpha = sel ? (meio >= sel.a && meio <= sel.b ? 1 : .22) : (parte == null || b / barras < parte ? 1 : .3);
     g.fillStyle = b % 2 ? c1 : c2;
     g.fillRect(b * (W / barras) + 1, (H - h) / 2, W / barras - 2, h);
   });
   g.globalAlpha = 1;
   if(parte != null && parte > 0 && parte < 1){ g.fillStyle = estilo.getPropertyValue('--vermelho').trim(); g.fillRect(parte * W - 3, 0, 6, H); }
+  if(sel){ g.fillStyle = estilo.getPropertyValue('--marca').trim(); g.fillRect(sel.a * W - 3, 0, 6, H); g.fillRect(sel.b * W - 3, 0, 6, H); }
 }
 
 /* ---------- a barrinha de quanto já tocou ---------- */
@@ -834,6 +898,7 @@ async function mostrarSalvos(){
   try{ lista = await mexer('readonly', st => st.getAll()); }catch(e){ vazio.textContent = 'Este navegador não deixa salvar. Use ⬇️ Baixar.'; return; }
   ul.innerHTML = '';
   vazio.hidden = lista.length > 0;
+  listaSalvos = lista.slice().sort((a, b) => b.quando - a.quando); encherJuntar();
   lista.sort((a, b) => b.quando - a.quando).forEach(a => {
     const li = document.createElement('li'); li.classList.toggle('aberto', a.id === abertoId);
     const J = JEITOS[a.escolha && a.escolha.j] || JEITOS[0];
@@ -868,6 +933,165 @@ async function mostrarSalvos(){
 }
 mostrarSalvos();
 
+/* ---------- 🔂 repetir sem parar ---------- */
+const btRepetir = document.getElementById('repetir');
+repetir = ler('aocontrario:repetir', false) === true;
+function mostrarRepetir(){ btRepetir.setAttribute('aria-pressed', repetir); player.loop = ehVoz && repetir; }
+btRepetir.onclick = () => {
+  repetir = !repetir; gravarLocal('aocontrario:repetir', repetir); mostrarRepetir();
+  avisar(repetir ? '🔂 Agora o áudio fica repetindo sem parar. Aperte ⏸️ pra parar.' : 'Repetir desligado.');
+  if(repetir && ehVoz && player.ended){ const p = player.play(); if(p && p.catch) p.catch(() => {}); }
+};
+mostrarRepetir();
+
+/* ---------- ✂️ cortar ---------- */
+let vozAntes = null;
+const corteA = document.getElementById('corte-a'), corteB = document.getElementById('corte-b');
+const ondaCorte = document.getElementById('onda-corte'), corteInfo = document.getElementById('corte-info');
+function faixa(){ let a = +corteA.value, b = +corteB.value; if(a > b) [a, b] = [b, a]; return { a:a / 1000, b:b / 1000 }; }
+function mostrarCorte(){
+  if(!voz) return;
+  const f = faixa(), dur = voz.length / taxa;
+  pintarOnda(ondaCorte, voz, null, f);
+  corteInfo.textContent = `Do ${fmt(f.a * dur)} até ${fmt(f.b * dur)} · pedaço de ${fmt((f.b - f.a) * dur)}`;
+}
+function zerarCorte(){ corteA.value = 0; corteB.value = 1000; mostrarCorte(); }
+[corteA, corteB].forEach(i => i.addEventListener('input', mostrarCorte));
+function pedaco(){
+  const f = faixa(), a = Math.floor(f.a * voz.length), b = Math.floor(f.b * voz.length);
+  if(b - a < taxa * .2){ avisar('O pedaço está pequenininho demais. Afaste mais as bolinhas.', true); return null; }
+  return { a, b };
+}
+document.getElementById('ouvir-pedaco').onclick = () => {
+  if(!voz) return; const p = pedaco(); if(!p) return;
+  audio(); avisar('👂 Tocando só o pedaço escolhido, com a voz escolhida.');
+  tocarWav(paraWav(normalizar(render(voz.subarray(p.a, p.b))), taxa), false);
+};
+document.getElementById('so-pedaco').onclick = () => {
+  if(!voz) return; const p = pedaco(); if(!p) return;
+  vozAntes = voz; voz = voz.slice(p.a, p.b);
+  document.getElementById('desfazer-corte').disabled = false;
+  tempo.textContent = `✂️ Cortou! Ficou ${fmt(voz.length / taxa)}`;
+  prontaPraTocar('✂️ Pronto! Agora o áudio é só aquele pedaço. Se não gostou, aperte ↩️ Desfazer.', true);
+};
+document.getElementById('pedaco-contrario').onclick = () => {
+  if(!voz) return; const p = pedaco(); if(!p) return;
+  vozAntes = voz; voz = voz.slice();
+  for(let i = p.a, j = p.b - 1; i < j; i++, j--){ const t = voz[i]; voz[i] = voz[j]; voz[j] = t; }
+  escolha.c = false;   // o resto fica pra frente, só o pedaço fica ao contrário
+  document.getElementById('desfazer-corte').disabled = false;
+  tempo.textContent = '🔀 Só um pedaço ao contrário!';
+  prontaPraTocar('🔀 Pronto! O começo e o fim estão pra frente, e só aquele pedaço está ao contrário.', true);
+};
+document.getElementById('desfazer-corte').onclick = () => {
+  if(!vozAntes) return;
+  voz = vozAntes; vozAntes = null;
+  document.getElementById('desfazer-corte').disabled = true;
+  tempo.textContent = `↩️ Voltou o áudio inteiro · ${fmt(voz.length / taxa)}`;
+  prontaPraTocar('', true);
+};
+
+/* ---------- 🎹 teclado de voz (Web Audio: toca várias notas juntas e sem atraso) ---------- */
+const BRANCAS = [['Dó', 0], ['Ré', 2], ['Mi', 4], ['Fá', 5], ['Sol', 7], ['Lá', 9], ['Si', 11], ['Dó', 12]];
+const PRETAS = [[1, 1], [3, 2], [6, 4], [8, 5], [10, 6]];   // [semitom, depois de qual branca]
+const TECLAS_PC = { a:0, w:1, s:2, e:3, d:4, f:5, t:6, g:7, y:8, h:9, u:10, j:11, k:12 };
+const OITAVAS = ['Som: bem grosso', 'Som: grosso', 'Som: do meio', 'Som: fino', 'Som: bem fino'];
+let oitava = 0, amostra = null, amostraDe = null;
+const soando = new Map(), teclado = document.getElementById('teclado');
+BRANCAS.forEach(([n, st]) => { const d = document.createElement('div'); d.className = 'branca'; d.dataset.s = st; d.textContent = n; teclado.appendChild(d); });
+PRETAS.forEach(([st, depois]) => { const d = document.createElement('div'); d.className = 'preta'; d.dataset.s = st; d.style.left = (depois / BRANCAS.length * 100) + '%'; teclado.appendChild(d); });
+function marcar(st, sim){ const k = teclado.querySelector(`[data-s="${st}"]`); if(k) k.classList.toggle('apertada', sim); }
+function pegarAmostra(){
+  if(amostraDe !== ultimo){
+    const n = Math.min(ultimo.length, Math.floor(taxa * 3)), b = audio().createBuffer(1, n, taxa), d = b.getChannelData(0);
+    d.set(ultimo.subarray(0, n));
+    const f = Math.min(n, Math.floor(taxa * .04)); for(let i = 0; i < f; i++) d[n - 1 - i] *= i / f;   // termina suave
+    amostra = b; amostraDe = ultimo;
+  }
+  return amostra;
+}
+function notaLiga(st, id){
+  if(!ultimo){ avisar('🎙️ Grave a sua voz primeiro! Aí o teclado toca com ela.'); return; }
+  const c = audio(); notaDesliga(id); pararSom();
+  const s = c.createBufferSource(), g = c.createGain();
+  s.buffer = pegarAmostra(); s.playbackRate.value = Math.pow(2, (st + 12 * oitava) / 12);
+  s.connect(g); g.connect(c.destination); s.start();
+  soando.set(id, { s, g, st }); marcar(st, true);
+  s.onended = () => { const v = soando.get(id); if(v && v.s === s){ soando.delete(id); marcar(st, false); } };
+}
+function notaDesliga(id){
+  const v = soando.get(id); if(!v) return;
+  const c = audio(); soando.delete(id); marcar(v.st, false);
+  try{ v.g.gain.setTargetAtTime(0, c.currentTime, .03); v.s.stop(c.currentTime + .2); }catch(e){}
+}
+teclado.addEventListener('pointerdown', ev => {
+  const k = ev.target.closest('[data-s]'); if(!k) return;
+  ev.preventDefault(); try{ teclado.releasePointerCapture(ev.pointerId); }catch(e){}
+  notaLiga(+k.dataset.s, 'p' + ev.pointerId);
+});
+['pointerup', 'pointercancel', 'pointerleave'].forEach(t => teclado.addEventListener(t, ev => notaDesliga('p' + ev.pointerId)));
+teclado.addEventListener('pointerout', ev => { if(ev.target.closest('[data-s]')) notaDesliga('p' + ev.pointerId); });
+document.addEventListener('keydown', ev => {
+  if(ev.repeat || ev.ctrlKey || ev.metaKey || ev.altKey || /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  const st = TECLAS_PC[ev.key.toLowerCase()]; if(st === undefined || document.getElementById('cartao-teclado').hidden) return;
+  notaLiga(st, 'k' + ev.key.toLowerCase());
+});
+document.addEventListener('keyup', ev => notaDesliga('k' + ev.key.toLowerCase()));
+function mostrarOitava(){ document.getElementById('oit').textContent = OITAVAS[oitava + 2]; }
+document.getElementById('oit-menos').onclick = () => { oitava = Math.max(-2, oitava - 1); mostrarOitava(); };
+document.getElementById('oit-mais').onclick = () => { oitava = Math.min(2, oitava + 1); mostrarOitava(); };
+mostrarOitava();
+/* Brilha, brilha, estrelinha (música folclórica, de todo mundo) */
+const ESTRELINHA = [[0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2],
+  [7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],[7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],
+  [0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2]];
+let musicaTimers = [];
+const btMusica = document.getElementById('musica');
+function pararMusica(){ musicaTimers.forEach(clearTimeout); musicaTimers = []; soando.forEach((v, id) => { if(String(id).startsWith('m')) notaDesliga(id); }); btMusica.textContent = '🌟 Tocar “Brilha, brilha, estrelinha”'; }
+btMusica.onclick = () => {
+  if(musicaTimers.length){ pararMusica(); return; }
+  if(!ultimo){ avisar('🎙️ Grave a sua voz primeiro! Aí o teclado toca com ela.'); return; }
+  audio(); btMusica.textContent = '⏹️ Parar a música';
+  const tempoNota = 380; let t = 0;
+  ESTRELINHA.forEach(([st, d], i) => {
+    musicaTimers.push(setTimeout(() => notaLiga(st, 'm' + i), t));
+    musicaTimers.push(setTimeout(() => notaDesliga('m' + i), t + d * tempoNota - 40));
+    t += d * tempoNota;
+  });
+  musicaTimers.push(setTimeout(pararMusica, t + 100));
+};
+
+/* ---------- 🧩 juntar dois salvos ---------- */
+let listaSalvos = [], mexeuJuntar = false;
+['junta-1', 'junta-2'].forEach(id => document.getElementById(id).addEventListener('change', () => { mexeuJuntar = true; }));
+function encherJuntar(){
+  const box = document.getElementById('juntar'); box.hidden = listaSalvos.length === 0;
+  ['junta-1', 'junta-2'].forEach((id, k) => {
+    const sel = document.getElementById(id), antes = sel.value;
+    sel.innerHTML = '';
+    listaSalvos.forEach(a => { const o = document.createElement('option'); o.value = a.id; o.textContent = a.nome; sel.appendChild(o); });
+    /* se a pessoa ainda não escolheu: o mais antigo primeiro, o mais novo depois */
+    if(mexeuJuntar && listaSalvos.some(a => String(a.id) === antes)) sel.value = antes;
+    else if(listaSalvos.length) sel.value = listaSalvos[k === 0 ? listaSalvos.length - 1 : 0].id;
+  });
+}
+document.getElementById('juntar-bt').onclick = () => {
+  const a = listaSalvos.find(x => String(x.id) === document.getElementById('junta-1').value);
+  const b = listaSalvos.find(x => String(x.id) === document.getElementById('junta-2').value);
+  if(!a || !b) return;
+  if(gravando) parar();
+  audio(); destravar();
+  const x1 = deInt16(a.dados); let x2 = deInt16(b.dados);
+  if(b.taxa !== a.taxa) x2 = velocidade(x2, b.taxa / a.taxa);
+  const pausa = Math.floor(a.taxa * .15), y = new Float32Array(x1.length + pausa + x2.length);
+  y.set(x1); y.set(x2, x1.length + pausa);
+  voz = y; taxa = a.taxa; abertoId = null;
+  tempo.textContent = `🧩 ${a.nome} + ${b.nome} · ${fmt(voz.length / taxa)}`;
+  prontaPraTocar('🧩 Juntou! Se gostar, aperte ⭐ Salvar no site pra guardar os dois juntinhos.');
+  mostrarSalvos();
+  document.querySelector('.palco').scrollIntoView({ behavior:'smooth', block:'start' });
+};
+
 /* ---------- desafio ---------- */
 const PALAVRAS = ['banana', 'bola', 'gato', 'pipoca', 'sapato', 'macaco', 'Pikachu', 'Ditto', 'bolo', 'amigo', 'escola', 'tatu',
   'panela', 'foguete', 'dinossauro', 'chocolate', 'Banjo', 'Mario', 'tomate', 'pato', 'cavalo', 'janela', 'mamãe', 'papai'];
@@ -892,6 +1116,7 @@ function aplicarTema(t){
   btTema.textContent = estaEscuro() ? '☀️' : '🌙';
   if(corDaBarra) corDaBarra.setAttribute('content', estaEscuro() ? '#11151a' : '#7b4dd6');
   if(ultimo) desenharOnda(ultimo);
+  if(voz) mostrarCorte();
 }
 aplicarTema(ler('aocontrario:tema', null));
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => aplicarTema(document.documentElement.getAttribute('data-tema')));

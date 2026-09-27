@@ -11,6 +11,10 @@ Site pra gravar a sua voz e ouvir **de trás pra frente**.
    - Barrinha que mostra quanto já tocou (dá pra arrastar), com ⏸️/▶️, e o desenho da voz vai ficando colorido
    - 🔊 **Tocar de novo**, ⬇️ **Baixar** (arquivo `.wav`) e 📤 **Compartilhar a voz** (abre a lista de apps do celular; se não der, baixa o arquivo)
    - ⭐ **Salvar no site**: guarda o áudio (com a voz e a mesa escolhidas) em “Meus áudios salvos”, mesmo fechando a página. Dá pra abrir ▶️, mudar o nome ✏️ e apagar 🗑️
+   - 🔂 **Repetir sem parar** (botão ao lado da barrinha)
+   - ✂️ **Cortar**: escolha um pedaço com Começo/Fim pra ouvir, ficar só com ele, ou deixar **só aquele pedaço ao contrário**; tem ↩️ Desfazer
+   - 🎹 **Teclado de voz**: 8 teclas brancas + 5 pretas tocam a sua voz em notas (A S D F G H J K no computador), com grosso/fino e a música “Brilha, brilha, estrelinha”
+   - 🧩 **Juntar**: gruda dois áudios salvos, um depois do outro
    - 🎛️ **Mesa de efeitos**: tom, velocidade, eco, salão, robô e grave, que somam com a voz escolhida
    - 🎭 **280 vozes**: 56 jeitos (DJ arranhando, derretendo, vai e volta, multidão, harmonia, câmera lenta, robô cantor…) — antes 40 jeitos (robô, caverna, telefone, fantasma, pato, abelha, zumbi, gaguejando, disco voador, choque elétrico…) × 5 tamanhos (normal, bebê, esquilo, grandão, monstro). Tem ⬅️ ➡️ pra passar por todas e 🎲 surpresa.
 4. 🏆 **Desafio**: fale a palavra escrita ao contrário e toque 🔁. Se você falou direitinho, sai a palavra certa!
