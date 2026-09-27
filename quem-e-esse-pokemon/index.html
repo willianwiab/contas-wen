@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quem é esse Pokémon?</title>
+<meta name="description" content="Adivinhe o Pokémon pela sombra! Níveis, recorde, dicas e coleção." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#2b2f77" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Quem é?" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --marca:#2b2f77; --marca2:#4a52c9; --vermelho:#e3350d; --amarelo:#ffcb05; --verde:#1f9d57; --erro:#d0342c;
+  --fundo:#eef1ff; --fundo2:#dfe5ff; --tinta:#1b1d3a; --tinta-fraca:#5b5f80; --cartao:#ffffff; --cartao2:#f5f6ff; --borda:#d6dafa;
+  --sombra:rgba(30,35,110,.14); --palco1:#ffe78a; --palco2:#ffb938;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#aab2ff; --marca2:#8891ff; --vermelho:#ff6a4d; --amarelo:#ffd84d; --verde:#43d18a; --erro:#ff6b62;
+    --fundo:#10122a; --fundo2:#171a3a; --tinta:#eef0ff; --tinta-fraca:#a5a9cf; --cartao:#1b1e3d; --cartao2:#23274d; --borda:#353a6b;
+    --sombra:rgba(0,0,0,.45); --palco1:#3a3a8a; --palco2:#23235e;
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#aab2ff; --marca2:#8891ff; --vermelho:#ff6a4d; --amarelo:#ffd84d; --verde:#43d18a; --erro:#ff6b62;
+  --fundo:#10122a; --fundo2:#171a3a; --tinta:#eef0ff; --tinta-fraca:#a5a9cf; --cartao:#1b1e3d; --cartao2:#23274d; --borda:#353a6b;
+  --sombra:rgba(0,0,0,.45); --palco1:#3a3a8a; --palco2:#23235e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);
+  background-image:radial-gradient(circle at 10% 0%, var(--fundo2) 0 25%, transparent 25.5%);background-attachment:fixed;min-height:100vh}
+.casca{max-width:560px;margin:0 auto;padding:14px 16px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.65rem;line-height:1.05;display:flex;align-items:center;gap:8px;color:var(--marca)}
+.logo img{width:44px;height:44px;flex:none}
+@media (max-width:370px){.logo{font-size:1.3rem}.logo img{width:36px;height:36px}}
+.redondo{border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);width:42px;height:42px;border-radius:50%;font-size:1.1rem;cursor:pointer;flex:none}
+.sub{color:var(--tinta-fraca);margin:6px 0 14px;line-height:1.5}
+.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:22px;padding:16px;box-shadow:0 6px 22px var(--sombra)}
+.cartao + .cartao{margin-top:14px}
+.cartao h2{font-family:'Baloo 2',cursive;font-size:1.3rem;line-height:1.2;margin-bottom:10px}
+.chips{display:grid;gap:8px}
+.chips.c2{grid-template-columns:1fr 1fr}
+.chips.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.chip{font:inherit;text-align:left;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:16px;padding:10px 12px;cursor:pointer;min-width:0}
+.chip b{display:block;font-size:.98rem}
+.chip small{display:block;font-size:.76rem;color:var(--tinta-fraca);margin-top:2px;line-height:1.3}
+.chips.c3 .chip{text-align:center;padding:10px 4px}
+.chip[aria-pressed="true"]{border-color:var(--marca2);background:var(--fundo2);box-shadow:inset 0 0 0 2px var(--marca2)}
+.geracoes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}
+.geracoes button{font:inherit;font-weight:700;font-size:.8rem;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:12px;padding:8px 2px;cursor:pointer}
+.geracoes button[aria-pressed="true"]{border-color:var(--marca2);background:var(--marca2);color:#fff}
+.linha{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;font-weight:600}
+.interruptor{font:inherit;font-weight:700;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:99px;padding:8px 14px;cursor:pointer}
+.interruptor[aria-pressed="true"]{background:var(--verde);border-color:var(--verde);color:#fff}
+.jogar{display:block;width:100%;margin-top:16px;font:inherit;font-family:'Baloo 2',cursive;font-weight:800;font-size:1.6rem;border:0;border-radius:20px;padding:14px;cursor:pointer;
+  color:#1b1d3a;background:linear-gradient(180deg,#ffe066,var(--amarelo));box-shadow:0 6px 0 #c99a00,0 10px 24px rgba(200,150,0,.35)}
+.jogar:active{transform:translateY(4px);box-shadow:0 2px 0 #c99a00}
+.recorde{text-align:center;margin-top:12px;font-weight:700;color:var(--tinta-fraca)}
+.barra-col{height:12px;border-radius:99px;background:var(--borda);overflow:hidden;margin:8px 0}
+.barra-col i{display:block;height:100%;background:linear-gradient(90deg,var(--vermelho),var(--amarelo));border-radius:99px}
+.mini{font:inherit;font-weight:700;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:99px;padding:9px 16px;cursor:pointer}
+
+/* ---------- jogo ---------- */
+.placar{margin-top:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:8px;align-items:stretch}
+.placar div{background:var(--cartao);border:2px solid var(--borda);border-radius:14px;padding:6px 4px;text-align:center}
+.placar b{display:block;font-family:'Baloo 2',cursive;font-size:1.3rem;line-height:1.1}
+.placar small{font-size:.7rem;color:var(--tinta-fraca);font-weight:600}
+.placar .sair{width:48px;border-radius:14px}
+.palco{position:relative;margin-top:12px;border-radius:26px;overflow:hidden;aspect-ratio:1/0.82;border:3px solid var(--borda);
+  background:radial-gradient(circle at 50% 55%, var(--palco1) 0 30%, var(--palco2) 72%)}
+.palco::before{content:'';position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.22) 0 10deg, transparent 10deg 20deg);animation:gira 30s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.palco::before{animation:none}}
+.palco img{position:absolute;inset:6% 12%;width:76%;height:88%;object-fit:contain;filter:brightness(0);transition:filter .6s, transform .4s;
+  -webkit-user-drag:none;user-select:none;pointer-events:none}
+.palco img.revelado{filter:none;transform:scale(1.06)}
+.palco .carregando{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;color:#1b1d3a;font-size:1.1rem}
+.palco .selo{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#fff;color:#1b1d3a;border-radius:99px;padding:6px 14px;font-weight:800;font-size:.95rem;
+  box-shadow:0 4px 12px rgba(0,0,0,.2);white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}
+.palco .num{position:absolute;right:10px;top:8px;background:rgba(255,255,255,.85);color:#1b1d3a;border-radius:99px;padding:3px 10px;font-weight:800;font-size:.8rem}
+.dicas{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:30px;margin-top:10px}
+.tipo{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:4px 12px;color:#fff;font-weight:800;font-size:.85rem;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.letras{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.25rem;letter-spacing:4px;color:var(--marca)}
+.opcoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.opcoes button{font:inherit;font-weight:800;font-size:1.02rem;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);border-radius:16px;padding:14px 8px;cursor:pointer;
+  box-shadow:0 4px 0 var(--borda);overflow-wrap:anywhere}
+.opcoes button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--borda)}
+.opcoes button.certo{background:var(--verde);border-color:var(--verde);color:#fff;box-shadow:0 4px 0 #13693a}
+.opcoes button.errado{background:var(--erro);border-color:var(--erro);color:#fff;box-shadow:0 4px 0 #8f201a}
+.opcoes button:disabled{cursor:default}
+.escrever{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:10px}
+.escrever input{font:inherit;font-size:1.05rem;padding:12px 14px;border-radius:14px;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);min-width:0}
+.escrever button{font:inherit;font-weight:800;border:0;border-radius:14px;padding:0 18px;background:var(--marca2);color:#fff;cursor:pointer}
+.acoes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.acoes button{font:inherit;font-weight:700;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:14px;padding:10px 6px;cursor:pointer}
+.acoes button:disabled{opacity:.45;cursor:default}
+.acoes .proximo{grid-column:1 / -1;background:var(--marca2);border-color:var(--marca2);color:#fff;font-size:1.1rem;padding:13px}
+.aviso{text-align:center;font-weight:700;margin-top:10px;min-height:1.4em}
+.aviso.bom{color:var(--verde)} .aviso.ruim{color:var(--erro)}
+.pontos-voando{position:fixed;left:50%;top:40%;transform:translate(-50%,0);font-family:'Baloo 2',cursive;font-weight:800;font-size:2.2rem;color:var(--amarelo);
+  text-shadow:0 2px 0 #b58600,0 4px 12px rgba(0,0,0,.25);pointer-events:none;animation:voa 1s ease-out forwards;z-index:30}
+@keyframes voa{to{transform:translate(-50%,-80px);opacity:0}}
+
+/* ---------- fim ---------- */
+.grande{text-align:center}
+.grande .pts{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.4rem;line-height:1;color:var(--marca)}
+.grande .novo{display:inline-block;margin-top:8px;background:var(--amarelo);color:#1b1d3a;border-radius:99px;padding:5px 14px;font-weight:800;animation:pula .8s ease-in-out infinite alternate}
+@keyframes pula{to{transform:scale(1.08)}}
+.numeros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.numeros div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:8px 4px;text-align:center}
+.numeros b{display:block;font-family:'Baloo 2',cursive;font-size:1.5rem;line-height:1.1}
+.numeros small{font-size:.74rem;color:var(--tinta-fraca);font-weight:600}
+.rodadas{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:12px}
+.rodadas li{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:6px 4px;text-align:center;font-size:.74rem;font-weight:700;overflow-wrap:anywhere}
+.rodadas li.ok{border-color:var(--verde)} .rodadas li.nao{border-color:var(--erro);opacity:.8}
+.rodadas img{width:60px;height:60px;object-fit:contain;display:block;margin:0 auto 2px}
+.botoes-fim{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.colecao{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:6px;margin-top:10px;max-height:60vh;overflow:auto;padding:2px}
+.colecao li{background:var(--cartao2);border:2px solid var(--borda);border-radius:12px;padding:4px 2px;text-align:center;font-size:.66rem;font-weight:700;overflow-wrap:anywhere}
+.colecao img{width:52px;height:52px;object-fit:contain;display:block;margin:0 auto}
+.por-geracao{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px;font-size:.78rem;font-weight:700}
+.por-geracao span{background:var(--cartao2);border:2px solid var(--borda);border-radius:10px;padding:5px;text-align:center}
+
+footer{text-align:center;margin-top:26px;color:var(--tinta-fraca);font-size:.8rem;line-height:1.6}
+.versao{display:inline-block;background:var(--cartao);border:2px solid var(--borda);border-radius:999px;padding:6px 14px;font:inherit;font-size:.78rem;font-weight:600;margin-top:4px;color:var(--tinta);cursor:pointer}
+.faixa-nova{position:fixed;left:10px;right:10px;bottom:10px;z-index:50;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--marca2);color:#fff;border-radius:16px;padding:12px 15px;font-weight:600}
+.faixa-nova button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:8px 16px;background:#fff;color:var(--marca2);cursor:pointer;margin-left:auto}
+</style>
+</head>
+<body>
+<div class="casca">
+  <header>
+    <h1 class="logo"><img src="icone-limpo.svg" alt="" /><span>Quem é esse Pokémon?</span></h1>
+    <button class="redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
+  </header>
+
+  <!-- ===================== INÍCIO ===================== -->
+  <section id="tela-inicio">
+    <p class="sub">Aparece a <b>sombra</b> de um Pokémon. Você consegue adivinhar quem é? 🕵️</p>
+
+    <div class="cartao">
+      <h2>🎚️ Nível</h2>
+      <div class="chips c2" id="niveis">
+        <button type="button" class="chip" data-nivel="facil"><b>🟢 Fácil</b><small>Os Pokémon mais famosos</small></button>
+        <button type="button" class="chip" data-nivel="medio"><b>🟡 Médio</b><small>Gerações 1 a 4</small></button>
+        <button type="button" class="chip" data-nivel="dificil"><b>🔴 Difícil</b><small>Todos os 1025!</small></button>
+        <button type="button" class="chip" data-nivel="minhas"><b>🎯 Eu escolho</b><small>Escolha as gerações</small></button>
+      </div>
+      <div class="geracoes" id="geracoes" hidden></div>
+    </div>
+
+    <div class="cartao">
+      <h2>🎮 Jeito de jogar</h2>
+      <div class="chips c3" id="modos">
+        <button type="button" class="chip" data-modo="dez"><b>🎯 10</b><small>10 perguntas</small></button>
+        <button type="button" class="chip" data-modo="tempo"><b>⏱️ 1 min</b><small>Contra o tempo</small></button>
+        <button type="button" class="chip" data-modo="vidas"><b>❤️ 3 vidas</b><small>Até errar 3</small></button>
+      </div>
+      <h2 style="margin-top:14px">✍️ Como responder</h2>
+      <div class="chips c2" id="respostas">
+        <button type="button" class="chip" data-resp="opcoes"><b>🔘 4 opções</b><small>Escolha o nome certo</small></button>
+        <button type="button" class="chip" data-resp="escrever"><b>⌨️ Escrever</b><small>Mais difícil!</small></button>
+      </div>
+      <div class="linha"><span>🔊 Grito do Pokémon</span><button type="button" class="interruptor" id="som" aria-pressed="true">Ligado</button></div>
+      <button type="button" class="jogar" id="jogar">▶️ Jogar!</button>
+      <p class="recorde" id="recorde-inicio"></p>
+    </div>
+
+    <div class="cartao">
+      <h2>📚 Minha coleção</h2>
+      <p id="colecao-txt"></p>
+      <div class="barra-col"><i id="colecao-barra" style="width:0"></i></div>
+      <button type="button" class="mini" id="ver-colecao">👀 Ver os que eu já acertei</button>
+      <div id="colecao-caixa" hidden>
+        <div class="por-geracao" id="por-geracao"></div>
+        <ul class="colecao" id="colecao"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== JOGO ===================== -->
+  <section id="tela-jogo" hidden>
+    <div class="placar">
+      <div><b id="p-pontos">0</b><small>⭐ pontos</small></div>
+      <div><b id="p-seq">0</b><small>🔥 seguidos</small></div>
+      <div><b id="p-extra">1/10</b><small id="p-extra-rot">pergunta</small></div>
+      <button type="button" class="redondo sair" id="sair" title="Parar o jogo" aria-label="Parar o jogo">✖️</button>
+    </div>
+    <div class="palco" id="palco">
+      <img id="figura" alt="Sombra de um Pokémon misterioso" />
+      <div class="carregando" id="carregando">Carregando… ⏳</div>
+      <span class="num" id="num" hidden></span>
+      <span class="selo" id="selo" hidden></span>
+    </div>
+    <div class="dicas" id="dicas"></div>
+    <div class="opcoes" id="opcoes"></div>
+    <form class="escrever" id="escrever" hidden autocomplete="off">
+      <input type="text" id="chute" list="nomes" placeholder="Quem é?" aria-label="Nome do Pokémon" autocapitalize="words" />
+      <button type="submit">Chutar</button>
+      <datalist id="nomes"></datalist>
+    </form>
+    <p class="aviso" id="aviso" aria-live="polite"></p>
+    <div class="acoes">
+      <button type="button" id="dica">💡 Dica</button>
+      <button type="button" id="pular">🤷 Não sei</button>
+      <button type="button" class="proximo" id="proximo" hidden>Próximo ➡️</button>
+    </div>
+  </section>
+
+  <!-- ===================== FIM ===================== -->
+  <section id="tela-fim" hidden>
+    <div class="cartao grande">
+      <p id="fim-titulo" style="font-weight:800;font-size:1.1rem"></p>
+      <div class="pts" id="fim-pontos">0</div>
+      <small style="color:var(--tinta-fraca);font-weight:700">pontos</small><br>
+      <span class="novo" id="fim-novo" hidden>🏆 Novo recorde!</span>
+      <div class="numeros">
+        <div><b id="fim-acertos">0</b><small>✅ acertos</small></div>
+        <div><b id="fim-seq">0</b><small>🔥 maior sequência</small></div>
+        <div><b id="fim-recorde">0</b><small>🏆 recorde</small></div>
+      </div>
+      <div class="botoes-fim">
+        <button type="button" class="jogar" id="de-novo" style="margin:0;font-size:1.2rem">🔁 De novo</button>
+        <button type="button" class="jogar" id="menu" style="margin:0;font-size:1.2rem;background:var(--cartao2);box-shadow:0 6px 0 var(--borda);color:var(--tinta)">🏠 Início</button>
+      </div>
+    </div>
+    <div class="cartao">
+      <h2>🗒️ Os Pokémon dessa partida</h2>
+      <ul class="rodadas" id="rodadas"></ul>
+    </div>
+  </section>
+
+  <footer>
+    Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
+    Pokémon é da Nintendo, Game Freak e The Pokémon Company.
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 27/09 · 🔄</button>
+  </footer>
+</div>
+
+<script>
+'use strict';
+/* =========================================================================
+   Quem é esse Pokémon? — a sombra aparece, você adivinha.
+   Dados: nome e tipos de cada Pokémon (1 a 1025), gerados do @pkmn/dex.
+   Cada um é "Nome~tipos", e cada tipo é uma letra (a = Normal, b = Fogo… na ordem de TIPOS).
+   Figuras e gritos vêm do PokeAPI (precisa de internet pra jogar).
+   ========================================================================= */
+const DADOS = 'Bulbasaur~dh|Ivysaur~dh|Venusaur~dh|Charmander~b|Charmeleon~b|Charizard~bj|Squirtle~c|Wartortle~c|Blastoise~c|Caterpie~l|Metapod~l|Butterfree~lj|Weedle~lh|Kakuna~lh|Beedrill~lh|Pidgey~aj|Pidgeotto~aj|Pidgeot~aj|Rattata~a|Raticate~a|Spearow~aj|Fearow~aj|Ekans~h|Arbok~h|Pikachu~e|Raichu~e|Sandshrew~i|Sandslash~i|Nidoran-F~h|Nidorina~h|Nidoqueen~hi|Nidoran-M~h|Nidorino~h|Nidoking~hi|Clefairy~r|Clefable~r|Vulpix~b|Ninetales~b|Jigglypuff~ar|Wigglytuff~ar|Zubat~hj|Golbat~hj|Oddish~dh|Gloom~dh|Vileplume~dh|Paras~ld|Parasect~ld|Venonat~lh|Venomoth~lh|Diglett~i|Dugtrio~i|Meowth~a|Persian~a|Psyduck~c|Golduck~c|Mankey~g|Primeape~g|Growlithe~b|Arcanine~b|Poliwag~c|Poliwhirl~c|Poliwrath~cg|Abra~k|Kadabra~k|Alakazam~k|Machop~g|Machoke~g|Machamp~g|Bellsprout~dh|Weepinbell~dh|Victreebel~dh|Tentacool~ch|Tentacruel~ch|Geodude~mi|Graveler~mi|Golem~mi|Ponyta~b|Rapidash~b|Slowpoke~ck|Slowbro~ck|Magnemite~eq|Magneton~eq|Farfetch’d~aj|Doduo~aj|Dodrio~aj|Seel~c|Dewgong~cf|Grimer~h|Muk~h|Shellder~c|Cloyster~cf|Gastly~nh|Haunter~nh|Gengar~nh|Onix~mi|Drowzee~k|Hypno~k|Krabby~c|Kingler~c|Voltorb~e|Electrode~e|Exeggcute~dk|Exeggutor~dk|Cubone~i|Marowak~i|Hitmonlee~g|Hitmonchan~g|Lickitung~a|Koffing~h|Weezing~h|Rhyhorn~im|Rhydon~im|Chansey~a|Tangela~d|Kangaskhan~a|Horsea~c|Seadra~c|Goldeen~c|Seaking~c|Staryu~c|Starmie~ck|Mr. Mime~kr|Scyther~lj|Jynx~fk|Electabuzz~e|Magmar~b|Pinsir~l|Tauros~a|Magikarp~c|Gyarados~cj|Lapras~cf|Ditto~a|Eevee~a|Vaporeon~c|Jolteon~e|Flareon~b|Porygon~a|Omanyte~mc|Omastar~mc|Kabuto~mc|Kabutops~mc|Aerodactyl~mj|Snorlax~a|Articuno~fj|Zapdos~ej|Moltres~bj|Dratini~o|Dragonair~o|Dragonite~oj|Mewtwo~k|Mew~k|Chikorita~d|Bayleef~d|Meganium~d|Cyndaquil~b|Quilava~b|Typhlosion~b|Totodile~c|Croconaw~c|Feraligatr~c|Sentret~a|Furret~a|Hoothoot~aj|Noctowl~aj|Ledyba~lj|Ledian~lj|Spinarak~lh|Ariados~lh|Crobat~hj|Chinchou~ce|Lanturn~ce|Pichu~e|Cleffa~r|Igglybuff~ar|Togepi~r|Togetic~rj|Natu~kj|Xatu~kj|Mareep~e|Flaaffy~e|Ampharos~e|Bellossom~d|Marill~cr|Azumarill~cr|Sudowoodo~m|Politoed~c|Hoppip~dj|Skiploom~dj|Jumpluff~dj|Aipom~a|Sunkern~d|Sunflora~d|Yanma~lj|Wooper~ci|Quagsire~ci|Espeon~k|Umbreon~p|Murkrow~pj|Slowking~ck|Misdreavus~n|Unown~k|Wobbuffet~k|Girafarig~ak|Pineco~l|Forretress~lq|Dunsparce~a|Gligar~ij|Steelix~qi|Snubbull~r|Granbull~r|Qwilfish~ch|Scizor~lq|Shuckle~lm|Heracross~lg|Sneasel~pf|Teddiursa~a|Ursaring~a|Slugma~b|Magcargo~bm|Swinub~fi|Piloswine~fi|Corsola~cm|Remoraid~c|Octillery~c|Delibird~fj|Mantine~cj|Skarmory~qj|Houndour~pb|Houndoom~pb|Kingdra~co|Phanpy~i|Donphan~i|Porygon2~a|Stantler~a|Smeargle~a|Tyrogue~g|Hitmontop~g|Smoochum~fk|Elekid~e|Magby~b|Miltank~a|Blissey~a|Raikou~e|Entei~b|Suicune~c|Larvitar~mi|Pupitar~mi|Tyranitar~mp|Lugia~kj|Ho-Oh~bj|Celebi~kd|Treecko~d|Grovyle~d|Sceptile~d|Torchic~b|Combusken~bg|Blaziken~bg|Mudkip~c|Marshtomp~ci|Swampert~ci|Poochyena~p|Mightyena~p|Zigzagoon~a|Linoone~a|Wurmple~l|Silcoon~l|Beautifly~lj|Cascoon~l|Dustox~lh|Lotad~cd|Lombre~cd|Ludicolo~cd|Seedot~d|Nuzleaf~dp|Shiftry~dp|Taillow~aj|Swellow~aj|Wingull~cj|Pelipper~cj|Ralts~kr|Kirlia~kr|Gardevoir~kr|Surskit~lc|Masquerain~lj|Shroomish~d|Breloom~dg|Slakoth~a|Vigoroth~a|Slaking~a|Nincada~li|Ninjask~lj|Shedinja~ln|Whismur~a|Loudred~a|Exploud~a|Makuhita~g|Hariyama~g|Azurill~ar|Nosepass~m|Skitty~a|Delcatty~a|Sableye~pn|Mawile~qr|Aron~qm|Lairon~qm|Aggron~qm|Meditite~gk|Medicham~gk|Electrike~e|Manectric~e|Plusle~e|Minun~e|Volbeat~l|Illumise~l|Roselia~dh|Gulpin~h|Swalot~h|Carvanha~cp|Sharpedo~cp|Wailmer~c|Wailord~c|Numel~bi|Camerupt~bi|Torkoal~b|Spoink~k|Grumpig~k|Spinda~a|Trapinch~i|Vibrava~io|Flygon~io|Cacnea~d|Cacturne~dp|Swablu~aj|Altaria~oj|Zangoose~a|Seviper~h|Lunatone~mk|Solrock~mk|Barboach~ci|Whiscash~ci|Corphish~c|Crawdaunt~cp|Baltoy~ik|Claydol~ik|Lileep~md|Cradily~md|Anorith~ml|Armaldo~ml|Feebas~c|Milotic~c|Castform~a|Kecleon~a|Shuppet~n|Banette~n|Duskull~n|Dusclops~n|Tropius~dj|Chimecho~k|Absol~p|Wynaut~k|Snorunt~f|Glalie~f|Spheal~fc|Sealeo~fc|Walrein~fc|Clamperl~c|Huntail~c|Gorebyss~c|Relicanth~cm|Luvdisc~c|Bagon~o|Shelgon~o|Salamence~oj|Beldum~qk|Metang~qk|Metagross~qk|Regirock~m|Regice~f|Registeel~q|Latias~ok|Latios~ok|Kyogre~c|Groudon~i|Rayquaza~oj|Jirachi~qk|Deoxys~k|Turtwig~d|Grotle~d|Torterra~di|Chimchar~b|Monferno~bg|Infernape~bg|Piplup~c|Prinplup~c|Empoleon~cq|Starly~aj|Staravia~aj|Staraptor~aj|Bidoof~a|Bibarel~ac|Kricketot~l|Kricketune~l|Shinx~e|Luxio~e|Luxray~e|Budew~dh|Roserade~dh|Cranidos~m|Rampardos~m|Shieldon~mq|Bastiodon~mq|Burmy~l|Wormadam~ld|Mothim~lj|Combee~lj|Vespiquen~lj|Pachirisu~e|Buizel~c|Floatzel~c|Cherubi~d|Cherrim~d|Shellos~c|Gastrodon~ci|Ambipom~a|Drifloon~nj|Drifblim~nj|Buneary~a|Lopunny~a|Mismagius~n|Honchkrow~pj|Glameow~a|Purugly~a|Chingling~k|Stunky~hp|Skuntank~hp|Bronzor~qk|Bronzong~qk|Bonsly~m|Mime Jr.~kr|Happiny~a|Chatot~aj|Spiritomb~np|Gible~oi|Gabite~oi|Garchomp~oi|Munchlax~a|Riolu~g|Lucario~gq|Hippopotas~i|Hippowdon~i|Skorupi~hl|Drapion~hp|Croagunk~hg|Toxicroak~hg|Carnivine~d|Finneon~c|Lumineon~c|Mantyke~cj|Snover~df|Abomasnow~df|Weavile~pf|Magnezone~eq|Lickilicky~a|Rhyperior~im|Tangrowth~d|Electivire~e|Magmortar~b|Togekiss~rj|Yanmega~lj|Leafeon~d|Glaceon~f|Gliscor~ij|Mamoswine~fi|Porygon-Z~a|Gallade~kg|Probopass~mq|Dusknoir~n|Froslass~fn|Rotom~en|Uxie~k|Mesprit~k|Azelf~k|Dialga~qo|Palkia~co|Heatran~bq|Regigigas~a|Giratina~no|Cresselia~k|Phione~c|Manaphy~c|Darkrai~p|Shaymin~d|Arceus~a|Victini~kb|Snivy~d|Servine~d|Serperior~d|Tepig~b|Pignite~bg|Emboar~bg|Oshawott~c|Dewott~c|Samurott~c|Patrat~a|Watchog~a|Lillipup~a|Herdier~a|Stoutland~a|Purrloin~p|Liepard~p|Pansage~d|Simisage~d|Pansear~b|Simisear~b|Panpour~c|Simipour~c|Munna~k|Musharna~k|Pidove~aj|Tranquill~aj|Unfezant~aj|Blitzle~e|Zebstrika~e|Roggenrola~m|Boldore~m|Gigalith~m|Woobat~kj|Swoobat~kj|Drilbur~i|Excadrill~iq|Audino~a|Timburr~g|Gurdurr~g|Conkeldurr~g|Tympole~c|Palpitoad~ci|Seismitoad~ci|Throh~g|Sawk~g|Sewaddle~ld|Swadloon~ld|Leavanny~ld|Venipede~lh|Whirlipede~lh|Scolipede~lh|Cottonee~dr|Whimsicott~dr|Petilil~d|Lilligant~d|Basculin~c|Sandile~ip|Krokorok~ip|Krookodile~ip|Darumaka~b|Darmanitan~b|Maractus~d|Dwebble~lm|Crustle~lm|Scraggy~pg|Scrafty~pg|Sigilyph~kj|Yamask~n|Cofagrigus~n|Tirtouga~cm|Carracosta~cm|Archen~mj|Archeops~mj|Trubbish~h|Garbodor~h|Zorua~p|Zoroark~p|Minccino~a|Cinccino~a|Gothita~k|Gothorita~k|Gothitelle~k|Solosis~k|Duosion~k|Reuniclus~k|Ducklett~cj|Swanna~cj|Vanillite~f|Vanillish~f|Vanilluxe~f|Deerling~ad|Sawsbuck~ad|Emolga~ej|Karrablast~l|Escavalier~lq|Foongus~dh|Amoonguss~dh|Frillish~cn|Jellicent~cn|Alomomola~c|Joltik~le|Galvantula~le|Ferroseed~dq|Ferrothorn~dq|Klink~q|Klang~q|Klinklang~q|Tynamo~e|Eelektrik~e|Eelektross~e|Elgyem~k|Beheeyem~k|Litwick~nb|Lampent~nb|Chandelure~nb|Axew~o|Fraxure~o|Haxorus~o|Cubchoo~f|Beartic~f|Cryogonal~f|Shelmet~l|Accelgor~l|Stunfisk~ie|Mienfoo~g|Mienshao~g|Druddigon~o|Golett~in|Golurk~in|Pawniard~pq|Bisharp~pq|Bouffalant~a|Rufflet~aj|Braviary~aj|Vullaby~pj|Mandibuzz~pj|Heatmor~b|Durant~lq|Deino~po|Zweilous~po|Hydreigon~po|Larvesta~lb|Volcarona~lb|Cobalion~qg|Terrakion~mg|Virizion~dg|Tornadus~j|Thundurus~ej|Reshiram~ob|Zekrom~oe|Landorus~ij|Kyurem~of|Keldeo~cg|Meloetta~ak|Genesect~lq|Chespin~d|Quilladin~d|Chesnaught~dg|Fennekin~b|Braixen~b|Delphox~bk|Froakie~c|Frogadier~c|Greninja~cp|Bunnelby~a|Diggersby~ai|Fletchling~aj|Fletchinder~bj|Talonflame~bj|Scatterbug~l|Spewpa~l|Vivillon~lj|Litleo~ba|Pyroar~ba|Flabébé~r|Floette~r|Florges~r|Skiddo~d|Gogoat~d|Pancham~g|Pangoro~gp|Furfrou~a|Espurr~k|Meowstic~k|Honedge~qn|Doublade~qn|Aegislash~qn|Spritzee~r|Aromatisse~r|Swirlix~r|Slurpuff~r|Inkay~pk|Malamar~pk|Binacle~mc|Barbaracle~mc|Skrelp~hc|Dragalge~ho|Clauncher~c|Clawitzer~c|Helioptile~ea|Heliolisk~ea|Tyrunt~mo|Tyrantrum~mo|Amaura~mf|Aurorus~mf|Sylveon~r|Hawlucha~gj|Dedenne~er|Carbink~mr|Goomy~o|Sliggoo~o|Goodra~o|Klefki~qr|Phantump~nd|Trevenant~nd|Pumpkaboo~nd|Gourgeist~nd|Bergmite~f|Avalugg~f|Noibat~jo|Noivern~jo|Xerneas~r|Yveltal~pj|Zygarde~oi|Diancie~mr|Hoopa~kn|Volcanion~bc|Rowlet~dj|Dartrix~dj|Decidueye~dn|Litten~b|Torracat~b|Incineroar~bp|Popplio~c|Brionne~c|Primarina~cr|Pikipek~aj|Trumbeak~aj|Toucannon~aj|Yungoos~a|Gumshoos~a|Grubbin~l|Charjabug~le|Vikavolt~le|Crabrawler~g|Crabominable~gf|Oricorio~bj|Cutiefly~lr|Ribombee~lr|Rockruff~m|Lycanroc~m|Wishiwashi~c|Mareanie~hc|Toxapex~hc|Mudbray~i|Mudsdale~i|Dewpider~cl|Araquanid~cl|Fomantis~d|Lurantis~d|Morelull~dr|Shiinotic~dr|Salandit~hb|Salazzle~hb|Stufful~ag|Bewear~ag|Bounsweet~d|Steenee~d|Tsareena~d|Comfey~r|Oranguru~ak|Passimian~g|Wimpod~lc|Golisopod~lc|Sandygast~ni|Palossand~ni|Pyukumuku~c|Type: Null~a|Silvally~a|Minior~mj|Komala~a|Turtonator~bo|Togedemaru~eq|Mimikyu~nr|Bruxish~ck|Drampa~ao|Dhelmise~nd|Jangmo-o~o|Hakamo-o~og|Kommo-o~og|Tapu Koko~er|Tapu Lele~kr|Tapu Bulu~dr|Tapu Fini~cr|Cosmog~k|Cosmoem~k|Solgaleo~kq|Lunala~kn|Nihilego~mh|Buzzwole~lg|Pheromosa~lg|Xurkitree~e|Celesteela~qj|Kartana~dq|Guzzlord~po|Necrozma~k|Magearna~qr|Marshadow~gn|Poipole~h|Naganadel~ho|Stakataka~mq|Blacephalon~bn|Zeraora~e|Meltan~q|Melmetal~q|Grookey~d|Thwackey~d|Rillaboom~d|Scorbunny~b|Raboot~b|Cinderace~b|Sobble~c|Drizzile~c|Inteleon~c|Skwovet~a|Greedent~a|Rookidee~j|Corvisquire~j|Corviknight~jq|Blipbug~l|Dottler~lk|Orbeetle~lk|Nickit~p|Thievul~p|Gossifleur~d|Eldegoss~d|Wooloo~a|Dubwool~a|Chewtle~c|Drednaw~cm|Yamper~e|Boltund~e|Rolycoly~m|Carkol~mb|Coalossal~mb|Applin~do|Flapple~do|Appletun~do|Silicobra~i|Sandaconda~i|Cramorant~jc|Arrokuda~c|Barraskewda~c|Toxel~eh|Toxtricity~eh|Sizzlipede~bl|Centiskorch~bl|Clobbopus~g|Grapploct~g|Sinistea~n|Polteageist~n|Hatenna~k|Hattrem~k|Hatterene~kr|Impidimp~pr|Morgrem~pr|Grimmsnarl~pr|Obstagoon~pa|Perrserker~q|Cursola~n|Sirfetch’d~g|Mr. Rime~fk|Runerigus~in|Milcery~r|Alcremie~r|Falinks~g|Pincurchin~e|Snom~fl|Frosmoth~fl|Stonjourner~m|Eiscue~f|Indeedee~ka|Morpeko~ep|Cufant~q|Copperajah~q|Dracozolt~eo|Arctozolt~ef|Dracovish~co|Arctovish~cf|Duraludon~qo|Dreepy~on|Drakloak~on|Dragapult~on|Zacian~r|Zamazenta~g|Eternatus~ho|Kubfu~g|Urshifu~gp|Zarude~pd|Regieleki~e|Regidrago~o|Glastrier~f|Spectrier~n|Calyrex~kd|Wyrdeer~ak|Kleavor~lm|Ursaluna~ia|Basculegion~cn|Sneasler~gh|Overqwil~ph|Enamorus~rj|Sprigatito~d|Floragato~d|Meowscarada~dp|Fuecoco~b|Crocalor~b|Skeledirge~bn|Quaxly~c|Quaxwell~c|Quaquaval~cg|Lechonk~a|Oinkologne~a|Tarountula~l|Spidops~l|Nymble~l|Lokix~lp|Pawmi~e|Pawmo~eg|Pawmot~eg|Tandemaus~a|Maushold~a|Fidough~r|Dachsbun~r|Smoliv~da|Dolliv~da|Arboliva~da|Squawkabilly~aj|Nacli~m|Naclstack~m|Garganacl~m|Charcadet~b|Armarouge~bk|Ceruledge~bn|Tadbulb~e|Bellibolt~e|Wattrel~ej|Kilowattrel~ej|Maschiff~p|Mabosstiff~p|Shroodle~ha|Grafaiai~ha|Bramblin~dn|Brambleghast~dn|Toedscool~id|Toedscruel~id|Klawf~m|Capsakid~d|Scovillain~db|Rellor~l|Rabsca~lk|Flittle~k|Espathra~k|Tinkatink~rq|Tinkatuff~rq|Tinkaton~rq|Wiglett~c|Wugtrio~c|Bombirdier~jp|Finizen~c|Palafin~c|Varoom~qh|Revavroom~qh|Cyclizar~oa|Orthworm~q|Glimmet~mh|Glimmora~mh|Greavard~n|Houndstone~n|Flamigo~jg|Cetoddle~f|Cetitan~f|Veluza~ck|Dondozo~c|Tatsugiri~oc|Annihilape~gn|Clodsire~hi|Farigiraf~ak|Dudunsparce~a|Kingambit~pq|Great Tusk~ig|Scream Tail~rk|Brute Bonnet~dp|Flutter Mane~nr|Slither Wing~lg|Sandy Shocks~ei|Iron Treads~iq|Iron Bundle~fc|Iron Hands~ge|Iron Jugulis~pj|Iron Moth~bh|Iron Thorns~me|Frigibax~of|Arctibax~of|Baxcalibur~of|Gimmighoul~n|Gholdengo~qn|Wo-Chien~pd|Chien-Pao~pf|Ting-Lu~pi|Chi-Yu~pb|Roaring Moon~op|Iron Valiant~rg|Koraidon~go|Miraidon~eo|Walking Wake~co|Iron Leaves~dk|Dipplin~do|Poltchageist~dn|Sinistcha~dn|Okidogi~hg|Munkidori~hk|Fezandipiti~hr|Ogerpon~d|Archaludon~qo|Hydrapple~do|Gouging Fire~bo|Raging Bolt~eo|Iron Boulder~mk|Iron Crown~qk|Terapagos~a|Pecharunt~hn';
+const TIPOS = [
+  ['Normal', '⚪', '#9fa19f'], ['Fogo', '🔥', '#e62829'], ['Água', '💧', '#2980ef'], ['Planta', '🌿', '#3fa129'],
+  ['Elétrico', '⚡', '#d9a800'], ['Gelo', '❄️', '#2fb3d6'], ['Lutador', '🥊', '#ff8000'], ['Venenoso', '☠️', '#9141cb'],
+  ['Terra', '⛰️', '#915121'], ['Voador', '🕊️', '#5f9fe0'], ['Psíquico', '🔮', '#ef4179'], ['Inseto', '🐛', '#7f8f10'],
+  ['Pedra', '🪨', '#8f8a62'], ['Fantasma', '👻', '#704170'], ['Dragão', '🐉', '#5060e1'], ['Sombrio', '🌑', '#624d4e'],
+  ['Aço', '⚙️', '#4f8aa0'], ['Fada', '🧚', '#d65cd6'],
+];
+const GERACOES = [[1, 151], [152, 251], [252, 386], [387, 493], [494, 649], [650, 721], [722, 809], [810, 905], [906, 1025]];
+const POKE = DADOS.split('|').map((x, i) => { const [n, t] = x.split('~'); return { id:i + 1, nome:n, tipos:[...t].map(c => c.charCodeAt(0) - 97), ger:GERACOES.findIndex(g => i + 1 >= g[0] && i + 1 <= g[1]) + 1 }; });
+/* Os mais famosos (nível fácil) */
+const FAMOSOS = [1,2,3,4,5,6,7,8,9,12,16,19,25,26,35,37,39,50,52,54,58,59,63,65,66,68,74,77,79,81,92,93,94,95,104,113,120,121,125,126,129,130,131,132,133,134,135,136,
+  137,138,143,144,145,146,147,148,149,150,151,152,155,158,172,175,183,196,197,212,214,215,248,249,250,251,252,255,258,282,302,359,373,376,380,381,382,383,384,385,
+  387,390,393,403,425,443,445,447,448,470,471,483,484,487,491,493,495,498,501,570,571,643,644,650,653,656,658,700,722,725,728,778,807,808,809,810,813,816,888,889,906,909,912];
+
+const $ = id => document.getElementById(id);
+const arte = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+const mini = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('quemepoke:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('quemepoke:' + k, JSON.stringify(v)); }catch(e){} }
+const semAcento = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/♀/g, 'f').replace(/♂/g, 'm').replace(/[^a-z0-9]/g, '');
+const embaralhar = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+/* ---------- configurações (lembradas) ---------- */
+const cfg = Object.assign({ nivel:'facil', modo:'dez', resp:'opcoes', som:true, gers:[1] }, ler('cfg', {}));
+if(!Array.isArray(cfg.gers) || !cfg.gers.length) cfg.gers = [1];
+function pool(){
+  if(cfg.nivel === 'facil') return FAMOSOS.map(i => POKE[i - 1]);
+  if(cfg.nivel === 'medio') return POKE.filter(p => p.ger <= 4);
+  if(cfg.nivel === 'minhas') return POKE.filter(p => cfg.gers.includes(p.ger));
+  return POKE;
+}
+const chaveRecorde = () => `${cfg.nivel}${cfg.nivel === 'minhas' ? '-' + cfg.gers.slice().sort().join('') : ''}:${cfg.modo}:${cfg.resp}`;
+function marcar(){
+  document.querySelectorAll('#niveis .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.nivel === cfg.nivel));
+  document.querySelectorAll('#modos .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.modo === cfg.modo));
+  document.querySelectorAll('#respostas .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.resp === cfg.resp));
+  $('geracoes').hidden = cfg.nivel !== 'minhas';
+  [...$('geracoes').children].forEach((b, i) => b.setAttribute('aria-pressed', cfg.gers.includes(i + 1)));
+  $('som').setAttribute('aria-pressed', cfg.som); $('som').textContent = cfg.som ? 'Ligado' : 'Desligado';
+  const r = ler('recordes', {})[chaveRecorde()];
+  $('recorde-inicio').textContent = r ? `🏆 Seu recorde nesse jeito: ${r} pontos` : '🏆 Ainda sem recorde nesse jeito. Bora!';
+  gravar('cfg', cfg);
+}
+GERACOES.forEach((g, i) => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = `Ger ${i + 1}`; b.title = `Pokémon ${g[0]} a ${g[1]}`;
+  b.onclick = () => { const n = i + 1; cfg.gers = cfg.gers.includes(n) ? cfg.gers.filter(x => x !== n) : [...cfg.gers, n]; if(!cfg.gers.length) cfg.gers = [n]; marcar(); };
+  $('geracoes').appendChild(b);
+});
+$('niveis').onclick = ev => { const b = ev.target.closest('[data-nivel]'); if(b){ cfg.nivel = b.dataset.nivel; marcar(); } };
+$('modos').onclick = ev => { const b = ev.target.closest('[data-modo]'); if(b){ cfg.modo = b.dataset.modo; marcar(); } };
+$('respostas').onclick = ev => { const b = ev.target.closest('[data-resp]'); if(b){ cfg.resp = b.dataset.resp; marcar(); } };
+$('som').onclick = () => { cfg.som = !cfg.som; marcar(); };
+
+/* ---------- coleção: todos que você já acertou ---------- */
+let colecao = new Set(ler('colecao', []));
+function mostrarColecao(){
+  $('colecao-txt').innerHTML = `Você já acertou <b>${colecao.size}</b> de <b>1025</b> Pokémon!`;
+  $('colecao-barra').style.width = (colecao.size / 1025 * 100) + '%';
+  if($('colecao-caixa').hidden) return;
+  $('por-geracao').innerHTML = GERACOES.map((g, i) => { let n = 0; colecao.forEach(id => { if(id >= g[0] && id <= g[1]) n++; }); return `<span>Ger ${i + 1}: ${n}/${g[1] - g[0] + 1}</span>`; }).join('');
+  const ul = $('colecao'); ul.innerHTML = '';
+  if(!colecao.size){ ul.innerHTML = '<li style="grid-column:1/-1;padding:10px">Nenhum ainda. Jogue pra começar a coleção! 🕵️</li>'; return; }
+  [...colecao].sort((a, b) => a - b).forEach(id => {
+    const li = document.createElement('li'), img = document.createElement('img');
+    img.loading = 'lazy'; img.src = mini(id); img.alt = '';
+    li.append(img, `#${id} ${POKE[id - 1].nome}`); ul.appendChild(li);
+  });
+}
+$('ver-colecao').onclick = () => { $('colecao-caixa').hidden = !$('colecao-caixa').hidden; $('ver-colecao').textContent = $('colecao-caixa').hidden ? '👀 Ver os que eu já acertei' : '🙈 Esconder'; mostrarColecao(); };
+
+/* ---------- o jogo ---------- */
+const TEMPO_S = 60, VIDAS = 3, PERGUNTAS = 10;
+let jogo = null;
+function trocarTela(t){ document.querySelectorAll('.pontos-voando').forEach(d => d.remove()); ['inicio', 'jogo', 'fim'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
+function novoJogo(){
+  const p = pool();
+  if(p.length < 4){ alert('Escolha mais gerações!'); return; }
+  jogo = { lista:p, usados:new Set(), pontos:0, seq:0, maiorSeq:0, acertos:0, n:0, vidas:VIDAS, fim:0, rodadas:[], atual:null, relogio:0, dicas:0, respondeu:false };
+  $('nomes').innerHTML = '';
+  if(cfg.resp === 'escrever'){ const f = document.createDocumentFragment(); POKE.forEach(x => { const o = document.createElement('option'); o.value = x.nome; f.appendChild(o); }); $('nomes').appendChild(f); }
+  $('opcoes').hidden = cfg.resp !== 'opcoes'; $('escrever').hidden = cfg.resp !== 'escrever';
+  trocarTela('jogo');
+  if(cfg.modo === 'tempo'){
+    jogo.fim = Date.now() + TEMPO_S * 1000;
+    jogo.relogio = setInterval(() => { const s = Math.max(0, Math.ceil((jogo.fim - Date.now()) / 1000)); $('p-extra').textContent = s + 's'; if(s <= 0) terminar(); }, 250);
+  }
+  proxima();
+}
+function sortear(){
+  const livres = jogo.lista.filter(p => !jogo.usados.has(p.id));
+  if(!livres.length) return null;
+  return livres[Math.floor(Math.random() * livres.length)];
+}
+function opcoesPara(certo){
+  /* metade das vezes as opções erradas são do mesmo tipo, pra ficar mais difícil */
+  const base = jogo.lista.length >= 12 ? jogo.lista : POKE;
+  const parecidos = base.filter(p => p.id !== certo.id && p.tipos.some(t => certo.tipos.includes(t)));
+  const erradas = new Set();
+  while(erradas.size < 3){
+    const fonte = Math.random() < .5 && parecidos.length >= 3 ? parecidos : base;
+    const p = fonte[Math.floor(Math.random() * fonte.length)];
+    if(p.id !== certo.id) erradas.add(p);
+  }
+  return embaralhar([certo, ...erradas]);
+}
+function atualizarPlacar(){
+  $('p-pontos').textContent = jogo.pontos; $('p-seq').textContent = jogo.seq;
+  if(cfg.modo === 'dez'){ $('p-extra').textContent = `${Math.min(jogo.n, PERGUNTAS)}/${PERGUNTAS}`; $('p-extra-rot').textContent = 'pergunta'; }
+  else if(cfg.modo === 'vidas'){ $('p-extra').textContent = '❤️'.repeat(jogo.vidas) || '💔'; $('p-extra-rot').textContent = 'vidas'; }
+  else $('p-extra-rot').textContent = 'tempo';
+}
+function proxima(){
+  if(!jogo) return;
+  if(cfg.modo === 'dez' && jogo.n >= PERGUNTAS){ terminar(); return; }
+  const p = sortear();
+  if(!p){ terminar(); return; }
+  jogo.usados.add(p.id); jogo.n++; jogo.atual = p; jogo.dicas = 0; jogo.respondeu = false;
+  const img = $('figura');
+  img.classList.remove('revelado'); img.removeAttribute('src');
+  $('carregando').hidden = false; $('carregando').textContent = 'Carregando… ⏳';
+  $('selo').hidden = true; $('num').hidden = true; $('dicas').innerHTML = ''; $('aviso').textContent = ''; $('aviso').className = 'aviso';
+  $('proximo').hidden = true; $('dica').disabled = false; $('pular').disabled = false;
+  const ops = $('opcoes'); ops.innerHTML = '';
+  if(cfg.resp === 'opcoes') opcoesPara(p).forEach(o => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = o.nome; b.dataset.id = o.id;
+    b.onclick = () => responder(o.id === p.id, b); ops.appendChild(b);
+  });
+  else { $('chute').value = ''; $('chute').disabled = false; setTimeout(() => $('chute').focus(), 50); }
+  atualizarPlacar();
+  img.onload = () => { $('carregando').hidden = true; };
+  img.onerror = () => {
+    $('carregando').textContent = navigator.onLine === false ? '📡 Sem internet! Conecte pra jogar.' : 'Não carregou 😕 Indo pro próximo…';
+    if(navigator.onLine !== false){ jogo.usados.add(p.id); jogo.n--; setTimeout(proxima, 1200); }
+  };
+  img.src = arte(p.id);
+}
+function responder(certo, botao){
+  if(!jogo || jogo.respondeu) return;
+  jogo.respondeu = true;
+  const p = jogo.atual, img = $('figura');
+  img.classList.add('revelado');
+  $('selo').textContent = `É o ${p.nome}!`; $('selo').hidden = false;
+  $('num').textContent = `#${p.id}`; $('num').hidden = false;
+  mostrarTipos();
+  document.querySelectorAll('#opcoes button').forEach(b => { b.disabled = true; if(+b.dataset.id === p.id) b.classList.add('certo'); });
+  if(botao && !certo) botao.classList.add('errado');
+  $('chute').disabled = true; $('dica').disabled = true; $('pular').disabled = true;
+  let ganhou = 0;
+  if(certo){
+    jogo.seq++; jogo.maiorSeq = Math.max(jogo.maiorSeq, jogo.seq); jogo.acertos++;
+    ganhou = Math.max(2, 10 - jogo.dicas * 3) + Math.min(5, jogo.seq - 1);
+    jogo.pontos += ganhou;
+    colecao.add(p.id); gravar('colecao', [...colecao]);
+    $('aviso').textContent = ['✅ Acertou!', '🎉 Isso aí!', '⭐ Mandou bem!', '🔥 Demais!'][Math.floor(Math.random() * 4)] + (jogo.seq > 1 ? ` ${jogo.seq} seguidos!` : '');
+    $('aviso').className = 'aviso bom';
+    voar('+' + ganhou);
+  }else{
+    jogo.seq = 0;
+    if(cfg.modo === 'vidas') jogo.vidas--;
+    $('aviso').textContent = botao === null ? '🤷 Tudo bem! Agora você conhece ele.' : '❌ Quase! Esse era outro.';
+    $('aviso').className = 'aviso ruim';
+  }
+  jogo.rodadas.push({ id:p.id, certo });
+  atualizarPlacar();
+  grito(p);
+  const acabou = (cfg.modo === 'vidas' && jogo.vidas <= 0) || (cfg.modo === 'dez' && jogo.n >= PERGUNTAS);
+  $('proximo').textContent = acabou ? 'Ver resultado 🏁' : 'Próximo ➡️';
+  $('proximo').hidden = false; $('proximo').focus();
+  if(cfg.modo === 'tempo') setTimeout(() => { if(jogo && jogo.atual === p) proxima(); }, 1300);   // contra o tempo: vai sozinho
+}
+function voar(t){ const d = document.createElement('div'); d.className = 'pontos-voando'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1000); }
+function mostrarTipos(){
+  const p = jogo.atual;
+  $('dicas').innerHTML = p.tipos.map(t => `<span class="tipo" style="background:${TIPOS[t][2]}">${TIPOS[t][1]} ${TIPOS[t][0]}</span>`).join('');
+}
+$('dica').onclick = () => {
+  if(!jogo || jogo.respondeu) return;
+  const p = jogo.atual; jogo.dicas++;
+  if(jogo.dicas === 1){ mostrarTipos(); $('aviso').textContent = '💡 Dica: o tipo dele. (vale menos pontos)'; }
+  else{
+    mostrarTipos();
+    const letras = [...p.nome].map((c, i) => i === 0 ? c : (/[a-zA-Z0-9éÉ]/.test(c) ? '_' : c)).join(' ');
+    $('dicas').insertAdjacentHTML('beforeend', `<div style="flex-basis:100%;text-align:center" class="letras">${letras}</div>`);
+    $('aviso').textContent = '💡 Dica: a primeira letra e quantas letras tem.';
+    $('dica').disabled = true;
+  }
+  $('aviso').className = 'aviso';
+};
+$('pular').onclick = () => responder(false, null);
+$('proximo').onclick = () => { if(!jogo) return; const acabou = (cfg.modo === 'vidas' && jogo.vidas <= 0) || (cfg.modo === 'dez' && jogo.n >= PERGUNTAS); acabou ? terminar() : proxima(); };
+function distancia(a, b){
+  const d = Array.from({ length:a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for(let j = 1; j <= b.length; j++) d[0][j] = j;
+  for(let i = 1; i <= a.length; i++) for(let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+$('escrever').onsubmit = ev => {
+  ev.preventDefault();
+  if(!jogo || jogo.respondeu) return;
+  const c = semAcento($('chute').value), certo = semAcento(jogo.atual.nome);
+  if(!c){ $('aviso').textContent = 'Escreva um nome! Ou aperte 🤷 Não sei.'; return; }
+  const tolera = certo.length >= 9 ? 2 : certo.length >= 5 ? 1 : 0;   // aceita um errinho de letra
+  responder(c === certo || distancia(c, certo) <= tolera, null);
+  if($('aviso').className.includes('ruim')) $('aviso').textContent = `❌ Não foi dessa vez! Você escreveu “${$('chute').value.trim()}”.`;
+};
+function grito(p){
+  if(!cfg.som) return;
+  try{
+    const a = new Audio(), ogg = a.canPlayType('audio/ogg; codecs=vorbis');
+    a.src = ogg ? `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${p.id}.ogg`
+                : `https://play.pokemonshowdown.com/audio/cries/${p.nome.toLowerCase().replace(/♀/g, 'f').replace(/♂/g, 'm').replace(/[^a-z0-9]/g, '')}.mp3`;
+    a.volume = .45; const r = a.play(); if(r && r.catch) r.catch(() => {});
+  }catch(e){}
+}
+function terminar(){
+  if(!jogo) return;
+  clearInterval(jogo.relogio);
+  const j = jogo; jogo = null;
+  const recs = ler('recordes', {}), k = chaveRecorde(), antes = recs[k] || 0, novo = j.pontos > antes && j.pontos > 0;
+  if(novo){ recs[k] = j.pontos; gravar('recordes', recs); }
+  $('fim-titulo').textContent = j.acertos === 0 ? 'Não foi dessa vez! Tenta de novo? 💪' : j.acertos >= j.rodadas.length * .8 ? '🏆 Você é um Mestre Pokémon!' : j.acertos >= j.rodadas.length / 2 ? '🎉 Muito bem!' : '👍 Boa! Treina mais um pouco!';
+  $('fim-pontos').textContent = j.pontos; $('fim-novo').hidden = !novo;
+  $('fim-acertos').textContent = `${j.acertos}/${j.rodadas.length}`; $('fim-seq').textContent = j.maiorSeq; $('fim-recorde').textContent = Math.max(antes, j.pontos);
+  const ul = $('rodadas'); ul.innerHTML = '';
+  j.rodadas.forEach(r => {
+    const li = document.createElement('li'), img = document.createElement('img'); li.className = r.certo ? 'ok' : 'nao';
+    img.src = mini(r.id); img.alt = ''; img.loading = 'lazy';
+    li.append(img, `${r.certo ? '✅' : '❌'} ${POKE[r.id - 1].nome}`); ul.appendChild(li);
+  });
+  if(!j.rodadas.length) ul.innerHTML = '<li style="grid-column:1/-1">Nenhum Pokémon dessa vez.</li>';
+  trocarTela('fim');
+  mostrarColecao();
+}
+$('jogar').onclick = novoJogo;
+$('de-novo').onclick = novoJogo;
+$('menu').onclick = () => { trocarTela('inicio'); marcar(); };
+$('sair').onclick = () => { if(!jogo) return; if(jogo.rodadas.length === 0 || confirm('Parar o jogo agora?')) terminar(); };
+document.addEventListener('keydown', ev => {   // no computador: 1 2 3 4 escolhem, Enter vai pro próximo
+  if($('tela-jogo').hidden || !jogo || document.activeElement === $('chute')) return;
+  if(/^[1-4]$/.test(ev.key) && cfg.resp === 'opcoes' && !jogo.respondeu){ const b = $('opcoes').children[+ev.key - 1]; if(b) b.click(); }
+});
+marcar(); mostrarColecao();
+
+/* ---------- claro / escuro ---------- */
+const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function aplicarTema(t){
+  if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema');
+  btTema.textContent = estaEscuro() ? '☀️' : '🌙';
+  if(corDaBarra) corDaBarra.setAttribute('content', estaEscuro() ? '#10122a' : '#2b2f77');
+}
+aplicarTema(ler('tema', null));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => aplicarTema(document.documentElement.getAttribute('data-tema')));
+btTema.onclick = () => { const n = estaEscuro() ? 'claro' : 'escuro'; gravar('tema', n); aplicarTema(n); };
+
+/* ---------- "não atualizou o site" ---------- */
+const btRecarregar = $('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{ if(window.caches){ const n = await caches.keys(); await Promise.all(n.map(x => caches.delete(x))); } }catch(e){}
+  try{ if(navigator.serviceWorker){ const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(x => x.update().catch(() => {}))); } }catch(e){}
+  const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+};
+try{ if(new URL(location.href).searchParams.has('v')){ const l = new URL(location.href); l.searchParams.delete('v'); history.replaceState(null, '', l.pathname + l.search + l.hash); } }catch(e){}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(!jaTinha || document.querySelector('.faixa-nova')) return;
+    const f = document.createElement('div'); f.className = 'faixa-nova';
+    f.innerHTML = '<span>✨ Chegou versão nova!</span><button type="button">Carregar</button>';
+    f.querySelector('button').onclick = () => location.reload();
+    document.body.appendChild(f);
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); }).catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
