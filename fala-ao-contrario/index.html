@@ -153,6 +153,48 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 .juntar-linha{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;margin-bottom:10px}
 .juntar-linha span{font-weight:800;font-size:1.2rem}
 .juntar select{width:100%;font:inherit;font-size:.88rem;padding:9px 8px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.config{margin-top:12px;border:2px solid var(--borda);border-radius:14px;padding:8px 12px;background:var(--cartao2);text-align:left}
+.config summary{cursor:pointer;font-weight:800;font-size:.92rem}
+.config[open] summary{margin-bottom:8px}
+.cfg{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) 42px;align-items:center;gap:8px;font-weight:700;font-size:.86rem;margin-top:8px}
+.cfg input{width:100%;accent-color:var(--marca)}
+.cfg output{text-align:right;color:var(--marca);font-weight:800;font-variant-numeric:tabular-nums}
+.cfg-sel{display:grid;gap:4px;font-weight:700;font-size:.86rem;margin-top:8px}
+.cfg-sel select{font:inherit;font-size:.9rem;padding:8px;border-radius:10px;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta)}
+.cfg-check{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.86rem;margin-top:10px;cursor:pointer}
+.cfg-check input{width:20px;height:20px;accent-color:var(--marca)}
+.volume{display:grid;grid-template-columns:auto minmax(0,1fr) 46px;align-items:center;gap:10px;margin-top:10px;font-weight:700;font-size:.9rem}
+.volume input{width:100%;accent-color:var(--marca)}
+.volume output{text-align:right;color:var(--marca);font-weight:800}
+.gravar.contando{background:radial-gradient(circle at 35% 30%, #ffd27a, #e08a00);box-shadow:0 8px 0 #9a5f00}
+.acao-grande{display:block;width:100%;font:inherit;font-weight:800;font-size:1.05rem;border:0;border-radius:16px;padding:15px 10px;margin-top:12px;cursor:pointer;background:var(--marca);color:#fff;box-shadow:0 4px 0 var(--marca-escura)}
+.acao-grande.ligado{background:var(--vermelho);box-shadow:0 4px 0 #9e2019}
+.medidor{position:relative;height:14px;border-radius:99px;background:var(--borda);margin-top:12px;overflow:hidden}
+.medidor i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--verde);border-radius:99px;transition:width .08s}
+.medidor b{position:absolute;top:0;bottom:0;width:3px;background:var(--vermelho)}
+.status{text-align:center;font-weight:800;margin-top:10px;min-height:1.4em}
+.efeitos-vivo{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px}
+.efeitos-vivo button{font:inherit;font-size:.82rem;font-weight:700;padding:9px 4px;border-radius:14px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.efeitos-vivo button[aria-pressed="true"]{border-color:var(--marca);background:var(--creme3);box-shadow:inset 0 0 0 2px var(--marca)}
+.placar{position:relative;padding-left:48px !important;padding-right:48px !important}
+@media (max-width:420px){.salvos li{grid-template-columns:auto minmax(0,1fr)}.salvos .acoes{grid-column:1 / -1;justify-content:flex-end}}
+.coracao{position:absolute;top:6px;right:6px;width:40px;height:40px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.2rem;cursor:pointer}
+.favs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+.favs span{font-weight:800;font-size:.85rem}
+.favs button{font:inherit;font-size:.8rem;font-weight:700;border-radius:99px;padding:6px 10px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.favs button[aria-pressed="true"]{border-color:var(--marca);background:var(--creme3)}
+.musica-linha{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:12px}
+.musica-linha select{font:inherit;font-size:.9rem;padding:8px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);min-width:0}
+.mini.gravando-tec{background:var(--vermelho);border-color:var(--vermelho);color:#fff}
+.salvos li{grid-template-columns:auto minmax(0,1fr) auto}
+.capa{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:1.45rem;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.editor-capa{grid-column:1 / -1;display:grid;gap:8px;border-top:2px dashed var(--borda);padding-top:8px}
+.editor-capa label{display:grid;gap:4px;font-weight:700;font-size:.85rem}
+.editor-capa input{font:inherit;padding:8px 10px;border-radius:10px;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta)}
+.editor-capa .grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:4px}
+.editor-capa .grade button{height:36px;border-radius:10px;border:2px solid var(--borda);background:var(--cartao);font-size:1.1rem;cursor:pointer}
+.editor-capa .grade button[aria-pressed="true"]{border-color:var(--marca);box-shadow:inset 0 0 0 2px var(--marca)}
+.editor-capa .ed-bts{display:flex;gap:8px;justify-content:flex-end}
 </style>
 </head>
 <body>
@@ -165,6 +207,13 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 
   <section class="palco">
     <button class="gravar" id="gravar" type="button"><span>🎙️</span><em id="gravar-txt" style="font-style:normal">Gravar</em></button>
+    <details class="config" id="config-gravar">
+      <summary>⚙️ Configurações de gravar</summary>
+      <label class="cfg-sel">⏱️ Contagem antes de gravar
+        <select id="contagem"><option value="0">Sem contagem</option><option value="3">3 segundos</option><option value="5">5 segundos</option><option value="10">10 segundos</option></select>
+      </label>
+      <label class="cfg-check"><input type="checkbox" id="contagem-bip" /> 🔔 Bip na contagem</label>
+    </details>
     <button type="button" class="pegar" id="pegar">📂 Pegar um áudio do celular</button>
     <input type="file" id="arquivo" accept="audio/*,video/*" hidden />
     <div class="linha-link">
@@ -183,6 +232,7 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
       <span id="tempo-audio">0.0 / 0.0s</span>
       <button type="button" class="repetir" id="repetir" aria-pressed="false" title="Repetir sem parar" aria-label="Repetir sem parar">🔂</button>
     </div>
+    <label class="volume">🔊 Volume <input type="range" id="volume" min="0" max="200" step="10" /><output id="volume-txt">100%</output></label>
     <div class="botoes">
       <button type="button" id="tocar" disabled>🔊 Tocar de novo</button>
       <button type="button" id="baixar" disabled>⬇️ Baixar</button>
@@ -193,7 +243,7 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
   </section>
 
   <section class="cartao" id="cartao-cortar" hidden>
-    <h2>✂️ Cortar o áudio</h2>
+    <h2>✂️ Cortar e embaralhar</h2>
     <p class="recado" style="margin-top:4px">Arraste as bolinhas de <b>Começo</b> e <b>Fim</b> pra escolher um pedaço.</p>
     <canvas id="onda-corte" width="1000" height="140" aria-label="Desenho do áudio com o pedaço escolhido"></canvas>
     <label class="corte">Começo <input type="range" id="corte-a" min="0" max="1000" value="0" /></label>
@@ -205,12 +255,23 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
       <button type="button" id="pedaco-contrario">🔀 Só o pedaço ao contrário</button>
       <button type="button" id="desfazer-corte" disabled>↩️ Desfazer</button>
     </div>
+    <h3>🔀 Embaralhar</h3>
+    <p class="recado" style="margin:0">Corta o áudio em pedacinhos e mistura tudo! Apertando de novo, mistura diferente.</p>
+    <details class="config">
+      <summary>⚙️ Configurações do embaralhar</summary>
+      <label class="cfg-sel">📏 Tamanho dos pedaços
+        <select id="emb-tam"><option value="0.1">Pequenininhos</option><option value="0.25">Médios</option><option value="0.5">Grandes</option><option value="1">Enormes</option></select>
+      </label>
+      <label class="cfg-check"><input type="checkbox" id="emb-inv" /> 🔁 Alguns pedaços de trás pra frente</label>
+    </details>
+    <button type="button" class="acao-grande" id="embaralhar">🔀 Embaralhar</button>
   </section>
 
   <section class="cartao" id="vozes">
     <h2>🎭 280 vozes</h2>
     <p class="recado" style="margin-top:4px">Escolha um <b>jeito</b> e um <b>tamanho</b>: 56 jeitos × 5 tamanhos = <b>280 vozes</b>! Tocou, já toca.</p>
-    <div class="placar"><b id="voz-num">Voz 1 de 280</b><span id="voz-nome"></span></div>
+    <div class="placar"><b id="voz-num">Voz 1 de 280</b><span id="voz-nome"></span><button type="button" class="coracao" id="fav" aria-pressed="false" aria-label="Favoritar esta voz" title="Favoritar esta voz">🤍</button></div>
+    <div class="favs" id="favs" hidden></div>
     <h3>Jeito</h3>
     <input type="search" class="procurar" id="procurar" placeholder="🔎 Procurar um jeito (robô, pato, DJ…)" aria-label="Procurar um jeito" />
     <div class="efeitos" id="efeitos"></div>
@@ -235,7 +296,39 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
       <span id="oit">Do meio</span>
       <button type="button" class="mini" id="oit-mais">⬆️ Fino</button>
     </div>
-    <div style="text-align:center;margin-top:10px"><button type="button" class="mini" id="musica">🌟 Tocar “Brilha, brilha, estrelinha”</button></div>
+    <div class="musica-linha">
+      <select id="musica-qual" aria-label="Qual música"></select>
+      <button type="button" class="mini" id="musica">▶️ Tocar</button>
+    </div>
+    <button type="button" class="acao-grande" id="gravar-teclado">⏺️ Gravar o que eu tocar</button>
+    <p class="recado" id="teclado-recado" style="text-align:center"></p>
+  </section>
+
+  <section class="cartao" id="cartao-papagaio">
+    <h2>🦜 Papagaio</h2>
+    <p class="recado" style="margin-top:4px">Ligue e fale. Quando você parar de falar, o papagaio repete sozinho! Não precisa apertar nada.</p>
+    <button type="button" class="acao-grande" id="papagaio-bt">🦜 Ligar o papagaio</button>
+    <div class="medidor" aria-hidden="true"><i id="papagaio-nivel"></i><b id="papagaio-lim"></b></div>
+    <p class="status" id="papagaio-status" aria-live="polite">Desligado.</p>
+    <details class="config">
+      <summary>⚙️ Configurações do papagaio</summary>
+      <label class="cfg"><span>👂 Sensibilidade</span><input type="range" id="pp-sens" min="0" max="100" step="5" /><output></output></label>
+      <label class="cfg"><span>🤫 Silêncio pra repetir</span><input type="range" id="pp-sil" min="0.4" max="2.5" step="0.1" /><output></output></label>
+      <label class="cfg-sel">🔁 Como ele repete
+        <select id="pp-modo"><option value="contrario">🔁 Ao contrário</option><option value="frente">▶️ Igualzinho</option><option value="voz">🎭 Com a voz escolhida lá em cima</option></select>
+      </label>
+      <p class="recado">A barrinha verde mostra o seu som. Quando ela passa do risquinho vermelho, o papagaio começa a ouvir.</p>
+    </details>
+    <div style="text-align:center;margin-top:10px"><button type="button" class="mini" id="papagaio-usar" disabled>📥 Usar a última frase</button></div>
+  </section>
+
+  <section class="cartao" id="cartao-vivo">
+    <h2>🎤 Eco ao vivo</h2>
+    <p class="recado" style="margin-top:4px">Fale e escute na hora, com efeito! 🎧 <b>Use fone de ouvido</b>, senão o som do celular volta pro microfone e faz um apito.</p>
+    <div class="efeitos-vivo" id="efeitos-vivo"></div>
+    <label class="cfg"><span>🔊 Volume</span><input type="range" id="vivo-vol" min="0" max="100" step="5" /><output></output></label>
+    <button type="button" class="acao-grande" id="vivo-bt">🎤 Ligar o eco ao vivo</button>
+    <p class="recado">Ao contrário ao vivo não dá: pra tocar de trás pra frente, o site precisa ouvir a frase inteira antes. Pra isso, use o 🦜 Papagaio!</p>
   </section>
 
   <section class="cartao" id="cartao-salvos">
@@ -282,6 +375,7 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
       <li>O site grava a sua voz (o celular vai pedir permissão pro microfone), ou você pega um áudio que já está no celular com 📂, ou cola um link de áudio 🔗.</li>
       <li>A gravação vira um monte de numerozinhos, um atrás do outro.</li>
       <li>O site vira essa fila de números de trás pra frente e toca: a sua voz sai ao contrário!</li>
+      <li>O 🦜 papagaio fica ouvindo: quando o som passa do risquinho, ele grava, e quando fica quietinho de novo, ele repete.</li>
       <li>Pras 280 vozes, o site mexe nos números: pula alguns (esquilo), repete (monstro), mistura com ecos (caverna) ou com uma ondinha (robô).</li>
     </ol>
   </section>
@@ -290,7 +384,7 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 
   <footer>
     Fala ao Contrário · feito pra brincar 🙃
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 7 — 27/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 8 — 27/09 · 🔄</button>
   </footer>
 </div>
 
@@ -338,9 +432,20 @@ function pararSom(){ try{ player.pause(); }catch(e){} }
 function destravar(){ try{ player.src = URL.createObjectURL(paraWav(new Float32Array(400), 8000)); const p = player.play(); if(p && p.catch) p.catch(() => {}); }catch(e){} }
 
 /* ---------- gravar (pega os números do microfone direto, sem MediaRecorder) ---------- */
-btGravar.onclick = () => gravando ? parar() : comecar();
+let contando = false;
+btGravar.onclick = () => contando ? (contando = false) : gravando ? parar() : comecar();
+const esperar = ms => new Promise(r => setTimeout(r, ms));
+function bip(f, d){
+  try{
+    const c = audio(), o = c.createOscillator(), g = c.createGain(), t = c.currentTime;
+    o.frequency.value = f; g.gain.setValueAtTime(.001, t); g.gain.exponentialRampToValueAtTime(.3, t + .01); g.gain.exponentialRampToValueAtTime(.001, t + d);
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + d + .02);
+  }catch(e){}
+}
+function botaoGravarNormal(){ btGravar.classList.remove('gravando', 'contando'); txtGravar.textContent = voz ? 'Gravar de novo' : 'Gravar'; btGravar.querySelector('span').textContent = '🎙️'; }
 async function comecar(){
   if(pedindo) return;
+  papagaioDesliga(); pararVivo();
   avisar('');
   if(!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !(window.AudioContext || window.webkitAudioContext)){
     avisar('Este navegador não deixa gravar. Abra o site no Chrome ou no Safari (não dentro de outro app).', true); return;
@@ -360,6 +465,20 @@ async function comecar(){
   pedindo = false;
   if(c.state === 'suspended'){ try{ await c.resume(); }catch(e){} }
   pararSom();
+  /* contagem antes de gravar (configurações de gravar) */
+  const n = +document.getElementById('contagem').value, comBip = document.getElementById('contagem-bip').checked;
+  if(n > 0){
+    contando = true; avisar('');
+    btGravar.classList.add('contando'); txtGravar.textContent = 'Cancelar'; btGravar.querySelector('span').textContent = '✋';
+    for(let k = n; k > 0 && contando; k--){
+      tempo.textContent = `⏱️ ${k}…`; if(comBip) bip(660, .12);
+      for(let i = 0; i < 10 && contando; i++) await esperar(100);
+    }
+    if(!contando){ stream.getTracks().forEach(t => t.stop()); stream = null; botaoGravarNormal(); tempo.textContent = '✋ Cancelou.'; return; }
+    contando = false; btGravar.classList.remove('contando');
+    tempo.textContent = '🎤 Fala!';
+    if(comBip){ bip(990, .25); await esperar(300); }
+  }
   pedacos = []; taxa = c.sampleRate;
   fonte = c.createMediaStreamSource(stream);
   proc = c.createScriptProcessor(4096, 1, 1);
@@ -674,6 +793,7 @@ function mostrarEscolha(){
   document.getElementById('dir-contrario').setAttribute('aria-pressed', escolha.c);
   document.getElementById('dir-frente').setAttribute('aria-pressed', !escolha.c);
   gravarLocal('aocontrario:voz', escolha);
+  mostrarFavs();
 }
 function irPara(n){ n = ((n - 1) % TOTAL + TOTAL) % TOTAL; escolha.j = Math.floor(n / TAMANHOS.length); escolha.t = n % TAMANHOS.length; tocarEscolha(); }
 document.getElementById('ant').onclick = () => irPara(numero() - 1);
@@ -681,6 +801,29 @@ document.getElementById('prox').onclick = () => irPara(numero() + 1);
 document.getElementById('sorte').onclick = () => { let n; do{ n = 1 + Math.floor(Math.random() * TOTAL); }while(n === numero()); irPara(n); };
 document.getElementById('dir-contrario').onclick = () => { escolha.c = true; tocarEscolha(); };
 document.getElementById('dir-frente').onclick = () => { escolha.c = false; tocarEscolha(); };
+
+/* ---------- ❤️ vozes favoritas ---------- */
+let favs = (Array.isArray(ler('aocontrario:favs', [])) ? ler('aocontrario:favs', []) : []).filter(f => f && JEITOS[f.j] && TAMANHOS[f.t]);
+const ehFav = () => favs.some(f => f.j === escolha.j && f.t === escolha.t);
+const btFav = document.getElementById('fav'), caixaFavs = document.getElementById('favs');
+btFav.onclick = () => {
+  if(ehFav()) favs = favs.filter(f => !(f.j === escolha.j && f.t === escolha.t));
+  else favs.push({ j:escolha.j, t:escolha.t });
+  gravarLocal('aocontrario:favs', favs); mostrarEscolha();
+};
+function mostrarFavs(){
+  const f = ehFav();
+  btFav.textContent = f ? '❤️' : '🤍'; btFav.setAttribute('aria-pressed', f);
+  btFav.title = f ? 'Tirar das favoritas' : 'Favoritar esta voz';
+  caixaFavs.hidden = !favs.length; caixaFavs.innerHTML = '<span>❤️ Favoritas:</span>';
+  favs.forEach(v => {
+    const b = document.createElement('button'); b.type = 'button';
+    b.textContent = `${JEITOS[v.j].e} ${JEITOS[v.j].n} ${TAMANHOS[v.t].e}`;
+    b.setAttribute('aria-pressed', v.j === escolha.j && v.t === escolha.t);
+    b.onclick = () => { escolha.j = v.j; escolha.t = v.t; tocarEscolha(); };
+    caixaFavs.appendChild(b);
+  });
+}
 
 /* procurar jeito */
 const semAcento = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -730,7 +873,7 @@ function render(fonte){
   let x = escolha.c ? inverter(v) : v.slice();
   const r = TAMANHOS[escolha.t].r;
   if(r !== 1) x = velocidade(x, r);
-  return normalizar(aplicarMesa(JEITOS[escolha.j].f(x, taxa)));
+  return aplicarVolume(normalizar(aplicarMesa(JEITOS[escolha.j].f(x, taxa))));
 }
 let vez = 0;
 function tocarEscolha(aviso){
@@ -856,6 +999,12 @@ document.getElementById('testar-som').onclick = () => {
 };
 
 /* ---------- ⭐ salvos: ficam no IndexedDB do aparelho ---------- */
+const CAPAS_E = ['🎤', '🤖', '👻', '👽', '🐉', '🦆', '🐱', '🐶', '🦄', '🍕', '⭐', '🔥', '💎', '🌈', '🎮', '⚽', '🚀', '🎸', '🍦', '🐸', '🎹', '🦜'];
+const CAPAS_COR = ['#7b4dd6', '#12a38a', '#d8342a', '#e08a00', '#2f7fe0', '#d6408f', '#5a6b7d', '#8a5a2b'];
+function capaDe(a){
+  const J = JEITOS[a.escolha && a.escolha.j] || JEITOS[0];
+  return { e:(a.capa && a.capa.e) || J.e, cor:(a.capa && CAPAS_COR.includes(a.capa.cor) && a.capa.cor) || CAPAS_COR[a.id % CAPAS_COR.length] };
+}
 let banco = null, abertoId = null;
 function abrirBanco(){
   if(banco) return banco;
@@ -885,7 +1034,7 @@ btSalvar.onclick = async () => {
   if(!nome) return;
   try{
     if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
-    abertoId = await mexer('readwrite', st => st.add({ nome, quando:Date.now(), taxa, dados:paraInt16(voz), escolha:{ ...escolha }, mesa:{ ...mesa } }));
+    abertoId = await mexer('readwrite', st => st.add({ nome, quando:Date.now(), taxa, dados:paraInt16(voz), escolha:{ ...escolha }, mesa:{ ...mesa }, capa:{ e:JEITOS[escolha.j].e, cor:CAPAS_COR[Math.floor(Math.random() * CAPAS_COR.length)] } }));
     avisar(`⭐ Salvou “${nome}”! Ele está lá embaixo em Meus áudios salvos.`);
     mostrarSalvos();
   }catch(e){
@@ -901,9 +1050,10 @@ async function mostrarSalvos(){
   listaSalvos = lista.slice().sort((a, b) => b.quando - a.quando); encherJuntar();
   lista.sort((a, b) => b.quando - a.quando).forEach(a => {
     const li = document.createElement('li'); li.classList.toggle('aberto', a.id === abertoId);
-    const J = JEITOS[a.escolha && a.escolha.j] || JEITOS[0];
+    const capa = capaDe(a), cp = document.createElement('div');
+    cp.className = 'capa'; cp.style.background = capa.cor; cp.textContent = capa.e; cp.setAttribute('aria-hidden', 'true');
     const info = document.createElement('div');
-    const b = document.createElement('b'); b.textContent = `${J.e} ${a.nome}`;
+    const b = document.createElement('b'); b.textContent = a.nome;
     const sm = document.createElement('small');
     sm.textContent = `${fmt(a.dados.length / a.taxa)} · ${new Date(a.quando).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' })} ${new Date(a.quando).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' })}`;
     info.append(b, sm);
@@ -920,15 +1070,31 @@ async function mostrarSalvos(){
       mostrarSalvos();
       document.querySelector('.palco').scrollIntoView({ behavior:'smooth', block:'start' });
     });
-    bt('✏️', 'Mudar o nome de', '', async () => {
-      const n = (prompt('Novo nome:', a.nome) || '').trim().slice(0, 40); if(!n) return;
-      a.nome = n; try{ await mexer('readwrite', st => st.put(a)); }catch(e){} mostrarSalvos();
+    bt('✏️', 'Mudar nome e capa de', '', () => {
+      const velho = li.querySelector('.editor-capa'); if(velho){ velho.remove(); cp.style.background = capa.cor; cp.textContent = capa.e; return; }
+      const esc = { ...capa }, ed = document.createElement('div'); ed.className = 'editor-capa';
+      ed.innerHTML = '<label>Nome <input type="text" maxlength="40" /></label><b>Figura</b><div class="grade emojis"></div><b>Cor</b><div class="grade cores"></div><div class="ed-bts"><button type="button" class="mini cancelar">Cancelar</button><button type="button" class="mini salvar-capa">✅ Salvar</button></div>';
+      const campo = ed.querySelector('input'); campo.value = a.nome;
+      const pintar = () => {
+        cp.style.background = esc.cor; cp.textContent = esc.e;
+        ed.querySelectorAll('.emojis button').forEach(x => x.setAttribute('aria-pressed', x.textContent === esc.e));
+        ed.querySelectorAll('.cores button').forEach(x => x.setAttribute('aria-pressed', x.dataset.cor === esc.cor));
+      };
+      CAPAS_E.forEach(e => { const x = document.createElement('button'); x.type = 'button'; x.textContent = e; x.setAttribute('aria-label', 'Figura ' + e); x.onclick = () => { esc.e = e; pintar(); }; ed.querySelector('.emojis').appendChild(x); });
+      CAPAS_COR.forEach(c => { const x = document.createElement('button'); x.type = 'button'; x.dataset.cor = c; x.style.background = c; x.setAttribute('aria-label', 'Cor ' + c); x.onclick = () => { esc.cor = c; pintar(); }; ed.querySelector('.cores').appendChild(x); });
+      ed.querySelector('.cancelar').onclick = () => { ed.remove(); cp.style.background = capa.cor; cp.textContent = capa.e; };
+      ed.querySelector('.salvar-capa').onclick = async () => {
+        a.nome = campo.value.trim().slice(0, 40) || a.nome; a.capa = esc;
+        try{ await mexer('readwrite', st => st.put(a)); }catch(e){}
+        mostrarSalvos();
+      };
+      pintar(); li.appendChild(ed); campo.focus();
     });
     bt('🗑️', 'Apagar', '', async () => {
       if(!confirm(`Apagar “${a.nome}”?`)) return;
       try{ await mexer('readwrite', st => st.delete(a.id)); }catch(e){} if(abertoId === a.id) abertoId = null; mostrarSalvos();
     });
-    li.append(info, acoes); ul.appendChild(li);
+    li.append(cp, info, acoes); ul.appendChild(li);
   });
 }
 mostrarSalvos();
@@ -965,7 +1131,7 @@ function pedaco(){
 document.getElementById('ouvir-pedaco').onclick = () => {
   if(!voz) return; const p = pedaco(); if(!p) return;
   audio(); avisar('👂 Tocando só o pedaço escolhido, com a voz escolhida.');
-  tocarWav(paraWav(normalizar(render(voz.subarray(p.a, p.b))), taxa), false);
+  tocarWav(paraWav(render(voz.subarray(p.a, p.b)), taxa), false);
 };
 document.getElementById('so-pedaco').onclick = () => {
   if(!voz) return; const p = pedaco(); if(!p) return;
@@ -990,6 +1156,44 @@ document.getElementById('desfazer-corte').onclick = () => {
   tempo.textContent = `↩️ Voltou o áudio inteiro · ${fmt(voz.length / taxa)}`;
   prontaPraTocar('', true);
 };
+
+/* ---------- 🔀 embaralhar ---------- */
+let baseEmb = null;
+const embTam = document.getElementById('emb-tam'), embInv = document.getElementById('emb-inv');
+const cfgEmb = Object.assign({ tam:'0.25', inv:false }, ler('aocontrario:embaralhar', {}));
+embTam.value = ['0.1', '0.25', '0.5', '1'].includes(String(cfgEmb.tam)) ? String(cfgEmb.tam) : '0.25'; embInv.checked = !!cfgEmb.inv;
+[embTam, embInv].forEach(el => el.addEventListener('change', () => gravarLocal('aocontrario:embaralhar', { tam:embTam.value, inv:embInv.checked })));
+document.getElementById('embaralhar').onclick = () => {
+  if(!voz) return;
+  const base = baseEmb && vozAntes === baseEmb ? baseEmb : voz;   // apertou de novo: embaralha o original de outro jeito
+  const T = Math.max(64, Math.floor(+embTam.value * taxa)), partes = [];
+  for(let a = 0; a < base.length; a += T) partes.push(base.slice(a, Math.min(base.length, a + T)));
+  if(partes.length < 3){ avisar('O áudio é curtinho pra pedaços desse tamanho. Escolha pedaços menores nas configurações.', true); return; }
+  for(let i = partes.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [partes[i], partes[j]] = [partes[j], partes[i]]; }
+  const F = Math.min(Math.floor(taxa * .005), T >> 2), y = new Float32Array(base.length); let o = 0;
+  partes.forEach(p => {
+    if(embInv.checked && Math.random() < .5) p.reverse();
+    for(let i = 0; i < F && i < p.length; i++){ p[i] *= i / F; p[p.length - 1 - i] *= i / F; }   // sem estalinho na emenda
+    y.set(p, o); o += p.length;
+  });
+  vozAntes = baseEmb = base; voz = y;
+  document.getElementById('desfazer-corte').disabled = false;
+  tempo.textContent = '🔀 Embaralhado!';
+  prontaPraTocar(`🔀 Embaralhou em ${partes.length} pedaços! Aperte de novo pra misturar diferente, ou ↩️ Desfazer.`, true);
+};
+
+/* ---------- 🔊 volume (entra no áudio, então vale também pra baixar e compartilhar) ---------- */
+let volume = +ler('aocontrario:volume', 100);
+if(!(volume >= 0 && volume <= 200)) volume = 100;
+const inVolume = document.getElementById('volume'), txtVolume = document.getElementById('volume-txt');
+inVolume.value = volume; txtVolume.textContent = volume + '%';
+inVolume.addEventListener('input', () => { txtVolume.textContent = inVolume.value + '%'; });
+inVolume.addEventListener('change', () => { volume = +inVolume.value; gravarLocal('aocontrario:volume', volume); if(voz) tocarEscolha(); });
+function aplicarVolume(x){
+  const v = volume / 100; if(v === 1) return x;
+  for(let i = 0; i < x.length; i++) x[i] = v <= 1 ? x[i] * v : Math.tanh(x[i] * v);   // mais alto sem estourar feio
+  return x;
+}
 
 /* ---------- 🎹 teclado de voz (Web Audio: toca várias notas juntas e sem atraso) ---------- */
 const BRANCAS = [['Dó', 0], ['Ré', 2], ['Mi', 4], ['Fá', 5], ['Sol', 7], ['Lá', 9], ['Si', 11], ['Dó', 12]];
@@ -1017,9 +1221,11 @@ function notaLiga(st, id){
   s.buffer = pegarAmostra(); s.playbackRate.value = Math.pow(2, (st + 12 * oitava) / 12);
   s.connect(g); g.connect(c.destination); s.start();
   soando.set(id, { s, g, st }); marcar(st, true);
+  if(gravTec){ const n = { s:st + 12 * oitava, a:performance.now() - gravTec.t0, b:null }; gravTec.notas.push(n); gravTec.abertas.set(id, n); }
   s.onended = () => { const v = soando.get(id); if(v && v.s === s){ soando.delete(id); marcar(st, false); } };
 }
 function notaDesliga(id){
+  if(gravTec){ const n = gravTec.abertas.get(id); if(n){ n.b = performance.now() - gravTec.t0; gravTec.abertas.delete(id); } }
   const v = soando.get(id); if(!v) return;
   const c = audio(); soando.delete(id); marcar(v.st, false);
   try{ v.g.gain.setTargetAtTime(0, c.currentTime, .03); v.s.stop(c.currentTime + .2); }catch(e){}
@@ -1041,24 +1247,76 @@ function mostrarOitava(){ document.getElementById('oit').textContent = OITAVAS[o
 document.getElementById('oit-menos').onclick = () => { oitava = Math.max(-2, oitava - 1); mostrarOitava(); };
 document.getElementById('oit-mais').onclick = () => { oitava = Math.min(2, oitava + 1); mostrarOitava(); };
 mostrarOitava();
-/* Brilha, brilha, estrelinha (música folclórica, de todo mundo) */
-const ESTRELINHA = [[0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2],
-  [7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],[7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],
-  [0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2]];
+/* Músicas antigas e folclóricas, que são de todo mundo. [semitom a partir do Dó, tempos] */
+const MUSICAS = [
+  { n:'🌟 Brilha, brilha, estrelinha', ms:380, notas:[[0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2],
+    [7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],[7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],
+    [0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2]] },
+  { n:'🎂 Parabéns pra você', ms:420, notas:[[-5,.75],[-5,.25],[-3,1],[-5,1],[0,1],[-1,2],[-5,.75],[-5,.25],[-3,1],[-5,1],[2,1],[0,2],
+    [-5,.75],[-5,.25],[7,1],[4,1],[0,1],[-1,1],[-3,2],[5,.75],[5,.25],[4,1],[0,1],[2,1],[0,3]] },
+  { n:'🎻 Ode à alegria', ms:380, notas:[[4,1],[4,1],[5,1],[7,1],[7,1],[5,1],[4,1],[2,1],[0,1],[0,1],[2,1],[4,1],[4,1.5],[2,.5],[2,2],
+    [4,1],[4,1],[5,1],[7,1],[7,1],[5,1],[4,1],[2,1],[0,1],[0,1],[2,1],[4,1],[2,1.5],[0,.5],[0,2]] },
+  { n:'🔔 Frei Martinho', ms:400, notas:[[0,1],[2,1],[4,1],[0,1],[0,1],[2,1],[4,1],[0,1],[4,1],[5,1],[7,2],[4,1],[5,1],[7,2],
+    [7,.5],[9,.5],[7,.5],[5,.5],[4,1],[0,1],[7,.5],[9,.5],[7,.5],[5,.5],[4,1],[0,1],[0,1],[-5,1],[0,2],[0,1],[-5,1],[0,2]] },
+  { n:'🐑 Maria tinha um carneirinho', ms:360, notas:[[4,1],[2,1],[0,1],[2,1],[4,1],[4,1],[4,2],[2,1],[2,1],[2,2],[4,1],[7,1],[7,2],
+    [4,1],[2,1],[0,1],[2,1],[4,1],[4,1],[4,1],[4,1],[2,1],[2,1],[4,1],[2,1],[0,4]] },
+];
+const selMusica = document.getElementById('musica-qual');
+MUSICAS.forEach((m, i) => { const o = document.createElement('option'); o.value = i; o.textContent = m.n; selMusica.appendChild(o); });
 let musicaTimers = [];
 const btMusica = document.getElementById('musica');
-function pararMusica(){ musicaTimers.forEach(clearTimeout); musicaTimers = []; soando.forEach((v, id) => { if(String(id).startsWith('m')) notaDesliga(id); }); btMusica.textContent = '🌟 Tocar “Brilha, brilha, estrelinha”'; }
+function pararMusica(){ musicaTimers.forEach(clearTimeout); musicaTimers = []; soando.forEach((v, id) => { if(String(id).startsWith('m')) notaDesliga(id); }); btMusica.textContent = '▶️ Tocar'; }
 btMusica.onclick = () => {
   if(musicaTimers.length){ pararMusica(); return; }
   if(!ultimo){ avisar('🎙️ Grave a sua voz primeiro! Aí o teclado toca com ela.'); return; }
-  audio(); btMusica.textContent = '⏹️ Parar a música';
-  const tempoNota = 380; let t = 0;
-  ESTRELINHA.forEach(([st, d], i) => {
+  audio(); btMusica.textContent = '⏹️ Parar';
+  const M = MUSICAS[+selMusica.value] || MUSICAS[0]; let t = 0;
+  M.notas.forEach(([st, d], i) => {
     musicaTimers.push(setTimeout(() => notaLiga(st, 'm' + i), t));
-    musicaTimers.push(setTimeout(() => notaDesliga('m' + i), t + d * tempoNota - 40));
-    t += d * tempoNota;
+    musicaTimers.push(setTimeout(() => notaDesliga('m' + i), t + d * M.ms - 40));
+    t += d * M.ms;
   });
   musicaTimers.push(setTimeout(pararMusica, t + 100));
+};
+
+/* ---------- ⏺️ gravar o que tocou no teclado: vira um áudio salvo ---------- */
+let gravTec = null;
+const btGravTec = document.getElementById('gravar-teclado'), tecRecado = document.getElementById('teclado-recado');
+btGravTec.onclick = async () => {
+  if(!gravTec){
+    if(!ultimo){ avisar('🎙️ Grave a sua voz primeiro! Aí o teclado toca com ela.'); return; }
+    gravTec = { t0:performance.now(), notas:[], abertas:new Map() };
+    btGravTec.textContent = '⏹️ Parar e virar áudio'; btGravTec.classList.add('ligado');
+    tecRecado.textContent = '🔴 Gravando o teclado… toque as notas (ou uma música)!';
+    return;
+  }
+  const g = gravTec; gravTec = null;
+  btGravTec.textContent = '⏺️ Gravar o que eu tocar'; btGravTec.classList.remove('ligado');
+  if(!g.notas.length){ tecRecado.textContent = 'Você não tocou nenhuma nota. Tente de novo!'; return; }
+  const agora = performance.now() - g.t0;
+  const src = ultimo.subarray(0, Math.min(ultimo.length, Math.floor(taxa * 3)));
+  const fade = Math.floor(taxa * .06);
+  let fim = 0;
+  g.notas.forEach(n => { if(n.b == null) n.b = agora; const r = Math.pow(2, n.s / 12); fim = Math.max(fim, n.a / 1000 * taxa + Math.min((n.b - n.a) / 1000 * taxa + fade, src.length / r)); });
+  const mix = new Float32Array(Math.ceil(fim) + fade);
+  g.notas.forEach(n => {
+    const r = Math.pow(2, n.s / 12), ini = Math.floor(n.a / 1000 * taxa), solto = (n.b - n.a) / 1000 * taxa;
+    const len = Math.min(solto + fade, src.length / r);
+    for(let i = 0; i < len && ini + i < mix.length; i++){
+      const p = i * r, a = p | 0; if(a + 1 >= src.length) break;
+      const env = i > solto ? Math.max(0, 1 - (i - solto) / fade) : 1;
+      mix[ini + i] += (src[a] * (1 - (p - a)) + src[a + 1] * (p - a)) * env * .8;
+    }
+  });
+  let pk = 0; for(let i = 0; i < mix.length; i++) pk = Math.max(pk, Math.abs(mix[i]));
+  const musica = normalizar(aparar(mix, taxa, pk || 1));
+  const nome = `Música do teclado ${new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' })}`;
+  try{
+    await mexer('readwrite', st => st.add({ nome, quando:Date.now(), taxa, dados:paraInt16(musica), escolha:{ j:0, t:0, c:false }, mesa:mesaLimpa(), capa:{ e:'🎹', cor:CAPAS_COR[0] } }));
+    tecRecado.textContent = `🎹 Virou áudio! Salvei como “${nome}” em ⭐ Meus áudios salvos. Aperte ▶️ lá pra usar com as vozes.`;
+    mostrarSalvos();
+  }catch(e){ tecRecado.textContent = '🎹 Virou áudio, mas não deu pra salvar aqui. Ouça agora!'; }
+  tocarWav(paraWav(musica, taxa), false);
 };
 
 /* ---------- 🧩 juntar dois salvos ---------- */
@@ -1091,6 +1349,178 @@ document.getElementById('juntar-bt').onclick = () => {
   mostrarSalvos();
   document.querySelector('.palco').scrollIntoView({ behavior:'smooth', block:'start' });
 };
+
+/* ---------- microfone pros modos ao vivo ---------- */
+async function pedirMic(dizer){
+  if(!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ dizer('Este navegador não deixa usar o microfone.'); return null; }
+  try{ return await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true } }); }
+  catch(e){
+    dizer(e && (e.name === 'NotAllowedError' || e.name === 'SecurityError') ? '🎙️ O microfone está bloqueado. Toque no cadeado 🔒 perto do endereço e libere.' : 'Não achei o microfone.');
+    return null;
+  }
+}
+
+/* ---------- 🦜 papagaio: ouve, espera você parar de falar e repete ---------- */
+let papa = null, ultimaFrase = null, ultimaTaxa = 44100;
+const ppBt = document.getElementById('papagaio-bt'), ppStatusEl = document.getElementById('papagaio-status');
+const ppNivel = document.getElementById('papagaio-nivel'), ppLim = document.getElementById('papagaio-lim');
+const ppSens = document.getElementById('pp-sens'), ppSil = document.getElementById('pp-sil'), ppModo = document.getElementById('pp-modo');
+const cfgPp = Object.assign({ sens:60, sil:1, modo:'contrario' }, ler('aocontrario:papagaio', {}));
+ppSens.value = cfgPp.sens; ppSil.value = cfgPp.sil; ppModo.value = ['contrario', 'frente', 'voz'].includes(cfgPp.modo) ? cfgPp.modo : 'contrario';
+const limiar = () => .004 + (1 - ppSens.value / 100) * .06;
+function mostrarCfgPp(){
+  ppSens.nextElementSibling.textContent = ppSens.value; ppSil.nextElementSibling.textContent = (+ppSil.value).toFixed(1) + 's';
+  ppLim.style.left = Math.min(100, limiar() / .1 * 100) + '%';
+  gravarLocal('aocontrario:papagaio', { sens:+ppSens.value, sil:+ppSil.value, modo:ppModo.value });
+}
+[ppSens, ppSil, ppModo].forEach(el => el.addEventListener('input', mostrarCfgPp)); ppModo.addEventListener('change', mostrarCfgPp);
+mostrarCfgPp();
+const ppStatus = t => { ppStatusEl.textContent = t; };
+ppBt.onclick = () => papa ? papagaioDesliga() : papagaioLiga();
+async function papagaioLiga(){
+  if(gravando) parar(); pararVivo();
+  const c = audio(); destravar();
+  ppBt.disabled = true; ppStatus('Pedindo o microfone…');
+  const st = await pedirMic(ppStatus);
+  ppBt.disabled = false;
+  if(!st) return;
+  if(c.state === 'suspended'){ try{ await c.resume(); }catch(e){} }
+  const fonte = c.createMediaStreamSource(st), proc = c.createScriptProcessor(2048, 1, 1), mudo = c.createGain();
+  mudo.gain.value = 0; fonte.connect(proc); proc.connect(mudo); mudo.connect(c.destination);
+  papa = { stream:st, fonte, proc, estado:'ouvindo', antes:[], pedacos:[], quieto:0, timer:0, sr:c.sampleRate };
+  proc.onaudioprocess = ev => {
+    if(!papa) return;
+    const d = ev.inputBuffer.getChannelData(0); let s2 = 0;
+    for(let i = 0; i < d.length; i++) s2 += d[i] * d[i];
+    const rms = Math.sqrt(s2 / d.length), lim = limiar();
+    ppNivel.style.width = Math.min(100, rms / .1 * 100) + '%';
+    if(papa.estado === 'tocando') return;   // não escuta a si mesmo
+    const pedaco = new Float32Array(d);
+    if(papa.estado === 'ouvindo'){
+      papa.antes.push(pedaco); if(papa.antes.length > 5) papa.antes.shift();   // guarda um tiquinho de antes, pra não cortar o comecinho
+      if(rms > lim){ papa.estado = 'gravando'; papa.pedacos = papa.antes.slice(); papa.quieto = 0; ppStatus('🔴 Ouvindo você…'); }
+    }else{
+      papa.pedacos.push(pedaco);
+      papa.quieto = rms < lim ? papa.quieto + d.length : 0;
+      const total = papa.pedacos.length * d.length;
+      if(papa.quieto >= +ppSil.value * papa.sr || total > 15 * papa.sr) papagaioRepete();
+    }
+  };
+  ppBt.textContent = '⏹️ Desligar o papagaio'; ppBt.classList.add('ligado');
+  ppStatus('👂 Pode falar! O papagaio está ouvindo.');
+}
+function papagaioRepete(){
+  const sr = papa.sr; let n = 0; papa.pedacos.forEach(p => n += p.length);
+  const x = new Float32Array(n); let o = 0; papa.pedacos.forEach(p => { x.set(p, o); o += p.length; });
+  papa.pedacos = []; papa.estado = 'tocando';
+  let pk = 0; for(let i = 0; i < n; i++) pk = Math.max(pk, Math.abs(x[i]));
+  const volta = () => { if(!papa) return; papa.estado = 'ouvindo'; papa.antes = []; ppStatus('👂 Pode falar! O papagaio está ouvindo.'); };
+  if(pk < .01 || n < sr * .25){ volta(); return; }
+  const v = aparar(x, sr, pk);
+  ultimaFrase = v; ultimaTaxa = sr; document.getElementById('papagaio-usar').disabled = false;
+  let y;
+  if(ppModo.value === 'voz'){ const t0 = taxa; taxa = sr; try{ y = render(v); }finally{ taxa = t0; } }
+  else y = aplicarVolume(normalizar(ppModo.value === 'contrario' ? inverter(v) : v.slice()));
+  ppStatus(ppModo.value === 'contrario' ? '🦜 Repetindo ao contrário…' : '🦜 Repetindo…');
+  tocarWav(paraWav(y, sr), false);
+  papa.timer = setTimeout(volta, y.length / sr * 1000 + 450);
+}
+function papagaioDesliga(){
+  if(!papa) return;
+  clearTimeout(papa.timer);
+  try{ papa.fonte.disconnect(); papa.proc.disconnect(); }catch(e){}
+  papa.stream.getTracks().forEach(t => t.stop());
+  papa = null;
+  ppBt.textContent = '🦜 Ligar o papagaio'; ppBt.classList.remove('ligado');
+  ppNivel.style.width = '0'; ppStatus('Desligado.');
+}
+document.getElementById('papagaio-usar').onclick = () => {
+  if(!ultimaFrase) return;
+  papagaioDesliga();
+  voz = ultimaFrase; taxa = ultimaTaxa; abertoId = null;
+  tempo.textContent = `🦜 Frase do papagaio · ${fmt(voz.length / taxa)}`;
+  prontaPraTocar();
+  document.querySelector('.palco').scrollIntoView({ behavior:'smooth', block:'start' });
+};
+
+/* ---------- 🎤 eco ao vivo: o som do microfone passa pelos efeitos na hora ---------- */
+const VIVO = [
+  { k:'eco', e:'🏔️', n:'Eco' }, { k:'robo', e:'🤖', n:'Robô' }, { k:'caverna', e:'🦇', n:'Caverna' },
+  { k:'telefone', e:'☎️', n:'Telefone' }, { k:'alien', e:'👽', n:'Alienígena' }, { k:'megafone', e:'📢', n:'Megafone' }, { k:'puro', e:'🎤', n:'Sem efeito' },
+];
+const cfgVivo = Object.assign({ ef:'eco', vol:70 }, ler('aocontrario:vivo', {}));
+if(!VIVO.some(v => v.k === cfgVivo.ef)) cfgVivo.ef = 'eco';
+let vivo = null;
+const vivoBt = document.getElementById('vivo-bt'), vivoVol = document.getElementById('vivo-vol'), caixaVivo = document.getElementById('efeitos-vivo');
+VIVO.forEach(V => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = `${V.e} ${V.n}`; b.dataset.k = V.k;
+  b.onclick = () => { cfgVivo.ef = V.k; salvarVivo(); if(vivo) montarVivo(); };
+  caixaVivo.appendChild(b);
+});
+vivoVol.value = cfgVivo.vol;
+function salvarVivo(){
+  cfgVivo.vol = +vivoVol.value; vivoVol.nextElementSibling.textContent = vivoVol.value;
+  [...caixaVivo.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.k === cfgVivo.ef));
+  gravarLocal('aocontrario:vivo', cfgVivo);
+  if(vivo && vivo.saida) vivo.saida.gain.value = cfgVivo.vol / 100;
+}
+vivoVol.addEventListener('input', salvarVivo); salvarVivo();
+function impulso(c, seg){
+  const n = Math.floor(c.sampleRate * seg), b = c.createBuffer(2, n, c.sampleRate);
+  for(let ch = 0; ch < 2; ch++){ const d = b.getChannelData(ch); for(let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3); }
+  return b;
+}
+function desmontarVivo(){
+  if(!vivo) return;
+  (vivo.nos || []).forEach(n => { try{ n.disconnect(); }catch(e){} try{ if(n.stop) n.stop(); }catch(e){} });
+  try{ vivo.fonte.disconnect(); }catch(e){}
+  vivo.nos = []; vivo.saida = null;
+}
+function montarVivo(){
+  desmontarVivo();
+  const c = audio(), f = vivo.fonte, k = cfgVivo.ef, nos = [];
+  const saida = c.createGain(); saida.gain.value = cfgVivo.vol / 100; saida.connect(c.destination); nos.push(saida);
+  if(k === 'puro') f.connect(saida);
+  else if(k === 'eco'){ const d = c.createDelay(1), fb = c.createGain(); d.delayTime.value = .3; fb.gain.value = .45; f.connect(saida); f.connect(d); d.connect(fb); fb.connect(d); d.connect(saida); nos.push(d, fb); }
+  else if(k === 'robo' || k === 'alien'){
+    const g = c.createGain(), o = c.createOscillator(); g.gain.value = 0; o.frequency.value = k === 'robo' ? 50 : 400;
+    o.connect(g.gain); o.start(); f.connect(g);
+    if(k === 'alien'){ const d = c.createDelay(.1), fb = c.createGain(); d.delayTime.value = .02; fb.gain.value = .6; g.connect(d); d.connect(fb); fb.connect(d); d.connect(saida); nos.push(d, fb); }
+    g.connect(saida); nos.push(g, o);
+  }
+  else if(k === 'caverna'){ const cv = c.createConvolver(), w = c.createGain(); cv.buffer = impulso(c, 2.2); w.gain.value = .7; f.connect(saida); f.connect(cv); cv.connect(w); w.connect(saida); nos.push(cv, w); }
+  else if(k === 'telefone'){ const a = c.createBiquadFilter(), b = c.createBiquadFilter(); a.type = 'highpass'; a.frequency.value = 500; b.type = 'lowpass'; b.frequency.value = 3000; f.connect(a); a.connect(b); b.connect(saida); nos.push(a, b); }
+  else if(k === 'megafone'){
+    const bp = c.createBiquadFilter(), ws = c.createWaveShaper(), curva = new Float32Array(1024);
+    bp.type = 'bandpass'; bp.frequency.value = 1500; for(let i = 0; i < 1024; i++){ const x = i / 511.5 - 1; curva[i] = Math.tanh(8 * x) / Math.tanh(8); }
+    ws.curve = curva; f.connect(bp); bp.connect(ws); ws.connect(saida); nos.push(bp, ws);
+  }
+  vivo.nos = nos; vivo.saida = saida;
+}
+vivoBt.onclick = async () => {
+  if(vivo){ pararVivo(); return; }
+  if(gravando) parar(); papagaioDesliga(); pararSom();
+  const c = audio(); vivoBt.disabled = true;
+  const st = await pedirMic(t => avisarVivo(t));
+  vivoBt.disabled = false;
+  if(!st) return;
+  if(c.state === 'suspended'){ try{ await c.resume(); }catch(e){} }
+  vivo = { stream:st, fonte:c.createMediaStreamSource(st), nos:[] };
+  montarVivo();
+  vivoBt.textContent = '⏹️ Desligar o eco ao vivo'; vivoBt.classList.add('ligado');
+};
+function avisarVivo(t){ vivoBt.textContent = t; setTimeout(() => { if(!vivo) vivoBt.textContent = '🎤 Ligar o eco ao vivo'; }, 3500); }
+function pararVivo(){
+  if(!vivo) return;
+  desmontarVivo(); vivo.stream.getTracks().forEach(t => t.stop()); vivo = null;
+  vivoBt.textContent = '🎤 Ligar o eco ao vivo'; vivoBt.classList.remove('ligado');
+}
+
+/* ---------- configurações de gravar (lembradas) ---------- */
+const selContagem = document.getElementById('contagem'), chkBip = document.getElementById('contagem-bip');
+const cfgGravar = Object.assign({ contagem:'0', bip:true }, ler('aocontrario:gravar', {}));
+selContagem.value = ['0', '3', '5', '10'].includes(String(cfgGravar.contagem)) ? String(cfgGravar.contagem) : '0'; chkBip.checked = !!cfgGravar.bip;
+[selContagem, chkBip].forEach(el => el.addEventListener('change', () => gravarLocal('aocontrario:gravar', { contagem:selContagem.value, bip:chkBip.checked })));
 
 /* ---------- desafio ---------- */
 const PALAVRAS = ['banana', 'bola', 'gato', 'pipoca', 'sapato', 'macaco', 'Pikachu', 'Ditto', 'bolo', 'amigo', 'escola', 'tatu',

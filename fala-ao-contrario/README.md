@@ -11,6 +11,14 @@ Site pra gravar a sua voz e ouvir **de trás pra frente**.
    - Barrinha que mostra quanto já tocou (dá pra arrastar), com ⏸️/▶️, e o desenho da voz vai ficando colorido
    - 🔊 **Tocar de novo**, ⬇️ **Baixar** (arquivo `.wav`) e 📤 **Compartilhar a voz** (abre a lista de apps do celular; se não der, baixa o arquivo)
    - ⭐ **Salvar no site**: guarda o áudio (com a voz e a mesa escolhidas) em “Meus áudios salvos”, mesmo fechando a página. Dá pra abrir ▶️, mudar o nome ✏️ e apagar 🗑️
+   - ⚙️ **Configurações de gravar**: contagem 3/5/10 segundos antes de gravar, com ou sem bip
+   - 🔊 **Volume** (0–200%, vale também pra baixar e compartilhar)
+   - 🦜 **Papagaio**: fica ouvindo e repete sozinho quando você para de falar (ao contrário, igualzinho ou com a voz escolhida); configura sensibilidade e silêncio
+   - 🎤 **Eco ao vivo**: fala e escuta na hora com eco, robô, caverna, telefone, alienígena ou megafone (use fone de ouvido)
+   - 🔀 **Embaralhar**: mistura pedacinhos do áudio (tamanho configurável, pode inverter alguns)
+   - ❤️ **Vozes favoritas** pra achar rápido
+   - 🎹 Teclado com 5 músicas (Brilha brilha, Parabéns, Ode à alegria, Frei Martinho, Maria tinha um carneirinho) e ⏺️ gravar o que tocou (vira áudio salvo)
+   - 🖼️ **Capa** dos áudios salvos: figura e cor
    - 🔂 **Repetir sem parar** (botão ao lado da barrinha)
    - ✂️ **Cortar**: escolha um pedaço com Começo/Fim pra ouvir, ficar só com ele, ou deixar **só aquele pedaço ao contrário**; tem ↩️ Desfazer
    - 🎹 **Teclado de voz**: 8 teclas brancas + 5 pretas tocam a sua voz em notas (A S D F G H J K no computador), com grosso/fino e a música “Brilha, brilha, estrelinha”
