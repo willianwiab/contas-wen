@@ -34,4 +34,6 @@ A gravação fica **só no aparelho**. Nada é enviado pra internet (só se voc�
 O microfone manda o som como uma fila de números (Web Audio). O site inverte a fila, aplica o efeito da voz escolhida (velocidade, filtros, ecos, reverb, ondinha do robô…) e toca como WAV num `<audio>`, que funciona até com o iPhone no silencioso.
 
 ## Não deu certo?
+No computador: escolha o microfone em ⚙️ Configurações de gravar → Qual microfone e use 🎙️ **Testar o microfone** em “😕 Não deu certo?”. O site também grava por um segundo caminho (MediaRecorder) se o primeiro não pegar som, e funciona no Firefox mesmo quando o microfone usa outra taxa de som.
+
 Permita o microfone, aumente o volume, abra no Chrome/Safari (fora de outros apps) e use o botão 🔊 **Testar o som** na parte “😕 Não deu certo?”.

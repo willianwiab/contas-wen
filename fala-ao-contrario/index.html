@@ -213,6 +213,9 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
         <select id="contagem"><option value="0">Sem contagem</option><option value="3">3 segundos</option><option value="5">5 segundos</option><option value="10">10 segundos</option></select>
       </label>
       <label class="cfg-check"><input type="checkbox" id="contagem-bip" /> 🔔 Bip na contagem</label>
+      <label class="cfg-sel">🎙️ Qual microfone
+        <select id="qual-mic"><option value="">O normal do aparelho</option></select>
+      </label>
     </details>
     <button type="button" class="pegar" id="pegar">📂 Pegar um áudio do celular</button>
     <input type="file" id="arquivo" accept="audio/*,video/*" hidden />
@@ -354,9 +357,13 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
         <li>Aumente o <b>volume</b> do celular.</li>
         <li>Abra o site no <b>Chrome</b> ou no <b>Safari</b>, e não dentro de outro app (tipo WhatsApp ou YouTube).</li>
         <li>Fale <b>pertinho</b> do celular e grave pelo menos 1 segundo.</li>
+        <li>💻 <b>No computador:</b> computador de mesa às vezes não tem microfone. Ligue um fone com microfone ou uma webcam, e escolha ele em <b>⚙️ Configurações de gravar → Qual microfone</b>. Feche programas que usam o microfone (Zoom, Discord, Meet…).</li>
         <li>Toque no botão da <b>versão</b> lá embaixo pra pegar o site mais novo.</li>
       </ul>
-      <div style="text-align:center"><button type="button" class="mini" id="testar-som">🔊 Testar o som</button></div>
+      <div style="text-align:center"><button type="button" class="mini" id="testar-mic">🎙️ Testar o microfone</button></div>
+      <div class="medidor" aria-hidden="true"><i id="teste-nivel"></i></div>
+      <p class="recado" id="teste-mic-txt" style="text-align:center" aria-live="polite">Fale alguma coisa enquanto testa: a barrinha verde tem que mexer.</p>
+      <div style="text-align:center;margin-top:10px"><button type="button" class="mini" id="testar-som">🔊 Testar o som</button></div>
       <p class="recado" style="text-align:center">Se tocar uma musiquinha, o som do celular está funcionando.</p>
     </details>
   </section>
@@ -384,7 +391,7 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 
   <footer>
     Fala ao Contrário · feito pra brincar 🙃
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 8 — 27/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 9 — 27/09 · 🔄</button>
   </footer>
 </div>
 
@@ -407,7 +414,7 @@ const btTocar = document.getElementById('tocar'), btBaixar = document.getElement
 const player = new Audio();
 let urlSom = null;
 
-let ctx = null, stream = null, fonte = null, proc = null, pedacos = [];
+let ctx = null, stream = null, pedacos = [], cap = null, reserva = null;
 let gravando = false, pedindo = false, relogio = 0, inicio = 0;
 let voz = null, taxa = 44100, ultimo = null;
 
@@ -442,6 +449,67 @@ function bip(f, d){
     o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + d + .02);
   }catch(e){}
 }
+/* ---------- microfone (serve pra gravar, papagaio, eco ao vivo e teste) ---------- */
+let micEscolhido = ler('aocontrario:mic', '') || '';
+function restricoes(){
+  const a = { echoCancellation:true, noiseSuppression:true, autoGainControl:true };
+  if(micEscolhido) a.deviceId = { exact:micEscolhido };
+  return { audio:a };
+}
+async function abrirMic(){
+  if(!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw { name:'SemSuporte' };
+  try{ return await navigator.mediaDevices.getUserMedia(restricoes()); }
+  catch(e){
+    if(micEscolhido && (e.name === 'OverconstrainedError' || e.name === 'NotFoundError')){   // o microfone escolhido sumiu: usa o normal
+      micEscolhido = ''; gravarLocal('aocontrario:mic', ''); return await navigator.mediaDevices.getUserMedia(restricoes());
+    }
+    throw e;
+  }
+  finally{ setTimeout(listarMics, 300); }
+}
+function explicarErroMic(e){
+  const n = e && e.name;
+  if(n === 'NotAllowedError' || n === 'SecurityError') return '🎙️ O microfone está bloqueado. Clique no cadeado 🔒 (ou no ícone de microfone) perto do endereço do site e escolha “Permitir”.';
+  if(n === 'NotFoundError' || n === 'OverconstrainedError') return '🎙️ Não achei nenhum microfone. Computador de mesa às vezes não tem: ligue um fone com microfone ou uma webcam.';
+  if(n === 'NotReadableError' || n === 'AbortError') return '🎙️ O microfone está ocupado. Feche outros programas que usam ele (Zoom, Discord, Meet…) e tente de novo.';
+  if(n === 'SemSuporte') return 'Este navegador não deixa usar o microfone. Abra o site no Chrome, Edge ou Safari (não dentro de outro app).';
+  return `Não deu pra usar o microfone (${n || 'erro'}).`;
+}
+/* Liga o microfone no Web Audio. No Firefox, se o microfone e o som do site usam
+   "velocidades" diferentes (tipo 48000 e 44100), dá erro: aí cria um só pro microfone. */
+function ligarFonte(stream){
+  let c = audio(), fonte;
+  try{ fonte = c.createMediaStreamSource(stream); }
+  catch(e){
+    const t = stream.getAudioTracks()[0], sr = t && t.getSettings ? t.getSettings().sampleRate : 0;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    c = sr ? new AC({ sampleRate:sr }) : new AC();
+    fonte = c.createMediaStreamSource(stream);
+  }
+  if(c.state === 'suspended') c.resume().catch(() => {});
+  return { c, fonte, fechar(){ try{ fonte.disconnect(); }catch(e){} if(c !== ctx) c.close().catch(() => {}); } };
+}
+function ligarCaptura(stream, tamanho, aoOuvir){
+  const f = ligarFonte(stream), c = f.c;
+  const proc = c.createScriptProcessor(tamanho, 1, 1), mudo = c.createGain(); mudo.gain.value = 0;   // precisa ligar na saída pra funcionar, mas sem som
+  proc.onaudioprocess = ev => aoOuvir(ev.inputBuffer.getChannelData(0));
+  f.fonte.connect(proc); proc.connect(mudo); mudo.connect(c.destination);
+  return { c, sr:c.sampleRate, fechar(){ proc.onaudioprocess = null; try{ proc.disconnect(); mudo.disconnect(); }catch(e){} f.fechar(); } };
+}
+async function listarMics(){
+  const sel = document.getElementById('qual-mic');
+  if(!sel || !navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+  try{
+    const mics = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'audioinput' && d.deviceId && d.deviceId !== 'default' && d.deviceId !== 'communications');
+    sel.innerHTML = '<option value="">O normal do aparelho</option>';
+    mics.forEach((d, i) => { const o = document.createElement('option'); o.value = d.deviceId; o.textContent = d.label || `Microfone ${i + 1}`; sel.appendChild(o); });
+    sel.value = mics.some(d => d.deviceId === micEscolhido) ? micEscolhido : '';
+  }catch(e){}
+}
+document.getElementById('qual-mic').addEventListener('change', ev => { micEscolhido = ev.target.value; gravarLocal('aocontrario:mic', micEscolhido); });
+if(navigator.mediaDevices && navigator.mediaDevices.addEventListener) navigator.mediaDevices.addEventListener('devicechange', listarMics);
+listarMics();
+
 function botaoGravarNormal(){ btGravar.classList.remove('gravando', 'contando'); txtGravar.textContent = voz ? 'Gravar de novo' : 'Gravar'; btGravar.querySelector('span').textContent = '🎙️'; }
 async function comecar(){
   if(pedindo) return;
@@ -453,12 +521,10 @@ async function comecar(){
   const c = audio();
   destravar();
   pedindo = true;
-  try{ stream = await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true } }); }
+  try{ stream = await abrirMic(); }
   catch(e){
     pedindo = false;
-    avisar(e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')
-      ? '🎙️ O microfone está bloqueado. Toque no cadeado 🔒 perto do endereço do site e deixe usar o microfone.'
-      : 'Não achei o microfone. Veja se nenhum outro app está usando ele.', true);
+    avisar(explicarErroMic(e), true);
     document.getElementById('ajuda').open = true;
     return;
   }
@@ -479,12 +545,17 @@ async function comecar(){
     tempo.textContent = '🎤 Fala!';
     if(comBip){ bip(990, .25); await esperar(300); }
   }
-  pedacos = []; taxa = c.sampleRate;
-  fonte = c.createMediaStreamSource(stream);
-  proc = c.createScriptProcessor(4096, 1, 1);
-  const mudo = c.createGain(); mudo.gain.value = 0;   // precisa ligar na saída pra funcionar, mas sem som
-  proc.onaudioprocess = ev => { if(gravando) pedacos.push(new Float32Array(ev.inputBuffer.getChannelData(0))); };
-  fonte.connect(proc); proc.connect(mudo); mudo.connect(c.destination);
+  pedacos = []; cap = null; reserva = null;
+  try{ cap = ligarCaptura(stream, 4096, d => { if(gravando) pedacos.push(new Float32Array(d)); }); }catch(e){ cap = null; }
+  taxa = cap ? cap.sr : c.sampleRate;
+  /* plano B: grava junto com o MediaRecorder; se o jeito de cima não pegar nada, usa esse */
+  if(window.MediaRecorder){
+    try{ const r = new MediaRecorder(stream), partes = []; r.ondataavailable = ev => { if(ev.data && ev.data.size) partes.push(ev.data); }; r.start(); reserva = { r, partes }; }catch(e){ reserva = null; }
+  }
+  if(!cap && !reserva){
+    stream.getTracks().forEach(t => t.stop()); stream = null; botaoGravarNormal(); tempo.textContent = '';
+    avisar('Este navegador não deixa gravar. Abra o site no Chrome, Edge ou Safari.', true); return;
+  }
   gravando = true; inicio = Date.now();
   btGravar.classList.add('gravando'); txtGravar.textContent = 'Parar';
   btGravar.querySelector('span').textContent = '⏹️';
@@ -499,13 +570,30 @@ function parar(){
   gravando = false; clearInterval(relogio);
   btGravar.classList.remove('gravando'); txtGravar.textContent = 'Gravar de novo';
   btGravar.querySelector('span').textContent = '🎙️';
-  try{ fonte.disconnect(); proc.disconnect(); }catch(e){}
-  if(stream) stream.getTracks().forEach(t => t.stop());   // desliga o microfone
-  stream = null;
+  if(cap){ cap.fechar(); cap = null; }
+  const st = stream, r = reserva; stream = null; reserva = null;
   let n = 0; pedacos.forEach(p => n += p.length);
   const tudo = new Float32Array(n); let o = 0;
   pedacos.forEach(p => { tudo.set(p, o); o += p.length; }); pedacos = [];
   let pico = 0; for(let i = 0; i < n; i++){ const a = Math.abs(tudo[i]); if(a > pico) pico = a; }
+  const desligar = () => { if(st) st.getTracks().forEach(t => t.stop()); };   // desliga o microfone
+  if(r && (n < taxa * 0.3 || pico < 0.002) && r.r.state !== 'inactive'){
+    /* o jeito normal não pegou som: tenta o plano B */
+    tempo.textContent = '⏳ Preparando…';
+    r.r.onstop = async () => {
+      desligar();
+      try{ await abrirAudio(await new Blob(r.partes, { type:r.r.mimeType || 'audio/webm' }).arrayBuffer(), '✅ Gravou', true); }
+      catch(e){
+        tempo.textContent = '';
+        avisar(n === 0 ? 'O navegador não mandou o som do microfone pro site. Use o botão 🎙️ Testar o microfone em “😕 Não deu certo?”.' : 'O microfone não mandou som nenhum. Veja se ele não está no mudo e fale pertinho.', true);
+        document.getElementById('ajuda').open = true;
+      }
+    };
+    try{ r.r.stop(); }catch(e){ desligar(); }
+    return;
+  }
+  if(r){ try{ r.r.onstop = null; r.r.stop(); }catch(e){} }
+  desligar();
   if(n < taxa * 0.3){ tempo.textContent = ''; avisar('Ficou curtinho demais! Segure um pouquinho mais antes de parar.', true); return; }
   if(pico < 0.002){ tempo.textContent = ''; avisar('O microfone não mandou som nenhum. Veja se ele não está no mudo e fale pertinho.', true); document.getElementById('ajuda').open = true; return; }
   voz = aparar(tudo, taxa, pico);
@@ -537,7 +625,7 @@ campoArquivo.onchange = async () => {
   try{ await abrirAudio(await f.arrayBuffer(), '📂 Pegou'); }
   catch(e){ tempo.textContent = ''; avisar('Não consegui abrir esse arquivo. Tente outro áudio (mp3, m4a, wav, ogg…) ou um vídeo.', true); }
 };
-async function abrirAudio(dados, palavra){
+async function abrirAudio(dados, palavra, daGravacao){
   avisar(''); pararSom();
   tempo.textContent = '⏳ Abrindo o áudio…';
   let C;
@@ -547,7 +635,7 @@ async function abrirAudio(dados, palavra){
   const n = Math.min(buf.length, Math.floor(MAX_ARQUIVO_S * taxa)), tudo = new Float32Array(n);
   for(let c = 0; c < buf.numberOfChannels; c++){ const d = buf.getChannelData(c); for(let i = 0; i < n; i++) tudo[i] += d[i] / buf.numberOfChannels; }
   let pico = 0; for(let i = 0; i < n; i++){ const a = Math.abs(tudo[i]); if(a > pico) pico = a; }
-  if(pico < 0.002){ tempo.textContent = ''; avisar('Esse áudio está em silêncio. Tente outro!', true); return; }
+  if(pico < 0.002){ if(daGravacao) throw new Error('silêncio'); tempo.textContent = ''; avisar('Esse áudio está em silêncio. Tente outro!', true); return; }
   voz = aparar(tudo, taxa, pico);
   tempo.textContent = `${palavra} ${fmt(voz.length / taxa)}!`;
   prontaPraTocar(buf.duration > MAX_ARQUIVO_S ? `O áudio era grandão, então peguei só os primeiros ${MAX_ARQUIVO_S / 60} minutos.` : '');
@@ -1352,12 +1440,8 @@ document.getElementById('juntar-bt').onclick = () => {
 
 /* ---------- microfone pros modos ao vivo ---------- */
 async function pedirMic(dizer){
-  if(!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ dizer('Este navegador não deixa usar o microfone.'); return null; }
-  try{ return await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true } }); }
-  catch(e){
-    dizer(e && (e.name === 'NotAllowedError' || e.name === 'SecurityError') ? '🎙️ O microfone está bloqueado. Toque no cadeado 🔒 perto do endereço e libere.' : 'Não achei o microfone.');
-    return null;
-  }
+  try{ return await abrirMic(); }
+  catch(e){ dizer(explicarErroMic(e)); return null; }
 }
 
 /* ---------- 🦜 papagaio: ouve, espera você parar de falar e repete ---------- */
@@ -1385,12 +1469,10 @@ async function papagaioLiga(){
   ppBt.disabled = false;
   if(!st) return;
   if(c.state === 'suspended'){ try{ await c.resume(); }catch(e){} }
-  const fonte = c.createMediaStreamSource(st), proc = c.createScriptProcessor(2048, 1, 1), mudo = c.createGain();
-  mudo.gain.value = 0; fonte.connect(proc); proc.connect(mudo); mudo.connect(c.destination);
-  papa = { stream:st, fonte, proc, estado:'ouvindo', antes:[], pedacos:[], quieto:0, timer:0, sr:c.sampleRate };
-  proc.onaudioprocess = ev => {
+  papa = { stream:st, cap:null, estado:'ouvindo', antes:[], pedacos:[], quieto:0, timer:0, sr:c.sampleRate };
+  try{ papa.cap = ligarCaptura(st, 2048, d => {
     if(!papa) return;
-    const d = ev.inputBuffer.getChannelData(0); let s2 = 0;
+    let s2 = 0;
     for(let i = 0; i < d.length; i++) s2 += d[i] * d[i];
     const rms = Math.sqrt(s2 / d.length), lim = limiar();
     ppNivel.style.width = Math.min(100, rms / .1 * 100) + '%';
@@ -1405,7 +1487,8 @@ async function papagaioLiga(){
       const total = papa.pedacos.length * d.length;
       if(papa.quieto >= +ppSil.value * papa.sr || total > 15 * papa.sr) papagaioRepete();
     }
-  };
+  }); papa.sr = papa.cap.sr; }
+  catch(e){ st.getTracks().forEach(t => t.stop()); papa = null; ppStatus(`Não deu pra ligar o microfone aqui (${e && e.name}).`); return; }
   ppBt.textContent = '⏹️ Desligar o papagaio'; ppBt.classList.add('ligado');
   ppStatus('👂 Pode falar! O papagaio está ouvindo.');
 }
@@ -1428,7 +1511,7 @@ function papagaioRepete(){
 function papagaioDesliga(){
   if(!papa) return;
   clearTimeout(papa.timer);
-  try{ papa.fonte.disconnect(); papa.proc.disconnect(); }catch(e){}
+  if(papa.cap) papa.cap.fechar();
   papa.stream.getTracks().forEach(t => t.stop());
   papa = null;
   ppBt.textContent = '🦜 Ligar o papagaio'; ppBt.classList.remove('ligado');
@@ -1478,7 +1561,7 @@ function desmontarVivo(){
 }
 function montarVivo(){
   desmontarVivo();
-  const c = audio(), f = vivo.fonte, k = cfgVivo.ef, nos = [];
+  const c = vivo.c, f = vivo.fonte, k = cfgVivo.ef, nos = [];
   const saida = c.createGain(); saida.gain.value = cfgVivo.vol / 100; saida.connect(c.destination); nos.push(saida);
   if(k === 'puro') f.connect(saida);
   else if(k === 'eco'){ const d = c.createDelay(1), fb = c.createGain(); d.delayTime.value = .3; fb.gain.value = .45; f.connect(saida); f.connect(d); d.connect(fb); fb.connect(d); d.connect(saida); nos.push(d, fb); }
@@ -1505,14 +1588,15 @@ vivoBt.onclick = async () => {
   vivoBt.disabled = false;
   if(!st) return;
   if(c.state === 'suspended'){ try{ await c.resume(); }catch(e){} }
-  vivo = { stream:st, fonte:c.createMediaStreamSource(st), nos:[] };
+  try{ const f = ligarFonte(st); vivo = { stream:st, fonte:f.fonte, c:f.c, fecharFonte:f.fechar, nos:[] }; }
+  catch(e){ st.getTracks().forEach(t => t.stop()); avisarVivo(`Não deu (${e && e.name})`); return; }
   montarVivo();
   vivoBt.textContent = '⏹️ Desligar o eco ao vivo'; vivoBt.classList.add('ligado');
 };
 function avisarVivo(t){ vivoBt.textContent = t; setTimeout(() => { if(!vivo) vivoBt.textContent = '🎤 Ligar o eco ao vivo'; }, 3500); }
 function pararVivo(){
   if(!vivo) return;
-  desmontarVivo(); vivo.stream.getTracks().forEach(t => t.stop()); vivo = null;
+  desmontarVivo(); vivo.fecharFonte(); vivo.stream.getTracks().forEach(t => t.stop()); vivo = null;
   vivoBt.textContent = '🎤 Ligar o eco ao vivo'; vivoBt.classList.remove('ligado');
 }
 
@@ -1521,6 +1605,28 @@ const selContagem = document.getElementById('contagem'), chkBip = document.getEl
 const cfgGravar = Object.assign({ contagem:'0', bip:true }, ler('aocontrario:gravar', {}));
 selContagem.value = ['0', '3', '5', '10'].includes(String(cfgGravar.contagem)) ? String(cfgGravar.contagem) : '0'; chkBip.checked = !!cfgGravar.bip;
 [selContagem, chkBip].forEach(el => el.addEventListener('change', () => gravarLocal('aocontrario:gravar', { contagem:selContagem.value, bip:chkBip.checked })));
+
+/* ---------- 🎙️ testar o microfone (pra descobrir o que está errado) ---------- */
+const btTestarMic = document.getElementById('testar-mic'), testeNivel = document.getElementById('teste-nivel'), testeTxt = document.getElementById('teste-mic-txt');
+let testando = false;
+btTestarMic.onclick = async () => {
+  if(testando) return;
+  if(gravando) parar(); papagaioDesliga(); pararVivo();
+  testando = true; btTestarMic.disabled = true; testeTxt.textContent = 'Pedindo o microfone…';
+  let st;
+  try{ st = await abrirMic(); }
+  catch(e){ testeTxt.textContent = explicarErroMic(e); testando = false; btTestarMic.disabled = false; return; }
+  const nome = (st.getAudioTracks()[0] || {}).label || 'microfone';
+  let maior = 0, blocos = 0, c;
+  try{ c = ligarCaptura(st, 2048, d => { let s2 = 0; for(let i = 0; i < d.length; i++) s2 += d[i] * d[i]; const rms = Math.sqrt(s2 / d.length); maior = Math.max(maior, rms); blocos++; testeNivel.style.width = Math.min(100, rms / .1 * 100) + '%'; }); }
+  catch(e){ st.getTracks().forEach(t => t.stop()); testeTxt.textContent = `O navegador não deixou ouvir o microfone (${e && e.name}). Tente no Chrome ou no Edge.`; testando = false; btTestarMic.disabled = false; return; }
+  for(let k = 5; k > 0; k--){ testeTxt.textContent = `🎙️ Fale alguma coisa! (${k})`; await esperar(1000); }
+  c.fechar(); st.getTracks().forEach(t => t.stop()); testeNivel.style.width = '0';
+  testando = false; btTestarMic.disabled = false;
+  if(!blocos) testeTxt.textContent = `⚠️ O “${nome}” ligou, mas o navegador não mandou o som pro site. Tente no Chrome ou no Edge.`;
+  else if(maior < .004) testeTxt.textContent = `⚠️ O “${nome}” ligou, mas não chegou som. Veja se ele está no mudo, ou escolha outro em ⚙️ Configurações de gravar → Qual microfone.`;
+  else testeTxt.textContent = `✅ Funcionou! O site ouviu você pelo “${nome}”.`;
+};
 
 /* ---------- desafio ---------- */
 const PALAVRAS = ['banana', 'bola', 'gato', 'pipoca', 'sapato', 'macaco', 'Pikachu', 'Ditto', 'bolo', 'amigo', 'escola', 'tatu',
