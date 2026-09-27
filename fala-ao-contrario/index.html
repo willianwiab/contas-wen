@@ -56,6 +56,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
   background:radial-gradient(circle at 35% 30%, #ff7a70, var(--vermelho));box-shadow:0 8px 0 #9e2019, 0 12px 26px rgba(200,40,30,.35);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin:0 auto}
 .gravar span{font-size:2.6rem;line-height:1}
+.gravar em{font-size:.95rem;max-width:130px;line-height:1.15}
 .linha-link{display:flex;gap:8px;margin-top:10px}
 .linha-link input{flex:1;min-width:0;font:inherit;font-size:.9rem;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
 .linha-link button{flex:none;font:inherit;font-weight:700;border-radius:12px;padding:10px 14px;cursor:pointer;border:0;background:var(--marca);color:#fff}
@@ -195,6 +196,56 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
 .editor-capa .grade button{height:36px;border-radius:10px;border:2px solid var(--borda);background:var(--cartao);font-size:1.1rem;cursor:pointer}
 .editor-capa .grade button[aria-pressed="true"]{border-color:var(--marca);box-shadow:inset 0 0 0 2px var(--marca)}
 .editor-capa .ed-bts{display:flex;gap:8px;justify-content:flex-end}
+/* ---------- abas e visual novo ---------- */
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+body.com-mini{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+.casca{padding-top:14px}
+header{margin-bottom:2px}
+.sub{margin:4px 0 14px}
+.painel > * + *{margin-top:16px}
+.painel .cartao{margin-top:16px}
+.painel > .cartao:first-child,.painel > .palco:first-child{margin-top:0}
+.abas{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;
+  background:var(--cartao);border-top:2px solid var(--borda);box-shadow:0 -6px 20px var(--sombra);
+  padding:6px max(6px, calc((100vw - 580px) / 2)) calc(6px + env(safe-area-inset-bottom))}
+.abas button{font:inherit;font-size:.68rem;font-weight:700;border:0;background:none;color:var(--tinta-fraca);display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 6px;border-radius:14px;cursor:pointer;min-width:0}
+.abas button i{font-style:normal;font-size:1.35rem;line-height:1;transition:transform .15s}
+.abas button[aria-selected="true"]{color:var(--marca);background:var(--creme3)}
+.abas button[aria-selected="true"] i{transform:translateY(-2px) scale(1.12)}
+@media (max-width:350px){.abas button{font-size:.6rem}.abas button i{font-size:1.2rem}}
+.mini-player{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom));width:min(540px, calc(100% - 20px));z-index:39;
+  display:flex;gap:10px;align-items:center;background:var(--marca-escura);color:#fff;border-radius:18px;padding:8px 12px 8px 8px;box-shadow:0 8px 24px rgba(40,20,90,.35)}
+.mini-player .play{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:#fff;color:var(--marca-escura);font-size:1.05rem;cursor:pointer}
+.mini-info{flex:1;min-width:0;text-align:left;background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0}
+.mini-info b{display:block;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-info i{display:block;height:6px;border-radius:9px;background:rgba(255,255,255,.28);margin-top:6px;overflow:hidden}
+.mini-info s{display:block;height:100%;width:0;background:#fff;border-radius:9px;text-decoration:none}
+.faixa-nova{bottom:calc(84px + env(safe-area-inset-bottom))}
+.palco{padding:22px 16px 18px}
+.fontes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+.fontes .pegar{margin:0;width:100%;padding:11px 6px;font-size:.9rem}
+@media (max-width:360px){.fontes .pegar{font-size:.8rem}}
+#resultado + .recado{margin-top:10px}
+.pegar[aria-expanded="true"]{border-color:var(--marca);background:var(--creme3)}
+#resultado{margin-top:4px}
+.acoes4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
+.acoes4 button{font:inherit;font-weight:700;font-size:.8rem;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px;border-radius:16px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.acoes4 button i{font-style:normal;font-size:1.45rem;line-height:1}
+.acoes4 button.principal{background:var(--verde);border-color:var(--verde);color:var(--no-verde);box-shadow:0 4px 0 var(--verde-escuro)}
+.acoes4 button:active{transform:translateY(2px)}
+.acoes4 button:disabled{opacity:.4;cursor:default}
+.rapidas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.rapidas button{font:inherit;font-size:.72rem;font-weight:700;line-height:1.15;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 2px;border-radius:14px;cursor:pointer;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);overflow-wrap:anywhere;position:relative}
+.rapidas button i{font-style:normal;font-size:1.6rem;line-height:1}
+.rapidas button[aria-pressed="true"]{border-color:var(--marca);background:var(--creme3);box-shadow:inset 0 0 0 2px var(--marca)}
+.rapidas button .f{position:absolute;top:2px;right:4px;font-size:.7rem}
+.acao-grande.secundaria{background:var(--cartao2);color:var(--marca);border:2px solid var(--borda);box-shadow:none}
+.cartao h2{display:flex;align-items:center;gap:6px}
+details.ajuda summary{list-style:none}
+details.ajuda summary::-webkit-details-marker{display:none}
+details.ajuda summary::after{content:'▾';float:right;color:var(--tinta-fraca);transition:transform .15s}
+details.ajuda[open] summary::after{transform:rotate(180deg)}
+.painel .seguro{margin-top:18px}
 </style>
 </head>
 <body>
@@ -203,28 +254,26 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
     <h1 class="logo"><img src="icone-limpo.svg" alt="" /><span>Fala ao <span class="p">Contrário</span></span></h1>
     <button class="botao-redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
   </header>
-  <p class="sub">Aperte o botão vermelho, fale alguma coisa e ouça a sua voz <b>de trás pra frente</b>, com <b>280 vozes</b> e uma mesa de efeitos! 🙃</p>
+  <p class="sub">Grave, e ouça a sua voz <b>de trás pra frente</b>! 🙃</p>
 
+
+
+
+
+
+
+
+
+
+
+
+  <main>
+  <div class="painel" id="aba-gravar" role="tabpanel">
   <section class="palco">
     <button class="gravar" id="gravar" type="button"><span>🎙️</span><em id="gravar-txt" style="font-style:normal">Gravar</em></button>
-    <details class="config" id="config-gravar">
-      <summary>⚙️ Configurações de gravar</summary>
-      <label class="cfg-sel">⏱️ Contagem antes de gravar
-        <select id="contagem"><option value="0">Sem contagem</option><option value="3">3 segundos</option><option value="5">5 segundos</option><option value="10">10 segundos</option></select>
-      </label>
-      <label class="cfg-check"><input type="checkbox" id="contagem-bip" /> 🔔 Bip na contagem</label>
-      <label class="cfg-sel">🎙️ Qual microfone
-        <select id="qual-mic"><option value="">O normal do aparelho</option></select>
-      </label>
-    </details>
-    <button type="button" class="pegar" id="pegar">📂 Pegar um áudio do celular</button>
-    <input type="file" id="arquivo" accept="audio/*,video/*" hidden />
-    <div class="linha-link">
-      <input type="url" id="link" placeholder="🔗 Cole um link de áudio (.mp3…)" inputmode="url" autocomplete="off" aria-label="Link de um áudio" />
-      <button type="button" id="ouvir-link">Ouvir</button>
-    </div>
     <p class="tempo" id="tempo" aria-live="polite"></p>
     <canvas id="onda" width="1000" height="180" aria-label="Desenho da sua voz" hidden></canvas>
+    <div id="resultado" hidden>
     <div class="direcao" role="group" aria-label="Direção">
       <button type="button" id="dir-contrario" aria-pressed="true">🔁 Ao contrário</button>
       <button type="button" id="dir-frente" aria-pressed="false">▶️ Pra frente</button>
@@ -236,15 +285,105 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
       <button type="button" class="repetir" id="repetir" aria-pressed="false" title="Repetir sem parar" aria-label="Repetir sem parar">🔂</button>
     </div>
     <label class="volume">🔊 Volume <input type="range" id="volume" min="0" max="200" step="10" /><output id="volume-txt">100%</output></label>
-    <div class="botoes">
-      <button type="button" id="tocar" disabled>🔊 Tocar de novo</button>
-      <button type="button" id="baixar" disabled>⬇️ Baixar</button>
-      <button type="button" class="largo" id="salvar" disabled>⭐ Salvar no site</button>
-      <button type="button" class="grande" id="compartilhar" disabled>📤 Compartilhar a voz</button>
+    <div class="acoes4">
+      <button type="button" id="tocar" disabled><i>🔊</i>Tocar</button>
+      <button type="button" class="principal" id="salvar" disabled><i>⭐</i>Salvar</button>
+      <button type="button" id="baixar" disabled><i>⬇️</i>Baixar</button>
+      <button type="button" id="compartilhar" disabled><i>📤</i>Mandar</button>
+    </div>
     </div>
     <p class="recado" id="recado" aria-live="polite"></p>
+    <div class="fontes">
+      <button type="button" class="pegar" id="pegar">📂 Abrir arquivo</button>
+      <button type="button" class="pegar" id="abrir-link" aria-expanded="false">🔗 Colar link</button>
+    </div>
+    <input type="file" id="arquivo" accept="audio/*,video/*" hidden />
+    <div class="linha-link" id="linha-link" hidden>
+      <input type="url" id="link" placeholder="🔗 Cole um link de áudio (.mp3…)" inputmode="url" autocomplete="off" aria-label="Link de um áudio" />
+      <button type="button" id="ouvir-link">Ouvir</button>
+    </div>
+    <details class="config" id="config-gravar">
+      <summary>⚙️ Configurações de gravar</summary>
+      <label class="cfg-sel">⏱️ Contagem antes de gravar
+        <select id="contagem"><option value="0">Sem contagem</option><option value="3">3 segundos</option><option value="5">5 segundos</option><option value="10">10 segundos</option></select>
+      </label>
+      <label class="cfg-check"><input type="checkbox" id="contagem-bip" /> 🔔 Bip na contagem</label>
+      <label class="cfg-sel">🎙️ Qual microfone
+        <select id="qual-mic"><option value="">O normal do aparelho</option></select>
+      </label>
+    </details>
   </section>
 
+  <section class="cartao" id="cartao-rapidas">
+    <h2>🎭 Vozes rápidas</h2>
+    <p class="recado" style="margin-top:4px">Toque numa voz pra ouvir. As suas ❤️ favoritas aparecem aqui primeiro!</p>
+    <div class="rapidas" id="rapidas"></div>
+    <button type="button" class="acao-grande secundaria" data-ir="vozes">Ver todas as 280 vozes e a mesa 🎛️</button>
+  </section>
+
+  <section class="cartao">
+    <details class="ajuda" id="ajuda">
+      <summary>😕 Não deu certo?</summary>
+      <ul>
+        <li>Quando o celular perguntar do microfone, aperte <b>“Permitir”</b>. Se apertou “Bloquear”, toque no cadeado 🔒 perto do endereço do site e libere o microfone.</li>
+        <li>Aumente o <b>volume</b> do celular.</li>
+        <li>Abra o site no <b>Chrome</b> ou no <b>Safari</b>, e não dentro de outro app (tipo WhatsApp ou YouTube).</li>
+        <li>Fale <b>pertinho</b> do celular e grave pelo menos 1 segundo.</li>
+        <li>💻 <b>No computador:</b> computador de mesa às vezes não tem microfone. Ligue um fone com microfone ou uma webcam, e escolha ele em <b>⚙️ Configurações de gravar → Qual microfone</b>. Feche programas que usam o microfone (Zoom, Discord, Meet…).</li>
+        <li>Toque no botão da <b>versão</b> lá embaixo pra pegar o site mais novo.</li>
+      </ul>
+      <div style="text-align:center"><button type="button" class="mini" id="testar-mic">🎙️ Testar o microfone</button></div>
+      <div class="medidor" aria-hidden="true"><i id="teste-nivel"></i></div>
+      <p class="recado" id="teste-mic-txt" style="text-align:center" aria-live="polite">Fale alguma coisa enquanto testa: a barrinha verde tem que mexer.</p>
+      <div style="text-align:center;margin-top:10px"><button type="button" class="mini" id="testar-som">🔊 Testar o som</button></div>
+      <p class="recado" style="text-align:center">Se tocar uma musiquinha, o som do celular está funcionando.</p>
+    </details>
+  </section>
+
+  <section class="cartao">
+    <details class="ajuda">
+    <summary>🤔 Como funciona?</summary>
+    <ol class="passos">
+      <li>O site grava a sua voz (o celular vai pedir permissão pro microfone), ou você pega um áudio que já está no celular com 📂, ou cola um link de áudio 🔗.</li>
+      <li>A gravação vira um monte de numerozinhos, um atrás do outro.</li>
+      <li>O site vira essa fila de números de trás pra frente e toca: a sua voz sai ao contrário!</li>
+      <li>O 🦜 papagaio fica ouvindo: quando o som passa do risquinho, ele grava, e quando fica quietinho de novo, ele repete.</li>
+      <li>Pras 280 vozes, o site mexe nos números: pula alguns (esquilo), repete (monstro), mistura com ecos (caverna) ou com uma ondinha (robô).</li>
+    </ol>
+    </details>
+  </section>
+
+  <p class="seguro">🔒 A sua voz fica <b>só neste aparelho</b>. Nada vai pra internet, e quando você fecha a página a gravação some (a não ser que você salve ⭐, baixe ou compartilhe).<br>📤 Só compartilhe com quem você conhece, tipo sua família e seus amigos.</p>
+  </div>
+
+  <div class="painel" id="aba-vozes" role="tabpanel" hidden>
+  <section class="cartao" id="vozes">
+    <h2>🎭 280 vozes</h2>
+    <p class="recado" style="margin-top:4px">Escolha um <b>jeito</b> e um <b>tamanho</b>: 56 jeitos × 5 tamanhos = <b>280 vozes</b>! Tocou, já toca.</p>
+    <div class="placar"><b id="voz-num">Voz 1 de 280</b><span id="voz-nome"></span><button type="button" class="coracao" id="fav" aria-pressed="false" aria-label="Favoritar esta voz" title="Favoritar esta voz">🤍</button></div>
+    <div class="favs" id="favs" hidden></div>
+    <h3>Jeito</h3>
+    <input type="search" class="procurar" id="procurar" placeholder="🔎 Procurar um jeito (robô, pato, DJ…)" aria-label="Procurar um jeito" />
+    <div class="efeitos" id="efeitos"></div>
+    <h3>Tamanho</h3>
+    <div class="tamanhos" id="tamanhos"></div>
+    <div class="navega">
+      <button type="button" id="ant">⬅️ Anterior</button>
+      <button type="button" id="sorte">🎲 Surpresa</button>
+      <button type="button" id="prox">Próxima ➡️</button>
+    </div>
+    <h3 class="titulo-mesa">🎛️ Mesa de efeitos <button type="button" class="mini" id="mesa-zerar">↩️ Zerar</button></h3>
+    <p class="recado" style="margin:0 0 8px">Arraste e solte: o efeito junta com a voz escolhida.</p>
+    <div class="mesa" id="mesa"></div>
+  </section>
+  </div>
+
+  <div class="painel" id="aba-editar" role="tabpanel" hidden>
+  <section class="cartao sem-audio">
+    <h2>✂️ Editar</h2>
+    <p class="recado" style="margin-top:4px">Aqui dá pra cortar e embaralhar o áudio. Primeiro grave ou abra um áudio na aba 🎙️ Gravar!</p>
+    <button type="button" class="acao-grande" data-ir="gravar">🎙️ Ir gravar</button>
+  </section>
   <section class="cartao" id="cartao-cortar" hidden>
     <h2>✂️ Cortar e embaralhar</h2>
     <p class="recado" style="margin-top:4px">Arraste as bolinhas de <b>Começo</b> e <b>Fim</b> pra escolher um pedaço.</p>
@@ -269,27 +408,14 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
     </details>
     <button type="button" class="acao-grande" id="embaralhar">🔀 Embaralhar</button>
   </section>
+  </div>
 
-  <section class="cartao" id="vozes">
-    <h2>🎭 280 vozes</h2>
-    <p class="recado" style="margin-top:4px">Escolha um <b>jeito</b> e um <b>tamanho</b>: 56 jeitos × 5 tamanhos = <b>280 vozes</b>! Tocou, já toca.</p>
-    <div class="placar"><b id="voz-num">Voz 1 de 280</b><span id="voz-nome"></span><button type="button" class="coracao" id="fav" aria-pressed="false" aria-label="Favoritar esta voz" title="Favoritar esta voz">🤍</button></div>
-    <div class="favs" id="favs" hidden></div>
-    <h3>Jeito</h3>
-    <input type="search" class="procurar" id="procurar" placeholder="🔎 Procurar um jeito (robô, pato, DJ…)" aria-label="Procurar um jeito" />
-    <div class="efeitos" id="efeitos"></div>
-    <h3>Tamanho</h3>
-    <div class="tamanhos" id="tamanhos"></div>
-    <div class="navega">
-      <button type="button" id="ant">⬅️ Anterior</button>
-      <button type="button" id="sorte">🎲 Surpresa</button>
-      <button type="button" id="prox">Próxima ➡️</button>
-    </div>
-    <h3 class="titulo-mesa">🎛️ Mesa de efeitos <button type="button" class="mini" id="mesa-zerar">↩️ Zerar</button></h3>
-    <p class="recado" style="margin:0 0 8px">Arraste e solte: o efeito junta com a voz escolhida.</p>
-    <div class="mesa" id="mesa"></div>
+  <div class="painel" id="aba-teclado" role="tabpanel" hidden>
+  <section class="cartao sem-audio">
+    <h2>🎹 Teclado de voz</h2>
+    <p class="recado" style="margin-top:4px">O teclado toca a sua voz em notas de piano. Primeiro grave a sua voz na aba 🎙️ Gravar!</p>
+    <button type="button" class="acao-grande" data-ir="gravar">🎙️ Ir gravar</button>
   </section>
-
   <section class="cartao" id="cartao-teclado" hidden>
     <h2>🎹 Teclado de voz</h2>
     <p class="recado" style="margin-top:4px">Cada tecla toca a sua voz numa nota. Segure pra tocar mais tempo! No computador, use as teclas <b>A S D F G H J K</b> (e <b>W E T Y U</b> pras pretas).</p>
@@ -306,7 +432,9 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
     <button type="button" class="acao-grande" id="gravar-teclado">⏺️ Gravar o que eu tocar</button>
     <p class="recado" id="teclado-recado" style="text-align:center"></p>
   </section>
+  </div>
 
+  <div class="painel" id="aba-brincar" role="tabpanel" hidden>
   <section class="cartao" id="cartao-papagaio">
     <h2>🦜 Papagaio</h2>
     <p class="recado" style="margin-top:4px">Ligue e fale. Quando você parar de falar, o papagaio repete sozinho! Não precisa apertar nada.</p>
@@ -325,6 +453,14 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
     <div style="text-align:center;margin-top:10px"><button type="button" class="mini" id="papagaio-usar" disabled>📥 Usar a última frase</button></div>
   </section>
 
+  <section class="cartao">
+    <h2>🏆 Desafio do ao contrário</h2>
+    <p class="recado" style="margin-top:4px">Grave falando a palavra <b>ao contrário</b> e depois ouça com 🔁 Ao contrário ligado. Se você falou direitinho, sai a palavra certa!</p>
+    <div class="palavra"><small>A palavra é</small><b id="p-certa"></b></div>
+    <div class="palavra"><small>Então fale assim</small><b class="ao" id="p-ao"></b></div>
+    <div style="text-align:center"><button type="button" class="mini" id="outra">🎲 Outra palavra</button></div>
+  </section>
+
   <section class="cartao" id="cartao-vivo">
     <h2>🎤 Eco ao vivo</h2>
     <p class="recado" style="margin-top:4px">Fale e escute na hora, com efeito! 🎧 <b>Use fone de ouvido</b>, senão o som do celular volta pro microfone e faz um apito.</p>
@@ -333,7 +469,9 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
     <button type="button" class="acao-grande" id="vivo-bt">🎤 Ligar o eco ao vivo</button>
     <p class="recado">Ao contrário ao vivo não dá: pra tocar de trás pra frente, o site precisa ouvir a frase inteira antes. Pra isso, use o 🦜 Papagaio!</p>
   </section>
+  </div>
 
+  <div class="painel" id="aba-salvos" role="tabpanel" hidden>
   <section class="cartao" id="cartao-salvos">
     <h2>⭐ Meus áudios salvos</h2>
     <p class="recado" style="margin-top:4px">Aperte <b>⭐ Salvar no site</b> e o áudio fica guardado aqui, mesmo se fechar a página. Fica só neste aparelho.</p>
@@ -348,52 +486,26 @@ details.ajuda ul{margin:10px 0 12px 20px;line-height:1.6;font-size:.92rem}
       <div style="text-align:center"><button type="button" class="mini" id="juntar-bt">🧩 Juntar e abrir</button></div>
     </div>
   </section>
-
-  <section class="cartao">
-    <details class="ajuda" id="ajuda">
-      <summary>😕 Não deu certo?</summary>
-      <ul>
-        <li>Quando o celular perguntar do microfone, aperte <b>“Permitir”</b>. Se apertou “Bloquear”, toque no cadeado 🔒 perto do endereço do site e libere o microfone.</li>
-        <li>Aumente o <b>volume</b> do celular.</li>
-        <li>Abra o site no <b>Chrome</b> ou no <b>Safari</b>, e não dentro de outro app (tipo WhatsApp ou YouTube).</li>
-        <li>Fale <b>pertinho</b> do celular e grave pelo menos 1 segundo.</li>
-        <li>💻 <b>No computador:</b> computador de mesa às vezes não tem microfone. Ligue um fone com microfone ou uma webcam, e escolha ele em <b>⚙️ Configurações de gravar → Qual microfone</b>. Feche programas que usam o microfone (Zoom, Discord, Meet…).</li>
-        <li>Toque no botão da <b>versão</b> lá embaixo pra pegar o site mais novo.</li>
-      </ul>
-      <div style="text-align:center"><button type="button" class="mini" id="testar-mic">🎙️ Testar o microfone</button></div>
-      <div class="medidor" aria-hidden="true"><i id="teste-nivel"></i></div>
-      <p class="recado" id="teste-mic-txt" style="text-align:center" aria-live="polite">Fale alguma coisa enquanto testa: a barrinha verde tem que mexer.</p>
-      <div style="text-align:center;margin-top:10px"><button type="button" class="mini" id="testar-som">🔊 Testar o som</button></div>
-      <p class="recado" style="text-align:center">Se tocar uma musiquinha, o som do celular está funcionando.</p>
-    </details>
-  </section>
-
-  <section class="cartao">
-    <h2>🏆 Desafio do ao contrário</h2>
-    <p class="recado" style="margin-top:4px">Grave falando a palavra <b>ao contrário</b> e depois ouça com 🔁 Ao contrário ligado. Se você falou direitinho, sai a palavra certa!</p>
-    <div class="palavra"><small>A palavra é</small><b id="p-certa"></b></div>
-    <div class="palavra"><small>Então fale assim</small><b class="ao" id="p-ao"></b></div>
-    <div style="text-align:center"><button type="button" class="mini" id="outra">🎲 Outra palavra</button></div>
-  </section>
-
-  <section class="cartao">
-    <h2>🤔 Como funciona?</h2>
-    <ol class="passos">
-      <li>O site grava a sua voz (o celular vai pedir permissão pro microfone), ou você pega um áudio que já está no celular com 📂, ou cola um link de áudio 🔗.</li>
-      <li>A gravação vira um monte de numerozinhos, um atrás do outro.</li>
-      <li>O site vira essa fila de números de trás pra frente e toca: a sua voz sai ao contrário!</li>
-      <li>O 🦜 papagaio fica ouvindo: quando o som passa do risquinho, ele grava, e quando fica quietinho de novo, ele repete.</li>
-      <li>Pras 280 vozes, o site mexe nos números: pula alguns (esquilo), repete (monstro), mistura com ecos (caverna) ou com uma ondinha (robô).</li>
-    </ol>
-  </section>
-
-  <p class="seguro">🔒 A sua voz fica <b>só neste aparelho</b>. Nada vai pra internet, e quando você fecha a página a gravação some (a não ser que você salve ⭐, baixe ou compartilhe).<br>📤 Só compartilhe com quem você conhece, tipo sua família e seus amigos.</p>
+  </div>
+  </main>
 
   <footer>
     Fala ao Contrário · feito pra brincar 🙃
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 9 — 27/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 10 — 27/09 · 🔄</button>
   </footer>
 </div>
+  <nav class="abas" id="abas" role="tablist" aria-label="Partes do site">
+    <button type="button" role="tab" data-aba="gravar" aria-controls="aba-gravar"><i>🎙️</i>Gravar</button>
+    <button type="button" role="tab" data-aba="vozes" aria-controls="aba-vozes"><i>🎭</i>Vozes</button>
+    <button type="button" role="tab" data-aba="editar" aria-controls="aba-editar"><i>✂️</i>Editar</button>
+    <button type="button" role="tab" data-aba="teclado" aria-controls="aba-teclado"><i>🎹</i>Teclado</button>
+    <button type="button" role="tab" data-aba="brincar" aria-controls="aba-brincar"><i>🦜</i>Brincar</button>
+    <button type="button" role="tab" data-aba="salvos" aria-controls="aba-salvos"><i>⭐</i>Salvos</button>
+  </nav>
+  <div class="mini-player" id="mini-player" hidden>
+    <button type="button" class="play" id="mini-pausar" aria-label="Tocar">▶️</button>
+    <button type="button" class="mini-info" id="mini-info" title="Ir pra aba Gravar"><b id="mini-nome"></b><i><s id="mini-prog"></s></i></button>
+  </div>
 
 <script>
 'use strict';
@@ -604,6 +716,9 @@ function prontaPraTocar(aviso, doCorte){
   btTocar.disabled = btBaixar.disabled = btCompartilhar.disabled = btSalvar.disabled = false;
   if(!doCorte){ vozAntes = null; document.getElementById('desfazer-corte').disabled = true; }
   document.getElementById('cartao-cortar').hidden = document.getElementById('cartao-teclado').hidden = false;
+  document.getElementById('resultado').hidden = false;
+  document.querySelectorAll('.sem-audio').forEach(e => { e.hidden = true; });
+  mostrarMini();
   zerarCorte();
   tocarEscolha(aviso);
 }
@@ -899,6 +1014,23 @@ btFav.onclick = () => {
   else favs.push({ j:escolha.j, t:escolha.t });
   gravarLocal('aocontrario:favs', favs); mostrarEscolha();
 };
+const RAPIDAS = [['Voz pura', 2], ['Voz pura', 4], ['Robô', 0], ['Fantasma', 0], ['Alienígena', 0], ['Caverna', 0], ['DJ arranhando', 0], ['Multidão', 0]]
+  .map(([n, t]) => ({ j:JEITOS.findIndex(J => J.n === n), t })).filter(v => v.j >= 0);
+function mostrarRapidas(){
+  const caixa = document.getElementById('rapidas'); if(!caixa) return;
+  const lista = favs.slice(0, 4).map(v => ({ ...v, fav:true }));
+  RAPIDAS.forEach(v => { if(lista.length < 8 && !lista.some(x => x.j === v.j && x.t === v.t)) lista.push(v); });
+  caixa.innerHTML = '';
+  lista.forEach(v => {
+    const J = JEITOS[v.j], T = TAMANHOS[v.t], b = document.createElement('button'); b.type = 'button';
+    const rot = J.n === 'Voz pura' && v.t ? T.n : J.n;
+    b.innerHTML = `<i>${J.n === 'Voz pura' && v.t ? T.e : J.e}</i>${rot}${v.fav ? '<span class="f">❤️</span>' : ''}`;
+    b.setAttribute('aria-pressed', v.j === escolha.j && v.t === escolha.t);
+    b.title = `${J.n} · ${T.n}`;
+    b.onclick = () => { escolha.j = v.j; escolha.t = v.t; tocarEscolha(); };
+    caixa.appendChild(b);
+  });
+}
 function mostrarFavs(){
   const f = ehFav();
   btFav.textContent = f ? '❤️' : '🤍'; btFav.setAttribute('aria-pressed', f);
@@ -911,6 +1043,7 @@ function mostrarFavs(){
     b.onclick = () => { escolha.j = v.j; escolha.t = v.t; tocarEscolha(); };
     caixaFavs.appendChild(b);
   });
+  mostrarRapidas();
 }
 
 /* procurar jeito */
@@ -1028,6 +1161,9 @@ function atualizarBarra(){
   btPausar.textContent = tocando ? '⏸️' : '▶️';
   btPausar.setAttribute('aria-label', tocando ? 'Pausar' : 'Tocar');
   if(ehVoz && ultimo) desenharOnda(ultimo, player.ended ? null : parte);
+  miniPausar.textContent = tocando ? '⏸️' : '▶️'; miniPausar.setAttribute('aria-label', tocando ? 'Pausar' : 'Tocar');
+  miniProg.style.width = (parte * 100) + '%';
+  miniNome.textContent = ehVoz ? nomeDaVoz() : (tocando ? '🔊 Tocando…' : nomeDaVoz());
 }
 function laco(){ atualizarBarra(); if(!player.paused && !player.ended) requestAnimationFrame(laco); }
 player.addEventListener('play', () => { if(player.src !== urlSom) return; tocador.hidden = false; requestAnimationFrame(laco); });   // o silêncio de destravar não conta
@@ -1039,6 +1175,44 @@ barra.addEventListener('input', () => {
   atualizarBarra();
 });
 barra.addEventListener('change', () => { arrastando = false; });
+
+/* ---------- abas ---------- */
+const ABAS = ['gravar', 'vozes', 'editar', 'teclado', 'brincar', 'salvos'];
+let abaAtual = 'gravar';
+const miniPlayer = document.getElementById('mini-player'), miniPausar = document.getElementById('mini-pausar');
+const miniNome = document.getElementById('mini-nome'), miniProg = document.getElementById('mini-prog');
+function irAba(a, foco){
+  if(!ABAS.includes(a)) a = 'gravar';
+  const mudou = a !== abaAtual; abaAtual = a;
+  ABAS.forEach(x => {
+    document.getElementById('aba-' + x).hidden = x !== a;
+    const b = document.querySelector(`.abas [data-aba="${x}"]`);
+    b.setAttribute('aria-selected', x === a); b.tabIndex = x === a ? 0 : -1;
+    if(x === a && foco) b.focus();
+  });
+  if(mudou) scrollTo(0, 0);
+  mostrarMini();
+}
+function mostrarMini(){
+  miniPlayer.hidden = !(voz && abaAtual !== 'gravar');
+  document.body.classList.toggle('com-mini', !miniPlayer.hidden);
+  if(!miniPlayer.hidden) miniNome.textContent = nomeDaVoz();
+}
+document.getElementById('abas').addEventListener('click', ev => { const b = ev.target.closest('[data-aba]'); if(b) irAba(b.dataset.aba); });
+document.getElementById('abas').addEventListener('keydown', ev => {   // setinhas trocam de aba
+  const i = ABAS.indexOf(abaAtual);
+  if(ev.key === 'ArrowRight') irAba(ABAS[(i + 1) % ABAS.length], true);
+  else if(ev.key === 'ArrowLeft') irAba(ABAS[(i + ABAS.length - 1) % ABAS.length], true);
+});
+document.addEventListener('click', ev => { const b = ev.target.closest('[data-ir]'); if(b) irAba(b.dataset.ir); });
+miniPausar.onclick = () => { if(!urlSom || player.src !== urlSom){ tocarEscolha(); return; } btPausar.onclick(); };
+document.getElementById('mini-info').onclick = () => irAba('gravar');
+document.getElementById('abrir-link').onclick = ev => {
+  const l = document.getElementById('linha-link'); l.hidden = !l.hidden;
+  ev.currentTarget.setAttribute('aria-expanded', !l.hidden);
+  if(!l.hidden) document.getElementById('link').focus();
+};
+irAba('gravar');
 
 /* ---------- baixar (WAV, que todo aparelho toca) ---------- */
 function paraWav(d, taxa){
@@ -1156,7 +1330,7 @@ async function mostrarSalvos(){
       tempo.textContent = `⭐ ${a.nome} · ${fmt(voz.length / taxa)}`;
       prontaPraTocar();
       mostrarSalvos();
-      document.querySelector('.palco').scrollIntoView({ behavior:'smooth', block:'start' });
+      irAba('gravar');
     });
     bt('✏️', 'Mudar nome e capa de', '', () => {
       const velho = li.querySelector('.editor-capa'); if(velho){ velho.remove(); cp.style.background = capa.cor; cp.textContent = capa.e; return; }
@@ -1327,7 +1501,7 @@ teclado.addEventListener('pointerdown', ev => {
 teclado.addEventListener('pointerout', ev => { if(ev.target.closest('[data-s]')) notaDesliga('p' + ev.pointerId); });
 document.addEventListener('keydown', ev => {
   if(ev.repeat || ev.ctrlKey || ev.metaKey || ev.altKey || /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
-  const st = TECLAS_PC[ev.key.toLowerCase()]; if(st === undefined || document.getElementById('cartao-teclado').hidden) return;
+  const st = TECLAS_PC[ev.key.toLowerCase()]; if(st === undefined || abaAtual !== 'teclado' || document.getElementById('cartao-teclado').hidden) return;
   notaLiga(st, 'k' + ev.key.toLowerCase());
 });
 document.addEventListener('keyup', ev => notaDesliga('k' + ev.key.toLowerCase()));
@@ -1435,7 +1609,7 @@ document.getElementById('juntar-bt').onclick = () => {
   tempo.textContent = `🧩 ${a.nome} + ${b.nome} · ${fmt(voz.length / taxa)}`;
   prontaPraTocar('🧩 Juntou! Se gostar, aperte ⭐ Salvar no site pra guardar os dois juntinhos.');
   mostrarSalvos();
-  document.querySelector('.palco').scrollIntoView({ behavior:'smooth', block:'start' });
+  irAba('gravar');
 };
 
 /* ---------- microfone pros modos ao vivo ---------- */
@@ -1523,7 +1697,7 @@ document.getElementById('papagaio-usar').onclick = () => {
   voz = ultimaFrase; taxa = ultimaTaxa; abertoId = null;
   tempo.textContent = `🦜 Frase do papagaio · ${fmt(voz.length / taxa)}`;
   prontaPraTocar();
-  document.querySelector('.palco').scrollIntoView({ behavior:'smooth', block:'start' });
+  irAba('gravar');
 };
 
 /* ---------- 🎤 eco ao vivo: o som do microfone passa pelos efeitos na hora ---------- */
