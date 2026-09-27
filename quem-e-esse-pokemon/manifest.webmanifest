@@ -1,0 +1,14 @@
+{
+  "name": "Quem é esse Pokémon?",
+  "short_name": "Quem é?",
+  "description": "Adivinhe o Pokémon pela sombra! Com níveis, recorde e coleção.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef1ff",
+  "theme_color": "#2b2f77",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
