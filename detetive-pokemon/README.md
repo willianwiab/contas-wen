@@ -10,8 +10,15 @@ e você lê as pistas do caderno pra descobrir quem levou ela.
 - 🔎 **Nova pista** mostra mais uma; quanto menos pistas você usar, mais pontos. 🪄 **Lupa mágica** risca um inocente (−10 pontos).
 - As pistas são inventadas pelo jogo a cada caso, e todas juntas sempre deixam só um culpado.
 
+## Versão 2: mais séria
+- 📹 **Gravação da câmera**: 10 animações diferentes de um vulto levando a Alcremie VMAX. O vulto é igual pra todo mundo (não entrega o culpado).
+- 📋 **Relatório de ocorrência** com local, hora, clima e quem deu o alerta; pistas da **perícia**.
+- 👥 **10 suspeitos + Eevee + 1 personagem especial**. Os especiais têm só 0,0001% (1 em 1 milhão) de chance de ser o culpado.
+- ✅ **Inocentar**, 🎤 **Interrogar** (3 por caso: álibi confirmado ou depoimento de testemunha) e ⚖️ **Culpar**.
+- 🕵️ **Escolha o seu detetive** entre 18 Pokémon; ele nunca é suspeito.
+
 ## Níveis
-- 🟢 Fácil: 4 suspeitos famosos · 🟡 Médio: 6 suspeitos (gerações 1 a 4) · 🔴 Difícil: 8 suspeitos de todos os 1025.
+- 🟢 Fácil: Pokémon famosos e pistas fortes · 🟡 Médio: gerações 1 a 4 · 🔴 Difícil: todos os 1025 e pistas fracas.
 
 ## Carreira
 Patentes (de Detetive Novato até Lenda da Investigação), 20 distintivos e a 📸 galeria de todos os culpados que você já prendeu.
