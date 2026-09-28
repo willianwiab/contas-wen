@@ -83,6 +83,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .palco img{position:absolute;inset:6% 12%;width:76%;height:88%;object-fit:contain;filter:brightness(0);transition:filter .6s, transform .4s;
   -webkit-user-drag:none;user-select:none;pointer-events:none}
 .palco img.revelado{filter:none;transform:scale(1.06)}
+.palco img.esperando{visibility:hidden}
 .palco .carregando{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;color:#1b1d3a;font-size:1.1rem}
 .palco .selo{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#fff;color:#1b1d3a;border-radius:99px;padding:6px 14px;font-weight:800;font-size:.95rem;
   box-shadow:0 4px 12px rgba(0,0,0,.2);white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}
@@ -260,7 +261,7 @@ footer{text-align:center;margin-top:26px;color:var(--tinta-fraca);font-size:.8re
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 3 — 28/09 · 🔄</button>
   </footer>
 </div>
 
@@ -398,7 +399,9 @@ function proxima(){
   if(!p){ terminar(); return; }
   jogo.usados.add(p.id); jogo.n++; jogo.atual = p; jogo.dicas = 0; jogo.respondeu = false;
   const img = $('figura');
-  img.classList.remove('revelado'); img.removeAttribute('src');
+  /* esconde na hora: sem a animação de voltar pra sombra, senão dava pra ver o próximo colorido */
+  img.style.transition = 'none'; img.classList.remove('revelado'); img.classList.add('esperando'); img.removeAttribute('src');
+  void img.offsetWidth; img.style.transition = '';
   $('carregando').hidden = false; $('carregando').textContent = 'Carregando… ⏳';
   $('selo').hidden = true; $('num').hidden = true; $('dicas').innerHTML = ''; $('aviso').textContent = ''; $('aviso').className = 'aviso';
   $('proximo').hidden = true; $('dica').disabled = false; $('pular').disabled = false;
@@ -409,7 +412,7 @@ function proxima(){
   });
   else { $('chute').value = ''; $('chute').disabled = false; setTimeout(() => $('chute').focus(), 50); }
   atualizarPlacar();
-  img.onload = () => { $('carregando').hidden = true; };
+  img.onload = () => { $('carregando').hidden = true; img.classList.remove('esperando'); };
   img.onerror = () => {
     $('carregando').textContent = navigator.onLine === false ? '📡 Sem internet! Conecte pra jogar.' : 'Não carregou 😕 Indo pro próximo…';
     if(navigator.onLine !== false){ jogo.usados.add(p.id); jogo.n--; setTimeout(proxima, 1200); }
