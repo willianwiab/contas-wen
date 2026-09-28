@@ -4,182 +4,242 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Detetive Pokémon</title>
-<meta name="description" content="A Alcremie VMAX sumiu da festa! Leia as pistas e descubra qual Pokémon levou ela." />
+<meta name="description" content="A Alcremie VMAX desapareceu. Veja a gravação, leia a perícia, interrogue os suspeitos e descubra qual Pokémon levou ela." />
 <link rel="icon" type="image/svg+xml" href="icone.svg" />
 <link rel="manifest" href="manifest.webmanifest" />
-<meta name="theme-color" content="#3b2a6e" />
+<meta name="theme-color" content="#1d2230" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-title" content="Detetive" />
 <link rel="apple-touch-icon" href="icone.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --marca:#3b2a6e; --marca2:#6a4bc4; --vermelho:#e3350d; --amarelo:#ffcb05; --verde:#1f9d57; --erro:#d0342c; --rosa:#ff8fc0;
-  --fundo:#f3efff; --fundo2:#e6ddff; --tinta:#1f1a36; --tinta-fraca:#625a80; --cartao:#ffffff; --cartao2:#f7f4ff; --borda:#dcd3fa;
-  --sombra:rgba(50,30,110,.14); --papel:#fff8e1; --papel-linha:#f0ddb0; --papel-tinta:#4a3a1a;
+  --marca:#1d2230; --carimbo:#b3261e; --ouro:#a87a06; --verde:#2e7d4f; --erro:#b3261e;
+  --fundo:#e9e4d8; --tinta:#1f1c17; --tinta-fraca:#5e574a; --cartao:#fbf8f1; --cartao2:#f1ece0; --borda:#cfc6b2;
+  --sombra:rgba(40,30,10,.16); --pasta:#e6c98f; --pasta2:#d9b56c; --papel:#fffdf6; --papel-linha:#e8e0cc; --botao:#1d2230; --botao-sombra:#000;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-tema="claro"]){
-    --marca:#c4b2ff; --marca2:#9c86ff; --vermelho:#ff6a4d; --amarelo:#ffd84d; --verde:#43d18a; --erro:#ff6b62; --rosa:#ff9ccb;
-    --fundo:#14102a; --fundo2:#1c1638; --tinta:#f1edff; --tinta-fraca:#aaa2cf; --cartao:#211b40; --cartao2:#2a234f; --borda:#3b3370;
-    --sombra:rgba(0,0,0,.45); --papel:#2e2818; --papel-linha:#4a3f22; --papel-tinta:#f3e6c0;
+    --marca:#e8e2d2; --carimbo:#ff6b5e; --ouro:#e2b84a; --verde:#5cc98b; --erro:#ff6b5e;
+    --fundo:#111317; --tinta:#ece7db; --tinta-fraca:#a8a192; --cartao:#1c1f26; --cartao2:#252932; --borda:#353a45;
+    --sombra:rgba(0,0,0,.5); --pasta:#5a4a2a; --pasta2:#4a3d22; --papel:#1f2229; --papel-linha:#2c3039; --botao:#b3261e; --botao-sombra:#6d1510;
   }
 }
 :root[data-tema="escuro"]{
-  --marca:#c4b2ff; --marca2:#9c86ff; --vermelho:#ff6a4d; --amarelo:#ffd84d; --verde:#43d18a; --erro:#ff6b62; --rosa:#ff9ccb;
-  --fundo:#14102a; --fundo2:#1c1638; --tinta:#f1edff; --tinta-fraca:#aaa2cf; --cartao:#211b40; --cartao2:#2a234f; --borda:#3b3370;
-  --sombra:rgba(0,0,0,.45); --papel:#2e2818; --papel-linha:#4a3f22; --papel-tinta:#f3e6c0;
+  --marca:#e8e2d2; --carimbo:#ff6b5e; --ouro:#e2b84a; --verde:#5cc98b; --erro:#ff6b5e;
+  --fundo:#111317; --tinta:#ece7db; --tinta-fraca:#a8a192; --cartao:#1c1f26; --cartao2:#252932; --borda:#353a45;
+  --sombra:rgba(0,0,0,.5); --pasta:#5a4a2a; --pasta2:#4a3d22; --papel:#1f2229; --papel-linha:#2c3039; --botao:#b3261e; --botao-sombra:#6d1510;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none !important}
-body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);
-  background-image:radial-gradient(circle at 90% 0%, var(--fundo2) 0 22%, transparent 22.5%);background-attachment:fixed;min-height:100vh}
-.casca{max-width:560px;margin:0 auto;padding:14px 16px 40px}
-h1,h2,h3,.titulo{font-family:'Baloo 2','Rubik',sans-serif}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);min-height:100vh;
+  background-image:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.018) 3px 4px)}
+.casca{max-width:600px;margin:0 auto;padding:14px 16px 40px}
+h1,h2{font-family:'Special Elite','Courier New',monospace;font-weight:400}
 button{font:inherit;color:inherit}
 .topo{display:flex;align-items:center;gap:10px}
 .logo{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
 .logo img{width:46px;height:46px}
-.logo h1{font-size:1.5rem;line-height:1.05;color:var(--marca)}
-.logo small{display:block;font-family:'Rubik',sans-serif;font-size:.8rem;color:var(--tinta-fraca);font-weight:500}
-.redondo{width:44px;height:44px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.25rem;cursor:pointer;display:grid;place-items:center;flex:none}
-.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:22px;padding:16px;margin-top:14px;box-shadow:0 6px 18px var(--sombra)}
-.cartao h2{font-size:1.2rem;margin-bottom:8px}
-.grande{display:block;width:100%;border:none;border-radius:18px;padding:16px;font-size:1.25rem;font-weight:800;cursor:pointer;color:#fff;
-  background:linear-gradient(180deg,var(--vermelho),#b8260a);box-shadow:0 5px 0 #7d1a06;font-family:'Baloo 2','Rubik',sans-serif}
-.grande:active{transform:translateY(3px);box-shadow:0 2px 0 #7d1a06}
-.mini{border:2px solid var(--borda);background:var(--cartao2);border-radius:14px;padding:9px 12px;font-weight:700;cursor:pointer}
-.mini:disabled{opacity:.5;cursor:default}
-/* herói: a Alcremie VMAX */
-.heroi{text-align:center;position:relative;overflow:hidden;background:linear-gradient(180deg,#ffe4f1,#fff5fb)}
-:root[data-tema="escuro"] .heroi{background:linear-gradient(180deg,#3a1f3d,#2a1a34)}
-@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .heroi{background:linear-gradient(180deg,#3a1f3d,#2a1a34)}}
-.heroi img{width:190px;height:190px;object-fit:contain;animation:boia 3s ease-in-out infinite;filter:drop-shadow(0 8px 10px rgba(0,0,0,.18))}
-@keyframes boia{50%{transform:translateY(-8px)}}
-.heroi .fita{position:absolute;left:-40px;top:22px;transform:rotate(-35deg);background:var(--amarelo);color:#1f1a36;font-weight:900;padding:4px 50px;font-size:.8rem;
-  background-image:repeating-linear-gradient(90deg,#1f1a36 0 12px,transparent 12px 24px);background-size:100% 4px;background-repeat:repeat-x;background-position:0 100%}
-.heroi p{margin:8px 0 12px;font-weight:600}
+.logo h1{font-size:1.45rem;line-height:1.05;color:var(--marca);letter-spacing:.5px}
+.logo small{display:block;font-family:'Rubik',sans-serif;font-size:.74rem;color:var(--tinta-fraca);font-weight:500}
+.redondo{width:44px;height:44px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.2rem;cursor:pointer;display:grid;place-items:center;flex:none}
+.cartao{background:var(--cartao);border:1px solid var(--borda);border-radius:10px;padding:16px;margin-top:14px;box-shadow:0 4px 14px var(--sombra)}
+.cartao h2{font-size:1.15rem;margin-bottom:8px;letter-spacing:.3px}
+.grande{display:block;width:100%;border:none;border-radius:10px;padding:15px;font-size:1.12rem;font-weight:800;cursor:pointer;color:#fff;background:var(--botao);box-shadow:0 4px 0 var(--botao-sombra)}
+.grande:active{transform:translateY(3px);box-shadow:0 1px 0 var(--botao-sombra)}
+.mini{border:1px solid var(--borda);background:var(--cartao2);border-radius:8px;padding:9px 10px;font-weight:700;cursor:pointer;font-size:.86rem}
+.mini:disabled{opacity:.45;cursor:default}
+/* pasta do caso */
+.pasta{position:relative;background:linear-gradient(180deg,var(--pasta),var(--pasta2));border-radius:4px 14px 10px 10px;padding:22px 16px 16px;margin-top:22px;box-shadow:0 8px 20px var(--sombra)}
+.pasta::before{content:'';position:absolute;left:0;top:-14px;width:44%;height:16px;background:var(--pasta);border-radius:10px 10px 0 0}
+.etiqueta{font-family:'Special Elite',monospace;background:var(--papel);display:inline-block;padding:3px 10px;border:1px solid var(--borda);font-size:.85rem}
+.pasta .dentro{display:flex;gap:12px;align-items:center;margin:12px 0}
+.pasta .dentro img{width:112px;height:112px;object-fit:contain;flex:none;background:var(--papel);border:1px solid var(--borda);padding:6px;transform:rotate(-3deg);box-shadow:0 4px 10px var(--sombra)}
+.pasta .dentro p{font-size:.9rem;line-height:1.45}
+.carimbo{font-family:'Special Elite',monospace;color:var(--carimbo);border:3px solid var(--carimbo);border-radius:6px;padding:2px 10px;display:inline-block;transform:rotate(-8deg);font-size:1.02rem;letter-spacing:2px;opacity:.9}
+.pasta .carimbo{position:absolute;right:14px;top:12px}
+/* meu detetive */
+.meu{display:flex;align-items:center;gap:12px}
+.meu img{width:84px;height:84px;object-fit:contain;background:var(--cartao2);border-radius:50%;border:3px solid var(--ouro);flex:none}
+.meu div{flex:1}
+.meu b{display:block;font-size:1.05rem}
+.meu small{color:var(--tinta-fraca);font-size:.8rem}
+.escolhas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;max-height:60vh;overflow:auto}
+.escolhas button{border:2px solid var(--borda);background:var(--cartao);border-radius:10px;padding:6px 2px;cursor:pointer;font-size:.74rem;font-weight:700}
+.escolhas button img{display:block;width:100%;aspect-ratio:1;object-fit:contain}
+.escolhas button[aria-pressed="true"]{border-color:var(--ouro);background:var(--cartao2);box-shadow:0 0 0 2px var(--ouro)}
 .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.chip{border:2px solid var(--borda);background:var(--cartao2);border-radius:16px;padding:10px 4px;cursor:pointer;text-align:center}
-.chip b{display:block;font-size:.95rem}
-.chip small{display:block;font-size:.72rem;color:var(--tinta-fraca)}
-.chip[aria-pressed="true"]{border-color:var(--marca2);background:var(--marca2);color:#fff}
-.chip[aria-pressed="true"] small{color:#eee}
-.linha{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.chip{border:1px solid var(--borda);background:var(--cartao2);border-radius:8px;padding:10px 4px;cursor:pointer;text-align:center}
+.chip b{display:block;font-size:.9rem}
+.chip small{display:block;font-size:.68rem;color:var(--tinta-fraca)}
+.chip[aria-pressed="true"]{border-color:var(--marca);box-shadow:inset 0 0 0 2px var(--marca)}
 .patente{display:flex;align-items:center;gap:12px}
-.patente .dist{font-size:2.4rem}
-.patente b{font-size:1.1rem;display:block}
-.barra{height:12px;border-radius:99px;background:var(--cartao2);border:2px solid var(--borda);overflow:hidden;margin-top:8px}
-.barra i{display:block;height:100%;background:linear-gradient(90deg,var(--amarelo),var(--vermelho));transition:width .5s}
+.patente .dist{font-size:2.3rem}
+.patente b{font-size:1.05rem;display:block}
+.barra{height:10px;border-radius:99px;background:var(--cartao2);border:1px solid var(--borda);overflow:hidden;margin-top:8px}
+.barra i{display:block;height:100%;background:var(--ouro);transition:width .5s}
 .numeros{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px;text-align:center}
-.numeros div{background:var(--cartao2);border-radius:14px;padding:8px 2px}
-.numeros b{display:block;font-size:1.2rem}
-.numeros small{font-size:.7rem;color:var(--tinta-fraca)}
+.numeros div{background:var(--cartao2);border-radius:8px;padding:8px 2px}
+.numeros b{display:block;font-size:1.15rem}
+.numeros small{font-size:.66rem;color:var(--tinta-fraca)}
 .distintivos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px}
-.distintivo{background:var(--cartao2);border-radius:14px;padding:8px 4px;text-align:center;font-size:.72rem;border:2px solid transparent}
-.distintivo i{display:block;font-style:normal;font-size:1.6rem}
-.distintivo.nao{opacity:.38;filter:grayscale(1)}
-.distintivo.sim{border-color:var(--amarelo)}
+.distintivo{background:var(--cartao2);border-radius:8px;padding:8px 4px;text-align:center;font-size:.7rem;border:1px solid transparent}
+.distintivo i{display:block;font-style:normal;font-size:1.5rem}
+.distintivo.nao{opacity:.35;filter:grayscale(1)}
+.distintivo.sim{border-color:var(--ouro)}
 .galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin-top:10px}
-.galeria div{background:var(--cartao2);border-radius:12px;text-align:center;font-size:.62rem;padding:2px;position:relative}
+.galeria div{background:var(--cartao2);border-radius:6px;text-align:center;font-size:.6rem;padding:2px;position:relative}
 .galeria img{width:100%;aspect-ratio:1;object-fit:contain;image-rendering:pixelated}
-.galeria em{position:absolute;right:3px;top:2px;font-style:normal;font-weight:800;font-size:.65rem;background:var(--vermelho);color:#fff;border-radius:99px;padding:0 5px}
-.como li{margin:6px 0 6px 20px}
-footer{text-align:center;margin-top:22px;color:var(--tinta-fraca);font-size:.8rem;line-height:1.5}
-.versao{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:5px 12px;font-weight:700;cursor:pointer;margin-top:8px}
+.galeria em{position:absolute;right:3px;top:2px;font-style:normal;font-weight:800;font-size:.62rem;background:var(--carimbo);color:#fff;border-radius:99px;padding:0 5px}
+.como li{margin:6px 0 6px 20px;line-height:1.4}
+footer{text-align:center;margin-top:22px;color:var(--tinta-fraca);font-size:.78rem;line-height:1.5}
+.versao{border:1px solid var(--borda);background:var(--cartao);border-radius:99px;padding:5px 12px;font-weight:700;cursor:pointer;margin-top:8px}
+
+/* ---------- 📹 a gravação da câmera ---------- */
+.camera{margin-top:14px;background:#0b0d10;border-radius:10px;padding:8px;box-shadow:0 6px 16px var(--sombra)}
+.cena{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:4px;background:linear-gradient(180deg,#26332d 0 70%,#2b241b 70% 100%)}
+.cena .janela{position:absolute;left:8%;top:10%;width:18%;height:30%;background:linear-gradient(#10202e,#1b3346);border:4px solid #3a4a42}
+.cena .janela::after{content:'';position:absolute;left:50%;top:0;bottom:0;border-left:3px solid #3a4a42}
+.cena .quadro{position:absolute;left:36%;top:12%;width:12%;height:18%;border:3px solid #6b5533;background:#3b2f3f}
+.cena .mesa{position:absolute;left:54%;top:65%;width:36%;height:5%;background:#5a4630;border-radius:3px}
+.cena .mesa::before,.cena .mesa::after{content:'';position:absolute;top:100%;width:6%;height:420%;background:#4a3826}
+.cena .mesa::before{left:6%}.cena .mesa::after{right:6%}
+.cena .bolo{position:absolute;left:58%;top:20%;width:26%}
+.cena .caixa{position:absolute;left:63%;top:36%;font-size:clamp(1.6rem,8vw,3.2rem);opacity:0}
+.vulto{position:absolute;left:-40%;top:38%;width:22%;height:56%}
+.vulto::before{content:'';position:absolute;inset:0;background:#000;border-radius:48% 48% 38% 38%/58% 58% 42% 42%;filter:blur(7px);opacity:.94}
+.vulto i{position:absolute;top:24%;width:10%;height:6%;background:#ffe45c;border-radius:50%;box-shadow:0 0 10px 2px #ffe45c;animation:pisca 3s infinite}
+.vulto i:first-child{left:33%}.vulto i:last-child{left:57%}
+@keyframes pisca{0%,46%,54%,100%{transform:scaleY(1)}50%{transform:scaleY(.1)}}
+.cena .luz{position:absolute;inset:0;background:#000;opacity:0}
+.cena .tv{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(255,255,255,.04) 0 2px,transparent 2px 4px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55));mix-blend-mode:normal}
+.cena .rec{position:absolute;left:8px;top:6px;color:#ff4a3d;font-family:'Special Elite',monospace;font-size:.8rem;animation:rec 1s steps(1) infinite}
+@keyframes rec{50%{opacity:0}}
+.cena .hora{position:absolute;right:8px;top:6px;color:#e6ffe9;font-family:'Special Elite',monospace;font-size:.78rem}
+.cena .sumiu{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:#fff;font-family:'Special Elite',monospace;font-size:.9rem;opacity:0;text-shadow:0 2px 4px #000}
+.cam-legenda{display:flex;align-items:center;gap:8px;margin-top:6px;color:#d9d3c4;font-size:.8rem}
+.cam-legenda span{flex:1;font-family:'Special Elite',monospace}
+.cam-legenda button{border:1px solid #444;background:#1b1e24;color:#eee;border-radius:6px;padding:5px 9px;font-weight:700;cursor:pointer;font-size:.78rem}
 
 /* ---------- caso ---------- */
-.placar{display:flex;gap:8px;align-items:stretch}
-.placar > div{flex:1;background:var(--cartao);border:2px solid var(--borda);border-radius:16px;text-align:center;padding:6px 4px}
-.placar b{display:block;font-size:1.15rem}
-.placar small{font-size:.7rem;color:var(--tinta-fraca)}
-.historia{display:flex;gap:12px;align-items:center}
-.historia img{width:84px;height:84px;object-fit:contain;flex:none}
-.historia p{font-weight:600;line-height:1.35}
-.historia .sumiu{filter:grayscale(1) opacity(.45)}
-.caderno{background:var(--papel);color:var(--papel-tinta);border-radius:18px;padding:14px 14px 14px 36px;margin-top:14px;position:relative;
-  background-image:repeating-linear-gradient(180deg,transparent 0 31px,var(--papel-linha) 31px 33px);box-shadow:0 6px 16px var(--sombra)}
-.caderno::before{content:'';position:absolute;left:22px;top:0;bottom:0;border-left:2px solid #f09a9a}
-.caderno h2{font-size:1.1rem;margin-bottom:6px}
+.placar{display:flex;gap:6px;align-items:stretch;margin-top:12px}
+.placar > div{flex:1;background:var(--cartao);border:1px solid var(--borda);border-radius:8px;text-align:center;padding:6px 2px}
+.placar b{display:block;font-size:1rem}
+.placar small{font-size:.62rem;color:var(--tinta-fraca)}
+.relatorio{background:var(--papel);border:1px solid var(--borda);border-radius:4px;padding:16px;margin-top:14px;box-shadow:0 6px 16px var(--sombra);position:relative;font-size:.9rem;line-height:1.5}
+.relatorio h2{font-size:1.1rem;border-bottom:2px solid var(--tinta);padding-bottom:4px;margin-bottom:8px}
+.relatorio .ficha{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-family:'Special Elite',monospace;font-size:.88rem;padding-right:80px}
+.relatorio .ficha dt{color:var(--tinta-fraca)}
+.relatorio .ocorrencia{margin-top:10px}
+.relatorio .encarregado{position:absolute;right:12px;top:42px;width:74px;text-align:center;font-size:.62rem;color:var(--tinta-fraca)}
+.relatorio .encarregado img{width:70px;height:70px;object-fit:contain;border:1px solid var(--borda);background:var(--cartao);border-radius:4px}
+.relatorio .carimbo{position:absolute;right:10px;bottom:10px;font-size:.78rem}
+.caderno{background:var(--papel);border:1px solid var(--borda);border-radius:4px;padding:14px 14px 14px 34px;margin-top:14px;position:relative;
+  background-image:repeating-linear-gradient(180deg,transparent 0 29px,var(--papel-linha) 29px 30px);box-shadow:0 6px 16px var(--sombra)}
+.caderno::before{content:'';position:absolute;left:22px;top:0;bottom:0;border-left:2px solid rgba(179,38,30,.45)}
+.caderno h2{font-size:1.05rem;margin:4px 0 4px}
+.caderno h3{font-size:.76rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tinta-fraca);margin-top:10px}
 .pistas{list-style:none}
-.pistas li{padding:6px 0;line-height:1.35;font-weight:500;animation:aparece .5s}
+.pistas li{padding:5px 0;line-height:1.4;animation:aparece .5s}
 .pistas li b{font-weight:800}
-@keyframes aparece{from{opacity:0;transform:translateX(-12px)}}
+.pistas li small{display:block;color:var(--tinta-fraca);font-size:.74rem}
+@keyframes aparece{from{opacity:0;transform:translateX(-10px)}}
 .pistas li.escondida{opacity:.5;font-style:italic}
 .botoes-caso{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.suspeitos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
-.suspeito{background:var(--cartao);border:2px solid var(--borda);border-radius:18px;padding:8px;position:relative;box-shadow:0 4px 12px var(--sombra);transition:opacity .3s,filter .3s}
-.suspeito .foto{position:relative;background:radial-gradient(circle,var(--cartao2) 55%,transparent 56%);aspect-ratio:1;display:grid;place-items:center}
-.suspeito img{width:88%;height:88%;object-fit:contain}
-.suspeito h3{font-size:1rem;text-align:center;line-height:1.1;margin-top:2px}
-.fatos{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:5px;font-size:.68rem}
-.fatos span{background:var(--cartao2);border-radius:99px;padding:2px 6px;white-space:nowrap}
+.filtro{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center;justify-content:space-between;font-size:.82rem;color:var(--tinta-fraca);font-weight:600}
+.suspeitos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+@media (min-width:560px){.suspeitos{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.suspeito{background:var(--cartao);border:1px solid var(--borda);border-radius:8px;padding:7px;position:relative;box-shadow:0 3px 10px var(--sombra);transition:opacity .3s,filter .3s}
+.suspeito .n{position:absolute;left:7px;top:5px;font-family:'Special Elite',monospace;font-size:.7rem;color:var(--tinta-fraca);z-index:1}
+.suspeito .foto{position:relative;aspect-ratio:1.25;display:grid;place-items:center;background:repeating-linear-gradient(180deg,var(--cartao2) 0 12px,var(--cartao) 12px 24px);border-radius:4px}
+.suspeito img{width:78%;height:92%;object-fit:contain}
+.suspeito h3{font-size:.95rem;text-align:center;line-height:1.1;margin-top:4px}
+.especial-selo{display:block;text-align:center;font-size:.62rem;font-weight:700;color:var(--ouro);margin-top:2px}
+.suspeito.especial{border-color:var(--ouro);box-shadow:0 0 0 1px var(--ouro),0 3px 10px var(--sombra)}
+.fatos{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:5px;font-size:.64rem}
+.fatos span{background:var(--cartao2);border-radius:4px;padding:2px 5px;white-space:nowrap}
 .fatos .tipo{color:#fff;font-weight:700}
 .cor-bola{display:inline-block;width:9px;height:9px;border-radius:50%;border:1px solid rgba(0,0,0,.3);vertical-align:-1px;margin-right:2px}
-.acoes{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}
-.acoes button{border:2px solid var(--borda);border-radius:12px;padding:7px 2px;font-weight:800;font-size:.8rem;cursor:pointer;background:var(--cartao2)}
-.acoes .prender{background:var(--vermelho);border-color:var(--vermelho);color:#fff}
-.suspeito.riscado{opacity:.5;filter:grayscale(1)}
-.suspeito.riscado .foto::after{content:'✖';position:absolute;inset:0;display:grid;place-items:center;font-size:5rem;color:var(--erro);font-weight:900;opacity:.85}
-.suspeito.inocente .foto::before{content:'Não fui eu! 😤';position:absolute;left:50%;top:4px;transform:translateX(-50%);background:#fff;color:#1f1a36;border-radius:12px;padding:3px 8px;font-size:.72rem;font-weight:800;white-space:nowrap;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.depo{margin-top:5px;font-size:.68rem;text-align:center;font-weight:700;border-radius:4px;padding:3px}
+.depo.ok{background:rgba(46,125,79,.14);color:var(--verde)}
+.depo.duvida{background:rgba(168,122,6,.14);color:var(--ouro)}
+.acoes{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:6px}
+.acoes button{border:1px solid var(--borda);border-radius:6px;padding:6px 1px 5px;font-weight:700;font-size:.62rem;cursor:pointer;background:var(--cartao2);line-height:1.1}
+.acoes button i{display:block;font-style:normal;font-size:1.05rem}
+.acoes .culpar{background:var(--carimbo);border-color:var(--carimbo);color:#fff}
+.acoes button:disabled{opacity:.4;cursor:default}
+.suspeito.riscado{opacity:.45;filter:grayscale(1)}
+.suspeito.riscado .foto::after{content:'INOCENTE';position:absolute;left:0;right:0;top:40%;text-align:center;font-family:'Special Elite',monospace;font-size:1.05rem;color:var(--verde);transform:rotate(-12deg);letter-spacing:2px}
 .suspeito.treme{animation:treme .45s}
 @keyframes treme{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.aviso{text-align:center;font-weight:700;min-height:1.4em;margin-top:10px}
+.aviso{text-align:center;font-weight:700;min-height:1.4em;margin-top:12px}
 .aviso.ruim{color:var(--erro)}
-/* ---------- resolvido ---------- */
-dialog{border:none;border-radius:26px;padding:0;width:min(440px,calc(100% - 32px));background:var(--cartao);color:var(--tinta);box-shadow:0 20px 50px rgba(0,0,0,.4);margin:auto}
-dialog::backdrop{background:rgba(20,10,40,.6)}
-.resolvido{text-align:center;padding:20px 18px}
-.resolvido .dupla{display:flex;justify-content:center;align-items:flex-end;gap:4px}
-.resolvido .dupla img{width:130px;height:130px;object-fit:contain}
-.resolvido .dupla .alc{width:110px;height:110px}
-.resolvido h2{font-size:1.5rem;color:var(--vermelho)}
-.resolvido .confissao{background:var(--cartao2);border-radius:16px;padding:10px;margin:10px 0;font-weight:600}
-.estrelas{font-size:2rem;letter-spacing:4px}
-.resolvido .pts{font-weight:800;font-size:1.1rem}
-.resolvido .grande{margin-top:12px}
-.resolvido .mini{margin-top:8px;width:100%}
-.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:var(--amarelo);color:#1f1a36;border-radius:16px;padding:10px 16px;font-weight:800;z-index:50;box-shadow:0 8px 20px rgba(0,0,0,.25);animation:desce .4s}
+/* ---------- diálogos ---------- */
+dialog{border:none;border-radius:10px;padding:0;width:min(460px,calc(100% - 32px));background:var(--papel);color:var(--tinta);box-shadow:0 20px 50px rgba(0,0,0,.5);margin:auto;max-height:calc(100vh - 32px)}
+dialog::backdrop{background:rgba(10,10,15,.7)}
+.dlg{padding:20px 18px;text-align:center}
+.dlg h2{font-size:1.25rem}
+.dlg .dupla{display:flex;justify-content:center;align-items:flex-end;gap:4px;margin:8px 0}
+.dlg .dupla img{width:112px;height:112px;object-fit:contain}
+.dlg .dupla .alc{width:96px;height:96px}
+.dlg .fala{background:var(--cartao2);border-left:4px solid var(--tinta);border-radius:4px;padding:10px;margin:10px 0;text-align:left;line-height:1.45}
+.dlg .fala b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--tinta-fraca)}
+.dlg .sala{background:radial-gradient(circle at 50% 20%,#f7e7a6 0 12%,transparent 45%),#23262e;border-radius:8px;padding:12px 6px 4px;display:flex;justify-content:space-around;align-items:flex-end}
+.dlg .sala img{width:44%;max-width:130px;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
+.dlg .sala img.eu{transform:scaleX(-1)}
+.estrelas{font-size:1.8rem;letter-spacing:4px}
+.dlg .pts{font-weight:800}
+.dlg .grande{margin-top:12px}
+.dlg .mini{margin-top:8px;width:100%}
+.dlg .carimbo{font-size:1.35rem;margin:6px 0}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:var(--ouro);color:#fff;border-radius:8px;padding:10px 16px;font-weight:800;z-index:50;box-shadow:0 8px 20px rgba(0,0,0,.3);animation:desce .4s;max-width:calc(100% - 32px);text-align:center}
 @keyframes desce{from{transform:translate(-50%,-80px)}}
-.confete{position:fixed;top:-20px;width:10px;height:14px;z-index:60;pointer-events:none;animation:cai 2.4s linear forwards}
-@keyframes cai{to{transform:translateY(110vh) rotate(720deg)}}
-.faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--marca);color:#fff;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:70;font-weight:700}
-.faixa-nova button{border:none;border-radius:99px;padding:6px 12px;font-weight:800;background:var(--amarelo);color:#1f1a36;cursor:pointer}
-@media (prefers-reduced-motion: reduce){.heroi img{animation:none}}
-@media (max-width:360px){.fatos{font-size:.62rem}.acoes button{font-size:.72rem}}
+.faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#1d2230;color:#fff;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:70;font-weight:700}
+.faixa-nova button{border:none;border-radius:99px;padding:6px 12px;font-weight:800;background:var(--ouro);color:#fff;cursor:pointer}
+@media (max-width:360px){.fatos{font-size:.58rem}.acoes button{font-size:.56rem}}
+@media (prefers-reduced-motion: reduce){.vulto i,.cena .rec{animation:none}}
 </style>
 </head>
 <body>
 <div class="casca">
   <header class="topo">
-    <div class="logo"><img src="icone.svg" alt="" /><h1>Detetive Pokémon<small>Quem levou a Alcremie VMAX?</small></h1></div>
+    <div class="logo"><img src="icone.svg" alt="" /><h1>Detetive Pokémon<small>Departamento de Investigação de Doces Desaparecidos</small></h1></div>
     <button type="button" class="redondo" id="som" title="Som" aria-label="Ligar ou desligar o som">🔊</button>
     <button type="button" class="redondo" id="tema" title="Claro ou escuro" aria-label="Trocar claro e escuro">🌙</button>
   </header>
 
   <!-- ===================== INÍCIO ===================== -->
   <section id="tela-inicio">
-    <div class="cartao heroi">
-      <span class="fita">CASO ABERTO</span>
-      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10223.png" alt="Alcremie VMAX, o bolo gigante" />
-      <p id="heroi-txt">🎂 A Alcremie VMAX, o bolo mais gostoso do mundo Pokémon, vive sumindo! Leia as pistas e descubra qual Pokémon levou ela.</p>
-      <button type="button" class="grande" id="comecar">🔎 Abrir o caso nº 1</button>
+    <div class="pasta">
+      <span class="carimbo">CONFIDENCIAL</span>
+      <span class="etiqueta" id="etiqueta">ARQUIVO — CASO #0001</span>
+      <div class="dentro">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10223.png" alt="Foto da Alcremie VMAX" />
+        <p><b>Vítima:</b> Alcremie VMAX, o bolo gigante.<br><b>Situação:</b> desaparecida outra vez.<br><b>Suspeitos:</b> 10 Pokémon e personagens especiais.<br><b>Missão:</b> ver a gravação, interrogar e culpar o Pokémon certo.</p>
+      </div>
+      <button type="button" class="grande" id="comecar">📂 Abrir o caso #0001</button>
     </div>
 
     <div class="cartao">
-      <h2>🎚️ Dificuldade</h2>
+      <h2>Seu detetive</h2>
+      <div class="meu"><img id="meu-img" alt="" /><div><b id="meu-nome"></b><small>É ele que investiga e faz as perguntas. Nunca é suspeito.</small></div></div>
+      <button type="button" class="mini" id="trocar-detetive" style="margin-top:10px;width:100%">🕵️ Escolher outro detetive</button>
+    </div>
+
+    <div class="cartao">
+      <h2>Dificuldade</h2>
       <div class="chips" id="niveis">
-        <button type="button" class="chip" data-nivel="facil"><b>🟢 Fácil</b><small>4 suspeitos famosos</small></button>
-        <button type="button" class="chip" data-nivel="medio"><b>🟡 Médio</b><small>6 suspeitos</small></button>
-        <button type="button" class="chip" data-nivel="dificil"><b>🔴 Difícil</b><small>8 de todos os 1025</small></button>
+        <button type="button" class="chip" data-nivel="facil"><b>🟢 Fácil</b><small>Pokémon famosos · pistas fortes</small></button>
+        <button type="button" class="chip" data-nivel="medio"><b>🟡 Médio</b><small>Gerações 1 a 4</small></button>
+        <button type="button" class="chip" data-nivel="dificil"><b>🔴 Difícil</b><small>Todos os 1025 · pistas fracas</small></button>
       </div>
     </div>
 
     <div class="cartao">
-      <h2>🕵️ Minha carreira</h2>
+      <h2>Minha carreira</h2>
       <div class="patente"><span class="dist" id="pat-emoji">🔍</span><div style="flex:1"><b id="pat-nome">Detetive Novato</b><small id="pat-prox"></small><div class="barra"><i id="pat-barra" style="width:0"></i></div></div></div>
       <div class="numeros">
         <div><b id="n-casos">0</b><small>📁 casos</small></div>
@@ -190,62 +250,76 @@ dialog::backdrop{background:rgba(20,10,40,.6)}
     </div>
 
     <div class="cartao">
-      <h2>🎖️ Distintivos <small id="dist-cont" style="font-size:.85rem;color:var(--tinta-fraca)"></small></h2>
+      <h2>Distintivos <small id="dist-cont" style="font-size:.8rem;color:var(--tinta-fraca)"></small></h2>
       <div class="distintivos" id="distintivos"></div>
     </div>
 
     <div class="cartao">
-      <h2>📸 Galeria dos culpados <small id="gal-cont" style="font-size:.85rem;color:var(--tinta-fraca)"></small></h2>
-      <p style="font-size:.85rem;color:var(--tinta-fraca)">Todo Pokémon que você pegou fica aqui.</p>
+      <h2>Galeria dos culpados <small id="gal-cont" style="font-size:.8rem;color:var(--tinta-fraca)"></small></h2>
+      <p style="font-size:.85rem;color:var(--tinta-fraca)">Todo Pokémon que você culpou certo fica fichado aqui.</p>
       <div class="galeria" id="galeria"></div>
     </div>
 
     <div class="cartao como">
-      <h2>❓ Como jogar</h2>
+      <h2>Manual do detetive</h2>
       <ol>
-        <li>A <b>Alcremie VMAX</b> sumiu e tem vários <b>suspeitos</b>.</li>
-        <li>Leia as <b>pistas</b> no caderno e olhe os cartões: tipo, cor, peso, altura, região…</li>
-        <li>Toque em <b>❌ Inocente</b> pra riscar quem não pode ser.</li>
-        <li>Quando souber, toque em <b>🚨 Prender</b> no culpado!</li>
-        <li>Quanto <b>menos pistas</b> você usar, mais pontos. Se prender o errado, perde estrela.</li>
+        <li>Veja a <b>gravação da câmera</b> e leia o <b>relatório</b>: onde, quando e como a Alcremie VMAX sumiu. (Na gravação só aparece um vulto: não dá pra saber quem é!)</li>
+        <li>São <b>10 suspeitos</b>, mais a <b>Eevee</b> e um <b>personagem especial</b>. Os especiais quase nunca são culpados: só <b>0,0001%</b> de chance (1 em 1 milhão)!</li>
+        <li>Cada ficha mostra <b>tipo, cor, peso, altura, região</b> e se o Pokémon <b>ainda evolui</b>.</li>
+        <li>As pistas da <b>perícia</b> falam dessas coisas. Compare com as fichas.</li>
+        <li><b>✅ Inocentar</b> risca um suspeito. <b>🎤 Interrogar</b> (3 por caso) mostra o álibi, e às vezes o suspeito conta o que viu. <b>⚖️ Culpar</b> acusa.</li>
+        <li>Culpar um inocente custa uma estrela. Quanto menos pistas você usar, mais pontos.</li>
       </ol>
     </div>
   </section>
 
   <!-- ===================== CASO ===================== -->
   <section id="tela-caso" hidden>
-    <div class="placar" style="margin-top:12px">
-      <div><b id="c-num">1</b><small>📁 caso</small></div>
-      <div><b id="c-pistas">1/3</b><small>🔎 pistas</small></div>
+    <div class="placar">
+      <div><b id="c-num">#0001</b><small>📁 caso</small></div>
+      <div><b id="c-pistas">1/3</b><small>🔬 pistas</small></div>
+      <div><b id="c-inter">3</b><small>🎤 interrogar</small></div>
       <div><b id="c-erros">⭐⭐⭐</b><small>estrelas</small></div>
-      <button type="button" class="redondo" id="sair" title="Sair do caso" aria-label="Sair do caso">✖️</button>
+      <button type="button" class="redondo" id="sair" title="Arquivar o caso" aria-label="Sair do caso">✖️</button>
     </div>
-    <div class="cartao historia">
-      <img class="sumiu" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10223.png" alt="" />
-      <p id="c-historia"></p>
+    <div class="camera">
+      <div class="cena" id="cena" aria-label="Gravação da câmera de segurança">
+        <div class="janela"></div><div class="quadro"></div><div class="mesa"></div>
+        <img class="bolo" id="c-bolo" alt="Alcremie VMAX" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10223.png" />
+        <span class="caixa" id="c-caixa">📦</span>
+        <div class="vulto" id="c-vulto"><i></i><i></i></div>
+        <div class="luz" id="c-luz"></div>
+        <div class="tv"></div>
+        <span class="rec">● REC</span><span class="hora" id="c-hora">CAM 02</span>
+        <span class="sumiu" id="c-sumiu">A ALCREMIE VMAX DESAPARECEU</span>
+      </div>
+      <div class="cam-legenda"><span id="cam-titulo">📹 Câmera de segurança</span><button type="button" id="rever">▶️ Ver de novo</button></div>
     </div>
+    <div class="relatorio" id="relatorio"></div>
     <div class="caderno">
-      <h2>📒 Caderno de pistas</h2>
+      <h2>📒 Caderno do detetive</h2>
+      <h3>🔬 Relatório da perícia</h3>
       <ol class="pistas" id="pistas"></ol>
+      <h3 id="depo-titulo" hidden>🎤 Depoimentos</h3>
+      <ol class="pistas" id="depoimentos"></ol>
       <div class="botoes-caso">
-        <button type="button" class="mini" id="nova-pista">🔎 Nova pista</button>
-        <button type="button" class="mini" id="lupa">🪄 Lupa mágica</button>
+        <button type="button" class="mini" id="nova-pista">🔬 Nova pista</button>
+        <button type="button" class="mini" id="pericia">🧪 Exame de DNA</button>
       </div>
     </div>
     <p class="aviso" id="aviso"></p>
+    <div class="filtro"><span id="restam"></span><button type="button" class="mini" id="so-suspeitos">👁️ Esconder inocentes</button></div>
     <div class="suspeitos" id="suspeitos"></div>
   </section>
 
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 28/09 · 🔄</button>
   </footer>
 </div>
 
-<dialog id="dlg-resolvido">
-  <div class="resolvido" id="resolvido"></div>
-</dialog>
+<dialog id="dlg"><div class="dlg" id="dlg-corpo"></div></dialog>
 
 <script>
 const DADOS = 'Bulbasaur~dh|Ivysaur~dh|Venusaur~dh|Charmander~b|Charmeleon~b|Charizard~bj|Squirtle~c|Wartortle~c|Blastoise~c|Caterpie~l|Metapod~l|Butterfree~lj|Weedle~lh|Kakuna~lh|Beedrill~lh|Pidgey~aj|Pidgeotto~aj|Pidgeot~aj|Rattata~a|Raticate~a|Spearow~aj|Fearow~aj|Ekans~h|Arbok~h|Pikachu~e|Raichu~e|Sandshrew~i|Sandslash~i|Nidoran-F~h|Nidorina~h|Nidoqueen~hi|Nidoran-M~h|Nidorino~h|Nidoking~hi|Clefairy~r|Clefable~r|Vulpix~b|Ninetales~b|Jigglypuff~ar|Wigglytuff~ar|Zubat~hj|Golbat~hj|Oddish~dh|Gloom~dh|Vileplume~dh|Paras~ld|Parasect~ld|Venonat~lh|Venomoth~lh|Diglett~i|Dugtrio~i|Meowth~a|Persian~a|Psyduck~c|Golduck~c|Mankey~g|Primeape~g|Growlithe~b|Arcanine~b|Poliwag~c|Poliwhirl~c|Poliwrath~cg|Abra~k|Kadabra~k|Alakazam~k|Machop~g|Machoke~g|Machamp~g|Bellsprout~dh|Weepinbell~dh|Victreebel~dh|Tentacool~ch|Tentacruel~ch|Geodude~mi|Graveler~mi|Golem~mi|Ponyta~b|Rapidash~b|Slowpoke~ck|Slowbro~ck|Magnemite~eq|Magneton~eq|Farfetch’d~aj|Doduo~aj|Dodrio~aj|Seel~c|Dewgong~cf|Grimer~h|Muk~h|Shellder~c|Cloyster~cf|Gastly~nh|Haunter~nh|Gengar~nh|Onix~mi|Drowzee~k|Hypno~k|Krabby~c|Kingler~c|Voltorb~e|Electrode~e|Exeggcute~dk|Exeggutor~dk|Cubone~i|Marowak~i|Hitmonlee~g|Hitmonchan~g|Lickitung~a|Koffing~h|Weezing~h|Rhyhorn~im|Rhydon~im|Chansey~a|Tangela~d|Kangaskhan~a|Horsea~c|Seadra~c|Goldeen~c|Seaking~c|Staryu~c|Starmie~ck|Mr. Mime~kr|Scyther~lj|Jynx~fk|Electabuzz~e|Magmar~b|Pinsir~l|Tauros~a|Magikarp~c|Gyarados~cj|Lapras~cf|Ditto~a|Eevee~a|Vaporeon~c|Jolteon~e|Flareon~b|Porygon~a|Omanyte~mc|Omastar~mc|Kabuto~mc|Kabutops~mc|Aerodactyl~mj|Snorlax~a|Articuno~fj|Zapdos~ej|Moltres~bj|Dratini~o|Dragonair~o|Dragonite~oj|Mewtwo~k|Mew~k|Chikorita~d|Bayleef~d|Meganium~d|Cyndaquil~b|Quilava~b|Typhlosion~b|Totodile~c|Croconaw~c|Feraligatr~c|Sentret~a|Furret~a|Hoothoot~aj|Noctowl~aj|Ledyba~lj|Ledian~lj|Spinarak~lh|Ariados~lh|Crobat~hj|Chinchou~ce|Lanturn~ce|Pichu~e|Cleffa~r|Igglybuff~ar|Togepi~r|Togetic~rj|Natu~kj|Xatu~kj|Mareep~e|Flaaffy~e|Ampharos~e|Bellossom~d|Marill~cr|Azumarill~cr|Sudowoodo~m|Politoed~c|Hoppip~dj|Skiploom~dj|Jumpluff~dj|Aipom~a|Sunkern~d|Sunflora~d|Yanma~lj|Wooper~ci|Quagsire~ci|Espeon~k|Umbreon~p|Murkrow~pj|Slowking~ck|Misdreavus~n|Unown~k|Wobbuffet~k|Girafarig~ak|Pineco~l|Forretress~lq|Dunsparce~a|Gligar~ij|Steelix~qi|Snubbull~r|Granbull~r|Qwilfish~ch|Scizor~lq|Shuckle~lm|Heracross~lg|Sneasel~pf|Teddiursa~a|Ursaring~a|Slugma~b|Magcargo~bm|Swinub~fi|Piloswine~fi|Corsola~cm|Remoraid~c|Octillery~c|Delibird~fj|Mantine~cj|Skarmory~qj|Houndour~pb|Houndoom~pb|Kingdra~co|Phanpy~i|Donphan~i|Porygon2~a|Stantler~a|Smeargle~a|Tyrogue~g|Hitmontop~g|Smoochum~fk|Elekid~e|Magby~b|Miltank~a|Blissey~a|Raikou~e|Entei~b|Suicune~c|Larvitar~mi|Pupitar~mi|Tyranitar~mp|Lugia~kj|Ho-Oh~bj|Celebi~kd|Treecko~d|Grovyle~d|Sceptile~d|Torchic~b|Combusken~bg|Blaziken~bg|Mudkip~c|Marshtomp~ci|Swampert~ci|Poochyena~p|Mightyena~p|Zigzagoon~a|Linoone~a|Wurmple~l|Silcoon~l|Beautifly~lj|Cascoon~l|Dustox~lh|Lotad~cd|Lombre~cd|Ludicolo~cd|Seedot~d|Nuzleaf~dp|Shiftry~dp|Taillow~aj|Swellow~aj|Wingull~cj|Pelipper~cj|Ralts~kr|Kirlia~kr|Gardevoir~kr|Surskit~lc|Masquerain~lj|Shroomish~d|Breloom~dg|Slakoth~a|Vigoroth~a|Slaking~a|Nincada~li|Ninjask~lj|Shedinja~ln|Whismur~a|Loudred~a|Exploud~a|Makuhita~g|Hariyama~g|Azurill~ar|Nosepass~m|Skitty~a|Delcatty~a|Sableye~pn|Mawile~qr|Aron~qm|Lairon~qm|Aggron~qm|Meditite~gk|Medicham~gk|Electrike~e|Manectric~e|Plusle~e|Minun~e|Volbeat~l|Illumise~l|Roselia~dh|Gulpin~h|Swalot~h|Carvanha~cp|Sharpedo~cp|Wailmer~c|Wailord~c|Numel~bi|Camerupt~bi|Torkoal~b|Spoink~k|Grumpig~k|Spinda~a|Trapinch~i|Vibrava~io|Flygon~io|Cacnea~d|Cacturne~dp|Swablu~aj|Altaria~oj|Zangoose~a|Seviper~h|Lunatone~mk|Solrock~mk|Barboach~ci|Whiscash~ci|Corphish~c|Crawdaunt~cp|Baltoy~ik|Claydol~ik|Lileep~md|Cradily~md|Anorith~ml|Armaldo~ml|Feebas~c|Milotic~c|Castform~a|Kecleon~a|Shuppet~n|Banette~n|Duskull~n|Dusclops~n|Tropius~dj|Chimecho~k|Absol~p|Wynaut~k|Snorunt~f|Glalie~f|Spheal~fc|Sealeo~fc|Walrein~fc|Clamperl~c|Huntail~c|Gorebyss~c|Relicanth~cm|Luvdisc~c|Bagon~o|Shelgon~o|Salamence~oj|Beldum~qk|Metang~qk|Metagross~qk|Regirock~m|Regice~f|Registeel~q|Latias~ok|Latios~ok|Kyogre~c|Groudon~i|Rayquaza~oj|Jirachi~qk|Deoxys~k|Turtwig~d|Grotle~d|Torterra~di|Chimchar~b|Monferno~bg|Infernape~bg|Piplup~c|Prinplup~c|Empoleon~cq|Starly~aj|Staravia~aj|Staraptor~aj|Bidoof~a|Bibarel~ac|Kricketot~l|Kricketune~l|Shinx~e|Luxio~e|Luxray~e|Budew~dh|Roserade~dh|Cranidos~m|Rampardos~m|Shieldon~mq|Bastiodon~mq|Burmy~l|Wormadam~ld|Mothim~lj|Combee~lj|Vespiquen~lj|Pachirisu~e|Buizel~c|Floatzel~c|Cherubi~d|Cherrim~d|Shellos~c|Gastrodon~ci|Ambipom~a|Drifloon~nj|Drifblim~nj|Buneary~a|Lopunny~a|Mismagius~n|Honchkrow~pj|Glameow~a|Purugly~a|Chingling~k|Stunky~hp|Skuntank~hp|Bronzor~qk|Bronzong~qk|Bonsly~m|Mime Jr.~kr|Happiny~a|Chatot~aj|Spiritomb~np|Gible~oi|Gabite~oi|Garchomp~oi|Munchlax~a|Riolu~g|Lucario~gq|Hippopotas~i|Hippowdon~i|Skorupi~hl|Drapion~hp|Croagunk~hg|Toxicroak~hg|Carnivine~d|Finneon~c|Lumineon~c|Mantyke~cj|Snover~df|Abomasnow~df|Weavile~pf|Magnezone~eq|Lickilicky~a|Rhyperior~im|Tangrowth~d|Electivire~e|Magmortar~b|Togekiss~rj|Yanmega~lj|Leafeon~d|Glaceon~f|Gliscor~ij|Mamoswine~fi|Porygon-Z~a|Gallade~kg|Probopass~mq|Dusknoir~n|Froslass~fn|Rotom~en|Uxie~k|Mesprit~k|Azelf~k|Dialga~qo|Palkia~co|Heatran~bq|Regigigas~a|Giratina~no|Cresselia~k|Phione~c|Manaphy~c|Darkrai~p|Shaymin~d|Arceus~a|Victini~kb|Snivy~d|Servine~d|Serperior~d|Tepig~b|Pignite~bg|Emboar~bg|Oshawott~c|Dewott~c|Samurott~c|Patrat~a|Watchog~a|Lillipup~a|Herdier~a|Stoutland~a|Purrloin~p|Liepard~p|Pansage~d|Simisage~d|Pansear~b|Simisear~b|Panpour~c|Simipour~c|Munna~k|Musharna~k|Pidove~aj|Tranquill~aj|Unfezant~aj|Blitzle~e|Zebstrika~e|Roggenrola~m|Boldore~m|Gigalith~m|Woobat~kj|Swoobat~kj|Drilbur~i|Excadrill~iq|Audino~a|Timburr~g|Gurdurr~g|Conkeldurr~g|Tympole~c|Palpitoad~ci|Seismitoad~ci|Throh~g|Sawk~g|Sewaddle~ld|Swadloon~ld|Leavanny~ld|Venipede~lh|Whirlipede~lh|Scolipede~lh|Cottonee~dr|Whimsicott~dr|Petilil~d|Lilligant~d|Basculin~c|Sandile~ip|Krokorok~ip|Krookodile~ip|Darumaka~b|Darmanitan~b|Maractus~d|Dwebble~lm|Crustle~lm|Scraggy~pg|Scrafty~pg|Sigilyph~kj|Yamask~n|Cofagrigus~n|Tirtouga~cm|Carracosta~cm|Archen~mj|Archeops~mj|Trubbish~h|Garbodor~h|Zorua~p|Zoroark~p|Minccino~a|Cinccino~a|Gothita~k|Gothorita~k|Gothitelle~k|Solosis~k|Duosion~k|Reuniclus~k|Ducklett~cj|Swanna~cj|Vanillite~f|Vanillish~f|Vanilluxe~f|Deerling~ad|Sawsbuck~ad|Emolga~ej|Karrablast~l|Escavalier~lq|Foongus~dh|Amoonguss~dh|Frillish~cn|Jellicent~cn|Alomomola~c|Joltik~le|Galvantula~le|Ferroseed~dq|Ferrothorn~dq|Klink~q|Klang~q|Klinklang~q|Tynamo~e|Eelektrik~e|Eelektross~e|Elgyem~k|Beheeyem~k|Litwick~nb|Lampent~nb|Chandelure~nb|Axew~o|Fraxure~o|Haxorus~o|Cubchoo~f|Beartic~f|Cryogonal~f|Shelmet~l|Accelgor~l|Stunfisk~ie|Mienfoo~g|Mienshao~g|Druddigon~o|Golett~in|Golurk~in|Pawniard~pq|Bisharp~pq|Bouffalant~a|Rufflet~aj|Braviary~aj|Vullaby~pj|Mandibuzz~pj|Heatmor~b|Durant~lq|Deino~po|Zweilous~po|Hydreigon~po|Larvesta~lb|Volcarona~lb|Cobalion~qg|Terrakion~mg|Virizion~dg|Tornadus~j|Thundurus~ej|Reshiram~ob|Zekrom~oe|Landorus~ij|Kyurem~of|Keldeo~cg|Meloetta~ak|Genesect~lq|Chespin~d|Quilladin~d|Chesnaught~dg|Fennekin~b|Braixen~b|Delphox~bk|Froakie~c|Frogadier~c|Greninja~cp|Bunnelby~a|Diggersby~ai|Fletchling~aj|Fletchinder~bj|Talonflame~bj|Scatterbug~l|Spewpa~l|Vivillon~lj|Litleo~ba|Pyroar~ba|Flabébé~r|Floette~r|Florges~r|Skiddo~d|Gogoat~d|Pancham~g|Pangoro~gp|Furfrou~a|Espurr~k|Meowstic~k|Honedge~qn|Doublade~qn|Aegislash~qn|Spritzee~r|Aromatisse~r|Swirlix~r|Slurpuff~r|Inkay~pk|Malamar~pk|Binacle~mc|Barbaracle~mc|Skrelp~hc|Dragalge~ho|Clauncher~c|Clawitzer~c|Helioptile~ea|Heliolisk~ea|Tyrunt~mo|Tyrantrum~mo|Amaura~mf|Aurorus~mf|Sylveon~r|Hawlucha~gj|Dedenne~er|Carbink~mr|Goomy~o|Sliggoo~o|Goodra~o|Klefki~qr|Phantump~nd|Trevenant~nd|Pumpkaboo~nd|Gourgeist~nd|Bergmite~f|Avalugg~f|Noibat~jo|Noivern~jo|Xerneas~r|Yveltal~pj|Zygarde~oi|Diancie~mr|Hoopa~kn|Volcanion~bc|Rowlet~dj|Dartrix~dj|Decidueye~dn|Litten~b|Torracat~b|Incineroar~bp|Popplio~c|Brionne~c|Primarina~cr|Pikipek~aj|Trumbeak~aj|Toucannon~aj|Yungoos~a|Gumshoos~a|Grubbin~l|Charjabug~le|Vikavolt~le|Crabrawler~g|Crabominable~gf|Oricorio~bj|Cutiefly~lr|Ribombee~lr|Rockruff~m|Lycanroc~m|Wishiwashi~c|Mareanie~hc|Toxapex~hc|Mudbray~i|Mudsdale~i|Dewpider~cl|Araquanid~cl|Fomantis~d|Lurantis~d|Morelull~dr|Shiinotic~dr|Salandit~hb|Salazzle~hb|Stufful~ag|Bewear~ag|Bounsweet~d|Steenee~d|Tsareena~d|Comfey~r|Oranguru~ak|Passimian~g|Wimpod~lc|Golisopod~lc|Sandygast~ni|Palossand~ni|Pyukumuku~c|Type: Null~a|Silvally~a|Minior~mj|Komala~a|Turtonator~bo|Togedemaru~eq|Mimikyu~nr|Bruxish~ck|Drampa~ao|Dhelmise~nd|Jangmo-o~o|Hakamo-o~og|Kommo-o~og|Tapu Koko~er|Tapu Lele~kr|Tapu Bulu~dr|Tapu Fini~cr|Cosmog~k|Cosmoem~k|Solgaleo~kq|Lunala~kn|Nihilego~mh|Buzzwole~lg|Pheromosa~lg|Xurkitree~e|Celesteela~qj|Kartana~dq|Guzzlord~po|Necrozma~k|Magearna~qr|Marshadow~gn|Poipole~h|Naganadel~ho|Stakataka~mq|Blacephalon~bn|Zeraora~e|Meltan~q|Melmetal~q|Grookey~d|Thwackey~d|Rillaboom~d|Scorbunny~b|Raboot~b|Cinderace~b|Sobble~c|Drizzile~c|Inteleon~c|Skwovet~a|Greedent~a|Rookidee~j|Corvisquire~j|Corviknight~jq|Blipbug~l|Dottler~lk|Orbeetle~lk|Nickit~p|Thievul~p|Gossifleur~d|Eldegoss~d|Wooloo~a|Dubwool~a|Chewtle~c|Drednaw~cm|Yamper~e|Boltund~e|Rolycoly~m|Carkol~mb|Coalossal~mb|Applin~do|Flapple~do|Appletun~do|Silicobra~i|Sandaconda~i|Cramorant~jc|Arrokuda~c|Barraskewda~c|Toxel~eh|Toxtricity~eh|Sizzlipede~bl|Centiskorch~bl|Clobbopus~g|Grapploct~g|Sinistea~n|Polteageist~n|Hatenna~k|Hattrem~k|Hatterene~kr|Impidimp~pr|Morgrem~pr|Grimmsnarl~pr|Obstagoon~pa|Perrserker~q|Cursola~n|Sirfetch’d~g|Mr. Rime~fk|Runerigus~in|Milcery~r|Alcremie~r|Falinks~g|Pincurchin~e|Snom~fl|Frosmoth~fl|Stonjourner~m|Eiscue~f|Indeedee~ka|Morpeko~ep|Cufant~q|Copperajah~q|Dracozolt~eo|Arctozolt~ef|Dracovish~co|Arctovish~cf|Duraludon~qo|Dreepy~on|Drakloak~on|Dragapult~on|Zacian~r|Zamazenta~g|Eternatus~ho|Kubfu~g|Urshifu~gp|Zarude~pd|Regieleki~e|Regidrago~o|Glastrier~f|Spectrier~n|Calyrex~kd|Wyrdeer~ak|Kleavor~lm|Ursaluna~ia|Basculegion~cn|Sneasler~gh|Overqwil~ph|Enamorus~rj|Sprigatito~d|Floragato~d|Meowscarada~dp|Fuecoco~b|Crocalor~b|Skeledirge~bn|Quaxly~c|Quaxwell~c|Quaquaval~cg|Lechonk~a|Oinkologne~a|Tarountula~l|Spidops~l|Nymble~l|Lokix~lp|Pawmi~e|Pawmo~eg|Pawmot~eg|Tandemaus~a|Maushold~a|Fidough~r|Dachsbun~r|Smoliv~da|Dolliv~da|Arboliva~da|Squawkabilly~aj|Nacli~m|Naclstack~m|Garganacl~m|Charcadet~b|Armarouge~bk|Ceruledge~bn|Tadbulb~e|Bellibolt~e|Wattrel~ej|Kilowattrel~ej|Maschiff~p|Mabosstiff~p|Shroodle~ha|Grafaiai~ha|Bramblin~dn|Brambleghast~dn|Toedscool~id|Toedscruel~id|Klawf~m|Capsakid~d|Scovillain~db|Rellor~l|Rabsca~lk|Flittle~k|Espathra~k|Tinkatink~rq|Tinkatuff~rq|Tinkaton~rq|Wiglett~c|Wugtrio~c|Bombirdier~jp|Finizen~c|Palafin~c|Varoom~qh|Revavroom~qh|Cyclizar~oa|Orthworm~q|Glimmet~mh|Glimmora~mh|Greavard~n|Houndstone~n|Flamigo~jg|Cetoddle~f|Cetitan~f|Veluza~ck|Dondozo~c|Tatsugiri~oc|Annihilape~gn|Clodsire~hi|Farigiraf~ak|Dudunsparce~a|Kingambit~pq|Great Tusk~ig|Scream Tail~rk|Brute Bonnet~dp|Flutter Mane~nr|Slither Wing~lg|Sandy Shocks~ei|Iron Treads~iq|Iron Bundle~fc|Iron Hands~ge|Iron Jugulis~pj|Iron Moth~bh|Iron Thorns~me|Frigibax~of|Arctibax~of|Baxcalibur~of|Gimmighoul~n|Gholdengo~qn|Wo-Chien~pd|Chien-Pao~pf|Ting-Lu~pi|Chi-Yu~pb|Roaring Moon~op|Iron Valiant~rg|Koraidon~go|Miraidon~eo|Walking Wake~co|Iron Leaves~dk|Dipplin~do|Poltchageist~dn|Sinistcha~dn|Okidogi~hg|Munkidori~hk|Fezandipiti~hr|Ogerpon~d|Archaludon~qo|Hydrapple~do|Gouging Fire~bo|Raging Bolt~eo|Iron Boulder~mk|Iron Crown~qk|Terapagos~a|Pecharunt~hn';
@@ -274,38 +348,92 @@ const REGIOES = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola',
 const $ = id => document.getElementById(id);
 const arte = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 const mini = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-const ALCREMIE = 869;
+const ALCREMIE = 869, MILCERY = 868, ALC_VMAX = 10223;
 function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('detetive:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
 function gravar(k, v){ try{ localStorage.setItem('detetive:' + k, JSON.stringify(v)); }catch(e){} }
 const embaralhar = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sorteia = a => a[Math.floor(Math.random() * a.length)];
 const num = x => x.toLocaleString('pt-BR');
 const kg = p => num(p.peso / 10) + ' kg', metros = p => num(p.alt / 10) + ' m';
+const numCaso = n => '#' + String(n).padStart(4, '0');
+
+/* ---------- 🕵️ quem você é ---------- */
+const DETETIVES = [25, 133, 448, 58, 54, 164, 197, 196, 658, 4, 7, 1, 150, 94, 906, 282, 700, 143];
 
 /* ---------- guardado ---------- */
-const cfg = Object.assign({ nivel:'facil', som:true }, ler('cfg', {}));
+const cfg = Object.assign({ nivel:'facil', som:true, esconder:false, detetive:25 }, ler('cfg', {}));
 if(!['facil', 'medio', 'dificil'].includes(cfg.nivel)) cfg.nivel = 'facil';
-const stats = Object.assign({ casos:0, estrelas:0, pontos:0, seq:0, melhorSeq:0, perfeitos:0, dificil:0, medio:0, rapidos:0, lendarios:0, lupas:0, semLupa:0, presos:{} }, ler('stats', {}));
+if(!DETETIVES.includes(cfg.detetive)) cfg.detetive = 25;
+const stats = Object.assign({ casos:0, estrelas:0, pontos:0, seq:0, melhorSeq:0, perfeitos:0, dificil:0, medio:0, rapidos:0, lendarios:0, lupas:0, semLupa:0,
+  interrogatorios:0, especiais:0, presos:{}, cenas:[] }, ler('stats', {}));
 if(!stats.presos || typeof stats.presos !== 'object') stats.presos = {};
+if(!Array.isArray(stats.cenas)) stats.cenas = [];
 const salvar = () => gravar('stats', stats);
 
-/* ---------- as histórias ---------- */
-const LUGARES = ['da festa de aniversário', 'da confeitaria', 'do piquenique no parque', 'da cozinha do Centro Pokémon', 'da vitrine da padaria',
-  'da festa da escola', 'do concurso de bolos', 'da mesa do café da manhã', 'do casamento', 'da festa do pijama', 'da geladeira', 'do trem'];
-const CONFISSOES = ['Foi mal… ela tava tão cheirosa que eu não resisti! 🤤', 'Eu só queria um pedacinho… 😅', 'Eu ia devolver, juro! 🙈',
-  'Eu achei que era a MINHA festa! 🥳', 'Tava com muita fome depois da batalha! 😋', 'Eu queria fazer uma festa surpresa pra ela! 🎉',
-  'Ela é tão fofa que eu queria abraçar! 🤗', 'Eu queria saber se ela era de morango… 🍓', 'Ela tava sozinha, eu fui fazer companhia! 😇',
-  'Desculpa! Eu nunca tinha visto um bolo tão grande! 😲'];
-/* rastro que cada tipo deixa */
+/* ---------- personagens especiais: vêm junto dos 10, mas quase nunca são culpados ---------- */
+const EEVEE = 133;
+const ESPECIAIS = [143, 132, 54, 52, 39, 79, 446, 175, 25];   // Snorlax, Ditto, Psyduck, Meowth, Jigglypuff, Slowpoke, Munchlax, Togepi, Pikachu
+const CHANCE_ESPECIAL = 0.000001;   // 0,0001% = 1 em 1 milhão
+
+/* ---------- o relatório ---------- */
+const LUGARES = [['Confeitaria Doce Creme', 'na vitrine principal'], ['Centro Pokémon da cidade', 'no balcão da recepção'], ['Salão de festas do ginásio', 'na mesa do bufê'],
+  ['Estação de trem', 'no vagão-restaurante'], ['Escola de Treinadores', 'na sala dos professores'], ['Parque Central', 'na mesa do piquenique'],
+  ['Museu de Doces Históricos', 'na sala de exposição'], ['Farol do porto', 'na cozinha do farol'], ['Hotel Estrela', 'no salão de baile'],
+  ['Concurso Nacional de Bolos', 'no palco dos finalistas'], ['Laboratório Pokémon', 'na geladeira do laboratório'], ['Navio de cruzeiro', 'no restaurante do convés']];
+const CLIMA = ['chuva forte', 'neblina densa', 'noite sem lua', 'vento gelado', 'tempestade com raios', 'céu limpo e estrelado', 'garoa fina'];
+const QUEM_ACHOU = ['a Chansey da recepção', 'o segurança Machoke', 'a garçonete Audino', 'o confeiteiro Slurpuff', 'o faxineiro Trubbish', 'a organizadora Blissey'];
+const ACHADO = ['só uma bandeja vazia e migalhas de creme', 'a caixa de vidro aberta e sem nenhuma marca na porta', 'um rastro de creme que sumia na saída de emergência',
+  'uma cadeira caída e cobertura espalhada no chão', 'a toalha da mesa puxada e uma cereja esquecida', 'a janela aberta e o alarme desligado'];
 const RASTRO = [
-  'Achamos um pelinho bem comum no chão', 'A toalha da mesa ficou queimada', 'Tinha pegadas molhadas por todo lado', 'Tinha folhas e florzinhas pelo chão',
-  'As luzes da festa piscaram e deu choque na maçaneta', 'A janela ficou congelada', 'Tinha marcas de soco na porta', 'Tinha uma gosma roxa no chão',
-  'Tinha terra e um buraco no chão', 'Tinha penas perto da janela', 'As colheres ficaram entortadas sozinhas', 'Tinha uma teia na porta',
-  'Tinha pedrinhas no caminho', 'Alguém atravessou a parede sem abrir a porta', 'Tinha uma escama brilhante de dragão', 'Alguém apagou todas as luzes',
-  'Tinha parafusos e cheiro de metal', 'Tinha brilhinhos cor-de-rosa no ar'];
+  'Um pelo curto e comum foi achado na cena', 'A toalha da mesa tinha marcas de queimado', 'Havia pegadas molhadas por todo o salão', 'Folhas e pólen foram encontrados no chão',
+  'O alarme sofreu um curto-circuito', 'A maçaneta estava congelada', 'A porta tinha marcas de golpes', 'Uma gosma roxa foi achada no chão',
+  'Havia terra e um buraco perto da mesa', 'Penas foram encontradas perto da janela', 'As colheres foram entortadas sem ninguém tocar', 'Fios de teia estavam presos na porta',
+  'Pedrinhas estavam espalhadas no caminho', 'O culpado atravessou a parede sem abrir a porta', 'Uma escama de dragão foi encontrada', 'As luzes foram apagadas de propósito',
+  'Havia parafusos e cheiro de metal', 'Um pó brilhante cor-de-rosa foi achado no ar'];
+const ALIBIS = ['treinando no ginásio', 'dormindo em casa', 'na fila do Centro Pokémon', 'pescando no lago', 'na aula de dança', 'jantando com a família',
+  'assistindo a uma batalha', 'no treino de corrida', 'ajudando na biblioteca', 'no cinema', 'cuidando do jardim', 'na aula de música'];
+const ALIBI_FRACO = ['Eu… eu estava passeando sozinho. Ninguém me viu.', 'Eu estava em casa. Sozinho. Por quê?', 'Não lembro direito… acho que estava dormindo.',
+  'Eu estava por aí. Isso é crime agora?', 'Estava dando uma volta. Não precisa me olhar assim.'];
+const CONFISSOES = ['Tá bom… fui eu. O cheiro de creme era forte demais pra resistir.', 'Eu só queria um pedaço… e quando vi, já tinha levado ela inteira.',
+  'Eu ia devolver antes de alguém perceber. Juro.', 'Achei que ninguém ia notar no meio da confusão.', 'Eu estava com fome depois de um dia inteiro de batalhas.',
+  'Eu queria fazer uma festa só pra mim. Foi errado, eu sei.', 'Nunca tinha visto um bolo tão grande. Perdi a cabeça.'];
+const SENTENCAS = ['vai ajudar a limpar a confeitaria por uma semana', 'vai lavar a louça da festa inteira', 'vai ajudar o confeiteiro a fazer um bolo novo',
+  'vai pedir desculpas pra Alcremie VMAX na frente de todos', 'vai ficar sem sobremesa por um mês'];
+
+/* ---------- 📹 as 10 gravações: o vulto (igual pra todo mundo) levando a Alcremie VMAX ----------
+   s = quadros do vulto [momento, esquerda%, topo%, {o:opacidade, r:giro}]; pega = momento em que agarra o bolo */
+const CENAS = [
+  { nome:'Entrou correndo e fugiu', pega:.5, s:[[0, -30, 38], [.35, 40, 38], [.5, 40, 38], [1, 125, 38]] },
+  { nome:'Desceu pelo teto', pega:.5, s:[[0, 40, -70], [.35, 40, 38], [.5, 40, 38], [1, 40, -80]] },
+  { nome:'Saiu de um buraco no chão', pega:.5, s:[[0, 40, 110], [.35, 40, 38], [.5, 40, 38], [1, 40, 115]] },
+  { nome:'Apagou as luzes', pega:.5, luz:[[0, 0], [.22, 0], [.26, 1], [.66, 1], [.7, 0], [1, 0]], s:[[0, -30, 38], [.3, 40, 38], [.5, 40, 38], [.7, 75, 38], [1, 125, 38]] },
+  { nome:'Pulou pela janela', pega:.5, s:[[0, 10, 0, { o:0 }], [.08, 12, 5], [.2, 25, 20], [.35, 40, 38], [.5, 40, 38], [.62, 25, 20], [.75, 12, 6], [.85, 10, 0, { o:0 }], [1, 10, 0, { o:0 }]] },
+  { nome:'Nas pontinhas dos pés', pega:.65, s:[[0, -30, 40], [.2, 0, 38], [.4, 20, 40], [.55, 40, 38], [.65, 40, 38], [1, 125, 38]] },
+  { nome:'Teletransporte', pega:.5, s:[[0, 40, 38, { o:0 }], [.1, 40, 38, { o:1 }], [.14, 40, 38, { o:0 }], [.2, 40, 38, { o:1 }], [.5, 40, 38, { o:1 }], [.6, 40, 38, { o:0 }], [.65, 40, 38, { o:1 }], [.75, 40, 38, { o:0 }], [1, 40, 38, { o:0 }]] },
+  { nome:'Deslizou pelo chão', pega:.45, s:[[0, -30, 42, { r:-20 }], [.4, 40, 40, { r:0 }], [.45, 40, 38], [1, 130, 42, { r:25 }]] },
+  { nome:'Voou em círculos', pega:.5, s:[[0, -30, -20], [.15, 10, 10], [.3, 30, 30], [.38, 40, 38], [.5, 40, 38], [.62, 70, 10], [.75, 40, -5], [.87, 15, 10], [1, -40, -50]] },
+  { nome:'Trocou por uma caixa', pega:.5, caixa:true, s:[[0, -30, 38], [.35, 40, 38], [.5, 40, 38], [1, -40, 38]] }];
+function rodarCena(){
+  if(!caso) return;
+  const C = CENAS[caso.cena], v = $('c-vulto'), b = $('c-bolo'), luz = $('c-luz'), cx = $('c-caixa'), fim = $('c-sumiu');
+  [v, b, luz, cx, fim].forEach(el => el.getAnimations().forEach(a => a.cancel()));
+  $('c-hora').textContent = `CAM 02 · ${caso.hora}`; $('cam-titulo').textContent = `📹 Gravação ${caso.cena + 1} de 10: ${C.nome}`;
+  const q = ([o, l, t, x]) => ({ offset:o, left:l + '%', top:t + '%', opacity:x && x.o != null ? x.o : 1, transform:`rotate(${x && x.r || 0}deg)` });
+  const sq = C.s.map(q);
+  const bq = [{ offset:0, left:'58%', top:'20%', opacity:1 }, { offset:C.pega, left:'58%', top:'20%', opacity:1 },
+    ...C.s.filter(k => k[0] > C.pega).map(([o, l, t, x]) => ({ offset:o, left:(l + 8) + '%', top:(t - 14) + '%', opacity:x && x.o != null ? x.o : 1 }))];
+  const dur = 5200, op = { duration:dur, fill:'both', easing:'linear' };
+  v.animate(sq, op); b.animate(bq, op);
+  luz.animate(C.luz ? C.luz.map(([o, x]) => ({ offset:o, opacity:x })) : [{ opacity:0 }, { opacity:0 }], op);
+  cx.animate(C.caixa ? [{ offset:0, opacity:0 }, { offset:C.pega, opacity:0 }, { offset:C.pega + .02, opacity:1 }, { offset:1, opacity:1 }] : [{ opacity:0 }, { opacity:0 }], op);
+  fim.animate([{ offset:0, opacity:0 }, { offset:.9, opacity:0 }, { offset:1, opacity:1 }], op);
+  clearTimeout(caso.timerSom); caso.timerSom = setTimeout(() => tocar([700, 420], .1, 'sine', .12), dur * C.pega);
+}
+$('rever').onclick = rodarCena;
 
 /* ---------- montar o caso: escolhe suspeitos e inventa pistas até só sobrar um ---------- */
-const NIVEIS = { facil:{ n:4, mult:1, base:() => FAMOSOS.map(i => POKE[i - 1]) }, medio:{ n:6, mult:1.5, base:() => POKE.filter(p => p.ger <= 4) }, dificil:{ n:8, mult:2, base:() => POKE } };
+const NIVEIS = { facil:{ mult:1, min:3, max:7, base:() => FAMOSOS.map(i => POKE[i - 1]) }, medio:{ mult:1.5, min:4, max:9, base:() => POKE.filter(p => p.ger <= 4) },
+  dificil:{ mult:2, min:5, max:10, base:() => POKE } };
 const PESOS = [0.5, 1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100, 150, 200, 300, 500, 800];
 const ALTURAS = [0.2, 0.3, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 8, 10];
 function limiar(a, b, bonitos){   // um número bonito entre a e b
@@ -315,128 +443,193 @@ function limiar(a, b, bonitos){   // um número bonito entre a e b
   for(const casas of [10, 100]){ const t = Math.round((lo + hi) / 2 * casas) / casas; if(t > lo && t < hi) return t; }
   return (lo + hi) / 2;
 }
+/* cada pista: txt (o que a perícia escreve), fato (o que uma testemunha fala), f (quem passa na pista) */
 function pistasPossiveis(c, sus){
-  const L = [];
-  const outros = sus.filter(s => s !== c);
-  c.tipos.forEach(t => L.push({ cat:'tipo', txt:`${TIPOS[t][1]} ${RASTRO[t]}: o culpado é do tipo <b>${TIPOS[t][0]}</b>.`, f:p => p.tipos.includes(t) }));
-  new Set(outros.flatMap(s => s.tipos)).forEach(t => { if(!c.tipos.includes(t)) L.push({ cat:'tipo', txt:`🚫 A testemunha tem certeza: o culpado <b>não</b> é do tipo ${TIPOS[t][1]} ${TIPOS[t][0]}.`, f:p => !p.tipos.includes(t) }); });
-  L.push({ cat:'cor', txt:`🎨 A vizinha viu um vulto <b>${CORES[c.cor][0].toLowerCase()}</b> saindo correndo.`, f:p => p.cor === c.cor });
-  new Set(outros.map(s => s.cor)).forEach(k => { if(k !== c.cor) L.push({ cat:'cor', txt:`🎨 O vulto que fugiu <b>não era ${CORES[k][0].toLowerCase()}</b>.`, f:p => p.cor !== k }); });
+  const L = [], outros = sus.filter(s => s !== c);
+  c.tipos.forEach(t => L.push({ cat:'tipo', txt:`${TIPOS[t][1]} ${RASTRO[t]}. Conclusão: o culpado é do tipo <b>${TIPOS[t][0]}</b>.`, fato:`era do tipo <b>${TIPOS[t][0]}</b>`, f:p => p.tipos.includes(t) }));
+  new Set(outros.flatMap(s => s.tipos)).forEach(t => { if(!c.tipos.includes(t)) L.push({ cat:'tipo', txt:`🚫 Nenhum sinal do tipo ${TIPOS[t][1]} ${TIPOS[t][0]} na cena. O culpado <b>não é do tipo ${TIPOS[t][0]}</b>.`, fato:`com certeza <b>não era do tipo ${TIPOS[t][0]}</b>`, f:p => !p.tipos.includes(t) }); });
+  L.push({ cat:'cor', txt:`🎨 Uma segunda câmera, colorida, pegou um pedaço <b>${CORES[c.cor][0].toLowerCase()}</b> do culpado.`, fato:`era <b>${CORES[c.cor][0].toLowerCase()}</b>`, f:p => p.cor === c.cor });
+  new Set(outros.map(s => s.cor)).forEach(k => { if(k !== c.cor) L.push({ cat:'cor', txt:`🎨 Pela câmera colorida, o culpado <b>não era ${CORES[k][0].toLowerCase()}</b>.`, fato:`<b>não era ${CORES[k][0].toLowerCase()}</b>`, f:p => p.cor !== k }); });
   outros.forEach(s => {
     if(s.peso !== c.peso){ const t = limiar(c.peso / 10, s.peso / 10, PESOS);
-      L.push(c.peso / 10 > t ? { cat:'peso', txt:`⚖️ O banco quase quebrou: o culpado pesa <b>mais de ${num(t)} kg</b>.`, f:p => p.peso / 10 > t }
-                             : { cat:'peso', txt:`🪶 Nem amassou a toalha: o culpado pesa <b>menos de ${num(t)} kg</b>.`, f:p => p.peso / 10 < t }); }
+      L.push(c.peso / 10 > t ? { cat:'peso', txt:`⚖️ As marcas no piso indicam que o culpado pesa <b>mais de ${num(t)} kg</b>.`, fato:`era pesado, <b>mais de ${num(t)} kg</b>`, f:p => p.peso / 10 > t }
+                             : { cat:'peso', txt:`🪶 O piso de madeira nem rangeu: o culpado pesa <b>menos de ${num(t)} kg</b>.`, fato:`era leve, <b>menos de ${num(t)} kg</b>`, f:p => p.peso / 10 < t }); }
     if(s.alt !== c.alt){ const t = limiar(c.alt / 10, s.alt / 10, ALTURAS);
-      L.push(c.alt / 10 > t ? { cat:'alt', txt:`📏 A Alcremie estava numa prateleira alta: o culpado tem <b>mais de ${num(t)} m</b>.`, f:p => p.alt / 10 > t }
-                            : { cat:'alt', txt:`🚪 Passou pela portinha do gato: o culpado tem <b>menos de ${num(t)} m</b>.`, f:p => p.alt / 10 < t }); }
+      L.push(c.alt / 10 > t ? { cat:'alt', txt:`📏 A Alcremie estava numa prateleira alta. O culpado tem <b>mais de ${num(t)} m</b>.`, fato:`era alto, <b>mais de ${num(t)} m</b>`, f:p => p.alt / 10 > t }
+                            : { cat:'alt', txt:`🚪 O culpado fugiu por uma passagem estreita: tem <b>menos de ${num(t)} m</b>.`, fato:`era baixinho, <b>menos de ${num(t)} m</b>`, f:p => p.alt / 10 < t }); }
   });
-  L.push({ cat:'regiao', txt:`🗺️ Deixou cair um mapa: o culpado veio de <b>${REGIOES[c.ger - 1]}</b>.`, f:p => p.ger === c.ger });
-  new Set(outros.map(s => s.ger)).forEach(g => { if(g !== c.ger) L.push({ cat:'regiao', txt:`🗺️ O culpado <b>não é de ${REGIOES[g - 1]}</b>.`, f:p => p.ger !== g }); });
-  L.push(c.evos.length ? { cat:'evo', txt:'🧬 Deixou um bilhete: “quando eu crescer, <b>vou evoluir</b>!”', f:p => p.evos.length > 0 }
-                       : { cat:'evo', txt:'💪 O culpado <b>não evolui mais</b>: já está na forma final.', f:p => !p.evos.length });
+  L.push({ cat:'regiao', txt:`🗺️ Um bilhete de trem foi achado na cena: o culpado veio de <b>${REGIOES[c.ger - 1]}</b>.`, fato:`falava com sotaque de <b>${REGIOES[c.ger - 1]}</b>`, f:p => p.ger === c.ger });
+  new Set(outros.map(s => s.ger)).forEach(g => { if(g !== c.ger) L.push({ cat:'regiao', txt:`🗺️ Os registros de viagem mostram: o culpado <b>não é de ${REGIOES[g - 1]}</b>.`, fato:`<b>não era de ${REGIOES[g - 1]}</b>`, f:p => p.ger !== g }); });
+  L.push(c.evos.length ? { cat:'evo', txt:'🧬 Pelo DNA achado, o culpado <b>ainda pode evoluir</b>.', fato:'parecia jovem, <b>ainda vai evoluir</b>', f:p => p.evos.length > 0 }
+                       : { cat:'evo', txt:'🧬 Pelo DNA achado, o culpado <b>já está na forma final</b> (não evolui mais).', fato:'parecia adulto, <b>na forma final</b>', f:p => !p.evos.length });
   const ini = c.nome[0].toUpperCase();
-  L.push({ cat:'letra', txt:`🔤 Nas migalhas estava escrita a letra <b>${ini}</b>: o nome começa com ${ini}.`, f:p => p.nome[0].toUpperCase() === ini });
-  new Set(outros.map(s => s.nome[0].toUpperCase())).forEach(l => { if(l !== ini) L.push({ cat:'letra', txt:`🔤 O nome do culpado <b>não começa com ${l}</b>.`, f:p => p.nome[0].toUpperCase() !== l }); });
+  L.push({ cat:'letra', txt:`🔤 Uma assinatura riscada foi encontrada: o nome começa com <b>${ini}</b>.`, fato:`tinha um nome começando com <b>${ini}</b>`, f:p => p.nome[0].toUpperCase() === ini });
+  new Set(outros.map(s => s.nome[0].toUpperCase())).forEach(l => { if(l !== ini) L.push({ cat:'letra', txt:`🔤 A análise da assinatura mostra: o nome <b>não começa com ${l}</b>.`, fato:`tinha um nome que <b>não começava com ${l}</b>`, f:p => p.nome[0].toUpperCase() !== l }); });
   return L;
 }
 function montarCaso(nivel){
-  const N = NIVEIS[nivel], base = N.base().filter(p => p.id !== ALCREMIE && p.id !== 868);
-  for(let tent = 0; tent < 300; tent++){
-    const sus = embaralhar(base.slice()).slice(0, N.n), c = sorteia(sus);
+  const N = NIVEIS[nivel], eu = cfg.detetive;
+  const especiais = ESPECIAIS.filter(id => id !== eu);
+  const fora = new Set([ALCREMIE, MILCERY, EEVEE, eu, ...ESPECIAIS]);
+  const base = N.base().filter(p => !fora.has(p.id));
+  for(let tent = 0; tent < 400; tent++){
+    const dez = embaralhar(base.slice()).slice(0, 10);
+    const escolhidos = eu === EEVEE ? embaralhar(especiais.slice()).slice(0, 2) : [EEVEE, sorteia(especiais)];
+    const esp = escolhidos.map(id => POKE[id - 1]);
+    const sus = [...dez, ...esp];
+    const c = Math.random() < CHANCE_ESPECIAL ? sorteia(esp) : sorteia(dez);
     const todas = pistasPossiveis(c, sus), usadas = [], cats = {};
     let resto = sus.filter(s => s !== c), deu = true;
     while(resto.length){
-      const cand = todas.filter(p => !usadas.includes(p) && (cats[p.cat] || 0) < 2).map(p => ({ p, k:resto.filter(s => !p.f(s)).length })).filter(x => x.k > 0);
+      const cand = todas.filter(p => !usadas.includes(p) && (cats[p.cat] || 0) < 3).map(p => ({ p, k:resto.filter(s => !p.f(s)).length })).filter(x => x.k > 0);
       if(!cand.length){ deu = false; break; }
       /* no fácil a pista tira bastante gente; no difícil tira pouca (precisa pensar mais) */
       let lista = cand;
       if(nivel === 'facil') lista = cand.sort((a, b) => b.k - a.k).slice(0, 3);
-      else if(nivel === 'dificil'){ const poucos = cand.filter(x => x.k <= 2); if(poucos.length && Math.random() < .75) lista = poucos; }
+      else if(nivel === 'dificil'){ const poucos = cand.filter(x => x.k <= 2); if(poucos.length && Math.random() < .6) lista = poucos; }
       const pick = sorteia(lista).p;
       usadas.push(pick); cats[pick.cat] = (cats[pick.cat] || 0) + 1; resto = resto.filter(s => pick.f(s));
     }
-    if(deu && usadas.length >= (nivel === 'facil' ? 2 : 3) && usadas.length <= 6) return { sus, culpado:c, pistas:usadas, lugar:sorteia(LUGARES) };
+    if(deu && usadas.length >= N.min && usadas.length <= N.max){
+      const [lugar, onde] = sorteia(LUGARES), h = 18 + Math.floor(Math.random() * 6), m = Math.floor(Math.random() * 60);
+      return { sus, especiais:new Set(esp.map(p => p.id)), culpado:c, pistas:usadas, todas, lugar, onde, hora:`${h}h${String(m).padStart(2, '0')}`,
+        clima:sorteia(CLIMA), achou:sorteia(QUEM_ACHOU), achado:sorteia(ACHADO), cena:Math.floor(Math.random() * CENAS.length) };
+    }
   }
   return null;
 }
 
 /* ---------- sons ---------- */
 let ac = null;
-function tocar(notas, dur, tipo){
+function tocar(notas, dur, tipo, vol){
   if(!cfg.som) return;
   try{
     ac = ac || new (window.AudioContext || window.webkitAudioContext)();
     notas.forEach((f, i) => { const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + i * dur;
-      o.type = tipo || 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.2, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + dur * .95);
+      o.type = tipo || 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol || .18, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + dur * .95);
       o.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur); });
   }catch(e){}
 }
-const somPista = () => tocar([660, 880], .08), somErro = () => tocar([220, 170], .18, 'sawtooth'), somRisca = () => tocar([400], .06, 'square');
-const somPreso = () => { tocar([660, 880, 660, 880], .16, 'square'); setTimeout(() => tocar([523, 659, 784, 1047], .13), 700); };
+const somPista = () => tocar([520, 390], .09), somErro = () => tocar([196, 147], .22, 'sawtooth', .12), somRisca = () => tocar([300], .05, 'square', .08);
+const somInter = () => tocar([262, 311, 262], .14, 'sine'), somResolvido = () => tocar([392, 466, 587, 784], .18, 'triangle');
 function grito(id){
   if(!cfg.som) return;
-  try{ const a = new Audio(`https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`); a.volume = .45; const r = a.play(); if(r && r.catch) r.catch(() => {}); }catch(e){}
+  try{ const a = new Audio(`https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`); a.volume = .4; const r = a.play(); if(r && r.catch) r.catch(() => {}); }catch(e){}
 }
 
 /* ---------- jogar ---------- */
+const MAX_INTER = 3;
 let caso = null;
+const eu = () => POKE[cfg.detetive - 1];
 function trocarTela(t){ ['inicio', 'caso'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
 function comecar(){
   const m = montarCaso(cfg.nivel);
-  if(!m){ alert('Ops! Não consegui montar esse caso. Tenta de novo!'); return; }
-  caso = Object.assign(m, { mostradas:1, erros:0, lupas:0, riscados:new Set(), inocentes:new Set(), fim:false, nivel:cfg.nivel });
-  $('c-num').textContent = stats.casos + 1;
-  $('c-historia').innerHTML = `🚨 A <b>Alcremie VMAX</b> sumiu ${caso.lugar}! Tem <b>${caso.sus.length} suspeitos</b>. Leia as pistas e prenda quem levou ela!`;
+  if(!m){ alert('Não consegui montar esse caso. Tente de novo!'); return; }
+  caso = Object.assign(m, { mostradas:1, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel:cfg.nivel, numero:stats.casos + 1 });
+  $('c-num').textContent = numCaso(caso.numero);
+  const nomesEsp = caso.sus.filter(s => caso.especiais.has(s.id)).map(s => s.nome).join(' e ');
+  $('relatorio').innerHTML = `<h2>RELATÓRIO DE OCORRÊNCIA</h2>
+    <div class="encarregado"><img src="${arte(cfg.detetive)}" alt="">Detetive ${eu().nome}</div>
+    <dl class="ficha"><dt>Caso</dt><dd>${numCaso(caso.numero)}</dd><dt>Local</dt><dd>${caso.lugar}</dd><dt>Hora</dt><dd>${caso.hora}</dd><dt>Clima</dt><dd>${caso.clima}</dd></dl>
+    <p class="ocorrencia">A <b>Alcremie VMAX</b> estava ${caso.onde} quando desapareceu. Quem deu o alerta foi ${caso.achou}, que encontrou ${caso.achado}.
+    A câmera de segurança gravou só um vulto. Havia <b>${caso.sus.length} Pokémon</b> no local: 10 suspeitos, mais ${nomesEsp}.
+    O caso foi entregue ao <b>Detetive ${eu().nome}</b>.</p>
+    <span class="carimbo">EM ANDAMENTO</span>`;
   $('aviso').textContent = ''; $('aviso').className = 'aviso';
+  if(!stats.cenas.includes(caso.cena)){ stats.cenas.push(caso.cena); salvar(); }
   desenharSuspeitos(); mostrarPistas(); trocarTela('caso');
+  setTimeout(rodarCena, 300);
 }
 function mostrarPistas(){
   const ol = $('pistas'); ol.innerHTML = '';
   caso.pistas.forEach((p, i) => {
     const li = document.createElement('li');
     if(i < caso.mostradas) li.innerHTML = `<b>${i + 1}.</b> ${p.txt}`;
-    else{ li.className = 'escondida'; li.textContent = `${i + 1}. ??? (pista escondida)`; }
+    else{ li.className = 'escondida'; li.textContent = `${i + 1}. [ainda em análise no laboratório]`; }
     ol.appendChild(li);
   });
+  $('depo-titulo').hidden = !caso.depoimentos.length;
+  $('depoimentos').innerHTML = caso.depoimentos.map(d => `<li>${d}</li>`).join('');
   $('c-pistas').textContent = `${caso.mostradas}/${caso.pistas.length}`;
+  $('c-inter').textContent = MAX_INTER - caso.inter;
   $('nova-pista').disabled = caso.mostradas >= caso.pistas.length || caso.fim;
-  $('nova-pista').textContent = caso.mostradas >= caso.pistas.length ? '✅ Todas as pistas' : `🔎 Nova pista (+${caso.pistas.length - caso.mostradas})`;
-  $('lupa').disabled = caso.fim || caso.sus.every(s => s === caso.culpado || caso.riscados.has(s.id));
+  $('nova-pista').textContent = caso.mostradas >= caso.pistas.length ? '✅ Perícia completa' : `🔬 Nova pista (+${caso.pistas.length - caso.mostradas})`;
+  $('pericia').disabled = caso.fim || caso.sus.every(s => s === caso.culpado || caso.riscados.has(s.id));
   $('c-erros').textContent = '⭐'.repeat(estrelasAgora()) + '☆'.repeat(3 - estrelasAgora());
+  const restam = caso.sus.filter(s => !caso.riscados.has(s.id)).length;
+  $('restam').textContent = `🔎 Suspeitos restantes: ${restam} de ${caso.sus.length}`;
+  $('so-suspeitos').textContent = cfg.esconder ? '👁️ Mostrar inocentes' : '👁️ Esconder inocentes';
 }
 const estrelasAgora = () => Math.max(1, 3 - caso.erros);
 function desenharSuspeitos(){
   const box = $('suspeitos'); box.innerHTML = '';
-  caso.sus.forEach(s => {
-    const d = document.createElement('div'); d.className = 'suspeito'; d.dataset.id = s.id;
-    if(caso.riscados.has(s.id)) d.classList.add('riscado');
-    if(caso.inocentes.has(s.id)) d.classList.add('inocente');
+  caso.sus.forEach((s, i) => {
+    const riscado = caso.riscados.has(s.id), esp = caso.especiais.has(s.id), dp = caso.depo[s.id];
+    if(riscado && cfg.esconder && !caso.fim) return;
+    const d = document.createElement('div'); d.className = 'suspeito' + (riscado ? ' riscado' : '') + (esp ? ' especial' : ''); d.dataset.id = s.id;
     const tipos = s.tipos.map(t => `<span class="tipo" style="background:${TIPOS[t][2]}">${TIPOS[t][1]} ${TIPOS[t][0]}</span>`).join('');
-    d.innerHTML = `<div class="foto"><img alt="" loading="lazy" src="${arte(s.id)}"></div><h3>${s.nome}</h3>
+    d.innerHTML = `<span class="n">Nº ${String(i + 1).padStart(2, '0')}</span><div class="foto"><img alt="" loading="lazy" src="${arte(s.id)}"></div><h3>${s.nome}</h3>
+      ${esp ? '<span class="especial-selo">⭐ Especial · 0,0001% de ser culpado</span>' : ''}
       <div class="fatos">${tipos}<span><i class="cor-bola" style="background:${CORES[s.cor][1]}"></i>${CORES[s.cor][0]}</span>
-      <span>⚖️ ${kg(s)}</span><span>📏 ${metros(s)}</span><span>🗺️ ${REGIOES[s.ger - 1]}</span><span>${s.evos.length ? '🧬 Evolui' : '💪 Forma final'}</span></div>
-      <div class="acoes"><button type="button" class="riscar">${caso.riscados.has(s.id) ? '↩️ Voltar' : '❌ Inocente'}</button><button type="button" class="prender">🚨 Prender</button></div>`;
+      <span>⚖️ ${kg(s)}</span><span>📏 ${metros(s)}</span><span>🗺️ ${REGIOES[s.ger - 1]}</span><span>${s.evos.length ? '🧬 Ainda evolui' : '💪 Forma final'}</span></div>
+      ${dp ? `<div class="depo ${dp.ok ? 'ok' : 'duvida'}">${dp.ok ? '✅ Álibi confirmado' : '❓ Álibi sem testemunhas'}</div>` : ''}
+      <div class="acoes"><button type="button" class="inocentar"><i>${riscado ? '↩️' : '✅'}</i>${riscado ? 'Voltar' : 'Inocentar'}</button>
+      <button type="button" class="interrogar"${dp || caso.inter >= MAX_INTER || caso.fim ? ' disabled' : ''}><i>🎤</i>Interrogar</button>
+      <button type="button" class="culpar"><i>⚖️</i>Culpar</button></div>`;
     d.querySelector('img').onerror = function(){ this.src = mini(s.id); this.onerror = null; };
-    d.querySelector('.riscar').onclick = () => { if(caso.fim) return; caso.riscados.has(s.id) ? caso.riscados.delete(s.id) : caso.riscados.add(s.id); somRisca(); desenharSuspeitos(); mostrarPistas(); };
-    d.querySelector('.prender').onclick = () => prender(s, d);
+    d.querySelector('.inocentar').onclick = () => { if(caso.fim) return; riscado ? caso.riscados.delete(s.id) : caso.riscados.add(s.id); somRisca(); desenharSuspeitos(); mostrarPistas(); };
+    d.querySelector('.interrogar').onclick = () => interrogar(s);
+    d.querySelector('.culpar').onclick = () => culpar(s);
     box.appendChild(d);
   });
 }
-function prender(s, el){
+/* 🎤 interrogatório: o inocente mostra o álibi ou conta o que viu; o culpado enrola */
+function interrogar(s){
+  if(!caso || caso.fim || caso.depo[s.id] || caso.inter >= MAX_INTER) return;
+  caso.inter++; stats.interrogatorios++; salvar(); somInter();
+  let fala, ok = false, extra = '';
+  if(s === caso.culpado){
+    fala = sorteia(ALIBI_FRACO);
+    if(Math.random() < .6) extra = `<p style="font-size:.85rem;color:var(--tinta-fraca)">📝 Anotação: ${s.nome} evitou olhar nos olhos.</p>`;
+  }else{
+    const outros = caso.sus.filter(x => x !== s);
+    const vivos = caso.sus.filter(x => !caso.riscados.has(x.id) && x !== caso.culpado && x !== s);
+    const nova = embaralhar(caso.todas.filter(p => !caso.pistas.includes(p) && !caso.usadasDepo?.includes(p) && vivos.some(x => !p.f(x))))[0];
+    if(Math.random() < .55 || !nova){
+      ok = true; fala = `Eu estava ${sorteia(ALIBIS)} na hora do crime. ${sorteia(outros).nome} estava comigo e pode confirmar.`;
+    }else{
+      (caso.usadasDepo = caso.usadasDepo || []).push(nova);
+      fala = `Eu estava sozinho, ninguém pode confirmar… Mas eu vi quem saiu correndo com a Alcremie! O culpado ${nova.fato}.`;
+      caso.depoimentos.push(`🗣️ <b>${s.nome}</b>: “O culpado ${nova.fato}.”<small>Testemunha ocular. O detetive conferiu: é verdade.</small>`);
+      if(Math.random() < .2) extra = `<p style="font-size:.85rem;color:var(--tinta-fraca)">📝 Anotação: ${s.nome} parecia nervoso.</p>`;
+    }
+  }
+  caso.depo[s.id] = { ok };
+  $('dlg-corpo').innerHTML = `<h2>SALA DE INTERROGATÓRIO</h2>
+    <div class="sala"><img class="eu" src="${arte(cfg.detetive)}" alt="Detetive ${eu().nome}"><img src="${arte(s.id)}" alt="${s.nome}"></div>
+    <div class="fala"><b>Detetive ${eu().nome}</b>Onde você estava às ${caso.hora}?</div>
+    <div class="fala"><b>${s.nome}</b>${fala}</div>${extra}
+    <p style="font-weight:700">${ok ? '✅ Álibi confirmado.' : '❓ Ninguém confirma esse álibi.'}</p>
+    <button type="button" class="grande" id="fechar-dlg">📝 Anotar e voltar</button>`;
+  $('fechar-dlg').onclick = () => $('dlg').close();
+  $('dlg').showModal(); grito(s.id);
+  desenharSuspeitos(); mostrarPistas();
+}
+function culpar(s){
   if(!caso || caso.fim) return;
   if(s !== caso.culpado){
-    caso.erros++; caso.riscados.add(s.id); caso.inocentes.add(s.id); somErro(); grito(s.id);
-    $('aviso').textContent = `😤 O ${s.nome} tem álibi! Não foi ele. Leia as pistas de novo.`; $('aviso').className = 'aviso ruim';
+    caso.erros++; caso.riscados.add(s.id); somErro(); grito(s.id);
+    $('aviso').textContent = `⚖️ Acusação errada! ${s.nome} provou que é inocente. Reveja as pistas.`; $('aviso').className = 'aviso ruim';
     desenharSuspeitos(); mostrarPistas();
-    const novo = document.querySelector(`.suspeito[data-id="${s.id}"]`); if(novo){ novo.classList.add('treme'); }
+    const novo = document.querySelector(`.suspeito[data-id="${s.id}"]`); if(novo) novo.classList.add('treme');
     return;
   }
   resolver();
 }
 function resolver(){
   caso.fim = true;
-  const c = caso.culpado, N = NIVEIS[caso.nivel], sobra = caso.pistas.length - caso.mostradas, est = estrelasAgora();
-  const pts = Math.max(10, Math.round((50 + 20 * sobra - 15 * caso.erros - 10 * caso.lupas) * N.mult));
+  const c = caso.culpado, N = NIVEIS[caso.nivel], sobra = caso.pistas.length - caso.mostradas, est = estrelasAgora(), esp = caso.especiais.has(c.id);
+  const pts = Math.max(10, Math.round((60 + 15 * sobra - 20 * caso.erros - 10 * caso.pericias - 5 * caso.inter) * N.mult)) + (esp ? 1000 : 0);
   const antes = patente().i;
   stats.casos++; stats.estrelas += est; stats.pontos += pts;
   stats.presos[c.id] = (stats.presos[c.id] || 0) + 1;
@@ -446,38 +639,53 @@ function resolver(){
   if(caso.nivel === 'medio') stats.medio++;
   if(caso.mostradas === 1 && caso.erros === 0) stats.rapidos++;
   if(LENDARIOS.has(c.id)) stats.lendarios++;
-  if(caso.lupas) stats.lupas += caso.lupas; else stats.semLupa++;
+  if(esp) stats.especiais++;
+  if(caso.pericias) stats.lupas += caso.pericias; else stats.semLupa++;
   salvar();
-  somPreso(); setTimeout(() => grito(c.id), 900); confete();
-  $('resolvido').innerHTML = `
-    <div class="dupla"><img src="${arte(c.id)}" alt="${c.nome}"><img class="alc" src="${arte(10223)}" alt="Alcremie VMAX"></div>
-    <h2>🚨 PEGUEI! Foi o ${c.nome}!</h2>
-    <div class="confissao">🗣️ ${c.nome}: “${sorteia(CONFISSOES)}”</div>
-    <p>🎂 A Alcremie VMAX voltou pra festa!</p>
+  somResolvido(); setTimeout(() => grito(c.id), 700);
+  $('relatorio').querySelector('.carimbo').textContent = 'ENCERRADO';
+  $('dlg-corpo').innerHTML = `
+    <span class="carimbo">CASO ENCERRADO</span>
+    <div class="dupla"><img src="${arte(c.id)}" alt="${c.nome}"><img class="alc" src="${arte(ALC_VMAX)}" alt="Alcremie VMAX"></div>
+    <h2>Culpado: ${c.nome}</h2>
+    ${esp ? '<p style="font-weight:800;color:var(--ouro)">🤯 IMPOSSÍVEL! Um personagem especial era o culpado! Isso acontece 1 vez em 1 milhão! +1000 pontos</p>' : ''}
+    <div class="fala"><b>Confissão de ${c.nome}</b>${sorteia(CONFISSOES)}</div>
+    <div class="fala"><b>Detetive ${eu().nome}</b>Caso resolvido. A Alcremie VMAX foi devolvida em segurança, e ${c.nome} ${sorteia(SENTENCAS)}.</div>
     <div class="estrelas">${'⭐'.repeat(est)}${'☆'.repeat(3 - est)}</div>
-    <p class="pts">+${pts} pontos${sobra ? ` · 🔎 ${sobra > 1 ? `sobraram ${sobra} pistas` : 'sobrou 1 pista'} (bônus!)` : ''}</p>
-    <button type="button" class="grande" id="proximo-caso">➡️ Próximo caso</button>
-    <button type="button" class="mini" id="voltar-inicio">🏠 Início</button>`;
-  $('proximo-caso').onclick = () => { $('dlg-resolvido').close(); comecar(); };
-  $('voltar-inicio').onclick = () => { $('dlg-resolvido').close(); caso = null; mostrarInicio(); trocarTela('inicio'); };
-  $('dlg-resolvido').showModal();
-  mostrarPistas();
-  document.querySelectorAll('.suspeito').forEach(d => { if(+d.dataset.id !== c.id) d.classList.add('riscado'); });
+    <p class="pts">+${pts} pontos${sobra ? ` · 🔬 ${sobra > 1 ? `sobraram ${sobra} pistas` : 'sobrou 1 pista'} (bônus)` : ''}</p>
+    <button type="button" class="grande" id="proximo-caso">📂 Próximo caso</button>
+    <button type="button" class="mini" id="voltar-inicio">🏠 Voltar pro arquivo</button>`;
+  $('proximo-caso').onclick = () => { $('dlg').close(); comecar(); };
+  $('voltar-inicio').onclick = () => { $('dlg').close(); caso = null; mostrarInicio(); trocarTela('inicio'); };
+  $('dlg').showModal();
+  caso.sus.forEach(s => { if(s !== c) caso.riscados.add(s.id); });
+  desenharSuspeitos(); mostrarPistas();
   checarDistintivos();
-  if(patente().i > antes) setTimeout(() => toast(`${patente().p.e} Subiu de patente: ${patente().p.n}!`), 1200);
+  if(patente().i > antes) setTimeout(() => toast(`${patente().p.e} Promoção: agora você é ${patente().p.n}!`), 1200);
 }
 $('nova-pista').onclick = () => { if(!caso || caso.fim || caso.mostradas >= caso.pistas.length) return; caso.mostradas++; somPista(); mostrarPistas(); };
-$('lupa').onclick = () => {
+$('pericia').onclick = () => {
   if(!caso || caso.fim) return;
   const livres = caso.sus.filter(s => s !== caso.culpado && !caso.riscados.has(s.id));
   if(!livres.length) return;
-  const s = sorteia(livres); caso.riscados.add(s.id); caso.lupas++; somRisca();
-  $('aviso').textContent = `🪄 A lupa mágica mostrou: o ${s.nome} é inocente! (−10 pontos)`; $('aviso').className = 'aviso';
+  const s = sorteia(livres); caso.riscados.add(s.id); caso.pericias++; somRisca();
+  $('aviso').textContent = `🧪 O exame de DNA deu negativo: ${s.nome} é inocente. (−10 pontos)`; $('aviso').className = 'aviso';
   desenharSuspeitos(); mostrarPistas();
 };
+$('so-suspeitos').onclick = () => { cfg.esconder = !cfg.esconder; gravar('cfg', cfg); if(caso){ desenharSuspeitos(); mostrarPistas(); } };
 $('comecar').onclick = comecar;
-$('sair').onclick = () => { if(caso && !caso.fim && !confirm('Sair do caso? A Alcremie VMAX vai continuar sumida! 😢')) return; caso = null; mostrarInicio(); trocarTela('inicio'); };
-$('dlg-resolvido').addEventListener('cancel', ev => ev.preventDefault());
+$('sair').onclick = () => { if(caso && !caso.fim && !confirm('Arquivar o caso sem resolver? A Alcremie VMAX continua desaparecida.')) return; caso = null; mostrarInicio(); trocarTela('inicio'); };
+$('dlg').addEventListener('cancel', ev => { if(caso && caso.fim) ev.preventDefault(); });
+
+/* ---------- 🕵️ escolher detetive ---------- */
+function mostrarDetetive(){ $('meu-img').src = arte(cfg.detetive); $('meu-nome').textContent = `Detetive ${eu().nome}`; }
+$('trocar-detetive').onclick = () => {
+  $('dlg-corpo').innerHTML = `<h2>Escolha seu detetive</h2><div class="escolhas">${DETETIVES.map(id => `<button type="button" data-id="${id}" aria-pressed="${id === cfg.detetive}"><img loading="lazy" alt="" src="${arte(id)}">${POKE[id - 1].nome}</button>`).join('')}</div>
+    <button type="button" class="mini" id="fechar-dlg">Fechar</button>`;
+  $('dlg-corpo').querySelector('.escolhas').onclick = ev => { const b = ev.target.closest('[data-id]'); if(!b) return; cfg.detetive = +b.dataset.id; gravar('cfg', cfg); mostrarDetetive(); grito(cfg.detetive); $('dlg').close(); toast(`🕵️ Agora você é o Detetive ${eu().nome}!`); };
+  $('fechar-dlg').onclick = () => $('dlg').close();
+  $('dlg').showModal();
+};
 
 /* ---------- carreira ---------- */
 const PATENTES = [{ c:0, e:'🔍', n:'Detetive Novato' }, { c:5, e:'🔎', n:'Detetive Júnior' }, { c:15, e:'🕵️', n:'Investigador' }, { c:30, e:'👮', n:'Inspetor' },
@@ -489,9 +697,11 @@ const DISTINTIVOS = [
   ['casos100', '🗄️', '100 casos', () => stats.casos >= 100], ['perfeito', '⭐', 'Caso perfeito', () => stats.perfeitos >= 1], ['seq5', '🔥', '5 perfeitos seguidos', () => stats.melhorSeq >= 5],
   ['seq10', '💥', '10 perfeitos seguidos', () => stats.melhorSeq >= 10], ['rapido', '⚡', 'Resolveu com 1 pista', () => stats.rapidos >= 1], ['rapido10', '🧠', '10 casos com 1 pista', () => stats.rapidos >= 10],
   ['medio', '🟡', 'Caso médio', () => stats.medio >= 1], ['dificil', '🔴', 'Caso difícil', () => stats.dificil >= 1], ['dificil10', '🌋', '10 casos difíceis', () => stats.dificil >= 10],
-  ['lendario', '🐉', 'Prendeu um lendário', () => stats.lendarios >= 1], ['galeria20', '📸', '20 culpados diferentes', () => nPresos() >= 20], ['galeria100', '🖼️', '100 culpados diferentes', () => nPresos() >= 100],
+  ['lendario', '🐉', 'Culpou um lendário', () => stats.lendarios >= 1], ['galeria20', '📸', '20 culpados diferentes', () => nPresos() >= 20], ['galeria100', '🖼️', '100 culpados diferentes', () => nPresos() >= 100],
   ['estrelas100', '🌟', '100 estrelas', () => stats.estrelas >= 100], ['pontos1000', '🏅', '1.000 pontos', () => stats.pontos >= 1000], ['pontos10000', '💎', '10.000 pontos', () => stats.pontos >= 10000],
-  ['reincidente', '🔁', 'Prendeu o mesmo 3 vezes', () => Object.values(stats.presos).some(n => n >= 3)], ['semlupa', '👁️', '20 casos sem lupa', () => stats.semLupa >= 20]];
+  ['reincidente', '🔁', 'Culpou o mesmo 3 vezes', () => Object.values(stats.presos).some(n => n >= 3)], ['semlupa', '👁️', '20 casos sem DNA', () => stats.semLupa >= 20],
+  ['inter10', '🎤', '10 interrogatórios', () => stats.interrogatorios >= 10], ['inter100', '🎙️', '100 interrogatórios', () => stats.interrogatorios >= 100],
+  ['cenas10', '📹', 'Viu as 10 gravações', () => stats.cenas.length >= 10], ['impossivel', '🦊', 'O impossível: um especial culpado', () => stats.especiais >= 1]];
 let ganhos = ler('distintivos', {}) || {};
 function checarDistintivos(){
   DISTINTIVOS.forEach(([id, e, n, f]) => { if(!ganhos[id] && f()){ ganhos[id] = Date.now(); toast(`${e} Distintivo novo: ${n}!`); } });
@@ -500,14 +710,10 @@ function checarDistintivos(){
 let filaToast = [], toastOcupado = false;
 function toast(t){ filaToast.push(t); if(toastOcupado) return; const vai = () => { const x = filaToast.shift(); if(!x){ toastOcupado = false; return; } toastOcupado = true;
   const d = document.createElement('div'); d.className = 'toast'; d.textContent = x; document.body.appendChild(d); setTimeout(() => { d.remove(); vai(); }, 2200); }; vai(); }
-function confete(){
-  const cores = ['#ff8fc0', '#ffcb05', '#e3350d', '#6a4bc4', '#1f9d57', '#fff'];
-  for(let i = 0; i < 70; i++){ const c = document.createElement('i'); c.className = 'confete'; c.style.left = Math.random() * 100 + 'vw'; c.style.background = sorteia(cores);
-    c.style.animationDelay = Math.random() * .6 + 's'; c.style.animationDuration = 1.8 + Math.random() * 1.4 + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 3600); }
-}
 function mostrarInicio(){
   document.querySelectorAll('#niveis .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.nivel === cfg.nivel));
-  $('comecar').textContent = `🔎 Abrir o caso nº ${stats.casos + 1}`;
+  $('comecar').textContent = `📂 Abrir o caso ${numCaso(stats.casos + 1)}`;
+  $('etiqueta').textContent = `ARQUIVO — CASO ${numCaso(stats.casos + 1)}`;
   const P = patente();
   $('pat-emoji').textContent = P.p.e; $('pat-nome').textContent = P.p.n;
   $('pat-prox').textContent = P.prox ? `Faltam ${P.prox.c - stats.casos} casos pra virar ${P.prox.n}` : 'Você chegou no topo! 👑';
@@ -516,10 +722,11 @@ function mostrarInicio(){
   const nd = DISTINTIVOS.filter(d => ganhos[d[0]]).length;
   $('dist-cont').textContent = `${nd}/${DISTINTIVOS.length}`;
   $('distintivos').innerHTML = DISTINTIVOS.map(([id, e, n]) => `<div class="distintivo ${ganhos[id] ? 'sim' : 'nao'}"><i>${e}</i>${n}</div>`).join('');
-  const ids = Object.keys(stats.presos).map(Number).sort((a, b) => a - b);
+  const ids = Object.keys(stats.presos).map(Number).filter(id => POKE[id - 1]).sort((a, b) => a - b);
   $('gal-cont').textContent = `${ids.length}/1025`;
   $('galeria').innerHTML = ids.length ? ids.map(id => `<div title="${POKE[id - 1].nome}"><img loading="lazy" alt="" src="${mini(id)}">${POKE[id - 1].nome}${stats.presos[id] > 1 ? `<em>×${stats.presos[id]}</em>` : ''}</div>`).join('')
-    : '<p style="grid-column:1/-1;font-size:.85rem">Ainda ninguém. Bora investigar! 🕵️</p>';
+    : '<p style="grid-column:1/-1;font-size:.85rem">Nenhum culpado fichado ainda.</p>';
+  mostrarDetetive();
 }
 $('niveis').onclick = ev => { const b = ev.target.closest('[data-nivel]'); if(!b) return; cfg.nivel = b.dataset.nivel; gravar('cfg', cfg); mostrarInicio(); };
 const btSom = $('som');
@@ -531,7 +738,7 @@ const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-
 function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
 function aplicarTema(t){
   if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema');
-  btTema.textContent = estaEscuro() ? '☀️' : '🌙'; corDaBarra.setAttribute('content', estaEscuro() ? '#14102a' : '#3b2a6e');
+  btTema.textContent = estaEscuro() ? '☀️' : '🌙'; corDaBarra.setAttribute('content', estaEscuro() ? '#111317' : '#1d2230');
 }
 aplicarTema(ler('tema', null));
 btTema.onclick = () => { const t = estaEscuro() ? 'claro' : 'escuro'; gravar('tema', t); aplicarTema(t); };
