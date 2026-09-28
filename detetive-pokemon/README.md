@@ -30,6 +30,16 @@ e você lê as pistas do caderno pra descobrir quem levou ela.
 - 👑 **Jojo adm** com a mesma senha secreta (só o hash fica no código), só neste aparelho.
 - Os detetives nunca são suspeitos; a Eevee virou só personagem especial.
 
+## Versão 5: habilidades especiais
+Cada um dos 30 detetives tem uma habilidade. Algumas são **poder** (um botão que funciona 1 vez por caso) e outras valem **sempre**:
+- ⚡ riscar inocentes (Pikachu, Pichu, Gengar, Mewtwo, Dragapult, Blastoise) · 🌀 revelar uma pista (Psyduck)
+- 👃 começar com pistas grátis (Growlithe, Sprigatito, Garchomp, Charizard)
+- 🦉 ver a cor e/ou 🌑 o tamanho do vulto na gravação (Noctowl, Umbreon, Rayquaza)
+- 🎤 mais interrogatórios (Greninja, Gardevoir, Zoroark), 🔮 inocentes sempre contam pista (Espeon, Venusaur), 🎀 álibis sempre confirmados (Sylveon)
+- 🔵 ler a aura (Lucario) e 🌑 detector de mentira (Darkrai)
+- 🔥 erros que não tiram estrela (Charmander, Mimikyu, Blaziken), 💧 DNA de graça (Squirtle)
+- 🍰 mais migalhas (Bulbasaur, Empoleon) e ⭐ mais pontos (Snorlax, Tinkaton)
+
 ## Níveis
 - 🟢 Fácil: Pokémon famosos e pistas fortes · 🟡 Médio: gerações 1 a 4 · 🔴 Difícil: todos os 1025 e pistas fracas.
 
