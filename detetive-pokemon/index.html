@@ -60,7 +60,7 @@ button{font:inherit;color:inherit}
 .pasta .dentro img{width:112px;height:112px;object-fit:contain;flex:none;background:var(--papel);border:1px solid var(--borda);padding:6px;transform:rotate(-3deg);box-shadow:0 4px 10px var(--sombra)}
 .pasta .dentro p{font-size:.9rem;line-height:1.45}
 .carimbo{font-family:'Special Elite',monospace;color:var(--carimbo);border:3px solid var(--carimbo);border-radius:6px;padding:2px 10px;display:inline-block;transform:rotate(-8deg);font-size:1.02rem;letter-spacing:2px;opacity:.9}
-.pasta .carimbo{position:absolute;right:14px;top:12px}
+.pasta .carimbo{position:absolute;right:12px;top:-10px;background:var(--pasta)}
 /* meu detetive */
 .meu{display:flex;align-items:center;gap:12px}
 .meu img{width:84px;height:84px;object-fit:contain;background:var(--cartao2);border-radius:50%;border:3px solid var(--ouro);flex:none}
@@ -200,6 +200,64 @@ dialog::backdrop{background:rgba(10,10,15,.7)}
 .faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#1d2230;color:#fff;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:70;font-weight:700}
 .faixa-nova button{border:none;border-radius:99px;padding:6px 12px;font-weight:800;background:var(--ouro);color:#fff;cursor:pointer}
 @media (max-width:360px){.fatos{font-size:.58rem}.acoes button{font-size:.56rem}}
+/* v4: perfil, loja, amigos */
+.heroi{display:flex;gap:10px;align-items:center;margin-top:14px;background:var(--cartao);border:1px solid var(--borda);border-radius:10px;padding:10px;box-shadow:0 4px 14px var(--sombra)}
+.perfil-bt{display:flex;align-items:center;gap:8px;border:none;background:none;cursor:pointer;text-align:left;min-width:0;flex:1.1}
+.perfil-bt img{width:52px;height:52px;object-fit:contain;border-radius:50%;background:var(--cartao2);flex:none}
+.perfil-bt span{min-width:0;overflow:hidden}
+.perfil-bt b{display:block;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.perfil-bt small{display:block;font-size:.7rem;color:var(--tinta-fraca)}
+.xp{flex:1;min-width:0}
+.xp-linha{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.xp small{font-size:.66rem;color:var(--tinta-fraca)}
+.migalhas{font-weight:800;font-size:.85rem;background:var(--cartao2);border-radius:99px;padding:2px 8px;white-space:nowrap}
+.atalhos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.atalhos button{border:1px solid var(--borda);background:var(--cartao);border-radius:10px;padding:8px 2px;cursor:pointer;font-weight:700;font-size:.78rem;box-shadow:0 3px 8px var(--sombra)}
+.atalhos i{display:block;font-style:normal;font-size:1.4rem}
+.missoes > div{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--borda)}
+.missoes > div:last-child{border-bottom:none}
+.missoes i{font-style:normal;font-size:1.3rem}
+.missoes span{flex:1;font-size:.88rem}
+.missoes small{font-weight:800;font-size:.8rem;white-space:nowrap}
+.missoes .feita span{text-decoration:line-through;opacity:.6}
+.topo-tela{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px}
+.abas{display:flex;gap:6px;overflow-x:auto;margin-top:12px;padding-bottom:4px}
+.abas button{border:1px solid var(--borda);background:var(--cartao);border-radius:99px;padding:7px 12px;font-weight:700;cursor:pointer;white-space:nowrap;font-size:.82rem}
+.abas button[aria-pressed="true"]{background:var(--botao);color:#fff;border-color:var(--botao)}
+.itens{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.item{background:var(--cartao);border:1px solid var(--borda);border-radius:10px;padding:10px;text-align:center;box-shadow:0 3px 10px var(--sombra)}
+.item .amostra{height:74px;border-radius:8px;display:grid;place-items:center;margin-bottom:6px;font-weight:700;font-size:.8rem}
+.item .amostra img{height:70px;width:70px;object-fit:contain}
+.item b{display:block;font-size:.88rem}
+.item button{margin-top:6px;width:100%}
+.item.usando{border-color:var(--verde);box-shadow:0 0 0 2px var(--verde)}
+.cartao-perfil{border-radius:12px;padding:16px;text-align:center;position:relative}
+.cartao-perfil.escuro{color:#fff}
+.cartao-perfil img.av{width:96px;height:96px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,.55)}
+.cartao-perfil h3{font-size:1.2rem;margin-top:6px}
+.cartao-perfil .tit{font-size:.82rem;opacity:.85}
+.cartao-perfil .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.cartao-perfil .nums div{background:rgba(255,255,255,.35);border-radius:8px;padding:6px 2px;font-size:.66rem}
+.cartao-perfil.escuro .nums div{background:rgba(0,0,0,.28)}
+.cartao-perfil .nums b{display:block;font-size:1rem}
+.lista > div{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--borda)}
+.lista > div:last-child{border-bottom:none}
+.lista img{width:46px;height:46px;object-fit:contain;border-radius:50%;background:var(--cartao2);flex:none}
+.lista .info{flex:1;min-width:0;font-size:.85rem}
+.lista .info b{display:block;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lista .info small{color:var(--tinta-fraca);font-size:.74rem}
+.lista .pos{font-weight:800;width:26px;text-align:center}
+.lista .eu{background:var(--cartao2);border-radius:8px;padding-left:6px}
+textarea,input[type=search],input[type=text],input[type=password]{width:100%;border:1px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:8px;padding:10px;font:inherit;font-size:.9rem}
+.galeria button{border:none;background:var(--cartao2);border-radius:6px;text-align:center;font-size:.6rem;padding:2px;position:relative;cursor:pointer}
+.galeria button img{width:100%;aspect-ratio:1;object-fit:contain;image-rendering:pixelated}
+.galeria button em{position:absolute;right:3px;top:2px;font-style:normal;font-weight:800;font-size:.62rem;background:var(--carimbo);color:#fff;border-radius:99px;padding:0 5px}
+.escolhas button.travado{opacity:.75}
+.escolhas button small{display:block;color:var(--ouro);font-weight:800}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin:10px 0;font-weight:800}
+.vs div{background:var(--cartao2);border-radius:8px;padding:8px 4px;font-size:.8rem}
+.vs div b{display:block;font-size:1.2rem}
+.codigo-caixa{font-family:monospace;font-size:.7rem;word-break:break-all;background:var(--cartao2);border-radius:8px;padding:8px;text-align:left;max-height:120px;overflow:auto;margin-top:8px;user-select:all}
 @media (prefers-reduced-motion: reduce){.vulto i,.cena .rec{animation:none}}
 </style>
 </head>
@@ -213,6 +271,16 @@ dialog::backdrop{background:rgba(10,10,15,.7)}
 
   <!-- ===================== INÍCIO ===================== -->
   <section id="tela-inicio">
+    <div class="heroi">
+      <button type="button" class="perfil-bt" id="perfil-bt"><img id="perfil-img" alt="" /><span><b id="perfil-nome"></b><small id="perfil-tit"></small></span></button>
+      <div class="xp"><div class="xp-linha"><b id="xp-nivel">Nível 1</b><span class="migalhas" id="migalhas">🍰 0</span></div><div class="barra"><i id="xp-barra" style="width:0"></i></div><small id="xp-txt"></small></div>
+    </div>
+    <div class="atalhos">
+      <button type="button" id="ir-loja"><i>🛒</i>Loja</button>
+      <button type="button" id="ir-amigos"><i>👥</i>Amigos</button>
+      <button type="button" id="ir-arquivo"><i>🔎</i>Arquivo</button>
+      <button type="button" id="ir-historico"><i>📜</i>Casos</button>
+    </div>
     <div class="pasta">
       <span class="carimbo">CONFIDENCIAL</span>
       <span class="etiqueta" id="etiqueta">ARQUIVO — CASO #0001</span>
@@ -223,6 +291,12 @@ dialog::backdrop{background:rgba(10,10,15,.7)}
       <button type="button" class="grande" id="comecar">📂 Abrir o caso #0001</button>
       <button type="button" class="mini" id="outro-caso" style="margin-top:8px;width:100%" hidden>📂 Deixar esse pra depois e abrir outro caso</button>
       <p id="salvo-info" style="font-size:.8rem;margin-top:8px;text-align:center" hidden></p>
+    </div>
+
+    <div class="cartao">
+      <h2>🎯 Missões de hoje</h2>
+      <div class="missoes" id="missoes"></div>
+      <p style="font-size:.8rem;color:var(--tinta-fraca);margin-top:6px">Cada missão vale <b>+50 XP</b> e <b>🍰 15</b>. Amanhã tem missões novas.</p>
     </div>
 
     <div class="cartao">
@@ -315,14 +389,60 @@ dialog::backdrop{background:rgba(10,10,15,.7)}
     <div class="suspeitos" id="suspeitos"></div>
   </section>
 
+  <!-- ===================== LOJA ===================== -->
+  <section id="tela-loja" hidden>
+    <div class="topo-tela"><button type="button" class="mini" id="voltar-loja">⬅️ Voltar</button><b id="loja-saldo">🍰 0</b></div>
+    <div class="abas" id="abas-loja">
+      <button type="button" data-l="detetives">🕵️ Detetives</button><button type="button" data-l="fundos">🖼️ Fundos</button>
+      <button type="button" data-l="molduras">🔲 Molduras</button><button type="button" data-l="titulos">🏷️ Títulos</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--tinta-fraca);margin-top:8px">Ganhe 🍰 migalhas resolvendo casos, nas missões e no prêmio de todo dia.</p>
+    <div class="itens" id="itens-loja"></div>
+  </section>
+
+  <!-- ===================== AMIGOS ===================== -->
+  <section id="tela-amigos" hidden>
+    <div class="topo-tela"><button type="button" class="mini" id="voltar-amigos">⬅️ Voltar</button><b>👥 Central da polícia</b></div>
+    <div class="abas" id="abas-amigos">
+      <button type="button" data-a="amigos">👥 Amigos</button><button type="button" data-a="ranking">🏆 Ranking</button>
+      <button type="button" data-a="desafios">⚔️ Desafios</button><button type="button" data-a="arquivo">🔎 Arquivo</button><button type="button" data-a="historico">📜 Casos</button>
+    </div>
+    <div class="painel" data-p="amigos">
+      <div class="cartao">
+        <h2>📤 Meu código</h2>
+        <p style="font-size:.85rem">Mande pra quem você conhece (irmão, primo, colega). Quem colar vê o seu perfil. Ninguém acha você sem o código.</p>
+        <button type="button" class="grande" id="meu-codigo" style="margin-top:10px">📤 Copiar meu código</button>
+      </div>
+      <div class="cartao">
+        <h2>📥 Colar um código</h2>
+        <textarea id="colar" rows="3" placeholder="Cole aqui o código do amigo (AMIGO1…) ou de um desafio (CASO1…)"></textarea>
+        <button type="button" class="mini" id="colar-ok" style="margin-top:8px;width:100%">✅ Adicionar</button>
+        <p class="aviso" id="colar-msg"></p>
+      </div>
+      <div class="cartao"><h2>Meus amigos</h2><div class="lista" id="lista-amigos"></div></div>
+    </div>
+    <div class="painel" data-p="ranking" hidden><div class="cartao"><h2>🏆 Ranking</h2><p style="font-size:.82rem;color:var(--tinta-fraca)">Você e os amigos que você adicionou, por pontos. (Os números atualizam quando o amigo manda o código de novo.)</p><div class="lista" id="ranking"></div></div></div>
+    <div class="painel" data-p="desafios" hidden><div class="cartao"><h2>⚔️ Desafios</h2><p style="font-size:.82rem;color:var(--tinta-fraca)">Resolva um caso e toque em <b>⚔️ Desafiar</b>: o amigo joga <b>o mesmo caso</b> e vocês comparam os pontos.</p><div class="lista" id="lista-desafios"></div></div></div>
+    <div class="painel" data-p="arquivo" hidden>
+      <div class="cartao"><h2>🔎 Arquivo de Pokémon</h2>
+        <input type="search" id="busca" placeholder="Pesquisar pelo nome ou número" />
+        <label style="display:block;font-size:.82rem;margin-top:6px"><input type="checkbox" id="so-fichados" /> 🚨 Só os que eu já culpei</label>
+        <p style="font-size:.8rem;color:var(--tinta-fraca);margin-top:6px" id="busca-info"></p>
+        <div class="galeria" id="resultado-busca"></div>
+      </div>
+    </div>
+    <div class="painel" data-p="historico" hidden><div class="cartao"><h2>📜 Meus casos</h2><p style="font-size:.82rem;color:var(--tinta-fraca)">Os últimos 50 casos resolvidos.</p><div class="lista" id="historico"></div></div></div>
+  </section>
+
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 3 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 4 — 28/09 · 🔄</button>
   </footer>
 </div>
 
 <dialog id="dlg"><div class="dlg" id="dlg-corpo"></div></dialog>
+<dialog id="dlg2"><div class="dlg" id="dlg2-corpo"></div></dialog>
 
 <script>
 const DADOS = 'Bulbasaur~dh|Ivysaur~dh|Venusaur~dh|Charmander~b|Charmeleon~b|Charizard~bj|Squirtle~c|Wartortle~c|Blastoise~c|Caterpie~l|Metapod~l|Butterfree~lj|Weedle~lh|Kakuna~lh|Beedrill~lh|Pidgey~aj|Pidgeotto~aj|Pidgeot~aj|Rattata~a|Raticate~a|Spearow~aj|Fearow~aj|Ekans~h|Arbok~h|Pikachu~e|Raichu~e|Sandshrew~i|Sandslash~i|Nidoran-F~h|Nidorina~h|Nidoqueen~hi|Nidoran-M~h|Nidorino~h|Nidoking~hi|Clefairy~r|Clefable~r|Vulpix~b|Ninetales~b|Jigglypuff~ar|Wigglytuff~ar|Zubat~hj|Golbat~hj|Oddish~dh|Gloom~dh|Vileplume~dh|Paras~ld|Parasect~ld|Venonat~lh|Venomoth~lh|Diglett~i|Dugtrio~i|Meowth~a|Persian~a|Psyduck~c|Golduck~c|Mankey~g|Primeape~g|Growlithe~b|Arcanine~b|Poliwag~c|Poliwhirl~c|Poliwrath~cg|Abra~k|Kadabra~k|Alakazam~k|Machop~g|Machoke~g|Machamp~g|Bellsprout~dh|Weepinbell~dh|Victreebel~dh|Tentacool~ch|Tentacruel~ch|Geodude~mi|Graveler~mi|Golem~mi|Ponyta~b|Rapidash~b|Slowpoke~ck|Slowbro~ck|Magnemite~eq|Magneton~eq|Farfetch’d~aj|Doduo~aj|Dodrio~aj|Seel~c|Dewgong~cf|Grimer~h|Muk~h|Shellder~c|Cloyster~cf|Gastly~nh|Haunter~nh|Gengar~nh|Onix~mi|Drowzee~k|Hypno~k|Krabby~c|Kingler~c|Voltorb~e|Electrode~e|Exeggcute~dk|Exeggutor~dk|Cubone~i|Marowak~i|Hitmonlee~g|Hitmonchan~g|Lickitung~a|Koffing~h|Weezing~h|Rhyhorn~im|Rhydon~im|Chansey~a|Tangela~d|Kangaskhan~a|Horsea~c|Seadra~c|Goldeen~c|Seaking~c|Staryu~c|Starmie~ck|Mr. Mime~kr|Scyther~lj|Jynx~fk|Electabuzz~e|Magmar~b|Pinsir~l|Tauros~a|Magikarp~c|Gyarados~cj|Lapras~cf|Ditto~a|Eevee~a|Vaporeon~c|Jolteon~e|Flareon~b|Porygon~a|Omanyte~mc|Omastar~mc|Kabuto~mc|Kabutops~mc|Aerodactyl~mj|Snorlax~a|Articuno~fj|Zapdos~ej|Moltres~bj|Dratini~o|Dragonair~o|Dragonite~oj|Mewtwo~k|Mew~k|Chikorita~d|Bayleef~d|Meganium~d|Cyndaquil~b|Quilava~b|Typhlosion~b|Totodile~c|Croconaw~c|Feraligatr~c|Sentret~a|Furret~a|Hoothoot~aj|Noctowl~aj|Ledyba~lj|Ledian~lj|Spinarak~lh|Ariados~lh|Crobat~hj|Chinchou~ce|Lanturn~ce|Pichu~e|Cleffa~r|Igglybuff~ar|Togepi~r|Togetic~rj|Natu~kj|Xatu~kj|Mareep~e|Flaaffy~e|Ampharos~e|Bellossom~d|Marill~cr|Azumarill~cr|Sudowoodo~m|Politoed~c|Hoppip~dj|Skiploom~dj|Jumpluff~dj|Aipom~a|Sunkern~d|Sunflora~d|Yanma~lj|Wooper~ci|Quagsire~ci|Espeon~k|Umbreon~p|Murkrow~pj|Slowking~ck|Misdreavus~n|Unown~k|Wobbuffet~k|Girafarig~ak|Pineco~l|Forretress~lq|Dunsparce~a|Gligar~ij|Steelix~qi|Snubbull~r|Granbull~r|Qwilfish~ch|Scizor~lq|Shuckle~lm|Heracross~lg|Sneasel~pf|Teddiursa~a|Ursaring~a|Slugma~b|Magcargo~bm|Swinub~fi|Piloswine~fi|Corsola~cm|Remoraid~c|Octillery~c|Delibird~fj|Mantine~cj|Skarmory~qj|Houndour~pb|Houndoom~pb|Kingdra~co|Phanpy~i|Donphan~i|Porygon2~a|Stantler~a|Smeargle~a|Tyrogue~g|Hitmontop~g|Smoochum~fk|Elekid~e|Magby~b|Miltank~a|Blissey~a|Raikou~e|Entei~b|Suicune~c|Larvitar~mi|Pupitar~mi|Tyranitar~mp|Lugia~kj|Ho-Oh~bj|Celebi~kd|Treecko~d|Grovyle~d|Sceptile~d|Torchic~b|Combusken~bg|Blaziken~bg|Mudkip~c|Marshtomp~ci|Swampert~ci|Poochyena~p|Mightyena~p|Zigzagoon~a|Linoone~a|Wurmple~l|Silcoon~l|Beautifly~lj|Cascoon~l|Dustox~lh|Lotad~cd|Lombre~cd|Ludicolo~cd|Seedot~d|Nuzleaf~dp|Shiftry~dp|Taillow~aj|Swellow~aj|Wingull~cj|Pelipper~cj|Ralts~kr|Kirlia~kr|Gardevoir~kr|Surskit~lc|Masquerain~lj|Shroomish~d|Breloom~dg|Slakoth~a|Vigoroth~a|Slaking~a|Nincada~li|Ninjask~lj|Shedinja~ln|Whismur~a|Loudred~a|Exploud~a|Makuhita~g|Hariyama~g|Azurill~ar|Nosepass~m|Skitty~a|Delcatty~a|Sableye~pn|Mawile~qr|Aron~qm|Lairon~qm|Aggron~qm|Meditite~gk|Medicham~gk|Electrike~e|Manectric~e|Plusle~e|Minun~e|Volbeat~l|Illumise~l|Roselia~dh|Gulpin~h|Swalot~h|Carvanha~cp|Sharpedo~cp|Wailmer~c|Wailord~c|Numel~bi|Camerupt~bi|Torkoal~b|Spoink~k|Grumpig~k|Spinda~a|Trapinch~i|Vibrava~io|Flygon~io|Cacnea~d|Cacturne~dp|Swablu~aj|Altaria~oj|Zangoose~a|Seviper~h|Lunatone~mk|Solrock~mk|Barboach~ci|Whiscash~ci|Corphish~c|Crawdaunt~cp|Baltoy~ik|Claydol~ik|Lileep~md|Cradily~md|Anorith~ml|Armaldo~ml|Feebas~c|Milotic~c|Castform~a|Kecleon~a|Shuppet~n|Banette~n|Duskull~n|Dusclops~n|Tropius~dj|Chimecho~k|Absol~p|Wynaut~k|Snorunt~f|Glalie~f|Spheal~fc|Sealeo~fc|Walrein~fc|Clamperl~c|Huntail~c|Gorebyss~c|Relicanth~cm|Luvdisc~c|Bagon~o|Shelgon~o|Salamence~oj|Beldum~qk|Metang~qk|Metagross~qk|Regirock~m|Regice~f|Registeel~q|Latias~ok|Latios~ok|Kyogre~c|Groudon~i|Rayquaza~oj|Jirachi~qk|Deoxys~k|Turtwig~d|Grotle~d|Torterra~di|Chimchar~b|Monferno~bg|Infernape~bg|Piplup~c|Prinplup~c|Empoleon~cq|Starly~aj|Staravia~aj|Staraptor~aj|Bidoof~a|Bibarel~ac|Kricketot~l|Kricketune~l|Shinx~e|Luxio~e|Luxray~e|Budew~dh|Roserade~dh|Cranidos~m|Rampardos~m|Shieldon~mq|Bastiodon~mq|Burmy~l|Wormadam~ld|Mothim~lj|Combee~lj|Vespiquen~lj|Pachirisu~e|Buizel~c|Floatzel~c|Cherubi~d|Cherrim~d|Shellos~c|Gastrodon~ci|Ambipom~a|Drifloon~nj|Drifblim~nj|Buneary~a|Lopunny~a|Mismagius~n|Honchkrow~pj|Glameow~a|Purugly~a|Chingling~k|Stunky~hp|Skuntank~hp|Bronzor~qk|Bronzong~qk|Bonsly~m|Mime Jr.~kr|Happiny~a|Chatot~aj|Spiritomb~np|Gible~oi|Gabite~oi|Garchomp~oi|Munchlax~a|Riolu~g|Lucario~gq|Hippopotas~i|Hippowdon~i|Skorupi~hl|Drapion~hp|Croagunk~hg|Toxicroak~hg|Carnivine~d|Finneon~c|Lumineon~c|Mantyke~cj|Snover~df|Abomasnow~df|Weavile~pf|Magnezone~eq|Lickilicky~a|Rhyperior~im|Tangrowth~d|Electivire~e|Magmortar~b|Togekiss~rj|Yanmega~lj|Leafeon~d|Glaceon~f|Gliscor~ij|Mamoswine~fi|Porygon-Z~a|Gallade~kg|Probopass~mq|Dusknoir~n|Froslass~fn|Rotom~en|Uxie~k|Mesprit~k|Azelf~k|Dialga~qo|Palkia~co|Heatran~bq|Regigigas~a|Giratina~no|Cresselia~k|Phione~c|Manaphy~c|Darkrai~p|Shaymin~d|Arceus~a|Victini~kb|Snivy~d|Servine~d|Serperior~d|Tepig~b|Pignite~bg|Emboar~bg|Oshawott~c|Dewott~c|Samurott~c|Patrat~a|Watchog~a|Lillipup~a|Herdier~a|Stoutland~a|Purrloin~p|Liepard~p|Pansage~d|Simisage~d|Pansear~b|Simisear~b|Panpour~c|Simipour~c|Munna~k|Musharna~k|Pidove~aj|Tranquill~aj|Unfezant~aj|Blitzle~e|Zebstrika~e|Roggenrola~m|Boldore~m|Gigalith~m|Woobat~kj|Swoobat~kj|Drilbur~i|Excadrill~iq|Audino~a|Timburr~g|Gurdurr~g|Conkeldurr~g|Tympole~c|Palpitoad~ci|Seismitoad~ci|Throh~g|Sawk~g|Sewaddle~ld|Swadloon~ld|Leavanny~ld|Venipede~lh|Whirlipede~lh|Scolipede~lh|Cottonee~dr|Whimsicott~dr|Petilil~d|Lilligant~d|Basculin~c|Sandile~ip|Krokorok~ip|Krookodile~ip|Darumaka~b|Darmanitan~b|Maractus~d|Dwebble~lm|Crustle~lm|Scraggy~pg|Scrafty~pg|Sigilyph~kj|Yamask~n|Cofagrigus~n|Tirtouga~cm|Carracosta~cm|Archen~mj|Archeops~mj|Trubbish~h|Garbodor~h|Zorua~p|Zoroark~p|Minccino~a|Cinccino~a|Gothita~k|Gothorita~k|Gothitelle~k|Solosis~k|Duosion~k|Reuniclus~k|Ducklett~cj|Swanna~cj|Vanillite~f|Vanillish~f|Vanilluxe~f|Deerling~ad|Sawsbuck~ad|Emolga~ej|Karrablast~l|Escavalier~lq|Foongus~dh|Amoonguss~dh|Frillish~cn|Jellicent~cn|Alomomola~c|Joltik~le|Galvantula~le|Ferroseed~dq|Ferrothorn~dq|Klink~q|Klang~q|Klinklang~q|Tynamo~e|Eelektrik~e|Eelektross~e|Elgyem~k|Beheeyem~k|Litwick~nb|Lampent~nb|Chandelure~nb|Axew~o|Fraxure~o|Haxorus~o|Cubchoo~f|Beartic~f|Cryogonal~f|Shelmet~l|Accelgor~l|Stunfisk~ie|Mienfoo~g|Mienshao~g|Druddigon~o|Golett~in|Golurk~in|Pawniard~pq|Bisharp~pq|Bouffalant~a|Rufflet~aj|Braviary~aj|Vullaby~pj|Mandibuzz~pj|Heatmor~b|Durant~lq|Deino~po|Zweilous~po|Hydreigon~po|Larvesta~lb|Volcarona~lb|Cobalion~qg|Terrakion~mg|Virizion~dg|Tornadus~j|Thundurus~ej|Reshiram~ob|Zekrom~oe|Landorus~ij|Kyurem~of|Keldeo~cg|Meloetta~ak|Genesect~lq|Chespin~d|Quilladin~d|Chesnaught~dg|Fennekin~b|Braixen~b|Delphox~bk|Froakie~c|Frogadier~c|Greninja~cp|Bunnelby~a|Diggersby~ai|Fletchling~aj|Fletchinder~bj|Talonflame~bj|Scatterbug~l|Spewpa~l|Vivillon~lj|Litleo~ba|Pyroar~ba|Flabébé~r|Floette~r|Florges~r|Skiddo~d|Gogoat~d|Pancham~g|Pangoro~gp|Furfrou~a|Espurr~k|Meowstic~k|Honedge~qn|Doublade~qn|Aegislash~qn|Spritzee~r|Aromatisse~r|Swirlix~r|Slurpuff~r|Inkay~pk|Malamar~pk|Binacle~mc|Barbaracle~mc|Skrelp~hc|Dragalge~ho|Clauncher~c|Clawitzer~c|Helioptile~ea|Heliolisk~ea|Tyrunt~mo|Tyrantrum~mo|Amaura~mf|Aurorus~mf|Sylveon~r|Hawlucha~gj|Dedenne~er|Carbink~mr|Goomy~o|Sliggoo~o|Goodra~o|Klefki~qr|Phantump~nd|Trevenant~nd|Pumpkaboo~nd|Gourgeist~nd|Bergmite~f|Avalugg~f|Noibat~jo|Noivern~jo|Xerneas~r|Yveltal~pj|Zygarde~oi|Diancie~mr|Hoopa~kn|Volcanion~bc|Rowlet~dj|Dartrix~dj|Decidueye~dn|Litten~b|Torracat~b|Incineroar~bp|Popplio~c|Brionne~c|Primarina~cr|Pikipek~aj|Trumbeak~aj|Toucannon~aj|Yungoos~a|Gumshoos~a|Grubbin~l|Charjabug~le|Vikavolt~le|Crabrawler~g|Crabominable~gf|Oricorio~bj|Cutiefly~lr|Ribombee~lr|Rockruff~m|Lycanroc~m|Wishiwashi~c|Mareanie~hc|Toxapex~hc|Mudbray~i|Mudsdale~i|Dewpider~cl|Araquanid~cl|Fomantis~d|Lurantis~d|Morelull~dr|Shiinotic~dr|Salandit~hb|Salazzle~hb|Stufful~ag|Bewear~ag|Bounsweet~d|Steenee~d|Tsareena~d|Comfey~r|Oranguru~ak|Passimian~g|Wimpod~lc|Golisopod~lc|Sandygast~ni|Palossand~ni|Pyukumuku~c|Type: Null~a|Silvally~a|Minior~mj|Komala~a|Turtonator~bo|Togedemaru~eq|Mimikyu~nr|Bruxish~ck|Drampa~ao|Dhelmise~nd|Jangmo-o~o|Hakamo-o~og|Kommo-o~og|Tapu Koko~er|Tapu Lele~kr|Tapu Bulu~dr|Tapu Fini~cr|Cosmog~k|Cosmoem~k|Solgaleo~kq|Lunala~kn|Nihilego~mh|Buzzwole~lg|Pheromosa~lg|Xurkitree~e|Celesteela~qj|Kartana~dq|Guzzlord~po|Necrozma~k|Magearna~qr|Marshadow~gn|Poipole~h|Naganadel~ho|Stakataka~mq|Blacephalon~bn|Zeraora~e|Meltan~q|Melmetal~q|Grookey~d|Thwackey~d|Rillaboom~d|Scorbunny~b|Raboot~b|Cinderace~b|Sobble~c|Drizzile~c|Inteleon~c|Skwovet~a|Greedent~a|Rookidee~j|Corvisquire~j|Corviknight~jq|Blipbug~l|Dottler~lk|Orbeetle~lk|Nickit~p|Thievul~p|Gossifleur~d|Eldegoss~d|Wooloo~a|Dubwool~a|Chewtle~c|Drednaw~cm|Yamper~e|Boltund~e|Rolycoly~m|Carkol~mb|Coalossal~mb|Applin~do|Flapple~do|Appletun~do|Silicobra~i|Sandaconda~i|Cramorant~jc|Arrokuda~c|Barraskewda~c|Toxel~eh|Toxtricity~eh|Sizzlipede~bl|Centiskorch~bl|Clobbopus~g|Grapploct~g|Sinistea~n|Polteageist~n|Hatenna~k|Hattrem~k|Hatterene~kr|Impidimp~pr|Morgrem~pr|Grimmsnarl~pr|Obstagoon~pa|Perrserker~q|Cursola~n|Sirfetch’d~g|Mr. Rime~fk|Runerigus~in|Milcery~r|Alcremie~r|Falinks~g|Pincurchin~e|Snom~fl|Frosmoth~fl|Stonjourner~m|Eiscue~f|Indeedee~ka|Morpeko~ep|Cufant~q|Copperajah~q|Dracozolt~eo|Arctozolt~ef|Dracovish~co|Arctovish~cf|Duraludon~qo|Dreepy~on|Drakloak~on|Dragapult~on|Zacian~r|Zamazenta~g|Eternatus~ho|Kubfu~g|Urshifu~gp|Zarude~pd|Regieleki~e|Regidrago~o|Glastrier~f|Spectrier~n|Calyrex~kd|Wyrdeer~ak|Kleavor~lm|Ursaluna~ia|Basculegion~cn|Sneasler~gh|Overqwil~ph|Enamorus~rj|Sprigatito~d|Floragato~d|Meowscarada~dp|Fuecoco~b|Crocalor~b|Skeledirge~bn|Quaxly~c|Quaxwell~c|Quaquaval~cg|Lechonk~a|Oinkologne~a|Tarountula~l|Spidops~l|Nymble~l|Lokix~lp|Pawmi~e|Pawmo~eg|Pawmot~eg|Tandemaus~a|Maushold~a|Fidough~r|Dachsbun~r|Smoliv~da|Dolliv~da|Arboliva~da|Squawkabilly~aj|Nacli~m|Naclstack~m|Garganacl~m|Charcadet~b|Armarouge~bk|Ceruledge~bn|Tadbulb~e|Bellibolt~e|Wattrel~ej|Kilowattrel~ej|Maschiff~p|Mabosstiff~p|Shroodle~ha|Grafaiai~ha|Bramblin~dn|Brambleghast~dn|Toedscool~id|Toedscruel~id|Klawf~m|Capsakid~d|Scovillain~db|Rellor~l|Rabsca~lk|Flittle~k|Espathra~k|Tinkatink~rq|Tinkatuff~rq|Tinkaton~rq|Wiglett~c|Wugtrio~c|Bombirdier~jp|Finizen~c|Palafin~c|Varoom~qh|Revavroom~qh|Cyclizar~oa|Orthworm~q|Glimmet~mh|Glimmora~mh|Greavard~n|Houndstone~n|Flamigo~jg|Cetoddle~f|Cetitan~f|Veluza~ck|Dondozo~c|Tatsugiri~oc|Annihilape~gn|Clodsire~hi|Farigiraf~ak|Dudunsparce~a|Kingambit~pq|Great Tusk~ig|Scream Tail~rk|Brute Bonnet~dp|Flutter Mane~nr|Slither Wing~lg|Sandy Shocks~ei|Iron Treads~iq|Iron Bundle~fc|Iron Hands~ge|Iron Jugulis~pj|Iron Moth~bh|Iron Thorns~me|Frigibax~of|Arctibax~of|Baxcalibur~of|Gimmighoul~n|Gholdengo~qn|Wo-Chien~pd|Chien-Pao~pf|Ting-Lu~pi|Chi-Yu~pb|Roaring Moon~op|Iron Valiant~rg|Koraidon~go|Miraidon~eo|Walking Wake~co|Iron Leaves~dk|Dipplin~do|Poltchageist~dn|Sinistcha~dn|Okidogi~hg|Munkidori~hk|Fezandipiti~hr|Ogerpon~d|Archaludon~qo|Hydrapple~do|Gouging Fire~bo|Raging Bolt~eo|Iron Boulder~mk|Iron Crown~qk|Terapagos~a|Pecharunt~hn';
@@ -354,28 +474,38 @@ const mini = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/spr
 const ALCREMIE = 869, MILCERY = 868, ALC_VMAX = 10223;
 function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('detetive:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
 function gravar(k, v){ try{ localStorage.setItem('detetive:' + k, JSON.stringify(v)); }catch(e){} }
-const embaralhar = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const sorteia = a => a[Math.floor(Math.random() * a.length)];
+function sorteador(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+let rnd = Math.random;
+const embaralhar = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sorteia = a => a[Math.floor(rnd() * a.length)];
 const num = x => x.toLocaleString('pt-BR');
 const kg = p => num(p.peso / 10) + ' kg', metros = p => num(p.alt / 10) + ' m';
 const numCaso = n => '#' + String(n).padStart(4, '0');
 
 /* ---------- 🕵️ quem você é ---------- */
-const DETETIVES = [25, 133, 448, 58, 54, 164, 197, 196, 658, 4, 7, 1, 150, 94, 906, 282, 700, 143];
+const DETETIVES = [25, 448, 58, 54, 164, 197, 196, 658, 4, 7, 1, 150, 94, 906, 282, 700, 143, 172];
+/* detetives que se compram na loja com 🍰 migalhas */
+const DETETIVES_LOJA = [[257, 60], [445, 80], [384, 150], [491, 120], [571, 100], [887, 100], [959, 60], [778, 80], [395, 60], [6, 70], [9, 70], [3, 70]];
+const TODOS_DETETIVES = [...DETETIVES, ...DETETIVES_LOJA.map(d => d[0])];
+/* ---------- 👤 perfil ---------- */
+const perfil = Object.assign({ apelido:'', fundo:'papel', moldura:'nenhuma', titulo:'curioso', adm:false }, ler('perfil', {}));
+perfil.tem = Object.assign({ fundos:[], molduras:[], titulos:[], detetives:[] }, perfil.tem || {});
+Object.keys(perfil.tem).forEach(k => { if(!Array.isArray(perfil.tem[k])) perfil.tem[k] = []; });
+const temDetetive = id => DETETIVES.includes(id) || perfil.tem.detetives.includes(id);
 
 /* ---------- guardado ---------- */
 const cfg = Object.assign({ nivel:'facil', som:true, esconder:false, detetive:25 }, ler('cfg', {}));
 if(!['facil', 'medio', 'dificil'].includes(cfg.nivel)) cfg.nivel = 'facil';
-if(!DETETIVES.includes(cfg.detetive)) cfg.detetive = 25;
+if(!temDetetive(cfg.detetive)) cfg.detetive = 25;
 const stats = Object.assign({ casos:0, estrelas:0, pontos:0, seq:0, melhorSeq:0, perfeitos:0, dificil:0, medio:0, rapidos:0, lendarios:0, lupas:0, semLupa:0,
-  interrogatorios:0, especiais:0, presos:{}, cenas:[] }, ler('stats', {}));
+  interrogatorios:0, especiais:0, presos:{}, cenas:[], migalhas:0, xpBonus:0, desafios:0 }, ler('stats', {}));
 if(!stats.presos || typeof stats.presos !== 'object') stats.presos = {};
 if(!Array.isArray(stats.cenas)) stats.cenas = [];
 const salvar = () => gravar('stats', stats);
 
 /* ---------- personagens especiais: vêm junto dos 10, mas quase nunca são culpados ---------- */
 const EEVEE = 133;
-const ESPECIAIS = [143, 132, 54, 52, 39, 79, 446, 175, 25];   // Snorlax, Ditto, Psyduck, Meowth, Jigglypuff, Slowpoke, Munchlax, Togepi, Pikachu
+const ESPECIAIS = [132, 52, 39, 79, 446, 175, 35, 113];   // Ditto, Meowth, Jigglypuff, Slowpoke, Munchlax, Togepi, Clefairy, Chansey
 const CHANCE_ESPECIAL = 0.000001;   // 0,0001% = 1 em 1 milhão
 
 /* ---------- o relatório ---------- */
@@ -470,17 +600,20 @@ function pistasPossiveis(c, sus){
   new Set(outros.map(s => s.nome[0].toUpperCase())).forEach(l => { if(l !== ini) L.push({ cat:'letra', txt:`🔤 A análise da assinatura mostra: o nome <b>não começa com ${l}</b>.`, fato:`tinha um nome que <b>não começava com ${l}</b>`, f:p => p.nome[0].toUpperCase() !== l }); });
   return L;
 }
-function montarCaso(nivel){
-  const N = NIVEIS[nivel], eu = cfg.detetive;
-  const especiais = ESPECIAIS.filter(id => id !== eu);
-  const fora = new Set([ALCREMIE, MILCERY, EEVEE, eu, ...ESPECIAIS]);
+function montarCaso(nivel, seed, forcarEspecial){
+  const antes = rnd; rnd = sorteador(seed);
+  try{ return montarCasoSemente(nivel, forcarEspecial); } finally{ rnd = antes; }
+}
+function montarCasoSemente(nivel, forcarEspecial){
+  const N = NIVEIS[nivel];
+  const fora = new Set([ALCREMIE, MILCERY, EEVEE, ...ESPECIAIS, ...TODOS_DETETIVES]);   // quem investiga nunca é suspeito
   const base = N.base().filter(p => !fora.has(p.id));
   for(let tent = 0; tent < 400; tent++){
     const dez = embaralhar(base.slice()).slice(0, 10);
-    const escolhidos = eu === EEVEE ? embaralhar(especiais.slice()).slice(0, 2) : [EEVEE, sorteia(especiais)];
-    const esp = escolhidos.map(id => POKE[id - 1]);
+    const esp = [EEVEE, sorteia(ESPECIAIS)].map(id => POKE[id - 1]);
     const sus = [...dez, ...esp];
-    const c = Math.random() < CHANCE_ESPECIAL ? sorteia(esp) : sorteia(dez);
+    const sorteEsp = rnd();
+    const c = forcarEspecial || sorteEsp < CHANCE_ESPECIAL ? sorteia(esp) : sorteia(dez);
     const todas = pistasPossiveis(c, sus), usadas = [], cats = {};
     let resto = sus.filter(s => s !== c), deu = true;
     while(resto.length){
@@ -489,14 +622,14 @@ function montarCaso(nivel){
       /* no fácil a pista tira bastante gente; no difícil tira pouca (precisa pensar mais) */
       let lista = cand;
       if(nivel === 'facil') lista = cand.sort((a, b) => b.k - a.k).slice(0, 3);
-      else if(nivel === 'dificil'){ const poucos = cand.filter(x => x.k <= 2); if(poucos.length && Math.random() < .6) lista = poucos; }
+      else if(nivel === 'dificil'){ const poucos = cand.filter(x => x.k <= 2); if(poucos.length && rnd() < .6) lista = poucos; }
       const pick = sorteia(lista).p;
       usadas.push(pick); cats[pick.cat] = (cats[pick.cat] || 0) + 1; resto = resto.filter(s => pick.f(s));
     }
     if(deu && usadas.length >= N.min && usadas.length <= N.max){
-      const [lugar, onde] = sorteia(LUGARES), h = 18 + Math.floor(Math.random() * 6), m = Math.floor(Math.random() * 60);
+      const [lugar, onde] = sorteia(LUGARES), h = 18 + Math.floor(rnd() * 6), m = Math.floor(rnd() * 60);
       return { sus, especiais:new Set(esp.map(p => p.id)), culpado:c, pistas:usadas, todas, lugar, onde, hora:`${h}h${String(m).padStart(2, '0')}`,
-        clima:sorteia(CLIMA), achou:sorteia(QUEM_ACHOU), achado:sorteia(ACHADO), cena:Math.floor(Math.random() * CENAS.length) };
+        clima:sorteia(CLIMA), achou:sorteia(QUEM_ACHOU), achado:sorteia(ACHADO), cena:Math.floor(rnd() * CENAS.length) };
     }
   }
   return null;
@@ -526,7 +659,7 @@ function salvarCaso(){
   const idx = p => caso.todas.indexOf(p);
   gravar('caso', { v:1, sus:caso.sus.map(s => s.id), esp:[...caso.especiais], culpado:caso.culpado.id, pistas:caso.pistas.map(idx), depoUsadas:(caso.usadasDepo || []).map(idx),
     mostradas:caso.mostradas, erros:caso.erros, pericias:caso.pericias, inter:caso.inter, riscados:[...caso.riscados], depo:caso.depo, depoimentos:caso.depoimentos,
-    nivel:caso.nivel, numero:caso.numero, lugar:caso.lugar, onde:caso.onde, hora:caso.hora, clima:caso.clima, achou:caso.achou, achado:caso.achado, cena:caso.cena, quando:Date.now() });
+    nivel:caso.nivel, numero:caso.numero, seed:caso.seed, desafio:caso.desafio || null, admForcado:!!caso.admForcado, lugar:caso.lugar, onde:caso.onde, hora:caso.hora, clima:caso.clima, achou:caso.achou, achado:caso.achado, cena:caso.cena, quando:Date.now() });
 }
 function carregarCaso(){
   const g = ler('caso', null);
@@ -538,7 +671,7 @@ function carregarCaso(){
     if(pistas.some(x => !x) || !sus.every(s => s === c || pistas.some(p => !p.f(s)))) return null;   // confere se as pistas ainda funcionam
     return { sus, especiais:new Set(g.esp), culpado:c, todas, pistas, usadasDepo:g.depoUsadas.map(i => todas[i]).filter(Boolean),
       mostradas:g.mostradas, erros:g.erros, pericias:g.pericias, inter:g.inter, riscados:new Set(g.riscados), depo:g.depo || {}, depoimentos:g.depoimentos || [],
-      fim:false, nivel:g.nivel, numero:g.numero, lugar:g.lugar, onde:g.onde, hora:g.hora, clima:g.clima, achou:g.achou, achado:g.achado, cena:g.cena, quando:g.quando };
+      fim:false, nivel:g.nivel, numero:g.numero, seed:g.seed, desafio:g.desafio || null, admForcado:!!g.admForcado, lugar:g.lugar, onde:g.onde, hora:g.hora, clima:g.clima, achou:g.achou, achado:g.achado, cena:g.cena, quando:g.quando };
   }catch(e){ return null; }
 }
 
@@ -546,16 +679,21 @@ function carregarCaso(){
 const MAX_INTER = 3;
 let caso = null;
 const eu = () => POKE[cfg.detetive - 1];
-function trocarTela(t){ ['inicio', 'caso'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
+function trocarTela(t){ ['inicio', 'caso', 'loja', 'amigos'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
 function comecar(){
   const salvo = carregarCaso();
   if(salvo) caso = salvo;
   else{
-    const m = montarCaso(cfg.nivel);
-    if(!m){ alert('Não consegui montar esse caso. Tente de novo!'); return; }
-    caso = Object.assign(m, { mostradas:1, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel:cfg.nivel, numero:stats.casos + 1 });
+    const seed = Math.floor(Math.random() * 2147483647) + 1, forcar = admEspecial; admEspecial = false;
+    if(!novoCaso(cfg.nivel, seed, null, forcar)) return;
   }
   abrirCaso(!!salvo);
+}
+function novoCaso(nivel, seed, desafio, forcar){
+  const m = montarCaso(nivel, seed, forcar);
+  if(!m){ alert('Não consegui montar esse caso. Tente de novo!'); return false; }
+  caso = Object.assign(m, { mostradas:1, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel, numero:stats.casos + 1, seed, desafio, admForcado:!!forcar });
+  return true;
 }
 function abrirCaso(continuando){
   $('c-num').textContent = numCaso(caso.numero);
@@ -619,7 +757,7 @@ function desenharSuspeitos(){
 /* 🎤 interrogatório: o inocente mostra o álibi ou conta o que viu; o culpado enrola */
 function interrogar(s){
   if(!caso || caso.fim || caso.depo[s.id] || caso.inter >= MAX_INTER) return;
-  caso.inter++; stats.interrogatorios++; salvar(); somInter();
+  caso.inter++; stats.interrogatorios++; salvar(); somInter(); avancarMissao('inter', 1);
   let fala, ok = false, extra = '';
   if(s === caso.culpado){
     fala = sorteia(ALIBI_FRACO);
@@ -675,6 +813,7 @@ function resolver(){
   if(esp) stats.especiais++;
   if(caso.pericias) stats.lupas += caso.pericias; else stats.semLupa++;
   salvar();
+  const extra = aoResolver(c, pts, est, esp);
   somResolvido(); setTimeout(() => grito(c.id), 700);
   $('relatorio').querySelector('.carimbo').textContent = 'ENCERRADO';
   $('dlg-corpo').innerHTML = `
@@ -685,10 +824,12 @@ function resolver(){
     <div class="fala"><b>Confissão de ${c.nome}</b>${sorteia(CONFISSOES)}</div>
     <div class="fala"><b>Detetive ${eu().nome}</b>Caso resolvido. A Alcremie VMAX foi devolvida em segurança, e ${c.nome} ${sorteia(SENTENCAS)}.</div>
     <div class="estrelas">${'⭐'.repeat(est)}${'☆'.repeat(3 - est)}</div>
-    <p class="pts">+${pts} pontos${sobra ? ` · 🔬 ${sobra > 1 ? `sobraram ${sobra} pistas` : 'sobrou 1 pista'} (bônus)` : ''}</p>
+    <p class="pts">+${pts} pontos${sobra ? ` · 🔬 ${sobra > 1 ? `sobraram ${sobra} pistas` : 'sobrou 1 pista'} (bônus)` : ''} · 🍰 +${extra.migalhas}</p>
+    ${extra.html}
     <button type="button" class="grande" id="proximo-caso">📂 Próximo caso</button>
     <button type="button" class="mini" id="voltar-inicio">🏠 Voltar pro arquivo</button>`;
   $('proximo-caso').onclick = () => { $('dlg').close(); comecar(); };
+  const bd = $('desafiar'); if(bd) bd.onclick = () => { if(guardarDesafio) guardarDesafio(); mandarCodigo(extra.codigo, 'desafio'); };
   $('voltar-inicio').onclick = () => { $('dlg').close(); caso = null; mostrarInicio(); trocarTela('inicio'); };
   $('dlg').showModal();
   caso.sus.forEach(s => { if(s !== c) caso.riscados.add(s.id); });
@@ -713,13 +854,6 @@ $('dlg').addEventListener('cancel', ev => { if(caso && caso.fim) ev.preventDefau
 
 /* ---------- 🕵️ escolher detetive ---------- */
 function mostrarDetetive(){ $('meu-img').src = arte(cfg.detetive); $('meu-nome').textContent = `Detetive ${eu().nome}`; }
-$('trocar-detetive').onclick = () => {
-  $('dlg-corpo').innerHTML = `<h2>Escolha seu detetive</h2><div class="escolhas">${DETETIVES.map(id => `<button type="button" data-id="${id}" aria-pressed="${id === cfg.detetive}"><img loading="lazy" alt="" src="${arte(id)}">${POKE[id - 1].nome}</button>`).join('')}</div>
-    <button type="button" class="mini" id="fechar-dlg">Fechar</button>`;
-  $('dlg-corpo').querySelector('.escolhas').onclick = ev => { const b = ev.target.closest('[data-id]'); if(!b) return; cfg.detetive = +b.dataset.id; gravar('cfg', cfg); mostrarDetetive(); grito(cfg.detetive); $('dlg').close(); toast(`🕵️ Agora você é o Detetive ${eu().nome}!`); };
-  $('fechar-dlg').onclick = () => $('dlg').close();
-  $('dlg').showModal();
-};
 
 /* ---------- carreira ---------- */
 const PATENTES = [{ c:0, e:'🔍', n:'Detetive Novato' }, { c:5, e:'🔎', n:'Detetive Júnior' }, { c:15, e:'🕵️', n:'Investigador' }, { c:30, e:'👮', n:'Inspetor' },
@@ -764,7 +898,7 @@ function mostrarInicio(){
   $('gal-cont').textContent = `${ids.length}/1025`;
   $('galeria').innerHTML = ids.length ? ids.map(id => `<div title="${POKE[id - 1].nome}"><img loading="lazy" alt="" src="${mini(id)}">${POKE[id - 1].nome}${stats.presos[id] > 1 ? `<em>×${stats.presos[id]}</em>` : ''}</div>`).join('')
     : '<p style="grid-column:1/-1;font-size:.85rem">Nenhum culpado fichado ainda.</p>';
-  mostrarDetetive();
+  mostrarDetetive(); mostrarHeroi(); mostrarMissoes();
 }
 $('niveis').onclick = ev => { const b = ev.target.closest('[data-nivel]'); if(!b) return; cfg.nivel = b.dataset.nivel; gravar('cfg', cfg); mostrarInicio(); };
 const btSom = $('som');
@@ -781,7 +915,382 @@ function aplicarTema(t){
 aplicarTema(ler('tema', null));
 btTema.onclick = () => { const t = estaEscuro() ? 'claro' : 'escuro'; gravar('tema', t); aplicarTema(t); };
 
-marcarSom(); checarDistintivos(); mostrarInicio();
+/* =========================================================================
+   Coisas do "Quem é esse Pokémon", com jeito de detetive:
+   👤 perfil e nível · 🍰 migalhas · 🛒 loja · 🎯 missões · 📅 prêmio do dia ·
+   👥 amigos por código · ⚔️ desafio com o mesmo caso · 🔎 arquivo · 📜 casos · 👑 Jojo adm
+   ========================================================================= */
+const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const paraB64 = obj => { const b = new TextEncoder().encode(JSON.stringify(obj)); let s = ''; b.forEach(x => { s += String.fromCharCode(x); }); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+const deB64 = t => { const s = atob(t.replace(/-/g, '+').replace(/_/g, '/')); return JSON.parse(new TextDecoder().decode(Uint8Array.from(s, c => c.charCodeAt(0)))); };
+function bitsDe(ids){ const b = new Uint8Array(129); ids.forEach(id => { if(id >= 1 && id <= 1025) b[(id - 1) >> 3] |= 1 << ((id - 1) & 7); }); let s = ''; b.forEach(x => { s += String.fromCharCode(x); }); return btoa(s); }
+function idsDe(bits){ const out = []; try{ const s = atob(bits); for(let i = 0; i < 1025; i++) if(s.charCodeAt(i >> 3) & (1 << (i & 7))) out.push(i + 1); }catch(e){} return out; }
+const diaLocal = d => new Date(d).toLocaleDateString('sv-SE');
+const dataBR = t => new Date(t).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+
+/* ---------- 🍰 migalhas e ⭐ nível ---------- */
+const migalhas = () => stats.migalhas || 0;
+function ganharMigalhas(n){ stats.migalhas = migalhas() + n; salvar(); mostrarHeroi(); }
+const xpTotal = () => stats.pontos + (stats.xpBonus || 0);
+const xpPara = n => 50 * n * (n - 1);
+function nivelDe(xp){ let n = 1; while(xp >= xpPara(n + 1)) n++; return n; }
+function darXP(q){ const antes = nivelDe(xpTotal()); stats.xpBonus = (stats.xpBonus || 0) + q; salvar(); checarNivel(antes); }
+function checarNivel(antes){ const agora = nivelDe(xpTotal()); if(agora > antes){ toast(`⭐ Subiu pro nível ${agora}! +${agora * 5} 🍰`); stats.migalhas = migalhas() + agora * 5; salvar(); } mostrarHeroi(); }
+
+/* ---------- 🛒 catálogo ---------- */
+const FUNDOS = {
+  papel:{ n:'Papel de arquivo', p:0, css:'linear-gradient(135deg,#fffdf6,#efe6cf)' },
+  noite:{ n:'Noite chuvosa', p:30, css:'repeating-linear-gradient(105deg,rgba(255,255,255,.07) 0 2px,transparent 2px 14px),linear-gradient(160deg,#1b2436,#3a4a66)', escuro:true },
+  delegacia:{ n:'Delegacia', p:40, css:'linear-gradient(160deg,#2f3b2f,#556b4f)', escuro:true },
+  biblioteca:{ n:'Biblioteca antiga', p:50, css:'repeating-linear-gradient(90deg,#6b4226 0 18px,#5a3620 18px 22px),linear-gradient(#5b3a22,#8a5a32)', escuro:true },
+  confeitaria:{ n:'Confeitaria', p:60, css:'radial-gradient(circle at 20% 20%,#fff 0 6%,transparent 7%),radial-gradient(circle at 80% 60%,#fff 0 5%,transparent 6%),linear-gradient(135deg,#ffd6e8,#ffb3d1)' },
+  neon:{ n:'Cidade neon', p:80, css:'linear-gradient(160deg,#2a0f4d,#0f4d63)', escuro:true },
+  lua:{ n:'Lua cheia', p:100, css:'radial-gradient(circle at 80% 22%,#fff7c2 0 12%,transparent 13%),linear-gradient(#0b1026,#27305e)', escuro:true },
+  ouro:{ n:'Arquivo dourado', p:150, css:'linear-gradient(135deg,#f7df8a,#c9951c,#f7df8a)' } };
+const MOLDURAS = {
+  nenhuma:{ n:'Sem moldura', p:0, css:'' }, madeira:{ n:'Madeira', p:20, css:'box-shadow:0 0 0 5px #8a5a2b' },
+  prata:{ n:'Prata', p:40, css:'box-shadow:0 0 0 5px #c0c6cc,0 0 0 7px #7d858c' }, policia:{ n:'Faixa policial', p:60, css:'box-shadow:0 0 0 5px #ffcb05,0 0 0 8px #1f1c17' },
+  ouro:{ n:'Ouro', p:80, css:'box-shadow:0 0 0 5px #e2b84a,0 0 14px #e2b84a' }, arco:{ n:'Arco-íris', p:120, css:'box-shadow:0 0 0 3px #e3350d,0 0 0 6px #ffcb05,0 0 0 9px #2e7d4f,0 0 0 12px #2f5d8a' } };
+const TITULOS = {
+  curioso:{ n:'🔍 Curioso', p:0 }, farejador:{ n:'👃 Farejador de Migalhas', p:20 }, lupa:{ n:'🔎 Olho de Lupa', p:30 }, cacador:{ n:'🍰 Caçador de Bolos', p:40 },
+  amigo:{ n:'🧁 Amigo da Alcremie', p:50 }, inspetor:{ n:'🎩 Inspetor Chefe', p:60 }, sombra:{ n:'🌑 Mestre das Sombras', p:80 }, lenda:{ n:'👑 Lenda do Departamento', p:150 } };
+if(!FUNDOS[perfil.fundo]) perfil.fundo = 'papel';
+if(!MOLDURAS[perfil.moldura]) perfil.moldura = 'nenhuma';
+if(!TITULOS[perfil.titulo]) perfil.titulo = 'curioso';
+const salvarPerfil = () => gravar('perfil', perfil);
+const tem = (cat, k) => (cat === 'fundos' ? FUNDOS : cat === 'molduras' ? MOLDURAS : TITULOS)[k].p === 0 || perfil.tem[cat].includes(k);
+const precoDetetive = id => (DETETIVES_LOJA.find(d => d[0] === id) || [0, 0])[1];
+function comprar(cat, k, preco){
+  if(migalhas() < preco){ toast(`🍰 Faltam ${preco - migalhas()} migalhas!`); return false; }
+  stats.migalhas = migalhas() - preco; salvar(); perfil.tem[cat].push(k); salvarPerfil(); mostrarHeroi(); tocar([660, 880, 1100], .08); return true;
+}
+
+/* ---------- 👤 cartão do perfil (o seu ou o de um amigo) ---------- */
+function meuPerfil(){
+  return { a:perfil.apelido || 'Detetive', d:cfg.detetive, f:perfil.fundo, m:perfil.moldura, t:perfil.titulo, nv:nivelDe(xpTotal()), c:stats.casos, e:stats.estrelas, p:stats.pontos,
+    g:bitsDe(Object.keys(stats.presos).map(Number)), adm:!!(perfil.adm && admLiberado()) };
+}
+function cartaoPerfil(o){
+  const F = FUNDOS[o.f] || FUNDOS.papel, M = MOLDURAS[o.m] || MOLDURAS.nenhuma, T = TITULOS[o.t] || TITULOS.curioso;
+  return `<div class="cartao-perfil${F.escuro ? ' escuro' : ''}" style="background:${F.css}">
+    <img class="av" src="${arte(o.d)}" alt="" style="${M.css}">
+    <h3>${esc(o.a)}${o.adm ? ' 👑' : ''}</h3><div class="tit">${esc(T.n)} · Nível ${o.nv}</div>
+    <div class="nums"><div><b>${o.c}</b>📁 casos</div><div><b>${o.e}</b>⭐ estrelas</div><div><b>${o.p}</b>🏅 pontos</div><div><b>${idsDe(o.g).length}</b>🚨 fichados</div></div></div>`;
+}
+function mostrarHeroi(){
+  $('perfil-img').src = arte(cfg.detetive); $('perfil-img').style.cssText = (MOLDURAS[perfil.moldura] || {}).css || '';
+  $('perfil-nome').textContent = (perfil.apelido || 'Detetive sem nome') + (perfil.adm && admLiberado() ? ' 👑' : '');
+  $('perfil-tit').textContent = TITULOS[perfil.titulo].n;
+  const xp = xpTotal(), n = nivelDe(xp), a = xpPara(n), b = xpPara(n + 1);
+  $('xp-nivel').textContent = `⭐ Nível ${n}`; $('xp-barra').style.width = ((xp - a) / (b - a) * 100) + '%'; $('xp-txt').textContent = `${xp - a}/${b - a} XP pro nível ${n + 1}`;
+  $('migalhas').textContent = `🍰 ${migalhas()}`; $('loja-saldo').textContent = `🍰 ${migalhas()} migalhas`;
+}
+function abrirPerfil(){
+  $('dlg-corpo').innerHTML = `<h2>Meu perfil</h2>${cartaoPerfil(meuPerfil())}
+    <label style="display:block;text-align:left;margin-top:12px;font-weight:700;font-size:.85rem">Apelido (não use o seu nome de verdade)
+    <input type="text" id="apelido" maxlength="14" value="${esc(perfil.apelido)}" placeholder="Ex.: Lupa Veloz" autocomplete="off"></label>
+    <button type="button" class="mini" id="perfil-detetive">🕵️ Trocar detetive</button>
+    <button type="button" class="mini" id="perfil-loja">🛒 Enfeitar na loja</button>
+    <button type="button" class="grande" id="fechar-dlg">✅ Pronto</button>`;
+  $('apelido').oninput = ev => { perfil.apelido = ev.target.value.replace(/[<>]/g, '').trim().slice(0, 14); salvarPerfil(); mostrarHeroi(); };
+  $('perfil-detetive').onclick = () => { $('dlg').close(); escolherDetetive(); };
+  $('perfil-loja').onclick = () => { $('dlg').close(); abrirLoja('fundos'); };
+  $('fechar-dlg').onclick = () => $('dlg').close();
+  $('dlg').showModal();
+}
+$('perfil-bt').onclick = abrirPerfil;
+
+/* ---------- 🕵️ escolher detetive (os de graça + os da loja) ---------- */
+function escolherDetetive(){
+  const botao = id => { const livre = temDetetive(id), preco = precoDetetive(id);
+    return `<button type="button" data-id="${id}" aria-pressed="${id === cfg.detetive}" class="${livre ? '' : 'travado'}"><img loading="lazy" alt="" src="${arte(id)}">${POKE[id - 1].nome}${livre ? '' : `<small>🔒 🍰 ${preco}</small>`}</button>`; };
+  $('dlg-corpo').innerHTML = `<h2>Escolha seu detetive</h2><p style="font-size:.8rem">Você tem 🍰 ${migalhas()} migalhas.</p><div class="escolhas">${TODOS_DETETIVES.map(botao).join('')}</div>
+    <button type="button" class="mini" id="fechar-dlg">Fechar</button>`;
+  $('dlg-corpo').querySelector('.escolhas').onclick = ev => {
+    const b = ev.target.closest('[data-id]'); if(!b) return; const id = +b.dataset.id;
+    if(!temDetetive(id)){ if(!confirm(`Comprar o detetive ${POKE[id - 1].nome} por 🍰 ${precoDetetive(id)} migalhas?`) || !comprar('detetives', id, precoDetetive(id))) return; }
+    cfg.detetive = id; gravar('cfg', cfg); mostrarDetetive(); mostrarHeroi(); grito(id); $('dlg').close(); toast(`🕵️ Agora você é o Detetive ${eu().nome}!`);
+  };
+  $('fechar-dlg').onclick = () => $('dlg').close();
+  $('dlg').showModal();
+}
+$('trocar-detetive').onclick = escolherDetetive;
+
+/* ---------- 🛒 loja ---------- */
+let abaLoja = 'detetives';
+function abrirLoja(aba){ if(aba) abaLoja = aba; mostrarLoja(); trocarTela('loja'); }
+function mostrarLoja(){
+  document.querySelectorAll('#abas-loja button').forEach(b => b.setAttribute('aria-pressed', b.dataset.l === abaLoja));
+  mostrarHeroi();
+  const box = $('itens-loja');
+  if(abaLoja === 'detetives'){
+    box.innerHTML = DETETIVES_LOJA.map(([id, p]) => { const t = temDetetive(id), u = cfg.detetive === id;
+      return `<div class="item${u ? ' usando' : ''}"><div class="amostra"><img loading="lazy" alt="" src="${arte(id)}"></div><b>${POKE[id - 1].nome}</b>
+        <button type="button" class="mini" data-k="${id}">${u ? '✅ Usando' : t ? 'Usar' : `🍰 ${p}`}</button></div>`; }).join('');
+    box.onclick = ev => { const b = ev.target.closest('[data-k]'); if(!b) return; const id = +b.dataset.k;
+      if(!temDetetive(id) && !comprar('detetives', id, precoDetetive(id))) return;
+      cfg.detetive = id; gravar('cfg', cfg); mostrarDetetive(); grito(id); mostrarLoja(); };
+    return;
+  }
+  const cat = abaLoja, L = cat === 'fundos' ? FUNDOS : cat === 'molduras' ? MOLDURAS : TITULOS, campo = cat === 'fundos' ? 'fundo' : cat === 'molduras' ? 'moldura' : 'titulo';
+  box.innerHTML = Object.entries(L).map(([k, x]) => { const t = tem(cat, k), u = perfil[campo] === k;
+    const amostra = cat === 'fundos' ? `<div class="amostra" style="background:${x.css}"></div>` : cat === 'molduras' ? `<div class="amostra"><img alt="" src="${arte(cfg.detetive)}" style="border-radius:50%;${x.css}"></div>` : `<div class="amostra" style="background:var(--cartao2)">${x.n}</div>`;
+    return `<div class="item${u ? ' usando' : ''}">${amostra}<b>${x.n}</b><button type="button" class="mini" data-k="${k}">${u ? '✅ Usando' : t ? 'Usar' : `🍰 ${x.p}`}</button></div>`; }).join('');
+  box.onclick = ev => { const b = ev.target.closest('[data-k]'); if(!b) return; const k = b.dataset.k;
+    if(!tem(cat, k) && !comprar(cat, k, L[k].p)) return;
+    perfil[campo] = k; salvarPerfil(); mostrarHeroi(); mostrarLoja(); };
+}
+$('abas-loja').onclick = ev => { const b = ev.target.closest('[data-l]'); if(b){ abaLoja = b.dataset.l; mostrarLoja(); } };
+$('ir-loja').onclick = () => abrirLoja();
+$('voltar-loja').onclick = () => { mostrarInicio(); trocarTela('inicio'); };
+
+/* ---------- 🎯 missões do dia ---------- */
+const MISSOES = [
+  { k:'casos', meta:2, e:'📁', t:'Resolva 2 casos' }, { k:'casos', meta:3, e:'🗂️', t:'Resolva 3 casos' }, { k:'perfeito', meta:1, e:'⭐', t:'Resolva 1 caso sem culpar ninguém errado' },
+  { k:'inter', meta:3, e:'🎤', t:'Faça 3 interrogatórios' }, { k:'inter', meta:5, e:'🎙️', t:'Faça 5 interrogatórios' }, { k:'semdna', meta:1, e:'🧪', t:'Resolva 1 caso sem exame de DNA' },
+  { k:'dificil', meta:1, e:'🔴', t:'Resolva 1 caso médio ou difícil' }, { k:'poucas', meta:1, e:'⚡', t:'Resolva 1 caso vendo no máximo 2 pistas' },
+  { k:'estrelas', meta:6, e:'🌟', t:'Ganhe 6 estrelas' }, { k:'desafio', meta:1, e:'⚔️', t:'Jogue 1 desafio (seu ou de um amigo)' }];
+function missoesDoDia(){
+  const hoje = diaLocal(Date.now()); let m = ler('missoes', null);
+  if(!m || m.dia !== hoje){
+    let seed = 0; [...hoje].forEach(c => { seed = seed * 31 + c.charCodeAt(0) | 0; });
+    const r = sorteador(seed), idx = new Set(); while(idx.size < 3) idx.add(Math.floor(r() * MISSOES.length));
+    m = { dia:hoje, i:[...idx], v:[0, 0, 0], feita:[false, false, false] }; gravar('missoes', m);
+  }
+  return m;
+}
+function mostrarMissoes(){
+  const m = missoesDoDia();
+  $('missoes').innerHTML = m.i.map((k, j) => { const M = MISSOES[k]; return `<div class="${m.feita[j] ? 'feita' : ''}"><i>${m.feita[j] ? '✅' : M.e}</i><span>${M.t}</span><small>${Math.min(m.v[j], M.meta)}/${M.meta}</small></div>`; }).join('');
+}
+function avancarMissao(k, valor){
+  const m = missoesDoDia();
+  m.i.forEach((idx, j) => { const M = MISSOES[idx]; if(m.feita[j] || M.k !== k) return;
+    m.v[j] += valor; if(m.v[j] >= M.meta){ m.feita[j] = true; toast(`🎯 Missão completa! +50 XP e 🍰 15`); stats.migalhas = migalhas() + 15; darXP(50); } });
+  gravar('missoes', m); mostrarMissoes();
+}
+
+/* ---------- 📅 prêmio de todo dia ---------- */
+function premioDoDia(){
+  const d = ler('diario', { ultimo:'', seq:0 }), hoje = diaLocal(Date.now());
+  if(d.ultimo === hoje) return;
+  const ontem = diaLocal(Date.now() - 864e5);
+  d.seq = d.ultimo === ontem ? d.seq + 1 : 1; d.ultimo = hoje; gravar('diario', d);
+  const premio = Math.min(5 + d.seq * 3, 30); stats.migalhas = migalhas() + premio; salvar(); mostrarHeroi();
+  if($('dlg').open) { toast(`📅 Dia ${d.seq} seguido! +${premio} 🍰`); return; }
+  $('dlg-corpo').innerHTML = `<h2>📅 Bom plantão, detetive!</h2><p style="font-size:2.4rem;margin:8px 0">🍰</p>
+    <p>Você veio <b>${d.seq} dia${d.seq > 1 ? 's' : ''} seguido${d.seq > 1 ? 's' : ''}</b>!</p><p class="pts" style="margin-top:6px">+${premio} migalhas</p>
+    <p style="font-size:.8rem;color:var(--tinta-fraca);margin-top:6px">Volte amanhã pra ganhar mais (até 🍰 30 por dia).</p>
+    <button type="button" class="grande" id="fechar-dlg">Bora investigar!</button>`;
+  $('fechar-dlg').onclick = () => $('dlg').close();
+  $('dlg').showModal();
+}
+
+/* ---------- 📜 histórico + o que acontece quando resolve ---------- */
+let historico = Array.isArray(ler('historico', [])) ? ler('historico', []) : [];
+let desafios = ler('desafios', {}) || {};
+let guardarDesafio = null;
+function aoResolver(c, pts, est, esp){
+  const bonus = { facil:0, medio:3, dificil:6 }[caso.nivel] || 0, ganho = 5 + est * 2 + bonus + (esp ? 100 : 0);
+  const nivelAntes = nivelDe(xpTotal() - pts);
+  stats.migalhas = migalhas() + ganho; salvar();
+  avancarMissao('casos', 1); avancarMissao('estrelas', est);
+  if(!caso.erros) avancarMissao('perfeito', 1);
+  if(!caso.pericias) avancarMissao('semdna', 1);
+  if(caso.nivel !== 'facil') avancarMissao('dificil', 1);
+  if(caso.mostradas <= 2) avancarMissao('poucas', 1);
+  const meu = { p:pts, e:est, m:caso.mostradas, er:caso.erros, i:caso.inter };
+  historico.unshift({ n:caso.numero, t:Date.now(), c:c.id, e:est, p:pts, nv:caso.nivel, m:caso.mostradas, er:caso.erros, des:caso.desafio ? caso.desafio.de : '' });
+  historico = historico.slice(0, 50); gravar('historico', historico);
+  let html = '', codigo = ''; guardarDesafio = null;
+  if(!caso.admForcado){
+    const k = String(caso.seed), d = desafios[k] || { nivel:caso.nivel, de:caso.desafio ? caso.desafio.de : '', eles:caso.desafio ? caso.desafio.eles : null, t:Date.now() };
+    const ehDesafio = !!caso.desafio || !!desafios[k];
+    if(ehDesafio){ avancarMissao('desafio', 1); stats.desafios = (stats.desafios || 0) + 1; salvar(); }
+    d.meu = meu;
+    if(ehDesafio){ desafios[k] = d; gravar('desafios', desafios); }
+    else guardarDesafio = () => { if(!desafios[k]){ d.t = Date.now(); desafios[k] = d; gravar('desafios', desafios); } };   // só vira desafio se você mandar
+    codigo = 'CASO1.' + paraB64({ s:caso.seed, n:caso.nivel, a:perfil.apelido || 'Detetive', d:cfg.detetive, r:meu });
+    if(d.eles) html = placarDesafio(d);
+    html += `<button type="button" class="mini" id="desafiar">⚔️ ${d.eles ? 'Mandar meu resultado pro amigo' : 'Desafiar um amigo com esse caso'}</button>`;
+  }
+  checarNivel(nivelAntes);
+  return { migalhas:ganho, html, codigo };
+}
+function placarDesafio(d){
+  const a = d.meu, b = d.eles, quem = esc(d.de || 'Amigo');
+  const res = !a ? `⏳ Falta você jogar!` : !b ? '⏳ Esperando o amigo jogar…' : a.p === b.p ? '🤝 Empate!' : a.p > b.p ? '🏆 Você venceu!' : `😅 ${quem} venceu!`;
+  const lado = (x, nome) => x ? `<div>${nome}<b>${x.p}</b>${'⭐'.repeat(x.e)} · 🔬 ${x.m} · ❌ ${x.er}</div>` : `<div>${nome}<b>?</b>ainda não jogou</div>`;
+  return `<div class="vs">${lado(a, 'Você')}<span>×</span>${lado(b, quem)}</div><p style="font-weight:800">${res}</p>`;
+}
+function mostrarHistorico(){
+  $('historico').innerHTML = historico.length ? historico.map(h => `<div><img loading="lazy" alt="" src="${mini(h.c)}"><div class="info"><b>${numCaso(h.n)} · ${POKE[h.c - 1].nome}</b>
+    <small>${dataBR(h.t)} · ${{ facil:'🟢', medio:'🟡', dificil:'🔴' }[h.nv] || ''} · ${'⭐'.repeat(h.e)} · 🔬 ${h.m} pista(s)${h.er ? ` · ❌ ${h.er}` : ''}${h.des ? ` · ⚔️ ${esc(h.des)}` : ''}</small></div><b>+${h.p}</b></div>`).join('')
+    : '<p style="font-size:.85rem">Nenhum caso resolvido ainda.</p>';
+}
+
+/* ---------- 👥 amigos (só por código: ninguém acha você sem ele) ---------- */
+let amigos = Array.isArray(ler('amigos', [])) ? ler('amigos', []) : [];
+const inteiro = (x, max) => Math.max(0, Math.min(max, Math.floor(+x || 0)));
+function limpaAmigo(o){
+  if(!o || typeof o !== 'object') return null;
+  const a = String(o.a || '').replace(/[<>]/g, '').trim().slice(0, 14) || 'Detetive';
+  return { a, d:TODOS_DETETIVES.includes(+o.d) ? +o.d : 25, f:FUNDOS[o.f] ? o.f : 'papel', m:MOLDURAS[o.m] ? o.m : 'nenhuma', t:TITULOS[o.t] ? o.t : 'curioso',
+    nv:inteiro(o.nv, 999), c:inteiro(o.c, 1e6), e:inteiro(o.e, 3e6), p:inteiro(o.p, 1e9), g:typeof o.g === 'string' && o.g.length < 400 ? o.g : '', adm:!!o.adm, id:String(o.id || '').slice(0, 20), v:Date.now() };
+}
+function meuCodigo(){
+  let id = ler('meu-id', ''); if(!id){ id = Math.random().toString(36).slice(2, 12); gravar('meu-id', id); }
+  return 'AMIGO1.' + paraB64(Object.assign(meuPerfil(), { id }));
+}
+function mandarCodigo(codigo, tipo){
+  const texto = tipo === 'desafio' ? `🕵️ Te desafio no Detetive Pokémon! Cole esse código em Amigos: ${codigo}` : codigo;
+  $('dlg2-corpo').innerHTML = `<h2>${tipo === 'desafio' ? '⚔️ Código do desafio' : '📤 Meu código'}</h2>
+    <p style="font-size:.85rem">${tipo === 'desafio' ? 'Mande pro seu amigo. Ele cola em 👥 Amigos e joga o mesmo caso!' : 'Mande pra quem você conhece. Não poste em lugar público.'}</p>
+    <div class="codigo-caixa">${esc(texto)}</div><button type="button" class="grande" id="copiar">📋 Copiar</button>
+    ${navigator.share ? '<button type="button" class="mini" id="compartilhar">📤 Mandar…</button>' : ''}<button type="button" class="mini" id="fechar-dlg2">Fechar</button>`;
+  $('copiar').onclick = async () => { try{ await navigator.clipboard.writeText(texto); $('copiar').textContent = '✅ Copiado!'; }catch(e){ $('copiar').textContent = 'Selecione o código e copie 👆'; } };
+  if($('compartilhar')) $('compartilhar').onclick = () => navigator.share({ text:texto }).catch(() => {});
+  $('fechar-dlg2').onclick = () => $('dlg2').close();
+  $('dlg2').showModal();
+}
+$('meu-codigo').onclick = () => mandarCodigo(meuCodigo(), 'amigo');
+function colarCodigo(txt){
+  const t = String(txt || '').trim(), m = t.match(/(AMIGO1|CASO1)\.([A-Za-z0-9_-]+)/);
+  if(!m) return '🤔 Esse código não é do Detetive. Ele começa com AMIGO1 ou CASO1.';
+  let o; try{ o = deB64(m[2]); }catch(e){ return '😕 Esse código está quebrado. Peça pro amigo mandar de novo.'; }
+  if(m[1] === 'AMIGO1'){
+    const a = limpaAmigo(o); if(!a) return '😕 Esse código está quebrado.';
+    if(a.id && a.id === ler('meu-id', '')) return '😄 Esse é o seu próprio código!';
+    const i = amigos.findIndex(x => (a.id && x.id === a.id) || x.a === a.a);
+    if(i >= 0){ amigos[i] = a; gravar('amigos', amigos); mostrarAmigos(); return `🔄 ${a.a} foi atualizado!`; }
+    if(amigos.length >= 50) return 'Você já tem 50 amigos na lista!';
+    amigos.push(a); gravar('amigos', amigos); mostrarAmigos(); return `🎉 ${a.a} virou seu amigo!`;
+  }
+  const seed = inteiro(o.s, 2147483647), nivel = NIVEIS[o.n] ? o.n : null;
+  if(!seed || !nivel) return '😕 Esse desafio está quebrado.';
+  const de = String(o.a || 'Amigo').replace(/[<>]/g, '').trim().slice(0, 14) || 'Amigo';
+  const r = o.r && typeof o.r === 'object' ? { p:inteiro(o.r.p, 1e6), e:Math.max(1, inteiro(o.r.e, 3)), m:inteiro(o.r.m, 20), er:inteiro(o.r.er, 20), i:inteiro(o.r.i, 3) } : null;
+  const k = String(seed), d = desafios[k] || { nivel, t:Date.now(), meu:null };
+  d.de = de; d.eles = r; d.nivel = nivel; desafios[k] = d; gravar('desafios', desafios);
+  irAba('desafios');
+  return d.meu ? `⚔️ Resultado de ${de} chegou!` : `⚔️ ${de} te desafiou! Jogue o mesmo caso.`;
+}
+$('colar-ok').onclick = () => { $('colar-msg').textContent = colarCodigo($('colar').value); $('colar').value = ''; };
+function mostrarAmigos(){
+  $('lista-amigos').innerHTML = amigos.length ? amigos.map((a, i) => `<div><img loading="lazy" alt="" src="${arte(a.d)}" style="${(MOLDURAS[a.m] || {}).css || ''}"><div class="info"><b>${esc(a.a)}${a.adm ? ' 👑' : ''}</b>
+    <small>Nível ${a.nv} · ${a.c} casos · ${a.p} pontos</small></div><button type="button" class="mini" data-ver="${i}">👀</button><button type="button" class="mini" data-tirar="${i}">🗑️</button></div>`).join('')
+    : '<p style="font-size:.85rem">Nenhum amigo ainda. Troque códigos com quem você conhece!</p>';
+  const lista = [Object.assign(meuPerfil(), { eu:true }), ...amigos].sort((x, y) => y.p - x.p);
+  $('ranking').innerHTML = lista.map((a, i) => `<div class="${a.eu ? 'eu' : ''}"><span class="pos">${['🥇', '🥈', '🥉'][i] || i + 1}</span><img loading="lazy" alt="" src="${arte(a.d)}"><div class="info"><b>${esc(a.a)}${a.eu ? ' (você)' : ''}</b><small>Nível ${a.nv} · ${a.c} casos · ${a.e} ⭐</small></div><b>${a.p}</b></div>`).join('');
+}
+$('lista-amigos').onclick = ev => {
+  const v = ev.target.closest('[data-ver]'), t = ev.target.closest('[data-tirar]');
+  if(t){ const a = amigos[+t.dataset.tirar]; if(a && confirm(`Tirar ${a.a} da lista?`)){ amigos.splice(+t.dataset.tirar, 1); gravar('amigos', amigos); mostrarAmigos(); } return; }
+  if(!v) return; const a = amigos[+v.dataset.ver]; if(!a) return;
+  const deles = new Set(idsDe(a.g)), meus = new Set(Object.keys(stats.presos).map(Number)), iguais = [...deles].filter(x => meus.has(x)).length;
+  $('dlg2-corpo').innerHTML = `${cartaoPerfil(a)}<p style="margin-top:10px;font-size:.88rem">🚨 Vocês dois já culparam <b>${iguais}</b> Pokémon iguais.<br>${esc(a.a)} fichou ${deles.size - iguais} que você não fichou · você fichou ${meus.size - iguais} que ${esc(a.a)} não fichou.</p>
+    <p style="font-size:.75rem;color:var(--tinta-fraca)">Atualizado em ${dataBR(a.v)}</p><button type="button" class="grande" id="fechar-dlg2">Fechar</button>`;
+  $('fechar-dlg2').onclick = () => $('dlg2').close(); $('dlg2').showModal();
+};
+function mostrarDesafios(){
+  const ks = Object.keys(desafios).sort((a, b) => (desafios[b].t || 0) - (desafios[a].t || 0));
+  $('lista-desafios').innerHTML = ks.length ? ks.map(k => { const d = desafios[k];
+    return `<div style="display:block"><b>${{ facil:'🟢 Fácil', medio:'🟡 Médio', dificil:'🔴 Difícil' }[d.nivel]} · ${d.de ? `com ${esc(d.de)}` : 'criado por você'}</b> <small style="color:var(--tinta-fraca)">${dataBR(d.t || Date.now())}</small>
+      ${placarDesafio(d)}<div style="display:flex;gap:6px">${d.meu ? '' : `<button type="button" class="grande" data-jogar="${k}" style="padding:10px;font-size:.95rem">🕵️ Jogar esse caso</button>`}
+      <button type="button" class="mini" data-tirar="${k}">🗑️</button></div></div>`; }).join('')
+    : '<p style="font-size:.85rem">Nenhum desafio ainda.</p>';
+}
+$('lista-desafios').onclick = ev => {
+  const j = ev.target.closest('[data-jogar]'), t = ev.target.closest('[data-tirar]');
+  if(t){ if(confirm('Apagar esse desafio?')){ delete desafios[t.dataset.tirar]; gravar('desafios', desafios); mostrarDesafios(); } return; }
+  if(!j) return; const k = j.dataset.jogar, d = desafios[k]; if(!d || d.meu) return;
+  if(carregarCaso() && !confirm('Você tem um caso salvo. Deixar ele de lado e jogar o desafio?')) return;
+  gravar('caso', null);
+  if(novoCaso(d.nivel, +k, { de:d.de, eles:d.eles })) abrirCaso(false);
+};
+
+/* ---------- 🔎 arquivo (a Pokédex do detetive) ---------- */
+function pesquisar(){
+  const q = semAcento($('busca').value.trim()), so = $('so-fichados').checked;
+  let r = POKE.filter(p => (!so || stats.presos[p.id]) && (!q || semAcento(p.nome).includes(q) || String(p.id) === q));
+  $('busca-info').textContent = `${r.length} Pokémon${r.length > 90 ? ' (mostrando 90)' : ''} · 🚨 fichados: ${Object.keys(stats.presos).length}`;
+  $('resultado-busca').innerHTML = r.slice(0, 90).map(p => `<button type="button" data-id="${p.id}"><img loading="lazy" alt="" src="${mini(p.id)}">#${p.id} ${p.nome}${stats.presos[p.id] ? `<em>🚨${stats.presos[p.id]}</em>` : ''}</button>`).join('');
+}
+const semAcento = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+$('busca').oninput = pesquisar; $('so-fichados').onchange = pesquisar;
+$('resultado-busca').onclick = ev => {
+  const b = ev.target.closest('[data-id]'); if(!b) return; const p = POKE[+b.dataset.id - 1];
+  const casos = historico.filter(h => h.c === p.id).map(h => numCaso(h.n));
+  $('dlg2-corpo').innerHTML = `<h2>FICHA #${p.id}</h2><img src="${arte(p.id)}" alt="" style="width:150px;height:150px;object-fit:contain"><h2>${p.nome}</h2>
+    <div class="fatos" style="font-size:.8rem">${p.tipos.map(t => `<span class="tipo" style="background:${TIPOS[t][2]}">${TIPOS[t][1]} ${TIPOS[t][0]}</span>`).join('')}<span><i class="cor-bola" style="background:${CORES[p.cor][1]}"></i>${CORES[p.cor][0]}</span>
+    <span>⚖️ ${kg(p)}</span><span>📏 ${metros(p)}</span><span>🗺️ ${REGIOES[p.ger - 1]}</span><span>${p.evos.length ? '🧬 Ainda evolui' : '💪 Forma final'}</span></div>
+    <p style="margin-top:10px;font-weight:700">${TODOS_DETETIVES.includes(p.id) ? '🕵️ É um detetive! Nunca é suspeito.' : p.id === EEVEE || ESPECIAIS.includes(p.id) ? '⭐ Personagem especial (0,0001% de ser culpado).' : stats.presos[p.id] ? `🚨 Você culpou ${stats.presos[p.id]} vez(es).` : '✅ Ficha limpa com você.'}</p>
+    ${casos.length ? `<p style="font-size:.8rem">Casos: ${casos.slice(0, 10).join(', ')}</p>` : ''}<button type="button" class="grande" id="fechar-dlg2">Fechar</button>`;
+  $('fechar-dlg2').onclick = () => $('dlg2').close(); grito(p.id); $('dlg2').showModal();
+};
+
+/* ---------- abas de amigos ---------- */
+let abaAmigos = 'amigos';
+function irAba(a){ abaAmigos = a;
+  document.querySelectorAll('#abas-amigos button').forEach(b => b.setAttribute('aria-pressed', b.dataset.a === a));
+  document.querySelectorAll('#tela-amigos .painel').forEach(p => { p.hidden = p.dataset.p !== a; });
+  if(a === 'amigos' || a === 'ranking') mostrarAmigos(); if(a === 'desafios') mostrarDesafios(); if(a === 'arquivo') pesquisar(); if(a === 'historico') mostrarHistorico();
+  trocarTela('amigos'); }
+$('abas-amigos').onclick = ev => { const b = ev.target.closest('[data-a]'); if(b) irAba(b.dataset.a); };
+$('ir-amigos').onclick = () => irAba('amigos'); $('ir-arquivo').onclick = () => irAba('arquivo'); $('ir-historico').onclick = () => irAba('historico');
+$('voltar-amigos').onclick = () => { mostrarInicio(); trocarTela('inicio'); };
+
+/* ---------- 👑 Jojo adm: só com a senha, e só neste aparelho ---------- */
+const ADM_HASH = '94898e3200212db557166a21a82fd97bcbbd85f387e40cf731a53897bec90bb7';
+const admLiberado = () => ler('adm-liberado', '') === ADM_HASH;
+async function hashSenha(s){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('jojo-adm:' + s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+let admEspecial = false, errosAdm = 0, travaAdm = 0;
+if(perfil.adm && !admLiberado()){ perfil.adm = false; salvarPerfil(); }
+function abrirAdm(){
+  if(!admLiberado()){
+    $('dlg2-corpo').innerHTML = `<h2>👑 Área secreta</h2><input type="password" inputmode="numeric" maxlength="10" id="adm-senha" placeholder="Senha" autocomplete="off">
+      <button type="button" class="grande" id="adm-ok">Entrar</button><p class="aviso ruim" id="adm-msg"></p><button type="button" class="mini" id="fechar-dlg2">Fechar</button>`;
+    $('fechar-dlg2').onclick = () => $('dlg2').close();
+    $('adm-ok').onclick = async () => {
+      if(Date.now() < travaAdm){ $('adm-msg').textContent = '⏳ Espere um minuto.'; return; }
+      let ok = false; try{ ok = await hashSenha($('adm-senha').value) === ADM_HASH; }catch(e){}
+      if(!ok){ if(++errosAdm >= 5){ travaAdm = Date.now() + 60000; errosAdm = 0; } $('adm-msg').textContent = '❌ Senha errada.'; $('adm-senha').value = ''; return; }
+      gravar('adm-liberado', ADM_HASH); painelAdm();
+    };
+    $('dlg2').showModal(); return;
+  }
+  painelAdm(); if(!$('dlg2').open) $('dlg2').showModal();
+}
+function painelAdm(){
+  $('dlg2-corpo').innerHTML = `<h2>👑 Jojo adm</h2><p style="font-size:.8rem;color:var(--tinta-fraca)">⚠️ Só vale neste aparelho. Não dá pra mexer no jogo dos outros.</p>
+    <div style="display:grid;gap:6px;margin-top:10px">
+    <button type="button" class="mini" data-adm="coroa">${perfil.adm ? '🙈 Esconder a coroa' : '👑 Mostrar coroa de ADM'}</button>
+    <button type="button" class="mini" data-adm="migalhas">🍰 +100 migalhas</button>
+    <button type="button" class="mini" data-adm="xp">⭐ +500 XP</button>
+    <button type="button" class="mini" data-adm="revelar">🔍 Quem é o culpado do caso aberto?</button>
+    <button type="button" class="mini" data-adm="especial">🦊 Próximo caso: o especial é o culpado</button>
+    <button type="button" class="mini" data-adm="missoes">🎯 Completar as missões de hoje</button>
+    <button type="button" class="mini" data-adm="sair">🚪 Sair do ADM neste aparelho</button>
+    <button type="button" class="mini" data-adm="apagar" style="color:var(--erro)">🗑️ Apagar todo o meu progresso</button></div>
+    <p class="aviso" id="adm-msg"></p><button type="button" class="grande" id="fechar-dlg2">Fechar</button>`;
+  $('fechar-dlg2').onclick = () => $('dlg2').close();
+  $('dlg2-corpo').querySelector('div').onclick = ev => {
+    const b = ev.target.closest('[data-adm]'); if(!b) return; const a = b.dataset.adm, msg = t => { $('adm-msg').textContent = t; };
+    if(a === 'coroa'){ perfil.adm = !perfil.adm; salvarPerfil(); mostrarHeroi(); painelAdm(); }
+    if(a === 'migalhas'){ ganharMigalhas(100); msg(`🍰 Agora: ${migalhas()}`); }
+    if(a === 'xp'){ darXP(500); msg(`⭐ Nível ${nivelDe(xpTotal())}`); }
+    if(a === 'revelar') msg(caso && !caso.fim ? `🔍 Foi o ${caso.culpado.nome}!` : 'Nenhum caso aberto agora.');
+    if(a === 'especial'){ admEspecial = true; msg('🦊 Combinado! No próximo caso novo, o especial é o culpado (não vale pra desafio).'); }
+    if(a === 'missoes'){ const m = missoesDoDia(); m.i.forEach((idx, j) => { if(!m.feita[j]) avancarMissao(MISSOES[idx].k, MISSOES[idx].meta); }); msg('🎯 Missões completas!'); }
+    if(a === 'sair'){ gravar('adm-liberado', ''); perfil.adm = false; salvarPerfil(); mostrarHeroi(); $('dlg2').close(); toast('🚪 Saiu do ADM.'); }
+    if(a === 'apagar' && confirm('Apagar TODO o progresso deste aparelho?') && confirm('Tem certeza MESMO? Não dá pra desfazer.')){
+      Object.keys(localStorage).filter(k => k.startsWith('detetive:') && k !== 'detetive:adm-liberado').forEach(k => localStorage.removeItem(k)); location.reload(); }
+  };
+}
+let toquesLogo = [];
+document.querySelector('.logo img').addEventListener('click', () => { const t = Date.now(); toquesLogo = toquesLogo.filter(x => t - x < 3000); toquesLogo.push(t); if(toquesLogo.length >= 5){ toquesLogo = []; abrirAdm(); } });
+
+marcarSom(); checarDistintivos(); mostrarInicio(); setTimeout(premioDoDia, 600);
 
 /* ---------- versão nova ---------- */
 const btRecarregar = $('recarregar');
