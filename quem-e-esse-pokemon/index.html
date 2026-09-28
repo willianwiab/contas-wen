@@ -763,7 +763,7 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 9 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 10 — 28/09 · 🔄</button>
   </footer>
 </div>
 
@@ -2086,15 +2086,15 @@ $('voltar-amigos').onclick = () => { trocarTela('inicio'); marcar(); novaSombra(
 let admShiny = false;
 /* O ADM é só do Jojo: a senha é fixa e aqui fica só o "resumo" (hash) dela, não a senha.
    Pra abrir: tocar 5 vezes rapidinho na pokébola do título. */
-const ADM_HASH = '2e17940fa64533fb75eda90c419062373fc2a0d07c61bf81066c9b2fcc98e046';
+const ADM_HASH = '94898e3200212db557166a21a82fd97bcbbd85f387e40cf731a53897bec90bb7';
 const admLiberado = () => ler('adm-liberado', '') === ADM_HASH;
 async function hashSenha(s){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('jojo-adm:' + s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
 let errosAdm = 0, travaAdm = 0;
 function pedirSenhaAdm(){
   if(admLiberado()){ painelAdm(); if(!$('adm-dlg').open){ try{ $('adm-dlg').showModal(); }catch(e){ $('adm-dlg').setAttribute('open', ''); } } return; }
   $('adm-corpo').innerHTML = `<h2>👑 Jojo adm</h2>
-    <p class="info-video">Área secreta. Digite a senha.</p>
-    <input type="password" maxlength="20" id="adm-senha" class="campo-senha" autocomplete="off" />
+    <p class="info-video">Área secreta. Digite a senha de 10 números.</p>
+    <input type="password" inputmode="numeric" maxlength="10" id="adm-senha" class="campo-senha" autocomplete="off" />
     <button type="button" class="jogar" id="adm-entrar" style="font-size:1.2rem">🔓 Entrar</button><p class="aviso" id="adm-msg"></p>`;
   const entrar = async () => {
     if(Date.now() < travaAdm){ $('adm-msg').textContent = '⏳ Errou muitas vezes. Espere um minuto.'; return; }
