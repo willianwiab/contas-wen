@@ -208,6 +208,7 @@ footer{text-align:center;margin-top:26px;color:var(--tinta-fraca);font-size:.8re
         <button type="button" class="chip" data-resp="opcoes"><b>🔘 4 opções</b><small>Escolha o nome certo</small></button>
         <button type="button" class="chip" data-resp="escrever"><b>⌨️ Escrever</b><small>Mais difícil!</small></button>
       </div>
+      <div class="linha"><span>✨ Modo shiny <small style="display:block;font-weight:500;color:var(--tinta-fraca);font-size:.78rem">Todos os Pokémon vêm shiny!</small></span><button type="button" class="interruptor" id="shiny" aria-pressed="false">Desligado</button></div>
       <div class="linha"><span>🔊 Grito do Pokémon</span><button type="button" class="interruptor" id="som" aria-pressed="true">Ligado</button></div>
       <div class="linha"><span>🎬 Gravar vídeo da partida</span><button type="button" class="interruptor" id="video" aria-pressed="false">Desligado</button></div>
       <p class="info-video" id="video-info"></p>
@@ -316,7 +317,7 @@ footer{text-align:center;margin-top:26px;color:var(--tinta-fraca);font-size:.8re
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 4 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 5 — 28/09 · 🔄</button>
   </footer>
 </div>
 
@@ -353,7 +354,7 @@ const semAcento = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().
 const embaralhar = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
 /* ---------- configurações (lembradas) ---------- */
-const cfg = Object.assign({ nivel:'facil', modo:'dez', resp:'opcoes', som:true, video:false, gers:[1] }, ler('cfg', {}));
+const cfg = Object.assign({ nivel:'facil', modo:'dez', resp:'opcoes', som:true, video:false, shiny:false, gers:[1] }, ler('cfg', {}));
 if(!Array.isArray(cfg.gers) || !cfg.gers.length) cfg.gers = [1];
 function pool(){
   if(cfg.nivel === 'facil') return FAMOSOS.map(i => POKE[i - 1]);
@@ -362,7 +363,7 @@ function pool(){
   if(cfg.nivel === 'revanche') return POKE.filter(p => errados.has(p.id));
   return POKE;
 }
-const chaveRecorde = () => `${cfg.nivel}${cfg.nivel === 'minhas' ? '-' + cfg.gers.slice().sort().join('') : ''}:${cfg.modo}:${cfg.resp}`;
+const chaveRecorde = () => `${cfg.nivel}${cfg.nivel === 'minhas' ? '-' + cfg.gers.slice().sort().join('') : ''}:${cfg.modo}:${cfg.resp}${cfg.shiny ? ':shiny' : ''}`;
 function marcar(){
   document.querySelectorAll('#niveis .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.nivel === cfg.nivel));
   document.querySelectorAll('#modos .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.modo === cfg.modo));
@@ -372,6 +373,7 @@ function marcar(){
   $('revanche-info').textContent = errados.size === 1 ? 'O único que você errou' : errados.size ? `Os ${errados.size} que você errou` : 'Aparece quando você errar algum';
   $('geracoes').hidden = cfg.nivel !== 'minhas';
   [...$('geracoes').children].forEach((b, i) => b.setAttribute('aria-pressed', cfg.gers.includes(i + 1)));
+  $('shiny').setAttribute('aria-pressed', cfg.shiny); $('shiny').textContent = cfg.shiny ? 'Ligado ✨' : 'Desligado';
   $('som').setAttribute('aria-pressed', cfg.som); $('som').textContent = cfg.som ? 'Ligado' : 'Desligado';
   if(!podeGravar()) cfg.video = false;
   $('video').setAttribute('aria-pressed', cfg.video); $('video').textContent = cfg.video ? 'Ligado' : 'Desligado'; $('video').disabled = !podeGravar();
@@ -390,6 +392,7 @@ $('niveis').onclick = ev => { const b = ev.target.closest('[data-nivel]'); if(b)
 $('modos').onclick = ev => { const b = ev.target.closest('[data-modo]'); if(b){ cfg.modo = b.dataset.modo; marcar(); } };
 $('respostas').onclick = ev => { const b = ev.target.closest('[data-resp]'); if(b){ cfg.resp = b.dataset.resp; marcar(); } };
 $('som').onclick = () => { cfg.som = !cfg.som; marcar(); };
+$('shiny').onclick = () => { cfg.shiny = !cfg.shiny; marcar(); };
 $('video').onclick = () => { cfg.video = !cfg.video; marcar(); };
 
 /* ---------- coleção: todos que você já acertou ---------- */
@@ -411,7 +414,7 @@ function mostrarColecao(){
 $('ver-colecao').onclick = () => { $('colecao-caixa').hidden = !$('colecao-caixa').hidden; $('ver-colecao').textContent = $('colecao-caixa').hidden ? '👀 Ver os que eu já acertei' : '🙈 Esconder'; mostrarColecao(); };
 
 /* ---------- o jogo ---------- */
-const TEMPO_S = 60, VIDAS = 3, PERGUNTAS = 10;
+const SHINY = 0.05, TEMPO_S = 60, VIDAS = 3, PERGUNTAS = 10;
 let jogo = null;
 function trocarTela(t){ document.querySelectorAll('.pontos-voando').forEach(d => d.remove()); ['inicio', 'jogo', 'fim', 'trofeus'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
 function novoJogo(){
@@ -460,7 +463,7 @@ function proxima(){
   const p = sortear();
   if(!p){ terminar(); return; }
   jogo.usados.add(p.id); jogo.n++; jogo.atual = p; jogo.dicas = 0; jogo.respondeu = false;
-  jogo.brilhante = Math.random() < 1 / 20;   // ✨ de vez em quando vem um brilhante!
+  jogo.brilhante = cfg.shiny || Math.random() < SHINY;   // ✨ 5% de chance de vir shiny (ou todos, no modo shiny)
   const img = $('figura');
   /* esconde na hora: sem a animação de voltar pra sombra, senão dava pra ver o próximo colorido */
   img.style.transition = 'none'; img.classList.remove('revelado'); img.classList.add('esperando'); img.removeAttribute('src');
@@ -488,7 +491,7 @@ function responder(certo, botao){
   jogo.respondeu = true;
   const p = jogo.atual, img = $('figura');
   img.classList.add('revelado');
-  $('selo').textContent = jogo.brilhante ? `✨ É o ${p.nome} brilhante!` : `É o ${p.nome}!`; $('selo').hidden = false;
+  $('selo').textContent = jogo.brilhante ? `✨ É o ${p.nome} shiny!` : `É o ${p.nome}!`; $('selo').hidden = false;
   $('num').textContent = `#${p.id}`; $('num').hidden = false;
   mostrarTipos();
   document.querySelectorAll('#opcoes button').forEach(b => { b.disabled = true; if(+b.dataset.id === p.id) b.classList.add('certo'); });
@@ -498,7 +501,7 @@ function responder(certo, botao){
   if(certo){
     jogo.seq++; jogo.maiorSeq = Math.max(jogo.maiorSeq, jogo.seq); jogo.acertos++;
     ganhou = Math.max(2, 10 - jogo.dicas * 3) + Math.min(5, jogo.seq - 1);
-    if(jogo.brilhante) ganhou += 10;
+    if(jogo.brilhante && !cfg.shiny) ganhou += 10;   // no modo shiny todos são, então não tem bônus
     jogo.pontos += ganhou;
     colecao.add(p.id); gravar('colecao', [...colecao]);
     stats.acertos++; stats.melhorSeq = Math.max(stats.melhorSeq, jogo.seq);
@@ -507,7 +510,7 @@ function responder(certo, botao){
     if(jogo.nivel === 'revanche') stats.revanche++;
     if(errados.delete(p.id)) gravar('errados', [...errados]);
     $('aviso').textContent = ['✅ Acertou!', '🎉 Isso aí!', '⭐ Mandou bem!', '🔥 Demais!'][Math.floor(Math.random() * 4)] + (jogo.seq > 1 ? ` ${jogo.seq} seguidos!` : '');
-    if(jogo.brilhante) $('aviso').textContent += ' ✨ Era brilhante! +10';
+    if(jogo.brilhante && !cfg.shiny) $('aviso').textContent += ' ✨ Era shiny! +10';
     $('aviso').className = 'aviso bom';
     voar('+' + ganhou);
     efeito(true);
@@ -833,7 +836,7 @@ grupo([
   ['vid50', '👑', 'Imortal', 'Acerte 50 numa partida de ❤️ 3 vidas', 50, () => stats.vidasMax],
 ]);
 grupo([[1,'Soletrando'],[10,'Escritor'],[50,'Dicionário Pokémon']].map(([m, n]) => ['esc' + m, '⌨️', n, `Acerte ${m} escrevendo o nome`, m, () => stats.escritos]));
-grupo([[1,'Brilhou!'],[5,'Caçador de brilhantes'],[10,'Tudo brilha']].map(([m, n]) => ['bri' + m, '✨', n, `Acerte ${m} Pokémon ${m > 1 ? 'brilhantes' : 'brilhante'}`, m, () => stats.brilhantes]));
+grupo([[1,'Brilhou!'],[5,'Caçador de shiny'],[10,'Tudo brilha']].map(([m, n]) => ['bri' + m, '✨', n, `Acerte ${m} Pokémon shiny`, m, () => stats.brilhantes]));
 grupo([[1,'#001','Bulbasaur'],[25,'Pika pika!','Pikachu'],[133,'Eevee!','Eevee'],[129,'Splash!','Magikarp'],[132,'Igualzinho','Ditto'],[150,'Clone poderoso','Mewtwo'],[151,'Mítico rosa','Mew']]
   .map(([id, n, nome]) => ['esp' + id, '🌟', n, `Acerte o ${nome}`, 1, () => colecao.has(id) ? 1 : 0]));
 grupo([[1,'Lendário'],[10,'Caçador de lendas'],[25,'Mestre das lendas']].map(([m, n]) => ['len' + m, '🐉', n, `Acerte ${m} ${m > 1 ? 'lendários ou míticos' : 'lendário ou mítico'}`, m, () => contaCol(p => LENDARIOS.has(p.id))]));
@@ -899,7 +902,7 @@ function mostrarTrofeus(){
   mostrarResumoTrofeus();
   const pct = stats.acertos + stats.erros ? Math.round(stats.acertos / (stats.acertos + stats.erros) * 100) : 0;
   $('stats').innerHTML = [[stats.partidas, '🎮 partidas'], [stats.acertos, '✅ acertos'], [stats.erros, '❌ erros'], [pct + '%', '🎯 de acerto'], [stats.melhorSeq, '🔥 melhor sequência'],
-    [stats.melhorPontos, '⭐ melhor partida'], [stats.pontosTotal, '💰 pontos no total'], [stats.brilhantes, '✨ brilhantes'], [stats.dicas, '💡 dicas usadas']]
+    [stats.melhorPontos, '⭐ melhor partida'], [stats.pontosTotal, '💰 pontos no total'], [stats.brilhantes, '✨ shinies'], [stats.dicas, '💡 dicas usadas']]
     .map(([v, r]) => `<div><b>${v}</b><small>${r}</small></div>`).join('');
   const lista = $('lista-trofeus'); lista.innerHTML = '';
   TROFEUS.filter(t => filtroTrofeu === 'todos' || (filtroTrofeu === 'ganhos') === !!ganhos[t.id]).forEach(t => {
