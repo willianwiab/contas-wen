@@ -30,7 +30,13 @@ Aparece a **sombra** de um Pokémon e você adivinha quem é!
 - 👥 **Amigos por código**: cada um tem um código (JOJO1…) pra mandar pra quem conhece; quem cola vê o perfil, a Pokédex e as últimas partidas. Dá pra pesquisar na sua lista. Não existe pesquisa de estranhos: só entra quem te manda o código.
 - ⚔️ **Desafio**: você joga 10 Pokémon e manda o código (DESAFIO1…); o amigo joga **os mesmos 10** com as mesmas opções, e aparece quem venceu.
 - 🔎 **Pokédex com pesquisa** (nome, número, tipo, geração, só os meus) e 🎬 **histórico** das últimas 50 partidas.
-- 👑 **Jojo adm**: painel com senha de 4 números, só deste aparelho (coroa, nome “Jojo adm”, +XP, cartinhas, próximo shiny, missões novas, backup, apagar).
+- 👑 **Jojo adm**: painel só deste aparelho (coroa, nome “Jojo adm”, +XP, cartinhas, moedas, próximo shiny, missões novas, backup, apagar).
+
+## Versão 9: AcertoPoke, loja, 1.125 troféus e ADM só do Jojo
+- 🪙 **AcertoPoke**: moeda que você ganha acertando (shiny e chefão valem mais), com as missões (+10) e a recompensa diária.
+- 🛒 **Loja**: 🖼️ fundos do perfil, 🔲 molduras, 🏷️ títulos e 📸 fotos de perfil (figuras do PokeAPI, também shiny). Os amigos veem o perfil enfeitado.
+- 🏆 **1.125 troféus**: os 100 principais + 1 pra cada Pokémon (📖), com filtro por categoria.
+- 👑 **Jojo adm é só do Jojo**: a senha é fixa (o site guarda só o hash), a entrada é secreta, trava depois de 5 erros, e o backup não leva a chave do ADM.
 
 ## Dados
 Nome e tipos dos Pokémon gerados do `@pkmn/dex`; cor, altura, peso e evoluções das tabelas CSV do PokeAPI. Figuras e gritos vêm do [PokeAPI](https://pokeapi.co) (precisa de internet pra jogar). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.
