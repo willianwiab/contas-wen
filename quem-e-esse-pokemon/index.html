@@ -260,6 +260,31 @@ header{margin-bottom:12px}
 @keyframes desembaca{from{filter:brightness(0) blur(16px)}to{filter:brightness(0) blur(0)}}
 .palco.ef-zoom:not(.revelou) img{animation:afasta 10s ease-out forwards}
 @keyframes afasta{from{transform:scale(3.6)}to{transform:scale(1)}}
+/* v11: jeitos novos */
+.palco .figura2{clip-path:inset(0 0 0 50%)}
+.palco[data-tipo="metades"] #figura{clip-path:inset(0 50% 0 0)}
+.palco[data-tipo="metades"]::after{content:'';position:absolute;left:50%;top:6%;bottom:6%;border-left:3px dashed rgba(255,255,255,.8);z-index:2}
+.palco[data-tipo="peso"] img,.palco[data-tipo="altura"] img{filter:none;inset:14% 52% 10% 3%;width:45%;height:76%}
+.palco[data-tipo="peso"] .figura2,.palco[data-tipo="altura"] .figura2{clip-path:none;inset:14% 3% 10% 52%}
+.palco[data-tipo="peso"]::after,.palco[data-tipo="altura"]::after{content:'VS';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#e3350d;color:#fff;font-weight:900;border-radius:99px;padding:6px 10px;z-index:2}
+.palco[data-tipo="numero"] img,.palco[data-tipo="regiao"] img,.palco[data-tipo="bebe"] img,.palco[data-tipo="vf"] img{filter:none}
+.palco.ef-contorno:not(.revelou) img{filter:url(#so-contorno)}
+.palco.ef-cabeca:not(.revelou) img{rotate:180deg}
+.palco.ef-espelho:not(.revelou) img{scale:-1 1}
+.palco.ef-cabeca.ef-espelho:not(.revelou) img{rotate:180deg;scale:-1 1}
+.palco.ef-cabeca:not(.revelou) img,.palco.ef-espelho:not(.revelou) img{transform-origin:50% 50% !important}
+.palco .veu{position:absolute;inset:0;z-index:3;pointer-events:none}
+.palco .veu.lanterna,.palco .veu.buraco{background:radial-gradient(circle at var(--lx,50%) var(--ly,50%),transparent 0 var(--lr,62px),#080a1c calc(var(--lr,62px) + 26px))}
+.palco .veu.buraco{--lr:44px}
+.palco .veu.gelo{background:linear-gradient(160deg,rgba(225,245,255,.96),rgba(150,205,250,.93));-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:derrete 12s linear forwards}
+.palco .veu.gelo::before{content:'🧊';position:absolute;right:12px;top:10px;font-size:1.6rem}
+@keyframes derrete{from{clip-path:inset(0 0 0 0)}to{clip-path:inset(100% 0 0 0)}}
+.palco.revelou .veu{display:none}
+.palco .conta{position:absolute;left:10px;top:8px;z-index:4;background:#e3350d;color:#fff;border-radius:99px;padding:3px 12px;font-weight:900;font-size:1rem}
+.palco .conta.pouco{animation:pulsa .5s infinite}
+.palco .lua{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:4;background:#1b1d3a;color:#ffcb05;border-radius:99px;padding:3px 12px;font-weight:800;font-size:.75rem;white-space:nowrap}
+.palco.noite{background:linear-gradient(#141735,#2c2f6b)}
+.opcoes.duas{grid-template-columns:1fr 1fr}
 .palco.ef-embacada.ef-zoom:not(.revelou) img{animation:desembaca 10s linear forwards,afasta 10s ease-out forwards}
 .pedacos{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);z-index:1}
 .pedacos i{background:var(--palco2);border:1px solid rgba(0,0,0,.06);transition:opacity .4s}
@@ -466,6 +491,8 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
         <button type="button" class="chip" data-modo="chefao"><b>👑 Chefão</b><small>Lendário x2 a cada 5</small></button>
         <button type="button" class="chip" data-modo="escada"><b>🧗 Escada</b><small>Fica mais difícil</small></button>
         <button type="button" class="chip" data-modo="calmo"><b>🐢 Calmo</b><small>Sem tempo e sem vida</small></button>
+        <button type="button" class="chip" data-modo="subita"><b>🎯 Morte súbita</b><small>Errou uma, acabou!</small></button>
+        <button type="button" class="chip" data-modo="cinco"><b>⏱️ 5 segundos</b><small>10 perguntas, 5 s cada</small></button>
       </div>
       <h3>✍️ Resposta</h3>
       <div class="chips c2" id="respostas">
@@ -473,19 +500,32 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
         <button type="button" class="chip" data-resp="escrever"><b>⌨️ Escrever</b><small>Mais difícil!</small></button>
       </div>
       <h3>❓ Tipo de pergunta <small class="dica-cfg">(escolha um ou mais)</small></h3>
-      <div class="tiles t5" id="tipos-pergunta">
+      <div class="tiles t4" id="tipos-pergunta">
         <button type="button" class="tile" data-tipo="sombra"><i>👤</i><b>Sombra</b><small class="estado"></small></button>
         <button type="button" class="tile" data-tipo="grito"><i>🔊</i><b>Grito</b><small class="estado"></small></button>
         <button type="button" class="tile" data-tipo="cor"><i>🎨</i><b>Cor</b><small class="estado"></small></button>
         <button type="button" class="tile" data-tipo="evolucao"><i>🧬</i><b>Evolução</b><small class="estado"></small></button>
         <button type="button" class="tile" data-tipo="letras"><i>🔤</i><b>Letras</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="metades"><i>🔀</i><b>Metades</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="numero"><i>🔢</i><b>Qual número</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="peso"><i>⚖️</i><b>Mais pesado</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="altura"><i>📏</i><b>Mais alto</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="regiao"><i>🗺️</i><b>De onde é</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="bebe"><i>🐣</i><b>Bebê ou adulto</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="vf"><i>❓</i><b>Verdade ou mentira</b><small class="estado"></small></button>
       </div>
       <h3>🎭 Efeitos da sombra</h3>
-      <div class="tiles t4" id="efeitos">
+      <div class="tiles t5" id="efeitos">
         <button type="button" class="tile" data-ef="pedacos"><i>🧩</i><b>Pedaços</b><small class="estado"></small></button>
         <button type="button" class="tile" data-ef="girando"><i>🌀</i><b>Girando</b><small class="estado"></small></button>
         <button type="button" class="tile" data-ef="embacada"><i>🌫️</i><b>Embaçada</b><small class="estado"></small></button>
         <button type="button" class="tile" data-ef="zoom"><i>🔍</i><b>Zoom</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-ef="lanterna"><i>🔦</i><b>Lanterna</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-ef="gelo"><i>🧊</i><b>Congelado</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-ef="buraco"><i>👀</i><b>Buraquinho</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-ef="contorno"><i>✏️</i><b>Só o contorno</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-ef="cabeca"><i>🙃</i><b>De cabeça pra baixo</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-ef="espelho"><i>🪞</i><b>Espelho</b><small class="estado"></small></button>
       </div>
       <h3>🎁 Extras</h3>
       <div class="tiles">
@@ -499,6 +539,7 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
         <button type="button" class="tile" id="musica" aria-pressed="false"><i>🎵</i><b>Música</b><small class="estado">Desligado</small></button>
         <button type="button" class="tile" id="falar-cfg" aria-pressed="false"><i>🎤</i><b>Falar a resposta</b><small class="estado">Desligado</small></button>
         <button type="button" class="tile" id="curiosidade" aria-pressed="true"><i>🧠</i><b>Curiosidades</b><small class="estado">Ligado</small></button>
+        <button type="button" class="tile" id="noite-cfg" aria-pressed="false"><i>🌗</i><b>Dia e noite</b><small class="estado">Desligado</small></button>
       </div>
       <p class="info-video" id="video-info"></p>
       <div class="nomes-2" id="nomes-2" hidden>
@@ -536,6 +577,7 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
     </div>
   </section>
 
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="so-contorno"><feMorphology operator="dilate" radius="3" in="SourceAlpha" result="d"/><feComposite in="d" in2="SourceAlpha" operator="out" result="o"/><feFlood flood-color="#1b1d3a"/><feComposite in2="o" operator="in"/></filter></svg>
   <!-- ===================== JOGO ===================== -->
   <section id="tela-jogo" hidden>
     <div class="placar">
@@ -547,7 +589,10 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
     <div class="progresso" aria-hidden="true"><i id="progresso"></i></div>
     <div class="vez" id="vez" hidden></div>
     <div class="palco" id="palco" data-tipo="sombra">
-      <div class="giro" id="giro"><img id="figura" alt="Sombra de um Pokémon misterioso" /></div>
+      <div class="giro" id="giro"><img id="figura" alt="Sombra de um Pokémon misterioso" /><img id="figura2" class="figura2" alt="" hidden /></div>
+      <div class="veu" id="veu" hidden></div>
+      <span class="conta" id="conta" hidden></span>
+      <span class="lua" id="lua" hidden>🌙 Noite: só fantasma e sombrio</span>
       <div class="pedacos" id="pedacos" hidden></div>
       <button type="button" class="botao-grito" id="botao-grito" hidden aria-label="Tocar o grito de novo">🔊</button>
       <span class="coroa" id="coroa" hidden>👑 CHEFÃO! pontos x2</span>
@@ -763,7 +808,7 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 10 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 11 — 28/09 · 🔄</button>
   </footer>
 </div>
 
@@ -809,13 +854,22 @@ const embaralhar = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.
 
 /* ---------- configurações (lembradas) ---------- */
 const cfg = Object.assign({ nivel:'facil', modo:'dez', resp:'opcoes', som:true, video:false, shiny:false, gers:[1], tipos:{}, efeitos:{}, dois:false, nomes:['', ''],
-  cartas:false, musica:false, falar:false, curiosidade:true, tema:'padrao', parceiro:0 }, ler('cfg', {}));
-cfg.tipos = Object.assign({ sombra:true, grito:false, cor:false, evolucao:false, letras:false }, cfg.tipos);
-cfg.efeitos = Object.assign({ pedacos:false, girando:false, embacada:false, zoom:false }, cfg.efeitos);
+  cartas:false, musica:false, falar:false, curiosidade:true, tema:'padrao', parceiro:0, noite:false }, ler('cfg', {}));
+cfg.tipos = Object.assign({ sombra:true, grito:false, cor:false, evolucao:false, letras:false, metades:false, numero:false, peso:false, altura:false, regiao:false, bebe:false, vf:false }, cfg.tipos);
+cfg.efeitos = Object.assign({ pedacos:false, girando:false, embacada:false, zoom:false, lanterna:false, gelo:false, buraco:false, contorno:false, cabeca:false, espelho:false }, cfg.efeitos);
 if(!Array.isArray(cfg.nomes)) cfg.nomes = ['', ''];
-if(!['dez', 'tempo', 'vidas', 'chefao', 'escada', 'calmo'].includes(cfg.modo)) cfg.modo = 'dez';
+if(!['dez', 'tempo', 'vidas', 'chefao', 'escada', 'calmo', 'subita', 'cinco'].includes(cfg.modo)) cfg.modo = 'dez';
 if(!Array.isArray(cfg.gers) || !cfg.gers.length) cfg.gers = [1];
+/* 🌗 dia e noite: das 19h às 6h só vêm Pokémon fantasma e sombrio */
+const ehNoite = () => { const h = new Date().getHours(); return !!cfg.noite && (h >= 19 || h < 6); };
+const FANTASMA = 13, SOMBRIO = 15;
 function pool(){
+  const p = poolDoNivel();
+  if(!ehNoite() || cfg.nivel === 'revanche') return p;
+  const noite = p.filter(x => x.tipos.includes(FANTASMA) || x.tipos.includes(SOMBRIO));
+  return noite.length >= 8 ? noite : POKE.filter(x => (x.tipos.includes(FANTASMA) || x.tipos.includes(SOMBRIO)) && (cfg.nivel === 'dificil' || x.ger <= 4));
+}
+function poolDoNivel(){
   if(cfg.nivel === 'facil') return FAMOSOS.map(i => POKE[i - 1]);
   if(cfg.nivel === 'medio') return POKE.filter(p => p.ger <= 4);
   if(cfg.nivel === 'minhas') return POKE.filter(p => cfg.gers.includes(p.ger));
@@ -878,16 +932,17 @@ $('ver-colecao').onclick = () => { $('colecao-caixa').hidden = !$('colecao-caixa
 
 /* ---------- o jogo ---------- */
 const SHINY = 0.05, TEMPO_S = 60, VIDAS = 3, PERGUNTAS = 10, EFEITO_S = 10;
-const MODOS_VIDA = ['vidas', 'chefao', 'escada'];
+const MODOS_VIDA = ['vidas', 'chefao', 'escada', 'subita'];
+const MODOS_DEZ = ['dez', 'cinco'];
 let jogo = null;
 function trocarTela(t){ document.querySelectorAll('.pontos-voando').forEach(d => d.remove()); $('recado-claude').hidden = t !== 'inicio'; ['inicio', 'jogo', 'fim', 'trofeus', 'album', 'amigos', 'loja'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
-const limite = () => cfg.modo === 'dez' ? PERGUNTAS * (cfg.dois ? 2 : 1) : Infinity;
+const limite = () => MODOS_DEZ.includes(cfg.modo) ? PERGUNTAS * (cfg.dois ? 2 : 1) : Infinity;
 const acabou = () => !!jogo && ((MODOS_VIDA.includes(cfg.modo) && jogo.vidas <= 0) || jogo.n >= limite());
 function novoJogo(){
   if(video) pararVideo(true);
   const p = pool();
   if(!p.length || (cfg.nivel !== 'revanche' && p.length < 4)){ alert(cfg.nivel === 'revanche' ? 'Não tem nenhum pra revanche!' : 'Escolha mais gerações!'); return; }
-  jogo = { lista:p, usados:new Set(), pontos:0, seq:0, maiorSeq:0, acertos:0, n:0, vidas:VIDAS, fim:0, rodadas:[], atual:null, relogio:0, dicas:0, respondeu:false,
+  jogo = { lista:p, usados:new Set(), pontos:0, seq:0, maiorSeq:0, acertos:0, n:0, vidas:cfg.modo === 'subita' ? 1 : VIDAS, vidasIni:cfg.modo === 'subita' ? 1 : VIDAS, fim:0, rodadas:[], atual:null, relogio:0, dicas:0, respondeu:false,
     usouDica:false, brilhante:false, trofeus:[], nivel:cfg.nivel, modo:cfg.modo, tipo:'sombra', degrau:0, chefe:false, inicioPerg:0, timerPedacos:0,
     desafio:desafioAtual, roteiro:desafioAtual ? desafioAtual.roteiro : null,
     jogadores:cfg.dois ? [{ nome:cfg.nomes[0] || 'Jogador 1', pontos:0, acertos:0, seq:0 }, { nome:cfg.nomes[1] || 'Jogador 2', pontos:0, acertos:0, seq:0 }] : null, vez:1 };
@@ -934,15 +989,56 @@ function erradasPara(certo, base, excluir){
 function atualizarPlacar(){
   const J = jogo.jogadores ? jogo.jogadores[jogo.vez] : null;
   $('p-pontos').textContent = J ? J.pontos : jogo.pontos; $('p-seq').textContent = J ? J.seq : jogo.seq;
-  if(cfg.modo === 'dez'){ $('p-extra').textContent = `${Math.min(jogo.n, limite())}/${limite()}`; $('p-extra-rot').textContent = 'pergunta'; }
-  else if(MODOS_VIDA.includes(cfg.modo)){ $('p-extra').textContent = '❤️'.repeat(Math.max(0, jogo.vidas)) || '💔'; $('p-extra-rot').textContent = cfg.modo === 'escada' ? `degrau ${jogo.degrau + 1}` : 'vidas'; }
+  if(MODOS_DEZ.includes(cfg.modo)){ $('p-extra').textContent = `${Math.min(jogo.n, limite())}/${limite()}`; $('p-extra-rot').textContent = 'pergunta'; }
+  else if(MODOS_VIDA.includes(cfg.modo)){ $('p-extra').textContent = '❤️'.repeat(Math.max(0, jogo.vidas)) || '💔'; $('p-extra-rot').textContent = cfg.modo === 'escada' ? `degrau ${jogo.degrau + 1}` : cfg.modo === 'subita' ? 'só 1 vida' : 'vidas'; }
   else if(cfg.modo === 'calmo'){ $('p-extra').textContent = '∞'; $('p-extra-rot').textContent = 'treino'; }
   else $('p-extra-rot').textContent = 'tempo';
-  $('progresso').style.width = (cfg.modo === 'dez' ? Math.min(jogo.n, limite()) / limite() : MODOS_VIDA.includes(cfg.modo) ? jogo.vidas / VIDAS : cfg.modo === 'calmo' ? 1 : Math.max(0, jogo.fim - Date.now()) / (TEMPO_S * 1000)) * 100 + '%';
+  $('progresso').style.width = (MODOS_DEZ.includes(cfg.modo) ? Math.min(jogo.n, limite()) / limite() : MODOS_VIDA.includes(cfg.modo) ? jogo.vidas / jogo.vidasIni : cfg.modo === 'calmo' ? 1 : Math.max(0, jogo.fim - Date.now()) / (TEMPO_S * 1000)) * 100 + '%';
   if(J){ const v = $('vez'); v.hidden = false; v.textContent = `🎮 Vez de: ${J.nome}`; v.style.background = jogo.vez === 0 ? '#2f7fe0' : '#d0342c'; }
   else $('vez').hidden = true;
 }
 const letrasDe = nome => semAcento(nome).toUpperCase();
+const FILTRO_TIPO = { evolucao:x => x.evos.length > 0, letras:x => letrasDe(x.nome).length >= 3 && letrasDe(x.nome).length <= 11, bebe:x => x.prevo > 0 || x.evos.length > 0 };
+const COM_EFEITO = ['sombra', 'letras', 'metades'];   // os que mostram a sombra
+const COLORIDO = ['numero', 'regiao', 'bebe', 'vf', 'peso', 'altura'];
+const fase = p => !p.prevo ? 0 : p.evos.length ? 1 : 2;   // 🐣 bebê, 🐥 no meio, 💪 adulto
+const FASES = ['🐣 Bebê (a primeira forma)', '🐥 No meio (ainda evolui)', '💪 Adulto (a última forma)'];
+const kg = p => (p.peso / 10).toLocaleString('pt-BR') + ' kg', metros = p => (p.alt / 10).toLocaleString('pt-BR') + ' m';
+/* ❓ verdade ou mentira: inventa uma frase sobre o Pokémon (metade das vezes é verdade) */
+function fraseVF(p){
+  const verdade = Math.random() < .5, qual = Math.floor(Math.random() * 4);
+  if(qual === 0){ const t = verdade ? p.tipos[0] : embaralhar([...TIPOS.keys()].filter(i => !p.tipos.includes(i)))[0]; return { verdade, frase:`O ${p.nome} é do tipo ${TIPOS[t][1]} ${TIPOS[t][0]}.` }; }
+  if(qual === 1){ const r = verdade ? p.ger - 1 : embaralhar([...REGIOES.keys()].filter(i => i !== p.ger - 1))[0]; return { verdade, frase:`O ${p.nome} apareceu primeiro em ${REGIOES[r]}.` }; }
+  if(qual === 2){ const ev = p.evos.length > 0; return { verdade, frase:(ev === verdade) ? `O ${p.nome} ainda pode evoluir.` : `O ${p.nome} não evolui mais.` }; }
+  const c = verdade ? p.cor : embaralhar([...CORES.keys()].filter(i => i !== p.cor))[0];
+  return { verdade, frase:`A cor principal do ${p.nome} é ${CORES[c][0].toLowerCase()}.` };
+}
+/* ⚖️📏 um segundo Pokémon bem diferente pra comparar */
+function outroPara(p, campo){
+  const base = jogo.lista.length >= 12 ? jogo.lista : POKE;
+  for(let t = 0; t < 200; t++){ const q = base[Math.floor(Math.random() * base.length)]; const a = p[campo], b = q[campo]; if(q.id !== p.id && a && b && Math.max(a, b) / Math.min(a, b) >= 1.4) return q; }
+  return POKE.find(q => q.id !== p.id && q[campo] && Math.max(p[campo], q[campo]) / Math.min(p[campo], q[campo]) >= 1.4);
+}
+/* 🔦 lanterna e 👀 buraquinho */
+let timerVeu = 0;
+function comecarVeu(tipoVeu){
+  const v = $('veu'); clearInterval(timerVeu);
+  v.className = 'veu'; v.hidden = !tipoVeu; if(!tipoVeu) return;
+  v.classList.add(tipoVeu); v.style.setProperty('--lx', '50%'); v.style.setProperty('--ly', '50%');
+  if(tipoVeu === 'buraco'){ const t0 = performance.now(); timerVeu = setInterval(() => { const t = (performance.now() - t0) / 1000; v.style.setProperty('--lx', 50 + 36 * Math.sin(t * .9) + '%'); v.style.setProperty('--ly', 50 + 34 * Math.sin(t * 1.3 + 1) + '%'); }, 40); }
+}
+$('palco').addEventListener('pointermove', ev => { const v = $('veu'); if(v.hidden || !v.classList.contains('lanterna')) return; const r = $('palco').getBoundingClientRect(); v.style.setProperty('--lx', ev.clientX - r.left + 'px'); v.style.setProperty('--ly', ev.clientY - r.top + 'px'); });
+$('palco').addEventListener('pointerdown', ev => { const v = $('veu'); if(v.hidden || !v.classList.contains('lanterna')) return; const r = $('palco').getBoundingClientRect(); v.style.setProperty('--lx', ev.clientX - r.left + 'px'); v.style.setProperty('--ly', ev.clientY - r.top + 'px'); });
+/* ⏱️ 5 segundos por pergunta */
+let timerConta = 0;
+function comecarConta(){
+  clearInterval(timerConta); const c = $('conta'); c.hidden = cfg.modo !== 'cinco' || !jogo; if(c.hidden) return;
+  const fim = performance.now() + 5000, p = jogo.atual;
+  const passo = () => { if(!jogo || jogo.atual !== p || jogo.respondeu){ clearInterval(timerConta); return; }
+    const s = Math.max(0, (fim - performance.now()) / 1000); c.textContent = '⏱️ ' + Math.ceil(s); c.classList.toggle('pouco', s < 2.5);
+    if(s <= 0){ clearInterval(timerConta); responder(false, null); $('aviso').textContent = '⏰ Acabou o tempo! Era o ' + p.nome + '.'; } };
+  passo(); timerConta = setInterval(passo, 100);
+}
 function tiposPossiveis(){ const t = Object.keys(cfg.tipos).filter(k => cfg.tipos[k]); return t.length ? t : ['sombra']; }
 function proxima(){
   if(!jogo) return;
@@ -950,10 +1046,12 @@ function proxima(){
   if(jogo.jogadores && jogo.n > 0) jogo.vez = 1 - jogo.vez; else if(jogo.jogadores) jogo.vez = 0;
   jogo.chefe = cfg.modo === 'chefao' && (jogo.n + 1) % 5 === 0 && !jogo.roteiro;
   let tipo = tiposPossiveis()[Math.floor(Math.random() * tiposPossiveis().length)];
-  let p = sortear(tipo === 'evolucao' ? (x => x.evos.length > 0) : tipo === 'letras' ? (x => letrasDe(x.nome).length >= 3 && letrasDe(x.nome).length <= 11) : null);
+  let p = sortear(FILTRO_TIPO[tipo] || null);
   if(!p && tipo !== 'sombra'){ tipo = 'sombra'; p = sortear(); }
   if(jogo.roteiro){ tipo = 'sombra'; p = POKE[jogo.roteiro[jogo.n].id - 1]; }   // desafio: os mesmos 10 pra todo mundo
   if(!p){ terminar(); return; }
+  jogo.outro = tipo === 'metades' ? sortear(x => x.id !== p.id) : tipo === 'peso' ? outroPara(p, 'peso') : tipo === 'altura' ? outroPara(p, 'alt') : null;
+  if(['metades', 'peso', 'altura'].includes(tipo) && !jogo.outro){ tipo = 'sombra'; }
   jogo.usados.add(p.id); jogo.n++; jogo.atual = p; jogo.dicas = 0; jogo.respondeu = false; jogo.tipo = tipo;
   jogo.brilhante = !jogo.roteiro && (cfg.shiny || admShiny || Math.random() < SHINY); admShiny = false;   // ✨ 5% de chance de vir shiny (ou todos, no modo shiny)
   jogo.evo = tipo === 'evolucao' ? p.evos[Math.floor(Math.random() * p.evos.length)] : 0;
@@ -963,19 +1061,30 @@ function proxima(){
   palco.className = 'palco'; palco.dataset.tipo = tipo; void img.offsetWidth; img.style.transition = '';
   if(jogo.chefe) palco.classList.add('chefao');
   $('coroa').hidden = !jogo.chefe;
-  const comEfeito = tipo === 'sombra' || tipo === 'letras';
+  const comEfeito = COM_EFEITO.includes(tipo);
   Object.keys(cfg.efeitos).forEach(e => { if(cfg.efeitos[e] && comEfeito) palco.classList.add('ef-' + e); });
+  if(ehNoite()) palco.classList.add('noite'); $('lua').hidden = !ehNoite() || !!jogo.roteiro;
+  const veus = ['lanterna', 'buraco', 'gelo'].filter(e => palco.classList.contains('ef-' + e));
+  comecarVeu(veus.length ? veus[Math.floor(Math.random() * veus.length)] : '');
+  const img2 = $('figura2'); img2.hidden = !jogo.outro; img2.classList.remove('revelado'); img2.removeAttribute('src');
+  if(jogo.outro){ img2.classList.add('esperando'); img2.onload = () => img2.classList.remove('esperando'); img2.crossOrigin = 'anonymous'; img2.src = arte(jogo.outro.id, false); }
+  $('conta').hidden = true;
   img.style.transformOrigin = `${20 + Math.random() * 60}% ${20 + Math.random() * 60}%`;
   clearInterval(jogo.timerPedacos); $('pedacos').hidden = true;
   $('carregando').hidden = false; $('carregando').textContent = 'Carregando… ⏳';
   $('selo').hidden = true; $('num').hidden = true; $('dicas').innerHTML = ''; $('aviso').textContent = ''; $('aviso').className = 'aviso';
   $('curio').hidden = true; $('botao-grito').hidden = tipo !== 'grito';
   $('proximo').hidden = true; $('dica').disabled = false; $('pular').disabled = false;
-  const perg = { sombra:'', grito:'🔊 Quem está gritando? Toque no 🔊 pra ouvir de novo.', cor:`🎨 Qual é a cor do ${p.nome}?`, evolucao:`🧬 Em quem o ${p.nome} evolui?`, letras:'🔤 Monte o nome do Pokémon!' }[tipo];
+  if(tipo === 'vf') jogo.vf = fraseVF(p);
+  const o2 = jogo.outro;
+  const perg = { sombra:'', grito:'🔊 Quem está gritando? Toque no 🔊 pra ouvir de novo.', cor:`🎨 Qual é a cor do ${p.nome}?`, evolucao:`🧬 Em quem o ${p.nome} evolui?`, letras:'🔤 Monte o nome do Pokémon!',
+    metades:'🔀 Dois Pokémon misturados! Quem é o da ESQUERDA ⬅️?', numero:`🔢 Qual é o número do ${p.nome} na Pokédex?`, regiao:`🗺️ De qual região vem o ${p.nome}?`,
+    peso:o2 ? `⚖️ Quem é mais PESADO: ${p.nome} ou ${o2.nome}?` : '', altura:o2 ? `📏 Quem é mais ALTO: ${p.nome} ou ${o2.nome}?` : '',
+    bebe:`🐣 O ${p.nome} é bebê ou adulto?`, vf:jogo.vf ? `❓ Verdade ou mentira? ${jogo.vf.frase}` : '' }[tipo];
   $('pergunta').textContent = perg; $('pergunta').hidden = !perg;
   /* respostas */
   const ops = $('opcoes'); ops.innerHTML = '';
-  const usarOpcoes = tipo === 'cor' || tipo === 'evolucao' || (tipo !== 'letras' && cfg.resp === 'opcoes');
+  const usarOpcoes = tipo === 'cor' || tipo === 'evolucao' || COLORIDO.includes(tipo) || (tipo !== 'letras' && cfg.resp === 'opcoes');
   ops.hidden = !usarOpcoes; $('escrever').hidden = usarOpcoes || tipo === 'letras'; $('letras-jogo').hidden = tipo !== 'letras';
   const botao = (texto, val, html) => { const b = document.createElement('button'); b.type = 'button'; if(html) b.innerHTML = html; else b.textContent = texto; b.dataset.val = val; b.onclick = () => responder(String(val) === String(jogo.certoVal), b); ops.appendChild(b); };
   if(tipo === 'cor'){
@@ -986,6 +1095,23 @@ function proxima(){
     const e = POKE[jogo.evo - 1]; jogo.certoVal = e.id;
     const excluir = new Set([p.id, ...p.evos]);
     embaralhar([e, ...erradasPara(e, jogo.lista.length >= 12 ? jogo.lista : POKE, excluir)]).forEach(o => botao(o.nome, o.id));
+  }else if(tipo === 'numero'){
+    jogo.certoVal = p.id; const ns = new Set([p.id]);
+    while(ns.size < 4){ const d = (1 + Math.floor(Math.random() * 40)) * (Math.random() < .5 ? -1 : 1); const n = p.id + d; if(n >= 1 && n <= 1025) ns.add(n); }
+    embaralhar([...ns]).forEach(n => botao('#' + n, n));
+  }else if(tipo === 'regiao'){
+    jogo.certoVal = p.ger;
+    embaralhar([p.ger, ...embaralhar([...REGIOES.keys()].map(i => i + 1).filter(g => g !== p.ger)).slice(0, 3)]).forEach(g => botao(`${REGIOES[g - 1]} (Ger ${g})`, g));
+  }else if(tipo === 'bebe'){
+    jogo.certoVal = fase(p); FASES.forEach((t, i) => botao(t, i));
+  }else if(tipo === 'vf'){
+    jogo.certoVal = jogo.vf.verdade ? 1 : 0; botao('✅ Verdade', 1); botao('❌ Mentira', 0);
+  }else if(tipo === 'peso' || tipo === 'altura'){
+    const c = tipo === 'peso' ? 'peso' : 'alt'; jogo.certoVal = p[c] > o2[c] ? p.id : o2.id;
+    botao(`⬅️ ${p.nome}`, p.id); botao(`${o2.nome} ➡️`, o2.id);
+  }else if(tipo === 'metades'){
+    jogo.certoVal = p.id;
+    const exc = new Set([p.id, o2.id]); embaralhar([p, o2, ...erradasPara(p, jogo.lista.length >= 12 ? jogo.lista : POKE, exc).slice(0, 2)]).forEach(o => botao(o.nome, o.id));
   }else if(tipo === 'letras'){
     jogo.certoVal = p.id; montarLetras(p);
   }else if(usarOpcoes){
@@ -1000,6 +1126,7 @@ function proxima(){
     jogo.inicioPerg = performance.now();
     if(palco.classList.contains('ef-pedacos')) comecarPedacos();
     if(tipo === 'grito') tocarGritoPergunta();
+    comecarConta();
   };
   img.onerror = () => {
     $('carregando').textContent = navigator.onLine === false ? '📡 Sem internet! Conecte pra jogar.' : 'Não carregou 😕 Indo pro próximo…';
@@ -1043,12 +1170,19 @@ $('apagar').onclick = () => { if(!jogo || jogo.respondeu || !jogo.montado.length
 function responder(certo, botao){
   if(!jogo || jogo.respondeu) return;
   jogo.respondeu = true;
-  clearInterval(jogo.timerPedacos);
-  const p = jogo.atual, img = $('figura'), palco = $('palco'), tipo = jogo.tipo;
-  palco.classList.add('revelou'); img.classList.add('revelado'); $('pedacos').hidden = true; $('botao-grito').hidden = true;
+  clearInterval(jogo.timerPedacos); clearInterval(timerConta); clearInterval(timerVeu); $('conta').hidden = true;
+  const p = jogo.atual, img = $('figura'), palco = $('palco'), tipo = jogo.tipo, o2 = jogo.outro;
+  palco.classList.add('revelou'); img.classList.add('revelado'); $('figura2').classList.add('revelado'); $('pedacos').hidden = true; $('botao-grito').hidden = true;
   const alvo = tipo === 'evolucao' ? POKE[jogo.evo - 1] : p;
   if(tipo === 'evolucao'){ img.src = arte(alvo.id, jogo.brilhante); $('selo').textContent = `${p.nome} evolui para ${alvo.nome}!`; }
   else if(tipo === 'cor') $('selo').textContent = `${p.nome} é ${CORES[p.cor][0].toLowerCase()}!`;
+  else if(tipo === 'metades') $('selo').textContent = `⬅️ ${p.nome} + ${o2.nome} ➡️`;
+  else if(tipo === 'peso') $('selo').textContent = `${p.nome} ${kg(p)} · ${o2.nome} ${kg(o2)}`;
+  else if(tipo === 'altura') $('selo').textContent = `${p.nome} ${metros(p)} · ${o2.nome} ${metros(o2)}`;
+  else if(tipo === 'numero') $('selo').textContent = `${p.nome} é o número ${p.id}!`;
+  else if(tipo === 'regiao') $('selo').textContent = `${p.nome} vem de ${REGIOES[p.ger - 1]}!`;
+  else if(tipo === 'bebe') $('selo').textContent = `${p.nome}: ${FASES[fase(p)].replace(/ \(.*/, '')}!`;
+  else if(tipo === 'vf') $('selo').textContent = jogo.vf.verdade ? '✅ Era verdade!' : '❌ Era mentira!';
   else $('selo').textContent = jogo.brilhante ? `✨ É o ${p.nome} shiny!` : `É o ${p.nome}!`;
   $('selo').hidden = false;
   $('num').textContent = `#${alvo.id}`; $('num').hidden = false;
@@ -1059,7 +1193,7 @@ function responder(certo, botao){
   $('pecas').querySelectorAll('button').forEach(b => { b.disabled = true; });
   $('chute').disabled = true; $('dica').disabled = true; $('pular').disabled = true; $('falar').hidden = true;
   const J = jogo.jogadores ? jogo.jogadores[jogo.vez] : null;
-  const nomeTipo = tipo === 'sombra' || tipo === 'grito' || tipo === 'letras';
+  const nomeTipo = tipo === 'sombra' || tipo === 'grito' || tipo === 'letras' || tipo === 'metades';
   let ganhou = 0;
   if(certo){
     jogo.seq++; jogo.maiorSeq = Math.max(jogo.maiorSeq, jogo.seq); jogo.acertos++;
@@ -1110,6 +1244,12 @@ $('dica').onclick = () => {
   const tipo = jogo.tipo, alvo = tipo === 'evolucao' ? POKE[jogo.evo - 1] : jogo.atual;
   jogo.dicas++; jogo.usouDica = true; stats.dicas++;
   if(tipo === 'cor'){ $('aviso').textContent = `💡 Dica: a cor começa com “${CORES[jogo.atual.cor][0][0]}”.`; $('dica').disabled = true; }
+  else if(COLORIDO.includes(tipo)){
+    const erradas = [...$('opcoes').children].filter(b => !b.disabled && String(b.dataset.val) !== String(jogo.certoVal));
+    if(erradas.length >= 2){ erradas[Math.floor(Math.random() * erradas.length)].disabled = true; $('aviso').textContent = '💡 Dica: tirei uma resposta errada!'; }
+    else $('aviso').textContent = '😉 Nessa pergunta não tem dica!';
+    $('dica').disabled = true;
+  }
   else if(tipo === 'letras'){
     const alvoL = letrasDe(alvo.nome);
     if(!jogo.montado.length){ const b = [...$('pecas').children].find(x => !x.disabled && x.textContent === alvoL[0]); if(b) b.click(); }
@@ -1154,7 +1294,7 @@ function grito(p, sempre){
 }
 function terminar(){
   if(!jogo) return;
-  clearInterval(jogo.relogio); clearInterval(jogo.timerPedacos);
+  clearInterval(jogo.relogio); clearInterval(jogo.timerPedacos); clearInterval(timerConta); clearInterval(timerVeu);
   musicaDesliga();
   const j = jogo; jogo = null;
   desafioAtual = null; voltarCfg();
@@ -1385,7 +1525,7 @@ $('menu').onclick = () => { trocarTela('inicio'); marcar(); mostrarMissoes(); mo
 $('sair').onclick = () => { if(!jogo) return; if(jogo.rodadas.length === 0 || confirm('Parar o jogo agora?')) terminar(); };
 document.addEventListener('keydown', ev => {   // no computador: 1 2 3 4 escolhem, Enter vai pro próximo
   if($('tela-jogo').hidden || !jogo || document.activeElement === $('chute')) return;
-  if(/^[1-4]$/.test(ev.key) && cfg.resp === 'opcoes' && !jogo.respondeu){ const b = $('opcoes').children[+ev.key - 1]; if(b) b.click(); }
+  if(/^[1-4]$/.test(ev.key) && !$('opcoes').hidden && !jogo.respondeu){ const b = $('opcoes').children[+ev.key - 1]; if(b) b.click(); }
 });
 /* =========================================================================
    🏆 Troféus: 100 principais + 1 pra cada Pokémon. Cada um tem uma meta, e v() diz quanto você já tem.
@@ -1860,14 +2000,16 @@ $('tipos-pergunta').onclick = ev => {
   marcar();
 };
 $('efeitos').onclick = ev => { const b = ev.target.closest('[data-ef]'); if(!b) return; cfg.efeitos[b.dataset.ef] = !cfg.efeitos[b.dataset.ef]; marcar(); };
-[['dois', 'dois'], ['cartas', 'cartas'], ['musica', 'musica'], ['falar-cfg', 'falar'], ['curiosidade', 'curiosidade']].forEach(([id, k]) => {
-  $(id).onclick = () => { if(id === 'falar-cfg' && !Reconhecer) return; cfg[k] = !cfg[k]; if(k === 'dois' && cfg.dois) cfg.modo = 'dez'; marcar(); };
+[['dois', 'dois'], ['cartas', 'cartas'], ['musica', 'musica'], ['falar-cfg', 'falar'], ['curiosidade', 'curiosidade'], ['noite-cfg', 'noite']].forEach(([id, k]) => {
+  $(id).onclick = () => { if(id === 'falar-cfg' && !Reconhecer) return;
+    if(k === 'noite' && !cfg.noite && !confirm('🌗 Dia e noite\n\nDas 7 da noite às 6 da manhã, só vão aparecer Pokémon FANTASMA 👻 e SOMBRIO 🌑.\n\nTem certeza que quer ligar?')) return;
+    cfg[k] = !cfg[k]; if(k === 'dois' && cfg.dois) cfg.modo = 'dez'; marcar(); };
 });
 ['nome1', 'nome2'].forEach((id, i) => $(id).addEventListener('input', ev => { cfg.nomes[i] = ev.target.value.trim().slice(0, 14); gravar('cfg', cfg); }));
 function marcarExtras(){
   document.querySelectorAll('#tipos-pergunta .tile').forEach(b => { const on = !!cfg.tipos[b.dataset.tipo]; b.setAttribute('aria-pressed', on); b.querySelector('.estado').textContent = on ? 'Ligado' : 'Desligado'; });
   document.querySelectorAll('#efeitos .tile').forEach(b => { const on = !!cfg.efeitos[b.dataset.ef]; b.setAttribute('aria-pressed', on); b.querySelector('.estado').textContent = on ? 'Ligado' : 'Desligado'; });
-  [['dois', 'dois'], ['cartas', 'cartas'], ['musica', 'musica'], ['falar-cfg', 'falar'], ['curiosidade', 'curiosidade']].forEach(([id, k]) => {
+  [['dois', 'dois'], ['cartas', 'cartas'], ['musica', 'musica'], ['falar-cfg', 'falar'], ['curiosidade', 'curiosidade'], ['noite-cfg', 'noite']].forEach(([id, k]) => {
     const b = $(id); b.setAttribute('aria-pressed', !!cfg[k]); b.querySelector('.estado').textContent = id === 'falar-cfg' && !Reconhecer ? 'Não dá aqui' : cfg[k] ? 'Ligado' : 'Desligado';
     if(id === 'falar-cfg') b.disabled = !Reconhecer;
   });
@@ -1898,7 +2040,7 @@ let amigos = Array.isArray(ler('amigos', [])) ? ler('amigos', []) : [];
 let historico = Array.isArray(ler('historico', [])) ? ler('historico', []) : [];
 let desafios = ler('desafios', {}) || {};
 const nTrofeus = () => Object.keys(ganhos).filter(id => TROFEUS.some(t => t.id === id)).length;
-const nomeModo = m => ({ dez:'🎯 10', tempo:'⏱️ 1 min', vidas:'❤️ 3 vidas', chefao:'👑 Chefão', escada:'🧗 Escada', calmo:'🐢 Calmo', desafio:'⚔️ Desafio' }[m] || esc(m));
+const nomeModo = m => ({ dez:'🎯 10', tempo:'⏱️ 1 min', vidas:'❤️ 3 vidas', chefao:'👑 Chefão', escada:'🧗 Escada', calmo:'🐢 Calmo', subita:'🎯 Morte súbita', cinco:'⏱️ 5 s', desafio:'⚔️ Desafio' }[m] || esc(m));
 const nomeNivel = n => ({ facil:'🟢 Fácil', medio:'🟡 Médio', dificil:'🔴 Difícil', minhas:'🎯 Eu escolho', revanche:'🔁 Revanche' }[n] || n);
 const coroa = adm => adm ? ' 👑' : '';
 

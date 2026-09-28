@@ -38,5 +38,11 @@ Aparece a **sombra** de um Pokémon e você adivinha quem é!
 - 🏆 **1.125 troféus**: os 100 principais + 1 pra cada Pokémon (📖), com filtro por categoria.
 - 👑 **Jojo adm é só do Jojo**: a senha é fixa (o site guarda só o hash), a entrada é secreta, trava depois de 5 erros, e o backup não leva a chave do ADM.
 
+## Versão 11: jeitos novos de jogar
+- ❓ **Perguntas novas**: 🔀 Metades (dois Pokémon misturados), 🔢 Qual é o número, ⚖️ Mais pesado, 📏 Mais alto, 🗺️ De onde é, 🐣 Bebê ou adulto e ❓ Verdade ou mentira.
+- 🎭 **Efeitos novos**: 🔦 Lanterna (vê só onde toca), 🧊 Congelado (o gelo derrete), 👀 Buraquinho que passeia, ✏️ Só o contorno, 🙃 De cabeça pra baixo e 🪞 Espelho.
+- 🎮 **Jeitos novos**: 🎯 Morte súbita (errou uma, acabou) e ⏱️ 5 segundos por pergunta.
+- 🌗 **Dia e noite** (nas configurações, pergunta se você tem certeza): das 19h às 6h só vêm Pokémon fantasma e sombrio.
+
 ## Dados
 Nome e tipos dos Pokémon gerados do `@pkmn/dex`; cor, altura, peso e evoluções das tabelas CSV do PokeAPI. Figuras e gritos vêm do [PokeAPI](https://pokeapi.co) (precisa de internet pra jogar). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.
