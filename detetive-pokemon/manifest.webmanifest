@@ -1,0 +1,14 @@
+{
+  "name": "Detetive Pokémon",
+  "short_name": "Detetive",
+  "description": "Leia as pistas e descubra qual Pokémon pegou o bolo!",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3efff",
+  "theme_color": "#3b2a6e",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

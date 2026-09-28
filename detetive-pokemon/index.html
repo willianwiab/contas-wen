@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Detetive Pokémon</title>
+<meta name="description" content="A Alcremie VMAX sumiu da festa! Leia as pistas e descubra qual Pokémon levou ela." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#3b2a6e" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Detetive" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --marca:#3b2a6e; --marca2:#6a4bc4; --vermelho:#e3350d; --amarelo:#ffcb05; --verde:#1f9d57; --erro:#d0342c; --rosa:#ff8fc0;
+  --fundo:#f3efff; --fundo2:#e6ddff; --tinta:#1f1a36; --tinta-fraca:#625a80; --cartao:#ffffff; --cartao2:#f7f4ff; --borda:#dcd3fa;
+  --sombra:rgba(50,30,110,.14); --papel:#fff8e1; --papel-linha:#f0ddb0; --papel-tinta:#4a3a1a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#c4b2ff; --marca2:#9c86ff; --vermelho:#ff6a4d; --amarelo:#ffd84d; --verde:#43d18a; --erro:#ff6b62; --rosa:#ff9ccb;
+    --fundo:#14102a; --fundo2:#1c1638; --tinta:#f1edff; --tinta-fraca:#aaa2cf; --cartao:#211b40; --cartao2:#2a234f; --borda:#3b3370;
+    --sombra:rgba(0,0,0,.45); --papel:#2e2818; --papel-linha:#4a3f22; --papel-tinta:#f3e6c0;
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#c4b2ff; --marca2:#9c86ff; --vermelho:#ff6a4d; --amarelo:#ffd84d; --verde:#43d18a; --erro:#ff6b62; --rosa:#ff9ccb;
+  --fundo:#14102a; --fundo2:#1c1638; --tinta:#f1edff; --tinta-fraca:#aaa2cf; --cartao:#211b40; --cartao2:#2a234f; --borda:#3b3370;
+  --sombra:rgba(0,0,0,.45); --papel:#2e2818; --papel-linha:#4a3f22; --papel-tinta:#f3e6c0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);
+  background-image:radial-gradient(circle at 90% 0%, var(--fundo2) 0 22%, transparent 22.5%);background-attachment:fixed;min-height:100vh}
+.casca{max-width:560px;margin:0 auto;padding:14px 16px 40px}
+h1,h2,h3,.titulo{font-family:'Baloo 2','Rubik',sans-serif}
+button{font:inherit;color:inherit}
+.topo{display:flex;align-items:center;gap:10px}
+.logo{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.logo img{width:46px;height:46px}
+.logo h1{font-size:1.5rem;line-height:1.05;color:var(--marca)}
+.logo small{display:block;font-family:'Rubik',sans-serif;font-size:.8rem;color:var(--tinta-fraca);font-weight:500}
+.redondo{width:44px;height:44px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.25rem;cursor:pointer;display:grid;place-items:center;flex:none}
+.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:22px;padding:16px;margin-top:14px;box-shadow:0 6px 18px var(--sombra)}
+.cartao h2{font-size:1.2rem;margin-bottom:8px}
+.grande{display:block;width:100%;border:none;border-radius:18px;padding:16px;font-size:1.25rem;font-weight:800;cursor:pointer;color:#fff;
+  background:linear-gradient(180deg,var(--vermelho),#b8260a);box-shadow:0 5px 0 #7d1a06;font-family:'Baloo 2','Rubik',sans-serif}
+.grande:active{transform:translateY(3px);box-shadow:0 2px 0 #7d1a06}
+.mini{border:2px solid var(--borda);background:var(--cartao2);border-radius:14px;padding:9px 12px;font-weight:700;cursor:pointer}
+.mini:disabled{opacity:.5;cursor:default}
+/* herói: a Alcremie VMAX */
+.heroi{text-align:center;position:relative;overflow:hidden;background:linear-gradient(180deg,#ffe4f1,#fff5fb)}
+:root[data-tema="escuro"] .heroi{background:linear-gradient(180deg,#3a1f3d,#2a1a34)}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .heroi{background:linear-gradient(180deg,#3a1f3d,#2a1a34)}}
+.heroi img{width:190px;height:190px;object-fit:contain;animation:boia 3s ease-in-out infinite;filter:drop-shadow(0 8px 10px rgba(0,0,0,.18))}
+@keyframes boia{50%{transform:translateY(-8px)}}
+.heroi .fita{position:absolute;left:-40px;top:22px;transform:rotate(-35deg);background:var(--amarelo);color:#1f1a36;font-weight:900;padding:4px 50px;font-size:.8rem;
+  background-image:repeating-linear-gradient(90deg,#1f1a36 0 12px,transparent 12px 24px);background-size:100% 4px;background-repeat:repeat-x;background-position:0 100%}
+.heroi p{margin:8px 0 12px;font-weight:600}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.chip{border:2px solid var(--borda);background:var(--cartao2);border-radius:16px;padding:10px 4px;cursor:pointer;text-align:center}
+.chip b{display:block;font-size:.95rem}
+.chip small{display:block;font-size:.72rem;color:var(--tinta-fraca)}
+.chip[aria-pressed="true"]{border-color:var(--marca2);background:var(--marca2);color:#fff}
+.chip[aria-pressed="true"] small{color:#eee}
+.linha{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.patente{display:flex;align-items:center;gap:12px}
+.patente .dist{font-size:2.4rem}
+.patente b{font-size:1.1rem;display:block}
+.barra{height:12px;border-radius:99px;background:var(--cartao2);border:2px solid var(--borda);overflow:hidden;margin-top:8px}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,var(--amarelo),var(--vermelho));transition:width .5s}
+.numeros{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px;text-align:center}
+.numeros div{background:var(--cartao2);border-radius:14px;padding:8px 2px}
+.numeros b{display:block;font-size:1.2rem}
+.numeros small{font-size:.7rem;color:var(--tinta-fraca)}
+.distintivos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px}
+.distintivo{background:var(--cartao2);border-radius:14px;padding:8px 4px;text-align:center;font-size:.72rem;border:2px solid transparent}
+.distintivo i{display:block;font-style:normal;font-size:1.6rem}
+.distintivo.nao{opacity:.38;filter:grayscale(1)}
+.distintivo.sim{border-color:var(--amarelo)}
+.galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin-top:10px}
+.galeria div{background:var(--cartao2);border-radius:12px;text-align:center;font-size:.62rem;padding:2px;position:relative}
+.galeria img{width:100%;aspect-ratio:1;object-fit:contain;image-rendering:pixelated}
+.galeria em{position:absolute;right:3px;top:2px;font-style:normal;font-weight:800;font-size:.65rem;background:var(--vermelho);color:#fff;border-radius:99px;padding:0 5px}
+.como li{margin:6px 0 6px 20px}
+footer{text-align:center;margin-top:22px;color:var(--tinta-fraca);font-size:.8rem;line-height:1.5}
+.versao{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:5px 12px;font-weight:700;cursor:pointer;margin-top:8px}
+
+/* ---------- caso ---------- */
+.placar{display:flex;gap:8px;align-items:stretch}
+.placar > div{flex:1;background:var(--cartao);border:2px solid var(--borda);border-radius:16px;text-align:center;padding:6px 4px}
+.placar b{display:block;font-size:1.15rem}
+.placar small{font-size:.7rem;color:var(--tinta-fraca)}
+.historia{display:flex;gap:12px;align-items:center}
+.historia img{width:84px;height:84px;object-fit:contain;flex:none}
+.historia p{font-weight:600;line-height:1.35}
+.historia .sumiu{filter:grayscale(1) opacity(.45)}
+.caderno{background:var(--papel);color:var(--papel-tinta);border-radius:18px;padding:14px 14px 14px 36px;margin-top:14px;position:relative;
+  background-image:repeating-linear-gradient(180deg,transparent 0 31px,var(--papel-linha) 31px 33px);box-shadow:0 6px 16px var(--sombra)}
+.caderno::before{content:'';position:absolute;left:22px;top:0;bottom:0;border-left:2px solid #f09a9a}
+.caderno h2{font-size:1.1rem;margin-bottom:6px}
+.pistas{list-style:none}
+.pistas li{padding:6px 0;line-height:1.35;font-weight:500;animation:aparece .5s}
+.pistas li b{font-weight:800}
+@keyframes aparece{from{opacity:0;transform:translateX(-12px)}}
+.pistas li.escondida{opacity:.5;font-style:italic}
+.botoes-caso{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.suspeitos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.suspeito{background:var(--cartao);border:2px solid var(--borda);border-radius:18px;padding:8px;position:relative;box-shadow:0 4px 12px var(--sombra);transition:opacity .3s,filter .3s}
+.suspeito .foto{position:relative;background:radial-gradient(circle,var(--cartao2) 55%,transparent 56%);aspect-ratio:1;display:grid;place-items:center}
+.suspeito img{width:88%;height:88%;object-fit:contain}
+.suspeito h3{font-size:1rem;text-align:center;line-height:1.1;margin-top:2px}
+.fatos{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:5px;font-size:.68rem}
+.fatos span{background:var(--cartao2);border-radius:99px;padding:2px 6px;white-space:nowrap}
+.fatos .tipo{color:#fff;font-weight:700}
+.cor-bola{display:inline-block;width:9px;height:9px;border-radius:50%;border:1px solid rgba(0,0,0,.3);vertical-align:-1px;margin-right:2px}
+.acoes{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}
+.acoes button{border:2px solid var(--borda);border-radius:12px;padding:7px 2px;font-weight:800;font-size:.8rem;cursor:pointer;background:var(--cartao2)}
+.acoes .prender{background:var(--vermelho);border-color:var(--vermelho);color:#fff}
+.suspeito.riscado{opacity:.5;filter:grayscale(1)}
+.suspeito.riscado .foto::after{content:'✖';position:absolute;inset:0;display:grid;place-items:center;font-size:5rem;color:var(--erro);font-weight:900;opacity:.85}
+.suspeito.inocente .foto::before{content:'Não fui eu! 😤';position:absolute;left:50%;top:4px;transform:translateX(-50%);background:#fff;color:#1f1a36;border-radius:12px;padding:3px 8px;font-size:.72rem;font-weight:800;white-space:nowrap;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.suspeito.treme{animation:treme .45s}
+@keyframes treme{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.aviso{text-align:center;font-weight:700;min-height:1.4em;margin-top:10px}
+.aviso.ruim{color:var(--erro)}
+/* ---------- resolvido ---------- */
+dialog{border:none;border-radius:26px;padding:0;width:min(440px,calc(100% - 32px));background:var(--cartao);color:var(--tinta);box-shadow:0 20px 50px rgba(0,0,0,.4);margin:auto}
+dialog::backdrop{background:rgba(20,10,40,.6)}
+.resolvido{text-align:center;padding:20px 18px}
+.resolvido .dupla{display:flex;justify-content:center;align-items:flex-end;gap:4px}
+.resolvido .dupla img{width:130px;height:130px;object-fit:contain}
+.resolvido .dupla .alc{width:110px;height:110px}
+.resolvido h2{font-size:1.5rem;color:var(--vermelho)}
+.resolvido .confissao{background:var(--cartao2);border-radius:16px;padding:10px;margin:10px 0;font-weight:600}
+.estrelas{font-size:2rem;letter-spacing:4px}
+.resolvido .pts{font-weight:800;font-size:1.1rem}
+.resolvido .grande{margin-top:12px}
+.resolvido .mini{margin-top:8px;width:100%}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:var(--amarelo);color:#1f1a36;border-radius:16px;padding:10px 16px;font-weight:800;z-index:50;box-shadow:0 8px 20px rgba(0,0,0,.25);animation:desce .4s}
+@keyframes desce{from{transform:translate(-50%,-80px)}}
+.confete{position:fixed;top:-20px;width:10px;height:14px;z-index:60;pointer-events:none;animation:cai 2.4s linear forwards}
+@keyframes cai{to{transform:translateY(110vh) rotate(720deg)}}
+.faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--marca);color:#fff;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:70;font-weight:700}
+.faixa-nova button{border:none;border-radius:99px;padding:6px 12px;font-weight:800;background:var(--amarelo);color:#1f1a36;cursor:pointer}
+@media (prefers-reduced-motion: reduce){.heroi img{animation:none}}
+@media (max-width:360px){.fatos{font-size:.62rem}.acoes button{font-size:.72rem}}
+</style>
+</head>
+<body>
+<div class="casca">
+  <header class="topo">
+    <div class="logo"><img src="icone.svg" alt="" /><h1>Detetive Pokémon<small>Quem levou a Alcremie VMAX?</small></h1></div>
+    <button type="button" class="redondo" id="som" title="Som" aria-label="Ligar ou desligar o som">🔊</button>
+    <button type="button" class="redondo" id="tema" title="Claro ou escuro" aria-label="Trocar claro e escuro">🌙</button>
+  </header>
+
+  <!-- ===================== INÍCIO ===================== -->
+  <section id="tela-inicio">
+    <div class="cartao heroi">
+      <span class="fita">CASO ABERTO</span>
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10223.png" alt="Alcremie VMAX, o bolo gigante" />
+      <p id="heroi-txt">🎂 A Alcremie VMAX, o bolo mais gostoso do mundo Pokémon, vive sumindo! Leia as pistas e descubra qual Pokémon levou ela.</p>
+      <button type="button" class="grande" id="comecar">🔎 Abrir o caso nº 1</button>
+    </div>
+
+    <div class="cartao">
+      <h2>🎚️ Dificuldade</h2>
+      <div class="chips" id="niveis">
+        <button type="button" class="chip" data-nivel="facil"><b>🟢 Fácil</b><small>4 suspeitos famosos</small></button>
+        <button type="button" class="chip" data-nivel="medio"><b>🟡 Médio</b><small>6 suspeitos</small></button>
+        <button type="button" class="chip" data-nivel="dificil"><b>🔴 Difícil</b><small>8 de todos os 1025</small></button>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <h2>🕵️ Minha carreira</h2>
+      <div class="patente"><span class="dist" id="pat-emoji">🔍</span><div style="flex:1"><b id="pat-nome">Detetive Novato</b><small id="pat-prox"></small><div class="barra"><i id="pat-barra" style="width:0"></i></div></div></div>
+      <div class="numeros">
+        <div><b id="n-casos">0</b><small>📁 casos</small></div>
+        <div><b id="n-estrelas">0</b><small>⭐ estrelas</small></div>
+        <div><b id="n-pontos">0</b><small>🏅 pontos</small></div>
+        <div><b id="n-seq">0</b><small>🔥 perfeitos</small></div>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <h2>🎖️ Distintivos <small id="dist-cont" style="font-size:.85rem;color:var(--tinta-fraca)"></small></h2>
+      <div class="distintivos" id="distintivos"></div>
+    </div>
+
+    <div class="cartao">
+      <h2>📸 Galeria dos culpados <small id="gal-cont" style="font-size:.85rem;color:var(--tinta-fraca)"></small></h2>
+      <p style="font-size:.85rem;color:var(--tinta-fraca)">Todo Pokémon que você pegou fica aqui.</p>
+      <div class="galeria" id="galeria"></div>
+    </div>
+
+    <div class="cartao como">
+      <h2>❓ Como jogar</h2>
+      <ol>
+        <li>A <b>Alcremie VMAX</b> sumiu e tem vários <b>suspeitos</b>.</li>
+        <li>Leia as <b>pistas</b> no caderno e olhe os cartões: tipo, cor, peso, altura, região…</li>
+        <li>Toque em <b>❌ Inocente</b> pra riscar quem não pode ser.</li>
+        <li>Quando souber, toque em <b>🚨 Prender</b> no culpado!</li>
+        <li>Quanto <b>menos pistas</b> você usar, mais pontos. Se prender o errado, perde estrela.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== CASO ===================== -->
+  <section id="tela-caso" hidden>
+    <div class="placar" style="margin-top:12px">
+      <div><b id="c-num">1</b><small>📁 caso</small></div>
+      <div><b id="c-pistas">1/3</b><small>🔎 pistas</small></div>
+      <div><b id="c-erros">⭐⭐⭐</b><small>estrelas</small></div>
+      <button type="button" class="redondo" id="sair" title="Sair do caso" aria-label="Sair do caso">✖️</button>
+    </div>
+    <div class="cartao historia">
+      <img class="sumiu" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10223.png" alt="" />
+      <p id="c-historia"></p>
+    </div>
+    <div class="caderno">
+      <h2>📒 Caderno de pistas</h2>
+      <ol class="pistas" id="pistas"></ol>
+      <div class="botoes-caso">
+        <button type="button" class="mini" id="nova-pista">🔎 Nova pista</button>
+        <button type="button" class="mini" id="lupa">🪄 Lupa mágica</button>
+      </div>
+    </div>
+    <p class="aviso" id="aviso"></p>
+    <div class="suspeitos" id="suspeitos"></div>
+  </section>
+
+  <footer>
+    Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
+    Pokémon é da Nintendo, Game Freak e The Pokémon Company.
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 28/09 · 🔄</button>
+  </footer>
+</div>
+
+<dialog id="dlg-resolvido">
+  <div class="resolvido" id="resolvido"></div>
+</dialog>
+
+<script>
+const DADOS = 'Bulbasaur~dh|Ivysaur~dh|Venusaur~dh|Charmander~b|Charmeleon~b|Charizard~bj|Squirtle~c|Wartortle~c|Blastoise~c|Caterpie~l|Metapod~l|Butterfree~lj|Weedle~lh|Kakuna~lh|Beedrill~lh|Pidgey~aj|Pidgeotto~aj|Pidgeot~aj|Rattata~a|Raticate~a|Spearow~aj|Fearow~aj|Ekans~h|Arbok~h|Pikachu~e|Raichu~e|Sandshrew~i|Sandslash~i|Nidoran-F~h|Nidorina~h|Nidoqueen~hi|Nidoran-M~h|Nidorino~h|Nidoking~hi|Clefairy~r|Clefable~r|Vulpix~b|Ninetales~b|Jigglypuff~ar|Wigglytuff~ar|Zubat~hj|Golbat~hj|Oddish~dh|Gloom~dh|Vileplume~dh|Paras~ld|Parasect~ld|Venonat~lh|Venomoth~lh|Diglett~i|Dugtrio~i|Meowth~a|Persian~a|Psyduck~c|Golduck~c|Mankey~g|Primeape~g|Growlithe~b|Arcanine~b|Poliwag~c|Poliwhirl~c|Poliwrath~cg|Abra~k|Kadabra~k|Alakazam~k|Machop~g|Machoke~g|Machamp~g|Bellsprout~dh|Weepinbell~dh|Victreebel~dh|Tentacool~ch|Tentacruel~ch|Geodude~mi|Graveler~mi|Golem~mi|Ponyta~b|Rapidash~b|Slowpoke~ck|Slowbro~ck|Magnemite~eq|Magneton~eq|Farfetch’d~aj|Doduo~aj|Dodrio~aj|Seel~c|Dewgong~cf|Grimer~h|Muk~h|Shellder~c|Cloyster~cf|Gastly~nh|Haunter~nh|Gengar~nh|Onix~mi|Drowzee~k|Hypno~k|Krabby~c|Kingler~c|Voltorb~e|Electrode~e|Exeggcute~dk|Exeggutor~dk|Cubone~i|Marowak~i|Hitmonlee~g|Hitmonchan~g|Lickitung~a|Koffing~h|Weezing~h|Rhyhorn~im|Rhydon~im|Chansey~a|Tangela~d|Kangaskhan~a|Horsea~c|Seadra~c|Goldeen~c|Seaking~c|Staryu~c|Starmie~ck|Mr. Mime~kr|Scyther~lj|Jynx~fk|Electabuzz~e|Magmar~b|Pinsir~l|Tauros~a|Magikarp~c|Gyarados~cj|Lapras~cf|Ditto~a|Eevee~a|Vaporeon~c|Jolteon~e|Flareon~b|Porygon~a|Omanyte~mc|Omastar~mc|Kabuto~mc|Kabutops~mc|Aerodactyl~mj|Snorlax~a|Articuno~fj|Zapdos~ej|Moltres~bj|Dratini~o|Dragonair~o|Dragonite~oj|Mewtwo~k|Mew~k|Chikorita~d|Bayleef~d|Meganium~d|Cyndaquil~b|Quilava~b|Typhlosion~b|Totodile~c|Croconaw~c|Feraligatr~c|Sentret~a|Furret~a|Hoothoot~aj|Noctowl~aj|Ledyba~lj|Ledian~lj|Spinarak~lh|Ariados~lh|Crobat~hj|Chinchou~ce|Lanturn~ce|Pichu~e|Cleffa~r|Igglybuff~ar|Togepi~r|Togetic~rj|Natu~kj|Xatu~kj|Mareep~e|Flaaffy~e|Ampharos~e|Bellossom~d|Marill~cr|Azumarill~cr|Sudowoodo~m|Politoed~c|Hoppip~dj|Skiploom~dj|Jumpluff~dj|Aipom~a|Sunkern~d|Sunflora~d|Yanma~lj|Wooper~ci|Quagsire~ci|Espeon~k|Umbreon~p|Murkrow~pj|Slowking~ck|Misdreavus~n|Unown~k|Wobbuffet~k|Girafarig~ak|Pineco~l|Forretress~lq|Dunsparce~a|Gligar~ij|Steelix~qi|Snubbull~r|Granbull~r|Qwilfish~ch|Scizor~lq|Shuckle~lm|Heracross~lg|Sneasel~pf|Teddiursa~a|Ursaring~a|Slugma~b|Magcargo~bm|Swinub~fi|Piloswine~fi|Corsola~cm|Remoraid~c|Octillery~c|Delibird~fj|Mantine~cj|Skarmory~qj|Houndour~pb|Houndoom~pb|Kingdra~co|Phanpy~i|Donphan~i|Porygon2~a|Stantler~a|Smeargle~a|Tyrogue~g|Hitmontop~g|Smoochum~fk|Elekid~e|Magby~b|Miltank~a|Blissey~a|Raikou~e|Entei~b|Suicune~c|Larvitar~mi|Pupitar~mi|Tyranitar~mp|Lugia~kj|Ho-Oh~bj|Celebi~kd|Treecko~d|Grovyle~d|Sceptile~d|Torchic~b|Combusken~bg|Blaziken~bg|Mudkip~c|Marshtomp~ci|Swampert~ci|Poochyena~p|Mightyena~p|Zigzagoon~a|Linoone~a|Wurmple~l|Silcoon~l|Beautifly~lj|Cascoon~l|Dustox~lh|Lotad~cd|Lombre~cd|Ludicolo~cd|Seedot~d|Nuzleaf~dp|Shiftry~dp|Taillow~aj|Swellow~aj|Wingull~cj|Pelipper~cj|Ralts~kr|Kirlia~kr|Gardevoir~kr|Surskit~lc|Masquerain~lj|Shroomish~d|Breloom~dg|Slakoth~a|Vigoroth~a|Slaking~a|Nincada~li|Ninjask~lj|Shedinja~ln|Whismur~a|Loudred~a|Exploud~a|Makuhita~g|Hariyama~g|Azurill~ar|Nosepass~m|Skitty~a|Delcatty~a|Sableye~pn|Mawile~qr|Aron~qm|Lairon~qm|Aggron~qm|Meditite~gk|Medicham~gk|Electrike~e|Manectric~e|Plusle~e|Minun~e|Volbeat~l|Illumise~l|Roselia~dh|Gulpin~h|Swalot~h|Carvanha~cp|Sharpedo~cp|Wailmer~c|Wailord~c|Numel~bi|Camerupt~bi|Torkoal~b|Spoink~k|Grumpig~k|Spinda~a|Trapinch~i|Vibrava~io|Flygon~io|Cacnea~d|Cacturne~dp|Swablu~aj|Altaria~oj|Zangoose~a|Seviper~h|Lunatone~mk|Solrock~mk|Barboach~ci|Whiscash~ci|Corphish~c|Crawdaunt~cp|Baltoy~ik|Claydol~ik|Lileep~md|Cradily~md|Anorith~ml|Armaldo~ml|Feebas~c|Milotic~c|Castform~a|Kecleon~a|Shuppet~n|Banette~n|Duskull~n|Dusclops~n|Tropius~dj|Chimecho~k|Absol~p|Wynaut~k|Snorunt~f|Glalie~f|Spheal~fc|Sealeo~fc|Walrein~fc|Clamperl~c|Huntail~c|Gorebyss~c|Relicanth~cm|Luvdisc~c|Bagon~o|Shelgon~o|Salamence~oj|Beldum~qk|Metang~qk|Metagross~qk|Regirock~m|Regice~f|Registeel~q|Latias~ok|Latios~ok|Kyogre~c|Groudon~i|Rayquaza~oj|Jirachi~qk|Deoxys~k|Turtwig~d|Grotle~d|Torterra~di|Chimchar~b|Monferno~bg|Infernape~bg|Piplup~c|Prinplup~c|Empoleon~cq|Starly~aj|Staravia~aj|Staraptor~aj|Bidoof~a|Bibarel~ac|Kricketot~l|Kricketune~l|Shinx~e|Luxio~e|Luxray~e|Budew~dh|Roserade~dh|Cranidos~m|Rampardos~m|Shieldon~mq|Bastiodon~mq|Burmy~l|Wormadam~ld|Mothim~lj|Combee~lj|Vespiquen~lj|Pachirisu~e|Buizel~c|Floatzel~c|Cherubi~d|Cherrim~d|Shellos~c|Gastrodon~ci|Ambipom~a|Drifloon~nj|Drifblim~nj|Buneary~a|Lopunny~a|Mismagius~n|Honchkrow~pj|Glameow~a|Purugly~a|Chingling~k|Stunky~hp|Skuntank~hp|Bronzor~qk|Bronzong~qk|Bonsly~m|Mime Jr.~kr|Happiny~a|Chatot~aj|Spiritomb~np|Gible~oi|Gabite~oi|Garchomp~oi|Munchlax~a|Riolu~g|Lucario~gq|Hippopotas~i|Hippowdon~i|Skorupi~hl|Drapion~hp|Croagunk~hg|Toxicroak~hg|Carnivine~d|Finneon~c|Lumineon~c|Mantyke~cj|Snover~df|Abomasnow~df|Weavile~pf|Magnezone~eq|Lickilicky~a|Rhyperior~im|Tangrowth~d|Electivire~e|Magmortar~b|Togekiss~rj|Yanmega~lj|Leafeon~d|Glaceon~f|Gliscor~ij|Mamoswine~fi|Porygon-Z~a|Gallade~kg|Probopass~mq|Dusknoir~n|Froslass~fn|Rotom~en|Uxie~k|Mesprit~k|Azelf~k|Dialga~qo|Palkia~co|Heatran~bq|Regigigas~a|Giratina~no|Cresselia~k|Phione~c|Manaphy~c|Darkrai~p|Shaymin~d|Arceus~a|Victini~kb|Snivy~d|Servine~d|Serperior~d|Tepig~b|Pignite~bg|Emboar~bg|Oshawott~c|Dewott~c|Samurott~c|Patrat~a|Watchog~a|Lillipup~a|Herdier~a|Stoutland~a|Purrloin~p|Liepard~p|Pansage~d|Simisage~d|Pansear~b|Simisear~b|Panpour~c|Simipour~c|Munna~k|Musharna~k|Pidove~aj|Tranquill~aj|Unfezant~aj|Blitzle~e|Zebstrika~e|Roggenrola~m|Boldore~m|Gigalith~m|Woobat~kj|Swoobat~kj|Drilbur~i|Excadrill~iq|Audino~a|Timburr~g|Gurdurr~g|Conkeldurr~g|Tympole~c|Palpitoad~ci|Seismitoad~ci|Throh~g|Sawk~g|Sewaddle~ld|Swadloon~ld|Leavanny~ld|Venipede~lh|Whirlipede~lh|Scolipede~lh|Cottonee~dr|Whimsicott~dr|Petilil~d|Lilligant~d|Basculin~c|Sandile~ip|Krokorok~ip|Krookodile~ip|Darumaka~b|Darmanitan~b|Maractus~d|Dwebble~lm|Crustle~lm|Scraggy~pg|Scrafty~pg|Sigilyph~kj|Yamask~n|Cofagrigus~n|Tirtouga~cm|Carracosta~cm|Archen~mj|Archeops~mj|Trubbish~h|Garbodor~h|Zorua~p|Zoroark~p|Minccino~a|Cinccino~a|Gothita~k|Gothorita~k|Gothitelle~k|Solosis~k|Duosion~k|Reuniclus~k|Ducklett~cj|Swanna~cj|Vanillite~f|Vanillish~f|Vanilluxe~f|Deerling~ad|Sawsbuck~ad|Emolga~ej|Karrablast~l|Escavalier~lq|Foongus~dh|Amoonguss~dh|Frillish~cn|Jellicent~cn|Alomomola~c|Joltik~le|Galvantula~le|Ferroseed~dq|Ferrothorn~dq|Klink~q|Klang~q|Klinklang~q|Tynamo~e|Eelektrik~e|Eelektross~e|Elgyem~k|Beheeyem~k|Litwick~nb|Lampent~nb|Chandelure~nb|Axew~o|Fraxure~o|Haxorus~o|Cubchoo~f|Beartic~f|Cryogonal~f|Shelmet~l|Accelgor~l|Stunfisk~ie|Mienfoo~g|Mienshao~g|Druddigon~o|Golett~in|Golurk~in|Pawniard~pq|Bisharp~pq|Bouffalant~a|Rufflet~aj|Braviary~aj|Vullaby~pj|Mandibuzz~pj|Heatmor~b|Durant~lq|Deino~po|Zweilous~po|Hydreigon~po|Larvesta~lb|Volcarona~lb|Cobalion~qg|Terrakion~mg|Virizion~dg|Tornadus~j|Thundurus~ej|Reshiram~ob|Zekrom~oe|Landorus~ij|Kyurem~of|Keldeo~cg|Meloetta~ak|Genesect~lq|Chespin~d|Quilladin~d|Chesnaught~dg|Fennekin~b|Braixen~b|Delphox~bk|Froakie~c|Frogadier~c|Greninja~cp|Bunnelby~a|Diggersby~ai|Fletchling~aj|Fletchinder~bj|Talonflame~bj|Scatterbug~l|Spewpa~l|Vivillon~lj|Litleo~ba|Pyroar~ba|Flabébé~r|Floette~r|Florges~r|Skiddo~d|Gogoat~d|Pancham~g|Pangoro~gp|Furfrou~a|Espurr~k|Meowstic~k|Honedge~qn|Doublade~qn|Aegislash~qn|Spritzee~r|Aromatisse~r|Swirlix~r|Slurpuff~r|Inkay~pk|Malamar~pk|Binacle~mc|Barbaracle~mc|Skrelp~hc|Dragalge~ho|Clauncher~c|Clawitzer~c|Helioptile~ea|Heliolisk~ea|Tyrunt~mo|Tyrantrum~mo|Amaura~mf|Aurorus~mf|Sylveon~r|Hawlucha~gj|Dedenne~er|Carbink~mr|Goomy~o|Sliggoo~o|Goodra~o|Klefki~qr|Phantump~nd|Trevenant~nd|Pumpkaboo~nd|Gourgeist~nd|Bergmite~f|Avalugg~f|Noibat~jo|Noivern~jo|Xerneas~r|Yveltal~pj|Zygarde~oi|Diancie~mr|Hoopa~kn|Volcanion~bc|Rowlet~dj|Dartrix~dj|Decidueye~dn|Litten~b|Torracat~b|Incineroar~bp|Popplio~c|Brionne~c|Primarina~cr|Pikipek~aj|Trumbeak~aj|Toucannon~aj|Yungoos~a|Gumshoos~a|Grubbin~l|Charjabug~le|Vikavolt~le|Crabrawler~g|Crabominable~gf|Oricorio~bj|Cutiefly~lr|Ribombee~lr|Rockruff~m|Lycanroc~m|Wishiwashi~c|Mareanie~hc|Toxapex~hc|Mudbray~i|Mudsdale~i|Dewpider~cl|Araquanid~cl|Fomantis~d|Lurantis~d|Morelull~dr|Shiinotic~dr|Salandit~hb|Salazzle~hb|Stufful~ag|Bewear~ag|Bounsweet~d|Steenee~d|Tsareena~d|Comfey~r|Oranguru~ak|Passimian~g|Wimpod~lc|Golisopod~lc|Sandygast~ni|Palossand~ni|Pyukumuku~c|Type: Null~a|Silvally~a|Minior~mj|Komala~a|Turtonator~bo|Togedemaru~eq|Mimikyu~nr|Bruxish~ck|Drampa~ao|Dhelmise~nd|Jangmo-o~o|Hakamo-o~og|Kommo-o~og|Tapu Koko~er|Tapu Lele~kr|Tapu Bulu~dr|Tapu Fini~cr|Cosmog~k|Cosmoem~k|Solgaleo~kq|Lunala~kn|Nihilego~mh|Buzzwole~lg|Pheromosa~lg|Xurkitree~e|Celesteela~qj|Kartana~dq|Guzzlord~po|Necrozma~k|Magearna~qr|Marshadow~gn|Poipole~h|Naganadel~ho|Stakataka~mq|Blacephalon~bn|Zeraora~e|Meltan~q|Melmetal~q|Grookey~d|Thwackey~d|Rillaboom~d|Scorbunny~b|Raboot~b|Cinderace~b|Sobble~c|Drizzile~c|Inteleon~c|Skwovet~a|Greedent~a|Rookidee~j|Corvisquire~j|Corviknight~jq|Blipbug~l|Dottler~lk|Orbeetle~lk|Nickit~p|Thievul~p|Gossifleur~d|Eldegoss~d|Wooloo~a|Dubwool~a|Chewtle~c|Drednaw~cm|Yamper~e|Boltund~e|Rolycoly~m|Carkol~mb|Coalossal~mb|Applin~do|Flapple~do|Appletun~do|Silicobra~i|Sandaconda~i|Cramorant~jc|Arrokuda~c|Barraskewda~c|Toxel~eh|Toxtricity~eh|Sizzlipede~bl|Centiskorch~bl|Clobbopus~g|Grapploct~g|Sinistea~n|Polteageist~n|Hatenna~k|Hattrem~k|Hatterene~kr|Impidimp~pr|Morgrem~pr|Grimmsnarl~pr|Obstagoon~pa|Perrserker~q|Cursola~n|Sirfetch’d~g|Mr. Rime~fk|Runerigus~in|Milcery~r|Alcremie~r|Falinks~g|Pincurchin~e|Snom~fl|Frosmoth~fl|Stonjourner~m|Eiscue~f|Indeedee~ka|Morpeko~ep|Cufant~q|Copperajah~q|Dracozolt~eo|Arctozolt~ef|Dracovish~co|Arctovish~cf|Duraludon~qo|Dreepy~on|Drakloak~on|Dragapult~on|Zacian~r|Zamazenta~g|Eternatus~ho|Kubfu~g|Urshifu~gp|Zarude~pd|Regieleki~e|Regidrago~o|Glastrier~f|Spectrier~n|Calyrex~kd|Wyrdeer~ak|Kleavor~lm|Ursaluna~ia|Basculegion~cn|Sneasler~gh|Overqwil~ph|Enamorus~rj|Sprigatito~d|Floragato~d|Meowscarada~dp|Fuecoco~b|Crocalor~b|Skeledirge~bn|Quaxly~c|Quaxwell~c|Quaquaval~cg|Lechonk~a|Oinkologne~a|Tarountula~l|Spidops~l|Nymble~l|Lokix~lp|Pawmi~e|Pawmo~eg|Pawmot~eg|Tandemaus~a|Maushold~a|Fidough~r|Dachsbun~r|Smoliv~da|Dolliv~da|Arboliva~da|Squawkabilly~aj|Nacli~m|Naclstack~m|Garganacl~m|Charcadet~b|Armarouge~bk|Ceruledge~bn|Tadbulb~e|Bellibolt~e|Wattrel~ej|Kilowattrel~ej|Maschiff~p|Mabosstiff~p|Shroodle~ha|Grafaiai~ha|Bramblin~dn|Brambleghast~dn|Toedscool~id|Toedscruel~id|Klawf~m|Capsakid~d|Scovillain~db|Rellor~l|Rabsca~lk|Flittle~k|Espathra~k|Tinkatink~rq|Tinkatuff~rq|Tinkaton~rq|Wiglett~c|Wugtrio~c|Bombirdier~jp|Finizen~c|Palafin~c|Varoom~qh|Revavroom~qh|Cyclizar~oa|Orthworm~q|Glimmet~mh|Glimmora~mh|Greavard~n|Houndstone~n|Flamigo~jg|Cetoddle~f|Cetitan~f|Veluza~ck|Dondozo~c|Tatsugiri~oc|Annihilape~gn|Clodsire~hi|Farigiraf~ak|Dudunsparce~a|Kingambit~pq|Great Tusk~ig|Scream Tail~rk|Brute Bonnet~dp|Flutter Mane~nr|Slither Wing~lg|Sandy Shocks~ei|Iron Treads~iq|Iron Bundle~fc|Iron Hands~ge|Iron Jugulis~pj|Iron Moth~bh|Iron Thorns~me|Frigibax~of|Arctibax~of|Baxcalibur~of|Gimmighoul~n|Gholdengo~qn|Wo-Chien~pd|Chien-Pao~pf|Ting-Lu~pi|Chi-Yu~pb|Roaring Moon~op|Iron Valiant~rg|Koraidon~go|Miraidon~eo|Walking Wake~co|Iron Leaves~dk|Dipplin~do|Poltchageist~dn|Sinistcha~dn|Okidogi~hg|Munkidori~hk|Fezandipiti~hr|Ogerpon~d|Archaludon~qo|Hydrapple~do|Gouging Fire~bo|Raging Bolt~eo|Iron Boulder~mk|Iron Crown~qk|Terapagos~a|Pecharunt~hn';
+const TIPOS = [
+  ['Normal', '⚪', '#9fa19f'], ['Fogo', '🔥', '#e62829'], ['Água', '💧', '#2980ef'], ['Planta', '🌿', '#3fa129'],
+  ['Elétrico', '⚡', '#d9a800'], ['Gelo', '❄️', '#2fb3d6'], ['Lutador', '🥊', '#ff8000'], ['Venenoso', '☠️', '#9141cb'],
+  ['Terra', '⛰️', '#915121'], ['Voador', '🕊️', '#5f9fe0'], ['Psíquico', '🔮', '#ef4179'], ['Inseto', '🐛', '#7f8f10'],
+  ['Pedra', '🪨', '#8f8a62'], ['Fantasma', '👻', '#704170'], ['Dragão', '🐉', '#5060e1'], ['Sombrio', '🌑', '#624d4e'],
+  ['Aço', '⚙️', '#4f8aa0'], ['Fada', '🧚', '#d65cd6'],
+];
+const GERACOES = [[1, 151], [152, 251], [252, 386], [387, 493], [494, 649], [650, 721], [722, 809], [810, 905], [906, 1025]];
+/* Mais dados (do PokeAPI): cor, altura (decímetros), peso (hectogramas), de quem evolui e para quem evolui */
+const EXTRA = '4,7,69,0,2|4,10,130,1,3|4,20,1000,2,|7,6,85,0,5|7,11,190,4,6|7,17,905,5,|1,5,90,0,8|1,10,225,7,9|1,16,855,8,|4,3,29,0,11|4,7,99,10,12|8,11,320,11,|2,3,32,0,14|9,6,100,13,15|9,10,295,14,|2,3,18,0,17|2,11,300,16,18|2,15,395,17,|6,3,35,0,20|2,7,185,19,|2,3,20,0,22|2,12,380,21,|6,20,69,0,24|6,35,650,23,|9,4,60,172,26|9,8,300,25,|9,6,120,0,28|9,10,295,27,|1,4,70,0,30|1,8,200,29,31|1,13,600,30,|6,5,90,0,33|6,9,195,32,34|6,14,620,33,|5,6,75,173,36|5,13,400,35,|2,6,99,0,38|9,11,199,37,|5,5,55,174,40|5,10,120,39,|6,8,75,0,42|6,16,550,41,169|1,5,54,0,44|1,8,86,43,45.182|7,12,186,44,|7,3,54,0,47|7,10,295,46,|6,10,300,0,49|6,15,125,48,|2,2,8,0,51|2,7,333,50,|9,4,42,0,53.863|9,10,320,52,|9,8,196,0,55|1,17,766,54,|2,5,280,0,57|2,10,320,56,979|2,7,190,0,59|2,19,1550,58,|1,6,124,0,61|1,10,200,60,62.186|1,13,540,61,|2,9,195,0,64|2,13,565,63,65|2,15,480,64,|3,8,195,0,67|3,15,705,66,68|3,16,1300,67,|4,7,40,0,70|4,10,64,69,71|4,17,155,70,|1,9,455,0,73|1,16,550,72,|2,4,200,0,75|2,10,1050,74,76|2,14,3000,75,|9,10,300,0,78|9,17,950,77,|5,12,360,0,80.199|5,16,785,79,|3,3,60,0,82|3,10,600,81,462|2,8,150,0,865|2,14,392,0,85|2,18,852,84,|8,11,900,0,87|8,17,1200,86,|6,9,300,0,89|6,12,300,88,|6,3,40,0,91|6,15,1325,90,|6,13,1,0,93|6,16,1,92,94|6,15,405,93,|3,88,2100,0,208|9,10,324,0,97|9,16,756,96,|7,4,65,0,99|7,13,600,98,|7,5,104,0,101|7,12,666,100,|5,4,25,0,103|9,20,1200,102,|2,4,65,0,105|2,10,450,104,|2,15,498,236,|2,14,502,236,|5,12,655,0,463|6,6,10,0,110|6,12,95,109,|3,10,1150,0,112|3,19,1200,111,464|5,11,346,440,242|1,10,350,0,465|2,22,800,0,|1,4,80,0,117|1,12,250,116,230|7,6,150,0,119|7,13,390,118,|2,8,345,0,121|6,11,800,120,|5,13,545,439,866|4,15,560,0,212.900|7,14,406,238,|9,11,300,239,466|7,13,445,240,467|2,15,550,0,|2,14,884,0,|7,9,100,0,130|1,65,2350,129,|1,25,2200,0,|6,3,40,0,|2,3,65,0,134.135.136.196.197.470.471.700|1,10,290,133,|9,8,245,133,|7,9,250,133,|5,8,365,0,233|1,4,75,0,139|1,10,350,138,|2,5,115,0,141|2,13,405,140,|6,18,590,0,|0,21,4600,446,|1,17,554,0,|9,16,526,0,|9,20,600,0,|1,18,33,0,148|1,40,165,147,149|2,22,2100,148,|6,20,1220,0,|5,4,40,0,|4,9,64,0,153|4,12,158,152,154|4,18,1005,153,|9,5,79,0,156|9,9,190,155,157|9,17,795,156,|1,6,95,0,159|1,11,250,158,160|1,23,888,159,|2,8,60,0,162|2,18,325,161,|2,7,212,0,164|2,16,408,163,|7,10,108,0,166|7,14,356,165,|4,5,85,0,168|7,11,335,167,|6,18,750,42,|1,5,120,0,171|1,12,225,170,|9,3,20,0,25|5,3,30,0,35|5,3,10,0,39|8,3,15,0,176|8,6,32,175,468|4,2,20,0,178|4,15,150,177,|8,6,78,0,180|5,8,133,179,181|9,14,615,180,|4,4,58,44,|1,4,85,298,184|1,8,285,183,|2,12,380,438,|4,11,339,61,|5,4,5,0,188|4,6,10,187,189|1,8,30,188,|6,8,115,0,424|9,3,18,0,192|9,8,85,191,|7,12,380,0,469|1,4,85,0,195.980|1,14,750,194,|6,9,265,133,|0,10,270,133,|0,5,21,0,430|5,20,795,79,|3,7,10,0,429|0,5,50,0,|1,13,285,360,|9,15,415,0,981|3,6,72,0,205|6,12,1258,204,|9,15,140,0,982|6,11,648,0,472|3,92,4000,95,|5,6,78,0,210|6,14,487,209,|3,5,39,0,904|7,18,1180,123,|9,6,205,0,|1,15,540,0,|0,9,280,0,461.903|2,6,88,0,217|2,18,1258,216,901|7,7,350,0,219|7,8,550,218,|2,4,65,0,221|2,11,558,220,473|5,6,50,0,864|3,6,120,0,224|7,9,285,223,|7,9,160,0,|6,21,2200,458,|3,17,505,0,|0,6,108,0,229|0,14,350,228,|1,18,1520,117,|1,5,335,0,232|3,11,1200,231,|7,6,325,137,474|2,14,712,0,899|8,12,580,0,|6,7,210,0,106.107.237|2,14,480,236,|5,4,60,0,124|9,6,235,0,125|7,7,214,0,126|5,12,755,0,|5,15,468,113,|9,19,1780,0,|2,21,1980,0,|1,20,1870,0,|4,6,720,0,247|3,12,1520,246,248|4,20,2020,247,|8,52,2160,0,|7,38,1990,0,|4,6,50,0,|4,5,50,0,253|4,9,216,252,254|4,17,522,253,|7,4,25,0,256|7,9,195,255,257|7,19,520,256,|1,4,76,0,259|1,7,280,258,260|1,15,819,259,|3,5,136,0,262|3,10,370,261,|2,4,175,0,264|8,5,325,263,862|7,3,36,0,266.268|8,6,100,265,267|9,10,284,266,|6,7,115,265,269|4,12,316,268,|4,5,26,0,271|4,12,325,270,272|4,15,550,271,|2,5,40,0,274|2,10,280,273,275|2,13,596,274,|1,3,23,0,277|1,7,198,276,|8,6,95,0,279|9,12,280,278,|8,4,66,0,281|8,8,202,280,282.475|8,16,484,281,|1,5,17,0,284|1,8,36,283,|2,4,45,0,286|4,12,392,285,|2,8,240,0,288|8,14,465,287,289|2,20,1305,288,|3,5,55,0,291.292|9,8,120,290,|2,8,12,290,|5,6,163,0,294|1,10,405,293,295|1,15,840,294,|9,10,864,0,297|2,23,2538,296,|1,2,20,0,183|3,10,970,0,476|5,6,110,0,301|6,11,326,300,|6,5,110,0,|0,6,115,0,|3,4,600,0,305|3,9,1200,304,306|3,21,3600,305,|1,6,112,0,308|7,13,315,307,|4,6,152,0,310|9,15,402,309,|9,4,42,0,|9,4,42,0,|3,7,177,0,|6,6,177,0,|4,3,20,406,407|4,4,103,0,317|6,17,800,316,|7,8,208,0,319|1,18,888,318,|1,20,1300,0,321|1,145,3980,320,|9,7,240,0,323|7,19,2200,322,|2,5,804,0,|0,7,306,0,326|6,9,715,325,|2,11,50,0,|2,7,150,0,329|4,11,153,328,330|4,20,820,329,|4,4,513,0,332|4,13,774,331,|1,4,12,0,334|1,11,206,333,|8,13,403,0,|0,27,525,0,|9,10,1680,0,|7,12,1540,0,|3,4,19,0,340|1,9,236,339,|7,6,115,0,342|7,11,328,341,|2,5,215,0,344|0,15,1080,343,|6,10,238,0,346|4,15,604,345,|3,7,125,0,348|3,15,682,347,|2,6,74,0,350|5,62,1620,349,|3,3,8,0,|4,10,220,0,|0,6,23,0,354|0,11,125,353,|0,8,150,0,356|0,16,306,355,477|4,20,1000,0,|1,6,10,433,|8,12,470,0,|1,6,140,0,202|3,7,168,0,362.478|3,15,2565,361,|1,8,395,0,364|1,11,876,363,365|1,14,1506,364,|1,4,525,0,367.368|1,17,270,366,|5,18,226,366,|3,10,234,0,|5,6,87,0,|1,6,421,0,372|8,11,1105,371,373|1,15,1026,372,|1,6,952,0,375|1,12,2025,374,376|1,16,5500,375,|2,17,2300,0,|1,18,1750,0,|3,19,2050,0,|7,14,400,0,|1,20,600,0,|1,45,3520,0,|7,35,9500,0,|4,70,2065,0,|9,3,11,0,|7,17,608,0,|4,4,102,0,388|4,11,970,387,389|4,22,3100,388,|2,5,62,0,391|2,9,220,390,392|2,12,550,391,|1,4,52,0,394|1,8,230,393,395|1,17,845,394,|2,3,20,0,397|2,6,155,396,398|2,12,249,397,|2,5,200,0,400|2,10,315,399,|7,3,22,0,402|7,10,255,401,|1,5,95,0,404|1,9,305,403,405|1,14,420,404,|4,2,12,0,315|4,9,145,315,|1,9,315,0,409|1,16,1025,408,|3,5,570,0,411|3,13,1495,410,|4,2,34,0,413.414|4,5,65,412,|9,9,233,412,|9,3,55,0,416|9,12,385,415,|8,4,39,0,|2,7,295,0,419|2,11,335,418,|5,4,33,0,421|6,5,93,420,|6,3,63,0,423|6,9,299,422,|6,12,203,190,|6,4,12,0,426|6,12,150,425,|2,4,55,0,428|2,12,333,427,|6,9,44,200,|0,9,273,198,|3,5,39,0,432|3,10,438,431,|9,2,6,0,358|6,4,192,0,435|6,10,380,434,|4,5,605,0,437|4,13,1870,436,|2,5,150,0,185|5,6,130,0,122|5,6,244,0,113|0,5,19,0,|6,10,1080,0,|1,7,205,0,444|1,14,560,443,445|1,19,950,444,|0,6,1050,0,143|1,7,202,0,448|1,12,540,447,|2,8,495,0,450|2,20,3000,449,|6,8,120,0,452|6,13,615,451,|1,7,230,0,454|1,13,444,453,|4,14,270,0,|1,4,70,0,457|1,12,240,456,|1,10,650,0,226|8,10,505,0,460|8,22,1355,459,|0,11,340,215,|3,12,1800,82,|5,17,1400,108,|3,24,2828,112,|1,20,1286,114,|9,18,1386,125,|7,16,680,126,|8,15,380,176,|4,19,515,193,|4,10,255,133,|1,8,259,133,|6,20,425,207,|2,25,2910,221,|7,9,340,233,|8,16,520,281,|3,14,3400,299,|0,22,1066,356,|8,13,266,361,|7,3,3,0,|9,3,3,0,|5,3,3,0,|1,3,3,0,|8,54,6830,0,|6,42,3360,0,|2,17,4300,0,|8,37,4200,0,|0,45,7500,0,|9,15,856,0,|1,4,31,0,|1,3,14,0,|0,15,505,0,|4,2,21,0,|8,32,3200,0,|9,4,40,0,|4,6,81,0,496|4,8,160,495,497|4,33,630,496,|7,5,99,0,499|7,10,555,498,500|7,16,1500,499,|1,5,59,0,502|1,8,245,501,503|1,15,946,502,|2,5,116,0,505|2,11,270,504,|2,4,41,0,507|3,9,147,506,508|3,12,610,507,|6,4,101,0,510|6,11,375,509,|4,6,105,0,512|4,11,305,511,|7,6,110,0,514|7,10,280,513,|1,6,135,0,516|1,10,290,515,|5,6,233,0,518|5,11,605,517,|3,3,21,0,520|3,6,150,519,521|3,12,290,520,|0,8,298,0,523|0,16,795,522,|1,4,180,0,525|1,9,1020,524,526|1,17,2600,525,|1,4,21,0,528|1,9,105,527,|3,3,85,0,530|3,7,404,529,|5,11,310,0,|3,6,125,0,533|3,12,400,532,534|2,14,870,533,|1,5,45,0,536|1,8,170,535,537|1,15,620,536,|7,13,555,0,|1,14,510,0,|9,3,25,0,541|4,5,73,540,542|9,12,205,541,|7,4,53,0,544|3,12,585,543,545|7,25,2005,544,|4,3,6,0,547|4,7,66,546,|4,5,66,0,549|4,11,163,548,|4,10,180,0,902|2,7,152,0,552|2,10,334,551,553|7,15,963,552,|7,6,375,0,555|7,13,929,554,|4,10,280,0,|7,3,145,0,558|7,14,2000,557,|9,6,118,0,560|7,11,300,559,|0,14,140,0,|0,5,15,0,563.867|9,17,765,562,|1,7,165,0,565|1,12,810,564,|9,5,95,0,567|9,14,320,566,|4,6,310,0,569|4,19,1073,568,|3,7,125,0,571|3,16,811,570,|3,4,58,0,573|3,5,75,572,|6,4,58,0,575|6,7,180,574,576|6,15,440,575,|4,3,10,0,578|4,6,80,577,579|4,10,201,578,|1,5,55,0,581|8,13,242,580,|8,4,57,0,583|8,11,410,582,584|8,13,575,583,|5,6,195,0,586|2,19,925,585,|8,4,50,0,|1,5,59,0,589|3,10,330,588,|8,2,10,0,591|8,6,105,590,|8,12,330,0,593|8,22,1350,592,|5,12,316,0,|9,1,6,0,596|9,8,143,595,|3,6,188,0,598|3,10,1100,597,|3,3,210,0,600|3,6,510,599,601|3,6,810,600,|8,2,3,0,603|1,12,220,602,604|1,21,805,603,|1,5,90,0,606|2,10,345,605,|8,3,31,0,608|0,6,130,607,609|0,10,343,608,|4,6,180,0,611|4,10,360,610,612|9,18,1055,611,|8,5,85,0,614|8,26,2600,613,|1,11,1480,0,|7,4,77,0,617|7,8,253,616,|2,7,110,0,|9,9,200,0,620|6,14,355,619,|7,16,1390,0,|4,10,920,0,623|4,28,3300,622,|7,5,102,0,625|7,16,700,624,983|2,16,946,0,|8,5,105,0,628|7,15,410,627,|2,5,90,0,630|2,12,395,629,|7,14,580,0,|3,3,330,0,|1,8,173,0,634|1,14,500,633,635|1,18,1600,634,|8,11,288,0,637|8,16,460,636,|1,21,2500,0,|3,19,2600,0,|4,20,2000,0,|4,15,630,0,|1,15,610,0,|8,32,3300,0,|0,29,3450,0,|2,15,680,0,|3,30,3250,0,|9,14,485,0,|8,6,65,0,|6,15,825,0,|4,4,90,0,651|4,7,290,650,652|4,16,900,651,|7,4,94,0,654|7,10,145,653,655|7,15,390,654,|1,3,70,0,657|1,6,109,656,658|1,15,400,657,|2,4,50,0,660|2,10,424,659,|7,3,17,0,662|7,7,160,661,663|7,12,245,662,|0,3,25,0,665|0,3,84,664,666|8,12,170,665,|2,6,135,0,668|2,15,815,667,|8,1,1,0,670|8,2,9,669,671|8,11,100,670,|2,9,310,0,673|2,17,910,672,|8,6,80,0,675|8,21,1360,674,|8,12,280,0,|3,3,35,0,678|1,6,85,677,|2,8,20,0,680|2,8,45,679,681|2,17,530,680,|5,2,5,0,683|5,8,155,682,|8,4,35,0,685|8,8,50,684,|1,4,35,0,687|1,15,470,686,|2,5,310,0,689|2,13,960,688,|2,5,73,0,691|2,18,815,690,|1,5,83,0,693|1,13,353,692,|9,5,60,0,695|9,10,210,694,|2,8,260,0,697|7,25,2700,696,|1,13,252,0,699|1,27,2250,698,|5,10,235,133,|4,8,215,0,|9,2,22,0,|3,3,57,0,|6,3,28,0,705|6,8,175,704,706|6,20,1505,705,|3,2,30,0,|2,4,70,0,709|2,15,710,708,|2,4,50,0,711|2,9,125,710,|1,10,995,0,713|1,20,5050,712,|6,5,80,0,715|6,15,850,714,|1,30,2150,0,|7,58,2030,0,|4,50,3050,0,|5,7,88,0,|6,5,90,0,|2,17,1950,0,|2,3,15,0,723|2,7,160,722,724|2,16,366,723,|7,4,43,0,726|7,7,250,725,727|7,18,830,726,|1,4,75,0,729|1,6,175,728,730|1,18,440,729,|0,3,12,0,732|0,6,148,731,733|0,11,260,732,|2,4,60,0,735|2,7,142,734,|3,4,44,0,737|4,5,105,736,738|1,15,450,737,|6,6,70,0,740|8,17,1800,739,|7,6,34,0,|9,1,2,0,743|9,2,5,742,|2,5,92,0,745|2,8,250,744,|1,2,3,0,|1,4,80,0,748|1,7,145,747,|2,10,1100,0,750|2,25,9200,749,|4,3,40,0,752|4,18,820,751,|5,3,15,0,754|5,9,185,753,|6,2,15,0,756|6,10,115,755,|0,6,48,0,758|0,12,222,757,|5,5,68,0,760|5,21,1350,759,|6,3,32,0,762|6,7,82,761,763|6,12,214,762,|4,1,3,0,|8,15,760,0,|8,20,828,0,|3,5,120,0,768|3,20,1080,767,|2,5,700,0,770|2,13,2500,769,|0,3,12,0,|3,19,1205,0,773|3,23,1005,772,|2,3,400,0,|1,4,199,0,|7,20,2120,0,|3,3,33,0,|9,2,7,0,|5,9,190,0,|8,30,1850,0,|4,39,2100,0,|3,6,297,0,783|3,12,470,782,784|3,16,782,783,|9,18,205,0,|5,12,186,0,|7,19,455,0,|6,13,212,0,|1,2,1,0,790|1,1,9999,789,791.792|8,34,2300,790,|6,40,1200,790,|8,12,555,0,|7,24,3336,0,|8,18,250,0,|0,38,1000,0,|4,92,9999,0,|8,3,1,0,|0,55,8880,0,|0,24,2300,0,|3,10,805,0,|3,7,222,0,|6,6,18,0,804|6,36,1500,803,|3,55,8200,0,|8,18,130,0,|9,15,445,0,|3,2,80,0,809|3,25,8000,808,|4,3,50,0,811|4,7,140,810,812|4,21,900,811,|8,3,45,0,814|3,6,90,813,815|8,14,330,814,|1,3,40,0,817|1,7,115,816,818|1,19,452,817,|2,3,25,0,820|2,6,60,819,|1,2,18,0,822|1,8,160,821,823|6,22,750,822,|1,4,80,0,825|9,4,195,824,826|7,4,408,825,|2,6,89,0,828|2,12,199,827,|4,4,22,0,830|4,5,25,829,|8,6,60,0,832|8,13,430,831,|4,3,85,0,834|4,10,1155,833,|9,3,135,0,836|9,10,340,835,|0,3,120,0,838|0,11,780,837,839|0,28,3105,838,|4,2,5,0,841.842.1011|4,3,10,840,|4,4,130,840,|4,22,76,0,844|4,38,655,843,|1,8,180,0,|2,5,10,0,847|2,13,300,846,|6,4,110,0,849|6,16,400,848,|7,7,10,0,851|7,30,1200,850,|2,6,40,0,853|1,16,390,852,|6,1,2,0,855|6,2,4,854,|5,4,34,0,857|5,6,48,856,858|5,21,51,857,|5,4,55,0,860|5,8,125,859,861|6,15,610,860,|3,16,460,264,|2,8,280,52,|8,10,4,222,|8,8,1170,83,|6,15,582,122,|3,16,666,562,|8,2,3,0,869|8,3,5,868,|9,30,620,0,|6,3,10,0,|8,3,38,0,873|8,13,420,872,|3,25,5200,0,|1,14,890,0,|6,9,280,0,|9,3,30,0,|9,12,1000,0,879|4,30,6500,878,|4,18,1900,0,|1,23,1500,0,|4,23,2150,0,|1,20,1750,0,|8,18,400,0,1018|4,5,20,0,886|4,14,110,885,887|4,30,500,886,|1,28,1100,0,|7,29,2100,0,|6,200,9500,0,|3,6,120,0,892|3,19,1050,891,|4,18,700,0,|9,12,1450,0,|4,21,2000,0,|8,22,8000,0,|0,20,445,0,|4,11,77,0,|3,18,951,234,|2,18,890,123,|2,24,2900,217,|4,30,1100,550,|3,13,430,215,|0,25,605,211,|5,16,480,0,|4,4,41,0,907|4,9,122,906,908|4,15,312,907,|7,4,98,0,910|7,10,307,909,911|7,16,3265,910,|8,5,61,0,913|1,12,215,912,914|1,18,619,913,|3,5,102,0,916|3,10,1200,915,|8,3,40,0,918|4,10,165,917,|3,2,10,0,920|3,10,175,919,|9,3,25,0,922|9,4,65,921,923|9,9,410,922,|8,3,18,0,925|8,3,28,924,|9,3,109,0,927|2,5,149,926,|4,3,65,0,929|4,6,119,928,930|4,14,482,929,|4,6,24,0,|2,4,160,0,933|2,6,1050,932,934|2,23,2400,933,|7,6,105,0,936.937|7,15,850,935,|1,16,620,935,|9,3,4,0,939|4,12,1130,938,|0,4,36,0,941|9,14,386,940,|2,5,160,0,943|3,11,610,942,|3,2,7,0,945|3,7,272,944,|2,6,6,0,947|2,12,60,946,|9,9,330,0,949|0,19,580,948,|7,13,790,0,|4,3,30,0,952|4,9,150,951,|2,2,10,0,954|4,3,35,953,|9,2,15,0,956|9,19,900,955,|5,4,89,0,958|5,7,591,957,959|5,7,1128,958,|8,12,18,0,961|7,12,54,960,|8,15,429,0,|1,13,602,0,964|1,13,602,963,|3,10,350,0,966|3,18,1200,965,|4,16,630,0,|5,25,3100,0,|1,7,80,0,970|1,15,450,969,|8,6,350,0,972|8,20,150,971,|5,16,370,0,|8,12,450,0,975|8,45,7000,974,|3,25,900,0,|1,120,2200,0,|5,3,80,0,|3,12,560,57,|2,18,2230,194,|2,32,1600,203,|9,36,392,206,|0,20,1200,625,|6,22,3200,0,|5,12,80,0,|3,12,210,0,|3,14,40,0,|7,32,920,0,|3,23,600,0,|3,9,2400,0,|7,6,110,0,|3,18,3807,0,|1,13,1110,0,|9,12,360,0,|4,16,3030,0,|3,5,170,0,997|3,8,300,996,998|3,21,2100,997,|2,3,50,0,1000|9,12,300,999,|2,15,742,0,|8,19,1522,0,|2,27,6997,0,|7,4,49,0,|4,20,3800,0,|8,14,350,0,|7,25,3030,0,|1,35,2400,0,|1,35,2800,0,|4,15,1250,0,|4,4,97,840,1019|4,1,11,0,1013|4,2,22,1012,|0,18,922,0,|0,10,122,0,|0,14,301,0,|4,12,398,0,|8,20,600,884,|4,18,930,1011,|2,35,5900,0,|9,52,4800,0,|3,15,1625,0,|1,16,1560,0,|1,2,65,0,|6,3,3,0,';
+const CORES = [['Preto', '#2b2b2b'], ['Azul', '#2f7fe0'], ['Marrom', '#8a5a2b'], ['Cinza', '#9aa0a6'], ['Verde', '#2fa56a'], ['Rosa', '#ef8fc0'], ['Roxo', '#8a4fd1'], ['Vermelho', '#e3350d'], ['Branco', '#f4f4f4'], ['Amarelo', '#ffcb05']];
+const POKE = DADOS.split('|').map((x, i) => {
+  const [n, t] = x.split('~'), [cor, alt, peso, prevo, evos] = EXTRA.split('|')[i].split(',');
+  return { id:i + 1, nome:n, tipos:[...t].map(c => c.charCodeAt(0) - 97), ger:GERACOES.findIndex(g => i + 1 >= g[0] && i + 1 <= g[1]) + 1,
+    cor:+cor, alt:+alt, peso:+peso, prevo:+prevo, evos:evos ? evos.split('.').map(Number) : [] };
+});
+/* Os mais famosos (nível fácil) */
+const FAMOSOS = [1,2,3,4,5,6,7,8,9,12,16,19,25,26,35,37,39,50,52,54,58,59,63,65,66,68,74,77,79,81,92,93,94,95,104,113,120,121,125,126,129,130,131,132,133,134,135,136,
+  137,138,143,144,145,146,147,148,149,150,151,152,155,158,172,175,183,196,197,212,214,215,248,249,250,251,252,255,258,282,302,359,373,376,380,381,382,383,384,385,
+  387,390,393,403,425,443,445,447,448,470,471,483,484,487,491,493,495,498,501,570,571,643,644,650,653,656,658,700,722,725,728,778,807,808,809,810,813,816,888,889,906,909,912];
+const LENDARIOS = new Set([144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,800,801,802,807,808,809,888,889,890,891,892,893,894,895,896,897,898,905,1001,1002,1003,1004,1007,1008,1014,1015,1016,1017,1024,1025]);
+const REGIOES = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola', 'Galar', 'Paldea'];
+const $ = id => document.getElementById(id);
+const arte = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+const mini = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+const ALCREMIE = 869;
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('detetive:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('detetive:' + k, JSON.stringify(v)); }catch(e){} }
+const embaralhar = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sorteia = a => a[Math.floor(Math.random() * a.length)];
+const num = x => x.toLocaleString('pt-BR');
+const kg = p => num(p.peso / 10) + ' kg', metros = p => num(p.alt / 10) + ' m';
+
+/* ---------- guardado ---------- */
+const cfg = Object.assign({ nivel:'facil', som:true }, ler('cfg', {}));
+if(!['facil', 'medio', 'dificil'].includes(cfg.nivel)) cfg.nivel = 'facil';
+const stats = Object.assign({ casos:0, estrelas:0, pontos:0, seq:0, melhorSeq:0, perfeitos:0, dificil:0, medio:0, rapidos:0, lendarios:0, lupas:0, semLupa:0, presos:{} }, ler('stats', {}));
+if(!stats.presos || typeof stats.presos !== 'object') stats.presos = {};
+const salvar = () => gravar('stats', stats);
+
+/* ---------- as histórias ---------- */
+const LUGARES = ['da festa de aniversário', 'da confeitaria', 'do piquenique no parque', 'da cozinha do Centro Pokémon', 'da vitrine da padaria',
+  'da festa da escola', 'do concurso de bolos', 'da mesa do café da manhã', 'do casamento', 'da festa do pijama', 'da geladeira', 'do trem'];
+const CONFISSOES = ['Foi mal… ela tava tão cheirosa que eu não resisti! 🤤', 'Eu só queria um pedacinho… 😅', 'Eu ia devolver, juro! 🙈',
+  'Eu achei que era a MINHA festa! 🥳', 'Tava com muita fome depois da batalha! 😋', 'Eu queria fazer uma festa surpresa pra ela! 🎉',
+  'Ela é tão fofa que eu queria abraçar! 🤗', 'Eu queria saber se ela era de morango… 🍓', 'Ela tava sozinha, eu fui fazer companhia! 😇',
+  'Desculpa! Eu nunca tinha visto um bolo tão grande! 😲'];
+/* rastro que cada tipo deixa */
+const RASTRO = [
+  'Achamos um pelinho bem comum no chão', 'A toalha da mesa ficou queimada', 'Tinha pegadas molhadas por todo lado', 'Tinha folhas e florzinhas pelo chão',
+  'As luzes da festa piscaram e deu choque na maçaneta', 'A janela ficou congelada', 'Tinha marcas de soco na porta', 'Tinha uma gosma roxa no chão',
+  'Tinha terra e um buraco no chão', 'Tinha penas perto da janela', 'As colheres ficaram entortadas sozinhas', 'Tinha uma teia na porta',
+  'Tinha pedrinhas no caminho', 'Alguém atravessou a parede sem abrir a porta', 'Tinha uma escama brilhante de dragão', 'Alguém apagou todas as luzes',
+  'Tinha parafusos e cheiro de metal', 'Tinha brilhinhos cor-de-rosa no ar'];
+
+/* ---------- montar o caso: escolhe suspeitos e inventa pistas até só sobrar um ---------- */
+const NIVEIS = { facil:{ n:4, mult:1, base:() => FAMOSOS.map(i => POKE[i - 1]) }, medio:{ n:6, mult:1.5, base:() => POKE.filter(p => p.ger <= 4) }, dificil:{ n:8, mult:2, base:() => POKE } };
+const PESOS = [0.5, 1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100, 150, 200, 300, 500, 800];
+const ALTURAS = [0.2, 0.3, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 8, 10];
+function limiar(a, b, bonitos){   // um número bonito entre a e b
+  const lo = Math.min(a, b), hi = Math.max(a, b);
+  const ok = bonitos.filter(x => x > lo && x < hi);
+  if(ok.length) return ok[Math.floor(ok.length / 2)];
+  for(const casas of [10, 100]){ const t = Math.round((lo + hi) / 2 * casas) / casas; if(t > lo && t < hi) return t; }
+  return (lo + hi) / 2;
+}
+function pistasPossiveis(c, sus){
+  const L = [];
+  const outros = sus.filter(s => s !== c);
+  c.tipos.forEach(t => L.push({ cat:'tipo', txt:`${TIPOS[t][1]} ${RASTRO[t]}: o culpado é do tipo <b>${TIPOS[t][0]}</b>.`, f:p => p.tipos.includes(t) }));
+  new Set(outros.flatMap(s => s.tipos)).forEach(t => { if(!c.tipos.includes(t)) L.push({ cat:'tipo', txt:`🚫 A testemunha tem certeza: o culpado <b>não</b> é do tipo ${TIPOS[t][1]} ${TIPOS[t][0]}.`, f:p => !p.tipos.includes(t) }); });
+  L.push({ cat:'cor', txt:`🎨 A vizinha viu um vulto <b>${CORES[c.cor][0].toLowerCase()}</b> saindo correndo.`, f:p => p.cor === c.cor });
+  new Set(outros.map(s => s.cor)).forEach(k => { if(k !== c.cor) L.push({ cat:'cor', txt:`🎨 O vulto que fugiu <b>não era ${CORES[k][0].toLowerCase()}</b>.`, f:p => p.cor !== k }); });
+  outros.forEach(s => {
+    if(s.peso !== c.peso){ const t = limiar(c.peso / 10, s.peso / 10, PESOS);
+      L.push(c.peso / 10 > t ? { cat:'peso', txt:`⚖️ O banco quase quebrou: o culpado pesa <b>mais de ${num(t)} kg</b>.`, f:p => p.peso / 10 > t }
+                             : { cat:'peso', txt:`🪶 Nem amassou a toalha: o culpado pesa <b>menos de ${num(t)} kg</b>.`, f:p => p.peso / 10 < t }); }
+    if(s.alt !== c.alt){ const t = limiar(c.alt / 10, s.alt / 10, ALTURAS);
+      L.push(c.alt / 10 > t ? { cat:'alt', txt:`📏 A Alcremie estava numa prateleira alta: o culpado tem <b>mais de ${num(t)} m</b>.`, f:p => p.alt / 10 > t }
+                            : { cat:'alt', txt:`🚪 Passou pela portinha do gato: o culpado tem <b>menos de ${num(t)} m</b>.`, f:p => p.alt / 10 < t }); }
+  });
+  L.push({ cat:'regiao', txt:`🗺️ Deixou cair um mapa: o culpado veio de <b>${REGIOES[c.ger - 1]}</b>.`, f:p => p.ger === c.ger });
+  new Set(outros.map(s => s.ger)).forEach(g => { if(g !== c.ger) L.push({ cat:'regiao', txt:`🗺️ O culpado <b>não é de ${REGIOES[g - 1]}</b>.`, f:p => p.ger !== g }); });
+  L.push(c.evos.length ? { cat:'evo', txt:'🧬 Deixou um bilhete: “quando eu crescer, <b>vou evoluir</b>!”', f:p => p.evos.length > 0 }
+                       : { cat:'evo', txt:'💪 O culpado <b>não evolui mais</b>: já está na forma final.', f:p => !p.evos.length });
+  const ini = c.nome[0].toUpperCase();
+  L.push({ cat:'letra', txt:`🔤 Nas migalhas estava escrita a letra <b>${ini}</b>: o nome começa com ${ini}.`, f:p => p.nome[0].toUpperCase() === ini });
+  new Set(outros.map(s => s.nome[0].toUpperCase())).forEach(l => { if(l !== ini) L.push({ cat:'letra', txt:`🔤 O nome do culpado <b>não começa com ${l}</b>.`, f:p => p.nome[0].toUpperCase() !== l }); });
+  return L;
+}
+function montarCaso(nivel){
+  const N = NIVEIS[nivel], base = N.base().filter(p => p.id !== ALCREMIE && p.id !== 868);
+  for(let tent = 0; tent < 300; tent++){
+    const sus = embaralhar(base.slice()).slice(0, N.n), c = sorteia(sus);
+    const todas = pistasPossiveis(c, sus), usadas = [], cats = {};
+    let resto = sus.filter(s => s !== c), deu = true;
+    while(resto.length){
+      const cand = todas.filter(p => !usadas.includes(p) && (cats[p.cat] || 0) < 2).map(p => ({ p, k:resto.filter(s => !p.f(s)).length })).filter(x => x.k > 0);
+      if(!cand.length){ deu = false; break; }
+      /* no fácil a pista tira bastante gente; no difícil tira pouca (precisa pensar mais) */
+      let lista = cand;
+      if(nivel === 'facil') lista = cand.sort((a, b) => b.k - a.k).slice(0, 3);
+      else if(nivel === 'dificil'){ const poucos = cand.filter(x => x.k <= 2); if(poucos.length && Math.random() < .75) lista = poucos; }
+      const pick = sorteia(lista).p;
+      usadas.push(pick); cats[pick.cat] = (cats[pick.cat] || 0) + 1; resto = resto.filter(s => pick.f(s));
+    }
+    if(deu && usadas.length >= (nivel === 'facil' ? 2 : 3) && usadas.length <= 6) return { sus, culpado:c, pistas:usadas, lugar:sorteia(LUGARES) };
+  }
+  return null;
+}
+
+/* ---------- sons ---------- */
+let ac = null;
+function tocar(notas, dur, tipo){
+  if(!cfg.som) return;
+  try{
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    notas.forEach((f, i) => { const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + i * dur;
+      o.type = tipo || 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.2, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + dur * .95);
+      o.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur); });
+  }catch(e){}
+}
+const somPista = () => tocar([660, 880], .08), somErro = () => tocar([220, 170], .18, 'sawtooth'), somRisca = () => tocar([400], .06, 'square');
+const somPreso = () => { tocar([660, 880, 660, 880], .16, 'square'); setTimeout(() => tocar([523, 659, 784, 1047], .13), 700); };
+function grito(id){
+  if(!cfg.som) return;
+  try{ const a = new Audio(`https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`); a.volume = .45; const r = a.play(); if(r && r.catch) r.catch(() => {}); }catch(e){}
+}
+
+/* ---------- jogar ---------- */
+let caso = null;
+function trocarTela(t){ ['inicio', 'caso'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
+function comecar(){
+  const m = montarCaso(cfg.nivel);
+  if(!m){ alert('Ops! Não consegui montar esse caso. Tenta de novo!'); return; }
+  caso = Object.assign(m, { mostradas:1, erros:0, lupas:0, riscados:new Set(), inocentes:new Set(), fim:false, nivel:cfg.nivel });
+  $('c-num').textContent = stats.casos + 1;
+  $('c-historia').innerHTML = `🚨 A <b>Alcremie VMAX</b> sumiu ${caso.lugar}! Tem <b>${caso.sus.length} suspeitos</b>. Leia as pistas e prenda quem levou ela!`;
+  $('aviso').textContent = ''; $('aviso').className = 'aviso';
+  desenharSuspeitos(); mostrarPistas(); trocarTela('caso');
+}
+function mostrarPistas(){
+  const ol = $('pistas'); ol.innerHTML = '';
+  caso.pistas.forEach((p, i) => {
+    const li = document.createElement('li');
+    if(i < caso.mostradas) li.innerHTML = `<b>${i + 1}.</b> ${p.txt}`;
+    else{ li.className = 'escondida'; li.textContent = `${i + 1}. ??? (pista escondida)`; }
+    ol.appendChild(li);
+  });
+  $('c-pistas').textContent = `${caso.mostradas}/${caso.pistas.length}`;
+  $('nova-pista').disabled = caso.mostradas >= caso.pistas.length || caso.fim;
+  $('nova-pista').textContent = caso.mostradas >= caso.pistas.length ? '✅ Todas as pistas' : `🔎 Nova pista (+${caso.pistas.length - caso.mostradas})`;
+  $('lupa').disabled = caso.fim || caso.sus.every(s => s === caso.culpado || caso.riscados.has(s.id));
+  $('c-erros').textContent = '⭐'.repeat(estrelasAgora()) + '☆'.repeat(3 - estrelasAgora());
+}
+const estrelasAgora = () => Math.max(1, 3 - caso.erros);
+function desenharSuspeitos(){
+  const box = $('suspeitos'); box.innerHTML = '';
+  caso.sus.forEach(s => {
+    const d = document.createElement('div'); d.className = 'suspeito'; d.dataset.id = s.id;
+    if(caso.riscados.has(s.id)) d.classList.add('riscado');
+    if(caso.inocentes.has(s.id)) d.classList.add('inocente');
+    const tipos = s.tipos.map(t => `<span class="tipo" style="background:${TIPOS[t][2]}">${TIPOS[t][1]} ${TIPOS[t][0]}</span>`).join('');
+    d.innerHTML = `<div class="foto"><img alt="" loading="lazy" src="${arte(s.id)}"></div><h3>${s.nome}</h3>
+      <div class="fatos">${tipos}<span><i class="cor-bola" style="background:${CORES[s.cor][1]}"></i>${CORES[s.cor][0]}</span>
+      <span>⚖️ ${kg(s)}</span><span>📏 ${metros(s)}</span><span>🗺️ ${REGIOES[s.ger - 1]}</span><span>${s.evos.length ? '🧬 Evolui' : '💪 Forma final'}</span></div>
+      <div class="acoes"><button type="button" class="riscar">${caso.riscados.has(s.id) ? '↩️ Voltar' : '❌ Inocente'}</button><button type="button" class="prender">🚨 Prender</button></div>`;
+    d.querySelector('img').onerror = function(){ this.src = mini(s.id); this.onerror = null; };
+    d.querySelector('.riscar').onclick = () => { if(caso.fim) return; caso.riscados.has(s.id) ? caso.riscados.delete(s.id) : caso.riscados.add(s.id); somRisca(); desenharSuspeitos(); mostrarPistas(); };
+    d.querySelector('.prender').onclick = () => prender(s, d);
+    box.appendChild(d);
+  });
+}
+function prender(s, el){
+  if(!caso || caso.fim) return;
+  if(s !== caso.culpado){
+    caso.erros++; caso.riscados.add(s.id); caso.inocentes.add(s.id); somErro(); grito(s.id);
+    $('aviso').textContent = `😤 O ${s.nome} tem álibi! Não foi ele. Leia as pistas de novo.`; $('aviso').className = 'aviso ruim';
+    desenharSuspeitos(); mostrarPistas();
+    const novo = document.querySelector(`.suspeito[data-id="${s.id}"]`); if(novo){ novo.classList.add('treme'); }
+    return;
+  }
+  resolver();
+}
+function resolver(){
+  caso.fim = true;
+  const c = caso.culpado, N = NIVEIS[caso.nivel], sobra = caso.pistas.length - caso.mostradas, est = estrelasAgora();
+  const pts = Math.max(10, Math.round((50 + 20 * sobra - 15 * caso.erros - 10 * caso.lupas) * N.mult));
+  const antes = patente().i;
+  stats.casos++; stats.estrelas += est; stats.pontos += pts;
+  stats.presos[c.id] = (stats.presos[c.id] || 0) + 1;
+  if(caso.erros === 0){ stats.seq++; stats.perfeitos++; } else stats.seq = 0;
+  stats.melhorSeq = Math.max(stats.melhorSeq, stats.seq);
+  if(caso.nivel === 'dificil') stats.dificil++;
+  if(caso.nivel === 'medio') stats.medio++;
+  if(caso.mostradas === 1 && caso.erros === 0) stats.rapidos++;
+  if(LENDARIOS.has(c.id)) stats.lendarios++;
+  if(caso.lupas) stats.lupas += caso.lupas; else stats.semLupa++;
+  salvar();
+  somPreso(); setTimeout(() => grito(c.id), 900); confete();
+  $('resolvido').innerHTML = `
+    <div class="dupla"><img src="${arte(c.id)}" alt="${c.nome}"><img class="alc" src="${arte(10223)}" alt="Alcremie VMAX"></div>
+    <h2>🚨 PEGUEI! Foi o ${c.nome}!</h2>
+    <div class="confissao">🗣️ ${c.nome}: “${sorteia(CONFISSOES)}”</div>
+    <p>🎂 A Alcremie VMAX voltou pra festa!</p>
+    <div class="estrelas">${'⭐'.repeat(est)}${'☆'.repeat(3 - est)}</div>
+    <p class="pts">+${pts} pontos${sobra ? ` · 🔎 ${sobra > 1 ? `sobraram ${sobra} pistas` : 'sobrou 1 pista'} (bônus!)` : ''}</p>
+    <button type="button" class="grande" id="proximo-caso">➡️ Próximo caso</button>
+    <button type="button" class="mini" id="voltar-inicio">🏠 Início</button>`;
+  $('proximo-caso').onclick = () => { $('dlg-resolvido').close(); comecar(); };
+  $('voltar-inicio').onclick = () => { $('dlg-resolvido').close(); caso = null; mostrarInicio(); trocarTela('inicio'); };
+  $('dlg-resolvido').showModal();
+  mostrarPistas();
+  document.querySelectorAll('.suspeito').forEach(d => { if(+d.dataset.id !== c.id) d.classList.add('riscado'); });
+  checarDistintivos();
+  if(patente().i > antes) setTimeout(() => toast(`${patente().p.e} Subiu de patente: ${patente().p.n}!`), 1200);
+}
+$('nova-pista').onclick = () => { if(!caso || caso.fim || caso.mostradas >= caso.pistas.length) return; caso.mostradas++; somPista(); mostrarPistas(); };
+$('lupa').onclick = () => {
+  if(!caso || caso.fim) return;
+  const livres = caso.sus.filter(s => s !== caso.culpado && !caso.riscados.has(s.id));
+  if(!livres.length) return;
+  const s = sorteia(livres); caso.riscados.add(s.id); caso.lupas++; somRisca();
+  $('aviso').textContent = `🪄 A lupa mágica mostrou: o ${s.nome} é inocente! (−10 pontos)`; $('aviso').className = 'aviso';
+  desenharSuspeitos(); mostrarPistas();
+};
+$('comecar').onclick = comecar;
+$('sair').onclick = () => { if(caso && !caso.fim && !confirm('Sair do caso? A Alcremie VMAX vai continuar sumida! 😢')) return; caso = null; mostrarInicio(); trocarTela('inicio'); };
+$('dlg-resolvido').addEventListener('cancel', ev => ev.preventDefault());
+
+/* ---------- carreira ---------- */
+const PATENTES = [{ c:0, e:'🔍', n:'Detetive Novato' }, { c:5, e:'🔎', n:'Detetive Júnior' }, { c:15, e:'🕵️', n:'Investigador' }, { c:30, e:'👮', n:'Inspetor' },
+  { c:60, e:'🎖️', n:'Detetive Chefe' }, { c:100, e:'🏆', n:'Super Detetive' }, { c:200, e:'👑', n:'Lenda da Investigação' }];
+function patente(){ let i = 0; PATENTES.forEach((p, k) => { if(stats.casos >= p.c) i = k; }); return { i, p:PATENTES[i], prox:PATENTES[i + 1] }; }
+const nPresos = () => Object.keys(stats.presos).length;
+const DISTINTIVOS = [
+  ['primeiro', '🎂', 'Primeiro caso', () => stats.casos >= 1], ['casos10', '📁', '10 casos', () => stats.casos >= 10], ['casos50', '🗂️', '50 casos', () => stats.casos >= 50],
+  ['casos100', '🗄️', '100 casos', () => stats.casos >= 100], ['perfeito', '⭐', 'Caso perfeito', () => stats.perfeitos >= 1], ['seq5', '🔥', '5 perfeitos seguidos', () => stats.melhorSeq >= 5],
+  ['seq10', '💥', '10 perfeitos seguidos', () => stats.melhorSeq >= 10], ['rapido', '⚡', 'Resolveu com 1 pista', () => stats.rapidos >= 1], ['rapido10', '🧠', '10 casos com 1 pista', () => stats.rapidos >= 10],
+  ['medio', '🟡', 'Caso médio', () => stats.medio >= 1], ['dificil', '🔴', 'Caso difícil', () => stats.dificil >= 1], ['dificil10', '🌋', '10 casos difíceis', () => stats.dificil >= 10],
+  ['lendario', '🐉', 'Prendeu um lendário', () => stats.lendarios >= 1], ['galeria20', '📸', '20 culpados diferentes', () => nPresos() >= 20], ['galeria100', '🖼️', '100 culpados diferentes', () => nPresos() >= 100],
+  ['estrelas100', '🌟', '100 estrelas', () => stats.estrelas >= 100], ['pontos1000', '🏅', '1.000 pontos', () => stats.pontos >= 1000], ['pontos10000', '💎', '10.000 pontos', () => stats.pontos >= 10000],
+  ['reincidente', '🔁', 'Prendeu o mesmo 3 vezes', () => Object.values(stats.presos).some(n => n >= 3)], ['semlupa', '👁️', '20 casos sem lupa', () => stats.semLupa >= 20]];
+let ganhos = ler('distintivos', {}) || {};
+function checarDistintivos(){
+  DISTINTIVOS.forEach(([id, e, n, f]) => { if(!ganhos[id] && f()){ ganhos[id] = Date.now(); toast(`${e} Distintivo novo: ${n}!`); } });
+  gravar('distintivos', ganhos);
+}
+let filaToast = [], toastOcupado = false;
+function toast(t){ filaToast.push(t); if(toastOcupado) return; const vai = () => { const x = filaToast.shift(); if(!x){ toastOcupado = false; return; } toastOcupado = true;
+  const d = document.createElement('div'); d.className = 'toast'; d.textContent = x; document.body.appendChild(d); setTimeout(() => { d.remove(); vai(); }, 2200); }; vai(); }
+function confete(){
+  const cores = ['#ff8fc0', '#ffcb05', '#e3350d', '#6a4bc4', '#1f9d57', '#fff'];
+  for(let i = 0; i < 70; i++){ const c = document.createElement('i'); c.className = 'confete'; c.style.left = Math.random() * 100 + 'vw'; c.style.background = sorteia(cores);
+    c.style.animationDelay = Math.random() * .6 + 's'; c.style.animationDuration = 1.8 + Math.random() * 1.4 + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 3600); }
+}
+function mostrarInicio(){
+  document.querySelectorAll('#niveis .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.nivel === cfg.nivel));
+  $('comecar').textContent = `🔎 Abrir o caso nº ${stats.casos + 1}`;
+  const P = patente();
+  $('pat-emoji').textContent = P.p.e; $('pat-nome').textContent = P.p.n;
+  $('pat-prox').textContent = P.prox ? `Faltam ${P.prox.c - stats.casos} casos pra virar ${P.prox.n}` : 'Você chegou no topo! 👑';
+  $('pat-barra').style.width = (P.prox ? (stats.casos - P.p.c) / (P.prox.c - P.p.c) * 100 : 100) + '%';
+  $('n-casos').textContent = stats.casos; $('n-estrelas').textContent = stats.estrelas; $('n-pontos').textContent = stats.pontos; $('n-seq').textContent = stats.seq;
+  const nd = DISTINTIVOS.filter(d => ganhos[d[0]]).length;
+  $('dist-cont').textContent = `${nd}/${DISTINTIVOS.length}`;
+  $('distintivos').innerHTML = DISTINTIVOS.map(([id, e, n]) => `<div class="distintivo ${ganhos[id] ? 'sim' : 'nao'}"><i>${e}</i>${n}</div>`).join('');
+  const ids = Object.keys(stats.presos).map(Number).sort((a, b) => a - b);
+  $('gal-cont').textContent = `${ids.length}/1025`;
+  $('galeria').innerHTML = ids.length ? ids.map(id => `<div title="${POKE[id - 1].nome}"><img loading="lazy" alt="" src="${mini(id)}">${POKE[id - 1].nome}${stats.presos[id] > 1 ? `<em>×${stats.presos[id]}</em>` : ''}</div>`).join('')
+    : '<p style="grid-column:1/-1;font-size:.85rem">Ainda ninguém. Bora investigar! 🕵️</p>';
+}
+$('niveis').onclick = ev => { const b = ev.target.closest('[data-nivel]'); if(!b) return; cfg.nivel = b.dataset.nivel; gravar('cfg', cfg); mostrarInicio(); };
+const btSom = $('som');
+function marcarSom(){ btSom.textContent = cfg.som ? '🔊' : '🔇'; }
+btSom.onclick = () => { cfg.som = !cfg.som; gravar('cfg', cfg); marcarSom(); };
+
+/* ---------- claro e escuro ---------- */
+const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function aplicarTema(t){
+  if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema');
+  btTema.textContent = estaEscuro() ? '☀️' : '🌙'; corDaBarra.setAttribute('content', estaEscuro() ? '#14102a' : '#3b2a6e');
+}
+aplicarTema(ler('tema', null));
+btTema.onclick = () => { const t = estaEscuro() ? 'claro' : 'escuro'; gravar('tema', t); aplicarTema(t); };
+
+marcarSom(); checarDistintivos(); mostrarInicio();
+
+/* ---------- versão nova ---------- */
+const btRecarregar = $('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{ if(window.caches){ const n = await caches.keys(); await Promise.all(n.map(x => caches.delete(x))); } }catch(e){}
+  try{ if(navigator.serviceWorker){ const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(x => x.update().catch(() => {}))); } }catch(e){}
+  const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+};
+try{ if(new URL(location.href).searchParams.has('v')){ const l = new URL(location.href); l.searchParams.delete('v'); history.replaceState(null, '', l.pathname + l.search + l.hash); } }catch(e){}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(!jaTinha || document.querySelector('.faixa-nova')) return;
+    const f = document.createElement('div'); f.className = 'faixa-nova';
+    f.innerHTML = '<span>✨ Chegou versão nova!</span><button type="button">Carregar</button>';
+    f.querySelector('button').onclick = () => location.reload();
+    document.body.appendChild(f);
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); }).catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
