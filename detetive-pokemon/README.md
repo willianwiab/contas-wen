@@ -20,6 +20,16 @@ e você lê as pistas do caderno pra descobrir quem levou ela.
 ## Versão 3: salvar a partida
 - 💾 O caso em andamento fica salvo sozinho no aparelho (pistas vistas, inocentados, interrogatórios, erros). Na tela inicial aparece **▶️ Continuar o caso**, ou dá pra deixar pra depois e abrir outro.
 
+## Versão 4: igual ao Quem é esse Pokémon, com jeito de detetive
+- 👤 **Perfil** com apelido, nível e XP · 🍰 **Migalhas** (a moeda do detetive).
+- 🛒 **Loja**: 12 detetives novos, fundos, molduras e títulos.
+- 🎯 **Missões do dia** e 📅 **prêmio de todo dia** (sequência de dias).
+- 👥 **Amigos por código** (AMIGO1…), 🏆 ranking e comparação dos fichados.
+- ⚔️ **Desafio**: o caso é montado com uma semente, então o amigo joga **o mesmo caso** (CASO1…) e vocês comparam.
+- 🔎 **Arquivo** (a Pokédex do detetive) e 📜 **histórico** dos últimos 50 casos.
+- 👑 **Jojo adm** com a mesma senha secreta (só o hash fica no código), só neste aparelho.
+- Os detetives nunca são suspeitos; a Eevee virou só personagem especial.
+
 ## Níveis
 - 🟢 Fácil: Pokémon famosos e pistas fortes · 🟡 Médio: gerações 1 a 4 · 🔴 Difícil: todos os 1025 e pistas fracas.
 
