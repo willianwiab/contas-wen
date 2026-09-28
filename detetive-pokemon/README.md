@@ -40,6 +40,12 @@ Cada um dos 30 detetives tem uma habilidade. Algumas são **poder** (um botão q
 - 🔥 erros que não tiram estrela (Charmander, Mimikyu, Blaziken), 💧 DNA de graça (Squirtle)
 - 🍰 mais migalhas (Bulbasaur, Empoleon) e ⭐ mais pontos (Snorlax, Tinkaton)
 
+## Versão 6: 🤝 jogar em dupla
+- No caso, **📤 Mandar o caso + o que eu descobri** gera um código DUPLA1… com a semente do caso e o que você **provou** (álibis confirmados, DNA, poderes, acusações erradas, depoimentos e pistas vistas).
+- O parceiro cola (em Amigos ou no próprio caso), abre **o mesmo caso** com as suas descobertas, investiga e manda o código dele de volta.
+- **📥 Juntar as descobertas** coloca tudo no seu caso (🤝 "Fulano provou"). O culpado nunca pode ser riscado por um código.
+- Distintivos 🤝 Caso em dupla e 👯 10 casos em dupla.
+
 ## Níveis
 - 🟢 Fácil: Pokémon famosos e pistas fortes · 🟡 Médio: gerações 1 a 4 · 🔴 Difícil: todos os 1025 e pistas fracas.
 

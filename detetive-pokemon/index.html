@@ -395,6 +395,14 @@ textarea,input[type=search],input[type=text],input[type=password]{width:100%;bor
     <p class="aviso" id="aviso"></p>
     <div class="filtro"><span id="restam"></span><button type="button" class="mini" id="so-suspeitos">👁️ Esconder inocentes</button></div>
     <div class="suspeitos" id="suspeitos"></div>
+    <div class="cartao" id="painel-dupla">
+      <h2>🤝 Jogar em dupla</h2>
+      <p style="font-size:.84rem" id="dupla-txt">Mande o código pro parceiro: ele abre <b>o mesmo caso</b>, investiga e te manda de volta o que descobriu. Vocês juntam as descobertas e culpam juntos!</p>
+      <button type="button" class="mini" id="mandar-dupla" style="width:100%;margin-top:8px">📤 Mandar o caso + o que eu descobri</button>
+      <textarea id="colar-dupla" rows="2" placeholder="Cole aqui o código do parceiro (DUPLA1…)" style="margin-top:8px"></textarea>
+      <button type="button" class="mini" id="colar-dupla-ok" style="width:100%;margin-top:6px">📥 Juntar as descobertas do parceiro</button>
+      <p class="aviso" id="dupla-msg"></p>
+    </div>
   </section>
 
   <!-- ===================== LOJA ===================== -->
@@ -423,7 +431,7 @@ textarea,input[type=search],input[type=text],input[type=password]{width:100%;bor
       </div>
       <div class="cartao">
         <h2>📥 Colar um código</h2>
-        <textarea id="colar" rows="3" placeholder="Cole aqui o código do amigo (AMIGO1…) ou de um desafio (CASO1…)"></textarea>
+        <textarea id="colar" rows="3" placeholder="Cole aqui o código do amigo (AMIGO1…), de um desafio (CASO1…) ou de dupla (DUPLA1…)"></textarea>
         <button type="button" class="mini" id="colar-ok" style="margin-top:8px;width:100%">✅ Adicionar</button>
         <p class="aviso" id="colar-msg"></p>
       </div>
@@ -445,7 +453,7 @@ textarea,input[type=search],input[type=text],input[type=password]{width:100%;bor
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 5 — 29/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 6 — 29/09 · 🔄</button>
   </footer>
 </div>
 
@@ -703,7 +711,7 @@ function salvarCaso(){
   if(!caso || caso.fim){ gravar('caso', null); return; }
   const idx = p => caso.todas.indexOf(p);
   gravar('caso', { v:1, sus:caso.sus.map(s => s.id), esp:[...caso.especiais], culpado:caso.culpado.id, pistas:caso.pistas.map(idx), depoUsadas:(caso.usadasDepo || []).map(idx),
-    gratis:caso.gratis || 0, poderUsado:!!caso.poderUsado, mostradas:caso.mostradas, erros:caso.erros, pericias:caso.pericias, inter:caso.inter, riscados:[...caso.riscados], depo:caso.depo, depoimentos:caso.depoimentos,
+    provados:[...(caso.provados || [])], dupla:caso.dupla || null, gratis:caso.gratis || 0, poderUsado:!!caso.poderUsado, mostradas:caso.mostradas, erros:caso.erros, pericias:caso.pericias, inter:caso.inter, riscados:[...caso.riscados], depo:caso.depo, depoimentos:caso.depoimentos,
     nivel:caso.nivel, numero:caso.numero, seed:caso.seed, desafio:caso.desafio || null, admForcado:!!caso.admForcado, lugar:caso.lugar, onde:caso.onde, hora:caso.hora, clima:caso.clima, achou:caso.achou, achado:caso.achado, cena:caso.cena, quando:Date.now() });
 }
 function carregarCaso(){
@@ -715,7 +723,7 @@ function carregarCaso(){
     const todas = pistasPossiveis(c, sus), pistas = g.pistas.map(i => todas[i]);
     if(pistas.some(x => !x) || !sus.every(s => s === c || pistas.some(p => !p.f(s)))) return null;   // confere se as pistas ainda funcionam
     return { sus, especiais:new Set(g.esp), culpado:c, todas, pistas, usadasDepo:g.depoUsadas.map(i => todas[i]).filter(Boolean),
-      gratis:g.gratis || 0, poderUsado:!!g.poderUsado, mostradas:g.mostradas, erros:g.erros, pericias:g.pericias, inter:g.inter, riscados:new Set(g.riscados), depo:g.depo || {}, depoimentos:g.depoimentos || [],
+      provados:new Set(g.provados || []), dupla:g.dupla || null, gratis:g.gratis || 0, poderUsado:!!g.poderUsado, mostradas:g.mostradas, erros:g.erros, pericias:g.pericias, inter:g.inter, riscados:new Set(g.riscados), depo:g.depo || {}, depoimentos:g.depoimentos || [],
       fim:false, nivel:g.nivel, numero:g.numero, seed:g.seed, desafio:g.desafio || null, admForcado:!!g.admForcado, lugar:g.lugar, onde:g.onde, hora:g.hora, clima:g.clima, achou:g.achou, achado:g.achado, cena:g.cena, quando:g.quando };
   }catch(e){ return null; }
 }
@@ -738,7 +746,7 @@ function novoCaso(nivel, seed, desafio, forcar){
   const m = montarCaso(nivel, seed, forcar);
   if(!m){ alert('Não consegui montar esse caso. Tente de novo!'); return false; }
   const gratis = habK('pista') || habK('pistainter') ? Math.min(hab().q, Math.max(0, m.pistas.length - 2)) : 0;
-  caso = Object.assign(m, { gratis, poderUsado:false, detetive:cfg.detetive, mostradas:1 + gratis, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel, numero:stats.casos + 1, seed, desafio, admForcado:!!forcar });
+  caso = Object.assign(m, { provados:new Set(), dupla:null, gratis, poderUsado:false, detetive:cfg.detetive, mostradas:1 + gratis, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel, numero:stats.casos + 1, seed, desafio, admForcado:!!forcar });
   return true;
 }
 function abrirCaso(continuando){
@@ -793,7 +801,7 @@ function desenharSuspeitos(){
       ${esp ? '<span class="especial-selo">⭐ Especial · 0,0001% de ser culpado</span>' : ''}
       <div class="fatos">${tipos}<span><i class="cor-bola" style="background:${CORES[s.cor][1]}"></i>${CORES[s.cor][0]}</span>
       <span>⚖️ ${kg(s)}</span><span>📏 ${metros(s)}</span><span>🗺️ ${REGIOES[s.ger - 1]}</span><span>${s.evos.length ? '🧬 Ainda evolui' : '💪 Forma final'}</span></div>
-      ${dp ? `<div class="depo ${dp.ok ? 'ok' : 'duvida'}">${dp.ok ? '✅ Álibi confirmado' : '❓ Álibi sem testemunhas'}</div>` : ''}
+      ${dp ? `<div class="depo ${dp.ok ? 'ok' : 'duvida'}">${dp.par ? `🤝 ${esc(dp.par)} provou` : dp.ok ? '✅ Álibi confirmado' : '❓ Álibi sem testemunhas'}</div>` : ''}
       <div class="acoes"><button type="button" class="inocentar"><i>${riscado ? '↩️' : '✅'}</i>${riscado ? 'Voltar' : 'Inocentar'}</button>
       <button type="button" class="interrogar"${dp || caso.inter >= maxInter() || caso.fim ? ' disabled' : ''}><i>🎤</i>Interrogar</button>
       <button type="button" class="culpar"><i>⚖️</i>Culpar</button></div>`;
@@ -826,7 +834,7 @@ function interrogar(s){
       if(!habK('aura') && Math.random() < .2) extra = `<p style="font-size:.85rem;color:var(--tinta-fraca)">📝 Anotação: ${s.nome} parecia nervoso.</p>`;
     }
   }
-  caso.depo[s.id] = { ok };
+  caso.depo[s.id] = { ok }; if(ok) caso.provados.add(s.id);
   if(!ok && s !== caso.culpado && habK('aura')) extra += '<p style="font-size:.85rem;color:var(--tinta-fraca)">🔵 A aura está calma.</p>';
   $('dlg-corpo').innerHTML = `<h2>SALA DE INTERROGATÓRIO</h2>
     <div class="sala"><img class="eu" src="${arte(cfg.detetive)}" alt="Detetive ${eu().nome}"><img src="${arte(s.id)}" alt="${s.nome}"></div>
@@ -841,7 +849,7 @@ function interrogar(s){
 function culpar(s){
   if(!caso || caso.fim) return;
   if(s !== caso.culpado){
-    caso.erros++; caso.riscados.add(s.id); somErro(); grito(s.id);
+    caso.erros++; caso.riscados.add(s.id); caso.provados.add(s.id); somErro(); grito(s.id);
     $('aviso').textContent = `⚖️ Acusação errada! ${s.nome} provou que é inocente. Reveja as pistas.`; $('aviso').className = 'aviso ruim';
     desenharSuspeitos(); mostrarPistas();
     const novo = document.querySelector(`.suspeito[data-id="${s.id}"]`); if(novo) novo.classList.add('treme');
@@ -863,6 +871,7 @@ function resolver(){
   if(caso.mostradas === 1 && caso.erros === 0) stats.rapidos++;
   if(LENDARIOS.has(c.id)) stats.lendarios++;
   if(esp) stats.especiais++;
+  if(caso.dupla) stats.duplas = (stats.duplas || 0) + 1;
   if(caso.pericias) stats.lupas += caso.pericias; else stats.semLupa++;
   salvar();
   const extra = aoResolver(c, pts, est, esp);
@@ -871,7 +880,7 @@ function resolver(){
   $('dlg-corpo').innerHTML = `
     <span class="carimbo">CASO ENCERRADO</span>
     <div class="dupla"><img src="${arte(c.id)}" alt="${c.nome}"><img class="alc" src="${arte(ALC_VMAX)}" alt="Alcremie VMAX"></div>
-    <h2>Culpado: ${c.nome}</h2>
+    <h2>Culpado: ${c.nome}</h2>${caso.dupla ? `<p style="font-weight:800">🤝 Resolvido em dupla com ${esc(caso.dupla)}!</p>` : ''}
     ${esp ? '<p style="font-weight:800;color:var(--ouro)">🤯 IMPOSSÍVEL! Um personagem especial era o culpado! Isso acontece 1 vez em 1 milhão! +1000 pontos</p>' : ''}
     <div class="fala"><b>Confissão de ${c.nome}</b>${sorteia(CONFISSOES)}</div>
     <div class="fala"><b>Detetive ${eu().nome}</b>Caso resolvido. A Alcremie VMAX foi devolvida em segurança, e ${c.nome} ${sorteia(SENTENCAS)}.</div>
@@ -894,7 +903,7 @@ $('pericia').onclick = () => {
   if(!caso || caso.fim) return;
   const livres = caso.sus.filter(s => s !== caso.culpado && !caso.riscados.has(s.id));
   if(!livres.length) return;
-  const s = sorteia(livres); caso.riscados.add(s.id); caso.pericias++; somRisca();
+  const s = sorteia(livres); caso.riscados.add(s.id); caso.provados.add(s.id); caso.pericias++; somRisca();
   $('aviso').textContent = `🧪 O exame de DNA deu negativo: ${s.nome} é inocente. ${habK('dna') ? '(💧 de graça!)' : '(−10 pontos)'}`; $('aviso').className = 'aviso';
   desenharSuspeitos(); mostrarPistas();
 };
@@ -904,7 +913,7 @@ $('poder').onclick = () => {
   else{
     const livres = embaralhar(caso.sus.filter(s => s !== caso.culpado && !caso.riscados.has(s.id))).slice(0, H.q);
     if(!livres.length) return;
-    livres.forEach(s => caso.riscados.add(s.id));
+    livres.forEach(s => { caso.riscados.add(s.id); caso.provados.add(s.id); });
     $('aviso').textContent = `${H.e} ${H.n}! ${livres.map(s => s.nome).join(', ')} ${livres.length > 1 ? 'são inocentes' : 'é inocente'}.`;
   }
   caso.poderUsado = true; $('aviso').className = 'aviso'; tocar([523, 784, 1047], .1, 'sine'); desenharSuspeitos(); mostrarPistas();
@@ -932,7 +941,7 @@ const DISTINTIVOS = [
   ['estrelas100', '🌟', '100 estrelas', () => stats.estrelas >= 100], ['pontos1000', '🏅', '1.000 pontos', () => stats.pontos >= 1000], ['pontos10000', '💎', '10.000 pontos', () => stats.pontos >= 10000],
   ['reincidente', '🔁', 'Culpou o mesmo 3 vezes', () => Object.values(stats.presos).some(n => n >= 3)], ['semlupa', '👁️', '20 casos sem DNA', () => stats.semLupa >= 20],
   ['inter10', '🎤', '10 interrogatórios', () => stats.interrogatorios >= 10], ['inter100', '🎙️', '100 interrogatórios', () => stats.interrogatorios >= 100],
-  ['cenas10', '📹', 'Viu as 10 gravações', () => stats.cenas.length >= 10], ['impossivel', '🦊', 'O impossível: um especial culpado', () => stats.especiais >= 1]];
+  ['cenas10', '📹', 'Viu as 10 gravações', () => stats.cenas.length >= 10], ['dupla', '🤝', 'Caso em dupla', () => (stats.duplas || 0) >= 1], ['dupla10', '👯', '10 casos em dupla', () => (stats.duplas || 0) >= 10], ['impossivel', '🦊', 'O impossível: um especial culpado', () => stats.especiais >= 1]];
 let ganhos = ler('distintivos', {}) || {};
 function checarDistintivos(){
   DISTINTIVOS.forEach(([id, e, n, f]) => { if(!ganhos[id] && f()){ ganhos[id] = Date.now(); toast(`${e} Distintivo novo: ${n}!`); } });
@@ -1206,9 +1215,9 @@ function meuCodigo(){
   return 'AMIGO1.' + paraB64(Object.assign(meuPerfil(), { id }));
 }
 function mandarCodigo(codigo, tipo){
-  const texto = tipo === 'desafio' ? `🕵️ Te desafio no Detetive Pokémon! Cole esse código em Amigos: ${codigo}` : codigo;
-  $('dlg2-corpo').innerHTML = `<h2>${tipo === 'desafio' ? '⚔️ Código do desafio' : '📤 Meu código'}</h2>
-    <p style="font-size:.85rem">${tipo === 'desafio' ? 'Mande pro seu amigo. Ele cola em 👥 Amigos e joga o mesmo caso!' : 'Mande pra quem você conhece. Não poste em lugar público.'}</p>
+  const texto = tipo === 'desafio' ? `🕵️ Te desafio no Detetive Pokémon! Cole esse código em Amigos: ${codigo}` : tipo === 'dupla' ? `🤝 Vamos resolver esse caso em dupla no Detetive Pokémon! Cole em Amigos (ou no caso): ${codigo}` : codigo;
+  $('dlg2-corpo').innerHTML = `<h2>${tipo === 'desafio' ? '⚔️ Código do desafio' : tipo === 'dupla' ? '🤝 Código da dupla' : '📤 Meu código'}</h2>
+    <p style="font-size:.85rem">${tipo === 'desafio' ? 'Mande pro seu amigo. Ele cola em 👥 Amigos e joga o mesmo caso!' : tipo === 'dupla' ? 'Mande pro parceiro. Ele abre o mesmo caso com as suas descobertas, investiga e te manda o código dele de volta. Mande de novo sempre que descobrir mais coisa!' : 'Mande pra quem você conhece. Não poste em lugar público.'}</p>
     <div class="codigo-caixa">${esc(texto)}</div><button type="button" class="grande" id="copiar">📋 Copiar</button>
     ${navigator.share ? '<button type="button" class="mini" id="compartilhar">📤 Mandar…</button>' : ''}<button type="button" class="mini" id="fechar-dlg2">Fechar</button>`;
   $('copiar').onclick = async () => { try{ await navigator.clipboard.writeText(texto); $('copiar').textContent = '✅ Copiado!'; }catch(e){ $('copiar').textContent = 'Selecione o código e copie 👆'; } };
@@ -1218,9 +1227,10 @@ function mandarCodigo(codigo, tipo){
 }
 $('meu-codigo').onclick = () => mandarCodigo(meuCodigo(), 'amigo');
 function colarCodigo(txt){
-  const t = String(txt || '').trim(), m = t.match(/(AMIGO1|CASO1)\.([A-Za-z0-9_-]+)/);
-  if(!m) return '🤔 Esse código não é do Detetive. Ele começa com AMIGO1 ou CASO1.';
+  const t = String(txt || '').trim(), m = t.match(/(AMIGO1|CASO1|DUPLA1)\.([A-Za-z0-9_-]+)/);
+  if(!m) return '🤔 Esse código não é do Detetive. Ele começa com AMIGO1, CASO1 ou DUPLA1.';
   let o; try{ o = deB64(m[2]); }catch(e){ return '😕 Esse código está quebrado. Peça pro amigo mandar de novo.'; }
+  if(m[1] === 'DUPLA1') return receberDupla(o);
   if(m[1] === 'AMIGO1'){
     const a = limpaAmigo(o); if(!a) return '😕 Esse código está quebrado.';
     if(a.id && a.id === ler('meu-id', '')) return '😄 Esse é o seu próprio código!';
@@ -1270,6 +1280,55 @@ $('lista-desafios').onclick = ev => {
   if(carregarCaso() && !confirm('Você tem um caso salvo. Deixar ele de lado e jogar o desafio?')) return;
   gravar('caso', null);
   if(novoCaso(d.nivel, +k, { de:d.de, eles:d.eles })) abrirCaso(false);
+};
+
+/* ---------- 🤝 dupla: os dois abrem o mesmo caso e trocam o que descobriram ---------- */
+function codigoDupla(){
+  const idx = p => caso.todas.indexOf(p);
+  return 'DUPLA1.' + paraB64({ s:caso.seed, n:caso.nivel, a:perfil.apelido || 'Detetive', d:cfg.detetive,
+    i:[...caso.provados].filter(id => id !== caso.culpado.id), p:(caso.usadasDepo || []).map(idx).filter(i => i >= 0), m:caso.mostradas });
+}
+function juntarDupla(o){   // coloca no caso aberto o que o parceiro provou
+  const par = String(o.a || 'Parceiro').replace(/[<>]/g, '').trim().slice(0, 14) || 'Parceiro';
+  const ids = new Set(caso.sus.map(x => x.id));
+  let novos = 0, depos = 0;
+  (Array.isArray(o.i) ? o.i : []).slice(0, 12).map(Number).forEach(id => {
+    if(!ids.has(id) || id === caso.culpado.id) return;   // o parceiro nunca "prova" o culpado
+    if(!caso.provados.has(id)) novos++;
+    caso.provados.add(id); caso.riscados.add(id); if(!caso.depo[id]) caso.depo[id] = { ok:true, par };
+  });
+  (Array.isArray(o.p) ? o.p : []).slice(0, 12).map(Number).forEach(i => {
+    const pista = caso.todas[i]; if(!pista || !pista.f(caso.culpado) || (caso.usadasDepo || []).includes(pista)) return;
+    (caso.usadasDepo = caso.usadasDepo || []).push(pista); depos++;
+    caso.depoimentos.push(`🤝 <b>${esc(par)}</b> descobriu: “O culpado ${pista.fato}.”<small>Descoberta do seu parceiro de dupla.</small>`);
+  });
+  const m = Math.min(caso.pistas.length, inteiro(o.m, 20)); const maisPistas = Math.max(0, m - caso.mostradas); caso.mostradas = Math.max(caso.mostradas, m);
+  if(novos || depos || maisPistas || !caso.dupla) caso.dupla = par;
+  desenharSuspeitos(); mostrarPistas();
+  return `🤝 Juntei as descobertas de ${par}: ${novos} inocente(s), ${depos} depoimento(s)${maisPistas ? ` e ${maisPistas} pista(s)` : ''}.`;
+}
+function receberDupla(o){
+  const seed = inteiro(o.s, 2147483647), nivel = NIVEIS[o.n] ? o.n : null;
+  if(!seed || !nivel) return '😕 Esse código de dupla está quebrado.';
+  if(caso && !caso.fim && caso.seed === seed) return juntarDupla(o);
+  const salvo = carregarCaso();
+  if(salvo && salvo.seed === seed){ caso = salvo; abrirCaso(true); return juntarDupla(o); }
+  if(salvo && !confirm('Você tem um caso salvo. Deixar ele de lado e abrir o caso da dupla?')) return 'Tudo bem, o caso salvo continua lá.';
+  gravar('caso', null);
+  if(!novoCaso(nivel, seed, null)) return '😕 Não consegui abrir esse caso.';
+  abrirCaso(false);
+  const r = juntarDupla(o);
+  $('aviso').textContent = r; $('aviso').className = 'aviso';
+  return r;
+}
+$('mandar-dupla').onclick = () => { if(caso && !caso.fim) mandarCodigo(codigoDupla(), 'dupla'); };
+$('colar-dupla-ok').onclick = () => {
+  const t = $('colar-dupla').value, m = String(t).match(/DUPLA1\.([A-Za-z0-9_-]+)/);
+  if(!m){ $('dupla-msg').textContent = '🤔 Cole um código que começa com DUPLA1.'; return; }
+  let o; try{ o = deB64(m[1]); }catch(e){ $('dupla-msg').textContent = '😕 Esse código está quebrado.'; return; }
+  if(!caso || caso.fim){ $('dupla-msg').textContent = 'Abra um caso primeiro.'; return; }
+  if(inteiro(o.s, 2147483647) !== caso.seed){ $('dupla-msg').textContent = '🤔 Esse código é de outro caso! Peça o código deste caso pro parceiro.'; return; }
+  $('dupla-msg').textContent = juntarDupla(o); $('colar-dupla').value = '';
 };
 
 /* ---------- 🔎 arquivo (a Pokédex do detetive) ---------- */
