@@ -141,6 +141,36 @@ footer{text-align:center;margin-top:26px;color:var(--tinta-fraca);font-size:.8re
 #cartao-video video{display:block;width:100%;max-height:60vh;border-radius:16px;background:#000;margin-top:4px}
 #cartao-video .botoes-fim button{font:inherit;font-weight:800;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:14px;padding:12px 6px;cursor:pointer}
 #cartao-video .botoes-fim button.forte{background:var(--marca2);border-color:var(--marca2);color:#fff}
+.chips.c2 .chip:nth-child(5){grid-column:1 / -1}
+.chip:disabled{opacity:.5;cursor:default}
+.toast{position:fixed;left:50%;top:12px;transform:translate(-50%,-140%);z-index:60;width:min(92vw,420px);display:flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,#ffe066,#ffcb05);color:#1b1d3a;border-radius:18px;padding:10px 14px;box-shadow:0 10px 28px rgba(0,0,0,.3);transition:transform .35s cubic-bezier(.2,1.4,.4,1)}
+.toast.aparece{transform:translate(-50%,0)}
+.toast i{font-style:normal;font-size:2rem;line-height:1}
+.toast b{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}
+.toast span{font-weight:800}
+.ultimos{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 10px}
+.ultimos span{background:var(--cartao2);border:2px solid var(--borda);border-radius:99px;padding:4px 10px;font-size:.8rem;font-weight:700}
+.topo-trofeus{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 12px}
+.topo-trofeus b{font-family:'Baloo 2',cursive;font-size:1.3rem}
+.stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+.filtros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:14px 0 10px}
+.filtros button{font:inherit;font-weight:700;font-size:.85rem;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:12px;padding:8px 4px;cursor:pointer}
+.filtros button[aria-pressed="true"]{background:var(--marca2);border-color:var(--marca2);color:#fff}
+.trofeus{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.trofeu{position:relative;background:var(--cartao);border:2px solid var(--borda);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:3px}
+.trofeu .ic{font-size:1.9rem;line-height:1}
+.trofeu .md{position:absolute;right:8px;top:8px;font-size:1.1rem}
+.trofeu b{font-size:.9rem;line-height:1.2}
+.trofeu small{font-size:.74rem;color:var(--tinta-fraca);line-height:1.3}
+.trofeu .pb{height:7px;border-radius:9px;background:var(--borda);overflow:hidden;margin-top:auto}
+.trofeu .pb i{display:block;height:100%;background:var(--marca2)}
+.trofeu .qt{font-size:.7rem;font-weight:700;color:var(--tinta-fraca)}
+.trofeu.ganho{border-color:#e0a800;background:linear-gradient(160deg,var(--cartao),rgba(255,203,5,.16))}
+.trofeu.ganho .pb i{background:#e0a800}
+.trofeu:not(.ganho) .ic,.trofeu:not(.ganho) .md{filter:grayscale(1);opacity:.45}
+.fim-trofeus{margin-top:14px;text-align:left}
+.fim-trofeus b{display:block;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -161,6 +191,7 @@ footer{text-align:center;margin-top:26px;color:var(--tinta-fraca);font-size:.8re
         <button type="button" class="chip" data-nivel="medio"><b>🟡 Médio</b><small>Gerações 1 a 4</small></button>
         <button type="button" class="chip" data-nivel="dificil"><b>🔴 Difícil</b><small>Todos os 1025!</small></button>
         <button type="button" class="chip" data-nivel="minhas"><b>🎯 Eu escolho</b><small>Escolha as gerações</small></button>
+        <button type="button" class="chip" data-nivel="revanche"><b>🔁 Revanche</b><small id="revanche-info">Só os que você errou</small></button>
       </div>
       <div class="geracoes" id="geracoes" hidden></div>
     </div>
@@ -182,6 +213,14 @@ footer{text-align:center;margin-top:26px;color:var(--tinta-fraca);font-size:.8re
       <p class="info-video" id="video-info"></p>
       <button type="button" class="jogar" id="jogar">▶️ Jogar!</button>
       <p class="recorde" id="recorde-inicio"></p>
+    </div>
+
+    <div class="cartao">
+      <h2>🏆 Troféus</h2>
+      <p id="trofeus-txt"></p>
+      <div class="barra-col"><i id="trofeus-barra" style="width:0"></i></div>
+      <div class="ultimos" id="ultimos-trofeus"></div>
+      <button type="button" class="mini" id="ver-trofeus">🏆 Ver os 100 troféus e as estatísticas</button>
     </div>
 
     <div class="cartao">
@@ -226,6 +265,21 @@ footer{text-align:center;margin-top:26px;color:var(--tinta-fraca);font-size:.8re
     </div>
   </section>
 
+  <!-- ===================== TROFÉUS ===================== -->
+  <section id="tela-trofeus" hidden>
+    <div class="topo-trofeus"><button type="button" class="mini" id="voltar-trofeus">⬅️ Voltar</button><b id="trofeus-cont"></b></div>
+    <div class="cartao">
+      <h2>📊 Suas estatísticas</h2>
+      <div class="numeros stats" id="stats"></div>
+    </div>
+    <div class="filtros" id="filtros-trofeus">
+      <button type="button" data-f="todos" aria-pressed="true">Todos</button>
+      <button type="button" data-f="ganhos" aria-pressed="false">🏆 Ganhos</button>
+      <button type="button" data-f="faltam" aria-pressed="false">🔒 Faltam</button>
+    </div>
+    <div class="trofeus" id="lista-trofeus"></div>
+  </section>
+
   <!-- ===================== FIM ===================== -->
   <section id="tela-fim" hidden>
     <div class="cartao grande">
@@ -238,6 +292,7 @@ footer{text-align:center;margin-top:26px;color:var(--tinta-fraca);font-size:.8re
         <div><b id="fim-seq">0</b><small>🔥 maior sequência</small></div>
         <div><b id="fim-recorde">0</b><small>🏆 recorde</small></div>
       </div>
+      <div class="fim-trofeus" id="fim-trofeus" hidden></div>
       <div class="botoes-fim">
         <button type="button" class="jogar" id="de-novo" style="margin:0;font-size:1.2rem">🔁 De novo</button>
         <button type="button" class="jogar" id="menu" style="margin:0;font-size:1.2rem;background:var(--cartao2);box-shadow:0 6px 0 var(--borda);color:var(--tinta)">🏠 Início</button>
@@ -261,10 +316,11 @@ footer{text-align:center;margin-top:26px;color:var(--tinta-fraca);font-size:.8re
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 3 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 4 — 28/09 · 🔄</button>
   </footer>
 </div>
 
+<div class="toast" id="toast" role="status" aria-live="polite"><i id="toast-ic">🏆</i><div><b>Troféu desbloqueado!</b><span id="toast-txt"></span></div></div>
 <script>
 'use strict';
 /* =========================================================================
@@ -289,7 +345,7 @@ const FAMOSOS = [1,2,3,4,5,6,7,8,9,12,16,19,25,26,35,37,39,50,52,54,58,59,63,65,
   387,390,393,403,425,443,445,447,448,470,471,483,484,487,491,493,495,498,501,570,571,643,644,650,653,656,658,700,722,725,728,778,807,808,809,810,813,816,888,889,906,909,912];
 
 const $ = id => document.getElementById(id);
-const arte = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+const arte = (id, brilha) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${brilha ? 'shiny/' : ''}${id}.png`;
 const mini = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
 function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('quemepoke:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
 function gravar(k, v){ try{ localStorage.setItem('quemepoke:' + k, JSON.stringify(v)); }catch(e){} }
@@ -303,6 +359,7 @@ function pool(){
   if(cfg.nivel === 'facil') return FAMOSOS.map(i => POKE[i - 1]);
   if(cfg.nivel === 'medio') return POKE.filter(p => p.ger <= 4);
   if(cfg.nivel === 'minhas') return POKE.filter(p => cfg.gers.includes(p.ger));
+  if(cfg.nivel === 'revanche') return POKE.filter(p => errados.has(p.id));
   return POKE;
 }
 const chaveRecorde = () => `${cfg.nivel}${cfg.nivel === 'minhas' ? '-' + cfg.gers.slice().sort().join('') : ''}:${cfg.modo}:${cfg.resp}`;
@@ -310,6 +367,9 @@ function marcar(){
   document.querySelectorAll('#niveis .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.nivel === cfg.nivel));
   document.querySelectorAll('#modos .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.modo === cfg.modo));
   document.querySelectorAll('#respostas .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.resp === cfg.resp));
+  if(cfg.nivel === 'revanche' && !errados.size) cfg.nivel = 'facil';
+  const bRev = document.querySelector('[data-nivel="revanche"]'); bRev.disabled = !errados.size;
+  $('revanche-info').textContent = errados.size === 1 ? 'O único que você errou' : errados.size ? `Os ${errados.size} que você errou` : 'Aparece quando você errar algum';
   $('geracoes').hidden = cfg.nivel !== 'minhas';
   [...$('geracoes').children].forEach((b, i) => b.setAttribute('aria-pressed', cfg.gers.includes(i + 1)));
   $('som').setAttribute('aria-pressed', cfg.som); $('som').textContent = cfg.som ? 'Ligado' : 'Desligado';
@@ -334,6 +394,7 @@ $('video').onclick = () => { cfg.video = !cfg.video; marcar(); };
 
 /* ---------- coleção: todos que você já acertou ---------- */
 let colecao = new Set(ler('colecao', []));
+let errados = new Set(ler('errados', []));
 function mostrarColecao(){
   $('colecao-txt').innerHTML = `Você já acertou <b>${colecao.size}</b> de <b>1025</b> Pokémon!`;
   $('colecao-barra').style.width = (colecao.size / 1025 * 100) + '%';
@@ -352,12 +413,13 @@ $('ver-colecao').onclick = () => { $('colecao-caixa').hidden = !$('colecao-caixa
 /* ---------- o jogo ---------- */
 const TEMPO_S = 60, VIDAS = 3, PERGUNTAS = 10;
 let jogo = null;
-function trocarTela(t){ document.querySelectorAll('.pontos-voando').forEach(d => d.remove()); ['inicio', 'jogo', 'fim'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
+function trocarTela(t){ document.querySelectorAll('.pontos-voando').forEach(d => d.remove()); ['inicio', 'jogo', 'fim', 'trofeus'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
 function novoJogo(){
   if(video) pararVideo(true);
   const p = pool();
-  if(p.length < 4){ alert('Escolha mais gerações!'); return; }
-  jogo = { lista:p, usados:new Set(), pontos:0, seq:0, maiorSeq:0, acertos:0, n:0, vidas:VIDAS, fim:0, rodadas:[], atual:null, relogio:0, dicas:0, respondeu:false };
+  if(!p.length || (cfg.nivel !== 'revanche' && p.length < 4)){ alert(cfg.nivel === 'revanche' ? 'Não tem nenhum pra revanche!' : 'Escolha mais gerações!'); return; }
+  jogo = { lista:p, usados:new Set(), pontos:0, seq:0, maiorSeq:0, acertos:0, n:0, vidas:VIDAS, fim:0, rodadas:[], atual:null, relogio:0, dicas:0, respondeu:false, usouDica:false, brilhante:false, trofeus:[], nivel:cfg.nivel, modo:cfg.modo };
+  marcarDia();
   $('nomes').innerHTML = '';
   if(cfg.resp === 'escrever'){ const f = document.createDocumentFragment(); POKE.forEach(x => { const o = document.createElement('option'); o.value = x.nome; f.appendChild(o); }); $('nomes').appendChild(f); }
   $('opcoes').hidden = cfg.resp !== 'opcoes'; $('escrever').hidden = cfg.resp !== 'escrever';
@@ -398,6 +460,7 @@ function proxima(){
   const p = sortear();
   if(!p){ terminar(); return; }
   jogo.usados.add(p.id); jogo.n++; jogo.atual = p; jogo.dicas = 0; jogo.respondeu = false;
+  jogo.brilhante = Math.random() < 1 / 20;   // ✨ de vez em quando vem um brilhante!
   const img = $('figura');
   /* esconde na hora: sem a animação de voltar pra sombra, senão dava pra ver o próximo colorido */
   img.style.transition = 'none'; img.classList.remove('revelado'); img.classList.add('esperando'); img.removeAttribute('src');
@@ -418,14 +481,14 @@ function proxima(){
     if(navigator.onLine !== false){ jogo.usados.add(p.id); jogo.n--; setTimeout(proxima, 1200); }
   };
   img.crossOrigin = 'anonymous';   // o PokeAPI deixa: assim a figura pode entrar no vídeo
-  img.src = arte(p.id);
+  img.src = arte(p.id, jogo.brilhante);
 }
 function responder(certo, botao){
   if(!jogo || jogo.respondeu) return;
   jogo.respondeu = true;
   const p = jogo.atual, img = $('figura');
   img.classList.add('revelado');
-  $('selo').textContent = `É o ${p.nome}!`; $('selo').hidden = false;
+  $('selo').textContent = jogo.brilhante ? `✨ É o ${p.nome} brilhante!` : `É o ${p.nome}!`; $('selo').hidden = false;
   $('num').textContent = `#${p.id}`; $('num').hidden = false;
   mostrarTipos();
   document.querySelectorAll('#opcoes button').forEach(b => { b.disabled = true; if(+b.dataset.id === p.id) b.classList.add('certo'); });
@@ -435,20 +498,29 @@ function responder(certo, botao){
   if(certo){
     jogo.seq++; jogo.maiorSeq = Math.max(jogo.maiorSeq, jogo.seq); jogo.acertos++;
     ganhou = Math.max(2, 10 - jogo.dicas * 3) + Math.min(5, jogo.seq - 1);
+    if(jogo.brilhante) ganhou += 10;
     jogo.pontos += ganhou;
     colecao.add(p.id); gravar('colecao', [...colecao]);
+    stats.acertos++; stats.melhorSeq = Math.max(stats.melhorSeq, jogo.seq);
+    if(cfg.resp === 'escrever') stats.escritos++;
+    if(jogo.brilhante) stats.brilhantes++;
+    if(jogo.nivel === 'revanche') stats.revanche++;
+    if(errados.delete(p.id)) gravar('errados', [...errados]);
     $('aviso').textContent = ['✅ Acertou!', '🎉 Isso aí!', '⭐ Mandou bem!', '🔥 Demais!'][Math.floor(Math.random() * 4)] + (jogo.seq > 1 ? ` ${jogo.seq} seguidos!` : '');
+    if(jogo.brilhante) $('aviso').textContent += ' ✨ Era brilhante! +10';
     $('aviso').className = 'aviso bom';
     voar('+' + ganhou);
     efeito(true);
   }else{
     jogo.seq = 0;
     if(cfg.modo === 'vidas') jogo.vidas--;
+    stats.erros++; errados.add(p.id); gravar('errados', [...errados]);
     $('aviso').textContent = botao === null ? '🤷 Tudo bem! Agora você conhece ele.' : '❌ Quase! Esse era outro.';
     $('aviso').className = 'aviso ruim';
     efeito(false);
   }
-  jogo.rodadas.push({ id:p.id, certo });
+  jogo.rodadas.push({ id:p.id, certo, brilha:jogo.brilhante });
+  gravar('stats', stats); checarTrofeus();
   atualizarPlacar();
   grito(p);
   const acabou = (cfg.modo === 'vidas' && jogo.vidas <= 0) || (cfg.modo === 'dez' && jogo.n >= PERGUNTAS);
@@ -463,7 +535,7 @@ function mostrarTipos(){
 }
 $('dica').onclick = () => {
   if(!jogo || jogo.respondeu) return;
-  const p = jogo.atual; jogo.dicas++;
+  const p = jogo.atual; jogo.dicas++; jogo.usouDica = true; stats.dicas++;
   if(jogo.dicas === 1){ mostrarTipos(); $('aviso').textContent = '💡 Dica: o tipo dele. (vale menos pontos)'; }
   else{
     mostrarTipos();
@@ -505,6 +577,17 @@ function terminar(){
   if(!jogo) return;
   clearInterval(jogo.relogio);
   const j = jogo; jogo = null;
+  if(j.rodadas.length){
+    stats.partidas++; stats.pontosTotal += j.pontos; stats.melhorPontos = Math.max(stats.melhorPontos, j.pontos);
+    if(!stats.niveis.includes(j.nivel)) stats.niveis.push(j.nivel);
+    if(j.modo === 'dez' && j.acertos === PERGUNTAS){ stats.perfeito++; if(!j.usouDica) stats.perfeitoSemDica++; }
+    if(j.modo === 'tempo') stats.tempoMax = Math.max(stats.tempoMax, j.acertos);
+    if(j.modo === 'vidas') stats.vidasMax = Math.max(stats.vidasMax, j.acertos);
+    if(j.modo === 'dez' && j.nivel === 'dificil' && j.acertos >= 7) stats.dificilVitoria++;
+    if(video) stats.videos++;
+    gravar('stats', stats);
+    const antesTr = trofeusDaPartida; trofeusDaPartida = j.trofeus; checarTrofeus(); trofeusDaPartida = antesTr;
+  }
   const recs = ler('recordes', {}), k = chaveRecorde(), antes = recs[k] || 0, novo = j.pontos > antes && j.pontos > 0;
   if(novo){ recs[k] = j.pontos; gravar('recordes', recs); }
   $('fim-titulo').textContent = j.acertos === 0 ? 'Não foi dessa vez! Tenta de novo? 💪' : j.acertos >= j.rodadas.length * .8 ? '🏆 Você é um Mestre Pokémon!' : j.acertos >= j.rodadas.length / 2 ? '🎉 Muito bem!' : '👍 Boa! Treina mais um pouco!';
@@ -514,8 +597,10 @@ function terminar(){
   j.rodadas.forEach(r => {
     const li = document.createElement('li'), img = document.createElement('img'); li.className = r.certo ? 'ok' : 'nao';
     img.src = mini(r.id); img.alt = ''; img.loading = 'lazy';
-    li.append(img, `${r.certo ? '✅' : '❌'} ${POKE[r.id - 1].nome}`); ul.appendChild(li);
+    li.append(img, `${r.certo ? '✅' : '❌'} ${r.brilha ? '✨' : ''}${POKE[r.id - 1].nome}`); ul.appendChild(li);
   });
+  const ft = $('fim-trofeus'); ft.hidden = !j.trofeus.length;
+  ft.innerHTML = j.trofeus.length ? `<b>🏆 Troféus que você ganhou agora (${j.trofeus.length}):</b><div class="ultimos">${j.trofeus.map(t => `<span>${t.e} ${t.n}</span>`).join('')}</div>` : '';
   if(!j.rodadas.length) ul.innerHTML = '<li style="grid-column:1/-1">Nenhum Pokémon dessa vez.</li>';
   trocarTela('fim');
   mostrarColecao();
@@ -531,9 +616,10 @@ const VW = 720, VH = 1080, MAX_VIDEO_S = 5 * 60;
 let video = null, urlVideo = null, arqVideo = null;
 function podeGravar(){ return !!(window.MediaRecorder && HTMLCanvasElement.prototype.captureStream); }
 const figuras = new Map();
-function figuraVideo(id){   // cópia da figura com permissão de ir pro vídeo
-  if(!figuras.has(id)){ const i = new Image(); i.crossOrigin = 'anonymous'; i.src = arte(id); figuras.set(id, i); if(figuras.size > 40) figuras.delete(figuras.keys().next().value); }
-  return figuras.get(id);
+function figuraVideo(id, brilha){   // cópia da figura com permissão de ir pro vídeo
+  const k = id + (brilha ? 's' : '');
+  if(!figuras.has(k)){ const i = new Image(); i.crossOrigin = 'anonymous'; i.src = arte(id, brilha); figuras.set(k, i); if(figuras.size > 40) figuras.delete(figuras.keys().next().value); }
+  return figuras.get(k);
 }
 function comecarVideo(){
   pararVideo(true);
@@ -642,7 +728,7 @@ function desenharVideo(){
   g.restore();
   const atual = jogo && jogo.atual, revelado = $('figura').classList.contains('revelado');
   if(atual){
-    const im = figuraVideo(atual.id);
+    const im = figuraVideo(atual.id, jogo.brilhante);
     if(im.complete && im.naturalWidth){
       const esc = Math.min(540 / im.naturalWidth, 470 / im.naturalHeight) * (revelado ? 1.06 : 1);
       const w = im.naturalWidth * esc, h = im.naturalHeight * esc, x = VW / 2 - w / 2, y = py + ph / 2 - h / 2;
@@ -656,7 +742,7 @@ function desenharVideo(){
     }else texto(g, 'Carregando… ⏳', VW / 2, py + ph / 2, 34, '#1b1d3a');
     if(revelado){
       texto(g, `#${atual.id}`, px + pw - 60, py + 34, 26, '#1b1d3a');
-      const t = `É o ${atual.nome}!`, tam = caber(g, t, 560, 40);
+      const t = $('selo').textContent, tam = caber(g, t, 560, 40);
       g.font = `800 ${tam}px 'Baloo 2', Rubik, sans-serif`; const w = g.measureText(t).width + 48;
       g.fillStyle = '#fff'; caixa(g, VW / 2 - w / 2, py + ph - 76, w, 60, 30); g.fill();
       texto(g, t, VW / 2, py + ph - 46, tam, '#1b1d3a');
@@ -705,7 +791,133 @@ document.addEventListener('keydown', ev => {   // no computador: 1 2 3 4 escolhe
   if($('tela-jogo').hidden || !jogo || document.activeElement === $('chute')) return;
   if(/^[1-4]$/.test(ev.key) && cfg.resp === 'opcoes' && !jogo.respondeu){ const b = $('opcoes').children[+ev.key - 1]; if(b) b.click(); }
 });
-marcar(); mostrarColecao();
+/* =========================================================================
+   🏆 100 troféus. Cada um tem uma meta, e v() diz quanto você já tem.
+   A maioria é contada pela coleção (os Pokémon que você já acertou).
+   ========================================================================= */
+const LENDARIOS = new Set([144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,800,801,802,807,808,809,888,889,890,891,892,893,894,895,896,897,898,905,1001,1002,1003,1004,1007,1008,1014,1015,1016,1017,1024,1025]);
+const INICIAIS = new Set([1,4,7,152,155,158,252,255,258,387,390,393,495,498,501,650,653,656,722,725,728,810,813,816,906,909,912]);
+let stats = Object.assign({ acertos:0, erros:0, partidas:0, pontosTotal:0, melhorPontos:0, melhorSeq:0, dicas:0, escritos:0, brilhantes:0, perfeito:0, perfeitoSemDica:0,
+  tempoMax:0, vidasMax:0, dificilVitoria:0, videos:0, revanche:0, noite:0, fds:0, niveis:[], dias:[] }, ler('stats', {}));
+if(!Array.isArray(stats.niveis)) stats.niveis = []; if(!Array.isArray(stats.dias)) stats.dias = [];
+let ganhos = ler('trofeus', {}) || {}, trofeusDaPartida = null;
+const contaCol = f => { let n = 0; colecao.forEach(id => { if(f(POKE[id - 1])) n++; }); return n; };
+const TROFEUS = [];
+function grupo(lista){ lista.forEach(([id, e, n, d, meta, v], i) => TROFEUS.push({ id, e, n, d, meta, v, nivel:Math.min(4, 1 + Math.floor(i * 4 / lista.length)) })); }
+grupo([[1,'Primeiro acerto'],[10,'Treinador iniciante'],[25,'Olho bom'],[50,'Detetive'],[100,'Cem na sombra'],[250,'Mestre das sombras'],[500,'Especialista'],[1000,'Lenda viva'],[2500,'Professor Pokémon']]
+  .map(([m, n]) => ['ac' + m, '✅', n, `Acerte ${m} ${m > 1 ? 'Pokémon' : 'Pokémon'} no total`, m, () => stats.acertos]));
+grupo([[10,'Começando a Pokédex'],[25,'Colecionador'],[50,'Álbum cheio'],[100,'Cem diferentes'],[151,'Cento e cinquenta e um'],[250,'Pokédex gigante'],[386,'Grande colecionador'],[500,'Meia Pokédex'],[1025,'TODOS OS 1025!']]
+  .map(([m, n]) => ['col' + m, '📚', n, `Tenha ${m} Pokémon diferentes na coleção`, m, () => colecao.size]));
+grupo([[3,'Esquentando'],[5,'Pegando fogo'],[10,'Imparável'],[15,'Em chamas'],[20,'Supersequência'],[30,'Ninguém segura']]
+  .map(([m, n]) => ['seq' + m, '🔥', n, `Acerte ${m} seguidos`, m, () => stats.melhorSeq]));
+grupo([[50,'Meia centena'],[100,'Cem pontos'],[150,'Cento e cinquenta'],[200,'Duzentos!'],[300,'Trezentos!!!']]
+  .map(([m, n]) => ['pts' + m, '⭐', n, `Faça ${m} pontos numa partida`, m, () => stats.melhorPontos]));
+grupo([[500,'Juntando pontos'],[1000,'Mil pontos'],[5000,'Rico em pontos']]
+  .map(([m, n]) => ['tot' + m, '💰', n, `Junte ${m} pontos somando tudo`, m, () => stats.pontosTotal]));
+grupo([[1,'Primeira partida'],[5,'Jogador'],[10,'Viciado em sombras'],[25,'Não para mais'],[50,'Veterano']]
+  .map(([m, n]) => ['par' + m, '🎮', n, `Jogue ${m} ${m > 1 ? 'partidas' : 'partida'}`, m, () => stats.partidas]));
+grupo(['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola', 'Galar', 'Paldea'].map((r, i) => {
+  const [a, b] = GERACOES[i];
+  return ['ger' + (i + 1), '🗺️', `${r} completo`, `Acerte todos os ${b - a + 1} Pokémon da geração ${i + 1}`, b - a + 1, () => contaCol(p => p.ger === i + 1)];
+}));
+grupo(TIPOS.map(([n, e], t) => ['tipo' + t, e, `Mestre ${['Água', 'Planta', 'Terra', 'Pedra', 'Fada'].includes(n) ? 'da' : 'do'} ${n}`, `Acerte 10 Pokémon diferentes do tipo ${n}`, 10, () => contaCol(p => p.tipos.includes(t))]));
+grupo([
+  ['perf', '💯', 'Perfeito!', 'Acerte 10 de 10 no jeito 🎯 10 perguntas', 1, () => stats.perfeito],
+  ['perfsd', '🧠', 'Perfeito sem ajuda', 'Acerte 10 de 10 sem usar nenhuma dica', 1, () => stats.perfeitoSemDica],
+  ['tem10', '⏱️', 'Rápido', 'Acerte 10 no jeito ⏱️ 1 minuto', 10, () => stats.tempoMax],
+  ['tem15', '⚡', 'Relâmpago', 'Acerte 15 no jeito ⏱️ 1 minuto', 15, () => stats.tempoMax],
+  ['tem20', '🚀', 'Supersônico', 'Acerte 20 no jeito ⏱️ 1 minuto', 20, () => stats.tempoMax],
+  ['tem30', '🌠', 'Velocidade da luz', 'Acerte 30 no jeito ⏱️ 1 minuto', 30, () => stats.tempoMax],
+  ['vid15', '❤️', 'Sobrevivente', 'Acerte 15 numa partida de ❤️ 3 vidas', 15, () => stats.vidasMax],
+  ['vid25', '🛡️', 'Duro na queda', 'Acerte 25 numa partida de ❤️ 3 vidas', 25, () => stats.vidasMax],
+  ['vid50', '👑', 'Imortal', 'Acerte 50 numa partida de ❤️ 3 vidas', 50, () => stats.vidasMax],
+]);
+grupo([[1,'Soletrando'],[10,'Escritor'],[50,'Dicionário Pokémon']].map(([m, n]) => ['esc' + m, '⌨️', n, `Acerte ${m} escrevendo o nome`, m, () => stats.escritos]));
+grupo([[1,'Brilhou!'],[5,'Caçador de brilhantes'],[10,'Tudo brilha']].map(([m, n]) => ['bri' + m, '✨', n, `Acerte ${m} Pokémon ${m > 1 ? 'brilhantes' : 'brilhante'}`, m, () => stats.brilhantes]));
+grupo([[1,'#001','Bulbasaur'],[25,'Pika pika!','Pikachu'],[133,'Eevee!','Eevee'],[129,'Splash!','Magikarp'],[132,'Igualzinho','Ditto'],[150,'Clone poderoso','Mewtwo'],[151,'Mítico rosa','Mew']]
+  .map(([id, n, nome]) => ['esp' + id, '🌟', n, `Acerte o ${nome}`, 1, () => colecao.has(id) ? 1 : 0]));
+grupo([[1,'Lendário'],[10,'Caçador de lendas'],[25,'Mestre das lendas']].map(([m, n]) => ['len' + m, '🐉', n, `Acerte ${m} ${m > 1 ? 'lendários ou míticos' : 'lendário ou mítico'}`, m, () => contaCol(p => LENDARIOS.has(p.id))]));
+grupo([
+  ['ini9', '🌱', 'Escolha seu inicial', 'Acerte 9 Pokémon iniciais', 9, () => contaCol(p => INICIAIS.has(p.id))],
+  ['ini27', '🎒', 'Todos os iniciais', 'Acerte os 27 iniciais de todas as regiões', 27, () => contaCol(p => INICIAIS.has(p.id))],
+  ['dif', '🔴', 'Nível difícil', 'Acerte 7 de 10 no nível 🔴 Difícil', 1, () => stats.dificilVitoria],
+  ['niv', '🎚️', 'Experimentou tudo', 'Jogue nos níveis Fácil, Médio, Difícil e Eu escolho', 4, () => stats.niveis.filter(n => n !== 'revanche').length],
+  ['noite', '🦉', 'Coruja', 'Jogue de noite (depois das 8 da noite)', 1, () => stats.noite],
+  ['fds', '🏖️', 'Fim de semana', 'Jogue num sábado ou domingo', 1, () => stats.fds],
+  ['dias3', '📅', 'Voltou!', 'Jogue em 3 dias diferentes', 3, () => stats.dias.length],
+  ['dias7', '🗓️', 'Toda semana', 'Jogue em 7 dias diferentes', 7, () => stats.dias.length],
+  ['dic50', '🔎', 'Detetive curioso', 'Use 50 dicas', 50, () => stats.dicas],
+  ['vid', '🎬', 'Youtuber', 'Grave um vídeo de partida', 1, () => stats.videos],
+  ['rev', '🔁', 'Vingança!', 'Acerte 10 no nível 🔁 Revanche', 10, () => stats.revanche],
+]);
+const MEDALHA = ['', '🥉', '🥈', '🥇', '💎'];
+function marcarDia(){
+  const d = new Date(), dia = d.toISOString().slice(0, 10);
+  if(!stats.dias.includes(dia)){ stats.dias.push(dia); if(stats.dias.length > 60) stats.dias.shift(); }
+  if(d.getHours() >= 20 || d.getHours() < 5) stats.noite = 1;
+  if(d.getDay() === 0 || d.getDay() === 6) stats.fds = 1;
+  gravar('stats', stats);
+}
+let filaToast = [], toastOcupado = false;
+function checarTrofeus(){
+  const novos = TROFEUS.filter(t => !ganhos[t.id] && t.v() >= t.meta);
+  if(!novos.length) return;
+  novos.forEach(t => { ganhos[t.id] = Date.now(); filaToast.push(t); if(jogo) jogo.trofeus.push(t); else if(trofeusDaPartida) trofeusDaPartida.push(t); });
+  gravar('trofeus', ganhos);
+  mostrarToast(); mostrarResumoTrofeus();
+}
+function mostrarToast(){
+  if(toastOcupado || !filaToast.length) return;
+  toastOcupado = true;
+  const t = filaToast.shift();
+  $('toast-ic').textContent = t.e; $('toast-txt').textContent = `${MEDALHA[t.nivel]} ${t.n}`;
+  $('toast').classList.add('aparece');
+  if(cfg.som) plim();
+  setTimeout(() => { $('toast').classList.remove('aparece'); setTimeout(() => { toastOcupado = false; mostrarToast(); }, 400); }, 2400);
+}
+let acPlim = null;
+function plim(){
+  try{
+    acPlim = acPlim || new (window.AudioContext || window.webkitAudioContext)();
+    [880, 1319, 1760].forEach((f, i) => {
+      const o = acPlim.createOscillator(), g = acPlim.createGain(), t = acPlim.currentTime + i * .08;
+      o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.18, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + .35);
+      o.connect(g); g.connect(acPlim.destination); o.start(t); o.stop(t + .4);
+    });
+  }catch(e){}
+}
+function mostrarResumoTrofeus(){
+  const n = Object.keys(ganhos).filter(id => TROFEUS.some(t => t.id === id)).length;
+  $('trofeus-txt').innerHTML = `Você tem <b>${n}</b> de <b>${TROFEUS.length}</b> troféus!`;
+  $('trofeus-barra').style.width = (n / TROFEUS.length * 100) + '%';
+  const ult = TROFEUS.filter(t => ganhos[t.id]).sort((a, b) => ganhos[b.id] - ganhos[a.id]).slice(0, 4);
+  $('ultimos-trofeus').innerHTML = ult.length ? ult.map(t => `<span>${t.e} ${t.n}</span>`).join('') : '<span>Jogue pra ganhar o primeiro! 🏆</span>';
+  $('trofeus-cont').textContent = `🏆 ${n}/${TROFEUS.length}`;
+}
+let filtroTrofeu = 'todos';
+function mostrarTrofeus(){
+  mostrarResumoTrofeus();
+  const pct = stats.acertos + stats.erros ? Math.round(stats.acertos / (stats.acertos + stats.erros) * 100) : 0;
+  $('stats').innerHTML = [[stats.partidas, '🎮 partidas'], [stats.acertos, '✅ acertos'], [stats.erros, '❌ erros'], [pct + '%', '🎯 de acerto'], [stats.melhorSeq, '🔥 melhor sequência'],
+    [stats.melhorPontos, '⭐ melhor partida'], [stats.pontosTotal, '💰 pontos no total'], [stats.brilhantes, '✨ brilhantes'], [stats.dicas, '💡 dicas usadas']]
+    .map(([v, r]) => `<div><b>${v}</b><small>${r}</small></div>`).join('');
+  const lista = $('lista-trofeus'); lista.innerHTML = '';
+  TROFEUS.filter(t => filtroTrofeu === 'todos' || (filtroTrofeu === 'ganhos') === !!ganhos[t.id]).forEach(t => {
+    const v = Math.min(t.v(), t.meta), d = document.createElement('div');
+    d.className = 'trofeu' + (ganhos[t.id] ? ' ganho' : '');
+    d.innerHTML = `<span class="ic"></span><span class="md"></span><b></b><small></small><div class="pb"><i style="width:${v / t.meta * 100}%"></i></div><span class="qt"></span>`;
+    d.querySelector('.ic').textContent = t.e; d.querySelector('.md').textContent = MEDALHA[t.nivel];
+    d.querySelector('b').textContent = t.n; d.querySelector('small').textContent = t.d;
+    d.querySelector('.qt').textContent = ganhos[t.id] ? `🏆 Ganhou em ${new Date(ganhos[t.id]).toLocaleDateString('pt-BR')}` : `${v}/${t.meta}`;
+    lista.appendChild(d);
+  });
+  if(!lista.children.length) lista.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:14px">Nenhum aqui ainda!</p>';
+}
+$('ver-trofeus').onclick = () => { trocarTela('trofeus'); mostrarTrofeus(); };
+$('voltar-trofeus').onclick = () => { trocarTela('inicio'); marcar(); };
+$('filtros-trofeus').onclick = ev => { const b = ev.target.closest('[data-f]'); if(!b) return; filtroTrofeu = b.dataset.f; [...$('filtros-trofeus').children].forEach(x => x.setAttribute('aria-pressed', x === b)); mostrarTrofeus(); };
+
+marcar(); mostrarColecao(); mostrarResumoTrofeus(); checarTrofeus();
 
 /* ---------- claro / escuro ---------- */
 const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
