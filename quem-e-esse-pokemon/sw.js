@@ -3,7 +3,7 @@
    pra jogar precisa estar conectado. */
 /* O número sobe sempre que eu quero que todo mundo largue o que estava
    guardado. Quem estava com versão velha pega a nova na primeira visita. */
-const CACHE = 'quemepoke-v7';
+const CACHE = 'quemepoke-v8';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg', './icone-limpo.svg'];
 
 self.addEventListener('install', ev => {

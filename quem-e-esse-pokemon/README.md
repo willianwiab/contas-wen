@@ -26,5 +26,11 @@ Aparece a **sombra** de um Pokémon e você adivinha quem é!
 - 🃏 **Cartinhas** e álbum, 🔎 **Pokédex** (toque num Pokémon), 🎵 **música** feita pelo site, 📸 **foto do resultado**, 🎤 **falar a resposta**
 - 👤 **Perfil** (apelido e foto), sombra da tela inicial trocando a cada 10 segundos, e o 🤖 recado do Claude
 
+## Versão 8: amigos, desafio e Jojo adm
+- 👥 **Amigos por código**: cada um tem um código (JOJO1…) pra mandar pra quem conhece; quem cola vê o perfil, a Pokédex e as últimas partidas. Dá pra pesquisar na sua lista. Não existe pesquisa de estranhos: só entra quem te manda o código.
+- ⚔️ **Desafio**: você joga 10 Pokémon e manda o código (DESAFIO1…); o amigo joga **os mesmos 10** com as mesmas opções, e aparece quem venceu.
+- 🔎 **Pokédex com pesquisa** (nome, número, tipo, geração, só os meus) e 🎬 **histórico** das últimas 50 partidas.
+- 👑 **Jojo adm**: painel com senha de 4 números, só deste aparelho (coroa, nome “Jojo adm”, +XP, cartinhas, próximo shiny, missões novas, backup, apagar).
+
 ## Dados
 Nome e tipos dos Pokémon gerados do `@pkmn/dex`; cor, altura, peso e evoluções das tabelas CSV do PokeAPI. Figuras e gritos vêm do [PokeAPI](https://pokeapi.co) (precisa de internet pra jogar). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.
