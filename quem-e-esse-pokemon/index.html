@@ -388,6 +388,29 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
 .adm-grade .mini{padding:9px 6px;font-size:.85rem}
 .campo-senha{display:block;width:100%;font:inherit;font-size:1.6rem;letter-spacing:10px;text-align:center;padding:10px;border-radius:14px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);margin-top:8px}
 #adm-corpo h2{font-family:'Baloo 2',cursive;font-size:1.6rem;text-align:center}
+/* ================= AcertoPoke e loja ================= */
+.carteira{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;font-weight:800}
+.carteira .mini{padding:6px 14px;background:#ffcb05;border-color:#ffcb05;color:#1b1d3a}
+.loja-itens{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px}
+.item-loja{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;background:var(--cartao2);border:2px solid var(--borda);border-radius:16px;padding:10px 6px}
+.item-loja.usando{border-color:var(--verde)}
+.item-loja b{font-size:.85rem;line-height:1.2}
+.item-loja .mini{padding:6px 12px;font-size:.85rem}
+.item-loja .mini.preco{background:#ffcb05;border-color:#ffcb05;color:#1b1d3a}
+.item-loja .mini:disabled{opacity:.55;cursor:default}
+.prev-fundo{display:block;width:100%;height:64px;border-radius:12px}
+.prev-moldura{display:grid;place-items:center;height:78px}
+.prev-titulo{font-size:2rem}
+.prev-foto{width:72px;height:72px;image-rendering:pixelated}
+.avatar{display:inline-grid;place-items:center;flex:none;border-radius:50%;background:rgba(255,255,255,.85);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.cartao-perfil{display:flex;align-items:center;gap:16px;border-radius:18px;padding:16px;color:#fff;margin-bottom:8px;text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.cartao-perfil .avatar{margin:10px}
+.cp-txt h2{font-family:'Baloo 2',cursive;font-size:1.5rem;line-height:1.1}
+.cp-titulo{display:inline-block;background:rgba(0,0,0,.35);border-radius:99px;padding:2px 10px;font-size:.78rem;font-weight:800;margin:2px 0 4px}
+.cp-txt b{display:block} .cp-txt small{font-weight:600;opacity:.95}
+.amigo .avatar{margin:6px}
+.perfil-bt{transition:box-shadow .2s}
 </style>
 </head>
 <body>
@@ -407,10 +430,11 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
       <p class="recorde" id="recorde-inicio"></p>
       <p class="resumo-cfg" id="resumo-cfg"></p>
       <div class="xp" id="xp"><span id="xp-txt"></span><div class="xp-barra"><i id="xp-barra"></i></div></div>
+      <div class="carteira"><span id="moedas-txt">🪙 0 AcertoPoke</span><button type="button" class="mini" id="abrir-loja">🛒 Loja</button></div>
     </div>
 
     <div class="atalhos">
-      <button type="button" class="atalho" id="atalho-trofeus"><i>🏆</i><b id="at-trofeus">0/100</b><small>troféus</small></button>
+      <button type="button" class="atalho" id="atalho-trofeus"><i>🏆</i><b id="at-trofeus">0/1125</b><small>troféus</small></button>
       <button type="button" class="atalho" id="atalho-colecao"><i>📚</i><b id="at-colecao">0</b><small>na coleção</small></button>
       <button type="button" class="atalho" id="atalho-shiny"><i>✨</i><b id="at-shiny">0</b><small>shinies</small></button>
       <button type="button" class="atalho" id="atalho-album"><i>🃏</i><b id="at-album">0</b><small>cartinhas</small></button>
@@ -497,7 +521,7 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
       <p id="trofeus-txt"></p>
       <div class="barra-col"><i id="trofeus-barra" style="width:0"></i></div>
       <div class="ultimos" id="ultimos-trofeus"></div>
-      <button type="button" class="mini" id="ver-trofeus">🏆 Ver os 100 troféus e as estatísticas</button>
+      <button type="button" class="mini" id="ver-trofeus">🏆 Ver os 1.125 troféus e as estatísticas</button>
     </div>
 
     <div class="cartao" id="cartao-colecao">
@@ -563,6 +587,11 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
       <h2>📊 Suas estatísticas</h2>
       <div class="numeros stats" id="stats"></div>
     </div>
+    <div class="filtros" id="cat-trofeus">
+      <button type="button" data-c="principal" aria-pressed="true">⭐ Principais (100)</button>
+      <button type="button" data-c="pokedex" aria-pressed="false">📖 Pokédex (1025)</button>
+      <button type="button" data-c="tudo" aria-pressed="false">🏆 Todos (1125)</button>
+    </div>
     <div class="filtros" id="filtros-trofeus">
       <button type="button" data-f="todos" aria-pressed="true">Todos</button>
       <button type="button" data-f="ganhos" aria-pressed="false">🏆 Ganhos</button>
@@ -608,6 +637,27 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
     <div class="cartao">
       <h2>🗒️ Os Pokémon dessa partida</h2>
       <ul class="rodadas" id="rodadas"></ul>
+    </div>
+  </section>
+
+  <!-- ===================== LOJA ===================== -->
+  <section id="tela-loja" hidden>
+    <div class="topo-trofeus"><button type="button" class="mini" id="voltar-loja">⬅️ Voltar</button><b id="loja-saldo">🪙 0</b></div>
+    <div class="cartao">
+      <h2>🛒 Loja do AcertoPoke</h2>
+      <p class="info-video">Você ganha 🪙 AcertoPoke acertando Pokémon (shiny e chefão valem mais), completando missões e pegando a recompensa diária. Os seus amigos veem o seu perfil enfeitado!</p>
+      <div class="abas-amigos" id="abas-loja">
+        <button type="button" data-l="fundos" aria-selected="true">🖼️ Fundos</button>
+        <button type="button" data-l="molduras" aria-selected="false">🔲 Molduras</button>
+        <button type="button" data-l="titulos" aria-selected="false">🏷️ Títulos</button>
+        <button type="button" data-l="fotos" aria-selected="false">📸 Fotos</button>
+      </div>
+      <div id="loja-fotos" hidden>
+        <input type="search" id="busca-foto" class="busca" placeholder="Pesquisar Pokémon pra foto" />
+        <label class="cfg-check"><input type="checkbox" id="foto-shiny" /> ✨ Versão shiny</label>
+        <p class="info-video" id="loja-fotos-info"></p>
+      </div>
+      <div class="loja-itens" id="loja-itens"></div>
     </div>
   </section>
 
@@ -713,7 +763,7 @@ dialog::backdrop{background:rgba(10,12,40,.6)}
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 8 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 9 — 28/09 · 🔄</button>
   </footer>
 </div>
 
@@ -830,7 +880,7 @@ $('ver-colecao').onclick = () => { $('colecao-caixa').hidden = !$('colecao-caixa
 const SHINY = 0.05, TEMPO_S = 60, VIDAS = 3, PERGUNTAS = 10, EFEITO_S = 10;
 const MODOS_VIDA = ['vidas', 'chefao', 'escada'];
 let jogo = null;
-function trocarTela(t){ document.querySelectorAll('.pontos-voando').forEach(d => d.remove()); $('recado-claude').hidden = t !== 'inicio'; ['inicio', 'jogo', 'fim', 'trofeus', 'album', 'amigos'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
+function trocarTela(t){ document.querySelectorAll('.pontos-voando').forEach(d => d.remove()); $('recado-claude').hidden = t !== 'inicio'; ['inicio', 'jogo', 'fim', 'trofeus', 'album', 'amigos', 'loja'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
 const limite = () => cfg.modo === 'dez' ? PERGUNTAS * (cfg.dois ? 2 : 1) : Infinity;
 const acabou = () => !!jogo && ((MODOS_VIDA.includes(cfg.modo) && jogo.vidas <= 0) || jogo.n >= limite());
 function novoJogo(){
@@ -1025,9 +1075,10 @@ function responder(certo, botao){
     if(jogo.brilhante) stats.brilhantes++;
     if(jogo.nivel === 'revanche') stats.revanche++;
     if(cfg.cartas && nomeTipo) ganharCarta(p.id, jogo.brilhante);
+    const moedasGanhas = (jogo.brilhante ? 2 : 1) * (jogo.chefe ? 2 : 1); ganharMoedas(moedasGanhas);
     progressoMissao(p, alvo, tipo);
     $('aviso').textContent = ['✅ Acertou!', '🎉 Isso aí!', '⭐ Mandou bem!', '🔥 Demais!'][Math.floor(Math.random() * 4)] + ((J ? J.seq : jogo.seq) > 1 ? ` ${J ? J.seq : jogo.seq} seguidos!` : '')
-      + (rapido ? ' ⚡ Rápido! +3' : '') + (jogo.chefe ? ' 👑 Chefão x2!' : '') + (jogo.brilhante && !cfg.shiny ? ' ✨ Era shiny! +10' : '') + (cfg.cartas && nomeTipo ? ' 🃏 +1 cartinha!' : '');
+      + (rapido ? ' ⚡ Rápido! +3' : '') + (jogo.chefe ? ' 👑 Chefão x2!' : '') + (jogo.brilhante && !cfg.shiny ? ' ✨ Era shiny! +10' : '') + (cfg.cartas && nomeTipo ? ' 🃏 +1 cartinha!' : '') + ` 🪙 +${moedasGanhas}`;
     $('aviso').className = 'aviso bom';
     voar('+' + ganhou); efeito(true); parceiroReage(true);
     if(cfg.modo === 'escada'){ const d = Math.min(3, Math.floor(jogo.acertos / 5)); if(d > jogo.degrau){ jogo.degrau = d; $('aviso').textContent += ` 🧗 Subiu pro degrau ${d + 1}!`; } }
@@ -1144,7 +1195,8 @@ function terminar(){
     li.dataset.id = r.id; li.append(img, `${r.certo ? '✅' : '❌'} ${r.brilha ? '✨' : ''}${j.jogadores ? (r.quem === 0 ? '🔵' : '🔴') : ''}${POKE[r.id - 1].nome}`); ul.appendChild(li);
   });
   const ft = $('fim-trofeus'); ft.hidden = !j.trofeus.length;
-  ft.innerHTML = j.trofeus.length ? `<b>🏆 Troféus que você ganhou agora (${j.trofeus.length}):</b><div class="ultimos">${j.trofeus.map(t => `<span>${t.e} ${t.n}</span>`).join('')}</div>` : '';
+  const trP = j.trofeus.filter(t => !t.silencioso), trK = j.trofeus.length - trP.length;
+  ft.innerHTML = j.trofeus.length ? `<b>🏆 Troféus que você ganhou agora (${j.trofeus.length}):</b><div class="ultimos">${trP.map(t => `<span>${t.e} ${t.n}</span>`).join('')}${trK ? `<span>📖 +${trK} da Pokédex</span>` : ''}</div>` : '';
   if(!j.rodadas.length) ul.innerHTML = '<li style="grid-column:1/-1">Nenhum Pokémon dessa vez.</li>';
   trocarTela('fim');
   mostrarColecao();
@@ -1336,7 +1388,7 @@ document.addEventListener('keydown', ev => {   // no computador: 1 2 3 4 escolhe
   if(/^[1-4]$/.test(ev.key) && cfg.resp === 'opcoes' && !jogo.respondeu){ const b = $('opcoes').children[+ev.key - 1]; if(b) b.click(); }
 });
 /* =========================================================================
-   🏆 100 troféus. Cada um tem uma meta, e v() diz quanto você já tem.
+   🏆 Troféus: 100 principais + 1 pra cada Pokémon. Cada um tem uma meta, e v() diz quanto você já tem.
    A maioria é contada pela coleção (os Pokémon que você já acertou).
    ========================================================================= */
 const LENDARIOS = new Set([144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,772,773,785,786,787,788,789,790,791,792,800,801,802,807,808,809,888,889,890,891,892,893,894,895,896,897,898,905,1001,1002,1003,1004,1007,1008,1014,1015,1016,1017,1024,1025]);
@@ -1394,6 +1446,11 @@ grupo([
   ['vid', '🎬', 'Youtuber', 'Grave um vídeo de partida', 1, () => stats.videos],
   ['rev', '🔁', 'Vingança!', 'Acerte 10 no nível 🔁 Revanche', 10, () => stats.revanche],
 ]);
+/* 📖 E mais 1.025: um troféu pra cada Pokémon (lendário vale diamante, inicial vale ouro) */
+TROFEUS.forEach(t => { t.cat = 'principal'; });
+POKE.forEach(p => TROFEUS.push({ id:'pk' + p.id, cat:'pokedex', silencioso:true, e:LENDARIOS.has(p.id) ? '🐉' : INICIAIS.has(p.id) ? '🌱' : '📖',
+  n:`#${p.id} ${p.nome}`, d:`Acerte o ${p.nome}`, meta:1, v:() => colecao.has(p.id) ? 1 : 0,
+  nivel:LENDARIOS.has(p.id) ? 4 : INICIAIS.has(p.id) ? 3 : p.ger >= 6 ? 2 : 1 }));
 const MEDALHA = ['', '🥉', '🥈', '🥇', '💎'];
 function marcarDia(){
   const d = new Date(), dia = d.toISOString().slice(0, 10);
@@ -1406,7 +1463,7 @@ let filaToast = [], toastOcupado = false;
 function checarTrofeus(){
   const novos = TROFEUS.filter(t => !ganhos[t.id] && t.v() >= t.meta);
   if(!novos.length) return;
-  novos.forEach(t => { ganhos[t.id] = Date.now(); filaToast.push(t); if(jogo) jogo.trofeus.push(t); else if(trofeusDaPartida) trofeusDaPartida.push(t); });
+  novos.forEach(t => { ganhos[t.id] = Date.now(); if(!t.silencioso) filaToast.push(t); if(jogo) jogo.trofeus.push(t); else if(trofeusDaPartida) trofeusDaPartida.push(t); });   // os da Pokédex não fazem aviso, senão seria aviso toda hora
   gravar('trofeus', ganhos);
   mostrarToast(); mostrarResumoTrofeus();
 }
@@ -1435,12 +1492,12 @@ function mostrarResumoTrofeus(){
   const n = Object.keys(ganhos).filter(id => TROFEUS.some(t => t.id === id)).length;
   $('trofeus-txt').innerHTML = `Você tem <b>${n}</b> de <b>${TROFEUS.length}</b> troféus!`;
   $('trofeus-barra').style.width = (n / TROFEUS.length * 100) + '%';
-  const ult = TROFEUS.filter(t => ganhos[t.id]).sort((a, b) => ganhos[b.id] - ganhos[a.id]).slice(0, 4);
+  const ult = TROFEUS.filter(t => ganhos[t.id] && !t.silencioso).sort((a, b) => ganhos[b.id] - ganhos[a.id]).slice(0, 4);
   $('ultimos-trofeus').innerHTML = ult.length ? ult.map(t => `<span>${t.e} ${t.n}</span>`).join('') : '<span>Jogue pra ganhar o primeiro! 🏆</span>';
   $('trofeus-cont').textContent = `🏆 ${n}/${TROFEUS.length}`;
   $('at-trofeus').textContent = `${n}/${TROFEUS.length}`;
 }
-let filtroTrofeu = 'todos';
+let filtroTrofeu = 'todos', catTrofeu = 'principal';
 function mostrarTrofeus(){
   mostrarResumoTrofeus();
   const pct = stats.acertos + stats.erros ? Math.round(stats.acertos / (stats.acertos + stats.erros) * 100) : 0;
@@ -1448,7 +1505,8 @@ function mostrarTrofeus(){
     [stats.melhorPontos, '⭐ melhor partida'], [stats.pontosTotal, '💰 pontos no total'], [stats.brilhantes, '✨ shinies'], [stats.dicas, '💡 dicas usadas']]
     .map(([v, r]) => `<div><b>${v}</b><small>${r}</small></div>`).join('');
   const lista = $('lista-trofeus'); lista.innerHTML = '';
-  TROFEUS.filter(t => filtroTrofeu === 'todos' || (filtroTrofeu === 'ganhos') === !!ganhos[t.id]).forEach(t => {
+  document.querySelectorAll('#cat-trofeus button').forEach(b => b.setAttribute('aria-pressed', b.dataset.c === catTrofeu));
+  TROFEUS.filter(t => (catTrofeu === 'tudo' || t.cat === catTrofeu) && (filtroTrofeu === 'todos' || (filtroTrofeu === 'ganhos') === !!ganhos[t.id])).forEach(t => {
     const v = Math.min(t.v(), t.meta), d = document.createElement('div');
     d.className = 'trofeu' + (ganhos[t.id] ? ' ganho' : '');
     d.innerHTML = `<span class="ic"></span><span class="md"></span><b></b><small></small><div class="pb"><i style="width:${v / t.meta * 100}%"></i></div><span class="qt"></span>`;
@@ -1459,6 +1517,7 @@ function mostrarTrofeus(){
   });
   if(!lista.children.length) lista.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:14px">Nenhum aqui ainda!</p>';
 }
+$('cat-trofeus').onclick = ev => { const b = ev.target.closest('[data-c]'); if(!b) return; catTrofeu = b.dataset.c; mostrarTrofeus(); };
 $('ver-trofeus').onclick = () => { trocarTela('trofeus'); mostrarTrofeus(); };
 $('voltar-trofeus').onclick = () => { trocarTela('inicio'); marcar(); };
 $('filtros-trofeus').onclick = ev => { const b = ev.target.closest('[data-f]'); if(!b) return; filtroTrofeu = b.dataset.f; [...$('filtros-trofeus').children].forEach(x => x.setAttribute('aria-pressed', x === b)); mostrarTrofeus(); };
@@ -1641,7 +1700,7 @@ const xpPara = n => 50 * n * (n - 1);   // nível 2 = 100 XP, 3 = 300, 4 = 600�
 function nivelDe(xp){ let n = 1; while(xp >= xpPara(n + 1)) n++; return n; }
 function mostrarXP(){
   const xp = xpTotal(), n = nivelDe(xp), a = xpPara(n), b = xpPara(n + 1);
-  $('xp-txt').textContent = `🎖️ ${perfil.apelido ? perfil.apelido + (perfil.adm ? ' 👑' : '') + ' · ' : ''}Treinador nível ${n} · ${xp - a}/${b - a} XP`;
+  $('xp-txt').textContent = `🎖️ ${perfil.apelido ? perfil.apelido + (perfil.adm ? ' 👑' : '') + ' · ' : ''}${perfil.titulo && perfil.titulo !== 'treinador' && typeof tituloDe === 'function' ? tituloDe(perfil.titulo) + ' · ' : ''}nível ${n} · ${xp - a}/${b - a} XP`;
   $('xp-barra').style.width = ((xp - a) / (b - a) * 100) + '%';
 }
 function darXP(qtd, motivo){
@@ -1670,7 +1729,8 @@ function recompensaDiaria(){
   const pos = ((dia - 1) % 7) + 1;
   $('dias7').innerHTML = [1, 2, 3, 4, 5, 6, 7].map(d => `<div class="${d < pos ? 'feito' : d === pos ? 'hoje' : ''}">Dia ${d}<b>${d < pos ? '✅' : d === 7 ? '🎁' : '⭐'}</b>+${d * 10}</div>`).join('');
   $('diario-pegar').textContent = `Pegar +${premio} XP!`;
-  $('diario-pegar').onclick = () => { $('diario').close(); darXP(premio); confete(); plim(); };
+  $('diario-pegar').textContent = `Pegar +${premio} XP e 🪙 ${Math.min(7, dia) * 2}!`;
+  $('diario-pegar').onclick = () => { $('diario').close(); darXP(premio); ganharMoedas(Math.min(7, dia) * 2); confete(); plim(); };
   setTimeout(() => { try{ $('diario').showModal(); }catch(e){ $('diario').setAttribute('open', ''); } }, 700);
 }
 
@@ -1706,8 +1766,8 @@ function avancarMissao(k, valor, maximo){
     missoes.prog.v[i] = maximo ? Math.max(missoes.prog.v[i], valor) : missoes.prog.v[i] + valor;
     if(missoes.prog.v[i] >= m.meta){
       missoes.prog.feita[i] = true;
-      filaToast.push({ e:'🎯', n:`Missão completa! +50 XP`, nivel:0 }); mostrarToast();
-      darXP(50);
+      filaToast.push({ e:'🎯', n:`Missão completa! +50 XP e 🪙 10`, nivel:0 }); mostrarToast();
+      darXP(50); ganharMoedas(10);
     }
   });
   gravar('missoes', missoes.prog);
@@ -1757,30 +1817,36 @@ $('foto').onclick = async () => {
 
 /* ---------- 👤 perfil de treinador ---------- */
 let perfil = Object.assign({ apelido:'', foto:25 }, ler('perfil', {}));
-function mostrarPerfilBotao(){ const b = $('perfil-bt'); b.innerHTML = `<img alt="" src="${mini(perfil.foto)}" />`; b.title = 'Meu perfil'; }
+function mostrarPerfilBotao(){ const b = $('perfil-bt'); b.innerHTML = `<img alt="" src="${perfil.fotoShiny ? miniShiny(perfil.foto) : mini(perfil.foto)}" />`; b.style.boxShadow = (MOLDURAS[perfil.moldura] || MOLDURAS.nenhuma).css.split(',').slice(0, 2).join(',') || ''; b.title = 'Meu perfil'; }
+function cartaoPerfil(o){   // o cartão bonito do perfil (o seu ou o de um amigo)
+  return `<div class="cartao-perfil" style="background:${(FUNDOS[o.fundo] || FUNDOS.padrao).css}">
+    ${avatar(o.foto, o.fotoShiny, o.moldura, 96)}
+    <div class="cp-txt"><h2></h2><span class="cp-titulo">🏷️ ${esc(tituloDe(o.titulo))}</span><b>🎖️ Nível ${o.nivel}</b><small>${esc(o.sub)}</small></div></div>`;
+}
 function abrirPerfil(){
-  const n = Object.keys(ganhos).filter(id => TROFEUS.some(t => t.id === id)).length, xp = xpTotal(), nv = nivelDe(xp);
+  const n = nTrofeus(), xp = xpTotal(), nv = nivelDe(xp);
   const fav = Object.entries(cartas).sort((a, b) => b[1].n - a[1].n)[0];
-  $('perfil-corpo').innerHTML = `
-    <div class="perfil-topo"><img src="${arte(perfil.foto)}" alt="" /><div><h2>${perfil.apelido ? '' : 'Treinador'}</h2><b>🎖️ Nível ${nv}</b><small>${xp} XP no total</small></div></div>
+  $('perfil-corpo').innerHTML = cartaoPerfil({ fundo:perfil.fundo, foto:perfil.foto, fotoShiny:perfil.fotoShiny, moldura:perfil.moldura, titulo:perfil.titulo, nivel:nv, sub:`${xp} XP · 🪙 ${moedas()} AcertoPoke` }) + `
     <label class="perfil-campo">Apelido <input type="text" id="pf-apelido" maxlength="16" placeholder="Seu apelido de treinador" /></label>
     <p class="info-video">Use um apelido, não o seu nome completo. 😉</p>
-    <label class="perfil-campo">Foto (um Pokémon) <select id="pf-foto"></select></label>
+    <label class="perfil-campo">Foto (os Pokémon que você tem) <select id="pf-foto"></select></label>
+    <button type="button" class="mini adm-bt" id="pf-loja">🛒 Mais fotos, fundos, molduras e títulos na loja</button>
     <div class="numeros">
       <div><b>${n}</b><small>🏆 troféus</small></div><div><b>${colecao.size}</b><small>📚 coleção</small></div><div><b>${stats.brilhantes}</b><small>✨ shinies</small></div>
       <div><b>${stats.partidas}</b><small>🎮 partidas</small></div><div><b>${stats.melhorSeq}</b><small>🔥 melhor sequência</small></div><div><b>${stats.diasSeguidos || 0}</b><small>📅 dias seguidos</small></div>
     </div>
     ${fav ? `<p style="text-align:center;margin-top:10px;font-weight:700">🃏 Cartinha que você mais tem: ${POKE[fav[0] - 1].nome} (x${fav[1].n})</p>` : ''}
-    <button type="button" class="jogar" id="pf-salvar" style="font-size:1.3rem">✅ Salvar perfil</button>
-    <button type="button" class="mini adm-bt" id="pf-adm">👑 Jojo adm</button>`;
+    <button type="button" class="jogar" id="pf-salvar" style="font-size:1.3rem">✅ Salvar perfil</button>`;
   $('pf-apelido').value = perfil.apelido;
-  $('pf-adm').onclick = () => { $('perfil').close(); pedirSenhaAdm(); };
   $('perfil-corpo').querySelector('h2').textContent = (perfil.apelido || 'Treinador') + (perfil.adm ? ' 👑' : '');
+  $('pf-loja').onclick = () => { $('perfil').close(); trocarTela('loja'); abaLoja = 'fotos'; mostrarLoja(); };
   const sel = $('pf-foto');
-  FAMOSOS.slice().sort((a, b) => POKE[a - 1].nome.localeCompare(POKE[b - 1].nome)).forEach(id => { const o = document.createElement('option'); o.value = id; o.textContent = POKE[id - 1].nome; sel.appendChild(o); });
-  sel.value = perfil.foto;
-  sel.onchange = () => { $('perfil-corpo').querySelector('.perfil-topo img').src = arte(+sel.value); };
-  $('pf-salvar').onclick = () => { perfil.apelido = $('pf-apelido').value.trim().slice(0, 16); perfil.foto = +sel.value; gravar('perfil', perfil); mostrarPerfilBotao(); mostrarXP(); $('perfil').close(); };
+  const opcoes = [...new Set([...FAMOSOS, ...perfil.tem.fotos])].map(id => [id, false]).concat(perfil.tem.fotosShiny.map(id => [id, true]));
+  opcoes.sort((a, b) => POKE[a[0] - 1].nome.localeCompare(POKE[b[0] - 1].nome)).forEach(([id, sh]) => { const o = document.createElement('option'); o.value = id + (sh ? 's' : ''); o.textContent = POKE[id - 1].nome + (sh ? ' ✨' : ''); sel.appendChild(o); });
+  sel.value = perfil.foto + (perfil.fotoShiny ? 's' : '');
+  const lerSel = () => [parseInt(sel.value, 10), sel.value.endsWith('s')];
+  sel.onchange = () => { const [id, sh] = lerSel(); $('perfil-corpo').querySelector('.avatar img').src = sh ? miniShiny(id) : mini(id); };
+  $('pf-salvar').onclick = () => { const [id, sh] = lerSel(); perfil.apelido = $('pf-apelido').value.trim().slice(0, 16); perfil.foto = id; perfil.fotoShiny = sh; gravar('perfil', perfil); mostrarPerfilBotao(); mostrarXP(); $('perfil').close(); };
   try{ $('perfil').showModal(); }catch(e){ $('perfil').setAttribute('open', ''); }
 }
 $('perfil-bt').onclick = abrirPerfil;
@@ -1855,6 +1921,7 @@ $('historico').addEventListener('click', ev => { const i = ev.target.closest('im
 /* ---------- 🪪 meu código de amigo ---------- */
 function meuCodigo(){
   return 'JOJO1.' + paraB64({ i:perfil.id, a:perfil.apelido || 'Treinador', f:perfil.foto, adm:!!perfil.adm, n:nivelDe(xpTotal()), x:xpTotal(), t:nTrofeus(), s:stats.brilhantes,
+    fs:!!perfil.fotoShiny, bg:perfil.fundo, mo:perfil.moldura, ti:perfil.titulo,
     c:Object.keys(cartas).length, m:stats.melhorPontos, p:stats.partidas, col:bitsDe([...colecao]),
     h:historico.slice(0, 5).map(h => [h.q, h.m, h.p, h.a, h.t, h.r.filter(r => r[1]).map(r => r[0]).slice(0, 12)]) });
 }
@@ -1870,7 +1937,8 @@ $('mandar-codigo').onclick = () => copiarOuMandar(meuCodigo(), true, $('codigo-m
 function limpaAmigo(o){
   if(!o || typeof o !== 'object' || typeof o.i !== 'string') return null;
   const num = (v, max) => Math.max(0, Math.min(max, Math.floor(+v) || 0));
-  return { i:o.i.slice(0, 12), a:String(o.a || 'Treinador').slice(0, 16), f:num(o.f, 1025) || 25, adm:!!o.adm, n:num(o.n, 999), x:num(o.x, 1e9), t:num(o.t, 100), s:num(o.s, 1e6),
+  return { i:o.i.slice(0, 12), a:String(o.a || 'Treinador').slice(0, 16), f:num(o.f, 1025) || 25, adm:!!o.adm,
+    fs:!!o.fs, bg:FUNDOS[o.bg] ? o.bg : 'padrao', mo:MOLDURAS[o.mo] ? o.mo : 'nenhuma', ti:TITULOS[o.ti] && (o.ti !== 'adm' || o.adm) ? o.ti : 'treinador', n:num(o.n, 999), x:num(o.x, 1e9), t:num(o.t, 2000), s:num(o.s, 1e6),
     c:num(o.c, 1025), m:num(o.m, 1e6), p:num(o.p, 1e6), col:typeof o.col === 'string' ? o.col.slice(0, 200) : '',
     h:Array.isArray(o.h) ? o.h.slice(0, 5).map(h => [num(h[0], 9e15), String(h[1]).slice(0, 10), num(h[2], 1e6), num(h[3], 1e4), num(h[4], 1e4), (Array.isArray(h[5]) ? h[5] : []).slice(0, 12).map(x => num(x, 1025)).filter(Boolean)]) : [],
     quando:Date.now() };
@@ -1900,7 +1968,7 @@ function mostrarAmigos(){
   const achados = amigos.filter(a => !q || semAcento(a.a).includes(q));
   lista.innerHTML = !amigos.length ? '<p class="info-video">Nenhum amigo ainda. Peça o código de alguém que você conhece e cole ali em cima! 👆</p>'
     : !achados.length ? '<p class="info-video">Ninguém com esse apelido.</p>'
-    : achados.map(a => `<button type="button" class="amigo" data-i="${esc(a.i)}"><img alt="" src="${mini(a.f)}" /><span><b>${esc(a.a)}${coroa(a.adm)}</b><small>🎖️ nível ${a.n} · 📚 ${idsDe(a.col).length} · 🏆 ${a.t}</small></span><i>›</i></button>`).join('');
+    : achados.map(a => `<button type="button" class="amigo" data-i="${esc(a.i)}">${avatar(a.f, a.fs, a.mo, 48)}<span><b>${esc(a.a)}${coroa(a.adm)}</b><small>🏷️ ${esc(tituloDe(a.ti))} · 🎖️ nível ${a.n} · 📚 ${idsDe(a.col).length}</small></span><i>›</i></button>`).join('');
 }
 $('busca-amigos').addEventListener('input', mostrarAmigos);
 $('lista-amigos').addEventListener('click', ev => { const b = ev.target.closest('[data-i]'); if(b) abrirAmigo(b.dataset.i); });
@@ -1908,7 +1976,7 @@ function abrirAmigo(i){
   const a = amigos.find(x => x.i === i); if(!a) return;
   const col = idsDe(a.col), meus = colecao, iguais = col.filter(id => meus.has(id)).length;
   $('amigo-corpo').innerHTML = `
-    <div class="perfil-topo"><img src="${arte(a.f)}" alt="" /><div><h2>${esc(a.a)}${coroa(a.adm)}</h2><b>🎖️ Nível ${a.n}</b><small>${a.x} XP · atualizado em ${new Date(a.quando).toLocaleDateString('pt-BR')}</small></div></div>
+    ${cartaoPerfil({ fundo:a.bg, foto:a.f, fotoShiny:a.fs, moldura:a.mo, titulo:a.ti, nivel:a.n, sub:`${a.x} XP · atualizado em ${new Date(a.quando).toLocaleDateString('pt-BR')}` })}
     <div class="numeros"><div><b>${a.t}</b><small>🏆 troféus</small></div><div><b>${col.length}</b><small>📚 coleção</small></div><div><b>${a.s}</b><small>✨ shinies</small></div>
       <div><b>${a.c}</b><small>🃏 cartinhas</small></div><div><b>${a.m}</b><small>⭐ melhor partida</small></div><div><b>${a.p}</b><small>🎮 partidas</small></div></div>
     <p class="comparar">🤝 Vocês dois têm <b>${iguais}</b> iguais · ${esc(a.a)} tem <b>${col.length - iguais}</b> que você não tem · você tem <b>${meus.size - iguais}</b> que ${esc(a.a)} não tem</p>
@@ -1917,6 +1985,7 @@ function abrirAmigo(i){
     <h3 class="sub-h">📖 Pokédex de ${esc(a.a)} (${col.length})</h3>
     <ul class="colecao" id="colecao-amigo">${col.map(id => `<li data-id="${id}"><img loading="lazy" alt="" src="${mini(id)}" />#${id} ${esc(POKE[id - 1].nome)}${meus.has(id) ? '' : ' 🆕'}</li>`).join('') || '<li style="grid-column:1/-1">Vazia ainda.</li>'}</ul>
     <div class="botoes-fim"><button type="button" class="mini" id="desafiar-amigo">⚔️ Desafiar</button><button type="button" class="mini" id="tirar-amigo">🗑️ Tirar da lista</button></div>`;
+  $('amigo-corpo').querySelector('.cartao-perfil h2').textContent = a.a + coroa(a.adm);
   $('amigo-corpo').querySelectorAll('[data-id]').forEach(el => { el.onclick = () => abrirPokedex(+el.dataset.id); });
   $('tirar-amigo').onclick = () => { if(!confirm(`Tirar ${a.a} da sua lista?`)) return; amigos = amigos.filter(x => x.i !== a.i); gravar('amigos', amigos); $('amigo-dlg').close(); mostrarAmigos(); };
   $('desafiar-amigo').onclick = () => { $('amigo-dlg').close(); irAbaAmigos('desafio'); };
@@ -2015,23 +2084,39 @@ $('voltar-amigos').onclick = () => { trocarTela('inicio'); marcar(); novaSombra(
 
 /* ---------- 👑 Jojo adm (painel só deste aparelho, com senha) ---------- */
 let admShiny = false;
+/* O ADM é só do Jojo: a senha é fixa e aqui fica só o "resumo" (hash) dela, não a senha.
+   Pra abrir: tocar 5 vezes rapidinho na pokébola do título. */
+const ADM_HASH = '2e17940fa64533fb75eda90c419062373fc2a0d07c61bf81066c9b2fcc98e046';
+const admLiberado = () => ler('adm-liberado', '') === ADM_HASH;
+async function hashSenha(s){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('jojo-adm:' + s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+let errosAdm = 0, travaAdm = 0;
 function pedirSenhaAdm(){
-  const tem = !!ler('adm-senha', '');
+  if(admLiberado()){ painelAdm(); if(!$('adm-dlg').open){ try{ $('adm-dlg').showModal(); }catch(e){ $('adm-dlg').setAttribute('open', ''); } } return; }
   $('adm-corpo').innerHTML = `<h2>👑 Jojo adm</h2>
-    <p class="info-video">${tem ? 'Digite a sua senha de ADM.' : 'Crie uma senha de 4 números. Só quem souber a senha entra aqui!'}</p>
-    <input type="password" inputmode="numeric" maxlength="4" id="adm-senha" class="campo-senha" autocomplete="off" />
-    ${tem ? '' : '<input type="password" inputmode="numeric" maxlength="4" id="adm-senha2" class="campo-senha" placeholder="Repita a senha" autocomplete="off" />'}
-    <button type="button" class="jogar" id="adm-entrar" style="font-size:1.2rem">${tem ? '🔓 Entrar' : '✅ Criar senha'}</button><p class="aviso" id="adm-msg"></p>`;
-  $('adm-entrar').onclick = () => {
-    const s = $('adm-senha').value;
-    if(!/^\d{4}$/.test(s)){ $('adm-msg').textContent = 'A senha tem que ter 4 números.'; return; }
-    if(!tem){ if(s !== $('adm-senha2').value){ $('adm-msg').textContent = 'As duas senhas estão diferentes.'; return; } gravar('adm-senha', s); }
-    else if(s !== ler('adm-senha', '')){ $('adm-msg').textContent = '❌ Senha errada.'; return; }
-    painelAdm();
+    <p class="info-video">Área secreta. Digite a senha.</p>
+    <input type="password" maxlength="20" id="adm-senha" class="campo-senha" autocomplete="off" />
+    <button type="button" class="jogar" id="adm-entrar" style="font-size:1.2rem">🔓 Entrar</button><p class="aviso" id="adm-msg"></p>`;
+  const entrar = async () => {
+    if(Date.now() < travaAdm){ $('adm-msg').textContent = '⏳ Errou muitas vezes. Espere um minuto.'; return; }
+    let ok = false;
+    try{ ok = await hashSenha($('adm-senha').value) === ADM_HASH; }catch(e){}
+    if(!ok){ if(++errosAdm >= 5){ travaAdm = Date.now() + 60000; errosAdm = 0; } $('adm-msg').textContent = '❌ Senha errada.'; $('adm-senha').value = ''; return; }
+    gravar('adm-liberado', ADM_HASH); painelAdm();
   };
+  $('adm-entrar').onclick = entrar;
+  $('adm-senha').addEventListener('keydown', ev => { if(ev.key === 'Enter') entrar(); });
   if(!$('adm-dlg').open){ try{ $('adm-dlg').showModal(); }catch(e){ $('adm-dlg').setAttribute('open', ''); } }
   setTimeout(() => $('adm-senha').focus(), 50);
 }
+/* entrada secreta: 5 toques rápidos na pokébola do título */
+let toquesLogo = [];
+document.querySelector('.logo img').addEventListener('click', () => {
+  const agora = Date.now(); toquesLogo = toquesLogo.filter(t => agora - t < 3000).concat(agora);
+  if(toquesLogo.length >= 5){ toquesLogo = []; pedirSenhaAdm(); }
+});
+/* quem virou "ADM" antes (na versão que deixava todo mundo) perde a coroa */
+if(!admLiberado() && (perfil.adm || perfil.titulo === 'adm')){ perfil.adm = false; if(perfil.titulo === 'adm') perfil.titulo = 'treinador'; gravar('perfil', perfil); }
+try{ localStorage.removeItem('quemepoke:adm-senha'); }catch(e){}
 function painelAdm(){
   const n = nTrofeus();
   $('adm-corpo').innerHTML = `<h2>👑 Jojo adm</h2>
@@ -2044,12 +2129,13 @@ function painelAdm(){
     <div class="adm-grade">
       <button type="button" class="mini" id="adm-xp">⭐ +100 XP</button>
       <button type="button" class="mini" id="adm-cartas">🃏 +5 cartinhas</button>
+      <button type="button" class="mini" id="adm-moedas">🪙 +50 AcertoPoke</button>
       <button type="button" class="mini" id="adm-shiny">✨ Próximo vem shiny</button>
       <button type="button" class="mini" id="adm-missoes">🎯 Missões novas</button>
       <button type="button" class="mini" id="adm-backup">💾 Copiar backup</button>
       <button type="button" class="mini" id="adm-restaurar">📥 Restaurar backup</button>
       <button type="button" class="mini" id="adm-amigos">👥 Apagar amigos</button>
-      <button type="button" class="mini" id="adm-senha-nova">🔑 Trocar senha</button>
+      <button type="button" class="mini" id="adm-sair">🔒 Sair do ADM</button>
       <button type="button" class="mini perigo" id="adm-zerar">🗑️ Apagar tudo</button>
     </div>
     <textarea id="adm-texto" class="adm-texto" placeholder="Cole aqui um backup (BACKUP1…) e aperte 📥 Restaurar" hidden></textarea>
@@ -2058,11 +2144,12 @@ function painelAdm(){
   $('adm-coroa').onclick = () => { perfil.adm = !perfil.adm; if(perfil.adm && !perfil.apelido) perfil.apelido = 'Jojo adm'; gravar('perfil', perfil); mostrarXP(); painelAdm(); };
   $('adm-nome').onclick = () => { perfil.apelido = 'Jojo adm'; perfil.adm = true; gravar('perfil', perfil); mostrarXP(); painelAdm(); msg('👑 Agora você é o Jojo adm!'); };
   $('adm-xp').onclick = () => { darXP(100); msg('⭐ +100 XP!'); };
+  $('adm-moedas').onclick = () => { ganharMoedas(50); msg('🪙 +50 AcertoPoke!'); };
   $('adm-cartas').onclick = () => { for(let k = 0; k < 5; k++) ganharCarta(1 + Math.floor(Math.random() * 1025), Math.random() < .2); msg('🃏 Ganhou 5 cartinhas surpresa!'); };
   $('adm-shiny').onclick = () => { admShiny = true; msg('✨ O próximo Pokémon do jogo vai ser shiny!'); };
   $('adm-missoes').onclick = () => { const g = ler('missoes-giro', { dia:'', n:0 }); const hoje = diaLocal(new Date()); gravar('missoes-giro', { dia:hoje, n:(g.dia === hoje ? g.n : 0) + 1 }); gravar('missoes', null); missoes = missoesDoDia(); mostrarMissoes(); msg('🎯 Sorteei missões novas pra hoje!'); };
   $('adm-backup').onclick = () => {
-    const tudo = {}; for(let k = 0; k < localStorage.length; k++){ const c = localStorage.key(k); if(c.startsWith('quemepoke:') && c !== 'quemepoke:adm-senha') tudo[c] = localStorage.getItem(c); }
+    const tudo = {}; for(let k = 0; k < localStorage.length; k++){ const c = localStorage.key(k); if(c.startsWith('quemepoke:') && c !== 'quemepoke:adm-liberado') tudo[c] = localStorage.getItem(c); }
     copiarOuMandar('BACKUP1.' + paraB64(tudo), false, $('adm-msg'));
   };
   $('adm-restaurar').onclick = () => {
@@ -2071,21 +2158,118 @@ function painelAdm(){
       if(!t.value.trim().startsWith('BACKUP1.')) throw 0;
       const tudo = deB64(t.value.trim().slice(8));
       if(!confirm('Trocar TODO o progresso por esse backup?')) return;
-      Object.entries(tudo).forEach(([k, v]) => { if(k.startsWith('quemepoke:') && k !== 'quemepoke:adm-senha' && typeof v === 'string') localStorage.setItem(k, v); });
+      Object.entries(tudo).forEach(([k, v]) => { if(k.startsWith('quemepoke:') && k !== 'quemepoke:adm-liberado' && typeof v === 'string') localStorage.setItem(k, v); });
       location.reload();
     }catch(e){ msg('😕 Esse backup está quebrado.'); }
   };
   $('adm-amigos').onclick = () => { if(!confirm('Apagar todos os amigos da lista?')) return; amigos = []; gravar('amigos', amigos); msg('👥 Lista de amigos apagada.'); };
-  $('adm-senha-nova').onclick = () => { try{ localStorage.removeItem('quemepoke:adm-senha'); }catch(e){} pedirSenhaAdm(); };
+  $('adm-sair').onclick = () => { try{ localStorage.removeItem('quemepoke:adm-liberado'); }catch(e){} perfil.adm = false; if(perfil.titulo === 'adm') perfil.titulo = 'treinador'; gravar('perfil', perfil); mostrarXP(); $('adm-dlg').close(); };
   $('adm-zerar').onclick = () => {
     if(!confirm('Apagar TODO o progresso? (troféus, coleção, cartinhas, amigos, tudo)') || !confirm('Tem certeza MESMO? Não dá pra desfazer!')) return;
-    Object.keys(localStorage).filter(k => k.startsWith('quemepoke:') && k !== 'quemepoke:adm-senha').forEach(k => localStorage.removeItem(k));
+    Object.keys(localStorage).filter(k => k.startsWith('quemepoke:') && k !== 'quemepoke:adm-liberado').forEach(k => localStorage.removeItem(k));
     location.reload();
   };
 }
 $('fechar-adm').onclick = () => $('adm-dlg').close();
 
-mostrarMissoes(); mostrarXP(); mostrarPerfilBotao(); recompensaDiaria();
+/* =========================================================================
+   🪙 AcertoPoke: a moeda do jogo. Ganha acertando, gasta na 🛒 loja com
+   fundos, molduras, títulos e fotos de perfil (figuras do PokeAPI).
+   ========================================================================= */
+const FUNDOS = {
+  padrao:   { n:'Padrão', p:0, css:'linear-gradient(160deg,#23276a,#4a52c9)' },
+  ceu:      { n:'Céu azul', p:20, css:'linear-gradient(170deg,#9be3ff,#2f7fe0)' },
+  floresta: { n:'Floresta', p:30, css:'linear-gradient(170deg,#7ed68a,#1f6b3a)' },
+  oceano:   { n:'Oceano', p:30, css:'linear-gradient(180deg,#48c6ef,#0f3d73)' },
+  por_sol:  { n:'Pôr do sol', p:40, css:'linear-gradient(170deg,#ffd166,#ef476f 60%,#5b2a86)' },
+  fogo:     { n:'Fogo', p:50, css:'radial-gradient(circle at 50% 110%,#ffd23f,#ee4b2b 55%,#5a0e0e)' },
+  doce:     { n:'Algodão doce', p:50, css:'linear-gradient(135deg,#ffd6f0,#c7a4ff,#9fe7ff)' },
+  noite:    { n:'Noite estrelada', p:70, css:'radial-gradient(#fff 1px,transparent 1.6px) 0 0/22px 22px,radial-gradient(#fff 1px,transparent 1.6px) 11px 11px/22px 22px,linear-gradient(180deg,#0b1030,#27206b)' },
+  pokebola: { n:'Pokébola', p:90, css:'linear-gradient(180deg,#e3350d 0 46%,#1b1d3a 46% 54%,#f4f4f4 54%)' },
+  arco:     { n:'Arco-íris', p:100, css:'linear-gradient(135deg,#ff595e,#ffca3a,#8ac926,#1982c4,#6a4c93)' },
+  galaxia:  { n:'Galáxia', p:150, css:'radial-gradient(circle at 30% 30%,#ff7ad9 0,transparent 35%),radial-gradient(circle at 70% 60%,#6be5ff 0,transparent 35%),radial-gradient(#fff 1px,transparent 1.5px) 0 0/26px 26px,#140b33' },
+};
+const MOLDURAS = {
+  nenhuma:  { n:'Sem moldura', p:0, css:'' },
+  prata:    { n:'Prata', p:20, css:'0 0 0 5px #c9ced6,0 0 0 8px #8a93a0' },
+  ouro:     { n:'Ouro', p:40, css:'0 0 0 5px #ffcb05,0 0 0 8px #b88a00,0 0 18px rgba(255,203,5,.7)' },
+  fogo:     { n:'Fogo', p:60, css:'0 0 0 5px #ff9f1c,0 0 0 9px #e3350d,0 0 22px #ff5a1f' },
+  gelo:     { n:'Gelo', p:60, css:'0 0 0 5px #bdf0ff,0 0 0 9px #3fb6e8,0 0 22px #9be3ff' },
+  raio:     { n:'Raio', p:80, css:'0 0 0 5px #fff36b,0 0 0 9px #1b1d3a,0 0 24px #ffe600' },
+  arco:     { n:'Arco-íris', p:120, css:'0 0 0 4px #ff595e,0 0 0 8px #ffca3a,0 0 0 12px #8ac926,0 0 0 16px #1982c4' },
+  diamante: { n:'Diamante', p:200, css:'0 0 0 5px #e8fbff,0 0 0 9px #7fd8ff,0 0 0 12px #fff,0 0 30px #7fd8ff' },
+};
+const TITULOS = {
+  treinador: { n:'Treinador', p:0 },
+  cacador:   { n:'Caçador de Sombras', p:15 },
+  detetive:  { n:'Detetive Pokémon', p:25 },
+  colecionador:{ n:'Colecionador', p:35 },
+  shiny:     { n:'Rei do Shiny', p:50 },
+  mestre:    { n:'Mestre Pokémon', p:80 },
+  lenda:     { n:'Lenda Viva', p:150 },
+  adm:       { n:'Jojo adm', p:0, soAdm:true },
+};
+const miniShiny = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${id}.png`;
+const precoFoto = (id, sh) => (FAMOSOS.includes(id) ? 0 : LENDARIOS.has(id) ? 50 : 10) + (sh ? 60 : 0);
+perfil = Object.assign({ fotoShiny:false, fundo:'padrao', moldura:'nenhuma', titulo:'treinador', tem:{} }, perfil);
+perfil.tem = Object.assign({ fundos:['padrao'], molduras:['nenhuma'], titulos:['treinador'], fotos:[], fotosShiny:[] }, perfil.tem);
+if(!FUNDOS[perfil.fundo]) perfil.fundo = 'padrao'; if(!MOLDURAS[perfil.moldura]) perfil.moldura = 'nenhuma'; if(!TITULOS[perfil.titulo]) perfil.titulo = 'treinador';
+const temFoto = (id, sh) => sh ? perfil.tem.fotosShiny.includes(id) : (FAMOSOS.includes(id) || perfil.tem.fotos.includes(id));
+function moedas(){ return stats.moedas || 0; }
+function ganharMoedas(n){ stats.moedas = moedas() + n; gravar('stats', stats); mostrarMoedas(); }
+function mostrarMoedas(){ $('moedas-txt').textContent = `🪙 ${moedas()} AcertoPoke`; const s = $('loja-saldo'); if(s) s.textContent = `🪙 ${moedas()}`; }
+function tituloDe(k){ return (TITULOS[k] || TITULOS.treinador).n; }
+function avatar(foto, sh, moldura, tam){
+  return `<span class="avatar" style="width:${tam}px;height:${tam}px;box-shadow:${(MOLDURAS[moldura] || MOLDURAS.nenhuma).css || 'none'}"><img alt="" src="${sh ? miniShiny(foto) : mini(foto)}" /></span>`;
+}
+
+/* ---------- 🛒 loja ---------- */
+let abaLoja = 'fundos';
+function mostrarLoja(){
+  mostrarMoedas();
+  document.querySelectorAll('#abas-loja button').forEach(b => b.setAttribute('aria-selected', b.dataset.l === abaLoja));
+  $('loja-fotos').hidden = abaLoja !== 'fotos';
+  const g = $('loja-itens'); g.innerHTML = '';
+  const item = (prev, nome, preco, tem, usando, comprar, usar) => {
+    const d = document.createElement('div'); d.className = 'item-loja' + (usando ? ' usando' : '');
+    d.innerHTML = `${prev}<b></b><button type="button" class="mini"></button>`;
+    d.querySelector('b').textContent = nome;
+    const b = d.querySelector('button');
+    if(usando){ b.textContent = '✅ Usando'; b.disabled = true; }
+    else if(tem){ b.textContent = 'Usar'; b.onclick = usar; }
+    else{ b.textContent = `🪙 ${preco}`; b.classList.add('preco'); b.disabled = moedas() < preco; b.title = moedas() < preco ? 'Faltam moedas! Acerte mais Pokémon.' : 'Comprar'; b.onclick = comprar; }
+    g.appendChild(d);
+  };
+  const compra = (lista, k, preco, depois) => () => {
+    if(moedas() < preco) return;
+    if(!confirm(`Comprar por ${preco} AcertoPoke?`)) return;
+    stats.moedas = moedas() - preco; gravar('stats', stats);
+    lista.push(k); depois(); gravar('perfil', perfil); plim(); mostrarLoja(); mostrarPerfilBotao(); mostrarXP();
+  };
+  if(abaLoja === 'fundos') Object.entries(FUNDOS).forEach(([k, f]) => item(`<span class="prev-fundo" style="background:${f.css}"></span>`, f.n, f.p, perfil.tem.fundos.includes(k), perfil.fundo === k,
+    compra(perfil.tem.fundos, k, f.p, () => { perfil.fundo = k; }), () => { perfil.fundo = k; gravar('perfil', perfil); mostrarLoja(); }));
+  if(abaLoja === 'molduras') Object.entries(MOLDURAS).forEach(([k, m]) => item(`<span class="prev-moldura">${avatar(perfil.foto, perfil.fotoShiny, k, 58)}</span>`, m.n, m.p, perfil.tem.molduras.includes(k), perfil.moldura === k,
+    compra(perfil.tem.molduras, k, m.p, () => { perfil.moldura = k; }), () => { perfil.moldura = k; gravar('perfil', perfil); mostrarPerfilBotao(); mostrarLoja(); }));
+  if(abaLoja === 'titulos') Object.entries(TITULOS).filter(([, t]) => !t.soAdm || perfil.adm).forEach(([k, t]) => item(`<span class="prev-titulo">🏷️</span>`, t.n, t.p, perfil.tem.titulos.includes(k) || (t.soAdm && perfil.adm), perfil.titulo === k,
+    compra(perfil.tem.titulos, k, t.p, () => { perfil.titulo = k; }), () => { perfil.titulo = k; gravar('perfil', perfil); mostrarXP(); mostrarLoja(); }));
+  if(abaLoja === 'fotos'){
+    const q = semAcento($('busca-foto').value), sh = $('foto-shiny').checked;
+    const lista = POKE.filter(p => !q || semAcento(p.nome).includes(q) || String(p.id) === q).slice(0, 30);
+    $('loja-fotos-info').textContent = q ? `${lista.length} encontrados${lista.length === 30 ? ' (mostrando 30)' : ''}` : 'Pesquise um Pokémon! Os famosos são de graça, os outros custam 🪙 10, os lendários 🪙 50, e o shiny custa +🪙 60.';
+    lista.forEach(p => {
+      const preco = precoFoto(p.id, sh);
+      item(`<img class="prev-foto" alt="" loading="lazy" src="${sh ? miniShiny(p.id) : mini(p.id)}" />`, `${p.nome}${sh ? ' ✨' : ''}`, preco, temFoto(p.id, sh) || preco === 0, perfil.foto === p.id && !!perfil.fotoShiny === sh,
+        compra(sh ? perfil.tem.fotosShiny : perfil.tem.fotos, p.id, preco, () => { perfil.foto = p.id; perfil.fotoShiny = sh; }),
+        () => { perfil.foto = p.id; perfil.fotoShiny = sh; gravar('perfil', perfil); mostrarPerfilBotao(); mostrarLoja(); });
+    });
+  }
+}
+$('abas-loja').onclick = ev => { const b = ev.target.closest('[data-l]'); if(b){ abaLoja = b.dataset.l; mostrarLoja(); } };
+['busca-foto', 'foto-shiny'].forEach(id => $(id).addEventListener('input', mostrarLoja));
+$('abrir-loja').onclick = () => { trocarTela('loja'); mostrarLoja(); };
+$('voltar-loja').onclick = () => { trocarTela('inicio'); marcar(); mostrarMoedas(); };
+
+mostrarMissoes(); mostrarXP(); mostrarPerfilBotao(); mostrarMoedas(); recompensaDiaria();
 
 /* ---------- claro / escuro ---------- */
 const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
