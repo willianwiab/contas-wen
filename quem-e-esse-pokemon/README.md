@@ -11,6 +11,7 @@ Aparece a **sombra** de um Pokémon e você adivinha quem é!
 - 💡 **Dica:** primeiro o tipo, depois a primeira letra e quantas letras tem (vale menos pontos)
 - ⭐ Pontos: 10 por acerto (menos com dica) + bônus de 🔥 sequência
 - 🏆 Recorde pra cada jeito de jogar e 📚 coleção com todos que você já acertou
+- 🎬 **Gravar vídeo da partida**: ligue antes de jogar; no fim aparece o vídeo pra ⬇️ salvar ou 📤 mandar (o jogo é desenhado num canvas e gravado com MediaRecorder, com os sons)
 - 🔊 Grito do Pokémon quando revela; no computador, teclas 1–4 escolhem
 
 ## Dados
