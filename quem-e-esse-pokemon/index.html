@@ -224,13 +224,133 @@ header{margin-bottom:12px}
   background:var(--fundo2);color:var(--marca);font-size:.78rem;display:grid;place-items:center}
 .opcoes button.certo::before,.opcoes button.errado::before{background:rgba(255,255,255,.25);color:#fff}
 .acoes button{border-radius:16px}
+/* ================= v7: muita coisa nova ================= */
+.dica-cfg{text-transform:none;letter-spacing:0;font-weight:600}
+.tiles.t5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.tiles.t4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tiles.t5 .tile b,.tiles.t4 .tile b{font-size:.72rem}
+@media (max-width:400px){.tiles.t5{grid-template-columns:repeat(3,minmax(0,1fr))}.tiles.t4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.chips.c3 .chip{padding:9px 3px}
+.nomes-2{display:grid;gap:8px;margin-top:10px}
+.nomes-2 label,.selects label{display:grid;gap:4px;font-weight:700;font-size:.85rem}
+.nomes-2 input,.selects select{font:inherit;padding:9px 10px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);min-width:0}
+.selects{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.atalhos{grid-template-columns:repeat(4,minmax(0,1fr))}
+.xp{margin:10px auto 0;max-width:280px;font-size:.82rem;font-weight:700}
+.xp-barra{height:8px;border-radius:9px;background:rgba(255,255,255,.2);overflow:hidden;margin-top:4px}
+.xp-barra i{display:block;height:100%;width:0;background:#ffcb05;border-radius:9px}
+.missoes{display:grid;gap:8px}
+.missao{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:8px 10px}
+.missao i{font-style:normal;font-size:1.4rem}
+.missao b{display:block;font-size:.88rem}
+.missao .pb{height:7px;border-radius:9px;background:var(--borda);overflow:hidden;margin-top:4px}
+.missao .pb s{display:block;height:100%;background:var(--marca2);text-decoration:none}
+.missao small{font-weight:800;font-size:.78rem;color:var(--tinta-fraca)}
+.missao.feita{border-color:var(--verde)}
+.missao.feita .pb s{background:var(--verde)}
+.vez{text-align:center;font-weight:800;border-radius:14px;padding:8px;margin-top:10px;color:#fff}
+.giro{position:absolute;inset:0}
+.palco[data-tipo="cor"] img{filter:grayscale(1) contrast(1.05)}
+.palco[data-tipo="evolucao"] img{filter:none}
+.palco[data-tipo="grito"] img:not(.revelado){visibility:hidden}
+.palco img.revelado{filter:none !important;animation:none !important}
+.palco.ef-girando:not(.revelou) .giro{animation:girar 3.2s linear infinite}
+@keyframes girar{to{transform:rotate(360deg)}}
+.palco.ef-embacada:not(.revelou) img{animation:desembaca 10s linear forwards}
+@keyframes desembaca{from{filter:brightness(0) blur(16px)}to{filter:brightness(0) blur(0)}}
+.palco.ef-zoom:not(.revelou) img{animation:afasta 10s ease-out forwards}
+@keyframes afasta{from{transform:scale(3.6)}to{transform:scale(1)}}
+.palco.ef-embacada.ef-zoom:not(.revelou) img{animation:desembaca 10s linear forwards,afasta 10s ease-out forwards}
+.pedacos{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);z-index:1}
+.pedacos i{background:var(--palco2);border:1px solid rgba(0,0,0,.06);transition:opacity .4s}
+.pedacos i.saiu{opacity:0}
+.botao-grito{position:absolute;inset:0;margin:auto;width:120px;height:120px;border-radius:50%;border:0;background:#fff;font-size:3.4rem;cursor:pointer;z-index:2;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);animation:pulsa 1.2s ease-in-out infinite}
+@keyframes pulsa{50%{transform:scale(1.08)}}
+.coroa{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:#e3350d;color:#fff;border-radius:99px;padding:4px 12px;font-weight:800;font-size:.85rem;z-index:3;white-space:nowrap}
+.palco.chefao{box-shadow:0 0 0 4px #e3350d,0 0 30px rgba(227,53,13,.6)}
+.parceiro{position:absolute;left:6px;bottom:4px;width:78px;height:78px;z-index:3}
+.parceiro img{width:100%;height:100%;image-rendering:pixelated;object-fit:contain}
+.parceiro.feliz img{animation:pula2 .5s ease 2}
+.parceiro.triste img{animation:treme .4s ease 2}
+@keyframes pula2{50%{transform:translateY(-18px)}}
+@keyframes treme{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.balao{position:absolute;left:62px;top:-4px;background:#fff;color:#1b1d3a;border-radius:12px;padding:3px 9px;font-weight:800;font-size:.8rem;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.pergunta{text-align:center;font-weight:800;font-size:1.05rem;margin-top:10px}
+.opcoes .cor-bola{display:inline-block;width:18px;height:18px;border-radius:50%;vertical-align:-3px;margin-right:6px;border:2px solid rgba(0,0,0,.2)}
+.letras-jogo{margin-top:10px;text-align:center}
+.montado{min-height:52px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px;padding:6px;border-radius:14px;border:2px dashed var(--borda);background:var(--cartao2)}
+.montado span{width:36px;height:40px;border-radius:10px;background:var(--marca2);color:#fff;font:800 1.3rem/40px 'Baloo 2',cursive}
+.montado.certo span{background:var(--verde)} .montado.errado span{background:var(--erro)}
+.pecas{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:10px 0}
+.pecas button{width:42px;height:46px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao);color:var(--tinta);font:800 1.35rem 'Baloo 2',cursive;cursor:pointer;box-shadow:0 3px 0 var(--borda)}
+.pecas button:disabled{opacity:.25}
+.falar{display:block;width:100%;margin-top:10px;font:inherit;font-weight:800;border:2px solid var(--marca2);background:var(--cartao);color:var(--marca2);border-radius:16px;padding:11px;cursor:pointer}
+.falar.ouvindo{background:var(--marca2);color:#fff}
+.curio{margin-top:10px;background:var(--cartao);border:2px solid var(--borda);border-left:6px solid var(--amarelo);border-radius:14px;padding:10px 12px;font-size:.9rem;line-height:1.45}
+.curio b{display:block;margin-bottom:2px}
+.foto{display:block;margin:12px auto 0}
+.album{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-top:10px}
+.carta{position:relative;border-radius:14px;padding:6px 6px 8px;text-align:center;color:#fff;cursor:pointer;border:3px solid #fff;box-shadow:0 4px 12px var(--sombra);font:inherit;overflow:hidden}
+.carta img{width:72px;height:72px;image-rendering:pixelated;display:block;margin:0 auto;background:rgba(255,255,255,.25);border-radius:10px}
+.carta b{display:block;font-size:.78rem;margin-top:4px;text-shadow:0 1px 2px rgba(0,0,0,.4);overflow-wrap:anywhere}
+.carta small{font-size:.66rem;font-weight:700;opacity:.9}
+.carta .qtd{position:absolute;right:5px;top:4px;background:rgba(0,0,0,.35);border-radius:99px;padding:1px 6px;font-size:.66rem;font-weight:800}
+.carta.rara{border-color:#ffcb05}
+.carta.brilha::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.55) 45%,transparent 60%);animation:holo 2.5s linear infinite}
+@keyframes holo{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.recado-claude{margin-top:22px;background:var(--cartao);border:2px dashed var(--borda);border-radius:18px;padding:14px;font-size:.86rem;line-height:1.5;color:var(--tinta)}
+.recado-claude > b:first-child{display:block;font-size:1rem;margin-bottom:4px}
+.recado-claude p + p{margin-top:6px}
+dialog{border:0;border-radius:22px;padding:18px;max-width:min(92vw,440px);width:100%;background:var(--cartao);color:var(--tinta);box-shadow:0 20px 50px rgba(0,0,0,.4)}
+dialog::backdrop{background:rgba(10,12,40,.6)}
+.pokedex .fechar{position:absolute;right:10px;top:10px}
+.pokedex img{display:block;width:180px;height:180px;object-fit:contain;margin:0 auto}
+.pokedex h2{font-family:'Baloo 2',cursive;text-align:center;font-size:1.6rem;line-height:1.1}
+.pokedex .tipos-pd{display:flex;gap:6px;justify-content:center;margin:6px 0 10px}
+.pokedex dl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:.9rem}
+.pokedex dt{font-weight:800;color:var(--tinta-fraca)}
+.pokedex .evo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.pokedex .evo button{font:inherit;font-size:.8rem;font-weight:700;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);border-radius:99px;padding:5px 10px;cursor:pointer}
+.pokedex .evo button.aqui{border-color:var(--marca2);background:var(--marca2);color:#fff}
+.colecao li,.rodadas li{cursor:pointer}
+.diario{text-align:center;background:linear-gradient(170deg,#23276a,#4a52c9);color:#fff}
+.diario-fogo{font-size:4rem;line-height:1;animation:pulsa 1s ease-in-out infinite}
+.diario h2{font-family:'Baloo 2',cursive;font-size:1.8rem;color:#ffcb05;letter-spacing:1px}
+.diario p{font-weight:700;margin:4px 0 12px}
+.dias7{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.dias7 div{background:rgba(255,255,255,.12);border-radius:10px;padding:6px 0;font-size:.66rem;font-weight:800}
+.dias7 div b{display:block;font-size:1rem}
+.dias7 div.feito{background:#1f9d57}
+.dias7 div.hoje{background:#ffcb05;color:#1b1d3a;transform:scale(1.08)}
+.confete{position:fixed;top:-12px;width:10px;height:14px;z-index:70;pointer-events:none;animation:cai linear forwards}
+@keyframes cai{to{transform:translateY(110vh) rotate(720deg)}}
+:root[data-cor="pikachu"]{--marca2:#c98a00;--hero1:#6b4700;--hero2:#d99a00;--palco2:#ffcb05}
+:root[data-cor="charizard"]{--marca2:#d9531a;--hero1:#6e1b08;--hero2:#e8641c}
+:root[data-cor="squirtle"]{--marca2:#2a7fc9;--hero1:#0f3d73;--hero2:#2f8fd8}
+:root[data-cor="bulbasaur"]{--marca2:#23935c;--hero1:#0f4d2c;--hero2:#2fa56a}
+:root[data-cor="gengar"]{--marca2:#6d48b8;--hero1:#241440;--hero2:#6a45b0}
+:root[data-cor="eevee"]{--marca2:#9c6a35;--hero1:#4a2f15;--hero2:#b07a3f}
+.hero{background:linear-gradient(160deg,var(--hero1,#23276a),var(--hero2,#4a52c9))}
+.topo-bts{display:flex;gap:8px}
+.perfil-bt{padding:0;overflow:hidden;background:var(--fundo2)}
+.perfil-bt img{width:100%;height:100%;image-rendering:pixelated;object-fit:contain}
+.perfil .fechar{position:absolute;right:10px;top:10px}
+.perfil-topo{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.perfil-topo img{width:96px;height:96px;object-fit:contain;background:var(--fundo2);border-radius:50%}
+.perfil-topo h2{font-family:'Baloo 2',cursive;font-size:1.5rem;line-height:1.1}
+.perfil-topo b{display:block;color:var(--marca2)} .perfil-topo small{color:var(--tinta-fraca);font-weight:600}
+.perfil-campo{display:grid;gap:4px;font-weight:700;font-size:.85rem;margin-top:8px}
+.perfil-campo input,.perfil-campo select{font:inherit;padding:9px 10px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta)}
+.perfil .jogar{margin-top:14px}
 </style>
 </head>
 <body>
 <div class="casca">
   <header>
     <h1 class="logo"><img src="icone-limpo.svg" alt="" /><span>Quem é esse Pokémon?</span></h1>
-    <button class="redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button>
+    <div class="topo-bts"><button class="redondo perfil-bt" id="perfil-bt" type="button" title="Meu perfil" aria-label="Meu perfil">👤</button>
+    <button class="redondo" id="tema" type="button" title="Trocar claro/escuro">🌙</button></div>
   </header>
 
   <!-- ===================== INÍCIO ===================== -->
@@ -241,12 +361,20 @@ header{margin-bottom:12px}
       <button type="button" class="jogar" id="jogar">▶️ Jogar!</button>
       <p class="recorde" id="recorde-inicio"></p>
       <p class="resumo-cfg" id="resumo-cfg"></p>
+      <div class="xp" id="xp"><span id="xp-txt"></span><div class="xp-barra"><i id="xp-barra"></i></div></div>
     </div>
 
     <div class="atalhos">
       <button type="button" class="atalho" id="atalho-trofeus"><i>🏆</i><b id="at-trofeus">0/100</b><small>troféus</small></button>
       <button type="button" class="atalho" id="atalho-colecao"><i>📚</i><b id="at-colecao">0</b><small>na coleção</small></button>
       <button type="button" class="atalho" id="atalho-shiny"><i>✨</i><b id="at-shiny">0</b><small>shinies</small></button>
+      <button type="button" class="atalho" id="atalho-album"><i>🃏</i><b id="at-album">0</b><small>cartinhas</small></button>
+    </div>
+
+    <div class="cartao">
+      <h2>🎯 Missões de hoje</h2>
+      <div class="missoes" id="missoes"></div>
+      <p class="info-video">Cada missão completa vale <b>+50 XP</b>. Amanhã tem missões novas!</p>
     </div>
 
     <div class="cartao config">
@@ -265,18 +393,57 @@ header{margin-bottom:12px}
         <button type="button" class="chip" data-modo="dez"><b>🎯 10</b><small>10 perguntas</small></button>
         <button type="button" class="chip" data-modo="tempo"><b>⏱️ 1 min</b><small>Contra o tempo</small></button>
         <button type="button" class="chip" data-modo="vidas"><b>❤️ 3 vidas</b><small>Até errar 3</small></button>
+        <button type="button" class="chip" data-modo="chefao"><b>👑 Chefão</b><small>Lendário x2 a cada 5</small></button>
+        <button type="button" class="chip" data-modo="escada"><b>🧗 Escada</b><small>Fica mais difícil</small></button>
+        <button type="button" class="chip" data-modo="calmo"><b>🐢 Calmo</b><small>Sem tempo e sem vida</small></button>
       </div>
       <h3>✍️ Resposta</h3>
       <div class="chips c2" id="respostas">
         <button type="button" class="chip" data-resp="opcoes"><b>🔘 4 opções</b><small>Escolha o nome certo</small></button>
         <button type="button" class="chip" data-resp="escrever"><b>⌨️ Escrever</b><small>Mais difícil!</small></button>
       </div>
+      <h3>❓ Tipo de pergunta <small class="dica-cfg">(escolha um ou mais)</small></h3>
+      <div class="tiles t5" id="tipos-pergunta">
+        <button type="button" class="tile" data-tipo="sombra"><i>👤</i><b>Sombra</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="grito"><i>🔊</i><b>Grito</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="cor"><i>🎨</i><b>Cor</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="evolucao"><i>🧬</i><b>Evolução</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-tipo="letras"><i>🔤</i><b>Letras</b><small class="estado"></small></button>
+      </div>
+      <h3>🎭 Efeitos da sombra</h3>
+      <div class="tiles t4" id="efeitos">
+        <button type="button" class="tile" data-ef="pedacos"><i>🧩</i><b>Pedaços</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-ef="girando"><i>🌀</i><b>Girando</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-ef="embacada"><i>🌫️</i><b>Embaçada</b><small class="estado"></small></button>
+        <button type="button" class="tile" data-ef="zoom"><i>🔍</i><b>Zoom</b><small class="estado"></small></button>
+      </div>
+      <h3>🎁 Extras</h3>
       <div class="tiles">
         <button type="button" class="tile" id="shiny" aria-pressed="false"><i>✨</i><b>Modo shiny</b><small class="estado">Desligado</small></button>
         <button type="button" class="tile" id="som" aria-pressed="true"><i>🔊</i><b>Grito</b><small class="estado">Ligado</small></button>
         <button type="button" class="tile" id="video" aria-pressed="false"><i>🎬</i><b>Gravar vídeo</b><small class="estado">Desligado</small></button>
       </div>
+      <div class="tiles" style="margin-top:8px">
+        <button type="button" class="tile" id="dois" aria-pressed="false"><i>👥</i><b>2 jogadores</b><small class="estado">Desligado</small></button>
+        <button type="button" class="tile" id="cartas" aria-pressed="false"><i>🃏</i><b>Cartinhas</b><small class="estado">Desligado</small></button>
+        <button type="button" class="tile" id="musica" aria-pressed="false"><i>🎵</i><b>Música</b><small class="estado">Desligado</small></button>
+        <button type="button" class="tile" id="falar-cfg" aria-pressed="false"><i>🎤</i><b>Falar a resposta</b><small class="estado">Desligado</small></button>
+        <button type="button" class="tile" id="curiosidade" aria-pressed="true"><i>🧠</i><b>Curiosidades</b><small class="estado">Ligado</small></button>
+      </div>
       <p class="info-video" id="video-info"></p>
+      <div class="nomes-2" id="nomes-2" hidden>
+        <label>🔵 Jogador 1 <input type="text" id="nome1" maxlength="14" /></label>
+        <label>🔴 Jogador 2 <input type="text" id="nome2" maxlength="14" /></label>
+        <p class="info-video">Vocês jogam no mesmo celular, um de cada vez, 10 perguntas cada.</p>
+      </div>
+      <p class="info-video" id="falar-info" hidden>🎤 Pra entender a sua voz, o navegador (Chrome) manda o som pro Google. Peça pra alguém da família deixar.</p>
+      <div class="selects">
+        <label>🎨 Tema <select id="tema-cor">
+          <option value="padrao">Padrão</option><option value="pikachu">⚡ Pikachu</option><option value="charizard">🔥 Charizard</option>
+          <option value="squirtle">💧 Squirtle</option><option value="bulbasaur">🌿 Bulbasaur</option><option value="gengar">👻 Gengar</option><option value="eevee">🦊 Eevee</option>
+        </select></label>
+        <label>🎒 Parceiro <select id="parceiro"></select></label>
+      </div>
     </div>
 
     <div class="cartao">
@@ -308,21 +475,34 @@ header{margin-bottom:12px}
       <button type="button" class="redondo sair" id="sair" title="Parar o jogo" aria-label="Parar o jogo">✖️</button>
     </div>
     <div class="progresso" aria-hidden="true"><i id="progresso"></i></div>
-    <div class="palco" id="palco">
-      <img id="figura" alt="Sombra de um Pokémon misterioso" />
+    <div class="vez" id="vez" hidden></div>
+    <div class="palco" id="palco" data-tipo="sombra">
+      <div class="giro" id="giro"><img id="figura" alt="Sombra de um Pokémon misterioso" /></div>
+      <div class="pedacos" id="pedacos" hidden></div>
+      <button type="button" class="botao-grito" id="botao-grito" hidden aria-label="Tocar o grito de novo">🔊</button>
+      <span class="coroa" id="coroa" hidden>👑 CHEFÃO! pontos x2</span>
+      <div class="parceiro" id="parceiro-el" hidden><img id="parceiro-img" alt="" /><span class="balao" id="balao" hidden></span></div>
       <div class="carregando" id="carregando">Carregando… ⏳</div>
       <span class="num" id="num" hidden></span>
       <span class="selo" id="selo" hidden></span>
       <span class="rec" id="rec" hidden>● GRAVANDO</span>
     </div>
+    <p class="pergunta" id="pergunta" hidden></p>
     <div class="dicas" id="dicas"></div>
     <div class="opcoes" id="opcoes"></div>
+    <div class="letras-jogo" id="letras-jogo" hidden>
+      <div class="montado" id="montado" aria-live="polite"></div>
+      <div class="pecas" id="pecas"></div>
+      <button type="button" class="mini" id="apagar">⌫ Apagar</button>
+    </div>
     <form class="escrever" id="escrever" hidden autocomplete="off">
       <input type="text" id="chute" list="nomes" placeholder="Quem é?" aria-label="Nome do Pokémon" autocapitalize="words" />
       <button type="submit">Chutar</button>
       <datalist id="nomes"></datalist>
     </form>
+    <button type="button" class="falar" id="falar" hidden>🎤 Falar a resposta</button>
     <p class="aviso" id="aviso" aria-live="polite"></p>
+    <div class="curio" id="curio" hidden></div>
     <div class="acoes">
       <button type="button" id="dica">💡 Dica</button>
       <button type="button" id="pular">🤷 Não sei</button>
@@ -358,6 +538,7 @@ header{margin-bottom:12px}
         <div><b id="fim-recorde">0</b><small>🏆 recorde</small></div>
       </div>
       <div class="fim-trofeus" id="fim-trofeus" hidden></div>
+      <button type="button" class="mini foto" id="foto">📸 Salvar foto do resultado</button>
       <div class="botoes-fim">
         <button type="button" class="jogar" id="de-novo" style="margin:0;font-size:1.2rem">🔁 De novo</button>
         <button type="button" class="jogar" id="menu" style="margin:0;font-size:1.2rem;background:var(--cartao2);box-shadow:0 6px 0 var(--borda);color:var(--tinta)">🏠 Início</button>
@@ -378,10 +559,42 @@ header{margin-bottom:12px}
     </div>
   </section>
 
+  <!-- ===================== ÁLBUM ===================== -->
+  <section id="tela-album" hidden>
+    <div class="topo-trofeus"><button type="button" class="mini" id="voltar-album">⬅️ Voltar</button><b id="album-cont"></b></div>
+    <p class="info-video" id="album-info"></p>
+    <div class="album" id="album"></div>
+  </section>
+
+  <div class="recado-claude" id="recado-claude">
+    <b>🤖 Recado do Claude</b>
+    <p>Eu sou o Claude, a inteligência artificial que ajudou a fazer este jogo. E eu tenho que contar: <b>eu não sei tudo de Pokémon!</b></p>
+    <p>O motivo: eu nunca joguei Pokémon de verdade, nem assisti o desenho. Eu só aprendi lendo textos, e às vezes eu confundo as coisas. Por isso os nomes, tipos, cores e evoluções do jogo vêm do <b>PokeAPI</b>, uma lista feita por fãs, e não da minha cabeça.</p>
+    <p>Se você achar alguma coisa errada, me conta que eu conserto! 😄</p>
+  </div>
+
+  <dialog class="pokedex" id="pokedex">
+    <button type="button" class="redondo fechar" id="fechar-pokedex" aria-label="Fechar">✖️</button>
+    <div id="pokedex-corpo"></div>
+  </dialog>
+
+  <dialog class="perfil" id="perfil">
+    <button type="button" class="redondo fechar" id="fechar-perfil" aria-label="Fechar">✖️</button>
+    <div id="perfil-corpo"></div>
+  </dialog>
+
+  <dialog class="diario" id="diario">
+    <div class="diario-fogo" id="diario-fogo">🔥</div>
+    <h2 id="diario-titulo">RECOMPENSA DIÁRIA!</h2>
+    <p id="diario-txt"></p>
+    <div class="dias7" id="dias7"></div>
+    <button type="button" class="jogar" id="diario-pegar">Pegar!</button>
+  </dialog>
+
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 6 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 7 — 28/09 · 🔄</button>
   </footer>
 </div>
 
@@ -403,7 +616,15 @@ const TIPOS = [
   ['Aço', '⚙️', '#4f8aa0'], ['Fada', '🧚', '#d65cd6'],
 ];
 const GERACOES = [[1, 151], [152, 251], [252, 386], [387, 493], [494, 649], [650, 721], [722, 809], [810, 905], [906, 1025]];
-const POKE = DADOS.split('|').map((x, i) => { const [n, t] = x.split('~'); return { id:i + 1, nome:n, tipos:[...t].map(c => c.charCodeAt(0) - 97), ger:GERACOES.findIndex(g => i + 1 >= g[0] && i + 1 <= g[1]) + 1 }; });
+/* Mais dados (do PokeAPI): cor, altura (decímetros), peso (hectogramas), de quem evolui e para quem evolui */
+const EXTRA = '4,7,69,0,2|4,10,130,1,3|4,20,1000,2,|7,6,85,0,5|7,11,190,4,6|7,17,905,5,|1,5,90,0,8|1,10,225,7,9|1,16,855,8,|4,3,29,0,11|4,7,99,10,12|8,11,320,11,|2,3,32,0,14|9,6,100,13,15|9,10,295,14,|2,3,18,0,17|2,11,300,16,18|2,15,395,17,|6,3,35,0,20|2,7,185,19,|2,3,20,0,22|2,12,380,21,|6,20,69,0,24|6,35,650,23,|9,4,60,172,26|9,8,300,25,|9,6,120,0,28|9,10,295,27,|1,4,70,0,30|1,8,200,29,31|1,13,600,30,|6,5,90,0,33|6,9,195,32,34|6,14,620,33,|5,6,75,173,36|5,13,400,35,|2,6,99,0,38|9,11,199,37,|5,5,55,174,40|5,10,120,39,|6,8,75,0,42|6,16,550,41,169|1,5,54,0,44|1,8,86,43,45.182|7,12,186,44,|7,3,54,0,47|7,10,295,46,|6,10,300,0,49|6,15,125,48,|2,2,8,0,51|2,7,333,50,|9,4,42,0,53.863|9,10,320,52,|9,8,196,0,55|1,17,766,54,|2,5,280,0,57|2,10,320,56,979|2,7,190,0,59|2,19,1550,58,|1,6,124,0,61|1,10,200,60,62.186|1,13,540,61,|2,9,195,0,64|2,13,565,63,65|2,15,480,64,|3,8,195,0,67|3,15,705,66,68|3,16,1300,67,|4,7,40,0,70|4,10,64,69,71|4,17,155,70,|1,9,455,0,73|1,16,550,72,|2,4,200,0,75|2,10,1050,74,76|2,14,3000,75,|9,10,300,0,78|9,17,950,77,|5,12,360,0,80.199|5,16,785,79,|3,3,60,0,82|3,10,600,81,462|2,8,150,0,865|2,14,392,0,85|2,18,852,84,|8,11,900,0,87|8,17,1200,86,|6,9,300,0,89|6,12,300,88,|6,3,40,0,91|6,15,1325,90,|6,13,1,0,93|6,16,1,92,94|6,15,405,93,|3,88,2100,0,208|9,10,324,0,97|9,16,756,96,|7,4,65,0,99|7,13,600,98,|7,5,104,0,101|7,12,666,100,|5,4,25,0,103|9,20,1200,102,|2,4,65,0,105|2,10,450,104,|2,15,498,236,|2,14,502,236,|5,12,655,0,463|6,6,10,0,110|6,12,95,109,|3,10,1150,0,112|3,19,1200,111,464|5,11,346,440,242|1,10,350,0,465|2,22,800,0,|1,4,80,0,117|1,12,250,116,230|7,6,150,0,119|7,13,390,118,|2,8,345,0,121|6,11,800,120,|5,13,545,439,866|4,15,560,0,212.900|7,14,406,238,|9,11,300,239,466|7,13,445,240,467|2,15,550,0,|2,14,884,0,|7,9,100,0,130|1,65,2350,129,|1,25,2200,0,|6,3,40,0,|2,3,65,0,134.135.136.196.197.470.471.700|1,10,290,133,|9,8,245,133,|7,9,250,133,|5,8,365,0,233|1,4,75,0,139|1,10,350,138,|2,5,115,0,141|2,13,405,140,|6,18,590,0,|0,21,4600,446,|1,17,554,0,|9,16,526,0,|9,20,600,0,|1,18,33,0,148|1,40,165,147,149|2,22,2100,148,|6,20,1220,0,|5,4,40,0,|4,9,64,0,153|4,12,158,152,154|4,18,1005,153,|9,5,79,0,156|9,9,190,155,157|9,17,795,156,|1,6,95,0,159|1,11,250,158,160|1,23,888,159,|2,8,60,0,162|2,18,325,161,|2,7,212,0,164|2,16,408,163,|7,10,108,0,166|7,14,356,165,|4,5,85,0,168|7,11,335,167,|6,18,750,42,|1,5,120,0,171|1,12,225,170,|9,3,20,0,25|5,3,30,0,35|5,3,10,0,39|8,3,15,0,176|8,6,32,175,468|4,2,20,0,178|4,15,150,177,|8,6,78,0,180|5,8,133,179,181|9,14,615,180,|4,4,58,44,|1,4,85,298,184|1,8,285,183,|2,12,380,438,|4,11,339,61,|5,4,5,0,188|4,6,10,187,189|1,8,30,188,|6,8,115,0,424|9,3,18,0,192|9,8,85,191,|7,12,380,0,469|1,4,85,0,195.980|1,14,750,194,|6,9,265,133,|0,10,270,133,|0,5,21,0,430|5,20,795,79,|3,7,10,0,429|0,5,50,0,|1,13,285,360,|9,15,415,0,981|3,6,72,0,205|6,12,1258,204,|9,15,140,0,982|6,11,648,0,472|3,92,4000,95,|5,6,78,0,210|6,14,487,209,|3,5,39,0,904|7,18,1180,123,|9,6,205,0,|1,15,540,0,|0,9,280,0,461.903|2,6,88,0,217|2,18,1258,216,901|7,7,350,0,219|7,8,550,218,|2,4,65,0,221|2,11,558,220,473|5,6,50,0,864|3,6,120,0,224|7,9,285,223,|7,9,160,0,|6,21,2200,458,|3,17,505,0,|0,6,108,0,229|0,14,350,228,|1,18,1520,117,|1,5,335,0,232|3,11,1200,231,|7,6,325,137,474|2,14,712,0,899|8,12,580,0,|6,7,210,0,106.107.237|2,14,480,236,|5,4,60,0,124|9,6,235,0,125|7,7,214,0,126|5,12,755,0,|5,15,468,113,|9,19,1780,0,|2,21,1980,0,|1,20,1870,0,|4,6,720,0,247|3,12,1520,246,248|4,20,2020,247,|8,52,2160,0,|7,38,1990,0,|4,6,50,0,|4,5,50,0,253|4,9,216,252,254|4,17,522,253,|7,4,25,0,256|7,9,195,255,257|7,19,520,256,|1,4,76,0,259|1,7,280,258,260|1,15,819,259,|3,5,136,0,262|3,10,370,261,|2,4,175,0,264|8,5,325,263,862|7,3,36,0,266.268|8,6,100,265,267|9,10,284,266,|6,7,115,265,269|4,12,316,268,|4,5,26,0,271|4,12,325,270,272|4,15,550,271,|2,5,40,0,274|2,10,280,273,275|2,13,596,274,|1,3,23,0,277|1,7,198,276,|8,6,95,0,279|9,12,280,278,|8,4,66,0,281|8,8,202,280,282.475|8,16,484,281,|1,5,17,0,284|1,8,36,283,|2,4,45,0,286|4,12,392,285,|2,8,240,0,288|8,14,465,287,289|2,20,1305,288,|3,5,55,0,291.292|9,8,120,290,|2,8,12,290,|5,6,163,0,294|1,10,405,293,295|1,15,840,294,|9,10,864,0,297|2,23,2538,296,|1,2,20,0,183|3,10,970,0,476|5,6,110,0,301|6,11,326,300,|6,5,110,0,|0,6,115,0,|3,4,600,0,305|3,9,1200,304,306|3,21,3600,305,|1,6,112,0,308|7,13,315,307,|4,6,152,0,310|9,15,402,309,|9,4,42,0,|9,4,42,0,|3,7,177,0,|6,6,177,0,|4,3,20,406,407|4,4,103,0,317|6,17,800,316,|7,8,208,0,319|1,18,888,318,|1,20,1300,0,321|1,145,3980,320,|9,7,240,0,323|7,19,2200,322,|2,5,804,0,|0,7,306,0,326|6,9,715,325,|2,11,50,0,|2,7,150,0,329|4,11,153,328,330|4,20,820,329,|4,4,513,0,332|4,13,774,331,|1,4,12,0,334|1,11,206,333,|8,13,403,0,|0,27,525,0,|9,10,1680,0,|7,12,1540,0,|3,4,19,0,340|1,9,236,339,|7,6,115,0,342|7,11,328,341,|2,5,215,0,344|0,15,1080,343,|6,10,238,0,346|4,15,604,345,|3,7,125,0,348|3,15,682,347,|2,6,74,0,350|5,62,1620,349,|3,3,8,0,|4,10,220,0,|0,6,23,0,354|0,11,125,353,|0,8,150,0,356|0,16,306,355,477|4,20,1000,0,|1,6,10,433,|8,12,470,0,|1,6,140,0,202|3,7,168,0,362.478|3,15,2565,361,|1,8,395,0,364|1,11,876,363,365|1,14,1506,364,|1,4,525,0,367.368|1,17,270,366,|5,18,226,366,|3,10,234,0,|5,6,87,0,|1,6,421,0,372|8,11,1105,371,373|1,15,1026,372,|1,6,952,0,375|1,12,2025,374,376|1,16,5500,375,|2,17,2300,0,|1,18,1750,0,|3,19,2050,0,|7,14,400,0,|1,20,600,0,|1,45,3520,0,|7,35,9500,0,|4,70,2065,0,|9,3,11,0,|7,17,608,0,|4,4,102,0,388|4,11,970,387,389|4,22,3100,388,|2,5,62,0,391|2,9,220,390,392|2,12,550,391,|1,4,52,0,394|1,8,230,393,395|1,17,845,394,|2,3,20,0,397|2,6,155,396,398|2,12,249,397,|2,5,200,0,400|2,10,315,399,|7,3,22,0,402|7,10,255,401,|1,5,95,0,404|1,9,305,403,405|1,14,420,404,|4,2,12,0,315|4,9,145,315,|1,9,315,0,409|1,16,1025,408,|3,5,570,0,411|3,13,1495,410,|4,2,34,0,413.414|4,5,65,412,|9,9,233,412,|9,3,55,0,416|9,12,385,415,|8,4,39,0,|2,7,295,0,419|2,11,335,418,|5,4,33,0,421|6,5,93,420,|6,3,63,0,423|6,9,299,422,|6,12,203,190,|6,4,12,0,426|6,12,150,425,|2,4,55,0,428|2,12,333,427,|6,9,44,200,|0,9,273,198,|3,5,39,0,432|3,10,438,431,|9,2,6,0,358|6,4,192,0,435|6,10,380,434,|4,5,605,0,437|4,13,1870,436,|2,5,150,0,185|5,6,130,0,122|5,6,244,0,113|0,5,19,0,|6,10,1080,0,|1,7,205,0,444|1,14,560,443,445|1,19,950,444,|0,6,1050,0,143|1,7,202,0,448|1,12,540,447,|2,8,495,0,450|2,20,3000,449,|6,8,120,0,452|6,13,615,451,|1,7,230,0,454|1,13,444,453,|4,14,270,0,|1,4,70,0,457|1,12,240,456,|1,10,650,0,226|8,10,505,0,460|8,22,1355,459,|0,11,340,215,|3,12,1800,82,|5,17,1400,108,|3,24,2828,112,|1,20,1286,114,|9,18,1386,125,|7,16,680,126,|8,15,380,176,|4,19,515,193,|4,10,255,133,|1,8,259,133,|6,20,425,207,|2,25,2910,221,|7,9,340,233,|8,16,520,281,|3,14,3400,299,|0,22,1066,356,|8,13,266,361,|7,3,3,0,|9,3,3,0,|5,3,3,0,|1,3,3,0,|8,54,6830,0,|6,42,3360,0,|2,17,4300,0,|8,37,4200,0,|0,45,7500,0,|9,15,856,0,|1,4,31,0,|1,3,14,0,|0,15,505,0,|4,2,21,0,|8,32,3200,0,|9,4,40,0,|4,6,81,0,496|4,8,160,495,497|4,33,630,496,|7,5,99,0,499|7,10,555,498,500|7,16,1500,499,|1,5,59,0,502|1,8,245,501,503|1,15,946,502,|2,5,116,0,505|2,11,270,504,|2,4,41,0,507|3,9,147,506,508|3,12,610,507,|6,4,101,0,510|6,11,375,509,|4,6,105,0,512|4,11,305,511,|7,6,110,0,514|7,10,280,513,|1,6,135,0,516|1,10,290,515,|5,6,233,0,518|5,11,605,517,|3,3,21,0,520|3,6,150,519,521|3,12,290,520,|0,8,298,0,523|0,16,795,522,|1,4,180,0,525|1,9,1020,524,526|1,17,2600,525,|1,4,21,0,528|1,9,105,527,|3,3,85,0,530|3,7,404,529,|5,11,310,0,|3,6,125,0,533|3,12,400,532,534|2,14,870,533,|1,5,45,0,536|1,8,170,535,537|1,15,620,536,|7,13,555,0,|1,14,510,0,|9,3,25,0,541|4,5,73,540,542|9,12,205,541,|7,4,53,0,544|3,12,585,543,545|7,25,2005,544,|4,3,6,0,547|4,7,66,546,|4,5,66,0,549|4,11,163,548,|4,10,180,0,902|2,7,152,0,552|2,10,334,551,553|7,15,963,552,|7,6,375,0,555|7,13,929,554,|4,10,280,0,|7,3,145,0,558|7,14,2000,557,|9,6,118,0,560|7,11,300,559,|0,14,140,0,|0,5,15,0,563.867|9,17,765,562,|1,7,165,0,565|1,12,810,564,|9,5,95,0,567|9,14,320,566,|4,6,310,0,569|4,19,1073,568,|3,7,125,0,571|3,16,811,570,|3,4,58,0,573|3,5,75,572,|6,4,58,0,575|6,7,180,574,576|6,15,440,575,|4,3,10,0,578|4,6,80,577,579|4,10,201,578,|1,5,55,0,581|8,13,242,580,|8,4,57,0,583|8,11,410,582,584|8,13,575,583,|5,6,195,0,586|2,19,925,585,|8,4,50,0,|1,5,59,0,589|3,10,330,588,|8,2,10,0,591|8,6,105,590,|8,12,330,0,593|8,22,1350,592,|5,12,316,0,|9,1,6,0,596|9,8,143,595,|3,6,188,0,598|3,10,1100,597,|3,3,210,0,600|3,6,510,599,601|3,6,810,600,|8,2,3,0,603|1,12,220,602,604|1,21,805,603,|1,5,90,0,606|2,10,345,605,|8,3,31,0,608|0,6,130,607,609|0,10,343,608,|4,6,180,0,611|4,10,360,610,612|9,18,1055,611,|8,5,85,0,614|8,26,2600,613,|1,11,1480,0,|7,4,77,0,617|7,8,253,616,|2,7,110,0,|9,9,200,0,620|6,14,355,619,|7,16,1390,0,|4,10,920,0,623|4,28,3300,622,|7,5,102,0,625|7,16,700,624,983|2,16,946,0,|8,5,105,0,628|7,15,410,627,|2,5,90,0,630|2,12,395,629,|7,14,580,0,|3,3,330,0,|1,8,173,0,634|1,14,500,633,635|1,18,1600,634,|8,11,288,0,637|8,16,460,636,|1,21,2500,0,|3,19,2600,0,|4,20,2000,0,|4,15,630,0,|1,15,610,0,|8,32,3300,0,|0,29,3450,0,|2,15,680,0,|3,30,3250,0,|9,14,485,0,|8,6,65,0,|6,15,825,0,|4,4,90,0,651|4,7,290,650,652|4,16,900,651,|7,4,94,0,654|7,10,145,653,655|7,15,390,654,|1,3,70,0,657|1,6,109,656,658|1,15,400,657,|2,4,50,0,660|2,10,424,659,|7,3,17,0,662|7,7,160,661,663|7,12,245,662,|0,3,25,0,665|0,3,84,664,666|8,12,170,665,|2,6,135,0,668|2,15,815,667,|8,1,1,0,670|8,2,9,669,671|8,11,100,670,|2,9,310,0,673|2,17,910,672,|8,6,80,0,675|8,21,1360,674,|8,12,280,0,|3,3,35,0,678|1,6,85,677,|2,8,20,0,680|2,8,45,679,681|2,17,530,680,|5,2,5,0,683|5,8,155,682,|8,4,35,0,685|8,8,50,684,|1,4,35,0,687|1,15,470,686,|2,5,310,0,689|2,13,960,688,|2,5,73,0,691|2,18,815,690,|1,5,83,0,693|1,13,353,692,|9,5,60,0,695|9,10,210,694,|2,8,260,0,697|7,25,2700,696,|1,13,252,0,699|1,27,2250,698,|5,10,235,133,|4,8,215,0,|9,2,22,0,|3,3,57,0,|6,3,28,0,705|6,8,175,704,706|6,20,1505,705,|3,2,30,0,|2,4,70,0,709|2,15,710,708,|2,4,50,0,711|2,9,125,710,|1,10,995,0,713|1,20,5050,712,|6,5,80,0,715|6,15,850,714,|1,30,2150,0,|7,58,2030,0,|4,50,3050,0,|5,7,88,0,|6,5,90,0,|2,17,1950,0,|2,3,15,0,723|2,7,160,722,724|2,16,366,723,|7,4,43,0,726|7,7,250,725,727|7,18,830,726,|1,4,75,0,729|1,6,175,728,730|1,18,440,729,|0,3,12,0,732|0,6,148,731,733|0,11,260,732,|2,4,60,0,735|2,7,142,734,|3,4,44,0,737|4,5,105,736,738|1,15,450,737,|6,6,70,0,740|8,17,1800,739,|7,6,34,0,|9,1,2,0,743|9,2,5,742,|2,5,92,0,745|2,8,250,744,|1,2,3,0,|1,4,80,0,748|1,7,145,747,|2,10,1100,0,750|2,25,9200,749,|4,3,40,0,752|4,18,820,751,|5,3,15,0,754|5,9,185,753,|6,2,15,0,756|6,10,115,755,|0,6,48,0,758|0,12,222,757,|5,5,68,0,760|5,21,1350,759,|6,3,32,0,762|6,7,82,761,763|6,12,214,762,|4,1,3,0,|8,15,760,0,|8,20,828,0,|3,5,120,0,768|3,20,1080,767,|2,5,700,0,770|2,13,2500,769,|0,3,12,0,|3,19,1205,0,773|3,23,1005,772,|2,3,400,0,|1,4,199,0,|7,20,2120,0,|3,3,33,0,|9,2,7,0,|5,9,190,0,|8,30,1850,0,|4,39,2100,0,|3,6,297,0,783|3,12,470,782,784|3,16,782,783,|9,18,205,0,|5,12,186,0,|7,19,455,0,|6,13,212,0,|1,2,1,0,790|1,1,9999,789,791.792|8,34,2300,790,|6,40,1200,790,|8,12,555,0,|7,24,3336,0,|8,18,250,0,|0,38,1000,0,|4,92,9999,0,|8,3,1,0,|0,55,8880,0,|0,24,2300,0,|3,10,805,0,|3,7,222,0,|6,6,18,0,804|6,36,1500,803,|3,55,8200,0,|8,18,130,0,|9,15,445,0,|3,2,80,0,809|3,25,8000,808,|4,3,50,0,811|4,7,140,810,812|4,21,900,811,|8,3,45,0,814|3,6,90,813,815|8,14,330,814,|1,3,40,0,817|1,7,115,816,818|1,19,452,817,|2,3,25,0,820|2,6,60,819,|1,2,18,0,822|1,8,160,821,823|6,22,750,822,|1,4,80,0,825|9,4,195,824,826|7,4,408,825,|2,6,89,0,828|2,12,199,827,|4,4,22,0,830|4,5,25,829,|8,6,60,0,832|8,13,430,831,|4,3,85,0,834|4,10,1155,833,|9,3,135,0,836|9,10,340,835,|0,3,120,0,838|0,11,780,837,839|0,28,3105,838,|4,2,5,0,841.842.1011|4,3,10,840,|4,4,130,840,|4,22,76,0,844|4,38,655,843,|1,8,180,0,|2,5,10,0,847|2,13,300,846,|6,4,110,0,849|6,16,400,848,|7,7,10,0,851|7,30,1200,850,|2,6,40,0,853|1,16,390,852,|6,1,2,0,855|6,2,4,854,|5,4,34,0,857|5,6,48,856,858|5,21,51,857,|5,4,55,0,860|5,8,125,859,861|6,15,610,860,|3,16,460,264,|2,8,280,52,|8,10,4,222,|8,8,1170,83,|6,15,582,122,|3,16,666,562,|8,2,3,0,869|8,3,5,868,|9,30,620,0,|6,3,10,0,|8,3,38,0,873|8,13,420,872,|3,25,5200,0,|1,14,890,0,|6,9,280,0,|9,3,30,0,|9,12,1000,0,879|4,30,6500,878,|4,18,1900,0,|1,23,1500,0,|4,23,2150,0,|1,20,1750,0,|8,18,400,0,1018|4,5,20,0,886|4,14,110,885,887|4,30,500,886,|1,28,1100,0,|7,29,2100,0,|6,200,9500,0,|3,6,120,0,892|3,19,1050,891,|4,18,700,0,|9,12,1450,0,|4,21,2000,0,|8,22,8000,0,|0,20,445,0,|4,11,77,0,|3,18,951,234,|2,18,890,123,|2,24,2900,217,|4,30,1100,550,|3,13,430,215,|0,25,605,211,|5,16,480,0,|4,4,41,0,907|4,9,122,906,908|4,15,312,907,|7,4,98,0,910|7,10,307,909,911|7,16,3265,910,|8,5,61,0,913|1,12,215,912,914|1,18,619,913,|3,5,102,0,916|3,10,1200,915,|8,3,40,0,918|4,10,165,917,|3,2,10,0,920|3,10,175,919,|9,3,25,0,922|9,4,65,921,923|9,9,410,922,|8,3,18,0,925|8,3,28,924,|9,3,109,0,927|2,5,149,926,|4,3,65,0,929|4,6,119,928,930|4,14,482,929,|4,6,24,0,|2,4,160,0,933|2,6,1050,932,934|2,23,2400,933,|7,6,105,0,936.937|7,15,850,935,|1,16,620,935,|9,3,4,0,939|4,12,1130,938,|0,4,36,0,941|9,14,386,940,|2,5,160,0,943|3,11,610,942,|3,2,7,0,945|3,7,272,944,|2,6,6,0,947|2,12,60,946,|9,9,330,0,949|0,19,580,948,|7,13,790,0,|4,3,30,0,952|4,9,150,951,|2,2,10,0,954|4,3,35,953,|9,2,15,0,956|9,19,900,955,|5,4,89,0,958|5,7,591,957,959|5,7,1128,958,|8,12,18,0,961|7,12,54,960,|8,15,429,0,|1,13,602,0,964|1,13,602,963,|3,10,350,0,966|3,18,1200,965,|4,16,630,0,|5,25,3100,0,|1,7,80,0,970|1,15,450,969,|8,6,350,0,972|8,20,150,971,|5,16,370,0,|8,12,450,0,975|8,45,7000,974,|3,25,900,0,|1,120,2200,0,|5,3,80,0,|3,12,560,57,|2,18,2230,194,|2,32,1600,203,|9,36,392,206,|0,20,1200,625,|6,22,3200,0,|5,12,80,0,|3,12,210,0,|3,14,40,0,|7,32,920,0,|3,23,600,0,|3,9,2400,0,|7,6,110,0,|3,18,3807,0,|1,13,1110,0,|9,12,360,0,|4,16,3030,0,|3,5,170,0,997|3,8,300,996,998|3,21,2100,997,|2,3,50,0,1000|9,12,300,999,|2,15,742,0,|8,19,1522,0,|2,27,6997,0,|7,4,49,0,|4,20,3800,0,|8,14,350,0,|7,25,3030,0,|1,35,2400,0,|1,35,2800,0,|4,15,1250,0,|4,4,97,840,1019|4,1,11,0,1013|4,2,22,1012,|0,18,922,0,|0,10,122,0,|0,14,301,0,|4,12,398,0,|8,20,600,884,|4,18,930,1011,|2,35,5900,0,|9,52,4800,0,|3,15,1625,0,|1,16,1560,0,|1,2,65,0,|6,3,3,0,';
+const CORES = [['Preto', '#2b2b2b'], ['Azul', '#2f7fe0'], ['Marrom', '#8a5a2b'], ['Cinza', '#9aa0a6'], ['Verde', '#2fa56a'], ['Rosa', '#ef8fc0'], ['Roxo', '#8a4fd1'], ['Vermelho', '#e3350d'], ['Branco', '#f4f4f4'], ['Amarelo', '#ffcb05']];
+const POKE = DADOS.split('|').map((x, i) => {
+  const [n, t] = x.split('~'), [cor, alt, peso, prevo, evos] = EXTRA.split('|')[i].split(',');
+  return { id:i + 1, nome:n, tipos:[...t].map(c => c.charCodeAt(0) - 97), ger:GERACOES.findIndex(g => i + 1 >= g[0] && i + 1 <= g[1]) + 1,
+    cor:+cor, alt:+alt, peso:+peso, prevo:+prevo, evos:evos ? evos.split('.').map(Number) : [] };
+});
+const Reconhecer = window.SpeechRecognition || window.webkitSpeechRecognition;
 /* Os mais famosos (nível fácil) */
 const FAMOSOS = [1,2,3,4,5,6,7,8,9,12,16,19,25,26,35,37,39,50,52,54,58,59,63,65,66,68,74,77,79,81,92,93,94,95,104,113,120,121,125,126,129,130,131,132,133,134,135,136,
   137,138,143,144,145,146,147,148,149,150,151,152,155,158,172,175,183,196,197,212,214,215,248,249,250,251,252,255,258,282,302,359,373,376,380,381,382,383,384,385,
@@ -418,7 +639,12 @@ const semAcento = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().
 const embaralhar = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
 /* ---------- configurações (lembradas) ---------- */
-const cfg = Object.assign({ nivel:'facil', modo:'dez', resp:'opcoes', som:true, video:false, shiny:false, gers:[1] }, ler('cfg', {}));
+const cfg = Object.assign({ nivel:'facil', modo:'dez', resp:'opcoes', som:true, video:false, shiny:false, gers:[1], tipos:{}, efeitos:{}, dois:false, nomes:['', ''],
+  cartas:false, musica:false, falar:false, curiosidade:true, tema:'padrao', parceiro:0 }, ler('cfg', {}));
+cfg.tipos = Object.assign({ sombra:true, grito:false, cor:false, evolucao:false, letras:false }, cfg.tipos);
+cfg.efeitos = Object.assign({ pedacos:false, girando:false, embacada:false, zoom:false }, cfg.efeitos);
+if(!Array.isArray(cfg.nomes)) cfg.nomes = ['', ''];
+if(!['dez', 'tempo', 'vidas', 'chefao', 'escada', 'calmo'].includes(cfg.modo)) cfg.modo = 'dez';
 if(!Array.isArray(cfg.gers) || !cfg.gers.length) cfg.gers = [1];
 function pool(){
   if(cfg.nivel === 'facil') return FAMOSOS.map(i => POKE[i - 1]);
@@ -427,7 +653,7 @@ function pool(){
   if(cfg.nivel === 'revanche') return POKE.filter(p => errados.has(p.id));
   return POKE;
 }
-const chaveRecorde = () => `${cfg.nivel}${cfg.nivel === 'minhas' ? '-' + cfg.gers.slice().sort().join('') : ''}:${cfg.modo}:${cfg.resp}${cfg.shiny ? ':shiny' : ''}`;
+const chaveRecorde = () => { const t = Object.keys(cfg.tipos).filter(k => cfg.tipos[k]).join('+'); return `${cfg.nivel}${cfg.nivel === 'minhas' ? '-' + cfg.gers.slice().sort().join('') : ''}:${cfg.modo}:${cfg.resp}${cfg.shiny ? ':shiny' : ''}${t === 'sombra' ? '' : ':' + t}`; };
 function marcar(){
   document.querySelectorAll('#niveis .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.nivel === cfg.nivel));
   document.querySelectorAll('#modos .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.modo === cfg.modo));
@@ -447,6 +673,7 @@ function marcar(){
   $('recorde-inicio').textContent = r ? `🏆 Seu recorde nesse jeito: ${r} pontos` : '🏆 Ainda sem recorde nesse jeito. Bora!';
   const nome = sel => { const b = document.querySelector(sel); return b ? b.querySelector('b').textContent : ''; };
   $('resumo-cfg').textContent = [nome(`[data-nivel="${cfg.nivel}"]`), nome(`[data-modo="${cfg.modo}"]`), nome(`[data-resp="${cfg.resp}"]`), cfg.shiny ? '✨ Shiny' : '', cfg.video ? '🎬 Vídeo' : ''].filter(Boolean).join(' · ');
+  marcarExtras();
   gravar('cfg', cfg);
 }
 GERACOES.forEach((g, i) => {
@@ -475,142 +702,251 @@ function mostrarColecao(){
   [...colecao].sort((a, b) => a - b).forEach(id => {
     const li = document.createElement('li'), img = document.createElement('img');
     img.loading = 'lazy'; img.src = mini(id); img.alt = '';
-    li.append(img, `#${id} ${POKE[id - 1].nome}`); ul.appendChild(li);
+    li.dataset.id = id; li.append(img, `#${id} ${POKE[id - 1].nome}`); ul.appendChild(li);
   });
 }
 $('ver-colecao').onclick = () => { $('colecao-caixa').hidden = !$('colecao-caixa').hidden; $('ver-colecao').textContent = $('colecao-caixa').hidden ? '👀 Ver os que eu já acertei' : '🙈 Esconder'; mostrarColecao(); };
 
 /* ---------- o jogo ---------- */
-const SHINY = 0.05, TEMPO_S = 60, VIDAS = 3, PERGUNTAS = 10;
+const SHINY = 0.05, TEMPO_S = 60, VIDAS = 3, PERGUNTAS = 10, EFEITO_S = 10;
+const MODOS_VIDA = ['vidas', 'chefao', 'escada'];
 let jogo = null;
-function trocarTela(t){ document.querySelectorAll('.pontos-voando').forEach(d => d.remove()); ['inicio', 'jogo', 'fim', 'trofeus'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
+function trocarTela(t){ document.querySelectorAll('.pontos-voando').forEach(d => d.remove()); $('recado-claude').hidden = t !== 'inicio'; ['inicio', 'jogo', 'fim', 'trofeus', 'album'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
+const limite = () => cfg.modo === 'dez' ? PERGUNTAS * (cfg.dois ? 2 : 1) : Infinity;
+const acabou = () => !!jogo && ((MODOS_VIDA.includes(cfg.modo) && jogo.vidas <= 0) || jogo.n >= limite());
 function novoJogo(){
   if(video) pararVideo(true);
   const p = pool();
   if(!p.length || (cfg.nivel !== 'revanche' && p.length < 4)){ alert(cfg.nivel === 'revanche' ? 'Não tem nenhum pra revanche!' : 'Escolha mais gerações!'); return; }
-  jogo = { lista:p, usados:new Set(), pontos:0, seq:0, maiorSeq:0, acertos:0, n:0, vidas:VIDAS, fim:0, rodadas:[], atual:null, relogio:0, dicas:0, respondeu:false, usouDica:false, brilhante:false, trofeus:[], nivel:cfg.nivel, modo:cfg.modo };
+  jogo = { lista:p, usados:new Set(), pontos:0, seq:0, maiorSeq:0, acertos:0, n:0, vidas:VIDAS, fim:0, rodadas:[], atual:null, relogio:0, dicas:0, respondeu:false,
+    usouDica:false, brilhante:false, trofeus:[], nivel:cfg.nivel, modo:cfg.modo, tipo:'sombra', degrau:0, chefe:false, inicioPerg:0, timerPedacos:0,
+    jogadores:cfg.dois ? [{ nome:cfg.nomes[0] || 'Jogador 1', pontos:0, acertos:0, seq:0 }, { nome:cfg.nomes[1] || 'Jogador 2', pontos:0, acertos:0, seq:0 }] : null, vez:1 };
   marcarDia();
   $('nomes').innerHTML = '';
   if(cfg.resp === 'escrever'){ const f = document.createDocumentFragment(); POKE.forEach(x => { const o = document.createElement('option'); o.value = x.nome; f.appendChild(o); }); $('nomes').appendChild(f); }
-  $('opcoes').hidden = cfg.resp !== 'opcoes'; $('escrever').hidden = cfg.resp !== 'escrever';
   trocarTela('jogo');
   if(cfg.video) comecarVideo();
+  if(cfg.musica) musicaLiga();
+  mostrarParceiro();
   if(cfg.modo === 'tempo'){
     jogo.fim = Date.now() + TEMPO_S * 1000;
-    jogo.relogio = setInterval(() => { const s = Math.max(0, Math.ceil((jogo.fim - Date.now()) / 1000)); $('p-extra').textContent = s + 's'; $('progresso').style.width = Math.max(0, jogo.fim - Date.now()) / (TEMPO_S * 1000) * 100 + '%'; if(s <= 0) terminar(); }, 250);
+    jogo.relogio = setInterval(() => { if(!jogo) return; const s = Math.max(0, Math.ceil((jogo.fim - Date.now()) / 1000)); $('p-extra').textContent = s + 's'; $('progresso').style.width = Math.max(0, jogo.fim - Date.now()) / (TEMPO_S * 1000) * 100 + '%'; if(s <= 0) terminar(); }, 250);
   }
   proxima();
 }
-function sortear(){
-  const livres = jogo.lista.filter(p => !jogo.usados.has(p.id));
+/* escada: começa com os famosos e vai abrindo */
+function poolEscada(){
+  const d = jogo.degrau;
+  if(d === 0) return FAMOSOS.map(i => POKE[i - 1]);
+  if(d === 1) return POKE.filter(p => p.ger <= 2);
+  if(d === 2) return POKE.filter(p => p.ger <= 4);
+  return POKE;
+}
+function sortear(filtro){
+  let base = cfg.modo === 'escada' ? poolEscada() : jogo.lista;
+  if(jogo.chefe) base = POKE.filter(p => LENDARIOS.has(p.id) && (cfg.nivel !== 'facil' || p.ger <= 4));
+  let livres = base.filter(p => !jogo.usados.has(p.id) && (!filtro || filtro(p)));
+  if(!livres.length && filtro) livres = POKE.filter(p => !jogo.usados.has(p.id) && filtro(p));
   if(!livres.length) return null;
   return livres[Math.floor(Math.random() * livres.length)];
 }
-function opcoesPara(certo){
-  /* metade das vezes as opções erradas são do mesmo tipo, pra ficar mais difícil */
-  const base = jogo.lista.length >= 12 ? jogo.lista : POKE;
-  const parecidos = base.filter(p => p.id !== certo.id && p.tipos.some(t => certo.tipos.includes(t)));
+function erradasPara(certo, base, excluir){
+  const parecidos = base.filter(p => p.id !== certo.id && !excluir.has(p.id) && p.tipos.some(t => certo.tipos.includes(t)));
   const erradas = new Set();
-  while(erradas.size < 3){
+  let voltas = 0;
+  while(erradas.size < 3 && voltas++ < 500){
     const fonte = Math.random() < .5 && parecidos.length >= 3 ? parecidos : base;
     const p = fonte[Math.floor(Math.random() * fonte.length)];
-    if(p.id !== certo.id) erradas.add(p);
+    if(p.id !== certo.id && !excluir.has(p.id)) erradas.add(p);
   }
-  return embaralhar([certo, ...erradas]);
+  return [...erradas];
 }
 function atualizarPlacar(){
-  $('p-pontos').textContent = jogo.pontos; $('p-seq').textContent = jogo.seq;
-  if(cfg.modo === 'dez'){ $('p-extra').textContent = `${Math.min(jogo.n, PERGUNTAS)}/${PERGUNTAS}`; $('p-extra-rot').textContent = 'pergunta'; }
-  else if(cfg.modo === 'vidas'){ $('p-extra').textContent = '❤️'.repeat(jogo.vidas) || '💔'; $('p-extra-rot').textContent = 'vidas'; }
+  const J = jogo.jogadores ? jogo.jogadores[jogo.vez] : null;
+  $('p-pontos').textContent = J ? J.pontos : jogo.pontos; $('p-seq').textContent = J ? J.seq : jogo.seq;
+  if(cfg.modo === 'dez'){ $('p-extra').textContent = `${Math.min(jogo.n, limite())}/${limite()}`; $('p-extra-rot').textContent = 'pergunta'; }
+  else if(MODOS_VIDA.includes(cfg.modo)){ $('p-extra').textContent = '❤️'.repeat(Math.max(0, jogo.vidas)) || '💔'; $('p-extra-rot').textContent = cfg.modo === 'escada' ? `degrau ${jogo.degrau + 1}` : 'vidas'; }
+  else if(cfg.modo === 'calmo'){ $('p-extra').textContent = '∞'; $('p-extra-rot').textContent = 'treino'; }
   else $('p-extra-rot').textContent = 'tempo';
-  $('progresso').style.width = (cfg.modo === 'dez' ? Math.min(jogo.n, PERGUNTAS) / PERGUNTAS : cfg.modo === 'vidas' ? jogo.vidas / VIDAS : Math.max(0, jogo.fim - Date.now()) / (TEMPO_S * 1000)) * 100 + '%';
+  $('progresso').style.width = (cfg.modo === 'dez' ? Math.min(jogo.n, limite()) / limite() : MODOS_VIDA.includes(cfg.modo) ? jogo.vidas / VIDAS : cfg.modo === 'calmo' ? 1 : Math.max(0, jogo.fim - Date.now()) / (TEMPO_S * 1000)) * 100 + '%';
+  if(J){ const v = $('vez'); v.hidden = false; v.textContent = `🎮 Vez de: ${J.nome}`; v.style.background = jogo.vez === 0 ? '#2f7fe0' : '#d0342c'; }
+  else $('vez').hidden = true;
 }
+const letrasDe = nome => semAcento(nome).toUpperCase();
+function tiposPossiveis(){ const t = Object.keys(cfg.tipos).filter(k => cfg.tipos[k]); return t.length ? t : ['sombra']; }
 function proxima(){
   if(!jogo) return;
-  if(cfg.modo === 'dez' && jogo.n >= PERGUNTAS){ terminar(); return; }
-  const p = sortear();
+  if(acabou()){ terminar(); return; }
+  if(jogo.jogadores && jogo.n > 0) jogo.vez = 1 - jogo.vez; else if(jogo.jogadores) jogo.vez = 0;
+  jogo.chefe = cfg.modo === 'chefao' && (jogo.n + 1) % 5 === 0;
+  let tipo = tiposPossiveis()[Math.floor(Math.random() * tiposPossiveis().length)];
+  let p = sortear(tipo === 'evolucao' ? (x => x.evos.length > 0) : tipo === 'letras' ? (x => letrasDe(x.nome).length >= 3 && letrasDe(x.nome).length <= 11) : null);
+  if(!p && tipo !== 'sombra'){ tipo = 'sombra'; p = sortear(); }
   if(!p){ terminar(); return; }
-  jogo.usados.add(p.id); jogo.n++; jogo.atual = p; jogo.dicas = 0; jogo.respondeu = false;
+  jogo.usados.add(p.id); jogo.n++; jogo.atual = p; jogo.dicas = 0; jogo.respondeu = false; jogo.tipo = tipo;
   jogo.brilhante = cfg.shiny || Math.random() < SHINY;   // ✨ 5% de chance de vir shiny (ou todos, no modo shiny)
-  const img = $('figura');
+  jogo.evo = tipo === 'evolucao' ? p.evos[Math.floor(Math.random() * p.evos.length)] : 0;
+  const img = $('figura'), palco = $('palco');
   /* esconde na hora: sem a animação de voltar pra sombra, senão dava pra ver o próximo colorido */
   img.style.transition = 'none'; img.classList.remove('revelado'); img.classList.add('esperando'); img.removeAttribute('src');
-  void img.offsetWidth; img.style.transition = '';
+  palco.className = 'palco'; palco.dataset.tipo = tipo; void img.offsetWidth; img.style.transition = '';
+  if(jogo.chefe) palco.classList.add('chefao');
+  $('coroa').hidden = !jogo.chefe;
+  const comEfeito = tipo === 'sombra' || tipo === 'letras';
+  Object.keys(cfg.efeitos).forEach(e => { if(cfg.efeitos[e] && comEfeito) palco.classList.add('ef-' + e); });
+  img.style.transformOrigin = `${20 + Math.random() * 60}% ${20 + Math.random() * 60}%`;
+  clearInterval(jogo.timerPedacos); $('pedacos').hidden = true;
   $('carregando').hidden = false; $('carregando').textContent = 'Carregando… ⏳';
   $('selo').hidden = true; $('num').hidden = true; $('dicas').innerHTML = ''; $('aviso').textContent = ''; $('aviso').className = 'aviso';
+  $('curio').hidden = true; $('botao-grito').hidden = tipo !== 'grito';
   $('proximo').hidden = true; $('dica').disabled = false; $('pular').disabled = false;
+  const perg = { sombra:'', grito:'🔊 Quem está gritando? Toque no 🔊 pra ouvir de novo.', cor:`🎨 Qual é a cor do ${p.nome}?`, evolucao:`🧬 Em quem o ${p.nome} evolui?`, letras:'🔤 Monte o nome do Pokémon!' }[tipo];
+  $('pergunta').textContent = perg; $('pergunta').hidden = !perg;
+  /* respostas */
   const ops = $('opcoes'); ops.innerHTML = '';
-  if(cfg.resp === 'opcoes') opcoesPara(p).forEach(o => {
-    const b = document.createElement('button'); b.type = 'button'; b.textContent = o.nome; b.dataset.id = o.id;
-    b.onclick = () => responder(o.id === p.id, b); ops.appendChild(b);
-  });
-  else { $('chute').value = ''; $('chute').disabled = false; setTimeout(() => $('chute').focus(), 50); }
+  const usarOpcoes = tipo === 'cor' || tipo === 'evolucao' || (tipo !== 'letras' && cfg.resp === 'opcoes');
+  ops.hidden = !usarOpcoes; $('escrever').hidden = usarOpcoes || tipo === 'letras'; $('letras-jogo').hidden = tipo !== 'letras';
+  const botao = (texto, val, html) => { const b = document.createElement('button'); b.type = 'button'; if(html) b.innerHTML = html; else b.textContent = texto; b.dataset.val = val; b.onclick = () => responder(String(val) === String(jogo.certoVal), b); ops.appendChild(b); };
+  if(tipo === 'cor'){
+    jogo.certoVal = p.cor;
+    const outras = embaralhar(CORES.map((c, i) => i).filter(i => i !== p.cor)).slice(0, 3);
+    embaralhar([p.cor, ...outras]).forEach(i => botao('', i, `<span class="cor-bola" style="background:${CORES[i][1]}"></span>${CORES[i][0]}`));
+  }else if(tipo === 'evolucao'){
+    const e = POKE[jogo.evo - 1]; jogo.certoVal = e.id;
+    const excluir = new Set([p.id, ...p.evos]);
+    embaralhar([e, ...erradasPara(e, jogo.lista.length >= 12 ? jogo.lista : POKE, excluir)]).forEach(o => botao(o.nome, o.id));
+  }else if(tipo === 'letras'){
+    jogo.certoVal = p.id; montarLetras(p);
+  }else if(usarOpcoes){
+    jogo.certoVal = p.id;
+    embaralhar([p, ...erradasPara(p, jogo.lista.length >= 12 ? jogo.lista : POKE, new Set([p.id]))]).forEach(o => botao(o.nome, o.id));
+  }else{ jogo.certoVal = p.id; $('chute').value = ''; $('chute').disabled = false; setTimeout(() => $('chute').focus(), 50); }
+  $('falar').hidden = !(cfg.falar && Reconhecer && (tipo === 'sombra' || tipo === 'grito'));
   atualizarPlacar();
-  img.onload = () => { $('carregando').hidden = true; img.classList.remove('esperando'); };
+  img.onload = () => {
+    $('carregando').hidden = true; img.classList.remove('esperando');
+    if(!jogo || jogo.atual !== p) return;
+    jogo.inicioPerg = performance.now();
+    if(palco.classList.contains('ef-pedacos')) comecarPedacos();
+    if(tipo === 'grito') tocarGritoPergunta();
+  };
   img.onerror = () => {
     $('carregando').textContent = navigator.onLine === false ? '📡 Sem internet! Conecte pra jogar.' : 'Não carregou 😕 Indo pro próximo…';
-    if(navigator.onLine !== false){ jogo.usados.add(p.id); jogo.n--; setTimeout(proxima, 1200); }
+    if(navigator.onLine !== false){ jogo.usados.add(p.id); jogo.n--; if(jogo.jogadores) jogo.vez = 1 - jogo.vez; setTimeout(proxima, 1200); }
   };
   img.crossOrigin = 'anonymous';   // o PokeAPI deixa: assim a figura pode entrar no vídeo
   img.src = arte(p.id, jogo.brilhante);
 }
+function comecarPedacos(){
+  const c = $('pedacos'); c.innerHTML = ''; c.hidden = false;
+  const ordem = embaralhar([...Array(16).keys()]);
+  for(let i = 0; i < 16; i++) c.appendChild(document.createElement('i'));
+  let k = 0;
+  jogo.timerPedacos = setInterval(() => { if(!jogo || jogo.respondeu || k >= 15){ clearInterval(jogo && jogo.timerPedacos); return; } c.children[ordem[k++]].classList.add('saiu'); }, EFEITO_S * 1000 / 16);
+}
+function tocarGritoPergunta(){ if(jogo && jogo.atual) grito(jogo.atual, true); }
+$('botao-grito').onclick = tocarGritoPergunta;
+/* ---------- letras embaralhadas ---------- */
+function montarLetras(p){
+  const alvo = letrasDe(p.nome); jogo.montado = [];
+  let pecas = [...alvo];
+  for(let t = 0; t < 10 && pecas.join('') === alvo; t++) pecas = embaralhar([...alvo]);
+  $('montado').className = 'montado'; $('montado').innerHTML = '';
+  const caixa = $('pecas'); caixa.innerHTML = '';
+  pecas.forEach((l, i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = l; b.dataset.i = i;
+    b.onclick = () => {
+      if(jogo.respondeu) return;
+      b.disabled = true; jogo.montado.push(b);
+      const s = document.createElement('span'); s.textContent = l; $('montado').appendChild(s);
+      if(jogo.montado.length === alvo.length){
+        const certo = jogo.montado.map(x => x.textContent).join('') === alvo;
+        $('montado').classList.add(certo ? 'certo' : 'errado');
+        setTimeout(() => responder(certo, null), 250);
+      }
+    };
+    caixa.appendChild(b);
+  });
+}
+$('apagar').onclick = () => { if(!jogo || jogo.respondeu || !jogo.montado.length) return; jogo.montado.pop().disabled = false; $('montado').lastChild.remove(); };
 function responder(certo, botao){
   if(!jogo || jogo.respondeu) return;
   jogo.respondeu = true;
-  const p = jogo.atual, img = $('figura');
-  img.classList.add('revelado');
-  $('selo').textContent = jogo.brilhante ? `✨ É o ${p.nome} shiny!` : `É o ${p.nome}!`; $('selo').hidden = false;
-  $('num').textContent = `#${p.id}`; $('num').hidden = false;
-  mostrarTipos();
-  document.querySelectorAll('#opcoes button').forEach(b => { b.disabled = true; if(+b.dataset.id === p.id) b.classList.add('certo'); });
+  clearInterval(jogo.timerPedacos);
+  const p = jogo.atual, img = $('figura'), palco = $('palco'), tipo = jogo.tipo;
+  palco.classList.add('revelou'); img.classList.add('revelado'); $('pedacos').hidden = true; $('botao-grito').hidden = true;
+  const alvo = tipo === 'evolucao' ? POKE[jogo.evo - 1] : p;
+  if(tipo === 'evolucao'){ img.src = arte(alvo.id, jogo.brilhante); $('selo').textContent = `${p.nome} evolui para ${alvo.nome}!`; }
+  else if(tipo === 'cor') $('selo').textContent = `${p.nome} é ${CORES[p.cor][0].toLowerCase()}!`;
+  else $('selo').textContent = jogo.brilhante ? `✨ É o ${p.nome} shiny!` : `É o ${p.nome}!`;
+  $('selo').hidden = false;
+  $('num').textContent = `#${alvo.id}`; $('num').hidden = false;
+  mostrarTipos(alvo);
+  document.querySelectorAll('#opcoes button').forEach(b => { b.disabled = true; if(String(b.dataset.val) === String(jogo.certoVal)) b.classList.add('certo'); });
   if(botao && !certo) botao.classList.add('errado');
-  $('chute').disabled = true; $('dica').disabled = true; $('pular').disabled = true;
+  if(tipo === 'letras' && !certo){ $('montado').innerHTML = [...letrasDe(p.nome)].map(l => `<span>${l}</span>`).join(''); $('montado').className = 'montado certo'; }
+  $('pecas').querySelectorAll('button').forEach(b => { b.disabled = true; });
+  $('chute').disabled = true; $('dica').disabled = true; $('pular').disabled = true; $('falar').hidden = true;
+  const J = jogo.jogadores ? jogo.jogadores[jogo.vez] : null;
+  const nomeTipo = tipo === 'sombra' || tipo === 'grito' || tipo === 'letras';
   let ganhou = 0;
   if(certo){
     jogo.seq++; jogo.maiorSeq = Math.max(jogo.maiorSeq, jogo.seq); jogo.acertos++;
-    ganhou = Math.max(2, 10 - jogo.dicas * 3) + Math.min(5, jogo.seq - 1);
+    if(J){ J.acertos++; J.seq++; }
+    const rapido = palco.className.includes('ef-') && jogo.inicioPerg && performance.now() - jogo.inicioPerg < 5000;
+    ganhou = Math.max(2, 10 - jogo.dicas * 3) + Math.min(5, (J ? J.seq : jogo.seq) - 1) + (rapido ? 3 : 0);
     if(jogo.brilhante && !cfg.shiny) ganhou += 10;   // no modo shiny todos são, então não tem bônus
-    jogo.pontos += ganhou;
-    colecao.add(p.id); gravar('colecao', [...colecao]);
+    if(jogo.chefe) ganhou *= 2;
+    jogo.pontos += ganhou; if(J) J.pontos += ganhou;
+    if(nomeTipo){ colecao.add(p.id); gravar('colecao', [...colecao]); if(errados.delete(p.id)) gravar('errados', [...errados]); }
     stats.acertos++; stats.melhorSeq = Math.max(stats.melhorSeq, jogo.seq);
-    if(cfg.resp === 'escrever') stats.escritos++;
+    if(cfg.resp === 'escrever' && (tipo === 'sombra' || tipo === 'grito')) stats.escritos++;
     if(jogo.brilhante) stats.brilhantes++;
     if(jogo.nivel === 'revanche') stats.revanche++;
-    if(errados.delete(p.id)) gravar('errados', [...errados]);
-    $('aviso').textContent = ['✅ Acertou!', '🎉 Isso aí!', '⭐ Mandou bem!', '🔥 Demais!'][Math.floor(Math.random() * 4)] + (jogo.seq > 1 ? ` ${jogo.seq} seguidos!` : '');
-    if(jogo.brilhante && !cfg.shiny) $('aviso').textContent += ' ✨ Era shiny! +10';
+    if(cfg.cartas && nomeTipo) ganharCarta(p.id, jogo.brilhante);
+    progressoMissao(p, alvo, tipo);
+    $('aviso').textContent = ['✅ Acertou!', '🎉 Isso aí!', '⭐ Mandou bem!', '🔥 Demais!'][Math.floor(Math.random() * 4)] + ((J ? J.seq : jogo.seq) > 1 ? ` ${J ? J.seq : jogo.seq} seguidos!` : '')
+      + (rapido ? ' ⚡ Rápido! +3' : '') + (jogo.chefe ? ' 👑 Chefão x2!' : '') + (jogo.brilhante && !cfg.shiny ? ' ✨ Era shiny! +10' : '') + (cfg.cartas && nomeTipo ? ' 🃏 +1 cartinha!' : '');
     $('aviso').className = 'aviso bom';
-    voar('+' + ganhou);
-    efeito(true);
+    voar('+' + ganhou); efeito(true); parceiroReage(true);
+    if(cfg.modo === 'escada'){ const d = Math.min(3, Math.floor(jogo.acertos / 5)); if(d > jogo.degrau){ jogo.degrau = d; $('aviso').textContent += ` 🧗 Subiu pro degrau ${d + 1}!`; } }
   }else{
-    jogo.seq = 0;
-    if(cfg.modo === 'vidas') jogo.vidas--;
-    stats.erros++; errados.add(p.id); gravar('errados', [...errados]);
-    $('aviso').textContent = botao === null ? '🤷 Tudo bem! Agora você conhece ele.' : '❌ Quase! Esse era outro.';
+    jogo.seq = 0; if(J) J.seq = 0;
+    if(MODOS_VIDA.includes(cfg.modo)) jogo.vidas--;
+    stats.erros++;
+    if(nomeTipo){ errados.add(p.id); gravar('errados', [...errados]); }
+    $('aviso').textContent = botao === null && tipo !== 'letras' ? '🤷 Tudo bem! Agora você conhece ele.' : '❌ Quase! A resposta era outra.';
     $('aviso').className = 'aviso ruim';
-    efeito(false);
+    efeito(false); parceiroReage(false);
   }
-  jogo.rodadas.push({ id:p.id, certo, brilha:jogo.brilhante });
+  jogo.rodadas.push({ id:p.id, certo, brilha:jogo.brilhante, quem:J ? jogo.vez : -1 });
   gravar('stats', stats); checarTrofeus();
   atualizarPlacar();
-  grito(p);
-  const acabou = (cfg.modo === 'vidas' && jogo.vidas <= 0) || (cfg.modo === 'dez' && jogo.n >= PERGUNTAS);
-  $('proximo').textContent = acabou ? 'Ver resultado 🏁' : 'Próximo ➡️';
+  if(tipo !== 'grito') grito(alvo);
+  if(cfg.curiosidade) mostrarCurio(alvo);
+  $('proximo').textContent = acabou() ? 'Ver resultado 🏁' : jogo.jogadores ? `Próximo: vez de ${jogo.jogadores[1 - jogo.vez].nome} ➡️` : 'Próximo ➡️';
   $('proximo').hidden = false; $('proximo').focus();
   if(cfg.modo === 'tempo') setTimeout(() => { if(jogo && jogo.atual === p) proxima(); }, 1300);   // contra o tempo: vai sozinho
 }
 function voar(t){ const d = document.createElement('div'); d.className = 'pontos-voando'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1000); }
-function mostrarTipos(){
-  const p = jogo.atual;
+function mostrarTipos(p){
+  p = p || jogo.atual;
   $('dicas').innerHTML = p.tipos.map(t => `<span class="tipo" style="background:${TIPOS[t][2]}">${TIPOS[t][1]} ${TIPOS[t][0]}</span>`).join('');
 }
 $('dica').onclick = () => {
   if(!jogo || jogo.respondeu) return;
-  const p = jogo.atual; jogo.dicas++; jogo.usouDica = true; stats.dicas++;
-  if(jogo.dicas === 1){ mostrarTipos(); $('aviso').textContent = '💡 Dica: o tipo dele. (vale menos pontos)'; }
+  const tipo = jogo.tipo, alvo = tipo === 'evolucao' ? POKE[jogo.evo - 1] : jogo.atual;
+  jogo.dicas++; jogo.usouDica = true; stats.dicas++;
+  if(tipo === 'cor'){ $('aviso').textContent = `💡 Dica: a cor começa com “${CORES[jogo.atual.cor][0][0]}”.`; $('dica').disabled = true; }
+  else if(tipo === 'letras'){
+    const alvoL = letrasDe(alvo.nome);
+    if(!jogo.montado.length){ const b = [...$('pecas').children].find(x => !x.disabled && x.textContent === alvoL[0]); if(b) b.click(); }
+    mostrarTipos(alvo); $('aviso').textContent = '💡 Dica: coloquei a primeira letra e mostrei o tipo.'; $('dica').disabled = true;
+  }
+  else if(jogo.dicas === 1){ mostrarTipos(alvo); $('aviso').textContent = '💡 Dica: o tipo dele. (vale menos pontos)'; }
   else{
-    mostrarTipos();
-    const letras = [...p.nome].map((c, i) => i === 0 ? c : (/[a-zA-Z0-9éÉ]/.test(c) ? '_' : c)).join(' ');
+    mostrarTipos(alvo);
+    const letras = [...alvo.nome].map((c, i) => i === 0 ? c : (/[a-zA-Z0-9éÉ]/.test(c) ? '_' : c)).join(' ');
     $('dicas').insertAdjacentHTML('beforeend', `<div style="flex-basis:100%;text-align:center" class="letras">${letras}</div>`);
     $('aviso').textContent = '💡 Dica: a primeira letra e quantas letras tem.';
     $('dica').disabled = true;
@@ -618,7 +954,7 @@ $('dica').onclick = () => {
   $('aviso').className = 'aviso';
 };
 $('pular').onclick = () => responder(false, null);
-$('proximo').onclick = () => { if(!jogo) return; const acabou = (cfg.modo === 'vidas' && jogo.vidas <= 0) || (cfg.modo === 'dez' && jogo.n >= PERGUNTAS); acabou ? terminar() : proxima(); };
+$('proximo').onclick = () => { if(!jogo) return; acabou() ? terminar() : proxima(); };
 function distancia(a, b){
   const d = Array.from({ length:a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
   for(let j = 1; j <= b.length; j++) d[0][j] = j;
@@ -634,8 +970,8 @@ $('escrever').onsubmit = ev => {
   responder(c === certo || distancia(c, certo) <= tolera, null);
   if($('aviso').className.includes('ruim')) $('aviso').textContent = `❌ Não foi dessa vez! Você escreveu “${$('chute').value.trim()}”.`;
 };
-function grito(p){
-  if(!cfg.som) return;
+function grito(p, sempre){
+  if(!cfg.som && !sempre) return;
   if(video && gritoNoVideo(p)) return;
   try{
     const a = new Audio(), ogg = a.canPlayType('audio/ogg; codecs=vorbis');
@@ -646,8 +982,10 @@ function grito(p){
 }
 function terminar(){
   if(!jogo) return;
-  clearInterval(jogo.relogio);
+  clearInterval(jogo.relogio); clearInterval(jogo.timerPedacos);
+  musicaDesliga();
   const j = jogo; jogo = null;
+  const nivelAntes = nivelDe(xpTotal());
   if(j.rodadas.length){
     stats.partidas++; stats.pontosTotal += j.pontos; stats.melhorPontos = Math.max(stats.melhorPontos, j.pontos);
     if(!stats.niveis.includes(j.nivel)) stats.niveis.push(j.nivel);
@@ -658,17 +996,28 @@ function terminar(){
     if(video) stats.videos++;
     gravar('stats', stats);
     const antesTr = trofeusDaPartida; trofeusDaPartida = j.trofeus; checarTrofeus(); trofeusDaPartida = antesTr;
+    avancarMissao('partidas', 1); avancarMissao('pontos', j.pontos, true);
+    checarNivel(nivelAntes);
   }
-  const recs = ler('recordes', {}), k = chaveRecorde(), antes = recs[k] || 0, novo = j.pontos > antes && j.pontos > 0;
+  const recs = ler('recordes', {}), k = chaveRecorde(), antes = recs[k] || 0, novo = !j.jogadores && j.pontos > antes && j.pontos > 0;
   if(novo){ recs[k] = j.pontos; gravar('recordes', recs); }
   $('fim-titulo').textContent = j.acertos === 0 ? 'Não foi dessa vez! Tenta de novo? 💪' : j.acertos >= j.rodadas.length * .8 ? '🏆 Você é um Mestre Pokémon!' : j.acertos >= j.rodadas.length / 2 ? '🎉 Muito bem!' : '👍 Boa! Treina mais um pouco!';
   $('fim-pontos').textContent = j.pontos; $('fim-novo').hidden = !novo;
   $('fim-acertos').textContent = `${j.acertos}/${j.rodadas.length}`; $('fim-seq').textContent = j.maiorSeq; $('fim-recorde').textContent = Math.max(antes, j.pontos);
+  if(j.jogadores){
+    const [a, b] = j.jogadores;
+    $('fim-titulo').textContent = a.pontos === b.pontos ? '🤝 Empate!' : `🏆 ${(a.pontos > b.pontos ? a : b).nome} venceu!`;
+    $('fim-pontos').textContent = `${a.pontos} × ${b.pontos}`; $('fim-acertos').textContent = `${a.acertos} × ${b.acertos}`;
+  }
+  if(novo || (j.modo === 'dez' && j.acertos === limite() && !j.jogadores)) setTimeout(confete, 300);
+  ultimoResultado = { pontos:j.jogadores ? `${j.jogadores[0].pontos}×${j.jogadores[1].pontos}` : j.pontos, acertos:`${j.acertos}/${j.rodadas.length}`, seq:j.maiorSeq, novo,
+    titulo:j.jogadores ? $('fim-titulo').textContent : $('fim-titulo').textContent, ids:j.rodadas.filter(r => r.certo).map(r => r.id) };
+  $('foto').textContent = '📸 Salvar foto do resultado';
   const ul = $('rodadas'); ul.innerHTML = '';
   j.rodadas.forEach(r => {
     const li = document.createElement('li'), img = document.createElement('img'); li.className = r.certo ? 'ok' : 'nao';
     img.src = mini(r.id); img.alt = ''; img.loading = 'lazy';
-    li.append(img, `${r.certo ? '✅' : '❌'} ${r.brilha ? '✨' : ''}${POKE[r.id - 1].nome}`); ul.appendChild(li);
+    li.dataset.id = r.id; li.append(img, `${r.certo ? '✅' : '❌'} ${r.brilha ? '✨' : ''}${j.jogadores ? (r.quem === 0 ? '🔵' : '🔴') : ''}${POKE[r.id - 1].nome}`); ul.appendChild(li);
   });
   const ft = $('fim-trofeus'); ft.hidden = !j.trofeus.length;
   ft.innerHTML = j.trofeus.length ? `<b>🏆 Troféus que você ganhou agora (${j.trofeus.length}):</b><div class="ultimos">${j.trofeus.map(t => `<span>${t.e} ${t.n}</span>`).join('')}</div>` : '';
@@ -856,7 +1205,7 @@ function desenharVideo(){
 }
 $('jogar').onclick = novoJogo;
 $('de-novo').onclick = novoJogo;
-$('menu').onclick = () => { trocarTela('inicio'); marcar(); };
+$('menu').onclick = () => { trocarTela('inicio'); marcar(); mostrarMissoes(); mostrarXP(); };
 $('sair').onclick = () => { if(!jogo) return; if(jogo.rodadas.length === 0 || confirm('Parar o jogo agora?')) terminar(); };
 document.addEventListener('keydown', ev => {   // no computador: 1 2 3 4 escolhem, Enter vai pro próximo
   if($('tela-jogo').hidden || !jogo || document.activeElement === $('chute')) return;
@@ -1009,7 +1358,340 @@ $('atalho-shiny').onclick = () => $('ver-trofeus').click();
 $('atalho-colecao').onclick = () => { if($('colecao-caixa').hidden) $('ver-colecao').click(); $('cartao-colecao').scrollIntoView({ behavior:'smooth', block:'start' }); };
 $('menu').addEventListener('click', novaSombra); $('voltar-trofeus').addEventListener('click', novaSombra);
 
+/* =========================================================================
+   Coisas novas: parceiro, temas, curiosidades, cartinhas, Pokédex, música,
+   confete, nível de treinador, recompensa diária, missões, foto, falar,
+   perfil e a sombra da tela inicial trocando sozinha.
+   ========================================================================= */
+const REGIOES = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola', 'Galar', 'Paldea'];
+
+/* ---------- 🎤 falar a resposta (reconhecimento de voz do navegador) ---------- */
+let ouvindo = null;
+$('falar').onclick = () => {
+  if(!Reconhecer || !jogo || jogo.respondeu) return;
+  if(ouvindo){ try{ ouvindo.stop(); }catch(e){} return; }
+  const r = new Reconhecer(); r.lang = 'pt-BR'; r.maxAlternatives = 5; r.interimResults = false;
+  ouvindo = r; $('falar').classList.add('ouvindo'); $('falar').textContent = '👂 Ouvindo… fale o nome!';
+  r.onresult = ev => {
+    const alts = [...ev.results[0]].map(a => semAcento(a.transcript));
+    const candidatos = cfg.resp === 'opcoes' ? [...$('opcoes').children].map(b => ({ nome:b.textContent, b })) : POKE.map(x => ({ nome:x.nome }));
+    let melhor = null, dist = 99;
+    alts.forEach(a => candidatos.forEach(c => { const d = distancia(a, semAcento(c.nome)); if(d < dist){ dist = d; melhor = c; } }));
+    const ok = melhor && dist <= Math.max(2, Math.floor(semAcento(melhor.nome).length * .35));
+    if(!ok){ $('aviso').textContent = `🎤 Não entendi “${ev.results[0][0].transcript}”. Tenta de novo!`; $('aviso').className = 'aviso'; return; }
+    if(melhor.b) melhor.b.click(); else { $('chute').value = melhor.nome; $('escrever').requestSubmit(); }
+  };
+  r.onerror = ev => { $('aviso').textContent = ev.error === 'not-allowed' ? '🎤 O microfone está bloqueado.' : '🎤 Não deu pra ouvir. Tenta de novo!'; $('aviso').className = 'aviso'; };
+  r.onend = () => { ouvindo = null; $('falar').classList.remove('ouvindo'); $('falar').textContent = '🎤 Falar a resposta'; };
+  try{ r.start(); }catch(e){ r.onend(); }
+};
+
+/* ---------- 🎒 parceiro ---------- */
+function mostrarParceiro(){
+  const el = $('parceiro-el'); el.hidden = !cfg.parceiro;
+  if(cfg.parceiro){ const i = $('parceiro-img'); i.src = mini(cfg.parceiro); i.alt = POKE[cfg.parceiro - 1].nome; }
+}
+function parceiroReage(bom){
+  if(!cfg.parceiro) return;
+  const el = $('parceiro-el'), b = $('balao');
+  el.classList.remove('feliz', 'triste'); void el.offsetWidth; el.classList.add(bom ? 'feliz' : 'triste');
+  b.textContent = bom ? ['Boa!', 'Isso!', 'Uhuu!', 'Demais!', `${POKE[cfg.parceiro - 1].nome}!`][Math.floor(Math.random() * 5)] : ['Ops!', 'Quase!', 'Próximo!'][Math.floor(Math.random() * 3)];
+  b.hidden = false; clearTimeout(b.t); b.t = setTimeout(() => { b.hidden = true; }, 1600);
+}
+FAMOSOS.slice().sort((a, b) => POKE[a - 1].nome.localeCompare(POKE[b - 1].nome)).forEach((id, i) => {
+  if(i === 0){ const o = document.createElement('option'); o.value = 0; o.textContent = 'Nenhum'; $('parceiro').appendChild(o); }
+  const o = document.createElement('option'); o.value = id; o.textContent = POKE[id - 1].nome; $('parceiro').appendChild(o);
+});
+$('parceiro').onchange = ev => { cfg.parceiro = +ev.target.value; marcar(); };
+
+/* ---------- 🎨 temas ---------- */
+function aplicarCor(){ if(cfg.tema && cfg.tema !== 'padrao') document.documentElement.setAttribute('data-cor', cfg.tema); else document.documentElement.removeAttribute('data-cor'); }
+$('tema-cor').onchange = ev => { cfg.tema = ev.target.value; aplicarCor(); marcar(); };
+
+/* ---------- 🧠 curiosidades ---------- */
+function mostrarCurio(p){
+  const fatos = [];
+  fatos.push(`É da geração ${p.ger}, da região de ${REGIOES[p.ger - 1]}.`);
+  const kg = p.peso / 10, m = p.alt / 10;
+  fatos.push(`Mede ${m.toLocaleString('pt-BR')} m e pesa ${kg.toLocaleString('pt-BR')} kg` + (kg < 1 ? ' (mais leve que um livro!)' : kg < 10 ? ' (tipo um gato).' : kg < 80 ? ' (tipo uma pessoa).' : kg < 500 ? ' (mais pesado que um urso!).' : ' (pesado igual um carro, ou mais!).'));
+  if(p.prevo) fatos.push(`Ele evolui do ${POKE[p.prevo - 1].nome}.`);
+  if(p.evos.length) fatos.push(`Ele evolui para ${p.evos.map(e => POKE[e - 1].nome).join(' ou ')}.`);
+  if(!p.prevo && !p.evos.length) fatos.push('Ele não evolui!');
+  if(LENDARIOS.has(p.id)) fatos.push('É um Pokémon lendário ou mítico! 🐉');
+  fatos.push(`A cor dele na Pokédex é ${CORES[p.cor][0].toLowerCase()}.`);
+  const dois = embaralhar(fatos).slice(0, 2);
+  $('curio').innerHTML = '<b>🧠 Sabia que…</b>' + dois.map(f => `<div>• ${f}</div>`).join('');
+  $('curio').hidden = false;
+}
+
+/* ---------- 🃏 cartinhas ---------- */
+let cartas = ler('cartas', {}) || {};
+function ganharCarta(id, brilha){ const c = cartas[id] || { n:0, s:0 }; c.n++; if(brilha) c.s++; cartas[id] = c; gravar('cartas', cartas); $('at-album').textContent = Object.keys(cartas).length; }
+function mostrarAlbum(){
+  const ids = Object.keys(cartas).map(Number).sort((a, b) => a - b), caixa = $('album');
+  $('album-cont').textContent = `🃏 ${ids.length} cartinhas`;
+  $('album-info').textContent = cfg.cartas ? 'Cada Pokémon que você acerta vira uma cartinha! Toque numa pra ver a Pokédex.' : 'Ligue 🃏 Cartinhas em ⚙️ Como jogar pra ganhar cartinhas quando acertar!';
+  caixa.innerHTML = '';
+  if(!ids.length){ caixa.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:16px">Nenhuma cartinha ainda. 🃏</p>'; return; }
+  ids.forEach(id => {
+    const p = POKE[id - 1], c = cartas[id], b = document.createElement('button');
+    b.type = 'button'; b.className = 'carta' + (LENDARIOS.has(id) ? ' rara' : '') + (c.s ? ' brilha' : '');
+    const t1 = TIPOS[p.tipos[0]][2], t2 = TIPOS[p.tipos[1] ?? p.tipos[0]][2];
+    b.style.background = `linear-gradient(150deg, ${t1}, ${t2})`;
+    b.innerHTML = `<span class="qtd">x${c.n}</span><img loading="lazy" alt="" /><b></b><small>#${id}${c.s ? ' ✨' : ''}${LENDARIOS.has(id) ? ' 👑' : ''}</small>`;
+    b.querySelector('img').src = mini(id); b.querySelector('b').textContent = p.nome;
+    b.onclick = () => abrirPokedex(id);
+    caixa.appendChild(b);
+  });
+}
+$('atalho-album').onclick = () => { trocarTela('album'); mostrarAlbum(); };
+$('voltar-album').onclick = () => { trocarTela('inicio'); marcar(); novaSombra(); };
+
+/* ---------- 🔎 Pokédex ---------- */
+function abrirPokedex(id){
+  const p = POKE[id - 1], d = $('pokedex');
+  const cadeia = [];
+  let raiz = p; while(raiz.prevo) raiz = POKE[raiz.prevo - 1];
+  const junta = x => { cadeia.push(x); x.evos.forEach(e => junta(POKE[e - 1])); };
+  junta(raiz);
+  $('pokedex-corpo').innerHTML = `
+    <img src="${arte(id)}" alt="" crossorigin="anonymous" />
+    <h2>#${id} ${p.nome}</h2>
+    <div class="tipos-pd">${p.tipos.map(t => `<span class="tipo" style="background:${TIPOS[t][2]}">${TIPOS[t][1]} ${TIPOS[t][0]}</span>`).join('')}</div>
+    <dl>
+      <dt>Região</dt><dd>${REGIOES[p.ger - 1]} (geração ${p.ger})</dd>
+      <dt>Altura</dt><dd>${(p.alt / 10).toLocaleString('pt-BR')} m</dd>
+      <dt>Peso</dt><dd>${(p.peso / 10).toLocaleString('pt-BR')} kg</dd>
+      <dt>Cor</dt><dd><span class="cor-bola" style="background:${CORES[p.cor][1]};display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px"></span> ${CORES[p.cor][0]}</dd>
+      ${LENDARIOS.has(id) ? '<dt>Especial</dt><dd>🐉 Lendário ou mítico</dd>' : ''}
+      <dt>Coleção</dt><dd>${colecao.has(id) ? '✅ Você já acertou!' : '❓ Ainda não acertou'}${cartas[id] ? ` · 🃏 x${cartas[id].n}` : ''}</dd>
+    </dl>
+    ${cadeia.length > 1 ? '<div class="evo">' + cadeia.map(x => `<button type="button" data-id="${x.id}" class="${x.id === id ? 'aqui' : ''}">${x.nome}</button>`).join('<span>➜</span>') + '</div>' : ''}
+    <div style="text-align:center;margin-top:12px"><button type="button" class="mini" id="pd-grito">🔊 Ouvir o grito</button></div>`;
+  $('pokedex-corpo').querySelectorAll('.evo button').forEach(b => { b.onclick = () => abrirPokedex(+b.dataset.id); });
+  $('pd-grito').onclick = () => grito(p, true);
+  if(!d.open){ try{ d.showModal(); }catch(e){ d.setAttribute('open', ''); } }
+}
+$('fechar-pokedex').onclick = () => $('pokedex').close();
+$('pokedex').addEventListener('click', ev => { if(ev.target === $('pokedex')) $('pokedex').close(); });
+$('colecao').addEventListener('click', ev => { const li = ev.target.closest('li[data-id]'); if(li) abrirPokedex(+li.dataset.id); });
+$('rodadas').addEventListener('click', ev => { const li = ev.target.closest('li[data-id]'); if(li) abrirPokedex(+li.dataset.id); });
+
+/* ---------- 🎵 música de fundo (feita pelo próprio site, não é de nenhum jogo) ---------- */
+let musica = null;
+const MELODIA = [72, 76, 79, 76, 77, 81, 79, 77, 76, 79, 84, 79, 74, 77, 76, 74, 72, 76, 79, 83, 81, 79, 77, 76, 74, 77, 81, 79, 77, 76, 74, 72];
+const BAIXO = [48, 48, 53, 53, 55, 55, 48, 48, 48, 48, 53, 53, 50, 50, 55, 55];
+function musicaLiga(){
+  musicaDesliga();
+  try{
+    const ac = new (window.AudioContext || window.webkitAudioContext)(), passo = 60 / 138 / 2;
+    const volume = ac.createGain(); volume.gain.value = .05; volume.connect(ac.destination);
+    let prox = ac.currentTime + .1, i = 0;
+    const nota = (midi, t, dur, tipo, g) => { const o = ac.createOscillator(), e = ac.createGain(); o.type = tipo; o.frequency.value = 440 * Math.pow(2, (midi - 69) / 12); e.gain.setValueAtTime(g, t); e.gain.exponentialRampToValueAtTime(.001, t + dur); o.connect(e); e.connect(volume); o.start(t); o.stop(t + dur + .02); };
+    const timer = setInterval(() => {
+      while(prox < ac.currentTime + .3){
+        nota(MELODIA[i % 32], prox, passo * .9, 'square', .6);
+        if(i % 2 === 0) nota(BAIXO[(i / 2) % 16], prox, passo * 1.8, 'triangle', 1);
+        prox += passo; i++;
+      }
+    }, 80);
+    musica = { ac, timer };
+  }catch(e){ musica = null; }
+}
+function musicaDesliga(){ if(!musica) return; clearInterval(musica.timer); try{ musica.ac.close(); }catch(e){} musica = null; }
+
+/* ---------- 🎉 confete ---------- */
+function confete(){
+  const cores = ['#ffcb05', '#e3350d', '#2f7fe0', '#1f9d57', '#d6408f', '#ffffff'];
+  for(let i = 0; i < 90; i++){
+    const d = document.createElement('i'); d.className = 'confete';
+    d.style.left = Math.random() * 100 + 'vw'; d.style.background = cores[i % cores.length];
+    d.style.animationDuration = (1.8 + Math.random() * 1.8) + 's'; d.style.animationDelay = Math.random() * .6 + 's';
+    document.body.appendChild(d); setTimeout(() => d.remove(), 4500);
+  }
+}
+
+/* ---------- 🎖️ nível de treinador (XP) ---------- */
+const xpTotal = () => stats.pontosTotal + (stats.xpBonus || 0);
+const xpPara = n => 50 * n * (n - 1);   // nível 2 = 100 XP, 3 = 300, 4 = 600…
+function nivelDe(xp){ let n = 1; while(xp >= xpPara(n + 1)) n++; return n; }
+function mostrarXP(){
+  const xp = xpTotal(), n = nivelDe(xp), a = xpPara(n), b = xpPara(n + 1);
+  $('xp-txt').textContent = `🎖️ ${perfil.apelido ? perfil.apelido + ' · ' : ''}Treinador nível ${n} · ${xp - a}/${b - a} XP`;
+  $('xp-barra').style.width = ((xp - a) / (b - a) * 100) + '%';
+}
+function darXP(qtd, motivo){
+  const antes = nivelDe(xpTotal());
+  stats.xpBonus = (stats.xpBonus || 0) + qtd; gravar('stats', stats);
+  checarNivel(antes, motivo);
+}
+function checarNivel(antes, motivo){
+  const depois = nivelDe(xpTotal());
+  if(depois > antes){ filaToast.push({ e:'⬆️', n:`Subiu pro nível ${depois}!`, nivel:0 }); mostrarToast(); confete(); }
+  mostrarXP();
+}
+
+/* ---------- 🔥 recompensa diária (sequência de dias) ---------- */
+const diaLocal = d => d.toLocaleDateString('sv-SE');
+function recompensaDiaria(){
+  const hoje = diaLocal(new Date()), ontem = diaLocal(new Date(Date.now() - 864e5));
+  if(stats.ultimoLogin === hoje) return;
+  const quebrou = stats.ultimoLogin && stats.ultimoLogin !== ontem && (stats.diasSeguidos || 0) > 1;
+  stats.diasSeguidos = stats.ultimoLogin === ontem ? (stats.diasSeguidos || 0) + 1 : 1;
+  stats.ultimoLogin = hoje; gravar('stats', stats);
+  const dia = stats.diasSeguidos, premio = Math.min(7, dia) * 10;
+  $('diario-titulo').textContent = dia === 1 ? 'RECOMPENSA DIÁRIA!' : `${dia} DIAS SEGUIDOS!`;
+  $('diario-fogo').textContent = dia >= 7 ? '🔥👑' : '🔥';
+  $('diario-txt').textContent = quebrou ? '😢 Sua sequência zerou… mas começou de novo! Volte todo dia pra ganhar mais.' : dia === 1 ? 'Volte amanhã pra continuar a sequência! 🔥' : `Você jogou ${dia} dias seguidos! Continua amanhã! 🔥`;
+  const pos = ((dia - 1) % 7) + 1;
+  $('dias7').innerHTML = [1, 2, 3, 4, 5, 6, 7].map(d => `<div class="${d < pos ? 'feito' : d === pos ? 'hoje' : ''}">Dia ${d}<b>${d < pos ? '✅' : d === 7 ? '🎁' : '⭐'}</b>+${d * 10}</div>`).join('');
+  $('diario-pegar').textContent = `Pegar +${premio} XP!`;
+  $('diario-pegar').onclick = () => { $('diario').close(); darXP(premio); confete(); plim(); };
+  setTimeout(() => { try{ $('diario').showModal(); }catch(e){ $('diario').setAttribute('open', ''); } }, 700);
+}
+
+/* ---------- 🎯 missões de hoje ---------- */
+function sorteador(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function missoesDoDia(){
+  const hoje = diaLocal(new Date()), r = sorteador([...hoje].reduce((a, c) => a * 31 + c.charCodeAt(0), 7));
+  const tipo = Math.floor(r() * 18), ger = 1 + Math.floor(r() * 4), n = [10, 15, 20][Math.floor(r() * 3)];
+  const todas = [
+    { k:'acertos', e:'✅', t:`Acerte ${n} Pokémon`, meta:n },
+    { k:'tipo', e:TIPOS[tipo][1], t:`Acerte 3 do tipo ${TIPOS[tipo][0]}`, meta:3, tipo },
+    { k:'seq', e:'🔥', t:'Acerte 5 seguidos', meta:5 },
+    { k:'partidas', e:'🎮', t:'Jogue 3 partidas', meta:3 },
+    { k:'ger', e:'🗺️', t:`Acerte 5 de ${REGIOES[ger - 1]} (geração ${ger})`, meta:5, ger },
+    { k:'semdica', e:'🧠', t:'Acerte 5 sem usar dica', meta:5 },
+    { k:'pontos', e:'⭐', t:'Faça 80 pontos numa partida', meta:80 },
+    { k:'especial', e:'🎲', t:'Acerte 2 perguntas de grito, cor, evolução ou letras', meta:2 },
+  ];
+  const escolhidas = []; while(escolhidas.length < 3){ const m = todas[Math.floor(r() * todas.length)]; if(!escolhidas.includes(m)) escolhidas.push(m); }
+  let prog = ler('missoes', null);
+  if(!prog || prog.dia !== hoje) prog = { dia:hoje, v:[0, 0, 0], feita:[false, false, false] };
+  return { lista:escolhidas, prog };
+}
+let missoes = missoesDoDia();
+function mostrarMissoes(){
+  if(missoes.prog.dia !== diaLocal(new Date())) missoes = missoesDoDia();
+  $('missoes').innerHTML = missoes.lista.map((m, i) => { const v = Math.min(m.meta, missoes.prog.v[i]); return `<div class="missao ${missoes.prog.feita[i] ? 'feita' : ''}"><i>${missoes.prog.feita[i] ? '✅' : m.e}</i><div><b>${m.t}</b><div class="pb"><s style="width:${v / m.meta * 100}%"></s></div></div><small>${missoes.prog.feita[i] ? '+50 XP' : `${v}/${m.meta}`}</small></div>`; }).join('');
+}
+function avancarMissao(k, valor, maximo){
+  if(missoes.prog.dia !== diaLocal(new Date())) missoes = missoesDoDia();
+  missoes.lista.forEach((m, i) => {
+    if(missoes.prog.feita[i] || (typeof k === 'function' ? !k(m) : m.k !== k)) return;
+    missoes.prog.v[i] = maximo ? Math.max(missoes.prog.v[i], valor) : missoes.prog.v[i] + valor;
+    if(missoes.prog.v[i] >= m.meta){
+      missoes.prog.feita[i] = true;
+      filaToast.push({ e:'🎯', n:`Missão completa! +50 XP`, nivel:0 }); mostrarToast();
+      darXP(50);
+    }
+  });
+  gravar('missoes', missoes.prog);
+}
+function progressoMissao(p, alvo, tipo){
+  avancarMissao('acertos', 1);
+  avancarMissao(m => m.k === 'tipo' && alvo.tipos.includes(m.tipo), 1);
+  avancarMissao(m => m.k === 'ger' && alvo.ger === m.ger, 1);
+  avancarMissao('seq', jogo.seq, true);
+  if(!jogo.dicas) avancarMissao('semdica', 1);
+  if(tipo !== 'sombra') avancarMissao('especial', 1);
+}
+
+/* ---------- 📸 foto do resultado ---------- */
+async function fazerFoto(r){
+  const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d');
+  const fundo = g.createLinearGradient(0, 0, 0, H); fundo.addColorStop(0, '#23276a'); fundo.addColorStop(1, '#4a52c9'); g.fillStyle = fundo; g.fillRect(0, 0, W, H);
+  g.save(); g.translate(W / 2, 420); g.fillStyle = 'rgba(255,255,255,.07)'; for(let k = 0; k < 18; k++){ g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, 1400, k * Math.PI / 9, k * Math.PI / 9 + Math.PI / 18); g.fill(); } g.restore();
+  const tx = (t, x, y, tam, cor, peso) => { g.font = `${peso || 800} ${tam}px 'Baloo 2', Rubik, sans-serif`; g.fillStyle = cor; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t, x, y); };
+  tx('Quem é esse Pokémon?', W / 2, 110, 76, '#ffcb05');
+  tx(r.titulo, W / 2, 210, 48, '#fff', 700);
+  tx(String(r.pontos), W / 2, 380, 230, '#fff');
+  tx('pontos', W / 2, 520, 52, 'rgba(255,255,255,.8)', 600);
+  tx(`✅ ${r.acertos}   🔥 ${r.seq} seguidos   🎖️ nível ${nivelDe(xpTotal())}`, W / 2, 620, 46, '#fff', 700);
+  if(r.novo) tx('🏆 NOVO RECORDE! 🏆', W / 2, 700, 58, '#ffcb05');
+  const ids = r.ids.slice(0, 12), col = 6, tam = 150;
+  const imgs = await Promise.all(ids.map(id => new Promise(ok => { const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => ok(i); i.onerror = () => ok(null); i.src = mini(id); })));
+  imgs.forEach((im, k) => {
+    const x = W / 2 - (Math.min(col, ids.length) * tam) / 2 + (k % col) * tam, y = 780 + Math.floor(k / col) * (tam + 20);
+    g.fillStyle = 'rgba(255,255,255,.15)'; g.beginPath(); g.arc(x + tam / 2, y + tam / 2, tam / 2 - 6, 0, Math.PI * 2); g.fill();
+    if(im){ g.imageSmoothingEnabled = false; g.drawImage(im, x + 10, y + 10, tam - 20, tam - 20); }
+  });
+  tx(`${perfil.apelido ? perfil.apelido + ' · ' : ''}${new Date().toLocaleDateString('pt-BR')}`, W / 2, H - 70, 36, 'rgba(255,255,255,.75)', 600);
+  return new Promise(ok => cv.toBlob(ok, 'image/png'));
+}
+let ultimoResultado = null;
+$('foto').onclick = async () => {
+  if(!ultimoResultado) return;
+  $('foto').textContent = '⏳ Fazendo a foto…';
+  try{
+    const blob = await fazerFoto(ultimoResultado), arq = new File([blob], `quem-e-esse-pokemon-${ultimoResultado.pontos}.png`, { type:'image/png' });
+    if(navigator.canShare && navigator.canShare({ files:[arq] })){ try{ await navigator.share({ files:[arq], title:'Quem é esse Pokémon?' }); }catch(e){} }
+    else{ const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = arq.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 5000); }
+    $('foto').textContent = '✅ Foto salva! Salvar de novo';
+  }catch(e){ $('foto').textContent = '😕 Não deu. Tentar de novo'; }
+};
+
+/* ---------- 👤 perfil de treinador ---------- */
+let perfil = Object.assign({ apelido:'', foto:25 }, ler('perfil', {}));
+function mostrarPerfilBotao(){ const b = $('perfil-bt'); b.innerHTML = `<img alt="" src="${mini(perfil.foto)}" />`; b.title = 'Meu perfil'; }
+function abrirPerfil(){
+  const n = Object.keys(ganhos).filter(id => TROFEUS.some(t => t.id === id)).length, xp = xpTotal(), nv = nivelDe(xp);
+  const fav = Object.entries(cartas).sort((a, b) => b[1].n - a[1].n)[0];
+  $('perfil-corpo').innerHTML = `
+    <div class="perfil-topo"><img src="${arte(perfil.foto)}" alt="" /><div><h2>${perfil.apelido ? '' : 'Treinador'}</h2><b>🎖️ Nível ${nv}</b><small>${xp} XP no total</small></div></div>
+    <label class="perfil-campo">Apelido <input type="text" id="pf-apelido" maxlength="16" placeholder="Seu apelido de treinador" /></label>
+    <p class="info-video">Use um apelido, não o seu nome completo. 😉</p>
+    <label class="perfil-campo">Foto (um Pokémon) <select id="pf-foto"></select></label>
+    <div class="numeros">
+      <div><b>${n}</b><small>🏆 troféus</small></div><div><b>${colecao.size}</b><small>📚 coleção</small></div><div><b>${stats.brilhantes}</b><small>✨ shinies</small></div>
+      <div><b>${stats.partidas}</b><small>🎮 partidas</small></div><div><b>${stats.melhorSeq}</b><small>🔥 melhor sequência</small></div><div><b>${stats.diasSeguidos || 0}</b><small>📅 dias seguidos</small></div>
+    </div>
+    ${fav ? `<p style="text-align:center;margin-top:10px;font-weight:700">🃏 Cartinha que você mais tem: ${POKE[fav[0] - 1].nome} (x${fav[1].n})</p>` : ''}
+    <button type="button" class="jogar" id="pf-salvar" style="font-size:1.3rem">✅ Salvar perfil</button>`;
+  $('pf-apelido').value = perfil.apelido;
+  $('perfil-corpo').querySelector('h2').textContent = perfil.apelido || 'Treinador';
+  const sel = $('pf-foto');
+  FAMOSOS.slice().sort((a, b) => POKE[a - 1].nome.localeCompare(POKE[b - 1].nome)).forEach(id => { const o = document.createElement('option'); o.value = id; o.textContent = POKE[id - 1].nome; sel.appendChild(o); });
+  sel.value = perfil.foto;
+  sel.onchange = () => { $('perfil-corpo').querySelector('.perfil-topo img').src = arte(+sel.value); };
+  $('pf-salvar').onclick = () => { perfil.apelido = $('pf-apelido').value.trim().slice(0, 16); perfil.foto = +sel.value; gravar('perfil', perfil); mostrarPerfilBotao(); mostrarXP(); $('perfil').close(); };
+  try{ $('perfil').showModal(); }catch(e){ $('perfil').setAttribute('open', ''); }
+}
+$('perfil-bt').onclick = abrirPerfil;
+$('fechar-perfil').onclick = () => $('perfil').close();
+
+/* ---------- configurações novas ---------- */
+$('tipos-pergunta').onclick = ev => {
+  const b = ev.target.closest('[data-tipo]'); if(!b) return;
+  cfg.tipos[b.dataset.tipo] = !cfg.tipos[b.dataset.tipo];
+  if(!Object.values(cfg.tipos).some(Boolean)) cfg.tipos.sombra = true;   // precisa de pelo menos um
+  marcar();
+};
+$('efeitos').onclick = ev => { const b = ev.target.closest('[data-ef]'); if(!b) return; cfg.efeitos[b.dataset.ef] = !cfg.efeitos[b.dataset.ef]; marcar(); };
+[['dois', 'dois'], ['cartas', 'cartas'], ['musica', 'musica'], ['falar-cfg', 'falar'], ['curiosidade', 'curiosidade']].forEach(([id, k]) => {
+  $(id).onclick = () => { if(id === 'falar-cfg' && !Reconhecer) return; cfg[k] = !cfg[k]; if(k === 'dois' && cfg.dois) cfg.modo = 'dez'; marcar(); };
+});
+['nome1', 'nome2'].forEach((id, i) => $(id).addEventListener('input', ev => { cfg.nomes[i] = ev.target.value.trim().slice(0, 14); gravar('cfg', cfg); }));
+function marcarExtras(){
+  document.querySelectorAll('#tipos-pergunta .tile').forEach(b => { const on = !!cfg.tipos[b.dataset.tipo]; b.setAttribute('aria-pressed', on); b.querySelector('.estado').textContent = on ? 'Ligado' : 'Desligado'; });
+  document.querySelectorAll('#efeitos .tile').forEach(b => { const on = !!cfg.efeitos[b.dataset.ef]; b.setAttribute('aria-pressed', on); b.querySelector('.estado').textContent = on ? 'Ligado' : 'Desligado'; });
+  [['dois', 'dois'], ['cartas', 'cartas'], ['musica', 'musica'], ['falar-cfg', 'falar'], ['curiosidade', 'curiosidade']].forEach(([id, k]) => {
+    const b = $(id); b.setAttribute('aria-pressed', !!cfg[k]); b.querySelector('.estado').textContent = id === 'falar-cfg' && !Reconhecer ? 'Não dá aqui' : cfg[k] ? 'Ligado' : 'Desligado';
+    if(id === 'falar-cfg') b.disabled = !Reconhecer;
+  });
+  $('nomes-2').hidden = !cfg.dois; $('nome1').value = cfg.nomes[0]; $('nome2').value = cfg.nomes[1];
+  document.querySelectorAll('#modos .chip').forEach(b => { b.disabled = cfg.dois && b.dataset.modo !== 'dez'; });
+  $('falar-info').hidden = !cfg.falar;
+  $('tema-cor').value = cfg.tema; $('parceiro').value = cfg.parceiro;
+  aplicarCor();
+}
+
+/* ---------- a sombra da tela inicial troca sozinha a cada 10 segundos ---------- */
+setInterval(() => { if(!$('tela-inicio').hidden && !document.hidden) novaSombra(); }, 10000);
+
 marcar(); mostrarColecao(); mostrarResumoTrofeus(); checarTrofeus(); novaSombra();
+$('at-album').textContent = Object.keys(cartas).length;
+mostrarMissoes(); mostrarXP(); mostrarPerfilBotao(); recompensaDiaria();
 
 /* ---------- claro / escuro ---------- */
 const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
