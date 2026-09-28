@@ -221,6 +221,8 @@ dialog::backdrop{background:rgba(10,10,15,.7)}
         <p><b>Vítima:</b> Alcremie VMAX, o bolo gigante.<br><b>Situação:</b> desaparecida outra vez.<br><b>Suspeitos:</b> 10 Pokémon e personagens especiais.<br><b>Missão:</b> ver a gravação, interrogar e culpar o Pokémon certo.</p>
       </div>
       <button type="button" class="grande" id="comecar">📂 Abrir o caso #0001</button>
+      <button type="button" class="mini" id="outro-caso" style="margin-top:8px;width:100%" hidden>📂 Deixar esse pra depois e abrir outro caso</button>
+      <p id="salvo-info" style="font-size:.8rem;margin-top:8px;text-align:center" hidden></p>
     </div>
 
     <div class="cartao">
@@ -269,6 +271,7 @@ dialog::backdrop{background:rgba(10,10,15,.7)}
         <li>As pistas da <b>perícia</b> falam dessas coisas. Compare com as fichas.</li>
         <li><b>✅ Inocentar</b> risca um suspeito. <b>🎤 Interrogar</b> (3 por caso) mostra o álibi, e às vezes o suspeito conta o que viu. <b>⚖️ Culpar</b> acusa.</li>
         <li>Culpar um inocente custa uma estrela. Quanto menos pistas você usar, mais pontos.</li>
+        <li>💾 O caso fica <b>salvo sozinho</b>. Pode sair ou fechar o site que ele continua de onde parou.</li>
       </ol>
     </div>
   </section>
@@ -315,7 +318,7 @@ dialog::backdrop{background:rgba(10,10,15,.7)}
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 3 — 28/09 · 🔄</button>
   </footer>
 </div>
 
@@ -517,15 +520,44 @@ function grito(id){
   try{ const a = new Audio(`https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`); a.volume = .4; const r = a.play(); if(r && r.catch) r.catch(() => {}); }catch(e){}
 }
 
+/* ---------- 💾 salvar a partida: o caso em andamento fica guardado no aparelho ---------- */
+function salvarCaso(){
+  if(!caso || caso.fim){ gravar('caso', null); return; }
+  const idx = p => caso.todas.indexOf(p);
+  gravar('caso', { v:1, sus:caso.sus.map(s => s.id), esp:[...caso.especiais], culpado:caso.culpado.id, pistas:caso.pistas.map(idx), depoUsadas:(caso.usadasDepo || []).map(idx),
+    mostradas:caso.mostradas, erros:caso.erros, pericias:caso.pericias, inter:caso.inter, riscados:[...caso.riscados], depo:caso.depo, depoimentos:caso.depoimentos,
+    nivel:caso.nivel, numero:caso.numero, lugar:caso.lugar, onde:caso.onde, hora:caso.hora, clima:caso.clima, achou:caso.achou, achado:caso.achado, cena:caso.cena, quando:Date.now() });
+}
+function carregarCaso(){
+  const g = ler('caso', null);
+  if(!g || g.v !== 1 || !Array.isArray(g.sus)) return null;
+  try{
+    const sus = g.sus.map(id => POKE[id - 1]), c = POKE[g.culpado - 1];
+    if(sus.some(x => !x) || !c || g.numero !== stats.casos + 1) return null;
+    const todas = pistasPossiveis(c, sus), pistas = g.pistas.map(i => todas[i]);
+    if(pistas.some(x => !x) || !sus.every(s => s === c || pistas.some(p => !p.f(s)))) return null;   // confere se as pistas ainda funcionam
+    return { sus, especiais:new Set(g.esp), culpado:c, todas, pistas, usadasDepo:g.depoUsadas.map(i => todas[i]).filter(Boolean),
+      mostradas:g.mostradas, erros:g.erros, pericias:g.pericias, inter:g.inter, riscados:new Set(g.riscados), depo:g.depo || {}, depoimentos:g.depoimentos || [],
+      fim:false, nivel:g.nivel, numero:g.numero, lugar:g.lugar, onde:g.onde, hora:g.hora, clima:g.clima, achou:g.achou, achado:g.achado, cena:g.cena, quando:g.quando };
+  }catch(e){ return null; }
+}
+
 /* ---------- jogar ---------- */
 const MAX_INTER = 3;
 let caso = null;
 const eu = () => POKE[cfg.detetive - 1];
 function trocarTela(t){ ['inicio', 'caso'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
 function comecar(){
-  const m = montarCaso(cfg.nivel);
-  if(!m){ alert('Não consegui montar esse caso. Tente de novo!'); return; }
-  caso = Object.assign(m, { mostradas:1, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel:cfg.nivel, numero:stats.casos + 1 });
+  const salvo = carregarCaso();
+  if(salvo) caso = salvo;
+  else{
+    const m = montarCaso(cfg.nivel);
+    if(!m){ alert('Não consegui montar esse caso. Tente de novo!'); return; }
+    caso = Object.assign(m, { mostradas:1, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel:cfg.nivel, numero:stats.casos + 1 });
+  }
+  abrirCaso(!!salvo);
+}
+function abrirCaso(continuando){
   $('c-num').textContent = numCaso(caso.numero);
   const nomesEsp = caso.sus.filter(s => caso.especiais.has(s.id)).map(s => s.nome).join(' e ');
   $('relatorio').innerHTML = `<h2>RELATÓRIO DE OCORRÊNCIA</h2>
@@ -535,12 +567,13 @@ function comecar(){
     A câmera de segurança gravou só um vulto. Havia <b>${caso.sus.length} Pokémon</b> no local: 10 suspeitos, mais ${nomesEsp}.
     O caso foi entregue ao <b>Detetive ${eu().nome}</b>.</p>
     <span class="carimbo">EM ANDAMENTO</span>`;
-  $('aviso').textContent = ''; $('aviso').className = 'aviso';
+  $('aviso').textContent = continuando ? '💾 Caso retomado de onde você parou.' : ''; $('aviso').className = 'aviso';
   if(!stats.cenas.includes(caso.cena)){ stats.cenas.push(caso.cena); salvar(); }
   desenharSuspeitos(); mostrarPistas(); trocarTela('caso');
   setTimeout(rodarCena, 300);
 }
 function mostrarPistas(){
+  salvarCaso();
   const ol = $('pistas'); ol.innerHTML = '';
   caso.pistas.forEach((p, i) => {
     const li = document.createElement('li');
@@ -674,7 +707,8 @@ $('pericia').onclick = () => {
 };
 $('so-suspeitos').onclick = () => { cfg.esconder = !cfg.esconder; gravar('cfg', cfg); if(caso){ desenharSuspeitos(); mostrarPistas(); } };
 $('comecar').onclick = comecar;
-$('sair').onclick = () => { if(caso && !caso.fim && !confirm('Arquivar o caso sem resolver? A Alcremie VMAX continua desaparecida.')) return; caso = null; mostrarInicio(); trocarTela('inicio'); };
+$('sair').onclick = () => { if(caso && !caso.fim){ salvarCaso(); toast('💾 Caso salvo! Continue quando quiser.'); } caso = null; mostrarInicio(); trocarTela('inicio'); };
+$('outro-caso').onclick = () => { if(!confirm('Abrir um caso novo? O caso salvo vai ser descartado e a Alcremie VMAX dele fica sem solução.')) return; gravar('caso', null); comecar(); };
 $('dlg').addEventListener('cancel', ev => { if(caso && caso.fim) ev.preventDefault(); });
 
 /* ---------- 🕵️ escolher detetive ---------- */
@@ -712,7 +746,11 @@ function toast(t){ filaToast.push(t); if(toastOcupado) return; const vai = () =>
   const d = document.createElement('div'); d.className = 'toast'; d.textContent = x; document.body.appendChild(d); setTimeout(() => { d.remove(); vai(); }, 2200); }; vai(); }
 function mostrarInicio(){
   document.querySelectorAll('#niveis .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.nivel === cfg.nivel));
-  $('comecar').textContent = `📂 Abrir o caso ${numCaso(stats.casos + 1)}`;
+  const salvo = carregarCaso();
+  if(!salvo && ler('caso', null)) gravar('caso', null);
+  $('comecar').textContent = salvo ? `▶️ Continuar o caso ${numCaso(salvo.numero)}` : `📂 Abrir o caso ${numCaso(stats.casos + 1)}`;
+  $('outro-caso').hidden = !salvo; $('salvo-info').hidden = !salvo;
+  if(salvo) $('salvo-info').textContent = `💾 Salvo em ${new Date(salvo.quando).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })} · ${salvo.mostradas} pista(s) vista(s) · ${salvo.riscados.size} inocentado(s)`;
   $('etiqueta').textContent = `ARQUIVO — CASO ${numCaso(stats.casos + 1)}`;
   const P = patente();
   $('pat-emoji').textContent = P.p.e; $('pat-nome').textContent = P.p.n;

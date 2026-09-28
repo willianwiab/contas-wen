@@ -17,6 +17,9 @@ e você lê as pistas do caderno pra descobrir quem levou ela.
 - ✅ **Inocentar**, 🎤 **Interrogar** (3 por caso: álibi confirmado ou depoimento de testemunha) e ⚖️ **Culpar**.
 - 🕵️ **Escolha o seu detetive** entre 18 Pokémon; ele nunca é suspeito.
 
+## Versão 3: salvar a partida
+- 💾 O caso em andamento fica salvo sozinho no aparelho (pistas vistas, inocentados, interrogatórios, erros). Na tela inicial aparece **▶️ Continuar o caso**, ou dá pra deixar pra depois e abrir outro.
+
 ## Níveis
 - 🟢 Fácil: Pokémon famosos e pistas fortes · 🟡 Médio: gerações 1 a 4 · 🔴 Difícil: todos os 1025 e pistas fracas.
 
