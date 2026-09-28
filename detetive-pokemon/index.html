@@ -110,7 +110,8 @@ footer{text-align:center;margin-top:22px;color:var(--tinta-fraca);font-size:.78r
 .cena .bolo{position:absolute;left:58%;top:20%;width:26%}
 .cena .caixa{position:absolute;left:63%;top:36%;font-size:clamp(1.6rem,8vw,3.2rem);opacity:0}
 .vulto{position:absolute;left:-40%;top:38%;width:22%;height:56%}
-.vulto::before{content:'';position:absolute;inset:0;background:#000;border-radius:48% 48% 38% 38%/58% 58% 42% 42%;filter:blur(7px);opacity:.94}
+.vulto{transform-origin:50% 100%}
+.vulto::before{content:'';position:absolute;inset:0;background:var(--vc,#000);border-radius:48% 48% 38% 38%/58% 58% 42% 42%;filter:blur(7px);opacity:.94}
 .vulto i{position:absolute;top:24%;width:10%;height:6%;background:#ffe45c;border-radius:50%;box-shadow:0 0 10px 2px #ffe45c;animation:pisca 3s infinite}
 .vulto i:first-child{left:33%}.vulto i:last-child{left:57%}
 @keyframes pisca{0%,46%,54%,100%{transform:scaleY(1)}50%{transform:scaleY(.1)}}
@@ -200,6 +201,11 @@ dialog::backdrop{background:rgba(10,10,15,.7)}
 .faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#1d2230;color:#fff;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:70;font-weight:700}
 .faixa-nova button{border:none;border-radius:99px;padding:6px 12px;font-weight:800;background:var(--ouro);color:#fff;cursor:pointer}
 @media (max-width:360px){.fatos{font-size:.58rem}.acoes button{font-size:.56rem}}
+.hab{background:var(--cartao2);border-left:4px solid var(--ouro);border-radius:6px;padding:8px 10px;margin-top:10px;font-size:.85rem;text-align:left}
+.hab b{display:block}
+.escolhas button .h{display:block;font-size:.62rem;color:var(--tinta-fraca);font-weight:600;margin-top:2px}
+#poder{grid-column:1/-1;background:var(--ouro);color:#fff;border-color:var(--ouro)}
+#poder:disabled{background:var(--cartao2);color:var(--tinta-fraca);border-color:var(--borda)}
 /* v4: perfil, loja, amigos */
 .heroi{display:flex;gap:10px;align-items:center;margin-top:14px;background:var(--cartao);border:1px solid var(--borda);border-radius:10px;padding:10px;box-shadow:0 4px 14px var(--sombra)}
 .perfil-bt{display:flex;align-items:center;gap:8px;border:none;background:none;cursor:pointer;text-align:left;min-width:0;flex:1.1}
@@ -302,6 +308,7 @@ textarea,input[type=search],input[type=text],input[type=password]{width:100%;bor
     <div class="cartao">
       <h2>Seu detetive</h2>
       <div class="meu"><img id="meu-img" alt="" /><div><b id="meu-nome"></b><small>É ele que investiga e faz as perguntas. Nunca é suspeito.</small></div></div>
+      <div class="hab" id="meu-hab"></div>
       <button type="button" class="mini" id="trocar-detetive" style="margin-top:10px;width:100%">🕵️ Escolher outro detetive</button>
     </div>
 
@@ -382,6 +389,7 @@ textarea,input[type=search],input[type=text],input[type=password]{width:100%;bor
       <div class="botoes-caso">
         <button type="button" class="mini" id="nova-pista">🔬 Nova pista</button>
         <button type="button" class="mini" id="pericia">🧪 Exame de DNA</button>
+        <button type="button" class="mini" id="poder" hidden></button>
       </div>
     </div>
     <p class="aviso" id="aviso"></p>
@@ -437,7 +445,7 @@ textarea,input[type=search],input[type=text],input[type=password]{width:100%;bor
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 4 — 28/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 5 — 29/09 · 🔄</button>
   </footer>
 </div>
 
@@ -487,6 +495,40 @@ const DETETIVES = [25, 448, 58, 54, 164, 197, 196, 658, 4, 7, 1, 150, 94, 906, 2
 /* detetives que se compram na loja com 🍰 migalhas */
 const DETETIVES_LOJA = [[257, 60], [445, 80], [384, 150], [491, 120], [571, 100], [887, 100], [959, 60], [778, 80], [395, 60], [6, 70], [9, 70], [3, 70]];
 const TODOS_DETETIVES = [...DETETIVES, ...DETETIVES_LOJA.map(d => d[0])];
+/* ✨ a habilidade especial de cada detetive. uso:'poder' = um botão que funciona 1 vez por caso; o resto vale sempre */
+const HAB = {
+  25:{ e:'⚡', n:'Choque da verdade', d:'1 vez por caso: um choque faz 1 inocente confessar que não foi ele.', k:'risca', q:1, uso:'poder' },
+  172:{ e:'✨', n:'Faísca', d:'1 vez por caso: risca 1 inocente de graça.', k:'risca', q:1, uso:'poder' },
+  448:{ e:'🔵', n:'Ler a aura', d:'No interrogatório, o culpado SEMPRE fica nervoso, e os inocentes nunca.', k:'aura' },
+  58:{ e:'👃', n:'Faro policial', d:'Começa o caso com 1 pista a mais, de graça.', k:'pista', q:1 },
+  54:{ e:'🌀', n:'Dor de cabeça psíquica', d:'1 vez por caso: revela 1 pista escondida de graça.', k:'pista1', uso:'poder' },
+  164:{ e:'🦉', n:'Visão noturna', d:'Na gravação, o vulto aparece com a COR do culpado.', k:'cor' },
+  197:{ e:'🌑', n:'Olhos no escuro', d:'Na gravação, o vulto aparece do TAMANHO do culpado.', k:'tamanho' },
+  196:{ e:'🔮', n:'Pressentimento', d:'Todo inocente interrogado conta uma pista (quando ainda tem pista pra contar).', k:'verdade' },
+  658:{ e:'🥷', n:'Ninja silencioso', d:'Pode interrogar 1 suspeito a mais (4 por caso).', k:'inter', q:1 },
+  4:{ e:'🔥', n:'Chama da coragem', d:'O primeiro erro não tira estrela.', k:'escudo', q:1 },
+  7:{ e:'💧', n:'Laboratório da água', d:'O exame de DNA não custa pontos.', k:'dna' },
+  1:{ e:'🌱', n:'Jardim de migalhas', d:'Ganha +50% de 🍰 migalhas nos casos.', k:'migalhas', q:1.5 },
+  150:{ e:'🧠', n:'Mente poderosa', d:'1 vez por caso: risca 3 inocentes de uma vez.', k:'risca', q:3, uso:'poder' },
+  94:{ e:'👻', n:'Susto fantasma', d:'1 vez por caso: dá um susto e 2 inocentes fogem da cena (riscados).', k:'risca', q:2, uso:'poder' },
+  906:{ e:'😺', n:'Curiosidade felina', d:'Começa o caso com 1 pista a mais, de graça.', k:'pista', q:1 },
+  282:{ e:'💞', n:'Empatia', d:'Pode interrogar 2 suspeitos a mais (5 por caso).', k:'inter', q:2 },
+  700:{ e:'🎀', n:'Fitas da amizade', d:'Todo inocente interrogado tem o álibi confirmado.', k:'alibi' },
+  143:{ e:'😴', n:'Sonho de campeão', d:'Ganha +20% de pontos nos casos.', k:'xp', q:1.2 },
+  257:{ e:'🦵', n:'Chute de fogo', d:'Os 2 primeiros erros não tiram estrela.', k:'escudo', q:2 },
+  445:{ e:'🦈', n:'Faro de tubarão', d:'Começa o caso com 2 pistas a mais, de graça.', k:'pista', q:2 },
+  384:{ e:'🐉', n:'Visão do céu', d:'Na gravação, o vulto aparece com a COR e o TAMANHO do culpado.', k:'cortam' },
+  491:{ e:'🌑', n:'Pesadelo', d:'Ao interrogar o culpado, aparece: 🚨 ESTÁ MENTINDO!', k:'detector' },
+  571:{ e:'🦊', n:'Ilusão', d:'Pode interrogar 3 suspeitos a mais (6 por caso).', k:'inter', q:3 },
+  887:{ e:'🚀', n:'Mísseis Dreepy', d:'1 vez por caso: risca 2 inocentes.', k:'risca', q:2, uso:'poder' },
+  959:{ e:'🔨', n:'Martelo da justiça', d:'Ganha +50% de pontos nos casos.', k:'xp', q:1.5 },
+  778:{ e:'🎭', n:'Disfarce', d:'O primeiro erro não tira estrela.', k:'escudo', q:1 },
+  395:{ e:'👑', n:'Tesouro do imperador', d:'Ganha o DOBRO de 🍰 migalhas nos casos.', k:'migalhas', q:2 },
+  6:{ e:'🔥', n:'Voo de reconhecimento', d:'Começa com 1 pista a mais E pode interrogar 1 a mais.', k:'pistainter', q:1 },
+  9:{ e:'💦', n:'Canhões de água', d:'1 vez por caso: risca 2 inocentes.', k:'risca', q:2, uso:'poder' },
+  3:{ e:'🌺', n:'Aroma calmante', d:'Todo inocente interrogado conta uma pista (quando ainda tem pista pra contar).', k:'verdade' } };
+const hab = () => HAB[cfg.detetive] || HAB[25];
+const habK = k => hab().k === k;
 /* ---------- 👤 perfil ---------- */
 const perfil = Object.assign({ apelido:'', fundo:'papel', moldura:'nenhuma', titulo:'curioso', adm:false }, ler('perfil', {}));
 perfil.tem = Object.assign({ fundos:[], molduras:[], titulos:[], detetives:[] }, perfil.tem || {});
@@ -550,6 +592,9 @@ function rodarCena(){
   if(!caso) return;
   const C = CENAS[caso.cena], v = $('c-vulto'), b = $('c-bolo'), luz = $('c-luz'), cx = $('c-caixa'), fim = $('c-sumiu');
   [v, b, luz, cx, fim].forEach(el => el.getAnimations().forEach(a => a.cancel()));
+  const cul = caso.culpado, verCor = habK('cor') || habK('cortam'), verTam = habK('tamanho') || habK('cortam');
+  v.style.setProperty('--vc', verCor ? CORES[cul.cor][1] : '#000');
+  v.style.scale = verTam ? String(Math.max(.45, Math.min(1.45, .4 + cul.alt / 10 * .45))) : '1';
   $('c-hora').textContent = `CAM 02 · ${caso.hora}`; $('cam-titulo').textContent = `📹 Gravação ${caso.cena + 1} de 10: ${C.nome}`;
   const q = ([o, l, t, x]) => ({ offset:o, left:l + '%', top:t + '%', opacity:x && x.o != null ? x.o : 1, transform:`rotate(${x && x.r || 0}deg)` });
   const sq = C.s.map(q);
@@ -658,7 +703,7 @@ function salvarCaso(){
   if(!caso || caso.fim){ gravar('caso', null); return; }
   const idx = p => caso.todas.indexOf(p);
   gravar('caso', { v:1, sus:caso.sus.map(s => s.id), esp:[...caso.especiais], culpado:caso.culpado.id, pistas:caso.pistas.map(idx), depoUsadas:(caso.usadasDepo || []).map(idx),
-    mostradas:caso.mostradas, erros:caso.erros, pericias:caso.pericias, inter:caso.inter, riscados:[...caso.riscados], depo:caso.depo, depoimentos:caso.depoimentos,
+    gratis:caso.gratis || 0, poderUsado:!!caso.poderUsado, mostradas:caso.mostradas, erros:caso.erros, pericias:caso.pericias, inter:caso.inter, riscados:[...caso.riscados], depo:caso.depo, depoimentos:caso.depoimentos,
     nivel:caso.nivel, numero:caso.numero, seed:caso.seed, desafio:caso.desafio || null, admForcado:!!caso.admForcado, lugar:caso.lugar, onde:caso.onde, hora:caso.hora, clima:caso.clima, achou:caso.achou, achado:caso.achado, cena:caso.cena, quando:Date.now() });
 }
 function carregarCaso(){
@@ -670,13 +715,13 @@ function carregarCaso(){
     const todas = pistasPossiveis(c, sus), pistas = g.pistas.map(i => todas[i]);
     if(pistas.some(x => !x) || !sus.every(s => s === c || pistas.some(p => !p.f(s)))) return null;   // confere se as pistas ainda funcionam
     return { sus, especiais:new Set(g.esp), culpado:c, todas, pistas, usadasDepo:g.depoUsadas.map(i => todas[i]).filter(Boolean),
-      mostradas:g.mostradas, erros:g.erros, pericias:g.pericias, inter:g.inter, riscados:new Set(g.riscados), depo:g.depo || {}, depoimentos:g.depoimentos || [],
+      gratis:g.gratis || 0, poderUsado:!!g.poderUsado, mostradas:g.mostradas, erros:g.erros, pericias:g.pericias, inter:g.inter, riscados:new Set(g.riscados), depo:g.depo || {}, depoimentos:g.depoimentos || [],
       fim:false, nivel:g.nivel, numero:g.numero, seed:g.seed, desafio:g.desafio || null, admForcado:!!g.admForcado, lugar:g.lugar, onde:g.onde, hora:g.hora, clima:g.clima, achou:g.achou, achado:g.achado, cena:g.cena, quando:g.quando };
   }catch(e){ return null; }
 }
 
 /* ---------- jogar ---------- */
-const MAX_INTER = 3;
+const maxInter = () => 3 + (habK('inter') || habK('pistainter') ? hab().q : 0);
 let caso = null;
 const eu = () => POKE[cfg.detetive - 1];
 function trocarTela(t){ ['inicio', 'caso', 'loja', 'amigos'].forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
@@ -692,7 +737,8 @@ function comecar(){
 function novoCaso(nivel, seed, desafio, forcar){
   const m = montarCaso(nivel, seed, forcar);
   if(!m){ alert('Não consegui montar esse caso. Tente de novo!'); return false; }
-  caso = Object.assign(m, { mostradas:1, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel, numero:stats.casos + 1, seed, desafio, admForcado:!!forcar });
+  const gratis = habK('pista') || habK('pistainter') ? Math.min(hab().q, Math.max(0, m.pistas.length - 2)) : 0;
+  caso = Object.assign(m, { gratis, poderUsado:false, detetive:cfg.detetive, mostradas:1 + gratis, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel, numero:stats.casos + 1, seed, desafio, admForcado:!!forcar });
   return true;
 }
 function abrirCaso(continuando){
@@ -704,6 +750,7 @@ function abrirCaso(continuando){
     <p class="ocorrencia">A <b>Alcremie VMAX</b> estava ${caso.onde} quando desapareceu. Quem deu o alerta foi ${caso.achou}, que encontrou ${caso.achado}.
     A câmera de segurança gravou só um vulto. Havia <b>${caso.sus.length} Pokémon</b> no local: 10 suspeitos, mais ${nomesEsp}.
     O caso foi entregue ao <b>Detetive ${eu().nome}</b>.</p>
+    <div class="hab"><b>${hab().e} Habilidade: ${hab().n}</b>${hab().d}${caso.gratis ? ` <b style="display:inline">(+${caso.gratis} pista${caso.gratis > 1 ? 's' : ''} grátis!)</b>` : ''}</div>
     <span class="carimbo">EM ANDAMENTO</span>`;
   $('aviso').textContent = continuando ? '💾 Caso retomado de onde você parou.' : ''; $('aviso').className = 'aviso';
   if(!stats.cenas.includes(caso.cena)){ stats.cenas.push(caso.cena); salvar(); }
@@ -722,16 +769,19 @@ function mostrarPistas(){
   $('depo-titulo').hidden = !caso.depoimentos.length;
   $('depoimentos').innerHTML = caso.depoimentos.map(d => `<li>${d}</li>`).join('');
   $('c-pistas').textContent = `${caso.mostradas}/${caso.pistas.length}`;
-  $('c-inter').textContent = MAX_INTER - caso.inter;
+  $('c-inter').textContent = maxInter() - caso.inter;
   $('nova-pista').disabled = caso.mostradas >= caso.pistas.length || caso.fim;
   $('nova-pista').textContent = caso.mostradas >= caso.pistas.length ? '✅ Perícia completa' : `🔬 Nova pista (+${caso.pistas.length - caso.mostradas})`;
   $('pericia').disabled = caso.fim || caso.sus.every(s => s === caso.culpado || caso.riscados.has(s.id));
+  const H = hab(); $('poder').hidden = H.uso !== 'poder';
+  $('poder').textContent = caso.poderUsado ? `${H.e} ${H.n} (já usado)` : `${H.e} Usar poder: ${H.n}`;
+  $('poder').disabled = caso.fim || caso.poderUsado || (H.k === 'pista1' ? caso.mostradas >= caso.pistas.length : caso.sus.every(s => s === caso.culpado || caso.riscados.has(s.id)));
   $('c-erros').textContent = '⭐'.repeat(estrelasAgora()) + '☆'.repeat(3 - estrelasAgora());
   const restam = caso.sus.filter(s => !caso.riscados.has(s.id)).length;
   $('restam').textContent = `🔎 Suspeitos restantes: ${restam} de ${caso.sus.length}`;
   $('so-suspeitos').textContent = cfg.esconder ? '👁️ Mostrar inocentes' : '👁️ Esconder inocentes';
 }
-const estrelasAgora = () => Math.max(1, 3 - caso.erros);
+const estrelasAgora = () => Math.max(1, 3 - Math.max(0, caso.erros - (habK('escudo') ? hab().q : 0)));
 function desenharSuspeitos(){
   const box = $('suspeitos'); box.innerHTML = '';
   caso.sus.forEach((s, i) => {
@@ -745,7 +795,7 @@ function desenharSuspeitos(){
       <span>⚖️ ${kg(s)}</span><span>📏 ${metros(s)}</span><span>🗺️ ${REGIOES[s.ger - 1]}</span><span>${s.evos.length ? '🧬 Ainda evolui' : '💪 Forma final'}</span></div>
       ${dp ? `<div class="depo ${dp.ok ? 'ok' : 'duvida'}">${dp.ok ? '✅ Álibi confirmado' : '❓ Álibi sem testemunhas'}</div>` : ''}
       <div class="acoes"><button type="button" class="inocentar"><i>${riscado ? '↩️' : '✅'}</i>${riscado ? 'Voltar' : 'Inocentar'}</button>
-      <button type="button" class="interrogar"${dp || caso.inter >= MAX_INTER || caso.fim ? ' disabled' : ''}><i>🎤</i>Interrogar</button>
+      <button type="button" class="interrogar"${dp || caso.inter >= maxInter() || caso.fim ? ' disabled' : ''}><i>🎤</i>Interrogar</button>
       <button type="button" class="culpar"><i>⚖️</i>Culpar</button></div>`;
     d.querySelector('img').onerror = function(){ this.src = mini(s.id); this.onerror = null; };
     d.querySelector('.inocentar').onclick = () => { if(caso.fim) return; riscado ? caso.riscados.delete(s.id) : caso.riscados.add(s.id); somRisca(); desenharSuspeitos(); mostrarPistas(); };
@@ -756,26 +806,28 @@ function desenharSuspeitos(){
 }
 /* 🎤 interrogatório: o inocente mostra o álibi ou conta o que viu; o culpado enrola */
 function interrogar(s){
-  if(!caso || caso.fim || caso.depo[s.id] || caso.inter >= MAX_INTER) return;
+  if(!caso || caso.fim || caso.depo[s.id] || caso.inter >= maxInter()) return;
   caso.inter++; stats.interrogatorios++; salvar(); somInter(); avancarMissao('inter', 1);
   let fala, ok = false, extra = '';
   if(s === caso.culpado){
     fala = sorteia(ALIBI_FRACO);
-    if(Math.random() < .6) extra = `<p style="font-size:.85rem;color:var(--tinta-fraca)">📝 Anotação: ${s.nome} evitou olhar nos olhos.</p>`;
+    if(habK('aura') || Math.random() < .6) extra = `<p style="font-size:.85rem;color:var(--tinta-fraca)">📝 Anotação: ${s.nome} evitou olhar nos olhos.${habK('aura') ? ' 🔵 A aura está agitada!' : ''}</p>`;
+    if(habK('detector')) extra += '<p style="font-weight:900;color:var(--erro);font-size:1.1rem">🌑 🚨 ESTÁ MENTINDO!</p>';
   }else{
     const outros = caso.sus.filter(x => x !== s);
     const vivos = caso.sus.filter(x => !caso.riscados.has(x.id) && x !== caso.culpado && x !== s);
     const nova = embaralhar(caso.todas.filter(p => !caso.pistas.includes(p) && !caso.usadasDepo?.includes(p) && vivos.some(x => !p.f(x))))[0];
-    if(Math.random() < .55 || !nova){
+    if(!nova || habK('alibi') || (!habK('verdade') && Math.random() < .55)){
       ok = true; fala = `Eu estava ${sorteia(ALIBIS)} na hora do crime. ${sorteia(outros).nome} estava comigo e pode confirmar.`;
     }else{
       (caso.usadasDepo = caso.usadasDepo || []).push(nova);
       fala = `Eu estava sozinho, ninguém pode confirmar… Mas eu vi quem saiu correndo com a Alcremie! O culpado ${nova.fato}.`;
       caso.depoimentos.push(`🗣️ <b>${s.nome}</b>: “O culpado ${nova.fato}.”<small>Testemunha ocular. O detetive conferiu: é verdade.</small>`);
-      if(Math.random() < .2) extra = `<p style="font-size:.85rem;color:var(--tinta-fraca)">📝 Anotação: ${s.nome} parecia nervoso.</p>`;
+      if(!habK('aura') && Math.random() < .2) extra = `<p style="font-size:.85rem;color:var(--tinta-fraca)">📝 Anotação: ${s.nome} parecia nervoso.</p>`;
     }
   }
   caso.depo[s.id] = { ok };
+  if(!ok && s !== caso.culpado && habK('aura')) extra += '<p style="font-size:.85rem;color:var(--tinta-fraca)">🔵 A aura está calma.</p>';
   $('dlg-corpo').innerHTML = `<h2>SALA DE INTERROGATÓRIO</h2>
     <div class="sala"><img class="eu" src="${arte(cfg.detetive)}" alt="Detetive ${eu().nome}"><img src="${arte(s.id)}" alt="${s.nome}"></div>
     <div class="fala"><b>Detetive ${eu().nome}</b>Onde você estava às ${caso.hora}?</div>
@@ -799,8 +851,8 @@ function culpar(s){
 }
 function resolver(){
   caso.fim = true;
-  const c = caso.culpado, N = NIVEIS[caso.nivel], sobra = caso.pistas.length - caso.mostradas, est = estrelasAgora(), esp = caso.especiais.has(c.id);
-  const pts = Math.max(10, Math.round((60 + 15 * sobra - 20 * caso.erros - 10 * caso.pericias - 5 * caso.inter) * N.mult)) + (esp ? 1000 : 0);
+  const c = caso.culpado, N = NIVEIS[caso.nivel], sobra = caso.pistas.length - (caso.mostradas - (caso.gratis || 0)), est = estrelasAgora(), esp = caso.especiais.has(c.id);
+  const pts = Math.max(10, Math.round((60 + 15 * sobra - 20 * caso.erros - (habK('dna') ? 0 : 10) * caso.pericias - 5 * caso.inter) * N.mult * (habK('xp') ? hab().q : 1))) + (esp ? 1000 : 0);
   const antes = patente().i;
   stats.casos++; stats.estrelas += est; stats.pontos += pts;
   stats.presos[c.id] = (stats.presos[c.id] || 0) + 1;
@@ -843,8 +895,19 @@ $('pericia').onclick = () => {
   const livres = caso.sus.filter(s => s !== caso.culpado && !caso.riscados.has(s.id));
   if(!livres.length) return;
   const s = sorteia(livres); caso.riscados.add(s.id); caso.pericias++; somRisca();
-  $('aviso').textContent = `🧪 O exame de DNA deu negativo: ${s.nome} é inocente. (−10 pontos)`; $('aviso').className = 'aviso';
+  $('aviso').textContent = `🧪 O exame de DNA deu negativo: ${s.nome} é inocente. ${habK('dna') ? '(💧 de graça!)' : '(−10 pontos)'}`; $('aviso').className = 'aviso';
   desenharSuspeitos(); mostrarPistas();
+};
+$('poder').onclick = () => {
+  const H = hab(); if(!caso || caso.fim || caso.poderUsado || H.uso !== 'poder') return;
+  if(H.k === 'pista1'){ if(caso.mostradas >= caso.pistas.length) return; caso.mostradas++; caso.gratis = (caso.gratis || 0) + 1; $('aviso').textContent = `${H.e} ${H.n}! Uma pista nova apareceu de graça.`; }
+  else{
+    const livres = embaralhar(caso.sus.filter(s => s !== caso.culpado && !caso.riscados.has(s.id))).slice(0, H.q);
+    if(!livres.length) return;
+    livres.forEach(s => caso.riscados.add(s.id));
+    $('aviso').textContent = `${H.e} ${H.n}! ${livres.map(s => s.nome).join(', ')} ${livres.length > 1 ? 'são inocentes' : 'é inocente'}.`;
+  }
+  caso.poderUsado = true; $('aviso').className = 'aviso'; tocar([523, 784, 1047], .1, 'sine'); desenharSuspeitos(); mostrarPistas();
 };
 $('so-suspeitos').onclick = () => { cfg.esconder = !cfg.esconder; gravar('cfg', cfg); if(caso){ desenharSuspeitos(); mostrarPistas(); } };
 $('comecar').onclick = comecar;
@@ -853,7 +916,7 @@ $('outro-caso').onclick = () => { if(!confirm('Abrir um caso novo? O caso salvo 
 $('dlg').addEventListener('cancel', ev => { if(caso && caso.fim) ev.preventDefault(); });
 
 /* ---------- 🕵️ escolher detetive ---------- */
-function mostrarDetetive(){ $('meu-img').src = arte(cfg.detetive); $('meu-nome').textContent = `Detetive ${eu().nome}`; }
+function mostrarDetetive(){ $('meu-img').src = arte(cfg.detetive); $('meu-nome').textContent = `Detetive ${eu().nome}`; const H = hab(); $('meu-hab').innerHTML = `<b>${H.e} ${H.n}${H.uso === 'poder' ? ' · poder (1x por caso)' : ' · sempre ligado'}</b>${H.d}`; }
 
 /* ---------- carreira ---------- */
 const PATENTES = [{ c:0, e:'🔍', n:'Detetive Novato' }, { c:5, e:'🔎', n:'Detetive Júnior' }, { c:15, e:'🕵️', n:'Investigador' }, { c:30, e:'👮', n:'Inspetor' },
@@ -1003,13 +1066,13 @@ $('perfil-bt').onclick = abrirPerfil;
 /* ---------- 🕵️ escolher detetive (os de graça + os da loja) ---------- */
 function escolherDetetive(){
   const botao = id => { const livre = temDetetive(id), preco = precoDetetive(id);
-    return `<button type="button" data-id="${id}" aria-pressed="${id === cfg.detetive}" class="${livre ? '' : 'travado'}"><img loading="lazy" alt="" src="${arte(id)}">${POKE[id - 1].nome}${livre ? '' : `<small>🔒 🍰 ${preco}</small>`}</button>`; };
+    return `<button type="button" data-id="${id}" aria-pressed="${id === cfg.detetive}" class="${livre ? '' : 'travado'}"><img loading="lazy" alt="" src="${arte(id)}">${POKE[id - 1].nome}<span class="h">${HAB[id].e} ${HAB[id].n}</span>${livre ? '' : `<small>🔒 🍰 ${preco}</small>`}</button>`; };
   $('dlg-corpo').innerHTML = `<h2>Escolha seu detetive</h2><p style="font-size:.8rem">Você tem 🍰 ${migalhas()} migalhas.</p><div class="escolhas">${TODOS_DETETIVES.map(botao).join('')}</div>
     <button type="button" class="mini" id="fechar-dlg">Fechar</button>`;
   $('dlg-corpo').querySelector('.escolhas').onclick = ev => {
     const b = ev.target.closest('[data-id]'); if(!b) return; const id = +b.dataset.id;
     if(!temDetetive(id)){ if(!confirm(`Comprar o detetive ${POKE[id - 1].nome} por 🍰 ${precoDetetive(id)} migalhas?`) || !comprar('detetives', id, precoDetetive(id))) return; }
-    cfg.detetive = id; gravar('cfg', cfg); mostrarDetetive(); mostrarHeroi(); grito(id); $('dlg').close(); toast(`🕵️ Agora você é o Detetive ${eu().nome}!`);
+    cfg.detetive = id; gravar('cfg', cfg); mostrarDetetive(); mostrarHeroi(); grito(id); $('dlg').close(); toast(`🕵️ Agora você é o Detetive ${eu().nome}! ${hab().e} ${hab().n}`);
   };
   $('fechar-dlg').onclick = () => $('dlg').close();
   $('dlg').showModal();
@@ -1025,7 +1088,7 @@ function mostrarLoja(){
   const box = $('itens-loja');
   if(abaLoja === 'detetives'){
     box.innerHTML = DETETIVES_LOJA.map(([id, p]) => { const t = temDetetive(id), u = cfg.detetive === id;
-      return `<div class="item${u ? ' usando' : ''}"><div class="amostra"><img loading="lazy" alt="" src="${arte(id)}"></div><b>${POKE[id - 1].nome}</b>
+      return `<div class="item${u ? ' usando' : ''}"><div class="amostra"><img loading="lazy" alt="" src="${arte(id)}"></div><b>${POKE[id - 1].nome}</b><small style="display:block;font-size:.7rem;color:var(--tinta-fraca)">${HAB[id].e} ${HAB[id].n}: ${HAB[id].d}</small>
         <button type="button" class="mini" data-k="${id}">${u ? '✅ Usando' : t ? 'Usar' : `🍰 ${p}`}</button></div>`; }).join('');
     box.onclick = ev => { const b = ev.target.closest('[data-k]'); if(!b) return; const id = +b.dataset.k;
       if(!temDetetive(id) && !comprar('detetives', id, precoDetetive(id))) return;
@@ -1091,7 +1154,7 @@ let historico = Array.isArray(ler('historico', [])) ? ler('historico', []) : [];
 let desafios = ler('desafios', {}) || {};
 let guardarDesafio = null;
 function aoResolver(c, pts, est, esp){
-  const bonus = { facil:0, medio:3, dificil:6 }[caso.nivel] || 0, ganho = 5 + est * 2 + bonus + (esp ? 100 : 0);
+  const bonus = { facil:0, medio:3, dificil:6 }[caso.nivel] || 0, ganho = Math.round((5 + est * 2 + bonus + (esp ? 100 : 0)) * (habK('migalhas') ? hab().q : 1));
   const nivelAntes = nivelDe(xpTotal() - pts);
   stats.migalhas = migalhas() + ganho; salvar();
   avancarMissao('casos', 1); avancarMissao('estrelas', est);
