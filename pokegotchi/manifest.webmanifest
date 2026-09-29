@@ -1,0 +1,14 @@
+{
+  "name": "Pokégotchi",
+  "short_name": "Pokégotchi",
+  "description": "O seu bichinho virtual Pokémon: choque o ovo, cuide, brinque e veja ele evoluir!",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff2f8",
+  "theme_color": "#ff7eb6",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

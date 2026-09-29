@@ -1,0 +1,14 @@
+# 🥚 Pokégotchi
+
+O seu bichinho virtual Pokémon!
+
+- 🥚 Escolha um dos 20 Pokémon ou um **ovo misterioso**, esquente o ovo até ele chocar (1 chance em 20 de nascer **✨ shiny**) e dê um nome.
+- 📊 Cinco barras: 🍖 barriga, 😊 felicidade, ⚡ energia, 🫧 limpeza e ❤️ saúde. Elas baixam com o tempo, **até com o site fechado** (no máximo 8 horas e pela metade da velocidade).
+- 🍎 Comer (frutinha de graça, poffin, suco, bolo de Alcremie e doce raro), 🎾 brincar (minijogo de pegar frutinhas), 🛁 banho, 💤 dormir, 💊 remédio e 🧹 limpar o cocô.
+- 💖 Toque no Pokémon pra fazer carinho e ouvir o grito.
+- ⭐ Cuidar dá XP. Ele evolui no **nível 8** e no **nível 18** (precisa estar feliz). Quando tem várias evoluções (Eevee!), você escolhe.
+- 🪙 Moedas (minijogo, subir de nível, evoluir e presente do dia) pra loja: comidas, 🎩 chapéus e 🖼️ fundos (com versão de noite).
+- 📖 Álbum com todos os Pokémon que você criou.
+- Ele **nunca morre**: sem cuidado, fica tristinho e doente.
+
+Tudo fica guardado só neste aparelho. Nomes, tipos e evoluções vêm do banco do *Quem é esse Pokémon?*; figuras e gritos do [PokeAPI](https://pokeapi.co). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.
