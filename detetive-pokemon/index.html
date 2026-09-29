@@ -204,6 +204,18 @@ dialog::backdrop{background:rgba(10,10,15,.7)}
 .hab{background:var(--cartao2);border-left:4px solid var(--ouro);border-radius:6px;padding:8px 10px;margin-top:10px;font-size:.85rem;text-align:left}
 .hab b{display:block}
 .escolhas button .h{display:block;font-size:.62rem;color:var(--tinta-fraca);font-weight:600;margin-top:2px}
+.flutua{position:fixed;right:max(14px,calc(50vw - 286px));bottom:16px;z-index:40;border:none;border-radius:18px;padding:8px 12px;background:var(--botao);color:#fff;font-weight:800;font-size:.8rem;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.flutua i{display:block;font-style:normal;font-size:1.35rem}
+.flutua em{position:absolute;top:-6px;right:-6px;background:var(--carimbo);color:#fff;border-radius:99px;font-style:normal;font-size:.72rem;padding:1px 7px;border:2px solid var(--fundo)}
+#tela-caso{padding-bottom:70px}
+.conversa{background:var(--cartao2);border-radius:10px;padding:8px;max-height:34vh;overflow:auto;display:flex;flex-direction:column;gap:6px;margin:8px 0;text-align:left}
+.conversa .msg{max-width:82%;border-radius:12px;padding:6px 10px;font-size:.86rem;line-height:1.35;background:var(--cartao);border:1px solid var(--borda);align-self:flex-start;word-wrap:break-word}
+.conversa .msg b{display:block;font-size:.68rem;color:var(--tinta-fraca)}
+.conversa .msg.eu{align-self:flex-end;background:var(--botao);color:#fff;border-color:var(--botao)}
+.conversa .msg.eu b{color:rgba(255,255,255,.75)}
+.conversa .msg.sis{align-self:center;background:none;border:none;font-size:.74rem;color:var(--tinta-fraca);text-align:center}
+.frases{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:6px 0}
+.frases button{border:1px solid var(--borda);background:var(--cartao);border-radius:99px;padding:4px 9px;font-size:.74rem;cursor:pointer}
 #poder{grid-column:1/-1;background:var(--ouro);color:#fff;border-color:var(--ouro)}
 #poder:disabled{background:var(--cartao2);color:var(--tinta-fraca);border-color:var(--borda)}
 /* v4: perfil, loja, amigos */
@@ -395,14 +407,7 @@ textarea,input[type=search],input[type=text],input[type=password]{width:100%;bor
     <p class="aviso" id="aviso"></p>
     <div class="filtro"><span id="restam"></span><button type="button" class="mini" id="so-suspeitos">👁️ Esconder inocentes</button></div>
     <div class="suspeitos" id="suspeitos"></div>
-    <div class="cartao" id="painel-dupla">
-      <h2>🤝 Jogar em dupla</h2>
-      <p style="font-size:.84rem" id="dupla-txt">Mande o código pro parceiro: ele abre <b>o mesmo caso</b>, investiga e te manda de volta o que descobriu. Vocês juntam as descobertas e culpam juntos!</p>
-      <button type="button" class="mini" id="mandar-dupla" style="width:100%;margin-top:8px">📤 Mandar o caso + o que eu descobri</button>
-      <textarea id="colar-dupla" rows="2" placeholder="Cole aqui o código do parceiro (DUPLA1…)" style="margin-top:8px"></textarea>
-      <button type="button" class="mini" id="colar-dupla-ok" style="width:100%;margin-top:6px">📥 Juntar as descobertas do parceiro</button>
-      <p class="aviso" id="dupla-msg"></p>
-    </div>
+    <button type="button" class="flutua" id="abrir-dupla" aria-label="Jogar em dupla e conversar"><i>🤝💬</i>Dupla<em id="dupla-badge" hidden></em></button>
   </section>
 
   <!-- ===================== LOJA ===================== -->
@@ -453,7 +458,7 @@ textarea,input[type=search],input[type=text],input[type=password]{width:100%;bor
   <footer>
     Jogo de fã, feito pra brincar 🕵️ · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 6 — 29/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 7 — 29/09 · 🔄</button>
   </footer>
 </div>
 
@@ -711,7 +716,7 @@ function salvarCaso(){
   if(!caso || caso.fim){ gravar('caso', null); return; }
   const idx = p => caso.todas.indexOf(p);
   gravar('caso', { v:1, sus:caso.sus.map(s => s.id), esp:[...caso.especiais], culpado:caso.culpado.id, pistas:caso.pistas.map(idx), depoUsadas:(caso.usadasDepo || []).map(idx),
-    provados:[...(caso.provados || [])], dupla:caso.dupla || null, gratis:caso.gratis || 0, poderUsado:!!caso.poderUsado, mostradas:caso.mostradas, erros:caso.erros, pericias:caso.pericias, inter:caso.inter, riscados:[...caso.riscados], depo:caso.depo, depoimentos:caso.depoimentos,
+    conversa:(caso.conversa || []).slice(-60), naoLidas:caso.naoLidas || 0, provados:[...(caso.provados || [])], dupla:caso.dupla || null, gratis:caso.gratis || 0, poderUsado:!!caso.poderUsado, mostradas:caso.mostradas, erros:caso.erros, pericias:caso.pericias, inter:caso.inter, riscados:[...caso.riscados], depo:caso.depo, depoimentos:caso.depoimentos,
     nivel:caso.nivel, numero:caso.numero, seed:caso.seed, desafio:caso.desafio || null, admForcado:!!caso.admForcado, lugar:caso.lugar, onde:caso.onde, hora:caso.hora, clima:caso.clima, achou:caso.achou, achado:caso.achado, cena:caso.cena, quando:Date.now() });
 }
 function carregarCaso(){
@@ -723,7 +728,7 @@ function carregarCaso(){
     const todas = pistasPossiveis(c, sus), pistas = g.pistas.map(i => todas[i]);
     if(pistas.some(x => !x) || !sus.every(s => s === c || pistas.some(p => !p.f(s)))) return null;   // confere se as pistas ainda funcionam
     return { sus, especiais:new Set(g.esp), culpado:c, todas, pistas, usadasDepo:g.depoUsadas.map(i => todas[i]).filter(Boolean),
-      provados:new Set(g.provados || []), dupla:g.dupla || null, gratis:g.gratis || 0, poderUsado:!!g.poderUsado, mostradas:g.mostradas, erros:g.erros, pericias:g.pericias, inter:g.inter, riscados:new Set(g.riscados), depo:g.depo || {}, depoimentos:g.depoimentos || [],
+      conversa:Array.isArray(g.conversa) ? g.conversa : [], naoLidas:g.naoLidas || 0, provados:new Set(g.provados || []), dupla:g.dupla || null, gratis:g.gratis || 0, poderUsado:!!g.poderUsado, mostradas:g.mostradas, erros:g.erros, pericias:g.pericias, inter:g.inter, riscados:new Set(g.riscados), depo:g.depo || {}, depoimentos:g.depoimentos || [],
       fim:false, nivel:g.nivel, numero:g.numero, seed:g.seed, desafio:g.desafio || null, admForcado:!!g.admForcado, lugar:g.lugar, onde:g.onde, hora:g.hora, clima:g.clima, achou:g.achou, achado:g.achado, cena:g.cena, quando:g.quando };
   }catch(e){ return null; }
 }
@@ -746,7 +751,7 @@ function novoCaso(nivel, seed, desafio, forcar){
   const m = montarCaso(nivel, seed, forcar);
   if(!m){ alert('Não consegui montar esse caso. Tente de novo!'); return false; }
   const gratis = habK('pista') || habK('pistainter') ? Math.min(hab().q, Math.max(0, m.pistas.length - 2)) : 0;
-  caso = Object.assign(m, { provados:new Set(), dupla:null, gratis, poderUsado:false, detetive:cfg.detetive, mostradas:1 + gratis, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel, numero:stats.casos + 1, seed, desafio, admForcado:!!forcar });
+  caso = Object.assign(m, { conversa:[], naoLidas:0, provados:new Set(), dupla:null, gratis, poderUsado:false, detetive:cfg.detetive, mostradas:1 + gratis, erros:0, pericias:0, inter:0, riscados:new Set(), depo:{}, depoimentos:[], fim:false, nivel, numero:stats.casos + 1, seed, desafio, admForcado:!!forcar });
   return true;
 }
 function abrirCaso(continuando){
@@ -766,7 +771,7 @@ function abrirCaso(continuando){
   setTimeout(rodarCena, 300);
 }
 function mostrarPistas(){
-  salvarCaso();
+  salvarCaso(); if(typeof marcarBadge === 'function') marcarBadge();
   const ol = $('pistas'); ol.innerHTML = '';
   caso.pistas.forEach((p, i) => {
     const li = document.createElement('li');
@@ -1283,9 +1288,10 @@ $('lista-desafios').onclick = ev => {
 };
 
 /* ---------- 🤝 dupla: os dois abrem o mesmo caso e trocam o que descobriram ---------- */
-function codigoDupla(){
+const limpaRecado = t => String(t || '').replace(/[<>]/g, '').replace(/https?:\/\/\S+|www\.\S+/gi, '[link]').replace(/\s+/g, ' ').trim().slice(0, 100);
+function codigoDupla(recado){
   const idx = p => caso.todas.indexOf(p);
-  return 'DUPLA1.' + paraB64({ s:caso.seed, n:caso.nivel, a:perfil.apelido || 'Detetive', d:cfg.detetive,
+  return 'DUPLA1.' + paraB64({ s:caso.seed, n:caso.nivel, a:perfil.apelido || 'Detetive', d:cfg.detetive, r:limpaRecado(recado), t:Date.now(),
     i:[...caso.provados].filter(id => id !== caso.culpado.id), p:(caso.usadasDepo || []).map(idx).filter(i => i >= 0), m:caso.mostradas });
 }
 function juntarDupla(o){   // coloca no caso aberto o que o parceiro provou
@@ -1304,6 +1310,12 @@ function juntarDupla(o){   // coloca no caso aberto o que o parceiro provou
   });
   const m = Math.min(caso.pistas.length, inteiro(o.m, 20)); const maisPistas = Math.max(0, m - caso.mostradas); caso.mostradas = Math.max(caso.mostradas, m);
   if(novos || depos || maisPistas || !caso.dupla) caso.dupla = par;
+  const rec = limpaRecado(o.r), quando = inteiro(o.t, 9e15);
+  caso.conversa = caso.conversa || [];
+  if(!caso.conversa.some(x => x.de === par && x.t === quando && quando)){
+    caso.conversa.push({ de:par, sis:true, txt:`📥 ${par} mandou: ${novos} inocente(s), ${depos} depoimento(s)${maisPistas ? `, ${maisPistas} pista(s)` : ''}`, t:quando });
+    if(rec){ caso.conversa.push({ de:par, txt:rec, t:quando }); caso.naoLidas = (caso.naoLidas || 0) + 1; }
+  }
   desenharSuspeitos(); mostrarPistas();
   return `🤝 Juntei as descobertas de ${par}: ${novos} inocente(s), ${depos} depoimento(s)${maisPistas ? ` e ${maisPistas} pista(s)` : ''}.`;
 }
@@ -1321,15 +1333,48 @@ function receberDupla(o){
   $('aviso').textContent = r; $('aviso').className = 'aviso';
   return r;
 }
-$('mandar-dupla').onclick = () => { if(caso && !caso.fim) mandarCodigo(codigoDupla(), 'dupla'); };
-$('colar-dupla-ok').onclick = () => {
-  const t = $('colar-dupla').value, m = String(t).match(/DUPLA1\.([A-Za-z0-9_-]+)/);
-  if(!m){ $('dupla-msg').textContent = '🤔 Cole um código que começa com DUPLA1.'; return; }
-  let o; try{ o = deB64(m[1]); }catch(e){ $('dupla-msg').textContent = '😕 Esse código está quebrado.'; return; }
-  if(!caso || caso.fim){ $('dupla-msg').textContent = 'Abra um caso primeiro.'; return; }
-  if(inteiro(o.s, 2147483647) !== caso.seed){ $('dupla-msg').textContent = '🤔 Esse código é de outro caso! Peça o código deste caso pro parceiro.'; return; }
-  $('dupla-msg').textContent = juntarDupla(o); $('colar-dupla').value = '';
-};
+/* 💬 a janela da dupla: conversa + mandar/colar código */
+const FRASES = ['👋 Oi, parceiro!', '🔎 Achei uma pista!', '🤔 Quem você acha que foi?', '🎤 Interroga os que sobraram!', '🚨 Já sei quem foi!', '⚖️ Pode culpar!', '😂 kkkk', '👍 Beleza!'];
+function marcarBadge(){ const n = caso && caso.naoLidas || 0, b = $('dupla-badge'); b.hidden = !n; b.textContent = n; }
+function abrirDupla(){
+  if(!caso) return;
+  caso.naoLidas = 0; marcarBadge(); salvarCaso();
+  const msgs = (caso.conversa || []).map(x => x.sis ? `<div class="msg sis">${esc(x.txt)}</div>` : `<div class="msg${x.eu ? ' eu' : ''}"><b>${x.eu ? 'Você' : esc(x.de)}</b>${esc(x.txt)}</div>`).join('');
+  $('dlg2-corpo').innerHTML = `<h2>🤝 Jogar em dupla</h2>
+    <p style="font-size:.8rem">${caso.dupla ? `Parceiro: <b>${esc(caso.dupla)}</b>` : 'Mande o código pro parceiro: ele abre <b>o mesmo caso</b>, investiga e te manda o código dele de volta.'}</p>
+    <div class="conversa" id="conversa">${msgs || '<div class="msg sis">💬 A conversa aparece aqui. O recado vai junto com o código.</div>'}</div>
+    <div class="frases">${FRASES.map(f => `<button type="button">${f}</button>`).join('')}</div>
+    <input type="text" id="recado" maxlength="100" placeholder="Recado (não escreva nome de verdade nem endereço)" autocomplete="off">
+    <button type="button" class="grande" id="mandar-dupla" style="padding:11px;font-size:1rem">📤 Mandar caso + descobertas + recado</button>
+    <div id="codigo-dupla" hidden><div class="codigo-caixa" id="codigo-dupla-txt"></div><button type="button" class="mini" id="copiar-dupla" style="width:100%">📋 Copiar o código</button></div>
+    <textarea id="colar-dupla" rows="2" placeholder="Cole aqui o código do parceiro (DUPLA1…)" style="margin-top:10px"></textarea>
+    <button type="button" class="mini" id="colar-dupla-ok" style="width:100%;margin-top:6px">📥 Juntar descobertas e ler o recado</button>
+    <p class="aviso" id="dupla-msg"></p>
+    <p style="font-size:.7rem;color:var(--tinta-fraca)">🔒 Só troque códigos com quem você conhece. O jogo não tem servidor: a conversa vai dentro do código.</p>
+    <button type="button" class="mini" id="fechar-dlg2" style="width:100%">Fechar</button>`;
+  const cv = $('conversa'); cv.scrollTop = cv.scrollHeight;
+  $('dlg2-corpo').querySelector('.frases').onclick = ev => { const b = ev.target.closest('button'); if(b){ $('recado').value = b.textContent; $('recado').focus(); } };
+  $('mandar-dupla').onclick = () => {
+    if(caso.fim) return;
+    const rec = limpaRecado($('recado').value), codigo = codigoDupla(rec);
+    if(rec){ caso.conversa.push({ eu:true, txt:rec, t:Date.now() }); salvarCaso(); }
+    const texto = `🤝 Vamos resolver esse caso em dupla no Detetive Pokémon! Cole no botão 🤝 Dupla (ou em Amigos): ${codigo}`;
+    $('codigo-dupla-txt').textContent = texto; $('codigo-dupla').hidden = false; $('recado').value = '';
+    if(rec){ const cvv = $('conversa'); if(cvv.querySelector('.sis') && cvv.children.length === 1) cvv.innerHTML = ''; cvv.insertAdjacentHTML('beforeend', `<div class="msg eu"><b>Você</b>${esc(rec)}</div>`); cvv.scrollTop = cvv.scrollHeight; }
+    $('copiar-dupla').onclick = async () => { try{ await navigator.clipboard.writeText(texto); $('copiar-dupla').textContent = '✅ Copiado! Agora mande pro parceiro.'; }catch(e){ $('copiar-dupla').textContent = 'Selecione o código e copie 👆'; } };
+  };
+  $('colar-dupla-ok').onclick = () => {
+    const t = $('colar-dupla').value, m = String(t).match(/DUPLA1\.([A-Za-z0-9_-]+)/);
+    if(!m){ $('dupla-msg').textContent = '🤔 Cole um código que começa com DUPLA1.'; return; }
+    let o; try{ o = deB64(m[1]); }catch(e){ $('dupla-msg').textContent = '😕 Esse código está quebrado.'; return; }
+    if(caso.fim){ $('dupla-msg').textContent = 'Esse caso já acabou.'; return; }
+    if(inteiro(o.s, 2147483647) !== caso.seed){ $('dupla-msg').textContent = '🤔 Esse código é de outro caso! Peça o código deste caso pro parceiro.'; return; }
+    const r = juntarDupla(o); abrirDupla(); $('dupla-msg').textContent = r;
+  };
+  $('fechar-dlg2').onclick = () => $('dlg2').close();
+  if(!$('dlg2').open) $('dlg2').showModal();
+}
+$('abrir-dupla').onclick = abrirDupla;
 
 /* ---------- 🔎 arquivo (a Pokédex do detetive) ---------- */
 function pesquisar(){

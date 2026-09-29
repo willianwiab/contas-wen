@@ -46,6 +46,11 @@ Cada um dos 30 detetives tem uma habilidade. Algumas são **poder** (um botão q
 - **📥 Juntar as descobertas** coloca tudo no seu caso (🤝 "Fulano provou"). O culpado nunca pode ser riscado por um código.
 - Distintivos 🤝 Caso em dupla e 👯 10 casos em dupla.
 
+## Versão 7: 🤝💬 dupla com conversa
+- O **🤝💬 Dupla** virou um botão que fica sempre no canto da tela do caso.
+- Dentro tem a **💬 conversa**: frases prontas ou um recado de até 100 letras, que vai junto com o código DUPLA1 (o jogo não tem servidor). Links são trocados por [link].
+- Um número vermelho mostra quantos recados novos chegaram. A conversa fica salva com o caso.
+
 ## Níveis
 - 🟢 Fácil: Pokémon famosos e pistas fortes · 🟡 Médio: gerações 1 a 4 · 🔴 Difícil: todos os 1025 e pistas fracas.
 
