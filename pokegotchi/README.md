@@ -27,4 +27,7 @@ O seu bichinho virtual Pokémon!
 - ⚔️ **Batalhas** na 🌿 grama alta (ou no botão Batalhar): ataque do tipo do seu Pokémon (com "super efetivo" e crítico), 🛡️ defender, 🍓 frutinha (2 por batalha) e 🏃 fugir.
 - 🩹 Ganhou com pouca vida: machucado leve (🩹 curativo). **Perdeu: precisa de 🦴 gesso!** No 🏥 Centro Pokémon é de graça, ou compre na loja; depois de alguns minutos ele sara sozinho. Machucado não batalha, não passeia e não treina.
 
+## Versão 6
+- 🤖 **Auto-comida**: ligado, o Pokémon come frutinha sozinho sempre que a barriga fica abaixo de 40% (até com o site fechado) e avisa quantas comeu.
+
 Tudo fica guardado só neste aparelho. Nomes, tipos e evoluções vêm do banco do *Quem é esse Pokémon?*; figuras e gritos do [PokeAPI](https://pokeapi.co). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.

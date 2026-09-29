@@ -234,6 +234,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
       <button type="button" id="bt-explorar"><i>🗺️</i>Explorar</button>
       <button type="button" id="bt-batalhar"><i>⚔️</i>Batalhar</button>
       <button type="button" id="bt-tratar"><i>🩹</i>Tratar</button>
+      <button type="button" id="bt-auto"><i>🤖</i>Auto-comida</button>
     </div>
 
     <div class="menu">
@@ -270,7 +271,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
   <footer>
     Jogo de fã, feito pra brincar 🥚 · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 5 — 29/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 6 — 30/09 · 🔄</button>
   </footer>
 </div>
 
@@ -368,6 +369,7 @@ function passarTempo(){
     pet.tempoCoco = (pet.tempoCoco || 0) + min;
     while(pet.tempoCoco > 40){ pet.tempoCoco -= 40; if((pet.cocos || 0) < 3) pet.cocos = (pet.cocos || 0) + 1; }
   }
+  if(pet.auto && s.fome < 40){ const vezes = Math.ceil((70 - s.fome) / 15); s.fome = Math.min(100, s.fome + vezes * 15); pet.autoComeu = (pet.autoComeu || 0) + vezes; }   // 🤖 come frutinha sozinho
   const ruim = ['fome', 'feliz', 'limpeza', 'energia'].filter(k => s[k] < 15).length;
   if(ruim) s.saude -= min * .25 * ruim; else if(['fome', 'feliz', 'limpeza', 'energia'].every(k => s[k] > 40)) s.saude += min * .3;
   Object.keys(s).forEach(k => { s[k] = limitar(s[k], 0, 100); });
@@ -478,6 +480,8 @@ function desenhar(){
   $('chapeu').textContent = (CHAPEUS[pet.chapeu] || CHAPEUS.nada).e;
   $('shiny-selo').hidden = !pet.shiny;
   checarFerida(); desenharFerida();
+  $('bt-auto').innerHTML = pet.auto ? '<i>🤖</i>Auto: LIGADO' : '<i>🤖</i>Auto-comida'; $('bt-auto').style.borderColor = pet.auto ? 'var(--verde)' : '';
+  if(pet.autoComeu){ toast(`🤖 ${pet.nome} comeu ${pet.autoComeu} frutinha${pet.autoComeu > 1 ? 's' : ''} sozinho!`); pet.autoComeu = 0; }
   $('bt-tratar').disabled = !pet.ferida; $('bt-tratar').classList.toggle('alerta', !!(pet.ferida && !pet.ferida.tratado));
   $('pet').classList.toggle('noturno', !!pet.noturno); $('lua').hidden = !pet.noturno;
   if(pet.hue) $('pet-img').style.filter = `hue-rotate(${pet.hue}deg)` + (pet.noturno ? ' drop-shadow(0 0 14px #9a5cff)' : ''); else $('pet-img').style.filter = '';
@@ -609,6 +613,14 @@ $('bt-foto').onclick = async () => {
   g.fillText(new Date().toLocaleDateString('pt-BR'), W / 2, 830);
   try{ const a = document.createElement('a'); a.href = cv.toDataURL('image/png'); a.download = `pokegotchi-${pet.nome}.png`; a.click(); toast('📸 Foto salva!'); tocar([1000, 1400], .06); }
   catch(e){ toast('😕 Não deu pra salvar a foto aqui.'); }
+};
+
+/* ---------- 🤖 auto-comida: come frutinha sozinho quando a barriga fica abaixo de 40% ---------- */
+$('bt-auto').onclick = () => {
+  pet.auto = !pet.auto;
+  if(pet.auto){ falar('Oba! Agora eu como sozinho quando tiver fome! 🤖🍓'); toast('🤖 Auto-comida LIGADA: quando a barriga ficar abaixo de 40%, ele come frutinha sozinho (até com o site fechado).'); passarTempo(); }
+  else falar('Tá bom, agora você me dá comida! 🍎');
+  tocar([660, 880], .07); desenhar(); salvar();
 };
 
 /* ---------- 🗣️ 🫂 🎨 🌙 🎁 ---------- */
