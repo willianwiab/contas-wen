@@ -128,7 +128,7 @@ dialog::backdrop{background:rgba(40,10,40,.55)}
 .album b{display:block;font-size:.8rem}
 /* minijogo */
 .jogo{position:relative;height:340px;border-radius:18px;overflow:hidden;background:linear-gradient(#bfe9ff,#e9fbff 70%,#b8f0b0 70%);margin-top:10px;touch-action:manipulation}
-.fruta{position:absolute;font-size:2.4rem;cursor:pointer;border:none;background:none;line-height:1;animation:aparece .25s}
+.fruta{position:absolute;font-size:2.9rem;cursor:pointer;border:none;background:none;line-height:1;padding:8px;animation:aparece .25s}
 @keyframes aparece{from{transform:scale(0)}}
 .jogo .placar-j{position:absolute;left:10px;top:8px;font-weight:900;background:rgba(255,255,255,.8);border-radius:99px;padding:3px 10px;color:#2a1f3d}
 .jogo .tempo-j{position:absolute;right:10px;top:8px;font-weight:900;background:rgba(255,255,255,.8);border-radius:99px;padding:3px 10px;color:#2a1f3d}
@@ -158,6 +158,8 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
     <div class="cartao" style="text-align:center">
       <h2>🥚 Escolha o seu Pokémon!</h2>
       <p style="font-size:.88rem">Toque no <b>ovo misterioso</b> pra ter uma surpresa, ou escolha um. Todos podem nascer <b>✨ shiny</b> (1 chance em 20)!</p>
+      <input type="text" id="busca-pet" placeholder="🔎 Procurar qualquer Pokémon (1025!)" autocomplete="off">
+      <p style="font-size:.78rem;color:var(--tinta-fraca);margin-top:4px" id="busca-info"></p>
       <div class="escolhas" id="escolhas"></div>
     </div>
   </section>
@@ -192,6 +194,12 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
       <button type="button" id="bt-dormir"><i>💤</i>Dormir</button>
       <button type="button" id="bt-remedio"><i>💊</i>Remédio</button>
       <button type="button" id="bt-limpar"><i>🧹</i>Limpar</button>
+      <button type="button" id="bt-passear"><i>🚶</i>Passear</button>
+      <button type="button" id="bt-treinar"><i>🏋️</i>Treinar</button>
+      <button type="button" id="bt-musica"><i>🎵</i>Música</button>
+      <button type="button" id="bt-brinquedo"><i>🧸</i>Brinquedo</button>
+      <button type="button" id="bt-escovar"><i>🪥</i>Escovar</button>
+      <button type="button" id="bt-foto"><i>📸</i>Foto</button>
     </div>
 
     <div class="menu">
@@ -215,7 +223,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
   <footer>
     Jogo de fã, feito pra brincar 🥚 · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 29/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 29/09 · 🔄</button>
   </footer>
 </div>
 
@@ -254,7 +262,9 @@ const limitar = (x, a, b) => Math.max(a, Math.min(b, x));
 const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 
 /* ---------- quem dá pra escolher ---------- */
-const INICIAIS = [1, 4, 7, 172, 133, 175, 147, 129, 92, 447, 280, 443, 885, 258, 393, 656, 722, 906, 909, 446];
+const INICIAIS = [1, 4, 7, 172, 133, 175, 147, 129, 92, 447, 280, 443, 885, 258, 393, 656, 722, 906, 909, 446,
+  152, 155, 158, 252, 255, 387, 390, 495, 498, 501, 650, 653, 725, 728, 810, 813, 816, 912, 10, 16, 37, 39, 52, 54, 58, 60, 63, 66,
+  74, 77, 79, 104, 216, 570, 682, 684, 704, 778, 848, 876];
 
 /* ---------- guardado ---------- */
 const cfg = Object.assign({ som:true }, ler('cfg', {}));
@@ -353,11 +363,16 @@ function evoluir(novo){
 }
 
 /* ---------- nascer ---------- */
+const semAcento = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 function mostrarEscolher(){
-  $('escolhas').innerHTML = `<button type="button" data-id="ovo"><span class="ovo-bt">🥚</span>Ovo misterioso</button>` +
-    INICIAIS.map(id => `<button type="button" data-id="${id}"><img loading="lazy" alt="" src="${arte(id)}">${POKE[id - 1].nome}</button>`).join('');
+  const q = semAcento(($('busca-pet').value || '').trim());
+  const lista = q ? POKE.filter(p => semAcento(p.nome).includes(q) || String(p.id) === q).slice(0, 60).map(p => p.id) : INICIAIS;
+  $('busca-info').textContent = q ? `${lista.length ? lista.length : 'Nenhum'} Pokémon encontrado${lista.length === 1 ? '' : 's'}${lista.length >= 60 ? ' (mostrando 60)' : ''}` : `${INICIAIS.length} favoritos · pesquise pra ver todos os 1025`;
+  $('escolhas').innerHTML = (q ? '' : `<button type="button" data-id="ovo"><span class="ovo-bt">🥚</span>Ovo misterioso</button>`) +
+    lista.map(id => `<button type="button" data-id="${id}"><img loading="lazy" alt="" src="${arte(id)}">${POKE[id - 1].nome}${POKE[id - 1].evos.length ? '' : '<br><small style="color:var(--tinta-fraca)">não evolui</small>'}</button>`).join('');
   trocarTela('escolher');
 }
+$('busca-pet').oninput = mostrarEscolher;
 $('escolhas').onclick = ev => {
   const b = ev.target.closest('[data-id]'); if(!b) return;
   const surpresa = b.dataset.id === 'ovo', id = surpresa ? sorteia(INICIAIS) : +b.dataset.id;
@@ -414,7 +429,7 @@ function desenhar(){
   $('shiny-selo').hidden = !pet.shiny;
   $('pet').classList.toggle('dorme', !!pet.dormindo); $('pet').classList.toggle('doente', doente());
   $('luz').hidden = !pet.dormindo; $('zzz').hidden = !pet.dormindo;
-  $('pet-nome').textContent = pet.nome + (doente() ? ' 🤒' : '');
+  $('pet-nome').textContent = pet.nome + (cfg.coroa && admLiberado() ? ' 👑' : '') + (doente() ? ' 🤒' : '');
   const dias = Math.floor((Date.now() - pet.nasceu) / 864e5);
   $('pet-especie').textContent = `${p.nome}${pet.shiny ? ' ✨' : ''} · ${p.tipos.map(t => TIPOS[t][1]).join('')} · ${dias ? `${dias} dia${dias > 1 ? 's' : ''}` : 'nasceu hoje'}`;
   $('pet-nivel').textContent = `⭐ Nível ${pet.nivel}`; $('xp-barra').style.width = pet.xp / xpPara(pet.nivel) * 100 + '%';
@@ -427,7 +442,7 @@ function desenhar(){
   $('bt-comer').classList.toggle('alerta', pet.s.fome < 25); $('bt-brincar').classList.toggle('alerta', pet.s.feliz < 25 && !pet.dormindo);
   $('bt-banho').classList.toggle('alerta', pet.s.limpeza < 25); $('bt-dormir').classList.toggle('alerta', pet.s.energia < 20 && !pet.dormindo);
   $('bt-remedio').classList.toggle('alerta', doente()); $('bt-limpar').classList.toggle('alerta', (pet.cocos || 0) >= 2);
-  ['bt-comer', 'bt-brincar', 'bt-banho', 'bt-remedio'].forEach(id => { if(pet.dormindo) $(id).disabled = true; });
+  ['bt-comer', 'bt-brincar', 'bt-banho', 'bt-remedio', 'bt-passear', 'bt-treinar', 'bt-brinquedo', 'bt-escovar'].forEach(id => { if(pet.dormindo) $(id).disabled = true; });
   if(!pet.dormindo){ $('bt-comer').disabled = false; $('bt-brincar').disabled = false; $('bt-banho').disabled = false; }
 }
 /* o que ele fala sozinho */
@@ -492,12 +507,58 @@ $('bt-remedio').onclick = () => {
 $('bt-limpar').onclick = () => { if(!pet.cocos) return; pet.cocos = 0; pet.s.limpeza = limitar(pet.s.limpeza + 15, 0, 100); tocar([300, 500], .08); falar('Obrigado! ✨'); ganharXP(2); desenhar(); salvar(); };
 $('cocos').onclick = ev => { if(ev.target.closest('.coco')) $('bt-limpar').click(); };
 
+/* ---------- mais coisas pra fazer ---------- */
+const mexer = (k, v) => { pet.s[k] = limitar(pet.s[k] + v, 0, 100); };
+$('bt-passear').onclick = () => {
+  if(pet.s.energia < 15){ falar('Tô cansado pra passear… 😴'); return; }
+  mexer('feliz', 15); mexer('energia', -10); mexer('fome', -8); mexer('limpeza', -10); animar('pula'); tocar([523, 587, 659, 698], .1);
+  const r = Math.random();
+  if(r < .5){ const m = 2 + Math.floor(Math.random() * 5); moedas += m; falar(`Achei 🪙 ${m} no caminho!`); }
+  else if(r < .7){ loja.comidas.poffin = (loja.comidas.poffin || 0) + 1; falar('Achei um 🧁 Poffin!'); }
+  else falar(sorteia(['Que passeio legal! 🌳', 'Vi uma borboleta! 🦋', 'Olha o céu! ☁️', 'Fiz um amigo! 🐾']));
+  ganharXP(4); desenhar(); salvar();
+};
+$('bt-treinar').onclick = () => {
+  if(pet.s.energia < 15 || pet.s.fome < 15){ falar(pet.s.fome < 15 ? 'Tô com fome pra treinar! 🍎' : 'Tô sem energia… 😴'); return; }
+  mexer('energia', -15); mexer('fome', -10); mexer('feliz', 3); animar('pula'); efeito(null, sorteia(['💪', '🔥', '⚡', '💥']));
+  tocar([220, 330, 440], .09, 'square'); falar(sorteia(['Hup! Hup! 💪', 'Tô ficando forte! 🔥', 'Mais uma! 💥'])); grito(pet.id); ganharXP(10); desenhar(); salvar();
+};
+const CANCOES = [[523, 587, 659, 523, 659, 698, 784], [659, 587, 523, 587, 659, 659, 659], [392, 440, 494, 523, 494, 440, 392]];
+$('bt-musica').onclick = () => {
+  tocar(sorteia(CANCOES), .22, 'sine');
+  if(pet.dormindo){ mexer('energia', 5); falar('🎵 zzz… que música calminha'); }
+  else{ mexer('feliz', 8); animar('pula'); setTimeout(() => animar('pula'), 800); falar(sorteia(['🎵 Lá lá lá! 💃', '🎶 Adoro essa! 🕺', '🎵 Dança comigo! 💖'])); }
+  for(let i = 0; i < 5; i++) setTimeout(() => efeito(null, sorteia(['🎵', '🎶'])), i * 250);
+  ganharXP(2); desenhar(); salvar();
+};
+$('bt-brinquedo').onclick = () => {
+  if(pet.s.energia < 5){ falar('Tô cansado… 😴'); return; }
+  const b = sorteia(['⚽', '🧸', '🪁', '🎈', '🪀', '🧶']); mexer('feliz', 10); mexer('energia', -5);
+  animar('pula'); for(let i = 0; i < 3; i++) setTimeout(() => efeito(null, b), i * 200); tocar([784, 988], .08); falar(`Oba, ${b}! Que divertido!`); ganharXP(3); desenhar(); salvar();
+};
+$('bt-escovar').onclick = () => {
+  mexer('limpeza', 10); mexer('feliz', 2); for(let i = 0; i < 4; i++) setTimeout(() => efeito(null, '✨'), i * 150);
+  tocar([1200, 1000, 1200, 1000], .05, 'sine'); falar('Dentinhos brilhando! 😁✨'); ganharXP(2); desenhar(); salvar();
+};
+$('bt-foto').onclick = async () => {
+  const W = 720, H = 900, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d');
+  const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#ffd6ea'); gr.addColorStop(1, '#fff6fb'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#d6337f'; g.font = "800 54px 'Baloo 2', sans-serif"; g.textAlign = 'center'; g.fillText('Pokégotchi', W / 2, 80);
+  try{ const im = new Image(); im.crossOrigin = 'anonymous'; im.src = arte(pet.id, pet.shiny); await im.decode(); g.drawImage(im, 110, 140, 500, 500); }catch(e){}
+  const ch = (CHAPEUS[pet.chapeu] || {}).e; if(ch){ g.font = '110px serif'; g.fillText(ch, W / 2, 190); }
+  g.fillStyle = '#2a1f3d'; g.font = "800 60px 'Baloo 2', sans-serif"; g.fillText(pet.nome + (pet.shiny ? ' ✨' : ''), W / 2, 720);
+  g.font = "600 34px Rubik, sans-serif"; g.fillStyle = '#6d6285'; g.fillText(`${POKE[pet.id - 1].nome} · Nível ${pet.nivel}`, W / 2, 775);
+  g.fillText(new Date().toLocaleDateString('pt-BR'), W / 2, 830);
+  try{ const a = document.createElement('a'); a.href = cv.toDataURL('image/png'); a.download = `pokegotchi-${pet.nome}.png`; a.click(); toast('📸 Foto salva!'); tocar([1000, 1400], .06); }
+  catch(e){ toast('😕 Não deu pra salvar a foto aqui.'); }
+};
+
 /* ---------- 🎾 minijogo: pegar as frutinhas ---------- */
 $('bt-brincar').onclick = () => {
   if(pet.s.energia < 10){ falar('Tô cansado demais… 😴'); return; }
-  let pontos = 0, t = 15, timer = 0, spawn = 0;
-  $('dlg-corpo').innerHTML = `<h2>🎾 Pegue as frutinhas!</h2><p style="font-size:.82rem">Toque nas frutas antes que sumam. Cuidado com as 💣!</p>
-    <div class="jogo" id="jogo"><span class="placar-j" id="pj">🍓 0</span><span class="tempo-j" id="tj">⏱️ 15</span></div><button type="button" class="mini" id="fechar">Parar</button>`;
+  let pontos = 0, t = 20, timer = 0, spawn = 0;
+  $('dlg-corpo').innerHTML = `<h2>🎾 Pegue as frutinhas!</h2><p style="font-size:.82rem">Toque nas frutas antes que sumam. As 💣 tiram só 1 ponto!</p>
+    <div class="jogo" id="jogo"><span class="placar-j" id="pj">🍓 0</span><span class="tempo-j" id="tj">⏱️ 20</span></div><button type="button" class="mini" id="fechar">Parar</button>`;
   const J = $('jogo');
   const fim = () => { clearInterval(timer); clearInterval(spawn);
     const ganho = Math.max(0, pontos); moedas += ganho; pet.s.feliz = limitar(pet.s.feliz + 10 + ganho * 1.5, 0, 100); pet.s.energia = limitar(pet.s.energia - 12, 0, 100); pet.s.fome = limitar(pet.s.fome - 5, 0, 100);
@@ -505,17 +566,17 @@ $('bt-brincar').onclick = () => {
     $('dlg-corpo').innerHTML = `<h2>🎉 Fim!</h2><p style="font-size:3rem">🍓</p><p><b>${pontos}</b> ponto${pontos === 1 ? '' : 's'}!</p><p>+🪙 ${ganho} · 😊 ${esc(pet.nome)} adorou brincar!</p><button type="button" class="grande" id="fechar" style="margin-top:10px">Legal!</button>`;
     $('fechar').onclick = () => $('dlg').close(); falar('Foi muito divertido! 🎾'); animar('pula'); };
   spawn = setInterval(() => {
-    const bomba = Math.random() < .18, b = document.createElement('button'); b.className = 'fruta'; b.type = 'button';
+    const bomba = Math.random() < .08, b = document.createElement('button'); b.className = 'fruta'; b.type = 'button';
     b.textContent = bomba ? '💣' : sorteia(['🍓', '🍎', '🍇', '🍑', '🫐', '🍒']);
-    b.style.left = (5 + Math.random() * 78) + '%'; b.style.top = (14 + Math.random() * 70) + '%';
-    b.onclick = () => { if(bomba){ pontos = Math.max(0, pontos - 3); tocar([150], .2, 'sawtooth'); } else { pontos++; tocar([700 + pontos * 10], .06); } $('pj').textContent = `🍓 ${pontos}`; b.remove(); };
-    J.appendChild(b); setTimeout(() => b.remove(), 1300);
-  }, 520);
+    b.style.left = (3 + Math.random() * 72) + '%'; b.style.top = (14 + Math.random() * 62) + '%';
+    b.onclick = () => { if(bomba){ pontos = Math.max(0, pontos - 1); tocar([150], .2, 'sawtooth'); } else { pontos++; tocar([700 + pontos * 10], .06); } $('pj').textContent = `🍓 ${pontos}`; b.remove(); };
+    J.appendChild(b); setTimeout(() => b.remove(), 2600);
+  }, 650);
   timer = setInterval(() => { t--; $('tj').textContent = `⏱️ ${t}`; if(t <= 0) fim(); }, 1000);
   $('fechar').onclick = () => { clearInterval(timer); clearInterval(spawn); $('dlg').close(); };
   $('dlg').showModal();
 };
-$('dlg').addEventListener('close', () => { document.querySelectorAll('.fruta').forEach(f => f.remove()); });
+$('dlg').addEventListener('close', () => { document.querySelectorAll('.fruta').forEach(f => f.remove()); $('dlg-corpo').onclick = null; });
 
 /* ---------- 🛒 loja ---------- */
 let abaLoja = 'chapeus';
@@ -563,6 +624,71 @@ $('bt-config').onclick = () => {
   $('novo-pet').onclick = () => { if(!confirm(`Começar um Pokémon novo? ${pet.nome} vai morar no 📖 Álbum.`)) return; if(pet.fase === 'pet') guardarNoAlbum(); pet = null; salvar(); $('dlg').close(); mostrarEscolher(); };
   $('fechar').onclick = () => $('dlg').close(); $('dlg').showModal();
 };
+
+/* ---------- 👑 Jojo adm: só com a senha, e só neste aparelho ---------- */
+const ADM_HASH = '94898e3200212db557166a21a82fd97bcbbd85f387e40cf731a53897bec90bb7';
+const admLiberado = () => ler('adm-liberado', '') === ADM_HASH;
+async function hashSenha(t){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('jojo-adm:' + t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+let errosAdm = 0, travaAdm = 0;
+if(cfg.coroa && !admLiberado()){ cfg.coroa = false; gravar('cfg', cfg); }
+function abrirAdm(){
+  if(!admLiberado()){
+    $('dlg-corpo').innerHTML = `<h2>👑 Área secreta</h2><input type="password" inputmode="numeric" maxlength="10" id="adm-senha" placeholder="Senha" autocomplete="off" style="width:100%;border:2px solid var(--borda);border-radius:12px;padding:10px;font:inherit;margin-top:8px;background:var(--cartao2);color:var(--tinta)">
+      <button type="button" class="grande" id="adm-ok" style="margin-top:10px">Entrar</button><p id="adm-msg" style="color:var(--vermelho);font-weight:700;margin-top:6px"></p><button type="button" class="mini" id="fechar">Fechar</button>`;
+    $('fechar').onclick = () => $('dlg').close();
+    $('adm-ok').onclick = async () => {
+      if(Date.now() < travaAdm){ $('adm-msg').textContent = '⏳ Espere um minuto.'; return; }
+      let ok = false; try{ ok = await hashSenha($('adm-senha').value) === ADM_HASH; }catch(e){}
+      if(!ok){ if(++errosAdm >= 5){ travaAdm = Date.now() + 60000; errosAdm = 0; } $('adm-msg').textContent = '❌ Senha errada.'; $('adm-senha').value = ''; return; }
+      gravar('adm-liberado', ADM_HASH); painelAdm();
+    };
+    if(!$('dlg').open) $('dlg').showModal(); return;
+  }
+  painelAdm(); if(!$('dlg').open) $('dlg').showModal();
+}
+function painelAdm(){
+  const vivo = pet && pet.fase === 'pet';
+  $('dlg-corpo').innerHTML = `<h2>👑 Jojo adm</h2><p style="font-size:.78rem;color:var(--tinta-fraca)">⚠️ Só vale neste aparelho.</p>
+    <div class="itens" id="adm-bts" style="grid-template-columns:1fr 1fr">
+    <button type="button" class="item" data-a="coroa"><i>👑</i><b>${cfg.coroa ? 'Tirar coroa' : 'Coroa no nome'}</b></button>
+    <button type="button" class="item" data-a="moedas"><i>🪙</i><b>+100 moedas</b></button>
+    <button type="button" class="item" data-a="encher"${vivo ? '' : ' disabled'}><i>💯</i><b>Encher tudo</b><small>todas as barras 100%</small></button>
+    <button type="button" class="item" data-a="nivel"${vivo ? '' : ' disabled'}><i>⭐</i><b>+5 níveis</b></button>
+    <button type="button" class="item" data-a="evoluir"${vivo && POKE[pet.id - 1].evos.length ? '' : ' disabled'}><i>✨</i><b>Evoluir agora</b></button>
+    <button type="button" class="item" data-a="shiny"${pet ? '' : ' disabled'}><i>🌟</i><b>${pet && pet.shiny ? 'Tirar shiny' : 'Virar shiny'}</b></button>
+    <button type="button" class="item" data-a="chocar"${pet && pet.fase === 'ovo' ? '' : ' disabled'}><i>🐣</i><b>Chocar agora</b></button>
+    <button type="button" class="item" data-a="tudo"><i>🎁</i><b>Ganhar a loja toda</b><small>chapéus, fundos e comidas</small></button>
+    <button type="button" class="item" data-a="trocar"${vivo ? '' : ' disabled'}><i>🔄</i><b>Virar outro Pokémon</b><small>digite o nome ou número</small></button>
+    <button type="button" class="item" data-a="noite"${vivo ? '' : ' disabled'}><i>🥱</i><b>Deixar com fome e sono</b><small>pra testar</small></button>
+    </div>
+    <input type="text" id="adm-poke" placeholder="Nome ou número (pra 🔄)" autocomplete="off">
+    <p id="adm-msg" style="font-weight:700;margin:6px 0"></p>
+    <button type="button" class="mini" data-a="sair" id="adm-sair">🚪 Sair do ADM neste aparelho</button>
+    <button type="button" class="mini" data-a="apagar" id="adm-apagar" style="color:var(--vermelho)">🗑️ Apagar tudo</button>
+    <button type="button" class="mini" id="fechar">Fechar</button>`;
+  $('fechar').onclick = () => $('dlg').close();
+  const msg = t => { $('adm-msg').textContent = t; };
+  const agir = a => {
+    if(a === 'coroa'){ cfg.coroa = !cfg.coroa; gravar('cfg', cfg); desenhar(); painelAdm(); return; }
+    if(a === 'moedas'){ moedas += 100; msg(`🪙 Agora: ${moedas}`); }
+    if(a === 'encher'){ Object.keys(pet.s).forEach(k => { pet.s[k] = 100; }); pet.cocos = 0; msg('💯 Tudo cheio!'); }
+    if(a === 'nivel'){ pet.nivel += 5; pet.xp = 0; msg(`⭐ Nível ${pet.nivel}`); $('dlg').close(); pet.s.feliz = Math.max(pet.s.feliz, 60); checarEvolucao(); }
+    if(a === 'evoluir'){ const e = POKE[pet.id - 1].evos; $('dlg').close(); if(e.length > 1) escolherEvolucao(e); else evoluir(e[0]); }
+    if(a === 'shiny'){ pet.shiny = !pet.shiny; msg(pet.shiny ? '🌟 Agora é shiny!' : 'Voltou ao normal.'); }
+    if(a === 'chocar'){ $('dlg').close(); nascer(); return; }
+    if(a === 'tudo'){ loja.chapeus = Object.keys(CHAPEUS); loja.fundos = Object.keys(FUNDOS); Object.keys(COMIDAS).forEach(k => { if(COMIDAS[k].p) loja.comidas[k] = (loja.comidas[k] || 0) + 10; }); msg('🎁 Ganhou tudo da loja!'); }
+    if(a === 'trocar'){ const q = semAcento($('adm-poke').value.trim()); const p = POKE.find(x => String(x.id) === q || semAcento(x.nome) === q) || POKE.find(x => q && semAcento(x.nome).startsWith(q));
+      if(!p){ msg('🤔 Não achei esse Pokémon.'); return; } const antigo = POKE[pet.id - 1].nome; pet.id = p.id; if(pet.nome === antigo) pet.nome = p.nome; pet.nascEstagio = estagio(p.id); grito(p.id); msg(`🔄 Virou ${p.nome}!`); guardarNoAlbum(); }
+    if(a === 'noite'){ pet.s.fome = 10; pet.s.energia = 10; msg('🥱 Ele ficou com fome e sono.'); }
+    if(a === 'sair'){ gravar('adm-liberado', ''); cfg.coroa = false; gravar('cfg', cfg); $('dlg').close(); toast('🚪 Saiu do ADM.'); desenhar(); return; }
+    if(a === 'apagar'){ if(!confirm('Apagar TUDO do Pokégotchi neste aparelho?') || !confirm('Tem certeza MESMO? Não dá pra desfazer.')) return;
+      Object.keys(localStorage).filter(k => k.startsWith('pokegotchi:') && k !== 'pokegotchi:adm-liberado').forEach(k => localStorage.removeItem(k)); location.reload(); return; }
+    salvar(); desenhar();
+  };
+  $('dlg-corpo').onclick = ev => { const b = ev.target.closest('[data-a]'); if(b && !b.disabled) agir(b.dataset.a); };
+}
+let toquesLogo = [];
+document.querySelector('.logo img').addEventListener('click', () => { const t = Date.now(); toquesLogo = toquesLogo.filter(x => t - x < 3000); toquesLogo.push(t); if(toquesLogo.length >= 5){ toquesLogo = []; abrirAdm(); } });
 
 /* ---------- 🎁 presente de todo dia ---------- */
 function presenteDoDia(){

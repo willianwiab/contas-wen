@@ -11,4 +11,10 @@ O seu bichinho virtual Pokémon!
 - 📖 Álbum com todos os Pokémon que você criou.
 - Ele **nunca morre**: sem cuidado, fica tristinho e doente.
 
+## Versão 2
+- ➕ Botões novos: 🚶 Passear (acha moedas e poffins), 🏋️ Treinar (muito XP), 🎵 Música (dança; de noite faz dormir melhor), 🧸 Brinquedo, 🪥 Escovar e 📸 Foto (baixa um cartão do seu Pokémon).
+- 🍓 Minijogo mais fácil: 20 segundos, frutas maiores que ficam o dobro do tempo, menos bombas e cada bomba tira só 1 ponto.
+- 🐣 60 favoritos pra escolher + pesquisa com **todos os 1025 Pokémon**.
+- 👑 Jojo adm (mesma senha secreta, 5 toques no logo): coroa, +100 moedas, encher tudo, +5 níveis, evoluir agora, shiny, chocar agora, ganhar a loja toda, virar outro Pokémon, deixar com fome e sono (pra testar), sair e apagar.
+
 Tudo fica guardado só neste aparelho. Nomes, tipos e evoluções vêm do banco do *Quem é esse Pokémon?*; figuras e gritos do [PokeAPI](https://pokeapi.co). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.
