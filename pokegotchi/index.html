@@ -317,7 +317,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
   <footer>
     Jogo de fã, feito pra brincar 🥚 · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 9 — 30/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 10 — 30/09 · 🔄</button>
   </footer>
 </div>
 
@@ -579,8 +579,8 @@ function abrirAmigos(){
     <button type="button" class="grande" id="meu-junto" style="margin-top:10px">📤 Meu código de amigo</button>
     <div id="meu-junto-cod" hidden style="font-family:monospace;font-size:.68rem;word-break:break-all;background:var(--cartao2);border-radius:10px;padding:8px;margin-top:6px;text-align:left;max-height:90px;overflow:auto;user-select:all"></div>
     <h3 style="margin-top:12px">📥 Adicionar amigo</h3>
-    <textarea id="colar-junto" rows="2" placeholder="Cole o código do amigo (JUNTO1…)" style="width:100%;margin-top:6px;border:2px solid var(--borda);border-radius:12px;padding:8px;background:var(--cartao2);color:var(--tinta)"></textarea>
-    <button type="button" class="mini" id="colar-junto-ok">➕ Adicionar / receber recado</button><p id="amg-msg" style="font-weight:700;margin-top:4px"></p>
+    <textarea id="colar-junto" rows="2" placeholder="Cole o código do amigo (JUNTO1…) ou um toque (TOQUE1…)" style="width:100%;margin-top:6px;border:2px solid var(--borda);border-radius:12px;padding:8px;background:var(--cartao2);color:var(--tinta)"></textarea>
+    <button type="button" class="mini" id="colar-junto-ok">➕ Adicionar / receber recado ou toque</button><p id="amg-msg" style="font-weight:700;margin-top:4px"></p>
     <h3 style="margin-top:10px">💞 Meus amigos (${amigos.length})</h3>
     <div class="itens" id="lista-amigos">${amigos.map((a, i) => `<button type="button" class="item" data-i="${i}" style="position:relative"><img alt="" src="${arte(a.av)}" style="width:60px;height:60px;object-fit:contain"><b>${esc(a.a)}</b><small>${a.t.length} Pokémon</small>${a.naoLidas ? `<small style="color:var(--vermelho)">💬 ${a.naoLidas} novo${a.naoLidas > 1 ? 's' : ''}</small>` : ''}</button>`).join('') || '<p style="grid-column:1/-1;font-size:.84rem">Nenhum ainda. Troque códigos com quem você conhece!</p>'}</div>
     <p style="font-size:.72rem;color:var(--tinta-fraca)">🔒 Só troque códigos com quem você conhece. O jogo não tem servidor: a conversa vai dentro do código.</p>
@@ -588,7 +588,7 @@ function abrirAmigos(){
   $('apelido').oninput = ev => { perfil.apelido = limpaTexto(ev.target.value, 14); salvarAmigos(); };
   $('avatar').onchange = ev => { perfil.avatar = +ev.target.value; salvarAmigos(); abrirAmigos(); };
   $('meu-junto').onclick = async () => { const c = codigoJunto(''); $('meu-junto-cod').hidden = false; $('meu-junto-cod').textContent = c; try{ await navigator.clipboard.writeText(c); $('meu-junto').textContent = '✅ Copiado! Mande pro amigo'; }catch(e){ $('meu-junto').textContent = 'Segure no código e copie 👇'; } };
-  $('colar-junto-ok').onclick = () => { const r = receberJunto($('colar-junto').value); if(r.erro){ $('amg-msg').textContent = r.erro; return; } toast(r.novo ? `🎉 ${r.amigo.a} virou seu amigo!` : `💬 Chegou coisa nova de ${r.amigo.a}!`); abrirAmigo(amigos.indexOf(r.amigo)); };
+  $('colar-junto-ok').onclick = () => { if(/TOQUE1\./.test($('colar-junto').value)){ const e = receberToque($('colar-junto').value); if(e) $('amg-msg').textContent = e; return; } const r = receberJunto($('colar-junto').value); if(r.erro){ $('amg-msg').textContent = r.erro; return; } toast(r.novo ? `🎉 ${r.amigo.a} virou seu amigo!` : `💬 Chegou coisa nova de ${r.amigo.a}!`); abrirAmigo(amigos.indexOf(r.amigo)); };
   $('lista-amigos').onclick = ev => { const b = ev.target.closest('[data-i]'); if(b) abrirAmigo(+b.dataset.i); };
   $('fechar').onclick = () => $('dlg').close();
   if(!$('dlg').open) $('dlg').showModal();
@@ -598,6 +598,9 @@ function abrirAmigo(i){
   const msgs = a.msgs.map(m => `<div class="msg${m.eu ? ' eu' : ''}"><b>${m.eu ? 'Você' : esc(a.a)}</b>${esc(m.txt)}</div>`).join('');
   $('dlg-corpo').innerHTML = `<button type="button" class="mini" id="voltar-amigos" style="width:auto;margin:0 0 8px">⬅️ Amigos</button>
     ${cartaoPerfil(a)}
+    <h3 style="margin-top:10px">👆 Mandar um toque</h3><p style="font-size:.76rem;color:var(--tinta-fraca)">O Pokémon de ${esc(a.a)} reage quando ele colar o código!</p>
+    <div class="frases" id="toques">${Object.entries(TOQUES).map(([k, t]) => `<button type="button" data-t="${k}">${t.e} ${t.n}</button>`).join('')}</div>
+    <div id="toque-cod" hidden style="font-family:monospace;font-size:.68rem;word-break:break-all;background:var(--cartao2);border-radius:10px;padding:8px;margin-top:6px;text-align:left;max-height:90px;overflow:auto;user-select:all"></div>
     <div class="itens" style="margin-top:8px"><button type="button" class="item" id="chamar"><i>🎾</i><b>Chamar pra brincar</b><small>o Pokémon dele vem pro seu quarto</small></button>
       <button type="button" class="item" id="tirar-amigo"><i>🗑️</i><b>Tirar da lista</b></button></div>
     <h3>💬 Conversa</h3>
@@ -611,6 +614,9 @@ function abrirAmigo(i){
   const cv = $('conversa'); cv.scrollTop = cv.scrollHeight;
   $('voltar-amigos').onclick = abrirAmigos; $('fechar').onclick = () => $('dlg').close();
   $('dlg-corpo').querySelector('.frases').onclick = ev => { const b = ev.target.closest('button'); if(b){ $('recado').value = b.textContent; $('recado').focus(); } };
+  $('toques').onclick = async ev => { const b = ev.target.closest('[data-t]'); if(!b) return; const c = codigoToque(b.dataset.t, a.t[0] ? a.t[0][1] : '');
+    a.msgs.push({ eu:true, txt:`👆 ${TOQUES[b.dataset.t].e} ${TOQUES[b.dataset.t].n}`, t:Date.now() }); salvarAmigos();
+    $('toque-cod').hidden = false; $('toque-cod').textContent = c; try{ await navigator.clipboard.writeText(c); toast('📋 Toque copiado! Mande pro amigo.'); }catch(e){ toast('Segure no código e copie 👇'); } };
   $('chamar').onclick = () => { const p = a.t[0]; if(!p){ toast('Esse amigo ainda não tem Pokémon!'); return; } if(!pet || pet.fase !== 'pet'){ toast('Choque o seu ovo primeiro! 🥚'); return; }
     pet.comp = { tipo:'visita', id:p[0], nome:p[1], shiny:!!p[3], nivel:p[2], dono:a.a }; salvar(); $('dlg').close(); trocarTela('jogo'); desenhar(); confete(); falar(`${p[1]} do ${a.a} veio brincar! 🎉`); };
   $('tirar-amigo').onclick = () => { if(confirm(`Tirar ${a.a} da lista?`)){ amigos.splice(i, 1); salvarAmigos(); abrirAmigos(); } };
@@ -624,6 +630,32 @@ function abrirAmigo(i){
   if(!$('dlg').open) $('dlg').showModal();
 }
 $('bt-amigos').onclick = abrirAmigos;
+
+/* 👆 código de toque: o amigo "toca" no seu Pokémon (quando você cola o código) */
+const TOQUES = { carinho:{ e:'💖', n:'Carinho', txt:'fez carinho em' }, pular:{ e:'🦘', n:'Fazer pular', txt:'fez pular o' }, abraco:{ e:'🫂', n:'Abraço', txt:'deu um abraço em' },
+  danca:{ e:'💃', n:'Dançar', txt:'fez dançar o' }, presente:{ e:'🎁', n:'Presentinho', txt:'mandou um presente pro' }, cocegas:{ e:'🤭', n:'Cócegas', txt:'fez cócegas no' } };
+const codigoToque = (acao, alvo) => 'TOQUE1.' + paraB64({ i:perfil.id, de:perfil.apelido || 'Um amigo', ac:acao, al:limpaTexto(alvo, 14), tm:Date.now() });
+function receberToque(texto){
+  const m = String(texto).match(/TOQUE1\.([A-Za-z0-9_-]+)/); if(!m) return '🤔 Código de toque quebrado.';
+  let o; try{ o = deB64(m[1]); }catch(e){ return '😕 Esse toque está quebrado.'; }
+  const T = TOQUES[o.ac]; if(!T) return '😕 Esse toque está quebrado.';
+  if(!pet || pet.fase !== 'pet') return '🥚 Choque o seu ovo primeiro!';
+  const de = limpaTexto(o.de, 14) || 'Um amigo', tm = num(o.tm, 0, 9e15, 0);
+  const usados = ler('toques', []); if(usados.includes(tm)) return '👆 Esse toque já foi usado!';
+  gravar('toques', [...usados, tm].slice(-100));
+  const hoje = new Date().toDateString(), cont = ler('toques-dia', { dia:'', n:0 }); if(cont.dia !== hoje){ cont.dia = hoje; cont.n = 0; } cont.n++; gravar('toques-dia', cont);
+  if($('dlg').open) $('dlg').close(); trocarTela('jogo'); desenhar();
+  const a = amigos.find(x => x.id === limpaTexto(o.i, 20)); if(a){ a.msgs.push({ eu:false, txt:`👆 ${T.e} ${T.n}`, tm, t:Date.now() }); salvarAmigos(); }
+  const chuva = em => { for(let i = 0; i < 8; i++) setTimeout(() => efeito(null, em), i * 130); };
+  if(o.ac === 'carinho'){ mexer('feliz', 8); chuva('💖'); pular('eu', 250); }
+  if(o.ac === 'pular'){ pular('eu', 560); setTimeout(() => pular('eu', 460), 900); mexer('feliz', 5); }
+  if(o.ac === 'abraco'){ mexer('feliz', 10); chuva('🫂'); }
+  if(o.ac === 'danca'){ tocar(sorteia(CANCOES), .2, 'sine'); for(let i = 0; i < 4; i++) setTimeout(() => pular('eu', 300), i * 600); chuva('🎶'); mexer('feliz', 8); }
+  if(o.ac === 'cocegas'){ mexer('feliz', 6); for(let i = 0; i < 6; i++) setTimeout(() => pular('eu', 180), i * 250); chuva('🤭'); }
+  if(o.ac === 'presente'){ if(cont.n <= 5){ if(Math.random() < .5){ moedas += 5; toast('🎁 O presente tinha 🪙 5!'); } else { loja.comidas.poffin = (loja.comidas.poffin || 0) + 1; toast('🎁 O presente tinha um 🧁 Poffin!'); } } else toast('🎁 Presentes de hoje já acabaram, mas valeu o carinho!'); chuva('🎁'); mexer('feliz', 5); }
+  grito(pet.id); tocar([784, 988, 1175], .09); falar(`👆 ${de} ${T.txt} ${pet.nome}! ${T.e}`); ganharXP(2); salvar(); desenhar();
+  return '';
+}
 marcarBadgeAmigos();
 $('voltar-time').onclick = () => { if(guardados.length) usar(0); };
 
