@@ -17,4 +17,9 @@ O seu bichinho virtual Pokémon!
 - 🐣 60 favoritos pra escolher + pesquisa com **todos os 1025 Pokémon**.
 - 👑 Jojo adm (mesma senha secreta, 5 toques no logo): coroa, +100 moedas, encher tudo, +5 níveis, evoluir agora, shiny, chocar agora, ganhar a loja toda, virar outro Pokémon, deixar com fome e sono (pra testar), sair e apagar.
 
+## Versão 4
+- ➕ Botões novos: 🗣️ Conversar, 🫂 Abraçar, 🎨 Colorir (muda a cor), 🎁 Presente (1 por dia: moedas, comida, chapéu ou até Doce Raro) e 🕹️ Joguinhos.
+- 🌙 **Modo noturno** com senha própria (o código só guarda o hash): o Pokémon nunca mais precisa dormir e ganha brilho roxo e lua.
+- 🕹️ 3 joguinhos: 🍓 Frutinhas, 🕳️ Pega o Diglett (Dugtrio vale 3) e 🃏 Memória (6 pares).
+
 Tudo fica guardado só neste aparelho. Nomes, tipos e evoluções vêm do banco do *Quem é esse Pokémon?*; figuras e gritos do [PokeAPI](https://pokeapi.co). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.
