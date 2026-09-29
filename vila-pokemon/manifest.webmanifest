@@ -1,0 +1,14 @@
+{
+  "name": "Vila Pokémon",
+  "short_name": "Vila",
+  "description": "Cuide da sua vila Pokémon: venda na Lojinha, faça bolos na Confeitaria da Alcremie e deixe tudo maior!",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eefbf2",
+  "theme_color": "#2e9e5b",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

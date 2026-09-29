@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vila Pokémon</title>
+<meta name="description" content="Cuide da sua vila Pokémon: venda na Lojinha, faça bolos na Confeitaria da Alcremie e deixe tudo maior!" />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#2e9e5b" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Vila" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --marca:#2e9e5b; --marca2:#49c47a; --amarelo:#ffc21a; --vermelho:#e5484d; --azul:#3b8cff; --rosa:#ff5fa2; --roxo:#8b5cf6;
+  --fundo:#eefbf2; --ceu:#bfe8ff; --grama:#8fd98f; --tinta:#173024; --tinta-fraca:#5c7a69; --cartao:#ffffff; --cartao2:#f5fbf7; --borda:#cfe9d9; --sombra:rgba(30,90,50,.15);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#5fd58d; --marca2:#3fae6c; --fundo:#0f1d16; --ceu:#1c2c4a; --grama:#1f4a31; --tinta:#e8fff0; --tinta-fraca:#9dbdaa; --cartao:#182a20; --cartao2:#1f3528; --borda:#2f4d3b; --sombra:rgba(0,0,0,.45);
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#5fd58d; --marca2:#3fae6c; --fundo:#0f1d16; --ceu:#1c2c4a; --grama:#1f4a31; --tinta:#e8fff0; --tinta-fraca:#9dbdaa; --cartao:#182a20; --cartao2:#1f3528; --borda:#2f4d3b; --sombra:rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);min-height:100vh;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+h2,h3,.titulo{font-family:'Baloo 2','Rubik',sans-serif}
+main{max-width:720px;margin:0 auto;padding:12px 16px 40px}
+header.topo{display:flex;align-items:center;gap:8px;max-width:720px;margin:0 auto;padding:12px 16px 0}
+.logo{flex:1;display:flex;align-items:center;gap:8px;min-width:0;cursor:pointer}
+.logo img{width:40px;height:40px;flex:none}
+.logo>div{min-width:0}
+.logo h1{font-family:'Baloo 2',sans-serif;font-size:1.45rem;color:var(--marca);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo small{display:block;font-size:.72rem;color:var(--tinta-fraca);font-weight:500}
+.moedas{background:#fff4c7;color:#5a4200;border:2px solid #f2d36b;border-radius:99px;padding:6px 12px;font-weight:800;white-space:nowrap;font-size:1rem}
+.moedas.pulo{animation:pulo .35s}
+@keyframes pulo{50%{transform:scale(1.18)}}
+.redondo{width:40px;height:40px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.1rem;cursor:pointer;display:grid;place-items:center;flex:none}
+.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:22px;padding:16px;margin-top:14px;box-shadow:0 6px 16px var(--sombra)}
+.grande{display:block;width:100%;border:none;border-radius:16px;padding:14px;font-size:1.15rem;font-weight:800;cursor:pointer;color:#fff;background:linear-gradient(180deg,var(--marca2),#23874b);box-shadow:0 5px 0 #196b3a;font-family:'Baloo 2','Rubik',sans-serif}
+.grande:active{transform:translateY(3px);box-shadow:0 2px 0 #196b3a}
+.grande.rosa{background:linear-gradient(180deg,#ff8cc0,#e8458e);box-shadow:0 5px 0 #a82a63}
+.grande:disabled{opacity:.5;cursor:default}
+.mini{border:2px solid var(--borda);background:var(--cartao2);border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:.88rem}
+.mini:disabled{opacity:.45;cursor:default}
+.linha{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.aviso{font-size:.82rem;color:var(--tinta-fraca);margin-top:6px;line-height:1.4}
+.voltar{margin-bottom:4px}
+
+/* ---------- vila ---------- */
+.cena{position:relative;border-radius:24px;overflow:hidden;margin-top:12px;border:2px solid var(--borda);
+  background:linear-gradient(180deg,var(--ceu) 0 38%,var(--grama) 38% 100%);padding:14px 10px 12px}
+.sol{position:absolute;right:16px;top:10px;font-size:2rem}
+.nuvem{position:absolute;top:14px;font-size:1.7rem;opacity:.9;animation:nuvem 30s linear infinite}
+@keyframes nuvem{from{left:-40px}to{left:105%}}
+.casas{position:relative;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:40px}
+.casa{position:relative;border:none;background:none;cursor:pointer;text-align:center;padding:0;color:var(--tinta)}
+.casa .telhado{height:34px;clip-path:polygon(50% 0,100% 100%,0 100%);background:var(--cor,#e5484d)}
+.casa .parede{background:var(--cartao);border:2px solid var(--borda);border-top:none;border-radius:0 0 16px 16px;padding:8px 6px 10px;box-shadow:0 5px 0 var(--sombra)}
+.casa .ico{font-size:2.3rem;line-height:1.1}
+.casa b{display:block;font-family:'Baloo 2',sans-serif;font-size:1.02rem;line-height:1.1}
+.casa small{display:block;font-size:.72rem;color:var(--tinta-fraca);margin-top:2px}
+.casa:active .parede{transform:translateY(3px)}
+.casa.fechada{cursor:default;opacity:.62}
+.casa.fechada .telhado{background:#9aa5a0}
+.moradores{display:flex;gap:4px;justify-content:center;margin-top:10px;flex-wrap:wrap;min-height:44px}
+.moradores img{width:44px;height:44px;image-rendering:pixelated;animation:anda 2.2s ease-in-out infinite}
+.moradores img:nth-child(2n){animation-delay:.6s}
+@keyframes anda{50%{transform:translateY(-5px)}}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;text-align:center}
+.stats div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:8px 4px}
+.stats b{display:block;font-size:1.2rem;font-family:'Baloo 2',sans-serif}
+.stats small{font-size:.72rem;color:var(--tinta-fraca)}
+
+/* ---------- lojinha ---------- */
+.painel{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.relogio{font-weight:800;font-size:1.1rem}
+.tempo-barra{height:10px;border-radius:99px;background:var(--cartao2);border:2px solid var(--borda);overflow:hidden;margin-top:8px}
+.tempo-barra i{display:block;height:100%;background:linear-gradient(90deg,#ffc21a,#2e9e5b);width:100%;transition:width .2s linear}
+.balcao{position:sticky;top:6px;z-index:5;min-height:176px;border-radius:20px;margin-top:12px;padding:10px;border:2px solid var(--borda);
+  background:repeating-linear-gradient(90deg,#fde9c8 0 28px,#f9deb0 28px 56px);display:flex;gap:8px;justify-content:center;align-items:flex-end;flex-wrap:nowrap;overflow:hidden}
+:root[data-tema="escuro"] .balcao{background:repeating-linear-gradient(90deg,#3a2e1c 0 28px,#33291a 28px 56px)}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .balcao{background:repeating-linear-gradient(90deg,#3a2e1c 0 28px,#33291a 28px 56px)}}
+.balcao .vazio{align-self:center;color:var(--tinta-fraca);font-weight:600;text-align:center}
+.cliente{flex:0 1 104px;min-width:0;text-align:center;animation:entra .35s ease-out}
+@keyframes entra{from{transform:translateX(60px);opacity:0}}
+.cliente.sai{animation:sai .45s ease-in forwards}
+@keyframes sai{to{transform:translateY(-30px);opacity:0}}
+.cliente.bravo{animation:bravo .5s ease-in forwards}
+@keyframes bravo{30%{transform:rotate(-8deg)}60%{transform:rotate(8deg)}100%{transform:translateX(80px);opacity:0}}
+.balao{background:var(--cartao);border:2px solid var(--borda);border-radius:14px;padding:4px 4px;font-size:1.35rem;position:relative;min-height:40px;display:flex;gap:2px;justify-content:center;align-items:center}
+.balao:after{content:'';position:absolute;bottom:-8px;left:50%;margin-left:-7px;border:7px solid transparent;border-top-color:var(--borda);border-bottom:0}
+.balao .ok{opacity:.25;filter:grayscale(1)}
+.cliente img{width:100%;max-width:80px;aspect-ratio:1;height:auto;image-rendering:pixelated;margin-top:6px}
+.cliente .emo{font-size:3rem;display:block;margin-top:8px}
+.cliente .nome{font-size:.72rem;font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.paciencia{height:7px;border-radius:99px;background:rgba(0,0,0,.12);overflow:hidden;margin:3px 8px 0}
+.paciencia i{display:block;height:100%;background:#2e9e5b}
+.fala{font-size:.66rem;color:var(--tinta-fraca);min-height:1em;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prateleiras{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:7px;margin-top:10px}
+.item{border:2px solid var(--borda);background:var(--cartao);border-radius:16px;padding:8px 4px 6px;cursor:pointer;text-align:center;box-shadow:0 4px 0 var(--borda);position:relative}
+.item:active{transform:translateY(3px);box-shadow:0 1px 0 var(--borda)}
+.item .ico{font-size:1.7rem;line-height:1.1;display:block;height:32px}
+.item .ico svg{width:30px;height:30px}
+.item b{display:block;font-size:.78rem}
+.item small{display:block;font-size:.72rem;color:var(--tinta-fraca)}
+.item .qtd{position:absolute;top:4px;right:6px;background:var(--marca);color:#fff;border-radius:99px;font-size:.72rem;font-weight:800;padding:1px 7px}
+.item.acabou .qtd{background:var(--vermelho)}
+.item.acabou .ico{opacity:.35}
+.item.chacoalha{animation:chacoalha .35s}
+@keyframes chacoalha{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.item .repor{display:block;width:100%;margin-top:4px;border:none;border-radius:9px;background:#fff1c2;color:#5a4200;font-size:.7rem;font-weight:800;padding:4px 2px;cursor:pointer}
+.voa{position:fixed;pointer-events:none;font-weight:800;color:#b58400;font-size:1.1rem;z-index:50;animation:voa 1s ease-out forwards;text-shadow:0 1px 0 #fff}
+@keyframes voa{to{transform:translateY(-50px);opacity:0}}
+.faixa-msg{min-height:1.4em;text-align:center;font-weight:700;margin-top:8px}
+
+/* ---------- melhorias ---------- */
+.melhorias{display:grid;gap:10px;margin-top:10px}
+.melhoria{display:flex;gap:10px;align-items:center;background:var(--cartao2);border:2px solid var(--borda);border-radius:16px;padding:10px}
+.melhoria .ico{font-size:1.9rem;flex:none;width:42px;text-align:center}
+.melhoria .txt{flex:1;min-width:0}
+.melhoria b{display:block}
+.melhoria small{display:block;color:var(--tinta-fraca);font-size:.78rem;line-height:1.3}
+.pontos{display:flex;gap:3px;margin-top:4px}
+.pontos i{width:12px;height:12px;border-radius:50%;background:var(--borda)}
+.pontos i.on{background:var(--marca)}
+.melhoria .mini{flex:none}
+
+/* ---------- confeitaria ---------- */
+.pedido{display:flex;gap:10px;align-items:center}
+.pedido .quem{text-align:center;flex:none;width:86px}
+.pedido .quem img{width:78px;height:78px;image-rendering:pixelated}
+.pedido .quem .emo{font-size:2.6rem;display:block}
+.pedido .quem b{display:block;font-size:.78rem}
+.pedido .quer{flex:1;min-width:0;background:var(--cartao2);border:2px dashed var(--borda);border-radius:16px;padding:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.pedido .quer svg{width:92px;height:92px;flex:none}
+.pedido .quer ul{list-style:none;font-size:.8rem;line-height:1.45}
+.forno{display:flex;justify-content:center;margin-top:8px}
+.forno svg{width:210px;height:210px;max-width:100%}
+.passos{display:grid;gap:10px;margin-top:6px}
+.passo h3{font-size:1rem;margin-bottom:4px}
+.opcoes{display:flex;gap:6px;flex-wrap:wrap}
+.opcoes button{min-width:48px;height:48px;border-radius:14px;border:2px solid var(--borda);background:var(--cartao2);cursor:pointer;font-size:1.4rem;display:grid;place-items:center;padding:0 8px;position:relative}
+.opcoes button.cor{width:48px;padding:0}
+.opcoes button.cor i{width:30px;height:30px;border-radius:50%;border:2px solid rgba(0,0,0,.15)}
+.opcoes button[aria-pressed="true"]{border-color:var(--marca);box-shadow:0 0 0 3px var(--marca)}
+.opcoes button.dica{animation:brilha 1s infinite}
+@keyframes brilha{50%{box-shadow:0 0 0 4px #ffc21a}}
+.opcoes .txt{font-size:.9rem;font-weight:800}
+.reacao{text-align:center;font-size:1.05rem;font-weight:700;min-height:1.5em;margin-top:6px}
+.estrelinhas{font-size:1.4rem;letter-spacing:2px}
+
+/* ---------- janela ---------- */
+dialog{border:none;border-radius:22px;padding:0;max-width:min(420px,calc(100vw - 32px));width:100%;background:var(--cartao);color:var(--tinta);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,30,20,.55)}
+.dlg{padding:20px;text-align:center}
+.dlg h2{font-size:1.5rem}
+.dlg .grandao{font-size:3rem}
+.dlg p{margin-top:6px;line-height:1.45}
+.dlg .grande{margin-top:14px}
+.rodape{text-align:center;margin-top:24px;color:var(--tinta-fraca);font-size:.8rem}
+.versao{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:5px 12px;font-weight:700;cursor:pointer;margin-top:8px}
+.faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--marca);color:#fff;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:60;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.faixa-nova button{border:none;border-radius:99px;background:#fff;color:#1c5c36;font-weight:800;padding:6px 12px;cursor:pointer}
+.confete{position:fixed;top:-12px;width:10px;height:14px;z-index:70;pointer-events:none;animation:cai 3s linear forwards}
+@keyframes cai{to{transform:translateY(105vh) rotate(720deg)}}
+@media (max-width:380px){ .logo small{display:none} .logo h1{font-size:1.15rem} .logo img{width:32px;height:32px} .moedas{padding:5px 9px;font-size:.9rem} .redondo{width:36px;height:36px} .pedido .quem{width:64px} .pedido .quem img{width:60px;height:60px} }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="logo" id="logo" title="Voltar pra vila"><img src="icone.svg" alt="" /><div><h1>Vila Pokémon</h1><small>parte 1: lojinha e confeitaria</small></div></div>
+  <span class="moedas" id="moedas" aria-live="polite">🪙 0</span>
+  <button class="redondo" id="som" type="button" title="Som">🔊</button>
+  <button class="redondo" id="tema" type="button" title="Claro ou escuro">🌙</button>
+</header>
+
+<main>
+  <!-- ========== VILA ========== -->
+  <section id="tela-vila">
+    <div class="cena">
+      <span class="sol">☀️</span><span class="nuvem">☁️</span>
+      <div class="casas" id="casas"></div>
+      <div class="moradores" id="moradores" aria-label="Pokémon passeando na vila"></div>
+    </div>
+    <div class="cartao">
+      <h2 class="titulo">🏘️ Minha vila</h2>
+      <div class="stats" id="stats"></div>
+      <p class="aviso">Ganhe moedas na 🏪 Lojinha e na 🍰 Confeitaria e gaste nas melhorias pra deixar tudo maior! As moedas servem em todos os lugares da vila.</p>
+    </div>
+    <div class="rodape">
+      Tudo fica guardado só neste aparelho.
+      <br><button class="mini" type="button" id="zerar" style="margin-top:8px">🗑️ Começar a vila do zero</button>
+      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 29/09 · 🔄</button>
+    </div>
+  </section>
+
+  <!-- ========== LOJINHA ========== -->
+  <section id="tela-loja" hidden>
+    <button class="mini voltar" type="button" data-vila>⬅️ Vila</button>
+    <div class="cartao">
+      <div class="painel">
+        <h2 class="titulo" id="loja-nome">🏪 Barraquinha</h2>
+        <span class="relogio" id="loja-relogio"></span>
+      </div>
+      <div class="tempo-barra" id="loja-tempo-barra" hidden><i id="loja-tempo"></i></div>
+      <div class="balcao" id="balcao"></div>
+      <div class="faixa-msg" id="loja-msg"></div>
+      <div class="prateleiras" id="prateleiras"></div>
+      <p class="aviso">Toque no item que o Pokémon pediu no balão. Acabou? Aperte <b>📦 +5</b> (custa moedinhas). Quanto mais rápido, mais gorjeta! 🪙</p>
+      <div class="linha" style="margin-top:12px">
+        <button class="grande" type="button" id="loja-abrir">🔔 Abrir a loja (1 minuto)</button>
+      </div>
+      <div class="linha" style="margin-top:10px;justify-content:center">
+        <button class="mini" type="button" id="loja-melhorar">⬆️ Melhorias da loja</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CONFEITARIA ========== -->
+  <section id="tela-conf" hidden>
+    <button class="mini voltar" type="button" data-vila>⬅️ Vila</button>
+    <div class="cartao">
+      <div class="painel">
+        <h2 class="titulo">🍰 Confeitaria da Alcremie</h2>
+        <span class="relogio" id="conf-relogio"></span>
+      </div>
+      <div id="conf-parado">
+        <p class="aviso" style="font-size:.95rem">A Alcremie é a chefe! 👩‍🍳 Os clientes pedem um bolo, e você monta igualzinho: andares, massa, creme, fruta e enfeite. Quanto mais parecido e mais rápido, mais moedas! Cada turno tem <b>5 pedidos</b>.</p>
+        <button class="grande rosa" type="button" id="conf-abrir" style="margin-top:12px">🎂 Abrir a confeitaria</button>
+        <div class="linha" style="margin-top:10px;justify-content:center"><button class="mini" type="button" id="conf-melhorar">⬆️ Melhorias da confeitaria</button></div>
+      </div>
+      <div id="conf-jogo" hidden>
+        <div class="tempo-barra"><i id="conf-tempo"></i></div>
+        <div class="pedido" style="margin-top:10px" id="conf-pedido"></div>
+        <div class="forno" id="conf-bolo"></div>
+        <div class="reacao" id="conf-reacao"></div>
+        <div class="passos" id="conf-passos"></div>
+        <div class="linha" style="margin-top:12px">
+          <button class="mini" type="button" id="conf-limpar">🔄 Começar de novo</button>
+          <button class="mini" type="button" id="conf-dica" hidden>💡 Dica da Alcremie</button>
+        </div>
+        <button class="grande rosa" type="button" id="conf-entregar" style="margin-top:10px">🎂 Entregar o bolo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== MELHORIAS ========== -->
+  <section id="tela-melhorias" hidden>
+    <button class="mini voltar" type="button" id="melh-voltar">⬅️ Voltar</button>
+    <div class="cartao">
+      <h2 class="titulo" id="melh-titulo">⬆️ Melhorias</h2>
+      <p class="aviso">Você tem <b id="melh-moedas">0</b> 🪙</p>
+      <div class="melhorias" id="melh-lista"></div>
+    </div>
+  </section>
+</main>
+
+<dialog id="dlg"><div class="dlg" id="dlg-corpo"></div></dialog>
+
+<script>
+'use strict';
+/* ---------- guardar ---------- */
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('vila:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('vila:' + k, JSON.stringify(v)); }catch(e){} }
+const $ = id => document.getElementById(id);
+const sorteia = a => a[Math.floor(Math.random() * a.length)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const sprite = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+const imgPoke = (p, cls) => `<img ${cls ? `class="${cls}"` : ''} src="${sprite(p.id)}" alt="${esc(p.n)}" loading="lazy" onerror="this.outerHTML='<span class=&quot;emo&quot;>${p.emo || '🐾'}</span>'" />`;
+
+/* ---------- itens da lojinha ----------
+   Os 4 primeiros já vêm na loja. Os outros aparecem com a melhoria "Prateleira nova", nessa ordem. */
+const ITENS = [
+  { id:'maca',    e:'🍎', n:'Maçã',       p:4,  cat:'comida' },
+  { id:'pocao',   e:'🧪', n:'Poção',      p:6,  cat:'cura' },
+  { id:'bola',    e:'', n:'Pokébola',   p:7,  cat:'bola', svg:['#e5484d', '#fff'] },
+  { id:'pelucia', e:'🧸', n:'Pelúcia',    p:8,  cat:'brinquedo' },
+  { id:'pao',     e:'🍞', n:'Pão',        p:5,  cat:'comida' },
+  { id:'laco',    e:'🎀', n:'Laço',       p:9,  cat:'brinquedo' },
+  { id:'mel',     e:'🍯', n:'Mel',        p:10, cat:'comida' },
+  { id:'ultra',   e:'', n:'Ultra Bola', p:14, cat:'bola', svg:['#333', '#ffc21a'] },
+  { id:'bala',    e:'🍬', n:'Bala Rara',  p:16, cat:'cura' },
+  { id:'coroa',   e:'👑', n:'Coroa',      p:22, cat:'brinquedo' }
+];
+const ITEM = Object.fromEntries(ITENS.map(x => [x.id, x]));
+function iconeItem(it){
+  if(!it.svg) return it.e;
+  const [c1, c2] = it.svg;
+  return `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="${c2}" stroke="#222" stroke-width="2.5"/><path d="M3 20a17 17 0 0 1 34 0z" fill="${c1}" stroke="#222" stroke-width="2.5"/>${it.id === 'ultra' ? '<path d="M9 9l6 6M31 9l-6 6" stroke="#ffc21a" stroke-width="4"/>' : ''}<circle cx="20" cy="20" r="5" fill="#fff" stroke="#222" stroke-width="2.5"/></svg>`;
+}
+/* Custo pra repor 5 unidades de um item. */
+const custoRepor = it => 5 * Math.ceil(it.p / 2);
+
+/* ---------- clientes ----------
+   so: só pede itens dessa categoria. gorjeta: multiplica a gorjeta. vip: paga vezes isso. */
+const CLIENTES = [
+  { id:25,  n:'Pikachu',    emo:'⚡', fala:'Pika pika!' },
+  { id:143, n:'Snorlax',    emo:'😴', so:'comida', fala:'Só quero comida…' },
+  { id:113, n:'Chansey',    emo:'🥚', so:'cura', fala:'Pra cuidar dos doentinhos!' },
+  { id:39,  n:'Jigglypuff', emo:'🎤', so:'brinquedo', fala:'Algo fofinho!' },
+  { id:52,  n:'Meowth',     emo:'🐱', gorjeta:2, fala:'Tenho moedinhas, miau!' },
+  { id:133, n:'Eevee',      emo:'🦊', fala:'Vui!' },
+  { id:1,   n:'Bulbasaur',  emo:'🌱', fala:'Bulba!' },
+  { id:4,   n:'Charmander', emo:'🔥', fala:'Char!' },
+  { id:7,   n:'Squirtle',   emo:'💧', fala:'Squirtle!' },
+  { id:94,  n:'Gengar',     emo:'👻', gorjeta:1.5, fala:'Hehehe…' },
+  { id:54,  n:'Psyduck',    emo:'🦆', fala:'Psy…?' },
+  { id:175, n:'Togepi',     emo:'🥚', so:'brinquedo', fala:'Toge toge!' },
+  { id:446, n:'Munchlax',   emo:'🍽️', so:'comida', fala:'Fome!!' },
+  { id:16,  n:'Pidgey',     emo:'🐦', so:'bola', fala:'Pro meu treinador!' },
+  { id:150, n:'Mewtwo',     emo:'🧠', vip:3, raro:true, fala:'Cliente VIP. Paga o triplo.' }
+];
+const CONF_CLIENTES = [
+  { id:685, n:'Slurpuff', emo:'🍭' }, { id:684, n:'Swirlix', emo:'🍬' }, { id:25, n:'Pikachu', emo:'⚡' },
+  { id:143, n:'Snorlax', emo:'😴' }, { id:39, n:'Jigglypuff', emo:'🎤' }, { id:133, n:'Eevee', emo:'🦊' },
+  { id:94, n:'Gengar', emo:'👻' }, { id:113, n:'Chansey', emo:'🥚' }, { id:282, n:'Gardevoir', emo:'💃' },
+  { id:778, n:'Mimikyu', emo:'👻' }, { id:700, n:'Sylveon', emo:'🎀' }, { id:52, n:'Meowth', emo:'🐱' },
+  { id:761, n:'Bounsweet', emo:'🍑' }, { id:446, n:'Munchlax', emo:'🍽️' }
+];
+
+/* ---------- ingredientes da confeitaria ----------
+   Os que têm "liberado" já vêm abertos; os outros abrem nas melhorias. */
+const MASSAS = [
+  { id:'baunilha', n:'Baunilha',  c:'#f6d98b', liberado:1 }, { id:'choco', n:'Chocolate', c:'#7a4a2a', liberado:1 },
+  { id:'morango',  n:'Morango',   c:'#f59ab5', liberado:1 }, { id:'menta', n:'Menta', c:'#8fdcba' }, { id:'uva', n:'Uva', c:'#a979d8' }
+];
+const CREMES = [
+  { id:'branco', n:'Branco', c:'#fffaf0', liberado:1 }, { id:'rosa', n:'Rosa', c:'#ffb3d1', liberado:1 },
+  { id:'azul', n:'Azul', c:'#9fd3ff', liberado:1 }, { id:'amarelo', n:'Amarelo', c:'#ffe27a' }, { id:'roxo', n:'Roxo', c:'#caa5ff' }
+];
+const FRUTAS = [
+  { id:'morango', n:'Morango', e:'🍓', liberado:1 }, { id:'mirtilo', n:'Mirtilo', e:'🫐', liberado:1 },
+  { id:'cereja', n:'Cereja', e:'🍒', liberado:1 }, { id:'pessego', n:'Pêssego', e:'🍑' }, { id:'abacaxi', n:'Abacaxi', e:'🍍' }
+];
+const ENFEITES = [
+  { id:'estrela', n:'Estrela', e:'⭐', liberado:1 }, { id:'laco', n:'Laço', e:'🎀', liberado:1 },
+  { id:'bala', n:'Bala', e:'🍬', liberado:1 }, { id:'flor', n:'Flor', e:'🌸' }, { id:'coracao', n:'Coração', e:'💖' }
+];
+
+/* ---------- melhorias ----------
+   custo: preço de cada nível. */
+const MELH_LOJA = [
+  { id:'prat',    e:'🗄️', n:'Prateleira nova', d:'Um item novo pra vender (e clientes que pagam mais).', custo:[30, 55, 90, 140, 200, 280] },
+  { id:'balcao',  e:'🪑', n:'Balcão maior',    d:'Cabe mais um cliente de uma vez.', custo:[45, 110] },
+  { id:'placa',   e:'🪧', n:'Placa bonita',    d:'Tudo vende 20% mais caro.', custo:[60, 130, 240] },
+  { id:'musica',  e:'🎶', n:'Musiquinha',      d:'Os clientes esperam mais tempo sem ficar bravos.', custo:[40, 100] },
+  { id:'chansey', e:'🥚', n:'Ajudante Chansey', d:'Quando um item acaba, a Chansey repõe sozinha (você ainda paga).', custo:[150] }
+];
+const MELH_CONF = [
+  { id:'massa',   e:'🍫', n:'Massas novas',    d:'Abre Menta e depois Uva. Pedidos novos pagam mais!', custo:[40, 90] },
+  { id:'creme',   e:'🍦', n:'Cremes novos',    d:'Abre Amarelo e depois Roxo.', custo:[40, 90] },
+  { id:'fruta',   e:'🍑', n:'Frutas novas',    d:'Abre Pêssego e depois Abacaxi.', custo:[35, 80] },
+  { id:'enfeite', e:'🌸', n:'Enfeites novos',  d:'Abre Flor e depois Coração.', custo:[35, 80] },
+  { id:'andar3',  e:'🎂', n:'Bolo de 3 andares', d:'Pedidos gigantes que pagam muito mais.', custo:[160] },
+  { id:'batedeira', e:'🌀', n:'Batedeira turbo', d:'Mais tempo pra montar cada bolo.', custo:[50, 120] },
+  { id:'vitrine', e:'🪟', n:'Vitrine brilhante', d:'Bolo perfeito ganha gorjeta maior.', custo:[70, 150] },
+  { id:'dica',    e:'💡', n:'Dica da Alcremie', d:'Um botão que mostra a próxima peça certa (1 por bolo).', custo:[120] }
+];
+
+/* ---------- estado ---------- */
+const NOVO = () => ({ moedas:30, loja:{}, conf:{}, estoque:{ maca:5, pocao:5, bola:5, pelucia:5 },
+  st:{ vendas:0, bravos:0, bolos:0, perfeitos:0, ganhou:0, recLoja:0, recConf:0 } });
+let E = ler('estado', null);
+if(!E || typeof E !== 'object') E = NOVO();
+E = Object.assign(NOVO(), E);
+E.st = Object.assign(NOVO().st, E.st || {});
+let cfg = Object.assign({ som:true }, ler('cfg', {}));
+const salvar = () => { gravar('estado', E); gravar('cfg', cfg); };
+const nivel = (onde, id) => Math.max(0, Math.min(99, +(E[onde][id] || 0)));
+
+/* ---------- moedas ---------- */
+function mostrarMoedas(pular){ const m = $('moedas'); m.textContent = '🪙 ' + E.moedas; if(pular){ m.classList.remove('pulo'); void m.offsetWidth; m.classList.add('pulo'); } }
+function ganhar(n, ondeEl){
+  n = Math.round(n); if(n <= 0) return;
+  E.moedas += n; E.st.ganhou += n; salvar(); mostrarMoedas(true);
+  if(ondeEl){ const r = ondeEl.getBoundingClientRect(); const v = document.createElement('span'); v.className = 'voa'; v.textContent = '+' + n + ' 🪙';
+    v.style.left = (r.left + r.width / 2 - 24) + 'px'; v.style.top = (r.top + 10) + 'px'; document.body.appendChild(v); setTimeout(() => v.remove(), 1000); }
+}
+function gastar(n){ if(E.moedas < n) return false; E.moedas -= n; salvar(); mostrarMoedas(true); return true; }
+
+/* ---------- som ---------- */
+let ac = null;
+function bip(freq, dur, tipo, quando){
+  if(!cfg.som) return;
+  try{ ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const t = ac.currentTime + (quando || 0);
+    const o = ac.createOscillator(), g = ac.createGain(); o.type = tipo || 'sine'; o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur); }catch(e){}
+}
+const somMoeda = () => { bip(988, .08, 'square'); bip(1319, .18, 'square', .08); };
+const somErro = () => bip(160, .25, 'sawtooth');
+const somFesta = () => [523, 659, 784, 1047].forEach((f, i) => bip(f, .2, 'triangle', i * .12));
+
+/* ---------- telas ---------- */
+const TELAS = ['vila', 'loja', 'conf', 'melhorias'];
+function tela(n){ TELAS.forEach(t => $('tela-' + t).hidden = t !== n); window.scrollTo(0, 0); }
+
+/* ---------- 🏘️ vila ---------- */
+const LUGARES = [
+  { id:'loja', ico:'🏪', n:'Lojinha', cor:'#e5484d', txt:'venda coisas pros Pokémon' },
+  { id:'conf', ico:'🍰', n:'Confeitaria', cor:'#ff5fa2', txt:'bolos da Alcremie' },
+  { id:'casa', ico:'👻', n:'Casa Assombrada', cor:'#6b3fd9', txt:'🔒 chega na parte 2', fechado:1 },
+  { id:'palco', ico:'🎤', n:'Palco de Talentos', cor:'#ffb300', txt:'🔒 chega na parte 2', fechado:1 },
+  { id:'ilha', ico:'🏝️', n:'Ilha', cor:'#3b8cff', txt:'🔒 chega na parte 3', fechado:1 }
+];
+function nomeLoja(){
+  const t = MELH_LOJA.reduce((s, m) => s + nivel('loja', m.id), 0);
+  return t >= 12 ? '🏬 Shopping Pokémon' : t >= 8 ? '🏪 Mercadão' : t >= 4 ? '🏪 Loja' : t >= 1 ? '🏪 Lojinha' : '⛺ Barraquinha';
+}
+function mostrarVila(){
+  pararLoja(true); pararConf(true);
+  $('casas').innerHTML = LUGARES.map(l => `<button type="button" class="casa ${l.fechado ? 'fechada' : ''}" data-lugar="${l.id}" style="--cor:${l.cor}">
+    <div class="telhado"></div><div class="parede"><div class="ico">${l.ico}</div><b>${l.id === 'loja' ? esc(nomeLoja().replace(/^\S+\s/, '')) : l.n}</b><small>${l.txt}</small></div></button>`).join('');
+  /* Moradores: quem mais comprou aparece passeando. Começa com 3 e ganha mais com as melhorias. */
+  const tot = MELH_LOJA.concat(MELH_CONF).reduce((s, m) => s + nivel(MELH_LOJA.includes(m) ? 'loja' : 'conf', m.id), 0);
+  const ids = [25, 869, 133, 143, 39, 94, 1, 4, 7, 52, 175, 685, 700, 778, 113, 54];
+  $('moradores').innerHTML = ids.slice(0, Math.min(ids.length, 3 + tot)).map(id => `<img src="${sprite(id)}" alt="" loading="lazy" onerror="this.remove()" />`).join('');
+  $('stats').innerHTML = [
+    ['🛒', E.st.vendas, 'vendas'], ['🎂', E.st.bolos, 'bolos'], ['🌟', E.st.perfeitos, 'bolos perfeitos'],
+    ['🪙', E.st.ganhou, 'moedas ganhas'], ['🏆', E.st.recLoja, 'recorde da loja'], ['🏆', E.st.recConf, 'recorde da confeitaria']
+  ].map(([e, n, t]) => `<div><b>${e} ${n}</b><small>${t}</small></div>`).join('');
+  tela('vila');
+}
+$('casas').onclick = ev => {
+  const b = ev.target.closest('[data-lugar]'); if(!b) return;
+  const l = LUGARES.find(x => x.id === b.dataset.lugar);
+  if(l.fechado){ somErro(); janela(`<div class="grandao">${l.ico}</div><h2>${l.n}</h2><p>Esse lugar ainda está em construção 🚧</p><p>${l.txt.replace('🔒 ', '')}!</p><button class="grande" type="button" data-fechar>Tá bom!</button>`); return; }
+  if(l.id === 'loja') mostrarLoja(); else mostrarConf();
+};
+document.querySelectorAll('[data-vila]').forEach(b => b.onclick = mostrarVila);
+$('logo').onclick = mostrarVila;
+
+/* ---------- 🏪 lojinha ---------- */
+const DURACAO_LOJA = 60;
+let L = null; /* turno aberto: { fim, clientes:[], prox, ganhou, atendidos, bravos, timer } */
+const itensAbertos = () => ITENS.slice(0, 4 + nivel('loja', 'prat'));
+const vagas = () => 3 + nivel('loja', 'balcao');
+const multPreco = () => 1 + .2 * nivel('loja', 'placa');
+const pacienciaBase = () => 14 * (1 + .3 * nivel('loja', 'musica'));
+
+function mostrarLoja(){
+  pararConf(true);
+  $('loja-nome').textContent = nomeLoja();
+  $('loja-msg').textContent = '';
+  desenharPrateleiras(); desenharBalcao(); atualizarRelogioLoja();
+  tela('loja');
+}
+function desenharPrateleiras(){
+  $('prateleiras').innerHTML = itensAbertos().map(it => {
+    const q = E.estoque[it.id] || 0;
+    return `<div class="item ${q ? '' : 'acabou'}" data-item="${it.id}" role="button" tabindex="0" aria-label="${it.n}, tem ${q}">
+      <span class="qtd">${q}</span><span class="ico">${iconeItem(it)}</span><b>${it.n}</b><small>vende ${Math.round(it.p * multPreco())} 🪙</small>
+      <button type="button" class="repor" data-repor="${it.id}">📦 +5 · ${custoRepor(it)}🪙</button></div>`;
+  }).join('');
+}
+function desenharBalcao(){
+  const b = $('balcao');
+  if(!L){ b.innerHTML = `<div class="vazio">🔒 A loja está fechada.<br>Aperte <b>🔔 Abrir a loja</b> pra chegar cliente!</div>`; return; }
+  if(!L.clientes.length){ b.innerHTML = `<div class="vazio">Esperando clientes… 👀</div>`; return; }
+  b.innerHTML = L.clientes.map(c => `<div class="cliente" data-cli="${c.uid}">
+    <div class="balao">${c.quer.map((id, i) => `<span class="${c.entregue[i] ? 'ok' : ''}">${iconeItem(ITEM[id])}</span>`).join('')}</div>
+    ${imgPoke(c.p)}<span class="nome">${esc(c.p.n)}${c.p.vip ? ' ⭐' : ''}</span>
+    <div class="paciencia"><i style="width:${Math.max(0, c.pac / c.pacMax * 100)}%"></i></div><span class="fala">${esc(c.p.fala)}</span></div>`).join('');
+  b.querySelectorAll('.balao svg').forEach(s => { s.style.width = '30px'; s.style.height = '30px'; });
+}
+/* Atualiza só as barrinhas, pra não piscar as imagens. */
+function atualizarPaciencia(){
+  if(!L) return;
+  L.clientes.forEach(c => { const el = document.querySelector(`[data-cli="${c.uid}"] .paciencia i`); if(!el) return;
+    const f = c.pac / c.pacMax; el.style.width = Math.max(0, f * 100) + '%'; el.style.background = f > .5 ? '#2e9e5b' : f > .25 ? '#ffb300' : '#e5484d'; });
+}
+function atualizarRelogioLoja(){
+  if(!L){ $('loja-relogio').textContent = ''; $('loja-tempo-barra').hidden = true; return; }
+  const s = Math.max(0, Math.ceil((L.fim - Date.now()) / 1000));
+  $('loja-relogio').textContent = `⏰ ${s}s · 🪙 +${L.ganhou}`;
+  $('loja-tempo-barra').hidden = false; $('loja-tempo').style.width = (s / DURACAO_LOJA * 100) + '%';
+}
+function novoCliente(){
+  const abertos = itensAbertos();
+  let lista = CLIENTES.filter(c => !c.raro || Math.random() < .25);
+  lista = lista.filter(c => !L.clientes.some(x => x.p.id === c.id));
+  const p = sorteia(lista.length ? lista : CLIENTES);
+  const pode = abertos.filter(it => !p.so || it.cat === p.so);
+  const opcoes = pode.length ? pode : abertos;
+  /* Com a loja maior, às vezes o cliente pede 2 coisas. */
+  const qtos = (abertos.length >= 7 && Math.random() < .35) ? 2 : 1;
+  const quer = []; for(let i = 0; i < qtos; i++) quer.push(sorteia(opcoes).id);
+  const pacMax = pacienciaBase() * (qtos === 2 ? 1.5 : 1);
+  L.clientes.push({ uid:++L.uid, p, quer, entregue:quer.map(() => false), pac:pacMax, pacMax, ganho:0 });
+}
+function abrirLoja(){
+  if(L) return;
+  L = { fim:Date.now() + DURACAO_LOJA * 1000, clientes:[], prox:Date.now() + 600, ganhou:0, atendidos:0, bravos:0, uid:0, ult:Date.now() };
+  $('loja-abrir').disabled = true; $('loja-abrir').textContent = '🔔 Loja aberta!'; $('loja-melhorar').disabled = true;
+  $('loja-msg').textContent = '';
+  bip(784, .15, 'triangle'); bip(1047, .2, 'triangle', .15);
+  desenharBalcao(); L.timer = setInterval(passoLoja, 100);
+}
+function passoLoja(){
+  if(!L) return;
+  const agora = Date.now(), dt = (agora - L.ult) / 1000; L.ult = agora;
+  let mudou = false;
+  L.clientes.forEach(c => { c.pac -= dt; });
+  const foram = L.clientes.filter(c => c.pac <= 0);
+  if(foram.length){
+    foram.forEach(c => { L.bravos++; E.st.bravos++; const el = document.querySelector(`[data-cli="${c.uid}"]`); if(el) el.classList.add('bravo'); });
+    somErro(); $('loja-msg').textContent = `😤 ${foram.map(c => c.p.n).join(' e ')} cansou de esperar!`;
+    L.clientes = L.clientes.filter(c => c.pac > 0); setTimeout(() => L && desenharBalcao(), 450);
+  }
+  if(agora >= L.prox && L.clientes.length < vagas() && agora < L.fim - 3000){
+    novoCliente(); mudou = true;
+    L.prox = agora + 1500 + Math.random() * 2200;
+  }
+  if(mudou) desenharBalcao(); else atualizarPaciencia();
+  atualizarRelogioLoja();
+  if(agora >= L.fim) fecharLoja();
+}
+function pararLoja(silencio){
+  if(!L) return; clearInterval(L.timer); L = null;
+  $('loja-abrir').disabled = false; $('loja-abrir').textContent = '🔔 Abrir a loja (1 minuto)'; $('loja-melhorar').disabled = false;
+  if(silencio) salvar();
+}
+function fecharLoja(){
+  const r = { ganhou:L.ganhou, atendidos:L.atendidos, bravos:L.bravos };
+  pararLoja(); desenharBalcao(); atualizarRelogioLoja();
+  const recorde = r.ganhou > E.st.recLoja; if(recorde) E.st.recLoja = r.ganhou; salvar();
+  if(recorde && r.ganhou > 0){ somFesta(); confete(); }
+  const nota = r.bravos === 0 && r.atendidos >= 8 ? '🌟 Nenhum cliente bravo! Loja perfeita!' : r.atendidos >= 12 ? '🔥 Que loja movimentada!' : r.atendidos >= 5 ? '🙂 Bom dia de trabalho!' : '🐢 Dia calminho…';
+  janela(`<div class="grandao">🏪</div><h2>Loja fechada!</h2><p>${nota}</p>
+    <p>🛒 Clientes felizes: <b>${r.atendidos}</b><br>😤 Foram embora bravos: <b>${r.bravos}</b><br>🪙 Moedas ganhas: <b>${r.ganhou}</b></p>
+    ${recorde && r.ganhou > 0 ? '<p>🏆 <b>RECORDE NOVO!</b></p>' : ''}
+    <button class="grande" type="button" data-fechar>Legal!</button>`);
+}
+function entregar(id, el){
+  if(!L){ somErro(); $('loja-msg').textContent = '🔒 Abre a loja primeiro! 🔔'; return; }
+  const it = ITEM[id];
+  if(!(E.estoque[id] > 0)){ somErro(); el.classList.remove('chacoalha'); void el.offsetWidth; el.classList.add('chacoalha'); $('loja-msg').textContent = `📦 Acabou ${it.n}! Aperte 📦 +5.`; return; }
+  /* Vai pro cliente que quer esse item e está com menos paciência. */
+  const quem = L.clientes.filter(c => c.quer.some((q, i) => q === id && !c.entregue[i])).sort((a, b) => a.pac - b.pac)[0];
+  if(!quem){ somErro(); el.classList.remove('chacoalha'); void el.offsetWidth; el.classList.add('chacoalha'); $('loja-msg').textContent = `🤔 Ninguém pediu ${it.n} agora.`; return; }
+  E.estoque[id]--; E.st.vendas++;
+  quem.entregue[quem.quer.findIndex((q, i) => q === id && !quem.entregue[i])] = true;
+  quem.ganho += it.p * multPreco();
+  const cliEl = document.querySelector(`[data-cli="${quem.uid}"]`);
+  if(quem.entregue.every(Boolean)){
+    const tip = quem.ganho * .5 * (quem.pac / quem.pacMax) * (quem.p.gorjeta || 1);
+    const total = Math.round((quem.ganho + tip) * (quem.p.vip || 1));
+    L.ganhou += total; L.atendidos++; ganhar(total, cliEl || el); somMoeda();
+    $('loja-msg').textContent = quem.p.vip ? `⭐ ${quem.p.n} pagou o TRIPLO!` : `😊 ${quem.p.n} amou! +${total} 🪙`;
+    L.clientes = L.clientes.filter(c => c !== quem);
+    if(cliEl) cliEl.classList.add('sai');
+    setTimeout(() => L && desenharBalcao(), 400);
+  } else { bip(660, .1, 'triangle'); desenharBalcao(); }
+  autoRepor(id); salvar(); desenharPrateleiras();
+}
+function repor(id, silencioso){
+  const it = ITEM[id], c = custoRepor(it);
+  if(gastar(c)){ E.estoque[id] = (E.estoque[id] || 0) + 5; salvar(); if(!silencioso) bip(520, .12, 'triangle'); desenharPrateleiras(); return true; }
+  /* Pra ninguém ficar preso: sem moedas e com a loja vazia, o fornecedor dá 3 de presente. */
+  const total = itensAbertos().reduce((s, x) => s + (E.estoque[x.id] || 0), 0);
+  if(total === 0){ E.estoque[id] = 3; salvar(); desenharPrateleiras(); $('loja-msg').textContent = `🎁 O fornecedor ficou com dó e deu 3 ${it.n} de presente!`; return true; }
+  if(!silencioso){ somErro(); $('loja-msg').textContent = `😢 Faltam moedas pra repor (precisa ${c} 🪙). Venda o que tem!`; }
+  return false;
+}
+function autoRepor(id){ if(nivel('loja', 'chansey') && !(E.estoque[id] > 0)) if(repor(id, true)) $('loja-msg').textContent += ' 🥚 A Chansey repôs!'; }
+$('prateleiras').onclick = ev => {
+  const r = ev.target.closest('[data-repor]'); if(r){ ev.stopPropagation(); repor(r.dataset.repor); return; }
+  const b = ev.target.closest('[data-item]'); if(b) entregar(b.dataset.item, b);
+};
+$('prateleiras').onkeydown = ev => { if((ev.key === 'Enter' || ev.key === ' ') && ev.target.dataset.item){ ev.preventDefault(); entregar(ev.target.dataset.item, ev.target); } };
+$('loja-abrir').onclick = abrirLoja;
+$('loja-melhorar').onclick = () => mostrarMelhorias('loja');
+
+/* ---------- 🍰 confeitaria ---------- */
+const PEDIDOS_TURNO = 5;
+let C = null; /* turno: { n, pedido, bolo, fim, tempo, total, perfeitos, timer, dica } */
+const abertos = (lista, melh) => lista.filter((x, i) => x.liberado || i - lista.filter(y => y.liberado).length < nivel('conf', melh));
+const tempoBolo = () => 40 + 12 * nivel('conf', 'batedeira');
+const PARTES = [
+  { id:'andares', n:'Andares', art:'os andares', lista:() => [1, 2].concat(nivel('conf', 'andar3') ? [3] : []) },
+  { id:'massa', n:'Massa', art:'a massa', lista:() => abertos(MASSAS, 'massa') },
+  { id:'creme', n:'Creme', art:'o creme', lista:() => abertos(CREMES, 'creme') },
+  { id:'fruta', n:'Fruta', art:'a fruta', lista:() => abertos(FRUTAS, 'fruta') },
+  { id:'enfeite', n:'Enfeite', art:'o enfeite', lista:() => abertos(ENFEITES, 'enfeite') }
+];
+const achar = (lista, id) => lista.find(x => x.id === id);
+
+/* Desenha o bolo. b = { andares, massa, creme, fruta, enfeite } (pode faltar coisa). */
+function desenharBolo(b, pequeno){
+  const n = b.andares || 1;
+  const massa = achar(MASSAS, b.massa), creme = achar(CREMES, b.creme), fruta = achar(FRUTAS, b.fruta), enf = achar(ENFEITES, b.enfeite);
+  const larg = [150, 118, 88], alt = 36;
+  let s = `<svg viewBox="0 0 200 200" role="img" aria-label="bolo"><ellipse cx="100" cy="186" rx="88" ry="10" fill="#d9e2ea" stroke="#b7c3cc" stroke-width="2"/>`;
+  let topo = 180;
+  for(let i = 0; i < n; i++){
+    const w = larg[i], x = 100 - w / 2, y = topo - alt;
+    const cor = massa ? massa.c : 'none';
+    s += `<rect x="${x}" y="${y}" width="${w}" height="${alt}" rx="8" fill="${cor}" stroke="${massa ? 'rgba(0,0,0,.25)' : '#aab'}" stroke-width="2" ${massa ? '' : 'stroke-dasharray="6 5"'}/>`;
+    if(creme){
+      /* Cobertura com gotinhas escorrendo. */
+      let gotas = ''; const qg = Math.round(w / 22);
+      for(let g = 0; g < qg; g++){ const gx = x + 10 + g * (w - 20) / Math.max(1, qg - 1); const h = 6 + ((g * 7 + i * 3) % 3) * 5; gotas += `<rect x="${gx - 5}" y="${y + 4}" width="10" height="${h}" rx="5" fill="${creme.c}"/>`; }
+      s += `<rect x="${x - 3}" y="${y - 3}" width="${w + 6}" height="12" rx="6" fill="${creme.c}" stroke="rgba(0,0,0,.15)" stroke-width="1.5"/>${gotas}`;
+    }
+    topo = y - (creme ? 3 : 0);
+  }
+  const wTop = larg[n - 1];
+  if(fruta){ [-.3, 0, .3].forEach(f => { s += `<text x="${100 + f * wTop}" y="${topo + 4}" font-size="${pequeno ? 22 : 20}" text-anchor="middle">${fruta.e}</text>`; }); }
+  if(enf) s += `<text x="100" y="${topo - (fruta ? 14 : 2)}" font-size="${pequeno ? 34 : 30}" text-anchor="middle">${enf.e}</text>`;
+  return s + '</svg>';
+}
+function mostrarConf(){
+  pararLoja(true);
+  $('conf-parado').hidden = !!C; $('conf-jogo').hidden = !C;
+  $('conf-relogio').textContent = '';
+  tela('conf');
+}
+function novoPedido(){
+  const quer = {};
+  PARTES.forEach(p => { const l = p.lista(); const v = sorteia(l); quer[p.id] = typeof v === 'number' ? v : v.id; });
+  C.pedido = { p:sorteia(CONF_CLIENTES.filter(x => !C.pedido || x.id !== C.pedido.p.id)), quer };
+  C.bolo = { andares:1 }; C.dica = false;
+  C.tempo = tempoBolo(); C.fim = Date.now() + C.tempo * 1000;
+  $('conf-reacao').textContent = '';
+  $('conf-dica').hidden = !nivel('conf', 'dica'); $('conf-dica').disabled = false;
+  $('conf-entregar').disabled = false;
+  desenharPedido(); desenharPassos(); desenharBoloAtual();
+}
+function valorPedido(){ const q = C.pedido.quer; return 8 + 6 * q.andares + ['menta', 'uva'].includes(q.massa) * 3 + ['amarelo', 'roxo'].includes(q.creme) * 2; }
+function desenharPedido(){
+  const q = C.pedido.quer, p = C.pedido.p;
+  $('conf-pedido').innerHTML = `<div class="quem">${imgPoke(p)}<b>${esc(p.n)}</b><small>pedido ${C.n}/${PEDIDOS_TURNO}</small></div>
+    <div class="quer">${desenharBolo(q, true)}<ul>
+      <li>🎂 ${q.andares} andar${q.andares > 1 ? 'es' : ''}</li><li>🍰 ${achar(MASSAS, q.massa).n}</li><li>🍦 creme ${achar(CREMES, q.creme).n.toLowerCase()}</li>
+      <li>${achar(FRUTAS, q.fruta).e} ${achar(FRUTAS, q.fruta).n}</li><li>${achar(ENFEITES, q.enfeite).e} ${achar(ENFEITES, q.enfeite).n}</li>
+      <li style="color:#b58400;font-weight:800">🪙 até ${Math.round(valorPedido() * 1.6 + 5)}</li></ul></div>`;
+}
+function desenharPassos(){
+  $('conf-passos').innerHTML = PARTES.map(p => `<div class="passo"><h3>${p.n}</h3><div class="opcoes" data-parte="${p.id}">${
+    p.lista().map(v => {
+      const id = typeof v === 'number' ? v : v.id, on = C.bolo[p.id] === id;
+      if(p.id === 'andares') return `<button type="button" data-v="${id}" aria-pressed="${on}"><span class="txt">${'🎂'.repeat(id)}</span></button>`;
+      if(v.c) return `<button type="button" class="cor" data-v="${id}" aria-pressed="${on}" title="${v.n}" aria-label="${v.n}"><i style="background:${v.c}"></i></button>`;
+      return `<button type="button" data-v="${id}" aria-pressed="${on}" title="${v.n}" aria-label="${v.n}">${v.e}</button>`;
+    }).join('')}</div></div>`).join('');
+}
+function desenharBoloAtual(){ $('conf-bolo').innerHTML = desenharBolo(C.bolo); }
+$('conf-passos').onclick = ev => {
+  const b = ev.target.closest('[data-v]'); if(!b || !C) return;
+  const parte = b.parentElement.dataset.parte; const v = parte === 'andares' ? +b.dataset.v : b.dataset.v;
+  C.bolo[parte] = v; bip(parte === 'andares' ? 440 : 600 + Math.random() * 300, .08, 'triangle');
+  b.parentElement.querySelectorAll('button').forEach(x => { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); x.classList.remove('dica'); });
+  desenharBoloAtual();
+};
+$('conf-limpar').onclick = () => { if(!C) return; C.bolo = { andares:1 }; desenharPassos(); desenharBoloAtual(); };
+$('conf-dica').onclick = () => {
+  if(!C || C.dica) return;
+  const p = PARTES.find(p => C.bolo[p.id] !== C.pedido.quer[p.id]);
+  if(!p){ $('conf-reacao').textContent = '💡 Alcremie: "Tá tudo certo! Pode entregar!"'; return; }
+  C.dica = true; $('conf-dica').disabled = true;
+  const b = document.querySelector(`[data-parte="${p.id}"] [data-v="${C.pedido.quer[p.id]}"]`);
+  if(b){ b.classList.add('dica'); b.scrollIntoView({ block:'center', behavior:'smooth' }); }
+  $('conf-reacao').textContent = `💡 Alcremie: "Olha ${p.art}!"`;
+};
+function abrirConf(){
+  C = { n:1, total:0, perfeitos:0, pedido:null };
+  $('conf-parado').hidden = true; $('conf-jogo').hidden = false;
+  novoPedido(); C.timer = setInterval(passoConf, 200);
+}
+function passoConf(){
+  if(!C || C.esperando) return;
+  const s = Math.max(0, (C.fim - Date.now()) / 1000);
+  $('conf-tempo').style.width = (s / C.tempo * 100) + '%';
+  $('conf-relogio').textContent = `⏰ ${Math.ceil(s)}s · 🪙 +${C.total}`;
+  if(s <= 0) entregarBolo(true);
+}
+function entregarBolo(acabouTempo){
+  if(!C || C.esperando) return;
+  const q = C.pedido.quer;
+  const certos = PARTES.filter(p => C.bolo[p.id] === q[p.id]).length;
+  const sobra = Math.max(0, (C.fim - Date.now()) / 1000) / C.tempo;
+  let ganho = valorPedido() * certos / 5;
+  if(certos === 5) ganho += valorPedido() * .4 * sobra + 3 + 3 * nivel('conf', 'vitrine');
+  ganho = Math.round(ganho);
+  C.esperando = true; $('conf-entregar').disabled = true;
+  E.st.bolos++; if(certos === 5){ E.st.perfeitos++; C.perfeitos++; }
+  C.total += ganho; if(ganho) ganhar(ganho, $('conf-bolo'));
+  const cara = certos === 5 ? '😍 PERFEITO! Igualzinho!' : certos >= 3 ? '🙂 Ficou quase igual!' : certos >= 1 ? '😕 Hmm… não era bem isso.' : '😭 Esse não é o meu bolo!';
+  $('conf-reacao').innerHTML = `${acabouTempo ? '⏰ Acabou o tempo! ' : ''}${esc(C.pedido.p.n)}: ${cara}<br><span class="estrelinhas">${'⭐'.repeat(certos)}${'☆'.repeat(5 - certos)}</span> +${ganho} 🪙`;
+  if(certos === 5) somFesta(); else if(certos >= 3) somMoeda(); else somErro();
+  salvar();
+  setTimeout(() => {
+    if(!C) return; C.esperando = false;
+    if(C.n >= PEDIDOS_TURNO) return fecharConf();
+    C.n++; novoPedido();
+  }, 1900);
+}
+function pararConf(){ if(!C) return; clearInterval(C.timer); C = null; $('conf-parado').hidden = false; $('conf-jogo').hidden = true; $('conf-relogio').textContent = ''; salvar(); }
+function fecharConf(){
+  const r = { total:C.total, perfeitos:C.perfeitos };
+  pararConf();
+  const recorde = r.total > E.st.recConf; if(recorde) E.st.recConf = r.total; salvar();
+  if(r.perfeitos === PEDIDOS_TURNO || recorde){ confete(); somFesta(); }
+  janela(`<div class="grandao">🍰</div><h2>Confeitaria fechada!</h2>
+    <p>${r.perfeitos === PEDIDOS_TURNO ? '👑 Todos os bolos perfeitos! A Alcremie está orgulhosa!' : r.perfeitos >= 3 ? '🎉 Muito bem, confeiteiro!' : '🧁 Treinando a gente melhora!'}</p>
+    <p>🌟 Bolos perfeitos: <b>${r.perfeitos}/${PEDIDOS_TURNO}</b><br>🪙 Moedas ganhas: <b>${r.total}</b></p>
+    ${recorde && r.total > 0 ? '<p>🏆 <b>RECORDE NOVO!</b></p>' : ''}
+    <button class="grande rosa" type="button" data-fechar>Oba!</button>`);
+}
+$('conf-abrir').onclick = abrirConf;
+$('conf-entregar').onclick = () => entregarBolo(false);
+$('conf-melhorar').onclick = () => mostrarMelhorias('conf');
+
+/* ---------- ⬆️ melhorias ---------- */
+let melhOnde = 'loja';
+function mostrarMelhorias(onde){
+  melhOnde = onde; const lista = onde === 'loja' ? MELH_LOJA : MELH_CONF;
+  $('melh-titulo').textContent = onde === 'loja' ? '⬆️ Melhorias da loja' : '⬆️ Melhorias da confeitaria';
+  $('melh-moedas').textContent = E.moedas;
+  $('melh-lista').innerHTML = lista.map(m => {
+    const nv = nivel(onde, m.id), max = m.custo.length, preco = m.custo[nv];
+    let extra = '';
+    if(m.id === 'prat' && nv < max){ const it = ITENS[4 + nv]; extra = ` Próximo: <b>${esc(it.n)}</b>.`; }
+    return `<div class="melhoria"><span class="ico">${m.e}</span><div class="txt"><b>${m.n}</b><small>${m.d}${extra}</small>
+      <div class="pontos">${Array.from({ length:max }, (_, i) => `<i class="${i < nv ? 'on' : ''}"></i>`).join('')}</div></div>
+      ${nv >= max ? '<span class="mini" style="cursor:default">✅ Máximo</span>' : `<button class="mini" type="button" data-comprar="${m.id}" ${E.moedas < preco ? 'disabled' : ''}>${preco} 🪙</button>`}</div>`;
+  }).join('');
+  tela('melhorias');
+}
+$('melh-lista').onclick = ev => {
+  const b = ev.target.closest('[data-comprar]'); if(!b) return;
+  const lista = melhOnde === 'loja' ? MELH_LOJA : MELH_CONF, m = lista.find(x => x.id === b.dataset.comprar);
+  const nv = nivel(melhOnde, m.id); if(nv >= m.custo.length) return;
+  if(!gastar(m.custo[nv])){ somErro(); return; }
+  E[melhOnde][m.id] = nv + 1;
+  if(m.id === 'prat'){ const it = ITENS[4 + nv]; E.estoque[it.id] = (E.estoque[it.id] || 0) + 5; }
+  salvar(); somFesta(); mostrarMelhorias(melhOnde);
+};
+$('melh-voltar').onclick = () => melhOnde === 'loja' ? mostrarLoja() : mostrarConf();
+
+/* ---------- janela e festa ---------- */
+const dlg = $('dlg');
+function janela(html){ $('dlg-corpo').innerHTML = html; if(!dlg.open) dlg.showModal(); }
+$('dlg-corpo').addEventListener('click', ev => { if(ev.target.closest('[data-fechar]')) dlg.close(); });
+function confete(){ const cores = ['#2e9e5b', '#ffc21a', '#ff5fa2', '#3b8cff', '#e5484d', '#fff'];
+  for(let i = 0; i < 60; i++){ const c = document.createElement('i'); c.className = 'confete'; c.style.left = Math.random() * 100 + 'vw'; c.style.background = sorteia(cores);
+    c.style.animationDelay = Math.random() * .5 + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 3600); } }
+
+$('zerar').onclick = () => janela(`<div class="grandao">🗑️</div><h2>Começar do zero?</h2><p>Você perde todas as moedas, melhorias e recordes da vila. Não dá pra desfazer!</p>
+  <div class="linha" style="margin-top:14px;justify-content:center"><button class="mini" type="button" data-fechar>Não, voltar</button><button class="mini" type="button" id="zerar-sim" style="background:#e5484d;color:#fff;border-color:#e5484d">Sim, apagar</button></div>`);
+$('dlg-corpo').addEventListener('click', ev => { if(ev.target.id === 'zerar-sim'){ E = NOVO(); salvar(); dlg.close(); mostrarMoedas(true); mostrarVila(); } });
+
+/* ---------- som e tema ---------- */
+const btSom = $('som'); function marcarSom(){ btSom.textContent = cfg.som ? '🔊' : '🔇'; }
+btSom.onclick = () => { cfg.som = !cfg.som; salvar(); marcarSom(); };
+const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function aplicarTema(t){ if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema'); btTema.textContent = estaEscuro() ? '☀️' : '🌙'; corDaBarra.setAttribute('content', estaEscuro() ? '#0f1d16' : '#2e9e5b'); }
+aplicarTema(ler('tema', null));
+btTema.onclick = () => { const t = estaEscuro() ? 'claro' : 'escuro'; gravar('tema', t); aplicarTema(t); };
+
+marcarSom(); mostrarMoedas(); mostrarVila();
+
+/* ---------- versão nova ---------- */
+const btRecarregar = $('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{ if(window.caches){ const n = await caches.keys(); await Promise.all(n.map(x => caches.delete(x))); } }catch(e){}
+  try{ if(navigator.serviceWorker){ const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(x => x.update().catch(() => {}))); } }catch(e){}
+  const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+};
+try{ if(new URL(location.href).searchParams.has('v')){ const l = new URL(location.href); l.searchParams.delete('v'); history.replaceState(null, '', l.pathname + l.search + l.hash); } }catch(e){}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(!jaTinha || document.querySelector('.faixa-nova')) return;
+    const f = document.createElement('div'); f.className = 'faixa-nova';
+    f.innerHTML = '<span>✨ Chegou versão nova!</span><button type="button">Carregar</button>';
+    f.querySelector('button').onclick = () => location.reload();
+    document.body.appendChild(f);
+  });
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); }).catch(() => {}); });
+}
+</script>
+</body>
+</html>
