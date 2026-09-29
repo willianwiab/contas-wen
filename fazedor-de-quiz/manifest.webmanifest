@@ -1,0 +1,14 @@
+{
+  "name": "Fazedor de Quiz",
+  "short_name": "Quiz",
+  "description": "Crie um quiz sobre você, mande o código pros amigos e veja o ranking de quem te conhece melhor!",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f0ff",
+  "theme_color": "#6b3fd9",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
