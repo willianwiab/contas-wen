@@ -2,519 +2,731 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Pescaria Maluca Pokémon</title>
-<meta name="description" content="O lago gira, os Pokémon abrem a boca e você tem que pescar na hora certa! Sozinho, contra o robô ou com um amigo no mesmo celular." />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Pesca Maluca Pokémon</title>
+<meta name="description" content="Jogue o anzol, escolha a profundidade e fisgue Pokémon! Quanto mais fundo, mais raro. Loja, álbum, conquistas, climas e lugares." />
 <link rel="icon" type="image/svg+xml" href="icone.svg" />
 <link rel="manifest" href="manifest.webmanifest" />
-<meta name="theme-color" content="#1f7ae0" />
+<meta name="theme-color" content="#1a3a5e" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-title" content="Pescaria" />
+<meta name="apple-mobile-web-app-title" content="Pesca" />
 <link rel="apple-touch-icon" href="icone.svg" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-:root{
-  --marca:#1f7ae0; --marca2:#4da3ff; --amarelo:#ffc21a; --vermelho:#e5484d; --verde:#2e9e5b; --rosa:#ff5fa2;
-  --fundo:#e8f5ff; --tinta:#0f2740; --tinta-fraca:#58708a; --cartao:#ffffff; --cartao2:#f3f9ff; --borda:#cfe3f7; --sombra:rgba(20,70,140,.16);
-  --agua1:#7fd0ff; --agua2:#1f7ae0; --borda-lago:#f5dfa3;
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden}
+body{font-family:'Trebuchet MS','Segoe UI',system-ui,sans-serif;background:#1a3a5e;color:#fff;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+button{font:inherit}
+canvas{position:absolute;inset:0;width:100vw;height:100vh;display:block;touch-action:none;cursor:pointer;z-index:1}
+.oculto{display:none !important}
+
+h1{position:absolute;top:8px;left:50%;transform:translateX(-50%);color:#ffe066;font-size:1.3rem;font-weight:900;letter-spacing:1px;z-index:10;pointer-events:none;white-space:nowrap;
+  text-shadow:0 0 15px rgba(255,224,102,.6),0 2px 6px #000}
+.hud{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:4px;z-index:10;pointer-events:none}
+.hud>span{background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:2px solid rgba(255,255,255,.15);padding:5px 11px;font-weight:900;font-size:.82rem;border-radius:14px;box-shadow:0 3px 10px rgba(0,0,0,.3);width:max-content}
+.hud .moedas{color:#ffd43b;border-color:rgba(255,212,59,.4)}
+.hud .peixes{color:#8ce99a;border-color:rgba(105,219,124,.4)}
+.hud .raros{color:#da77f2;border-color:rgba(218,119,242,.4)}
+.hud .isca{color:#ffb673;border-color:rgba(255,182,115,.4)}
+.hud .local{color:#66d9e8;border-color:rgba(102,217,232,.4)}
+.hud .clima{color:#ffd43b;border-color:rgba(255,212,59,.4)}
+.hud .adm{color:#ff922b;border-color:rgba(255,146,43,.8);background:rgba(255,146,43,.2)}
+
+.status{position:absolute;bottom:150px;left:50%;transform:translateX(-50%);font-size:1.15rem;font-weight:900;text-align:center;text-shadow:0 2px 6px #000;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);padding:10px 20px;border-radius:20px;border:2px solid rgba(255,255,255,.15);z-index:10;max-width:90vw;box-shadow:0 4px 15px rgba(0,0,0,.4);pointer-events:none}
+.status.morder{background:linear-gradient(45deg,#e03131,#f76707);border-color:#ffd43b;box-shadow:0 0 30px rgba(255,107,107,.7);animation:piscar .3s infinite}
+@keyframes piscar{50%{transform:translateX(-50%) scale(1.1)}}
+
+.btn{background:linear-gradient(45deg,#ffd43b,#f76707);border:none;color:#1a1a1a;padding:11px 22px;font-size:1rem;font-weight:900;border-radius:22px;cursor:pointer;letter-spacing:.5px;
+  box-shadow:0 4px 15px rgba(247,103,7,.5),inset 0 1px 0 rgba(255,255,255,.3);transition:transform .15s;text-decoration:none;display:inline-block}
+.btn:active{transform:scale(.95)}
+.btn.verde{background:linear-gradient(45deg,#51cf66,#339af0);color:#fff}
+.btn.roxo{background:linear-gradient(45deg,#845ef7,#e64980);color:#fff}
+.btn.dourado{background:linear-gradient(45deg,#ffd43b,#f59f00);color:#333}
+.btn.azul{background:linear-gradient(45deg,#339af0,#22b8cf);color:#fff}
+.controles{position:absolute;bottom:62px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;z-index:10;width:max-content;max-width:96vw}
+.controles .btn{padding:9px 15px;font-size:.88rem}
+.instru{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:.76rem;text-align:center;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);
+  padding:6px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);z-index:10;width:max-content;max-width:94vw;pointer-events:none}
+.instru b{color:#ffe066}
+@media (max-width:500px){
+  h1{font-size:1.05rem;top:10px;left:auto;right:40px;transform:none}
+  .controles{bottom:58px;gap:5px}
+  .controles .btn{padding:7px 10px;font-size:.76rem}
+  .status{bottom:132px;font-size:.95rem;padding:8px 14px}
+  .instru{font-size:.68rem;padding:5px 9px}
+  .hud>span{font-size:.72rem;padding:4px 9px}
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-tema="claro"]){
-    --marca:#6fb6ff; --fundo:#0b1a2b; --tinta:#e6f3ff; --tinta-fraca:#9bb4cc; --cartao:#13263b; --cartao2:#1a3049; --borda:#2a4563; --sombra:rgba(0,0,0,.45);
-    --agua1:#2a6fb0; --agua2:#0d3563; --borda-lago:#6b5a3e;
-  }
-}
-:root[data-tema="escuro"]{
-  --marca:#6fb6ff; --fundo:#0b1a2b; --tinta:#e6f3ff; --tinta-fraca:#9bb4cc; --cartao:#13263b; --cartao2:#1a3049; --borda:#2a4563; --sombra:rgba(0,0,0,.45);
-  --agua1:#2a6fb0; --agua2:#0d3563; --borda-lago:#6b5a3e;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-[hidden]{display:none !important}
-html,body{overflow-x:clip}
-body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);min-height:100vh;-webkit-tap-highlight-color:transparent}
-button{font:inherit;color:inherit}
-h1,h2,h3{font-family:'Baloo 2','Rubik',sans-serif}
-main{max-width:620px;margin:0 auto;padding:10px 16px 40px}
-header.topo{display:flex;align-items:center;gap:8px;max-width:620px;margin:0 auto;padding:12px 16px 0}
-.logo{flex:1;display:flex;align-items:center;gap:8px;min-width:0;cursor:pointer}
-.logo img{width:40px;height:40px;flex:none}
-.logo>div{min-width:0}
-.logo h1{font-size:1.35rem;color:var(--marca);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.logo small{display:block;font-size:.72rem;color:var(--tinta-fraca)}
-.redondo{width:40px;height:40px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.1rem;cursor:pointer;display:grid;place-items:center;flex:none;box-shadow:0 3px 0 var(--borda)}
-.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:24px;padding:16px;margin-top:14px;box-shadow:0 6px 16px var(--sombra)}
-.grande{display:block;width:100%;border:none;border-radius:18px;padding:14px;font-size:1.15rem;font-weight:800;cursor:pointer;color:#fff;font-family:'Baloo 2','Rubik',sans-serif;
-  background:linear-gradient(180deg,var(--marca2),#1f6fd0);box-shadow:0 5px 0 #154f99;text-align:left;display:flex;gap:12px;align-items:center}
-.grande:active{transform:translateY(3px);box-shadow:0 2px 0 #154f99}
-.grande .ic{font-size:2rem}
-.grande small{display:block;font-family:'Rubik',sans-serif;font-weight:500;font-size:.8rem;opacity:.9}
-.grande.verde{background:linear-gradient(180deg,#49c47a,#23874b);box-shadow:0 5px 0 #196b3a}
-.grande.rosa{background:linear-gradient(180deg,#ff8cc0,#e8458e);box-shadow:0 5px 0 #a82a63}
-.grande.amarelo{background:linear-gradient(180deg,#ffd54d,#ffb300);box-shadow:0 5px 0 #b37a00;color:#3a2a00}
-.menu{display:grid;gap:12px;margin-top:14px}
-.mini{border:2px solid var(--borda);background:var(--cartao2);border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:.88rem;box-shadow:0 3px 0 var(--borda)}
-.aviso{font-size:.84rem;color:var(--tinta-fraca);line-height:1.45;margin-top:6px}
-main>section{animation:aparece .3s ease-out}
-@keyframes aparece{from{opacity:0;transform:translateY(8px)}}
+@media (max-width:400px){ h1{display:none} .instru{display:none} .controles{bottom:12px} .status{bottom:112px} }
+.btn-adm{position:fixed;top:4px;right:4px;width:26px;height:26px;background:rgba(0,0,0,.15);border:none;border-radius:50%;cursor:pointer;z-index:15;opacity:.3}
+.btn-adm:hover{opacity:1;background:#ffd43b}
 
-/* capa */
-.capa{text-align:center;padding:18px 12px;border-radius:24px;margin-top:12px;color:#fff;position:relative;overflow:hidden;
-  background:radial-gradient(circle at 50% 120%,#7fd0ff,#1f7ae0 60%,#0d4a99)}
-.capa h2{font-size:2rem;line-height:1;text-shadow:0 3px 0 #0d3563}
-.capa p{margin-top:6px;font-weight:600}
-.capa .roda{font-size:3rem;display:inline-block;animation:gira 4s linear infinite;margin-top:8px}
-@keyframes gira{to{transform:rotate(360deg)}}
-.recs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;text-align:center}
-.recs div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:8px 4px}
-.recs b{display:block;font-family:'Baloo 2',sans-serif;font-size:1.25rem}
-.recs small{font-size:.72rem;color:var(--tinta-fraca)}
+.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:400;background:linear-gradient(45deg,#ffd43b,#f76707);color:#1a1a1a;font-weight:900;border-radius:16px;padding:10px 16px;
+  box-shadow:0 6px 20px rgba(0,0,0,.4);text-align:center;animation:toast 3s ease-out forwards;max-width:92vw;pointer-events:none}
+.toast small{display:block;font-weight:700;font-size:.8rem}
+@keyframes toast{0%{transform:translate(-50%,-80px)}12%{transform:translate(-50%,0)}85%{opacity:1}100%{opacity:0}}
 
-/* jogo */
-.placar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px}
-.placar .jog{flex:1;background:var(--cartao);border:2px solid var(--borda);border-radius:16px;padding:6px 10px;display:flex;align-items:center;gap:8px;min-width:0}
-.placar .jog b{font-family:'Baloo 2',sans-serif;font-size:1.5rem;line-height:1}
-.placar .jog small{display:block;font-size:.72rem;color:var(--tinta-fraca);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.placar .jog .cor{width:14px;height:14px;border-radius:50%;flex:none}
-.placar .jog.tonto{animation:chacoalha .3s 3}
-.tempo{font-family:'Baloo 2',sans-serif;font-size:1.4rem;background:var(--amarelo);color:#3a2a00;border-radius:99px;padding:4px 12px;box-shadow:0 3px 0 #b37a00;flex:none}
-.tempo.acabando{background:var(--vermelho);color:#fff;box-shadow:0 3px 0 #9c2a2e;animation:pulo .5s infinite}
-.p2 .placar-topo{transform:rotate(180deg)}
-.placar-topo{margin-bottom:8px}
-.lago-caixa{position:relative;margin:10px auto 0;width:min(100%,460px);aspect-ratio:1}
-.lago{position:absolute;inset:0;border-radius:50%;touch-action:manipulation;user-select:none;-webkit-user-select:none;
-  background:radial-gradient(circle at 50% 50%,var(--agua1),var(--agua2) 70%);border:10px solid var(--borda-lago);box-shadow:0 10px 0 rgba(0,0,0,.12),inset 0 0 30px rgba(0,0,0,.25)}
-.lago:before{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.12) 0 3px,transparent 3px 26px);animation:gira 18s linear infinite}
-.lago .miolo{position:absolute;left:50%;top:50%;width:26%;height:26%;margin:-13% 0 0 -13%;border-radius:50%;
-  background:radial-gradient(circle at 40% 35%,#9be38f,#3f9a4f);border:4px solid #2c7a3a;display:grid;place-items:center;font-size:clamp(1.4rem,7vw,2.4rem);box-shadow:0 4px 0 rgba(0,0,0,.2)}
-.lago .miolo span{display:inline-block}
-.p2 .lago:after{content:'';position:absolute;left:4%;right:4%;top:50%;border-top:3px dashed rgba(255,255,255,.6)}
-.peixe{position:absolute;left:0;top:0;width:18%;height:18%;border:none;background:none;padding:0;cursor:pointer;will-change:transform;z-index:2}
-.peixe .corpo{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 70%,rgba(0,40,90,.35),transparent 70%);transition:transform .15s}
-.peixe img,.peixe .emo{position:absolute;left:0;top:0;width:100%;height:100%;image-rendering:pixelated;transition:transform .18s;transform:translateY(22%) scale(.78);filter:brightness(.85) drop-shadow(0 2px 0 rgba(0,0,0,.2))}
-.peixe .emo{display:grid;place-items:center;font-size:clamp(1.4rem,7vw,2.2rem)}
-.peixe .boca{position:absolute;left:50%;top:-14%;transform:translateX(-50%) scale(0);font-size:clamp(.9rem,4vw,1.3rem);transition:transform .15s;pointer-events:none}
-.peixe.aberto img,.peixe.aberto .emo{transform:translateY(-10%) scale(1.08);filter:brightness(1.1) drop-shadow(0 0 8px #fff)}
-.peixe.aberto .corpo{background:radial-gradient(circle,rgba(255,255,255,.55),transparent 70%);transform:scale(1.2)}
-.peixe.aberto .boca{transform:translateX(-50%) scale(1)}
-.peixe.ruim.aberto .corpo{background:radial-gradient(circle,rgba(255,120,120,.45),transparent 70%)}
-.peixe.raro .corpo:after{content:'';position:absolute;inset:-4px;border-radius:50%;border:3px dashed #ffd84d;animation:gira 3s linear infinite}
-.pescado{position:fixed;z-index:40;pointer-events:none;width:64px;height:64px;transition:transform .7s cubic-bezier(.3,-.4,.6,1),opacity .7s}
-.pescado img,.pescado .emo{width:100%;height:100%;image-rendering:pixelated;font-size:2.4rem;display:grid;place-items:center}
-.linha{position:fixed;z-index:39;pointer-events:none;width:2px;background:#333;transform-origin:top center;transition:opacity .4s}
-.pontinho{position:fixed;z-index:41;pointer-events:none;font-weight:800;font-size:1.3rem;animation:sobe 1s ease-out forwards;text-shadow:0 2px 0 #fff,0 0 4px #fff}
-.pontinho.menos{color:var(--vermelho)} .pontinho.mais{color:#0d6b33}
-@keyframes sobe{to{transform:translateY(-50px);opacity:0}}
-.splash{position:fixed;z-index:41;pointer-events:none;font-size:1.8rem;animation:sobe .6s ease-out forwards}
-.evento{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none;background:rgba(255,255,255,.95);color:#0f2740;border-radius:18px;padding:8px 16px;font-family:'Baloo 2',sans-serif;font-size:1.3rem;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.2);animation:evento 1.8s ease-out forwards;white-space:nowrap}
-@keyframes evento{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}15%{transform:translate(-50%,-50%) scale(1.1);opacity:1}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
-.balde{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;min-height:44px;margin-top:10px;padding:6px;border-radius:16px;background:var(--cartao2);border:2px dashed var(--borda)}
-.balde img{width:38px;height:38px;image-rendering:pixelated;animation:pulo .35s}
-.balde .emo{font-size:1.6rem}
-.balde:empty:before{content:'🪣 Seu balde de peixes';color:var(--tinta-fraca);font-size:.85rem;align-self:center}
-@keyframes pulo{50%{transform:scale(1.25)}}
-@keyframes chacoalha{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-.contagem{position:absolute;inset:0;display:grid;place-items:center;z-index:6;font-family:'Baloo 2',sans-serif;font-size:4rem;color:#fff;text-shadow:0 4px 0 #0d3563;pointer-events:none}
-
-/* pokédex */
-.dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:10px}
-.dex div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:6px;text-align:center}
-.dex img{width:64px;height:64px;image-rendering:pixelated}
-.dex .nao img{filter:brightness(0) opacity(.35)}
-.dex .emo{font-size:2.4rem;display:block;height:64px;line-height:64px}
-.dex .nao .emo{filter:grayscale(1) opacity(.35)}
-.dex b{display:block;font-size:.78rem}
-.dex small{font-size:.72rem;color:var(--tinta-fraca)}
-.dex .pts{font-weight:800;color:var(--marca)}
-
-dialog{border:none;border-radius:22px;padding:0;max-width:min(420px,calc(100vw - 32px));width:100%;background:var(--cartao);color:var(--tinta);box-shadow:0 20px 50px rgba(0,0,0,.35)}
-dialog::backdrop{background:rgba(5,20,40,.6)}
-.dlg{padding:20px;text-align:center}
-.dlg h2{font-size:1.6rem}
-.dlg .grandao{font-size:3rem;animation:pulo .6s}
-.dlg p{margin-top:6px;line-height:1.45}
-.dlg .grande{margin-top:14px;justify-content:center;text-align:center}
-.dlg .pegos{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;margin-top:8px}
-.dlg .pegos img{width:40px;height:40px;image-rendering:pixelated}
-.dlg .pegos .emo{font-size:1.6rem}
-.rodape{text-align:center;margin-top:22px;color:var(--tinta-fraca);font-size:.8rem}
-.versao{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:5px 12px;font-weight:700;cursor:pointer;margin-top:8px}
-.faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--marca);color:#fff;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:60;box-shadow:0 8px 20px rgba(0,0,0,.3)}
-.faixa-nova button{border:none;border-radius:99px;background:#fff;color:#154f99;font-weight:800;padding:6px 12px;cursor:pointer}
-.confete{position:fixed;top:-12px;width:10px;height:14px;z-index:70;pointer-events:none;animation:cai 3s linear forwards}
-@keyframes cai{to{transform:translateY(105vh) rotate(720deg)}}
-button:focus-visible{outline:3px solid #ffb300;outline-offset:2px}
-@media (max-width:420px){ .logo small{display:none} .logo h1{font-size:1.15rem} }
-@media (prefers-reduced-motion: reduce){ .lago:before,.capa .roda{animation:none} }
+.tela{position:fixed;inset:0;background:rgba(0,5,25,.94);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:20;text-align:center;padding:20px;overflow-y:auto}
+.tela.topo{justify-content:flex-start}
+.tela h2{font-size:1.8rem;background:linear-gradient(90deg,#ffd43b,#ff6b6b,#da77f2,#4dabf7);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:grad 4s linear infinite}
+@keyframes grad{to{background-position:200%}}
+.caixa{max-width:560px;width:100%}
+.peixe-pego{background:rgba(255,255,255,.08);border:3px solid rgba(255,224,102,.5);border-radius:20px;padding:18px;max-width:320px;width:100%}
+.peixe-pego img{width:150px;height:150px;image-rendering:pixelated;animation:pular 1s ease-in-out infinite}
+.peixe-pego .emo{font-size:5rem;display:block}
+@keyframes pular{50%{transform:translateY(-10px)}}
+.peixe-nome{font-size:1.6rem;font-weight:900;margin:8px 0}
+.r-comum{color:#a5d8ff}.r-raro{color:#8ce99a}.r-epico{color:#da77f2}.r-lendario{color:#ffd43b;text-shadow:0 0 15px #ffd43b}
+.r-evento{color:#ff6b9d}.r-mitico{color:#ff922b;text-shadow:0 0 18px #ff922b}
+.selo{display:inline-block;border-radius:99px;padding:2px 10px;font-weight:900;font-size:.8rem;margin:2px}
+.selo.novo{background:#51cf66;color:#0b2e14}.selo.shiny{background:linear-gradient(45deg,#ffd43b,#ff6b9d,#4dabf7);color:#1a1a1a}
+.peixe-valor{color:#ffe066;font-size:1.25rem;font-weight:900;margin-top:6px}
+.tabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.tab{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.15);color:#fff;padding:6px 12px;border-radius:12px;cursor:pointer;font-weight:700;font-size:.88rem}
+.tab.sel{border-color:#ffe066;background:rgba(255,212,59,.25)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:10px 0;width:100%}
+.item{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:12px;padding:10px;text-align:center;color:#fff;cursor:pointer}
+.item.comprado{border-color:#51cf66;background:rgba(81,207,102,.15)}
+.item.equipado{border-color:#ffd43b;background:rgba(255,212,59,.2);box-shadow:0 0 15px rgba(255,212,59,.5)}
+.item .e{font-size:2.1rem}
+.item .e img{width:52px;height:52px;image-rendering:pixelated}
+.item b{display:block;font-size:.86rem;margin:2px 0}
+.item .preco{color:#ffd43b;font-size:.82rem;font-weight:800}
+.item small{display:block;color:#a5d8ff;font-size:.72rem;margin-top:3px}
+.album{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px;margin:10px 0;width:100%}
+.album div{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:10px;padding:5px;text-align:center}
+.album img{width:56px;height:56px;image-rendering:pixelated}
+.album .nao img{filter:brightness(0) opacity(.5)}
+.album .nome{font-size:.68rem;font-weight:800;display:block}
+.album .qtd{color:#ffe066;font-size:.7rem;font-weight:900}
+.conqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:10px 0;width:100%}
+.conqs div{border-radius:12px;padding:10px;text-align:center;border:2px solid #495057;background:rgba(0,0,0,.3);opacity:.55}
+.conqs div.ok{border-color:#ffd43b;background:rgba(255,212,59,.15);opacity:1}
+.conqs .e{font-size:1.8rem}
+.conqs b{display:block;color:#ffd43b;font-size:.85rem;margin:4px 0}
+.conqs small{color:#a5d8ff;font-size:.72rem}
+.adm-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;max-width:600px;width:100%;margin:12px 0}
+.adm-btn{background:linear-gradient(45deg,#845ef7,#e64980);border:2px solid rgba(255,255,255,.2);color:#fff;padding:12px;border-radius:12px;cursor:pointer;font-weight:900;font-size:.9rem}
+.adm-btn.dourado{background:linear-gradient(45deg,#ffd43b,#f76707);color:#1a1a1a}
+.adm-btn.perigo{background:linear-gradient(45deg,#e03131,#c92a2a)}
+.senha{background:rgba(0,0,0,.5);border:3px solid rgba(255,224,102,.5);border-radius:14px;padding:12px 16px;font-size:1.4rem;font-weight:900;color:#fff;text-align:center;width:min(300px,80vw);letter-spacing:3px}
+.senha.erro{border-color:#ff6b6b;animation:tremer .3s}
+@keyframes tremer{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 </style>
 </head>
 <body>
-<header class="topo">
-  <div class="logo" id="logo" title="Início"><img src="icone.svg" alt="" /><div><h1>Pescaria Maluca</h1><small>versão Pokémon 🎣</small></div></div>
-  <button class="redondo" id="som" type="button" title="Som">🔊</button>
-  <button class="redondo" id="tema" type="button" title="Claro ou escuro">🌙</button>
-</header>
+<button class="btn-adm" id="btn-adm" type="button" title=" " aria-label="Opções"></button>
 
-<main>
-  <!-- ========== INÍCIO ========== -->
-  <section id="tela-inicio">
-    <div class="capa">
-      <h2>🎣 Pescaria Maluca</h2>
-      <p>O lago gira, os Pokémon abrem a boca…<br>e você pesca na hora certa!</p>
-      <span class="roda">🌀</span>
-    </div>
-    <div class="menu">
-      <button class="grande" type="button" data-modo="solo"><span class="ic">🎣</span><span>Sozinho<small>1 minuto pra pescar o máximo de pontos</small></span></button>
-      <button class="grande verde" type="button" data-modo="robo"><span class="ic">🤖</span><span>Contra o Robô<small>o Treinador Robô também pesca, seja mais rápido!</small></span></button>
-      <button class="grande rosa" type="button" data-modo="dupla"><span class="ic">👫</span><span>2 jogadores<small>no mesmo celular: cada um pesca na sua metade do lago</small></span></button>
-      <button class="grande amarelo" type="button" id="ir-dex"><span class="ic">📖</span><span>Pokédex da pesca<small>todos os Pokémon que você já pescou</small></span></button>
-    </div>
-    <div class="cartao">
-      <h3>📜 Como joga</h3>
-      <p class="aviso">Os Pokémon ficam em volta do lago, que vai girando 🌀. De vez em quando cada um <b>abre a boca</b> 😮 e sobe. Toque nele <b>nessa hora</b> pra pescar! Se tocar com a boca fechada, ele foge 💦.</p>
-      <p class="aviso">Pokémon raros valem mais (tem até o <b>Kyogre</b> e o <b>Magikarp dourado</b> ✨). Mas cuidado com a 🥾 <b>bota velha</b> (-1) e o <b>Tentacool</b>, que queima e te deixa tonto (-2)! E às vezes o lago fica <b>maluco</b>: acelera, vira pro outro lado ou todo mundo abre a boca de uma vez!</p>
-      <div class="recs" id="recs"></div>
-    </div>
-    <div class="rodape">
-      Tudo fica guardado só neste aparelho.
-      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 29/09 · 🔄</button>
-    </div>
-  </section>
+<h1>🎣 PESCA MALUCA ⚡</h1>
+<div class="hud">
+  <span class="moedas">🪙 <span id="h-moedas">0</span></span>
+  <span class="peixes">🐟 <span id="h-pescados">0</span></span>
+  <span class="raros">✨ <span id="h-raros">0</span></span>
+  <span class="isca" id="h-isca">🪱 ∞</span>
+  <span class="local" id="h-local">🌊 Mar</span>
+  <span class="clima" id="h-clima">☀️ Sol</span>
+  <span class="adm oculto" id="h-adm">🔓 ADM</span>
+</div>
 
-  <!-- ========== JOGO ========== -->
-  <section id="tela-jogo" hidden>
-    <div class="placar placar-topo" id="placar-topo" hidden></div>
-    <div class="lago-caixa" id="lago-caixa">
-      <div class="lago" id="lago"><div class="miolo"><span id="miolo">🌀</span></div></div>
-    </div>
-    <div class="placar" id="placar"></div>
-    <div class="balde" id="balde"></div>
-    <div style="text-align:center;margin-top:12px"><button class="mini" type="button" id="desistir">🏳️ Parar</button></div>
-  </section>
+<canvas id="canvas"></canvas>
 
-  <!-- ========== POKÉDEX ========== -->
-  <section id="tela-dex" hidden>
-    <button class="mini" type="button" id="dex-voltar">⬅️ Voltar</button>
-    <div class="cartao">
-      <h2>📖 Pokédex da pesca</h2>
-      <p class="aviso" id="dex-resumo"></p>
-      <div class="dex" id="dex"></div>
-    </div>
-  </section>
-</main>
+<div class="status" id="status">🎣 Toque pra jogar o anzol!</div>
+<div class="controles">
+  <button class="btn roxo" type="button" id="b-loja">🛒 Loja</button>
+  <button class="btn verde" type="button" id="b-album">📖 Álbum</button>
+  <button class="btn dourado" type="button" id="b-conq">🏆 Conquistas</button>
+  <a class="btn azul" href="lago.html">🌀 Lago</a>
+</div>
+<div class="instru">💡 <b>Toque</b> pra jogar o anzol! Enquanto desce, <b>toque DE NOVO</b> pra parar. Quando aparecer <b>MORDEU!</b>, toque rápido! <b style="color:#ff8787">Pokémon melhores</b> ficam mais fundo!</div>
 
-<dialog id="dlg"><div class="dlg" id="dlg-corpo"></div></dialog>
+<!-- pescou -->
+<div class="tela oculto" id="t-pescou">
+  <div class="peixe-pego">
+    <div id="p-img"></div>
+    <div class="peixe-nome" id="p-nome"></div>
+    <div id="p-selos"></div>
+    <div id="p-rar" style="font-weight:800;margin:4px 0"></div>
+    <div class="peixe-valor">+<span id="p-valor">0</span> 🪙</div>
+    <div id="p-extra" style="font-size:.85rem;margin-top:6px;color:#a5d8ff"></div>
+  </div>
+  <button class="btn verde" type="button" data-continuar>▶️ Continuar!</button>
+</div>
+<!-- escapou -->
+<div class="tela oculto" id="t-escapou">
+  <div style="font-size:4rem">😞</div>
+  <h2>Escapou!</h2>
+  <p style="color:#a5d8ff" id="e-txt">Você fisgou muito cedo ou muito tarde!</p>
+  <button class="btn verde" type="button" data-continuar>🔄 Tentar de novo</button>
+</div>
+<!-- loja -->
+<div class="tela topo oculto" id="t-loja">
+  <div class="caixa">
+    <h2>🛒 LOJA</h2>
+    <p style="color:#ffd43b;font-weight:900;font-size:1.3rem;margin:6px 0">🪙 <span id="l-moedas">0</span></p>
+    <div class="tabs" id="l-tabs"></div>
+    <div class="grade" id="l-grade"></div>
+    <button class="btn" type="button" data-fechar>↩️ Voltar</button>
+  </div>
+</div>
+<!-- álbum -->
+<div class="tela topo oculto" id="t-album">
+  <div class="caixa">
+    <h2>📖 ÁLBUM POKÉMON</h2>
+    <p style="color:#a5d8ff;font-size:.9rem" id="a-resumo"></p>
+    <div class="tabs" id="a-tabs"></div>
+    <div class="album" id="a-grade"></div>
+    <button class="btn" type="button" data-fechar>↩️ Voltar</button>
+  </div>
+</div>
+<!-- conquistas -->
+<div class="tela topo oculto" id="t-conq">
+  <div class="caixa">
+    <h2>🏆 CONQUISTAS</h2>
+    <p style="color:#a5d8ff" id="c-resumo"></p>
+    <div class="conqs" id="c-grade"></div>
+    <button class="btn" type="button" data-fechar>↩️ Voltar</button>
+  </div>
+</div>
+<!-- senha -->
+<div class="tela oculto" id="t-senha">
+  <div style="font-size:3rem">🔐</div>
+  <div style="color:#ffe066;font-size:1.2rem;font-weight:900">Digite a senha secreta:</div>
+  <input class="senha" id="senha" type="password" autocomplete="off" inputmode="text" />
+  <div style="display:flex;gap:8px"><button class="btn verde" type="button" id="senha-ok">✅ OK</button><button class="btn" type="button" data-fechar>↩️ Voltar</button></div>
+</div>
+<!-- adm -->
+<div class="tela topo oculto" id="t-adm">
+  <div style="font-size:3rem">🔓</div>
+  <h2>MODO ADMIN</h2>
+  <p style="color:#a5d8ff">Poderes de administrador ativados!</p>
+  <div class="adm-grade" id="adm-grade"></div>
+  <button class="btn verde" type="button" data-fechar>↩️ Voltar</button>
+</div>
 
 <script>
 'use strict';
-function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('pescaria:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
-function gravar(k, v){ try{ localStorage.setItem('pescaria:' + k, JSON.stringify(v)); }catch(e){} }
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const sorteia = a => a[Math.floor(Math.random() * a.length)];
 
-/* ---------- os Pokémon do lago ----------
-   p: pontos. w: chance de aparecer (maior = mais comum). ruim: tira ponto. */
-const PEIXES = [
-  { k:'129',  id:129, n:'Magikarp',  p:1,  w:30 },
-  { k:'118',  id:118, n:'Goldeen',   p:2,  w:13 },
-  { k:'116',  id:116, n:'Horsea',    p:2,  w:12 },
-  { k:'120',  id:120, n:'Staryu',    p:2,  w:12 },
-  { k:'54',   id:54,  n:'Psyduck',   p:2,  w:10 },
-  { k:'7',    id:7,   n:'Squirtle',  p:3,  w:8 },
-  { k:'158',  id:158, n:'Totodile',  p:3,  w:8 },
-  { k:'194',  id:194, n:'Wooper',    p:3,  w:8 },
-  { k:'393',  id:393, n:'Piplup',    p:3,  w:7 },
-  { k:'222',  id:222, n:'Corsola',   p:4,  w:5 },
-  { k:'349',  id:349, n:'Feebas',    p:5,  w:4 },
-  { k:'131',  id:131, n:'Lapras',    p:8,  w:2.5, raro:1 },
-  { k:'130',  id:130, n:'Gyarados',  p:10, w:2, raro:1 },
-  { k:'129s', id:129, n:'Magikarp dourado', p:15, w:1, raro:1, shiny:1 },
-  { k:'382',  id:382, n:'Kyogre',    p:25, w:.4, raro:1 },
-  { k:'72',   id:72,  n:'Tentacool', p:-2, w:5, ruim:1 },
-  { k:'bota', id:0,   n:'Bota velha', e:'🥾', p:-1, w:5, ruim:1 }
+/* ═════════ POKÉMON DE CADA LUGAR ═════════
+   [id, nome, valor]. Os de evento só aparecem no mês deles. */
+const LISTA = {
+  mar: {
+    comum:    [[129, 'Magikarp', 5], [72, 'Tentacool', 6], [116, 'Horsea', 8], [118, 'Goldeen', 7], [120, 'Staryu', 10], [98, 'Krabby', 9], [90, 'Shellder', 8], [278, 'Wingull', 6]],
+    raro:     [[7, 'Squirtle', 25], [54, 'Psyduck', 22], [222, 'Corsola', 30], [170, 'Chinchou', 28], [226, 'Mantine', 35], [366, 'Clamperl', 32], [370, 'Luvdisc', 26], [320, 'Wailmer', 40]],
+    epico:    [[130, 'Gyarados', 100], [131, 'Lapras', 120], [121, 'Starmie', 90], [171, 'Lanturn', 95], [319, 'Sharpedo', 110], [781, 'Dhelmise', 130], [321, 'Wailord', 140], [977, 'Dondozo', 150]],
+    lendario: [[382, 'Kyogre', 800], [249, 'Lugia', 900], [490, 'Manaphy', 700], [489, 'Phione', 500], [245, 'Suicune', 650], [484, 'Palkia', 1000]]
+  },
+  polo: {
+    comum:    [[363, 'Spheal', 9], [86, 'Seel', 10], [872, 'Snom', 8], [712, 'Bergmite', 11], [459, 'Snover', 9]],
+    raro:     [[393, 'Piplup', 35], [220, 'Swinub', 30], [613, 'Cubchoo', 32], [875, 'Eiscue', 45], [582, 'Vanillite', 38]],
+    epico:    [[365, 'Walrein', 150], [87, 'Dewgong', 130], [91, 'Cloyster', 140], [471, 'Glaceon', 170], [713, 'Avalugg', 160]],
+    lendario: [[144, 'Articuno', 900], [378, 'Regice', 850], [646, 'Kyurem', 1200], [896, 'Glastrier', 950]]
+  },
+  vulcao: {
+    comum:    [[218, 'Slugma', 12], [322, 'Numel', 11], [324, 'Torkoal', 14], [850, 'Sizzlipede', 12], [4, 'Charmander', 15]],
+    raro:     [[240, 'Magby', 45], [667, 'Litleo', 42], [757, 'Salandit', 50], [155, 'Cyndaquil', 44], [390, 'Chimchar', 44]],
+    epico:    [[219, 'Magcargo', 170], [323, 'Camerupt', 180], [758, 'Salazzle', 190], [851, 'Centiskorch', 200], [839, 'Coalossal', 210]],
+    lendario: [[383, 'Groudon', 1100], [485, 'Heatran', 1000], [244, 'Entei', 950], [146, 'Moltres', 1000], [721, 'Volcanion', 1200]]
+  },
+  espaco: {
+    comum:    [[35, 'Clefairy', 20], [774, 'Minior', 22], [337, 'Lunatone', 25], [338, 'Solrock', 25]],
+    raro:     [[605, 'Elgyem', 80], [606, 'Beheeyem', 95], [789, 'Cosmog', 120], [374, 'Beldum', 90]],
+    epico:    [[376, 'Metagross', 350], [790, 'Cosmoem', 400], [797, 'Celesteela', 450], [793, 'Nihilego', 420]],
+    lendario: [[386, 'Deoxys', 3000], [384, 'Rayquaza', 3500], [385, 'Jirachi', 3200], [791, 'Solgaleo', 3800], [792, 'Lunala', 3800], [800, 'Necrozma', 4500]],
+    mitico:   [[493, 'Arceus', 1000000]]
+  }
+};
+const EVENTOS = [
+  { id:'halloween', nome:'🎃 Halloween', mes:10, poke:[[94, 'Gengar', 1600], [710, 'Pumpkaboo', 1500], [778, 'Mimikyu', 1700], [92, 'Gastly', 1400]] },
+  { id:'natal', nome:'🎄 Natal', mes:12, poke:[[225, 'Delibird', 2000], [234, 'Stantler', 1800], [459, 'Snover de Natal', 1500]] },
+  { id:'pascoa', nome:'🐰 Páscoa', mes:4, poke:[[427, 'Buneary', 1500], [175, 'Togepi', 1600], [659, 'Bunnelby', 1300]] },
+  { id:'aniversario', nome:'🎂 Aniversário', mes:6, poke:[[869, 'Alcremie', 1900], [684, 'Swirlix', 1400], [685, 'Slurpuff', 1700]] }
 ];
-const PESO_TOTAL = PEIXES.reduce((s, x) => s + x.w, 0);
-function sortearPeixe(){ let r = Math.random() * PESO_TOTAL; for(const x of PEIXES){ r -= x.w; if(r <= 0) return x; } return PEIXES[0]; }
-const sprite = x => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${x.shiny ? 'shiny/' : ''}${x.id}.png`;
-const imgPeixe = x => x.e ? `<span class="emo">${x.e}</span>` : `<img src="${sprite(x)}" alt="${esc(x.n)}" draggable="false" onerror="this.outerHTML='<span class=&quot;emo&quot;>🐟</span>'" />`;
+/* Monta a lista com chave única de cada Pokémon. */
+const TODOS = [];
+for(const [local, rars] of Object.entries(LISTA))
+  for(const [rar, lista] of Object.entries(rars))
+    for(const [id, nome, valor] of lista) TODOS.push({ k:local + ':' + id, id, nome, valor, raridade:rar, local });
+for(const ev of EVENTOS) for(const [id, nome, valor] of ev.poke) TODOS.push({ k:'ev:' + ev.id + ':' + id, id, nome, valor, raridade:'evento', local:'*', evento:ev.id, mes:ev.mes });
+const RARIDADE = {
+  comum:{ banner:'Comum', janela:1.5 }, raro:{ banner:'⭐ Raro', janela:1.2 }, epico:{ banner:'💜 Épico!', janela:.95 },
+  lendario:{ banner:'🌟 LENDÁRIO! 🌟', janela:.75 }, evento:{ banner:'🎉 EVENTO ESPECIAL! 🎉', janela:1 }, mitico:{ banner:'🌈✨ MÍTICO !!! IMPOSSÍVEL !!! ✨🌈', janela:.4 }
+};
+const CHANCE_SHINY = 1 / 150;
 
-/* ---------- guardado ---------- */
-let dex = ler('dex', {}); if(!dex || typeof dex !== 'object' || Array.isArray(dex)) dex = {};
-let rec = Object.assign({ solo:0, robo:0, vitorias:0, jogos:0, pescados:0 }, ler('rec', {}));
-let cfg = Object.assign({ som:true }, ler('cfg', {}));
-const salvar = () => { gravar('dex', dex); gravar('rec', rec); gravar('cfg', cfg); };
+/* ═════════ LOJA ═════════ */
+const ANZOIS = {
+  padrao:   { nome:'Anzol Comum', preco:0,    emoji:'🪝', bonus:0,  desc:'Padrão' },
+  reforcado:{ nome:'Reforçado',   preco:100,  emoji:'🔩', bonus:5,  desc:'+5% raros, fisgada mais fácil' },
+  dourado:  { nome:'Dourado',     preco:500,  emoji:'🥇', bonus:12, desc:'+12% raros' },
+  magico:   { nome:'Mágico',      preco:2000, emoji:'✨', bonus:25, desc:'+25% raros' },
+  lendario: { nome:'Lendário',    preco:8000, emoji:'🌟', bonus:50, desc:'+50% raros!' }
+};
+const ISCAS = {
+  minhoca:{ nome:'Minhoca',     preco:0,    emoji:'🪱', mult:1,   desc:'Grátis, infinita' },
+  baga:   { nome:'Baga Oran',   preco:100,  emoji:'🫐', mult:1.3, desc:'×1,3 moedas · 10 usos' },
+  poffin: { nome:'Poffin',      preco:400,  emoji:'🧁', mult:1.7, desc:'×1,7 moedas · 10 usos' },
+  doce:   { nome:'Doce Raro',   preco:1500, emoji:'🍬', mult:2.5, desc:'×2,5 moedas · 10 usos' }
+};
+const BARCOS = {
+  canoa: { nome:'Canoa',          preco:0,    emoji:'🛶', vel:1,   desc:'Devagar' },
+  lancha:{ nome:'Lancha',         preco:300,  emoji:'🚤', vel:1.5, desc:'Morde ×1,5 mais rápido' },
+  iate:  { nome:'Iate',           preco:1500, emoji:'⛴️', vel:2,   desc:'Morde ×2 mais rápido' },
+  lapras:{ nome:'Surf no Lapras', preco:6000, emoji:'🌊', poke:131, vel:3, desc:'Morde ×3 mais rápido!' }
+};
+const LINHAS = {
+  curta:{ nome:'Linha Curta', preco:0,    emoji:'🧵', camadas:3,  desc:'Só o começo' },
+  media:{ nome:'Linha Média', preco:400,  emoji:'🧶', camadas:6,  desc:'Até a Floresta de Algas!' },
+  longa:{ nome:'Linha Longa', preco:1800, emoji:'🪢', camadas:9,  desc:'Até o Abismo!' },
+  ultra:{ nome:'Linha Ultra', preco:8000, emoji:'⚡', camadas:12, desc:'Vai até o NÚCLEO!' }
+};
+const REDES = {
+  nenhuma: { nome:'Nenhuma',       preco:0,     emoji:'🚫', extra:0,  desc:'Um Pokémon por vez' },
+  pequena: { nome:'Rede Pequena',  preco:500,   emoji:'🕸️', extra:15, desc:'15% de pegar +1' },
+  media:   { nome:'Rede Média',    preco:2500,  emoji:'🔲', extra:30, desc:'30% de pegar +1' },
+  eletrica:{ nome:'Rede Elétrica', preco:5000,  emoji:'⚡', extra:40, desc:'40% de pegar +1!' },
+  dourada: { nome:'Rede Dourada',  preco:10000, emoji:'✨', extra:50, desc:'50% de pegar +1!' }
+};
+const LOCAIS = {
+  mar:   { nome:'Mar',          preco:0,    emoji:'🌊', desc:'O lugar padrão', topo:'#87CEEB', base:'#0a2555' },
+  polo:  { nome:'Polo Norte',   preco:800,  emoji:'❄️', desc:'Pokémon de gelo!', topo:'#e3f2fd', base:'#1a3a5e' },
+  vulcao:{ nome:'Vulcão',       preco:1500, emoji:'🌋', desc:'Pokémon de fogo!', topo:'#ff8a6b', base:'#4a1010' },
+  espaco:{ nome:'Ultra-Espaço', preco:4000, emoji:'🌌', desc:'Pokémon do espaço! (o Arceus mora no Núcleo…)', topo:'#1a1f4e', base:'#000000' }
+};
+const LOJA = { anzol:ANZOIS, isca:ISCAS, barco:BARCOS, linha:LINHAS, rede:REDES, local:LOCAIS };
+const ABAS = [['anzol', '🪝 Anzóis'], ['isca', '🪱 Iscas'], ['barco', '🚤 Barcos'], ['linha', '🧵 Linhas'], ['rede', '🕸️ Redes'], ['local', '🗺️ Locais']];
 
-/* ---------- som ---------- */
-let ac = null;
+/* ═════════ 12 CAMADAS DE PROFUNDIDADE ═════════ */
+const CAMADAS = [
+  { nome:'Superfície',      emoji:'🌊', cor:'#a5d8ff', r:{ comum:75, raro:22, epico:3 } },
+  { nome:'Ensolarada',      emoji:'☀️', cor:'#96e6ff', r:{ comum:65, raro:28, epico:6, lendario:1 } },
+  { nome:'Rasa',            emoji:'💧', cor:'#74c0fc', r:{ comum:55, raro:33, epico:10, lendario:2 } },
+  { nome:'Coral Colorido',  emoji:'🪸', cor:'#5eb8fa', r:{ comum:45, raro:37, epico:15, lendario:3 } },
+  { nome:'Zona dos Lapras', emoji:'🐚', cor:'#4dabf7', r:{ comum:35, raro:40, epico:20, lendario:5 } },
+  { nome:'Floresta de Algas', emoji:'🌿', cor:'#3487e5', r:{ comum:28, raro:40, epico:24, lendario:7, evento:1 } },
+  { nome:'Recife Rochoso',  emoji:'⛰️', cor:'#2b7bd6', r:{ comum:20, raro:38, epico:30, lendario:10, evento:2 } },
+  { nome:'Zona Escura',     emoji:'🦑', cor:'#1c7ed6', r:{ comum:14, raro:34, epico:35, lendario:14, evento:3 } },
+  { nome:'Abismo',          emoji:'⚫', cor:'#1671c5', r:{ comum:9, raro:28, epico:38, lendario:20, evento:5 } },
+  { nome:'Ruínas Antigas',  emoji:'🏛️', cor:'#124e93', r:{ comum:5, raro:22, epico:38, lendario:28, evento:7 } },
+  { nome:'Fossa',           emoji:'🕳️', cor:'#0a2f5c', r:{ comum:2, raro:15, epico:35, lendario:40, evento:8 } },
+  { nome:'NÚCLEO',          emoji:'💀', cor:'#02132e', r:{ comum:0, raro:8, epico:30, lendario:52, evento:10 } }
+];
+const TOPO_AGUA = .045;
+CAMADAS.forEach((c, i) => { c.n = i + 1; c.yMin = TOPO_AGUA + i * (1 - TOPO_AGUA - .01) / CAMADAS.length; c.yMax = TOPO_AGUA + (i + 1) * (1 - TOPO_AGUA - .01) / CAMADAS.length; });
+
+const CLIMAS = {
+  sol:       { nome:'Sol',        emoji:'☀️', desc:'+50% moedas' },
+  noite:     { nome:'Noite',      emoji:'🌙', desc:'Mais Pokémon raros' },
+  tempestade:{ nome:'Tempestade', emoji:'🌩️', desc:'Eles escapam mais rápido' },
+  neblina:   { nome:'Neblina',    emoji:'🌫️', desc:'Difícil de enxergar' }
+};
+
+/* ═════════ SALVO ═════════ */
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('pesca:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('pesca:' + k, JSON.stringify(v)); }catch(e){} }
+const NOVO = () => ({ moedas:0, pescados:0, raros:0, colecao:{}, shinies:{}, estoque:{},
+  comprados:{ anzol:['padrao'], isca:['minhoca'], barco:['canoa'], linha:['curta'], rede:['nenhuma'], local:['mar'] },
+  eq:{ anzol:'padrao', isca:'minhoca', barco:'canoa', linha:'curta', rede:'nenhuma', local:'mar' },
+  conq:[], climas:[], maior:0, adm:false });
+let S = ler('estado', null);
+if(!S || typeof S !== 'object') S = NOVO();
+S = Object.assign(NOVO(), S);
+['colecao', 'shinies', 'estoque'].forEach(k => { if(!S[k] || typeof S[k] !== 'object') S[k] = {}; });
+S.comprados = Object.assign(NOVO().comprados, S.comprados || {}); S.eq = Object.assign(NOVO().eq, S.eq || {});
+for(const t of Object.keys(LOJA)){ if(!Array.isArray(S.comprados[t])) S.comprados[t] = NOVO().comprados[t]; if(!LOJA[t][S.eq[t]]) S.eq[t] = NOVO().eq[t]; }
+if(!Array.isArray(S.conq)) S.conq = []; if(!Array.isArray(S.climas)) S.climas = [];
+let admLigado = sessionStorage.getItem('pesca:adm') === '1';
+const salvar = () => gravar('estado', S);
+
+/* ═════════ SOM ═════════ */
+let ac = null, somLigado = ler('som', true);
 function bip(freq, dur, tipo, quando, vol){
-  if(!cfg.som) return;
+  if(!somLigado) return;
   try{ ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const t = ac.currentTime + (quando || 0);
     const o = ac.createOscillator(), g = ac.createGain(); o.type = tipo || 'sine'; o.frequency.setValueAtTime(freq, t);
-    g.gain.setValueAtTime(vol || .12, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur); }catch(e){}
+    g.gain.setValueAtTime(vol || .1, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur); }catch(e){}
 }
-const somPesca = raro => { bip(660, .08, 'square'); bip(990, .12, 'square', .07); if(raro){ bip(1320, .15, 'square', .15); bip(1760, .25, 'square', .25); } };
-const somSplash = () => { bip(300, .12, 'triangle'); bip(200, .15, 'triangle', .05); };
-const somRuim = () => bip(140, .3, 'sawtooth');
-const somFesta = () => [523, 659, 784, 1047].forEach((f, i) => bip(f, .2, 'triangle', i * .12));
+const somPlop = () => { bip(400, .08, 'sine'); bip(250, .12, 'sine', .06); };
+const somMordeu = () => { bip(880, .08, 'square'); bip(880, .08, 'square', .12); };
+const somPescou = r => { [523, 659, 784, 1047].slice(0, r === 'comum' ? 2 : 4).forEach((f, i) => bip(f, .15, 'triangle', i * .09)); if(r === 'lendario' || r === 'mitico') [1319, 1568, 2093].forEach((f, i) => bip(f, .2, 'triangle', .4 + i * .1)); };
+const somEscapou = () => bip(150, .35, 'sawtooth');
 
-/* ---------- telas ---------- */
-function tela(n){ ['inicio', 'jogo', 'dex'].forEach(t => $('tela-' + t).hidden = t !== n); window.scrollTo(0, 0); }
-function mostrarInicio(){
-  parar();
-  $('recs').innerHTML = [['🎣', rec.solo, 'recorde sozinho'], ['🤖', rec.vitorias, 'vitórias no robô'], ['🐟', rec.pescados, 'Pokémon pescados']]
-    .map(([e, n, t]) => `<div><b>${e} ${n}</b><small>${t}</small></div>`).join('');
-  tela('inicio');
+/* ═════════ CANVAS ═════════ */
+const canvas = $('canvas'), ctx = canvas.getContext('2d');
+let W = 0, H = 0;
+function ajustar(){ const d = Math.min(2, window.devicePixelRatio || 1); W = innerWidth; H = innerHeight; canvas.width = W * d; canvas.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
+ajustar(); addEventListener('resize', ajustar);
+const P = () => H * 5;  /* o oceano tem 5 telas de fundo */
+const imgs = {};
+function imgPoke(id, shiny){
+  const k = id + (shiny ? 's' : '');
+  if(!imgs[k]){ const im = new Image(); im.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shiny ? 'shiny/' : ''}${id}.png`; imgs[k] = im; }
+  return imgs[k];
 }
-$('logo').onclick = mostrarInicio;
+const urlPoke = (id, shiny) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shiny ? 'shiny/' : ''}${id}.png`;
+function camadaEm(y){ const pct = y / P(); for(const c of CAMADAS) if(pct >= c.yMin && pct < c.yMax) return c; return pct < CAMADAS[0].yMin ? CAMADAS[0] : CAMADAS[CAMADAS.length - 1]; }
+const fundoMax = () => P() * CAMADAS[LINHAS[S.eq.linha].camadas - 1].yMax - 4;
 
-/* ---------- o jogo ---------- */
-const QTD = 12, DURACAO = 60;
-let J = null;
-function novoJogo(modo){
-  const jogadores = modo === 'dupla'
-    ? [{ nome:'Jogador 1', cor:'#1f7ae0', pts:0, pegos:[] }, { nome:'Jogador 2', cor:'#e8458e', pts:0, pegos:[] }]
-    : modo === 'robo'
-      ? [{ nome:'Você', cor:'#1f7ae0', pts:0, pegos:[] }, { nome:'Treinador Robô 🤖', cor:'#2e9e5b', pts:0, pegos:[], robo:true }]
-      : [{ nome:'Você', cor:'#1f7ae0', pts:0, pegos:[] }];
-  J = { modo, jogadores, ang:0, vel:.45, dir:1, fim:0, comeco:performance.now() + 3000, ult:performance.now(), proxEvento:0, efeitos:{}, peixes:[], raf:0, acabou:false };
-  document.body.classList.toggle('p2', modo === 'dupla');
-  $('placar-topo').hidden = modo !== 'dupla';
-  $('balde').hidden = modo === 'dupla';
-  $('balde').innerHTML = '';
-  const lago = $('lago'); lago.querySelectorAll('.peixe,.evento,.contagem').forEach(x => x.remove());
-  for(let i = 0; i < QTD; i++){
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'peixe';
-    lago.appendChild(b);
-    const f = { el:b, i, abreEm:0, fechaEm:0 };
-    trocarPeixe(f, true);
-    J.peixes.push(f);
+/* ═════════ ESTADO DA PESCA ═════════ */
+let fase = 'parado';  /* parado | descendo | esperando | mordendo | subindo | fim */
+let anzolY = 0, camY = 0, espera = 0, janela = 0, janelaTot = 1, pego = null, clima = 'sol', tempoClima = 0, forcarLend = false;
+let nadando = [], bolhas = [], ult = performance.now();
+
+function poolLocal(){ const l = LISTA[S.eq.local]; return Object.values(l).flat().filter(x => x[2] < 100000); }
+function novoNadador(){
+  const p = sorteia(poolLocal()), dir = Math.random() < .5 ? 1 : -1;
+  return { id:p[0], x:dir > 0 ? -40 : W + 40, y:P() * (.08 + Math.random() * .88), vx:(30 + Math.random() * 60) * dir, t:Math.random() * 6 };
+}
+function iniciarNadadores(){ nadando = Array.from({ length:16 }, () => { const n = novoNadador(); n.x = Math.random() * W; return n; }); }
+
+function eventoAtivo(){ const m = new Date().getMonth() + 1; return EVENTOS.find(e => e.mes === m); }
+function sortearPokemon(){
+  const cam = camadaEm(anzolY), r = Object.assign({}, cam.r);
+  const ev = eventoAtivo(); if(!ev) delete r.evento;
+  const transf = Math.min(r.comum || 0, ANZOIS[S.eq.anzol].bonus + (clima === 'noite' ? 10 : 0));
+  r.comum = (r.comum || 0) - transf; r.raro = (r.raro || 0) + transf * .3; r.epico = (r.epico || 0) + transf * .35; r.lendario = (r.lendario || 0) + transf * .35;
+  if(S.eq.local === 'espaco' && cam.n === 12) r.mitico = .08;
+  let rar = 'comum';
+  if(forcarLend){ rar = 'lendario'; forcarLend = false; }
+  else { const tot = Object.values(r).reduce((a, b) => a + b, 0); let x = Math.random() * tot; for(const [k, v] of Object.entries(r)){ if(x < v){ rar = k; break; } x -= v; } }
+  const op = rar === 'evento' ? TODOS.filter(p => p.evento === ev.id) : TODOS.filter(p => p.local === S.eq.local && p.raridade === rar);
+  const p = op.length ? sorteia(op) : sorteia(TODOS.filter(p => p.local === S.eq.local && p.raridade === 'comum'));
+  return Object.assign({}, p, { shiny:Math.random() < CHANCE_SHINY });
+}
+function novoClima(){
+  clima = sorteia(Object.keys(CLIMAS)); tempoClima = 60;
+  if(!S.climas.includes(clima)){ S.climas.push(clima); salvar(); }
+  atualizarHUD(); checarConquistas();
+}
+
+/* ═════════ TOQUE ═════════ */
+function status(t, morder){ const s = $('status'); s.textContent = t; s.className = 'status' + (morder ? ' morder' : ''); }
+function comecarEspera(){
+  const c = camadaEm(anzolY); fase = 'esperando';
+  espera = (1.8 + Math.random() * 3) / BARCOS[S.eq.barco].vel;
+  status(`${c.emoji} ${c.nome} — esperando um Pokémon…`);
+}
+function tocar(){
+  if(telaAberta()) return;
+  if(fase === 'parado'){ fase = 'descendo'; anzolY = P() * TOPO_AGUA - 20; somPlop(); status('🎣 Descendo… toque pra PARAR!'); }
+  else if(fase === 'descendo') comecarEspera();
+  else if(fase === 'esperando') escapou('Você puxou antes da hora! Não tinha nada no anzol.');
+  else if(fase === 'mordendo') fisgou();
+}
+canvas.addEventListener('pointerdown', ev => { ev.preventDefault(); tocar(); });
+addEventListener('keydown', ev => { if((ev.key === ' ' || ev.key === 'Enter') && !telaAberta() && document.activeElement === document.body){ ev.preventDefault(); tocar(); } });
+
+function fisgou(){
+  fase = 'subindo'; somPescou(pego.raridade);
+  const isca = ISCAS[S.eq.isca];
+  let valor = pego.valor * isca.mult * (clima === 'sol' ? 1.5 : 1) * (pego.shiny ? 5 : 1);
+  const novo = !S.colecao[pego.k];
+  S.colecao[pego.k] = (S.colecao[pego.k] || 0) + 1; S.pescados++;
+  if(pego.raridade !== 'comum') S.raros++;
+  if(pego.shiny) S.shinies[pego.k] = (S.shinies[pego.k] || 0) + 1;
+  let extraTxt = '';
+  if(Math.random() * 100 < REDES[S.eq.rede].extra){
+    const x = sortearPokemon(); const v = x.valor * isca.mult * (x.shiny ? 5 : 1);
+    valor += v; S.colecao[x.k] = (S.colecao[x.k] || 0) + 1; S.pescados++; if(x.raridade !== 'comum') S.raros++;
+    if(x.shiny) S.shinies[x.k] = (S.shinies[x.k] || 0) + 1;
+    extraTxt = `🕸️ A rede pegou mais um: <b>${esc(x.nome)}</b>${x.shiny ? ' ✨' : ''}!`;
   }
-  desenharPlacar();
-  tela('jogo');
-  contagem();
-  J.raf = requestAnimationFrame(passo);
-}
-function trocarPeixe(f, inicio){
-  const x = sortearPeixe(); f.tipo = x;
-  f.el.className = 'peixe' + (x.ruim ? ' ruim' : '') + (x.raro ? ' raro' : '');
-  f.el.innerHTML = `<span class="corpo"></span>${imgPeixe(x)}<span class="boca">${x.ruim ? '😈' : '😮'}</span>`;
-  f.el.setAttribute('aria-label', x.n);
-  const agora = performance.now();
-  f.abreEm = agora + (inicio ? 3000 : 0) + 600 + Math.random() * 3000; f.fechaEm = 0; f.pego = false;
-}
-function contagem(){
-  const c = document.createElement('div'); c.className = 'contagem'; $('lago').appendChild(c);
-  [3, 2, 1, '🎣!'].forEach((n, i) => setTimeout(() => { if(!J) return; c.textContent = n; bip(i === 3 ? 880 : 440, .15, 'triangle'); if(i === 3) setTimeout(() => c.remove(), 500); }, i * 750));
-  J.fim = J.comeco + DURACAO * 1000; J.proxEvento = J.comeco + 9000 + Math.random() * 5000;
-}
-function desenharPlacar(){
-  if(!J) return;
-  const agora = performance.now();
-  const s = Math.max(0, Math.ceil((J.fim - Math.max(agora, J.comeco)) / 1000));
-  const jog = (j, idx) => `<div class="jog ${j.tontoAte > agora ? 'tonto' : ''}" data-j="${idx}"><span class="cor" style="background:${j.cor}"></span><div style="min-width:0"><b>${j.pts}</b><small>${esc(j.nome)}${j.tontoAte > agora ? ' 😵' : ''}</small></div></div>`;
-  const tempo = `<span class="tempo ${s <= 10 ? 'acabando' : ''}">⏰ ${s}</span>`;
-  if(J.modo === 'dupla'){ $('placar-topo').innerHTML = jog(J.jogadores[1], 1) + tempo; $('placar').innerHTML = jog(J.jogadores[0], 0) + tempo; }
-  else $('placar').innerHTML = jog(J.jogadores[0], 0) + tempo + (J.jogadores[1] ? jog(J.jogadores[1], 1) : '');
-}
-function passo(agora){
-  if(!J) return;
-  const dt = Math.min(.05, (agora - J.ult) / 1000); J.ult = agora;
-  const jogando = agora >= J.comeco && !J.acabou;
-  const vel = J.vel * (J.efeitos.rapido > agora ? 2.4 : 1) * (J.efeitos.devagar > agora ? .4 : 1);
-  J.ang += vel * dt * J.dir;
-  const lago = $('lago'), S = lago.clientWidth, R = S * .37, c = S / 2 - S * .09;
-  const frenesi = J.efeitos.frenesi > agora;
-  J.peixes.forEach(f => {
-    const a = J.ang + f.i * Math.PI * 2 / QTD;
-    const bob = Math.sin(agora / 300 + f.i) * 2;
-    f.x = c + Math.cos(a) * R; f.y = c + Math.sin(a) * R + bob;
-    f.el.style.transform = `translate(${f.x}px,${f.y}px)`;
-    if(f.pego) return;
-    if(jogando && !f.fechaEm && agora >= f.abreEm){ f.fechaEm = agora + 750 + Math.random() * 450; }
-    if(f.fechaEm && agora >= f.fechaEm){ f.fechaEm = 0; f.abreEm = agora + 1600 + Math.random() * 2800; }
-    const aberto = jogando && (frenesi || (f.fechaEm && agora < f.fechaEm));
-    if(aberto !== f.aberto){ f.aberto = aberto; f.el.classList.toggle('aberto', aberto); }
-  });
-  $('miolo').style.transform = `rotate(${J.ang * 57}deg)`;
-  if(jogando){
-    if(agora >= J.proxEvento) eventoMaluco(agora);
-    J.jogadores.forEach((j, idx) => { if(j.robo) roboPensa(j, idx, agora); });
+  valor = Math.round(valor);
+  S.moedas += valor; S.maior = Math.max(S.maior, valor);
+  if(S.eq.isca !== 'minhoca' && !admLigado){
+    S.estoque[S.eq.isca] = (S.estoque[S.eq.isca] || 0) - 1;
+    if(S.estoque[S.eq.isca] <= 0){ delete S.estoque[S.eq.isca]; extraTxt += `<br>⚠️ Sua isca ${isca.emoji} ${isca.nome} acabou! Voltou pra minhoca 🪱`; S.eq.isca = 'minhoca'; }
   }
-  if(Math.floor(agora / 250) !== J.tick){ J.tick = Math.floor(agora / 250); desenharPlacar(); }
-  if(jogando && agora >= J.fim){ J.acabou = true; setTimeout(fimJogo, 400); }
-  J.raf = requestAnimationFrame(passo);
+  salvar(); atualizarHUD();
+  setTimeout(() => {
+    $('p-img').innerHTML = `<img src="${urlPoke(pego.id, pego.shiny)}" alt="${esc(pego.nome)}" onerror="this.outerHTML='<span class=&quot;emo&quot;>🐟</span>'" />`;
+    $('p-nome').textContent = pego.nome + (pego.shiny ? ' ✨' : ''); $('p-nome').className = 'peixe-nome r-' + pego.raridade;
+    $('p-selos').innerHTML = (novo ? '<span class="selo novo">🆕 NOVO NO ÁLBUM!</span>' : '') + (pego.shiny ? '<span class="selo shiny">✨ SHINY! ×5</span>' : '');
+    $('p-rar').textContent = RARIDADE[pego.raridade].banner; $('p-rar').className = 'r-' + pego.raridade;
+    $('p-valor').textContent = valor.toLocaleString('pt-BR'); $('p-extra').innerHTML = extraTxt;
+    abrir('t-pescou'); checarConquistas();
+  }, 750);
 }
-/* O robô olha o lago de tempos em tempos e às vezes pega um peixe aberto (e às vezes erra). */
-function roboPensa(j, idx, agora){
-  if(!j.proxOlhada){ j.proxOlhada = agora + 1200; return; }
-  if(agora < j.proxOlhada || j.tontoAte > agora) return;
-  j.proxOlhada = agora + 700 + Math.random() * 1100;
-  const abertos = J.peixes.filter(f => f.aberto && !f.pego && !f.tipo.ruim);
-  if(abertos.length && Math.random() < .5){
-    abertos.sort((a, b) => b.tipo.p - a.tipo.p);
-    pescar(abertos[Math.random() < .5 ? 0 : Math.floor(Math.random() * abertos.length)], idx);
+function escapou(msg){
+  fase = 'fim'; somEscapou(); status('😞 ' + msg);
+  $('e-txt').textContent = msg;
+  setTimeout(() => abrir('t-escapou'), 450);
+}
+function resetar(){ fase = 'parado'; pego = null; status('🎣 Toque pra jogar o anzol!'); }
+
+/* ═════════ LOOP ═════════ */
+function atualizar(dt){
+  tempoClima -= dt; if(tempoClima <= 0) novoClima();
+  for(const n of nadando){ n.x += n.vx * dt; n.t += dt; if((n.vx > 0 && n.x > W + 50) || (n.vx < 0 && n.x < -50)) Object.assign(n, novoNadador()); }
+  bolhas = bolhas.filter(b => b.y > -10); for(const b of bolhas) b.y -= b.vy * dt;
+  if(Math.random() < .05) bolhas.push({ x:Math.random() * W, y:H + 5, r:2 + Math.random() * 4, vy:30 + Math.random() * 50 });
+  if(fase === 'descendo'){
+    anzolY += (220 + H * .12) * dt;
+    if(anzolY >= fundoMax()){ anzolY = fundoMax(); comecarEspera(); }
+  } else if(fase === 'esperando'){
+    espera -= dt;
+    if(espera <= 0){
+      pego = sortearPokemon(); fase = 'mordendo';
+      janela = RARIDADE[pego.raridade].janela + ANZOIS[S.eq.anzol].bonus * .012;
+      if(clima === 'tempestade') janela *= .6;
+      janelaTot = janela; somMordeu(); status('⚡ ! MORDEU ! FISGA AGORA !', true);
+      if(navigator.vibrate) try{ navigator.vibrate(120); }catch(e){}
+    }
+  } else if(fase === 'mordendo'){
+    janela -= dt;
+    if(janela <= 0) escapou(`O ${pego.nome}${pego.shiny ? ' ✨' : ''} escapou! Demorou demais.`);
+  } else if(fase === 'subindo') anzolY -= 480 * dt;
+  /* câmera segue o anzol */
+  let alvo = fase === 'parado' ? 0 : anzolY - H * .42;
+  alvo = Math.max(0, Math.min(P() - H * .5, alvo));
+  camY += (alvo - camY) * Math.min(1, dt * 5);
+}
+function desenhar(agora){
+  const loc = LOCAIS[S.eq.local];
+  const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, loc.topo); g.addColorStop(1, loc.base);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  const prof = camY / Math.max(1, P() - H);
+  if(prof > .03){ ctx.fillStyle = `rgba(0,0,15,${Math.min(.9, prof * 1.05)})`; ctx.fillRect(0, 0, W, H); }
+
+  ctx.save(); ctx.translate(0, -camY);
+  const sup = P() * TOPO_AGUA;
+  /* céu */
+  const ceus = { sol:['#87CEEB', '#cfeeff'], noite:['#1a237e', '#3949ab'], tempestade:['#37474f', '#78909c'], neblina:['#cfd8dc', '#eceff1'] };
+  const cg = ctx.createLinearGradient(0, 0, 0, sup); cg.addColorStop(0, S.eq.local === 'espaco' ? '#05061a' : ceus[clima][0]); cg.addColorStop(1, S.eq.local === 'espaco' ? '#1a1f4e' : ceus[clima][1]);
+  ctx.fillStyle = cg; ctx.fillRect(0, 0, W, sup);
+  if(S.eq.local === 'espaco' || clima === 'noite'){ ctx.fillStyle = '#fff'; for(let i = 0; i < 25; i++) ctx.fillRect((i * 137) % W, (i * 43) % Math.max(1, sup - 10), 2, 2); }
+  if(clima === 'sol' && S.eq.local !== 'espaco'){ ctx.fillStyle = '#ffd43b'; ctx.shadowColor = '#ffd43b'; ctx.shadowBlur = 16; ctx.beginPath(); ctx.arc(W - 60, sup * .45, 18, 0, 7); ctx.fill(); ctx.shadowBlur = 0; }
+  if(clima === 'noite'){ ctx.fillStyle = '#f8f9fa'; ctx.beginPath(); ctx.arc(W - 60, sup * .45, 15, 0, 7); ctx.fill(); }
+  if(clima === 'tempestade'){ ctx.fillStyle = 'rgba(50,50,60,.9)'; ctx.beginPath(); ctx.arc(W * .3, sup * .4, 16, 0, 7); ctx.arc(W * .3 + 24, sup * .35, 20, 0, 7); ctx.arc(W * .3 + 46, sup * .4, 16, 0, 7); ctx.fill();
+    if(Math.floor(agora / 90) % 40 === 0){ ctx.fillStyle = 'rgba(255,255,200,.5)'; ctx.fillRect(0, 0, W, sup); } }
+  /* água */
+  ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 2; ctx.beginPath();
+  for(let x = 0; x <= W; x += 4){ const y = sup + Math.sin(x * .05 + agora * .003) * 3; x ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke();
+  /* camadas */
+  const maxC = LINHAS[S.eq.linha].camadas;
+  ctx.font = 'bold 12px system-ui'; ctx.textBaseline = 'top';
+  for(const c of CAMADAS){
+    const yt = P() * c.yMin, yb = P() * c.yMax;
+    if(yb < camY - 40 || yt > camY + H + 40) continue;
+    ctx.strokeStyle = 'rgba(255,255,255,.2)'; ctx.lineWidth = 1; ctx.setLineDash([6, 8]); ctx.beginPath(); ctx.moveTo(0, yt); ctx.lineTo(W, yt); ctx.stroke(); ctx.setLineDash([]);
+    ctx.textAlign = 'left'; ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillText(`${c.emoji} ${c.n}. ${c.nome}`, 8, yt + 6);
+    ctx.textAlign = 'right'; ctx.fillText(c.n <= maxC ? '✓' : '🔒', W - 44, yt + 6);
+  }
+  const ym = fundoMax(); ctx.strokeStyle = 'rgba(255,212,59,.6)'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(0, ym); ctx.lineTo(W, ym); ctx.stroke(); ctx.setLineDash([]);
+  if(fase === 'descendo' || fase === 'esperando' || fase === 'mordendo'){ const c = camadaEm(anzolY); ctx.globalAlpha = .15; ctx.fillStyle = c.cor; ctx.fillRect(0, P() * c.yMin, W, P() * (c.yMax - c.yMin)); ctx.globalAlpha = 1; }
+  /* Pokémon nadando */
+  for(const n of nadando){
+    if(n.y < camY - 60 || n.y > camY + H + 60) continue;
+    const im = imgPoke(n.id), s = 52, y = n.y + Math.sin(n.t * 2) * 6;
+    ctx.globalAlpha = clima === 'neblina' ? .35 : .8;
+    if(im.complete && im.naturalWidth){ ctx.save(); ctx.translate(n.x, y); if(n.vx > 0) ctx.scale(-1, 1); ctx.imageSmoothingEnabled = false; ctx.drawImage(im, -s / 2, -s / 2, s, s); ctx.restore(); }
+    else { ctx.font = '24px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🐟', n.x, y); }
+    ctx.globalAlpha = 1;
+  }
+  /* bolhas (na tela) */
+  ctx.fillStyle = 'rgba(255,255,255,.35)'; for(const b of bolhas){ ctx.beginPath(); ctx.arc(b.x, b.y + camY, b.r, 0, 7); ctx.fill(); }
+  /* barco */
+  const bx = W / 2, by = sup - 16, barco = BARCOS[S.eq.barco];
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  if(barco.poke){ const im = imgPoke(barco.poke); if(im.complete && im.naturalWidth){ ctx.imageSmoothingEnabled = false; ctx.drawImage(im, bx - 40, by - 44, 80, 80); } else { ctx.font = '40px serif'; ctx.fillText('🌊', bx, by); } }
+  else { ctx.font = '40px serif'; ctx.fillText(barco.emoji, bx, by + Math.sin(agora / 400) * 2); }
+  /* linha e anzol */
+  if(fase !== 'parado'){
+    ctx.strokeStyle = '#dee2e6'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(bx + 8, by - 6); ctx.lineTo(bx, anzolY); ctx.stroke();
+    ctx.font = '24px serif'; ctx.fillText(ANZOIS[S.eq.anzol].emoji, bx, anzolY + 6);
+    if(fase !== 'subindo'){ ctx.font = '15px serif'; ctx.fillText(ISCAS[S.eq.isca].emoji, bx + 10, anzolY + 20); }
+  }
+  if(fase === 'mordendo'){
+    const pisca = Math.floor(agora / 100) % 2; ctx.font = 'bold 40px Trebuchet MS'; ctx.fillStyle = pisca ? '#ff6b6b' : '#ffe066';
+    ctx.shadowColor = '#000'; ctx.shadowBlur = 8; ctx.fillText('!', bx - 42, anzolY - 6); ctx.fillText('!', bx + 42, anzolY - 6); ctx.shadowBlur = 0;
+    /* sombra do Pokémon mordendo */
+    const im = imgPoke(pego.id, pego.shiny); if(im.complete && im.naturalWidth){ ctx.save(); ctx.globalAlpha = .55; ctx.filter = 'brightness(0)'; ctx.drawImage(im, bx - 30 + Math.sin(agora / 40) * 3, anzolY + 10, 60, 60); ctx.restore(); }
+    const L = 160, f = Math.max(0, janela / janelaTot);
+    ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(bx - L / 2, anzolY + 76, L, 9);
+    ctx.fillStyle = f > .35 ? '#51cf66' : '#ff6b6b'; ctx.fillRect(bx - L / 2, anzolY + 76, L * f, 9);
+  }
+  if(fase === 'subindo' && pego){ const im = imgPoke(pego.id, pego.shiny); if(im.complete && im.naturalWidth){ ctx.imageSmoothingEnabled = false; ctx.drawImage(im, bx - 36, anzolY + 6, 72, 72); } else { ctx.font = '32px serif'; ctx.fillText('🐟', bx, anzolY + 30); } }
+  ctx.restore();
+  if(clima === 'neblina'){ ctx.fillStyle = 'rgba(255,255,255,.28)'; ctx.fillRect(0, 0, W, H); }
+  /* barra de profundidade */
+  if(fase === 'descendo' || fase === 'esperando' || fase === 'mordendo'){
+    const x = W - 26, y = 90, h = Math.max(120, H - 250), w = 14;
+    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(x, y, w, h);
+    for(const c of CAMADAS){ ctx.globalAlpha = c.n <= maxC ? .8 : .25; ctx.fillStyle = c.cor; ctx.fillRect(x, y + h * c.yMin, w, h * (c.yMax - c.yMin)); }
+    ctx.globalAlpha = 1;
+    const ay = y + h * Math.max(0, Math.min(1, anzolY / P()));
+    ctx.fillStyle = '#ffe066'; ctx.beginPath(); ctx.moveTo(x - 10, ay); ctx.lineTo(x - 3, ay - 6); ctx.lineTo(x - 3, ay + 6); ctx.fill();
+    ctx.fillRect(x - 3, ay - 1, w + 6, 3);
   }
 }
-function eventoMaluco(agora){
-  const ev = [
-    ['rapido', '⚡ Lago TURBO!'], ['virou', '🔄 Virou pro outro lado!'], ['frenesi', '😮 Todo mundo de boca aberta!'],
-    ['devagar', '🐢 Lago lentinho…'], ['raros', '✨ Chegaram Pokémon raros!']
-  ];
-  const [id, txt] = ev[Math.floor(Math.random() * ev.length)];
-  if(id === 'rapido') J.efeitos.rapido = agora + 4500;
-  if(id === 'devagar') J.efeitos.devagar = agora + 4000;
-  if(id === 'virou') J.dir *= -1;
-  if(id === 'frenesi') J.efeitos.frenesi = agora + 2200;
-  if(id === 'raros'){
-    const raros = PEIXES.filter(x => x.raro);
-    J.peixes.filter(f => !f.pego).sort(() => Math.random() - .5).slice(0, 3).forEach(f => { trocarPeixe(f); f.tipo = raros[Math.floor(Math.random() * raros.length)];
-      f.el.className = 'peixe raro'; f.el.innerHTML = `<span class="corpo"></span>${imgPeixe(f.tipo)}<span class="boca">😮</span>`; f.el.setAttribute('aria-label', f.tipo.n); });
-  }
-  const d = document.createElement('div'); d.className = 'evento'; d.textContent = txt; $('lago').appendChild(d); setTimeout(() => d.remove(), 1800);
-  bip(523, .1, 'square'); bip(784, .1, 'square', .1); bip(1047, .15, 'square', .2);
-  J.proxEvento = agora + 10000 + Math.random() * 6000;
+function loop(agora){
+  const dt = Math.min(.05, (agora - ult) / 1000); ult = agora;
+  atualizar(dt); desenhar(agora);
+  requestAnimationFrame(loop);
 }
-function quemTocou(f){
-  if(J.modo !== 'dupla') return 0;
-  const S = $('lago').clientWidth; return (f.y + S * .09) < S / 2 ? 1 : 0;
+
+/* ═════════ HUD ═════════ */
+function atualizarHUD(){
+  $('h-moedas').textContent = S.moedas.toLocaleString('pt-BR'); $('h-pescados').textContent = S.pescados; $('h-raros').textContent = S.raros;
+  const i = ISCAS[S.eq.isca]; $('h-isca').textContent = `${i.emoji} ${S.eq.isca === 'minhoca' || admLigado ? '∞' : (S.estoque[S.eq.isca] || 0)}`;
+  const l = LOCAIS[S.eq.local]; $('h-local').textContent = `${l.emoji} ${l.nome}`;
+  const c = CLIMAS[clima]; $('h-clima').textContent = `${c.emoji} ${c.nome}`;
+  $('h-adm').classList.toggle('oculto', !admLigado);
 }
-$('lago').addEventListener('pointerdown', ev => {
-  const b = ev.target.closest('.peixe'); if(!b || !J || J.acabou) return;
-  ev.preventDefault();
-  const f = J.peixes.find(x => x.el === b); if(!f || f.pego) return;
-  const idx = quemTocou(f), j = J.jogadores[idx];
-  if(j.tontoAte > performance.now()){ bip(120, .1, 'square'); return; }
-  if(f.aberto) pescar(f, idx);
-  else fugiu(f);
-});
-/* Teclado: espaço pesca o primeiro Pokémon de boca aberta (modo sozinho ou robô). */
-document.addEventListener('keydown', ev => {
-  if(!J || J.acabou || J.modo === 'dupla' || ev.key !== ' ' || $('tela-jogo').hidden) return;
-  ev.preventDefault();
-  const f = J.peixes.find(x => x.aberto && !x.pego && !x.tipo.ruim) || J.peixes.find(x => x.aberto && !x.pego);
-  if(f) pescar(f, 0);
-});
-function posTela(f){ const r = f.el.getBoundingClientRect(); return { x:r.left + r.width / 2, y:r.top + r.height / 2, w:r.width }; }
-function flutuar(txt, x, y, cls){ const d = document.createElement('div'); d.className = 'pontinho ' + (cls || ''); d.textContent = txt; d.style.left = (x - 20) + 'px'; d.style.top = (y - 30) + 'px'; document.body.appendChild(d); setTimeout(() => d.remove(), 1000); }
-function fugiu(f){
-  const p = posTela(f); const s = document.createElement('div'); s.className = 'splash'; s.textContent = '💦'; s.style.left = (p.x - 16) + 'px'; s.style.top = (p.y - 20) + 'px';
-  document.body.appendChild(s); setTimeout(() => s.remove(), 600); somSplash();
-  /* Assusta: fica um tempinho sem abrir a boca. */
-  f.fechaEm = 0; f.aberto = false; f.el.classList.remove('aberto'); f.abreEm = performance.now() + 1500 + Math.random() * 1500;
+
+/* ═════════ TELAS ═════════ */
+const TELAS = ['t-pescou', 't-escapou', 't-loja', 't-album', 't-conq', 't-senha', 't-adm'];
+const telaAberta = () => TELAS.some(t => !$(t).classList.contains('oculto'));
+function abrir(id){ TELAS.forEach(t => $(t).classList.toggle('oculto', t !== id)); }
+function fechar(){ TELAS.forEach(t => $(t).classList.add('oculto')); }
+document.querySelectorAll('[data-continuar]').forEach(b => b.onclick = () => { fechar(); resetar(); });
+document.querySelectorAll('[data-fechar]').forEach(b => b.onclick = fechar);
+function toast(titulo, sub){ const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `${titulo}${sub ? `<small>${sub}</small>` : ''}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+
+/* ═════════ LOJA ═════════ */
+let aba = 'anzol';
+function mostrarLoja(){ $('l-moedas').textContent = S.moedas.toLocaleString('pt-BR'); $('l-tabs').innerHTML = ABAS.map(([k, n]) => `<button type="button" class="tab ${k === aba ? 'sel' : ''}" data-aba="${k}">${n}</button>`).join('');
+  $('l-grade').innerHTML = Object.entries(LOJA[aba]).map(([id, it]) => {
+    const tem = S.comprados[aba].includes(id), eq = S.eq[aba] === id;
+    let acao;
+    if(aba === 'isca' && id !== 'minhoca'){ const q = admLigado ? '∞' : (S.estoque[id] || 0); acao = q ? (eq ? `⭐ Equipada (${q})` : `👆 Equipar (${q})`) : `🪙 ${it.preco} (10x)`; }
+    else acao = eq ? '⭐ Equipado' : tem ? '👆 Equipar' : `🪙 ${it.preco.toLocaleString('pt-BR')}`;
+    const ic = it.poke ? `<img src="${urlPoke(it.poke)}" alt="" />` : it.emoji;
+    return `<div class="item ${tem ? 'comprado' : ''} ${eq ? 'equipado' : ''}" data-item="${id}" role="button" tabindex="0"><div class="e">${ic}</div><b>${it.nome}</b><div class="preco">${acao}</div><small>${it.desc}</small></div>`;
+  }).join('');
+  abrir('t-loja');
 }
-function pescar(f, idx){
-  const j = J.jogadores[idx], x = f.tipo, p = posTela(f);
-  f.pego = true; f.aberto = false; f.el.classList.remove('aberto'); f.el.style.visibility = 'hidden';
-  j.pts = Math.max(0, j.pts + x.p); j.pegos.push(x);
-  if(!j.robo){ dex[x.k] = (dex[x.k] || 0) + 1; rec.pescados++; }
-  if(x.ruim){
-    somRuim(); flutuar((x.p) + ' ' + (x.id === 72 ? '🔥 Ai!' : '🥾'), p.x, p.y, 'menos');
-    if(x.id === 72) j.tontoAte = performance.now() + 1500;
-  } else { somPesca(x.raro); flutuar('+' + x.p + (x.raro ? ' ✨' : ''), p.x, p.y, 'mais'); }
-  /* Animação: a linha desce e o Pokémon voa pro balde (ou pro lado de quem pescou). */
-  const alvoY = J.modo === 'dupla' ? (idx === 1 ? -80 : innerHeight + 80) : (j.robo ? -80 : $('balde').getBoundingClientRect().top + 20);
-  const alvoX = j.robo ? innerWidth - 40 : innerWidth / 2;
-  const voa = document.createElement('div'); voa.className = 'pescado'; voa.innerHTML = imgPeixe(x);
-  voa.style.left = (p.x - 32) + 'px'; voa.style.top = (p.y - 32) + 'px'; document.body.appendChild(voa);
-  const linha = document.createElement('div'); linha.className = 'linha'; linha.style.left = p.x + 'px'; linha.style.top = (idx === 1 && J.modo === 'dupla' ? p.y : 0) + 'px';
-  linha.style.height = (idx === 1 && J.modo === 'dupla' ? 0 : p.y) + 'px'; document.body.appendChild(linha);
-  requestAnimationFrame(() => requestAnimationFrame(() => { voa.style.transform = `translate(${alvoX - p.x}px,${alvoY - p.y}px) scale(.6)`; voa.style.opacity = '.3'; linha.style.opacity = '0'; }));
-  setTimeout(() => { voa.remove(); linha.remove(); }, 750);
-  if(!j.robo && J.modo !== 'dupla'){ const b = $('balde'); b.insertAdjacentHTML('beforeend', imgPeixe(x)); while(b.children.length > 24) b.firstElementChild.remove(); }
-  salvar(); desenharPlacar();
-  /* Um Pokémon novo aparece no lugar. */
-  setTimeout(() => { if(!J || J.acabou) return; trocarPeixe(f); f.el.style.visibility = ''; }, 900);
-}
-function parar(){ if(!J) return; cancelAnimationFrame(J.raf); J = null; document.body.classList.remove('p2'); }
-function fimJogo(){
-  if(!J) return;
-  const js = J.jogadores, modo = J.modo;
-  parar();
-  rec.jogos++;
-  let titulo, texto, festa = false;
-  if(modo === 'solo'){
-    const novo = js[0].pts > rec.solo; if(novo){ rec.solo = js[0].pts; festa = true; }
-    titulo = `${js[0].pts} pontos!`;
-    texto = novo ? '🏆 <b>RECORDE NOVO!</b>' : `Seu recorde é ${rec.solo}. ${js[0].pts >= 40 ? 'Pescador profissional! 🎣' : 'Bora tentar de novo?'}`;
-  } else if(modo === 'robo'){
-    const ganhou = js[0].pts > js[1].pts, empate = js[0].pts === js[1].pts;
-    if(ganhou){ rec.vitorias++; festa = true; }
-    titulo = ganhou ? 'Você venceu! 🏆' : empate ? 'Empate! 🤝' : 'O Robô venceu… 🤖';
-    texto = `Você: <b>${js[0].pts}</b> · Robô: <b>${js[1].pts}</b>`;
+$('l-tabs').onclick = ev => { const b = ev.target.closest('[data-aba]'); if(b){ aba = b.dataset.aba; mostrarLoja(); } };
+function interagir(id){
+  const it = LOJA[aba][id];
+  if(aba === 'isca' && id !== 'minhoca'){
+    if(!(S.estoque[id] > 0) && !admLigado){
+      if(S.moedas < it.preco){ toast(`🪙 Faltam ${(it.preco - S.moedas).toLocaleString('pt-BR')} moedas!`); return; }
+      S.moedas -= it.preco; S.estoque[id] = (S.estoque[id] || 0) + 10; toast(`${it.emoji} +10 ${it.nome}!`);
+    }
+    if(!S.comprados.isca.includes(id)) S.comprados.isca.push(id);
+    S.eq.isca = id;
+  } else if(S.comprados[aba].includes(id) || admLigado){
+    if(!S.comprados[aba].includes(id)) S.comprados[aba].push(id);
+    S.eq[aba] = id;
   } else {
-    const a = js[0].pts, b = js[1].pts; festa = true;
-    titulo = a === b ? 'Empate! 🤝' : (a > b ? 'Jogador 1 venceu! 🏆' : 'Jogador 2 venceu! 🏆');
-    texto = `Jogador 1: <b>${a}</b> · Jogador 2: <b>${b}</b>`;
+    if(S.moedas < it.preco){ toast(`🪙 Faltam ${(it.preco - S.moedas).toLocaleString('pt-BR')} moedas!`); return; }
+    S.moedas -= it.preco; S.comprados[aba].push(id); S.eq[aba] = id; toast(`🎉 Comprou ${it.emoji} ${it.nome}!`);
+    bip(784, .1, 'triangle'); bip(1047, .15, 'triangle', .1);
   }
-  salvar();
-  if(festa){ somFesta(); confete(); }
-  const meus = modo === 'dupla' ? js[0].pegos.concat(js[1].pegos) : js[0].pegos;
-  const melhor = meus.filter(x => !x.ruim).sort((x, y) => y.p - x.p)[0];
-  janela(`<div class="grandao">🎣</div><h2>${titulo}</h2><p>${texto}</p>
-    ${melhor ? `<p>Melhor peixe: <b>${esc(melhor.n)}</b> (+${melhor.p})</p>` : ''}
-    <div class="pegos">${meus.slice(0, 40).map(imgPeixe).join('')}</div>
-    <button class="grande" type="button" data-denovo="${modo}">🔁 Jogar de novo</button>
-    <button class="mini" type="button" data-fechar style="margin-top:10px">🏠 Início</button>`);
+  if(aba === 'local') iniciarNadadores();
+  salvar(); atualizarHUD(); checarConquistas(); mostrarLoja();
 }
-$('dlg-corpo').addEventListener('click', ev => {
-  const d = ev.target.closest('[data-denovo]'); if(d){ dlg.close(); novoJogo(d.dataset.denovo); return; }
-  if(ev.target.closest('[data-fechar]')){ dlg.close(); mostrarInicio(); }
-});
-document.querySelectorAll('[data-modo]').forEach(b => b.onclick = () => novoJogo(b.dataset.modo));
-$('desistir').onclick = mostrarInicio;
+$('l-grade').onclick = ev => { const b = ev.target.closest('[data-item]'); if(b) interagir(b.dataset.item); };
+$('l-grade').onkeydown = ev => { const b = ev.target.closest('[data-item]'); if(b && (ev.key === 'Enter' || ev.key === ' ')){ ev.preventDefault(); interagir(b.dataset.item); } };
+$('b-loja').onclick = mostrarLoja;
 
-/* ---------- pokédex ---------- */
-function mostrarDex(){
-  const tem = PEIXES.filter(x => dex[x.k]).length;
-  $('dex-resumo').textContent = `Você já pescou ${tem} de ${PEIXES.length} tipos. Os escurinhos ainda faltam!`;
-  $('dex').innerHTML = PEIXES.map(x => `<div class="${dex[x.k] ? '' : 'nao'}">${imgPeixe(x)}<b>${dex[x.k] ? esc(x.n) : '???'}</b>
-    <small>${dex[x.k] ? `pescado ${dex[x.k]}x` : 'ainda não'}</small><br><small class="pts">${x.p > 0 ? '+' : ''}${x.p} ${Math.abs(x.p) === 1 ? 'ponto' : 'pontos'}</small></div>`).join('');
-  tela('dex');
+/* ═════════ ÁLBUM ═════════ */
+let abaAlbum = 'mar';
+function mostrarAlbum(){
+  const abas = [['mar', '🌊 Mar'], ['polo', '❄️ Polo'], ['vulcao', '🌋 Vulcão'], ['espaco', '🌌 Espaço'], ['evento', '🎉 Eventos']];
+  $('a-tabs').innerHTML = abas.map(([k, n]) => `<button type="button" class="tab ${k === abaAlbum ? 'sel' : ''}" data-aba="${k}">${n}</button>`).join('');
+  const lista = TODOS.filter(p => abaAlbum === 'evento' ? p.raridade === 'evento' : p.local === abaAlbum);
+  const tem = TODOS.filter(p => S.colecao[p.k]).length;
+  $('a-resumo').innerHTML = `Você já pescou <b style="color:#ffe066">${tem}</b> de <b style="color:#ffe066">${TODOS.length}</b> Pokémon! ✨ Shinies: <b style="color:#ffe066">${Object.keys(S.shinies).length}</b>`;
+  $('a-grade').innerHTML = lista.map(p => {
+    const q = S.colecao[p.k] || 0, sh = S.shinies[p.k];
+    const extra = p.evento ? `<br><small style="color:#ff6b9d">${EVENTOS.find(e => e.id === p.evento).nome}</small>` : '';
+    return `<div class="${q ? '' : 'nao'}"><img src="${urlPoke(p.id, !!sh)}" alt="" loading="lazy" /><span class="nome r-${p.raridade}">${q ? esc(p.nome) + (sh ? ' ✨' : '') : '???'}</span><span class="qtd">${q ? '×' + q : ''}</span>${extra}</div>`;
+  }).join('');
+  abrir('t-album');
 }
-$('ir-dex').onclick = mostrarDex;
-$('dex-voltar').onclick = mostrarInicio;
+$('a-tabs').onclick = ev => { const b = ev.target.closest('[data-aba]'); if(b){ abaAlbum = b.dataset.aba; mostrarAlbum(); } };
+$('b-album').onclick = mostrarAlbum;
 
-/* ---------- janela e festa ---------- */
-const dlg = $('dlg');
-function janela(html){ $('dlg-corpo').innerHTML = html; if(!dlg.open) dlg.showModal(); }
-dlg.addEventListener('cancel', () => setTimeout(mostrarInicio, 0));
-function confete(){ const cores = ['#1f7ae0', '#ffc21a', '#ff5fa2', '#2e9e5b', '#fff'];
-  for(let i = 0; i < 60; i++){ const c = document.createElement('i'); c.className = 'confete'; c.style.left = Math.random() * 100 + 'vw'; c.style.background = cores[i % cores.length];
-    c.style.animationDelay = Math.random() * .5 + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 3600); } }
-
-/* ---------- som e tema ---------- */
-const btSom = $('som'); function marcarSom(){ btSom.textContent = cfg.som ? '🔊' : '🔇'; }
-btSom.onclick = () => { cfg.som = !cfg.som; salvar(); marcarSom(); };
-const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
-function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
-function aplicarTema(t){ if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema'); btTema.textContent = estaEscuro() ? '☀️' : '🌙'; corDaBarra.setAttribute('content', estaEscuro() ? '#0b1a2b' : '#1f7ae0'); }
-aplicarTema(ler('tema', null));
-btTema.onclick = () => { const t = estaEscuro() ? 'claro' : 'escuro'; gravar('tema', t); aplicarTema(t); };
-
-marcarSom(); mostrarInicio();
-
-/* ---------- versão nova ---------- */
-const btRecarregar = $('recarregar');
-btRecarregar.onclick = async () => {
-  btRecarregar.textContent = 'buscando a mais nova…';
-  try{ if(window.caches){ const n = await caches.keys(); await Promise.all(n.map(x => caches.delete(x))); } }catch(e){}
-  try{ if(navigator.serviceWorker){ const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(x => x.update().catch(() => {}))); } }catch(e){}
-  const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+/* ═════════ CONQUISTAS ═════════ */
+const tipos = (rar, local) => TODOS.filter(p => p.raridade === rar && (!local || p.local === local) && S.colecao[p.k]).length;
+const CONQUISTAS = [
+  ['primeiro', '🎣', 'Primeira Pesca', 'Pesque seu primeiro Pokémon', () => S.pescados >= 1],
+  ['p10', '🐟', 'Pescador Iniciante', 'Pesque 10 Pokémon', () => S.pescados >= 10],
+  ['p50', '🐠', 'Pescador Legal', 'Pesque 50 Pokémon', () => S.pescados >= 50],
+  ['p100', '🦈', 'Pescador Bom', 'Pesque 100 Pokémon', () => S.pescados >= 100],
+  ['p500', '🏆', 'Pescador PRO', 'Pesque 500 Pokémon', () => S.pescados >= 500],
+  ['raro1', '⭐', 'Primeiro Raro', 'Pesque um Pokémon raro', () => S.raros >= 1],
+  ['raro50', '✨', 'Rei dos Raros', 'Pesque 50 raros ou melhores', () => S.raros >= 50],
+  ['lend1', '🌟', 'Primeiro Lendário', 'Pesque um lendário', () => tipos('lendario') >= 1],
+  ['lend10', '💫', 'Caçador de Lendários', 'Pesque 10 lendários diferentes', () => tipos('lendario') >= 10],
+  ['kyogre', '🐋', 'Rei do Mar', 'Pesque o Kyogre', () => S.colecao['mar:382']],
+  ['groudon', '🌋', 'Rei da Terra', 'Pesque o Groudon', () => S.colecao['vulcao:383']],
+  ['ray', '🐉', 'Rei do Céu', 'Pesque o Rayquaza', () => S.colecao['espaco:384']],
+  ['arceus', '🌈', 'IMPOSSÍVEL!', 'Pesque o Arceus no Núcleo do Ultra-Espaço', () => S.colecao['espaco:493']],
+  ['shiny1', '✨', 'Brilhou!', 'Pesque um Pokémon shiny', () => Object.keys(S.shinies).length >= 1],
+  ['shiny5', '💎', 'Colecionador de Brilhos', '5 shinies diferentes', () => Object.keys(S.shinies).length >= 5],
+  ['m1k', '🪙', 'Riquinho', 'Tenha 1.000 moedas', () => S.moedas >= 1000],
+  ['m10k', '💰', 'Milionário', 'Tenha 10.000 moedas', () => S.moedas >= 10000],
+  ['anzol', '🏆', 'Anzol de Ouro', 'Compre o Anzol Lendário', () => S.comprados.anzol.includes('lendario')],
+  ['lapras', '🌊', 'Surfista', 'Compre o Surf no Lapras', () => S.comprados.barco.includes('lapras')],
+  ['ultra', '⚡', 'Linha Ultra', 'Compre a Linha Ultra', () => S.comprados.linha.includes('ultra')],
+  ['rede', '🕸️', 'Rede Dourada', 'Compre a Rede Dourada', () => S.comprados.rede.includes('dourada')],
+  ['polo', '❄️', 'Rei do Gelo', 'Desbloqueie o Polo Norte', () => S.comprados.local.includes('polo')],
+  ['vulcao', '🔥', 'Explorador do Vulcão', 'Desbloqueie o Vulcão', () => S.comprados.local.includes('vulcao')],
+  ['espaco', '🚀', 'Astronauta', 'Desbloqueie o Ultra-Espaço', () => S.comprados.local.includes('espaco')],
+  ['a25', '📖', 'Colecionador', '25 Pokémon no álbum', () => Object.keys(S.colecao).length >= 25],
+  ['a60', '📚', 'Grande Colecionador', '60 Pokémon no álbum', () => Object.keys(S.colecao).length >= 60],
+  ['atudo', '🏅', 'ÁLBUM COMPLETO!', 'Todos os Pokémon', () => TODOS.every(p => S.colecao[p.k])],
+  ['evento', '🎉', 'Espírito Festivo', 'Pesque um Pokémon de evento', () => tipos('evento') >= 1],
+  ['climas', '⛅', 'Mudança de Clima', 'Veja os 4 climas', () => S.climas.length >= 4],
+  ['secreta', '🤫', '???', 'Segredo!', () => S.adm, '🔓', 'Colinha Rara', 'Achou o modo ADM secreto!']
+];
+function checarConquistas(){
+  for(const c of CONQUISTAS){
+    if(S.conq.includes(c[0]) || !c[4]()) continue;
+    S.conq.push(c[0]); salvar();
+    toast(`🏆 CONQUISTA! ${c[5] || c[1]} ${c[6] || c[2]}`, c[7] || c[3]);
+    bip(1047, .12, 'triangle'); bip(1319, .2, 'triangle', .12);
+  }
+}
+$('b-conq').onclick = () => {
+  $('c-resumo').textContent = `${S.conq.length} de ${CONQUISTAS.length}`;
+  $('c-grade').innerHTML = CONQUISTAS.map(c => { const ok = S.conq.includes(c[0]); const e = ok && c[5] ? c[5] : c[1], n = ok && c[6] ? c[6] : c[2], d = ok && c[7] ? c[7] : c[3];
+    return `<div class="${ok ? 'ok' : ''}"><div class="e">${e}</div><b>${n}</b><small>${d}</small></div>`; }).join('');
+  abrir('t-conq');
 };
-try{ if(new URL(location.href).searchParams.has('v')){ const l = new URL(location.href); l.searchParams.delete('v'); history.replaceState(null, '', l.pathname + l.search + l.hash); } }catch(e){}
-if('serviceWorker' in navigator){
-  const jaTinha = !!navigator.serviceWorker.controller;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if(!jaTinha || document.querySelector('.faixa-nova')) return;
-    const f = document.createElement('div'); f.className = 'faixa-nova';
-    f.innerHTML = '<span>✨ Chegou versão nova!</span><button type="button">Carregar</button>';
-    f.querySelector('button').onclick = () => location.reload();
-    document.body.appendChild(f);
-  });
-  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); }).catch(() => {}); });
+
+/* ═════════ 🔓 ADM ═════════
+   Mesma senha do ADM dos outros jogos. Só guardo a impressão digital (SHA-256), nunca a senha. */
+const ADM_HASH = '94898e3200212db557166a21a82fd97bcbbd85f387e40cf731a53897bec90bb7';
+async function hash(t){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+$('btn-adm').onclick = () => { if(admLigado) return mostrarAdm(); $('senha').value = ''; $('senha').classList.remove('erro'); abrir('t-senha'); setTimeout(() => $('senha').focus(), 50); };
+async function conferirSenha(){
+  const v = $('senha').value.trim();
+  let ok = false; try{ ok = (await hash('jojo-adm:' + v)) === ADM_HASH; }catch(e){}
+  if(!ok){ const s = $('senha'); s.classList.remove('erro'); void s.offsetWidth; s.classList.add('erro'); s.value = ''; return; }
+  admLigado = true; try{ sessionStorage.setItem('pesca:adm', '1'); }catch(e){}
+  S.adm = true; salvar(); atualizarHUD(); checarConquistas(); mostrarAdm();
 }
+$('senha-ok').onclick = conferirSenha;
+$('senha').onkeydown = ev => { if(ev.key === 'Enter') conferirSenha(); if(ev.key === 'Escape') fechar(); };
+const PODERES = [
+  ['dourado', '🪙 +1.000 moedas', () => { S.moedas += 1000; }],
+  ['dourado', '💰 +100.000 moedas', () => { S.moedas += 100000; }],
+  ['', '🍬 +50 de cada isca', () => { for(const k of Object.keys(ISCAS)) if(k !== 'minhoca'){ S.estoque[k] = (S.estoque[k] || 0) + 50; if(!S.comprados.isca.includes(k)) S.comprados.isca.push(k); } }],
+  ['', '🛒 Desbloquear TUDO', () => { for(const t of Object.keys(LOJA)) for(const id of Object.keys(LOJA[t])) if(!S.comprados[t].includes(id)) S.comprados[t].push(id);
+      Object.assign(S.eq, { anzol:'lendario', barco:'lapras', linha:'ultra', rede:'dourada' }); }],
+  ['', '🌟 Próximo é LENDÁRIO', () => { forcarLend = true; }],
+  ['', '☀️ Trocar o clima', () => { novoClima(); }],
+  ['', '📖 Completar álbum', () => { for(const p of TODOS) if(!S.colecao[p.k]) S.colecao[p.k] = 1; }],
+  ['', '🚪 Sair do ADM', () => { admLigado = false; try{ sessionStorage.removeItem('pesca:adm'); }catch(e){} fechar(); }],
+  ['perigo', '💥 RESETAR TUDO', () => { if(!confirm('⚠️ Apagar TUDO da Pesca Maluca? Não dá pra desfazer!')) return; S = NOVO(); S.adm = true; iniciarNadadores(); }]
+];
+function mostrarAdm(){
+  $('adm-grade').innerHTML = PODERES.map((p, i) => `<button type="button" class="adm-btn ${p[0]}" data-poder="${i}">${p[1]}</button>`).join('');
+  abrir('t-adm');
+}
+$('adm-grade').onclick = ev => { const b = ev.target.closest('[data-poder]'); if(!b) return; const p = PODERES[+b.dataset.poder]; p[2](); salvar(); atualizarHUD(); checarConquistas(); if(admLigado && !p[1].startsWith('🚪')) toast('✅ ' + p[1]); };
+
+/* ═════════ COMEÇA ═════════ */
+iniciarNadadores(); novoClima();
+const ev = eventoAtivo(); if(ev) setTimeout(() => toast(`${ev.nome} começou!`, 'Pokémon de evento no fundo do mar 🎉'), 800);
+requestAnimationFrame(loop);
+if('serviceWorker' in navigator) addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => setTimeout(() => r.update().catch(() => {}), 3000)).catch(() => {}); });
 </script>
 </body>
 </html>

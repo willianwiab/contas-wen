@@ -1,8 +1,8 @@
 /* Guarda a casca do site (página, ícone, manifesto) pra abrir rápido e funcionar sem internet. */
 /* O número sobe sempre que eu quero que todo mundo largue o que estava
    guardado. Quem estava com versão velha pega a nova na primeira visita. */
-const CACHE = 'pescaria-v1';
-const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg'];
+const CACHE = 'pescaria-v2';
+const ARQUIVOS = ['./', './index.html', './lago.html', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {
   self.skipWaiting();
