@@ -1,12 +1,15 @@
-# 🎣 Pescaria Maluca Pokémon
+# 🎣 Pesca Maluca Pokémon
 
-A versão Pokémon do brinquedo Pescaria Maluca! O lago gira 🌀, os Pokémon abrem a boca 😮 de vez em quando e você toca neles bem nessa hora pra pescar. Tocou com a boca fechada? Ele foge 💦.
+Igual à Pesca Maluca, só que com Pokémon!
 
-- **Modos:** 🎣 Sozinho (1 minuto, recorde), 🤖 Contra o Robô (o Treinador Robô também pesca) e 👫 2 jogadores no mesmo celular (cada um pesca na sua metade do lago; o placar do jogador 2 fica virado pra ele).
-- **Pokémon:** Magikarp, Goldeen, Horsea, Staryu, Psyduck, Squirtle, Totodile, Wooper, Piplup, Corsola, Feebas e os raros Lapras, Gyarados, **Magikarp dourado** ✨ e **Kyogre** (25 pontos!).
-- **Cuidado:** 🥾 bota velha (-1) e Tentacool (-2, e te deixa tonto 1,5s).
-- **Lago maluco:** turbo ⚡, vira pro outro lado 🔄, todo mundo de boca aberta 😮, lentinho 🐢 e chuva de raros ✨.
-- 📖 **Pokédex da pesca** com tudo que você já pescou.
-- No computador, a barra de espaço pesca o primeiro Pokémon de boca aberta.
+- **Toque** pra jogar o anzol. Enquanto ele desce, **toque de novo** pra parar na profundidade que quiser. Quando aparecer **⚡ MORDEU!**, toque rápido pra fisgar. Puxou antes da hora ou demorou? Escapou! 😞
+- **12 camadas** de profundidade (Superfície → NÚCLEO): quanto mais fundo, mais raro. A linha decide até onde o anzol chega.
+- **4 lugares**: 🌊 Mar, ❄️ Polo Norte, 🌋 Vulcão e 🌌 Ultra-Espaço, cada um com seus Pokémon (comum, raro, épico, lendário). No Núcleo do Ultra-Espaço mora o **Arceus** (mítico, quase impossível!).
+- ✨ **Shiny**: 1 em 150, vale ×5.
+- 🎉 **Eventos por mês**: Halloween (outubro), Natal (dezembro), Páscoa (abril) e Aniversário (junho).
+- ⛅ **Clima** muda a cada minuto: sol (+50% moedas), noite (mais raros), tempestade (escapam mais rápido) e neblina.
+- 🛒 **Loja**: anzóis, iscas (com usos), barcos (até o Surf no Lapras), linhas, redes e lugares.
+- 📖 **Álbum**, 🏆 **30 conquistas** (tem uma secreta) e 🔓 **modo ADM** com a mesma senha dos outros jogos (só a impressão digital SHA-256 fica no código).
+- 🌀 **Lago Maluco** (`lago.html`): o jogo antigo do lago que gira continua lá.
 
 Tudo fica guardado só neste aparelho.
