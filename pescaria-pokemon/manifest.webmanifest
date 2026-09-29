@@ -1,0 +1,14 @@
+{
+  "name": "Pescaria Maluca Pokémon",
+  "short_name": "Pescaria",
+  "description": "O lago gira, os Pokémon abrem a boca e você tem que pescar na hora certa!",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#e8f5ff",
+  "theme_color": "#1f7ae0",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
