@@ -42,4 +42,9 @@ O seu bichinho virtual Pokémon!
 - 🔐 Senha secreta (só o hash no código) que libera o 🤖 Claude como amigo.
 - 👑 ADM: batalha lendária, forçar dia/noite, tempo turbo x10, resetar mapa, teleporte, amizade 100%, próximo ovo shiny e liberar o Claude.
 
+## Versão 9: 👥 Amigos
+- 👤 Perfil com apelido (só apelido) e foto (um dos seus Pokémon), mostrando todos os seus Pokémon com imagem.
+- ➕ Adicionar amigo pelo código JUNTO1 (perfil + time + recado), ver o perfil e os Pokémon do amigo, 💬 conversa (frases prontas ou recado de até 120 letras, links viram [link]) e 🎾 chamar o Pokémon do amigo pra brincar no quarto.
+- Contador de recados novos, e os amigos vão junto no 💾 Save.
+
 Tudo fica guardado só neste aparelho. Nomes, tipos e evoluções vêm do banco do *Quem é esse Pokémon?*; figuras e gritos do [PokeAPI](https://pokeapi.co). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.

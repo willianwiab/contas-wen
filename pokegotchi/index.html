@@ -132,14 +132,29 @@ button{font:inherit;color:inherit}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-top:12px}
 .stat{font-size:.82rem;font-weight:700}
 .stat span{float:right;color:var(--tinta-fraca);font-weight:600}
-.acoes{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
+.acoes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:12px}
 .acoes button{border:2px solid var(--borda);background:var(--cartao);border-radius:16px;padding:8px 2px;cursor:pointer;font-weight:800;font-size:.72rem;box-shadow:0 4px 0 var(--borda);line-height:1.15}
 .acoes button i{display:block;font-style:normal;font-size:1.5rem;margin-bottom:2px}
 .acoes button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--borda)}
 .acoes button:disabled{opacity:.4;cursor:default}
 .acoes button.alerta{border-color:var(--vermelho);animation:alerta 1s infinite}
 @keyframes alerta{50%{box-shadow:0 4px 0 var(--vermelho),0 0 0 4px rgba(232,65,58,.25)}}
-.menu{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
+.menu button{position:relative}
+.menu em{position:absolute;top:-6px;right:-4px;background:var(--vermelho);color:#fff;border-radius:99px;font-style:normal;font-size:.7rem;padding:1px 6px}
+.perfil-card{border-radius:18px;padding:12px;background:linear-gradient(135deg,var(--fundo2),var(--cartao2));text-align:center}
+.perfil-card .av{width:84px;height:84px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,.7);border:3px solid var(--marca2)}
+.perfil-card h3{font-size:1.2rem;margin-top:4px}
+.time-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.time-mini div{background:var(--cartao);border-radius:12px;padding:4px;font-size:.7rem;font-weight:700}
+.time-mini img{width:100%;aspect-ratio:1;object-fit:contain}
+.conversa{background:var(--cartao2);border-radius:14px;padding:8px;max-height:36vh;overflow:auto;display:flex;flex-direction:column;gap:6px;margin:8px 0;text-align:left}
+.conversa .msg{max-width:82%;border-radius:14px;padding:6px 10px;font-size:.86rem;background:var(--cartao);border:2px solid var(--borda);align-self:flex-start;word-wrap:break-word}
+.conversa .msg b{display:block;font-size:.68rem;color:var(--tinta-fraca)}
+.conversa .msg.eu{align-self:flex-end;background:var(--marca);border-color:var(--marca);color:#fff}
+.conversa .msg.eu b{color:rgba(255,255,255,.8)}
+.frases{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:6px 0}
+.frases button{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:4px 9px;font-size:.74rem;cursor:pointer}
+.menu{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
 .menu button{border:2px solid var(--borda);background:var(--cartao2);border-radius:14px;padding:8px 2px;font-weight:700;font-size:.78rem;cursor:pointer}
 .menu i{display:block;font-style:normal;font-size:1.3rem}
 /* escolher */
@@ -271,6 +286,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
       <button type="button" id="bt-config"><i>⚙️</i>Opções</button>
       <button type="button" id="bt-time"><i>🗂️</i>Meus Pokémon</button>
       <button type="button" id="bt-save"><i>💾</i>Save</button>
+      <button type="button" id="bt-amigos"><i>👥</i>Amigos<em id="amigos-badge" hidden></em></button>
     </div>
 
     <div class="cartao" style="font-size:.84rem">
@@ -301,7 +317,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
   <footer>
     Jogo de fã, feito pra brincar 🥚 · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 8 — 30/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 9 — 30/09 · 🔄</button>
   </footer>
 </div>
 
@@ -517,6 +533,98 @@ function abrirTime(){
   if(!$('dlg').open) $('dlg').showModal();
 }
 $('bt-time').onclick = abrirTime;
+
+/* =========================================================================
+   👥 Amigos: perfil (apelido + Pokémon), adicionar por código, ver os Pokémon do amigo,
+   conversar (o recado vai dentro do código JUNTO1) e chamar o Pokémon dele pra brincar
+   ========================================================================= */
+const perfil = Object.assign({ apelido:'', avatar:0, id:'' }, ler('perfil', {}));
+if(!perfil.id){ perfil.id = Math.random().toString(36).slice(2, 12); gravar('perfil', perfil); }
+let amigos = Array.isArray(ler('amigos', [])) ? ler('amigos', []) : [];
+const salvarAmigos = () => { gravar('amigos', amigos); gravar('perfil', perfil); marcarBadgeAmigos(); };
+const limpaTexto = (t, n) => String(t || '').replace(/[<>]/g, '').replace(/https?:\/\/\S+|www\.\S+/gi, '[link]').replace(/\s+/g, ' ').trim().slice(0, n);
+function meuTime(){ return [pet, ...guardados].filter(p => p && p.fase === 'pet').slice(0, 6).map(p => [p.id, p.nome, p.nivel, p.shiny ? 1 : 0]); }
+const meuAvatar = () => { const t = meuTime(); return perfil.avatar && POKE[perfil.avatar - 1] ? perfil.avatar : t.length ? t[0][0] : 25; };
+function cartaoPerfil(o){
+  return `<div class="perfil-card"><img class="av" alt="" src="${arte(o.av)}"><h3>${esc(o.a || 'Treinador')}</h3>
+    <small>${o.t.length} Pokémon${o.eu ? '' : ` · atualizado ${new Date(o.v || Date.now()).toLocaleDateString('pt-BR')}`}</small>
+    <div class="time-mini">${o.t.map(([id, n, nv, sh]) => `<div><img alt="" loading="lazy" src="${arte(id, sh)}">${esc(n)}${sh ? ' ✨' : ''}<br><small>${POKE[id - 1].nome} · nv ${nv}</small></div>`).join('') || '<div style="grid-column:1/-1">Nenhum ainda</div>'}</div></div>`;
+}
+function codigoJunto(recado){
+  return 'JUNTO1.' + paraB64({ i:perfil.id, a:perfil.apelido || 'Treinador', av:meuAvatar(), t:meuTime(), r:limpaTexto(recado, 120), tm:Date.now() });
+}
+function receberJunto(texto){
+  const m = String(texto).match(/JUNTO1\.([A-Za-z0-9_-]+)/); if(!m) return { erro:'🤔 Cole um código que começa com JUNTO1.' };
+  let o; try{ o = deB64(m[1]); }catch(e){ return { erro:'😕 Esse código está quebrado.' }; }
+  const id = limpaTexto(o.i, 20); if(!id) return { erro:'😕 Esse código está quebrado.' };
+  if(id === perfil.id) return { erro:'😄 Esse é o seu próprio código!' };
+  const t = (Array.isArray(o.t) ? o.t : []).slice(0, 6).filter(x => Array.isArray(x) && POKE[(+x[0] || 0) - 1]).map(x => [+x[0], limpaTexto(x[1], 14) || POKE[+x[0] - 1].nome, num(x[2], 1, 999, 1), x[3] ? 1 : 0]);
+  let a = amigos.find(x => x.id === id), novo = false;
+  if(!a){ if(amigos.length >= 30) return { erro:'Você já tem 30 amigos!' }; a = { id, msgs:[] }; amigos.push(a); novo = true; }
+  a.a = limpaTexto(o.a, 14) || 'Treinador'; a.av = POKE[(+o.av || 0) - 1] ? +o.av : (t[0] ? t[0][0] : 25); a.t = t; a.v = Date.now();
+  const r = limpaTexto(o.r, 120), tm = num(o.tm, 0, 9e15, 0);
+  if(r && !a.msgs.some(x => !x.eu && x.tm === tm)){ a.msgs.push({ eu:false, txt:r, tm, t:Date.now() }); a.naoLidas = (a.naoLidas || 0) + 1; }
+  a.msgs = a.msgs.slice(-60); salvarAmigos();
+  return { amigo:a, novo };
+}
+function marcarBadgeAmigos(){ const n = amigos.reduce((q, a) => q + (a.naoLidas || 0), 0), b = $('amigos-badge'); if(b){ b.hidden = !n; b.textContent = n; } }
+const FRASES_AMIGO = ['👋 Oi!', '😄 Tudo bem?', '🎾 Bora brincar?', '⚔️ Batalha amistosa?', '🐣 Choquei um Pokémon novo!', '⭐ Meu Pokémon evoluiu!', '💖 Você é meu amigo!', '😂 kkkk'];
+function abrirAmigos(){
+  const eu = { a:perfil.apelido, av:meuAvatar(), t:meuTime(), eu:true };
+  $('dlg-corpo').innerHTML = `<h2>👥 Amigos</h2>
+    ${cartaoPerfil(eu)}
+    <label style="display:block;text-align:left;font-weight:700;font-size:.82rem;margin-top:8px">Seu apelido (não use nome de verdade)<input type="text" id="apelido" maxlength="14" value="${esc(perfil.apelido)}" placeholder="Ex.: Mestre Miau" autocomplete="off"></label>
+    <label style="display:block;text-align:left;font-weight:700;font-size:.82rem;margin-top:6px">Foto do perfil<select id="avatar" style="width:100%;border:2px solid var(--borda);border-radius:12px;padding:8px;background:var(--cartao2);color:var(--tinta);margin-top:4px">
+      ${eu.t.map(([id, n]) => `<option value="${id}"${id === eu.av ? ' selected' : ''}>${esc(n)} (${POKE[id - 1].nome})</option>`).join('')}</select></label>
+    <button type="button" class="grande" id="meu-junto" style="margin-top:10px">📤 Meu código de amigo</button>
+    <div id="meu-junto-cod" hidden style="font-family:monospace;font-size:.68rem;word-break:break-all;background:var(--cartao2);border-radius:10px;padding:8px;margin-top:6px;text-align:left;max-height:90px;overflow:auto;user-select:all"></div>
+    <h3 style="margin-top:12px">📥 Adicionar amigo</h3>
+    <textarea id="colar-junto" rows="2" placeholder="Cole o código do amigo (JUNTO1…)" style="width:100%;margin-top:6px;border:2px solid var(--borda);border-radius:12px;padding:8px;background:var(--cartao2);color:var(--tinta)"></textarea>
+    <button type="button" class="mini" id="colar-junto-ok">➕ Adicionar / receber recado</button><p id="amg-msg" style="font-weight:700;margin-top:4px"></p>
+    <h3 style="margin-top:10px">💞 Meus amigos (${amigos.length})</h3>
+    <div class="itens" id="lista-amigos">${amigos.map((a, i) => `<button type="button" class="item" data-i="${i}" style="position:relative"><img alt="" src="${arte(a.av)}" style="width:60px;height:60px;object-fit:contain"><b>${esc(a.a)}</b><small>${a.t.length} Pokémon</small>${a.naoLidas ? `<small style="color:var(--vermelho)">💬 ${a.naoLidas} novo${a.naoLidas > 1 ? 's' : ''}</small>` : ''}</button>`).join('') || '<p style="grid-column:1/-1;font-size:.84rem">Nenhum ainda. Troque códigos com quem você conhece!</p>'}</div>
+    <p style="font-size:.72rem;color:var(--tinta-fraca)">🔒 Só troque códigos com quem você conhece. O jogo não tem servidor: a conversa vai dentro do código.</p>
+    <button type="button" class="mini" id="fechar">Fechar</button>`;
+  $('apelido').oninput = ev => { perfil.apelido = limpaTexto(ev.target.value, 14); salvarAmigos(); };
+  $('avatar').onchange = ev => { perfil.avatar = +ev.target.value; salvarAmigos(); abrirAmigos(); };
+  $('meu-junto').onclick = async () => { const c = codigoJunto(''); $('meu-junto-cod').hidden = false; $('meu-junto-cod').textContent = c; try{ await navigator.clipboard.writeText(c); $('meu-junto').textContent = '✅ Copiado! Mande pro amigo'; }catch(e){ $('meu-junto').textContent = 'Segure no código e copie 👇'; } };
+  $('colar-junto-ok').onclick = () => { const r = receberJunto($('colar-junto').value); if(r.erro){ $('amg-msg').textContent = r.erro; return; } toast(r.novo ? `🎉 ${r.amigo.a} virou seu amigo!` : `💬 Chegou coisa nova de ${r.amigo.a}!`); abrirAmigo(amigos.indexOf(r.amigo)); };
+  $('lista-amigos').onclick = ev => { const b = ev.target.closest('[data-i]'); if(b) abrirAmigo(+b.dataset.i); };
+  $('fechar').onclick = () => $('dlg').close();
+  if(!$('dlg').open) $('dlg').showModal();
+}
+function abrirAmigo(i){
+  const a = amigos[i]; if(!a) return; a.naoLidas = 0; salvarAmigos();
+  const msgs = a.msgs.map(m => `<div class="msg${m.eu ? ' eu' : ''}"><b>${m.eu ? 'Você' : esc(a.a)}</b>${esc(m.txt)}</div>`).join('');
+  $('dlg-corpo').innerHTML = `<button type="button" class="mini" id="voltar-amigos" style="width:auto;margin:0 0 8px">⬅️ Amigos</button>
+    ${cartaoPerfil(a)}
+    <div class="itens" style="margin-top:8px"><button type="button" class="item" id="chamar"><i>🎾</i><b>Chamar pra brincar</b><small>o Pokémon dele vem pro seu quarto</small></button>
+      <button type="button" class="item" id="tirar-amigo"><i>🗑️</i><b>Tirar da lista</b></button></div>
+    <h3>💬 Conversa</h3>
+    <div class="conversa" id="conversa">${msgs || '<div class="msg" style="align-self:center;background:none;border:none;font-size:.78rem">A conversa aparece aqui. O recado vai junto com o seu código.</div>'}</div>
+    <div class="frases">${FRASES_AMIGO.map(f => `<button type="button">${f}</button>`).join('')}</div>
+    <input type="text" id="recado" maxlength="120" placeholder="Escreva um recado (sem nome de verdade nem endereço)" autocomplete="off">
+    <button type="button" class="grande" id="mandar-recado" style="margin-top:8px">📤 Mandar recado</button>
+    <div id="recado-cod" hidden style="font-family:monospace;font-size:.68rem;word-break:break-all;background:var(--cartao2);border-radius:10px;padding:8px;margin-top:6px;text-align:left;max-height:90px;overflow:auto;user-select:all"></div>
+    <p style="font-size:.72rem;color:var(--tinta-fraca);margin-top:6px">Depois de tocar em 📤, copie o código e mande pro ${esc(a.a)}. A resposta dele chega colando o código dele em 👥 Amigos.</p>
+    <button type="button" class="mini" id="fechar">Fechar</button>`;
+  const cv = $('conversa'); cv.scrollTop = cv.scrollHeight;
+  $('voltar-amigos').onclick = abrirAmigos; $('fechar').onclick = () => $('dlg').close();
+  $('dlg-corpo').querySelector('.frases').onclick = ev => { const b = ev.target.closest('button'); if(b){ $('recado').value = b.textContent; $('recado').focus(); } };
+  $('chamar').onclick = () => { const p = a.t[0]; if(!p){ toast('Esse amigo ainda não tem Pokémon!'); return; } if(!pet || pet.fase !== 'pet'){ toast('Choque o seu ovo primeiro! 🥚'); return; }
+    pet.comp = { tipo:'visita', id:p[0], nome:p[1], shiny:!!p[3], nivel:p[2], dono:a.a }; salvar(); $('dlg').close(); trocarTela('jogo'); desenhar(); confete(); falar(`${p[1]} do ${a.a} veio brincar! 🎉`); };
+  $('tirar-amigo').onclick = () => { if(confirm(`Tirar ${a.a} da lista?`)){ amigos.splice(i, 1); salvarAmigos(); abrirAmigos(); } };
+  $('mandar-recado').onclick = async () => {
+    const r = limpaTexto($('recado').value, 120); const c = codigoJunto(r);
+    if(r){ a.msgs.push({ eu:true, txt:r, t:Date.now() }); a.msgs = a.msgs.slice(-60); salvarAmigos();
+      const cvv = $('conversa'); if(!a.msgs.some(m => !m.eu) && a.msgs.length === 1) cvv.innerHTML = ''; cvv.insertAdjacentHTML('beforeend', `<div class="msg eu"><b>Você</b>${esc(r)}</div>`); cvv.scrollTop = cvv.scrollHeight; }
+    $('recado').value = ''; $('recado-cod').hidden = false; $('recado-cod').textContent = c;
+    try{ await navigator.clipboard.writeText(c); $('mandar-recado').textContent = '✅ Copiado! Mande pro amigo'; }catch(e){ $('mandar-recado').textContent = 'Segure no código e copie 👇'; }
+  };
+  if(!$('dlg').open) $('dlg').showModal();
+}
+$('bt-amigos').onclick = abrirAmigos;
+marcarBadgeAmigos();
 $('voltar-time').onclick = () => { if(guardados.length) usar(0); };
 
 /* 💾 código de save: guarda tudo num texto (pra não perder ou levar pra outro aparelho) */
@@ -534,7 +642,7 @@ function limpaPet(p){
 }
 $('bt-save').onclick = () => {
   if(pet && pet.fase === 'pet') passarTempo();
-  const codigo = 'GOTCHI1.' + paraB64({ pet, guardados, moedas, loja, album:album.slice(0, 30) });
+  const codigo = 'GOTCHI1.' + paraB64({ pet, guardados, moedas, loja, album:album.slice(0, 30), amigos, perfil });
   $('dlg-corpo').innerHTML = `<h2>💾 Save</h2><p style="font-size:.84rem">O jogo já salva sozinho neste aparelho. Esse <b>código</b> é pra guardar num lugar seguro ou <b>levar pro outro celular</b>.</p>
     <textarea id="save-cod" rows="4" readonly style="width:100%;margin-top:8px;border:2px solid var(--borda);border-radius:12px;padding:8px;font-family:monospace;font-size:.7rem;background:var(--cartao2);color:var(--tinta)">${esc(codigo)}</textarea>
     <button type="button" class="grande" id="save-copiar" style="margin-top:8px">📋 Copiar o código</button>
@@ -553,6 +661,11 @@ $('bt-save').onclick = () => {
     const L = o.loja || {}; loja = { chapeus:(Array.isArray(L.chapeus) ? L.chapeus : []).filter(k => CHAPEUS[k]), fundos:['quarto', ...(Array.isArray(L.fundos) ? L.fundos : []).filter(k => FUNDOS[k] && k !== 'quarto')], comidas:{} };
     Object.keys(COMIDAS).forEach(k => { const q = num((L.comidas || {})[k], 0, 999, 0); if(q) loja.comidas[k] = q; });
     album = (Array.isArray(o.album) ? o.album : []).filter(a => a && POKE[(+a.id || 0) - 1]).map(a => ({ nasceu:num(a.nasceu, 0, 9e15, 0), id:+a.id, nome:String(a.nome || '').replace(/[<>]/g, '').slice(0, 14), shiny:!!a.shiny, nivel:num(a.nivel, 1, 999, 1) })).slice(0, 60);
+    if(o.perfil && typeof o.perfil === 'object'){ perfil.apelido = limpaTexto(o.perfil.apelido, 14); perfil.avatar = POKE[(+o.perfil.avatar || 0) - 1] ? +o.perfil.avatar : 0; if(o.perfil.id) perfil.id = limpaTexto(o.perfil.id, 20); }
+    if(Array.isArray(o.amigos)) amigos = o.amigos.slice(0, 30).filter(x => x && x.id).map(x => ({ id:limpaTexto(x.id, 20), a:limpaTexto(x.a, 14) || 'Treinador', av:POKE[(+x.av || 0) - 1] ? +x.av : 25,
+      t:(Array.isArray(x.t) ? x.t : []).slice(0, 6).filter(y => Array.isArray(y) && POKE[(+y[0] || 0) - 1]).map(y => [+y[0], limpaTexto(y[1], 14), num(y[2], 1, 999, 1), y[3] ? 1 : 0]),
+      msgs:(Array.isArray(x.msgs) ? x.msgs : []).slice(-60).map(m => ({ eu:!!m.eu, txt:limpaTexto(m.txt, 120), tm:num(m.tm, 0, 9e15, 0), t:num(m.t, 0, 9e15, 0) })), v:num(x.v, 0, 9e15, 0) }));
+    salvarAmigos();
     salvar(); $('dlg').close(); trocarTela('jogo'); desenhar(); confete(); toast('📥 Save carregado!');
   };
   $('fechar').onclick = () => $('dlg').close(); $('dlg').showModal();

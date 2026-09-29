@@ -2,7 +2,7 @@
    As figuras e os gritos dos Pokémon vêm da internet (PokeAPI). */
 /* O número sobe sempre que eu quero que todo mundo largue o que estava
    guardado. Quem estava com versão velha pega a nova na primeira visita. */
-const CACHE = 'pokegotchi-v8';
+const CACHE = 'pokegotchi-v9';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {
