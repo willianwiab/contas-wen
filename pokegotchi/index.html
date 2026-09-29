@@ -36,7 +36,7 @@ body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(
 h1,h2,h3,.titulo{font-family:'Baloo 2','Rubik',sans-serif}
 button{font:inherit;color:inherit}
 .topo{display:flex;align-items:center;gap:8px}
-.logo{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+.logo{flex:1;display:flex;align-items:center;gap:8px;min-width:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 .logo img{width:44px;height:44px}
 .logo h1{font-size:1.5rem;color:var(--marca);line-height:1}
 .logo small{display:block;font-family:'Rubik',sans-serif;font-size:.74rem;color:var(--tinta-fraca);font-weight:500}
@@ -223,7 +223,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
   <footer>
     Jogo de fã, feito pra brincar 🥚 · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 29/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 3 — 29/09 · 🔄</button>
   </footer>
 </div>
 
@@ -617,9 +617,11 @@ $('bt-config').onclick = () => {
   $('dlg-corpo').innerHTML = `<h2>⚙️ Opções</h2>
     <label style="display:block;text-align:left;font-weight:700;font-size:.85rem">Nome do seu Pokémon<input type="text" id="renomear" maxlength="14" value="${esc(pet.nome)}" autocomplete="off"></label>
     <button type="button" class="mini" id="salvar-nome">💾 Salvar nome</button>
-    <button type="button" class="mini" id="novo-pet" style="margin-top:14px">🥚 Começar com um Pokémon novo</button>
+    <button type="button" class="mini" id="abrir-adm" style="margin-top:14px">👑 Área do ADM (com senha)</button>
+    <button type="button" class="mini" id="novo-pet" style="margin-top:8px">🥚 Começar com um Pokémon novo</button>
     <p style="font-size:.75rem;color:var(--tinta-fraca);margin-top:4px">O de agora vai pro 📖 Álbum. Suas moedas, chapéus e fundos continuam!</p>
     <button type="button" class="mini" id="fechar">Fechar</button>`;
+  $('abrir-adm').onclick = () => abrirAdm();
   $('salvar-nome').onclick = () => { pet.nome = $('renomear').value.replace(/[<>]/g, '').trim().slice(0, 14) || pet.nome; salvar(); desenhar(); guardarNoAlbum(); toast('💾 Nome salvo!'); };
   $('novo-pet').onclick = () => { if(!confirm(`Começar um Pokémon novo? ${pet.nome} vai morar no 📖 Álbum.`)) return; if(pet.fase === 'pet') guardarNoAlbum(); pet = null; salvar(); $('dlg').close(); mostrarEscolher(); };
   $('fechar').onclick = () => $('dlg').close(); $('dlg').showModal();
@@ -688,7 +690,7 @@ function painelAdm(){
   $('dlg-corpo').onclick = ev => { const b = ev.target.closest('[data-a]'); if(b && !b.disabled) agir(b.dataset.a); };
 }
 let toquesLogo = [];
-document.querySelector('.logo img').addEventListener('click', () => { const t = Date.now(); toquesLogo = toquesLogo.filter(x => t - x < 3000); toquesLogo.push(t); if(toquesLogo.length >= 5){ toquesLogo = []; abrirAdm(); } });
+document.querySelector('.logo').addEventListener('click', () => { const t = Date.now(); toquesLogo = toquesLogo.filter(x => t - x < 5000); toquesLogo.push(t); if(toquesLogo.length >= 5){ toquesLogo = []; abrirAdm(); } });
 
 /* ---------- 🎁 presente de todo dia ---------- */
 function presenteDoDia(){
