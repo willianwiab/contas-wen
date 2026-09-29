@@ -173,6 +173,154 @@ dialog::backdrop{background:rgba(10,30,20,.55)}
 .confete{position:fixed;top:-12px;width:10px;height:14px;z-index:70;pointer-events:none;animation:cai 3s linear forwards}
 @keyframes cai{to{transform:translateY(105vh) rotate(720deg)}}
 @media (max-width:380px){ .logo small{display:none} .logo h1{font-size:1.15rem} .logo img{width:32px;height:32px} .moedas{padding:5px 9px;font-size:.9rem} .redondo{width:36px;height:36px} .pedido .quem{width:64px} .pedido .quem img{width:60px;height:60px} }
+
+/* ================= visual 2 ================= */
+body{background:radial-gradient(circle at 20% 0,rgba(255,255,255,.7),transparent 40%),var(--fundo)}
+:root[data-tema="escuro"] body{background:var(--fundo)}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) body{background:var(--fundo)}}
+main>section{animation:aparece .35s ease-out}
+@keyframes aparece{from{opacity:0;transform:translateY(10px)}}
+.moedas{background:linear-gradient(180deg,#fff6cf,#ffe07a);border-color:#e9b949;box-shadow:0 3px 0 #d19c1d;text-shadow:0 1px 0 #fff8}
+.redondo{box-shadow:0 3px 0 var(--borda)}
+.redondo:active{transform:translateY(2px);box-shadow:none}
+.mini{box-shadow:0 3px 0 var(--borda)}
+.mini:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+.cartao{border-radius:24px}
+
+/* --- cena da vila --- */
+.cena{--ceu1:#8fd3ff;--ceu2:#dff4ff;--grama1:#9be38f;--grama2:#6cc46a;--terra:#e8cfa0;
+  background:linear-gradient(180deg,var(--ceu1),var(--ceu2) 30%,var(--grama1) 30%,var(--grama2));padding:0 10px 0;border:3px solid #fff;box-shadow:0 10px 24px var(--sombra)}
+:root[data-tema="escuro"] .cena{--ceu1:#0d1b3d;--ceu2:#27386b;--grama1:#2d6b44;--grama2:#1d4a2f;--terra:#6b5a3e;border-color:var(--borda)}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .cena{--ceu1:#0d1b3d;--ceu2:#27386b;--grama1:#2d6b44;--grama2:#1d4a2f;--terra:#6b5a3e;border-color:var(--borda)}}
+.ceu{position:absolute;left:0;right:0;top:0;height:30%;overflow:hidden;pointer-events:none}
+.sol{position:absolute;right:22px;top:14px;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle,#fff6a8,#ffc21a 60%);box-shadow:0 0 0 8px rgba(255,214,70,.35),0 0 30px #ffd84d;animation:gira 6s ease-in-out infinite;font-size:0}
+@keyframes gira{50%{box-shadow:0 0 0 14px rgba(255,214,70,.2),0 0 40px #ffd84d}}
+.lua,.estrelas{display:none}
+.lua{position:absolute;right:26px;top:14px;width:40px;height:40px;border-radius:50%;box-shadow:-10px 6px 0 0 #fff3c4;transform:rotate(-20deg)}
+.estrelas{position:absolute;inset:0;background:
+  radial-gradient(1.5px 1.5px at 10% 20%,#fff,transparent),radial-gradient(1.5px 1.5px at 30% 60%,#fff,transparent),radial-gradient(2px 2px at 55% 25%,#fff,transparent),
+  radial-gradient(1.5px 1.5px at 70% 70%,#fff,transparent),radial-gradient(1.5px 1.5px at 85% 40%,#fff,transparent),radial-gradient(2px 2px at 45% 80%,#fff,transparent);animation:pisca 3s infinite}
+@keyframes pisca{50%{opacity:.5}}
+:root[data-tema="escuro"] .sol{display:none} :root[data-tema="escuro"] .lua,:root[data-tema="escuro"] .estrelas{display:block}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .sol{display:none} :root:not([data-tema="claro"]) .lua,:root:not([data-tema="claro"]) .estrelas{display:block}}
+.nuvem{position:absolute;width:70px;height:22px;background:#fff;border-radius:99px;opacity:.95;animation:nuvem 40s linear infinite;font-size:0}
+.nuvem:before,.nuvem:after{content:'';position:absolute;background:#fff;border-radius:50%}
+.nuvem:before{width:30px;height:30px;left:12px;top:-14px}.nuvem:after{width:24px;height:24px;left:34px;top:-9px}
+.nuvem.n1{top:30px}.nuvem.n2{top:62px;transform:scale(.7);animation-duration:55s;animation-delay:-20s}.nuvem.n3{top:18px;transform:scale(.85);animation-duration:47s;animation-delay:-35s}
+:root[data-tema="escuro"] .nuvem,:root[data-tema="escuro"] .nuvem:before,:root[data-tema="escuro"] .nuvem:after{background:#3b4d80}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .nuvem,:root:not([data-tema="claro"]) .nuvem:before,:root:not([data-tema="claro"]) .nuvem:after{background:#3b4d80}}
+@keyframes nuvem{from{left:-90px}to{left:105%}}
+.morro{position:absolute;bottom:-40px;border-radius:50%;background:var(--grama1);filter:brightness(.92)}
+.morro.m1{width:220px;height:110px;left:-40px}.morro.m2{width:280px;height:130px;left:35%;filter:brightness(.85)}.morro.m3{width:200px;height:100px;right:-50px}
+.placa-vila{position:relative;display:flex;justify-content:center;padding-top:96px}
+.placa-vila b{background:linear-gradient(180deg,#c98b4f,#a86a35);color:#fff8e8;font-family:'Baloo 2',sans-serif;font-size:1.05rem;padding:3px 16px;border-radius:10px;border:3px solid #7a4a22;box-shadow:0 4px 0 #6b3f1c;text-shadow:0 2px 0 #6b3f1c}
+.casas{margin-top:14px;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:18px 12px;align-items:end}
+.casa{filter:drop-shadow(0 6px 0 rgba(0,0,0,.12));transition:transform .15s}
+.casa:not(.fechada):hover{transform:translateY(-3px)}
+.casa:not(.fechada):active{transform:translateY(2px)}
+.casa .telhado{position:relative;height:40px;margin:0 -8px;clip-path:polygon(50% 0,100% 100%,0 100%);
+  background:linear-gradient(180deg,transparent 0 80%,rgba(0,0,0,.18) 80%),repeating-linear-gradient(0deg,var(--cor) 0 7px,color-mix(in srgb,var(--cor) 80%,#000) 7px 9px)}
+.casa .chamine{display:none}
+.casa .parede{position:relative;border:3px solid color-mix(in srgb,var(--cor) 45%,#fff);border-top:none;border-radius:0 0 14px 14px;padding:0 8px 8px;box-shadow:none;
+  background:linear-gradient(180deg,#fffdf6,#fff3dd)}
+:root[data-tema="escuro"] .casa .parede{background:linear-gradient(180deg,#2b3a31,#22302a)}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .casa .parede{background:linear-gradient(180deg,#2b3a31,#22302a)}}
+.toldinho,.toldo{height:18px;margin:0 -8px;background:repeating-linear-gradient(90deg,var(--cor,#e5484d) 0 14px,#fff 14px 28px);
+  -webkit-mask:radial-gradient(circle at 7px 0,#000 7px,transparent 7.5px) 0 100%/14px 8px repeat-x,linear-gradient(#000,#000) top/100% calc(100% - 7px) no-repeat;
+  mask:radial-gradient(circle at 7px 0,#000 7px,transparent 7.5px) 0 100%/14px 8px repeat-x,linear-gradient(#000,#000) top/100% calc(100% - 7px) no-repeat}
+.casa .placa{margin:6px auto 0;display:inline-block;background:var(--cor);color:#fff;border-radius:8px;padding:1px 10px;box-shadow:0 3px 0 color-mix(in srgb,var(--cor) 60%,#000)}
+.casa .placa b{font-size:.98rem;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.casa .frente{display:flex;gap:8px;align-items:flex-end;justify-content:center;margin-top:8px}
+.casa .vitrine{width:66px;height:54px;border-radius:10px;border:3px solid color-mix(in srgb,var(--cor) 55%,#6b4a2a);display:grid;place-items:center;
+  background:linear-gradient(135deg,#dff4ff 0 40%,#bfe6ff 40% 55%,#dff4ff 55%)}
+:root[data-tema="escuro"] .casa .vitrine{background:linear-gradient(135deg,#ffe9a8 0 40%,#ffd86b 40% 55%,#ffe9a8 55%)}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .casa .vitrine{background:linear-gradient(135deg,#ffe9a8 0 40%,#ffd86b 40% 55%,#ffe9a8 55%)}}
+.casa .vitrine .ico{font-size:2rem;line-height:1}
+.casa:not(.fechada) .vitrine .ico{animation:bate 2.4s ease-in-out infinite}
+@keyframes bate{50%{transform:scale(1.12) rotate(-4deg)}}
+.casa .porta{width:32px;height:50px;border-radius:14px 14px 0 0;background:linear-gradient(90deg,#a86a35,#c98b4f);border:3px solid #7a4a22;border-bottom:none;position:relative}
+.casa .porta i{position:absolute;right:5px;top:24px;width:5px;height:5px;border-radius:50%;background:#ffd84d}
+.casa small{margin-top:6px;font-weight:600}
+.casa.fechada{opacity:1}
+.casa.fechada .telhado{--cor:#9aa5a0}
+.casa.fechada .parede{border-color:#c9d1cd;filter:grayscale(.7)}
+.casa.fechada .toldinho{--cor:#9aa5a0}
+.casa .obra{position:absolute;left:-6px;right:-6px;top:52%;transform:rotate(-8deg);background:repeating-linear-gradient(45deg,#ffc21a 0 12px,#222 12px 24px);
+  color:#fff;font-weight:800;font-size:.72rem;padding:2px 0;text-shadow:0 0 3px #000,0 0 3px #000;filter:none;border-radius:4px}
+.rua{position:relative;height:76px;margin:14px -10px 0;background:linear-gradient(180deg,var(--terra),color-mix(in srgb,var(--terra) 80%,#8a6a3a));border-top:3px solid color-mix(in srgb,var(--terra) 70%,#6b4a2a)}
+.rua:before{content:'';position:absolute;left:0;right:0;top:50%;border-top:4px dashed rgba(255,255,255,.55)}
+.moradores{position:absolute;inset:0;display:block;margin:0;min-height:0}
+.passeia{position:absolute;left:-60px;bottom:0;animation:passeio 16s linear infinite}
+.passeia img{width:52px;height:52px;display:block;image-rendering:pixelated;animation:anda .5s ease-in-out infinite alternate;filter:drop-shadow(0 4px 0 rgba(0,0,0,.18))}
+@keyframes passeio{0%{left:-60px;transform:scaleX(-1)}49.9%{left:calc(100% + 10px);transform:scaleX(-1)}50%{left:calc(100% + 10px);transform:scaleX(1)}100%{left:-60px;transform:scaleX(1)}}
+@keyframes anda{to{transform:translateY(-4px)}}
+.enfeites-chao{display:flex;justify-content:space-around;font-size:1.5rem;padding:6px 0 8px}
+.enfeites-chao span:nth-child(odd){font-size:1.9rem}
+.stats div{border:none;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.stats div:nth-child(1){background:#ffe3e3}.stats div:nth-child(2){background:#ffe0f0}.stats div:nth-child(3){background:#fff3c4}
+.stats div:nth-child(4){background:#fff0cc}.stats div:nth-child(5){background:#e0f0ff}.stats div:nth-child(6){background:#efe3ff}
+.stats b,.stats small{color:#2a2a3a}
+
+/* --- lugares (loja e confeitaria) --- */
+.cartao.lugar{padding-top:0;overflow:hidden}
+.cartao.lugar .toldo{--cor:#e5484d;height:30px;margin:0 -16px 12px;-webkit-mask-size:28px 12px,100% calc(100% - 11px);mask-size:28px 12px,100% calc(100% - 11px);
+  background:repeating-linear-gradient(90deg,var(--cor) 0 28px,#fff 28px 56px);
+  -webkit-mask:radial-gradient(circle at 14px 0,#000 14px,transparent 14.5px) 0 100%/28px 12px repeat-x,linear-gradient(#000,#000) top/100% calc(100% - 11px) no-repeat;
+  mask:radial-gradient(circle at 14px 0,#000 14px,transparent 14.5px) 0 100%/28px 12px repeat-x,linear-gradient(#000,#000) top/100% calc(100% - 11px) no-repeat}
+.cartao.lugar .toldo.rosa{--cor:#ff7eb6}
+.painel h2{font-size:1.35rem}
+.relogio{background:var(--cartao2);border:2px solid var(--borda);border-radius:99px;padding:3px 10px;font-size:.95rem}
+.relogio:empty{display:none}
+.tempo-barra{height:14px}
+.tempo-barra i{background:linear-gradient(90deg,#ff6b6b,#ffc21a 40%,#2e9e5b);background-size:100% 100%;border-radius:99px}
+.balcao{background:linear-gradient(180deg,#fff7e6 0 70%,transparent 70%),repeating-linear-gradient(90deg,#f7d9a8 0 34px,#f1cd93 34px 36px);
+  border:3px solid #e8c48a;padding:12px 10px 26px;overflow:hidden}
+.balcao:after{content:'';position:absolute;left:0;right:0;bottom:0;height:22px;background:linear-gradient(180deg,#c98b4f,#a86a35);border-top:4px solid #7a4a22}
+:root[data-tema="escuro"] .balcao{background:linear-gradient(180deg,#2b2519 0 70%,transparent 70%),repeating-linear-gradient(90deg,#3a2e1c 0 34px,#33291a 34px 36px);border-color:#5a4526}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .balcao{background:linear-gradient(180deg,#2b2519 0 70%,transparent 70%),repeating-linear-gradient(90deg,#3a2e1c 0 34px,#33291a 34px 36px);border-color:#5a4526}}
+.cliente{position:relative;z-index:1}
+.cliente img{animation:respira 1.6s ease-in-out infinite;filter:drop-shadow(0 5px 0 rgba(0,0,0,.15))}
+@keyframes respira{50%{transform:translateY(-3px)}}
+.balao{box-shadow:0 3px 0 var(--borda);animation:balao 1.8s ease-in-out infinite}
+@keyframes balao{50%{transform:translateY(-2px)}}
+.paciencia{height:8px;background:rgba(0,0,0,.15)}
+.balcao .vazio{position:relative;z-index:1;background:var(--cartao);border-radius:14px;padding:10px 14px;box-shadow:0 3px 0 var(--borda)}
+.prateleiras{background:linear-gradient(180deg,#c98b4f,#b0743e);border:4px solid #7a4a22;border-radius:18px;padding:10px;gap:10px 8px;box-shadow:inset 0 4px 0 rgba(0,0,0,.12)}
+.item{border:none;box-shadow:0 4px 0 #6b3f1c;background:linear-gradient(180deg,var(--cartao),var(--cartao2))}
+.item:active{box-shadow:0 1px 0 #6b3f1c}
+.item .qtd{box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.faixa-msg{background:var(--cartao2);border-radius:12px;padding:4px 8px}
+.faixa-msg:empty{background:none}
+
+/* confeitaria */
+.conf .forno{position:relative;border-radius:20px;margin-top:10px;padding:8px 0 4px;border:3px solid #ffc2dc;
+  background:repeating-conic-gradient(#fff0f6 0 25%,#ffe0ee 0 50%) 0 0/28px 28px}
+:root[data-tema="escuro"] .conf .forno{background:repeating-conic-gradient(#3a2230 0 25%,#321c29 0 50%) 0 0/28px 28px;border-color:#6b3a55}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .conf .forno{background:repeating-conic-gradient(#3a2230 0 25%,#321c29 0 50%) 0 0/28px 28px;border-color:#6b3a55}}
+.conf .forno.brilho:after{content:'✨ 🌟 ✨';position:absolute;left:0;right:0;top:10px;text-align:center;font-size:1.8rem;animation:brilhinho 1.4s ease-out forwards}
+.conf .forno.brilho svg{animation:pula-bolo .6s ease-out}
+@keyframes brilhinho{from{transform:scale(.3);opacity:0}40%{transform:scale(1.2);opacity:1}to{transform:translateY(-10px);opacity:0}}
+@keyframes pula-bolo{40%{transform:scale(1.08) translateY(-6px)}}
+.pedido .quer{position:relative;background:#fffdf3;border:none;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);transform:rotate(-1.2deg);color:#3a2a1a;
+  background-image:repeating-linear-gradient(180deg,transparent 0 21px,#e9e2c8 21px 22px)}
+.pedido .quer:before{content:'📌';position:absolute;top:-12px;left:50%;margin-left:-10px;font-size:1.2rem}
+.pedido .quem img{animation:respira 1.6s ease-in-out infinite}
+.passo{background:var(--cartao2);border-radius:16px;padding:8px 10px}
+.passo h3{color:#e8458e;font-size:.95rem}
+:root[data-tema="escuro"] .passo h3{color:#ff8cc0}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .passo h3{color:#ff8cc0}}
+.opcoes button{box-shadow:0 3px 0 var(--borda);background:var(--cartao)}
+.opcoes button[aria-pressed="true"]{border-color:#e8458e;box-shadow:0 0 0 3px #e8458e;transform:translateY(-2px)}
+.melhoria{box-shadow:0 4px 0 var(--borda)}
+.melhoria .ico{background:var(--cartao);border-radius:14px;height:46px;display:grid;place-items:center}
+.dlg{background:radial-gradient(circle at 50% 0,#fff3c4,transparent 55%)}
+:root[data-tema="escuro"] .dlg{background:radial-gradient(circle at 50% 0,#3a3218,transparent 55%)}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .dlg{background:radial-gradient(circle at 50% 0,#3a3218,transparent 55%)}}
+.dlg .grandao{animation:pulo .6s ease-out}
+@media (max-width:480px){ .logo small{display:none} .logo h1{font-size:1.1rem} }
+@media (max-width:360px){ .logo img{display:none} }
+@media (max-width:360px){ .casa .vitrine{width:54px;height:48px} .casa .vitrine .ico{font-size:1.7rem} .casa .porta{width:26px;height:42px} .casa .placa b{font-size:.86rem} }
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;animation-iteration-count:1 !important}}
 </style>
 </head>
 <body>
@@ -187,9 +335,15 @@ dialog::backdrop{background:rgba(10,30,20,.55)}
   <!-- ========== VILA ========== -->
   <section id="tela-vila">
     <div class="cena">
-      <span class="sol">☀️</span><span class="nuvem">☁️</span>
+      <div class="ceu" aria-hidden="true">
+        <span class="sol"></span><span class="lua"></span><span class="estrelas"></span>
+        <span class="nuvem n1"></span><span class="nuvem n2"></span><span class="nuvem n3"></span>
+        <span class="morro m1"></span><span class="morro m2"></span><span class="morro m3"></span>
+      </div>
+      <div class="placa-vila"><b>🏘️ Vila Pokémon</b></div>
       <div class="casas" id="casas"></div>
-      <div class="moradores" id="moradores" aria-label="Pokémon passeando na vila"></div>
+      <div class="rua"><div class="moradores" id="moradores" aria-label="Pokémon passeando na vila"></div></div>
+      <div class="enfeites-chao" aria-hidden="true"><span>🌳</span><span>🌷</span><span>🌲</span><span>🌼</span><span>🌳</span><span>🍄</span></div>
     </div>
     <div class="cartao">
       <h2 class="titulo">🏘️ Minha vila</h2>
@@ -199,14 +353,15 @@ dialog::backdrop{background:rgba(10,30,20,.55)}
     <div class="rodape">
       Tudo fica guardado só neste aparelho.
       <br><button class="mini" type="button" id="zerar" style="margin-top:8px">🗑️ Começar a vila do zero</button>
-      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 29/09 · 🔄</button>
+      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 29/09 · 🔄</button>
     </div>
   </section>
 
   <!-- ========== LOJINHA ========== -->
   <section id="tela-loja" hidden>
     <button class="mini voltar" type="button" data-vila>⬅️ Vila</button>
-    <div class="cartao">
+    <div class="cartao lugar">
+      <div class="toldo" aria-hidden="true"></div>
       <div class="painel">
         <h2 class="titulo" id="loja-nome">🏪 Barraquinha</h2>
         <span class="relogio" id="loja-relogio"></span>
@@ -228,7 +383,8 @@ dialog::backdrop{background:rgba(10,30,20,.55)}
   <!-- ========== CONFEITARIA ========== -->
   <section id="tela-conf" hidden>
     <button class="mini voltar" type="button" data-vila>⬅️ Vila</button>
-    <div class="cartao">
+    <div class="cartao lugar conf">
+      <div class="toldo rosa" aria-hidden="true"></div>
       <div class="painel">
         <h2 class="titulo">🍰 Confeitaria da Alcremie</h2>
         <span class="relogio" id="conf-relogio"></span>
@@ -418,11 +574,18 @@ function nomeLoja(){
 function mostrarVila(){
   pararLoja(true); pararConf(true);
   $('casas').innerHTML = LUGARES.map(l => `<button type="button" class="casa ${l.fechado ? 'fechada' : ''}" data-lugar="${l.id}" style="--cor:${l.cor}">
-    <div class="telhado"></div><div class="parede"><div class="ico">${l.ico}</div><b>${l.id === 'loja' ? esc(nomeLoja().replace(/^\S+\s/, '')) : l.n}</b><small>${l.txt}</small></div></button>`).join('');
+    <div class="telhado"><span class="chamine"></span></div>
+    <div class="parede"><div class="toldinho"></div>
+      <div class="placa"><b>${l.id === 'loja' ? esc(nomeLoja().replace(/^\S+\s/, '')) : l.n}</b></div>
+      <div class="frente"><div class="vitrine"><span class="ico">${l.ico}</span></div><div class="porta"><i></i></div></div>
+      ${l.fechado ? '<div class="obra">🚧 EM OBRA 🚧</div>' : ''}
+      <small>${l.txt}</small></div></button>`).join('');
   /* Moradores: quem mais comprou aparece passeando. Começa com 3 e ganha mais com as melhorias. */
   const tot = MELH_LOJA.concat(MELH_CONF).reduce((s, m) => s + nivel(MELH_LOJA.includes(m) ? 'loja' : 'conf', m.id), 0);
   const ids = [25, 869, 133, 143, 39, 94, 1, 4, 7, 52, 175, 685, 700, 778, 113, 54];
-  $('moradores').innerHTML = ids.slice(0, Math.min(ids.length, 3 + tot)).map(id => `<img src="${sprite(id)}" alt="" loading="lazy" onerror="this.remove()" />`).join('');
+  /* Cada um anda num ritmo diferente pela rua, pra não andarem todos juntos. */
+  $('moradores').innerHTML = ids.slice(0, Math.min(ids.length, 3 + tot)).map((id, i) =>
+    `<span class="passeia" style="animation-duration:${14 + (i * 7) % 11}s;animation-delay:-${(i * 3.7) % 14}s;bottom:${(i % 3) * 9}px"><img src="${sprite(id)}" alt="" loading="lazy" onerror="this.parentNode.remove()" /></span>`).join('');
   $('stats').innerHTML = [
     ['🛒', E.st.vendas, 'vendas'], ['🎂', E.st.bolos, 'bolos'], ['🌟', E.st.perfeitos, 'bolos perfeitos'],
     ['🪙', E.st.ganhou, 'moedas ganhas'], ['🏆', E.st.recLoja, 'recorde da loja'], ['🏆', E.st.recConf, 'recorde da confeitaria']
@@ -627,7 +790,7 @@ function novoPedido(){
   const quer = {};
   PARTES.forEach(p => { const l = p.lista(); const v = sorteia(l); quer[p.id] = typeof v === 'number' ? v : v.id; });
   C.pedido = { p:sorteia(CONF_CLIENTES.filter(x => !C.pedido || x.id !== C.pedido.p.id)), quer };
-  C.bolo = { andares:1 }; C.dica = false;
+  C.bolo = { andares:1 }; C.dica = false; $('conf-bolo').classList.remove('brilho');
   C.tempo = tempoBolo(); C.fim = Date.now() + C.tempo * 1000;
   $('conf-reacao').textContent = '';
   $('conf-dica').hidden = !nivel('conf', 'dica'); $('conf-dica').disabled = false;
@@ -695,7 +858,7 @@ function entregarBolo(acabouTempo){
   C.total += ganho; if(ganho) ganhar(ganho, $('conf-bolo'));
   const cara = certos === 5 ? '😍 PERFEITO! Igualzinho!' : certos >= 3 ? '🙂 Ficou quase igual!' : certos >= 1 ? '😕 Hmm… não era bem isso.' : '😭 Esse não é o meu bolo!';
   $('conf-reacao').innerHTML = `${acabouTempo ? '⏰ Acabou o tempo! ' : ''}${esc(C.pedido.p.n)}: ${cara}<br><span class="estrelinhas">${'⭐'.repeat(certos)}${'☆'.repeat(5 - certos)}</span> +${ganho} 🪙`;
-  if(certos === 5) somFesta(); else if(certos >= 3) somMoeda(); else somErro();
+  if(certos === 5){ somFesta(); const f = $('conf-bolo'); f.classList.remove('brilho'); void f.offsetWidth; f.classList.add('brilho'); } else if(certos >= 3) somMoeda(); else somErro();
   salvar();
   setTimeout(() => {
     if(!C) return; C.esperando = false;
