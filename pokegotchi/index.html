@@ -122,7 +122,7 @@ button{font:inherit;color:inherit}
 .acoes button:disabled{opacity:.4;cursor:default}
 .acoes button.alerta{border-color:var(--vermelho);animation:alerta 1s infinite}
 @keyframes alerta{50%{box-shadow:0 4px 0 var(--vermelho),0 0 0 4px rgba(232,65,58,.25)}}
-.menu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.menu{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
 .menu button{border:2px solid var(--borda);background:var(--cartao2);border-radius:14px;padding:8px 2px;font-weight:700;font-size:.78rem;cursor:pointer}
 .menu i{display:block;font-style:normal;font-size:1.3rem}
 /* escolher */
@@ -181,6 +181,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
   <section id="tela-escolher" hidden>
     <div class="cartao" style="text-align:center">
       <h2>🥚 Escolha o seu Pokémon!</h2>
+      <button type="button" class="mini" id="voltar-time" hidden style="width:100%;margin-bottom:8px">🗂️ Voltar pros meus Pokémon</button>
       <p style="font-size:.88rem">Toque no <b>ovo misterioso</b> pra ter uma surpresa, ou escolha um. Todos podem nascer <b>✨ shiny</b> (1 chance em 20)!</p>
       <input type="text" id="busca-pet" placeholder="🔎 Procurar qualquer Pokémon (1025!)" autocomplete="off">
       <p style="font-size:.78rem;color:var(--tinta-fraca);margin-top:4px" id="busca-info"></p>
@@ -241,6 +242,8 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
       <button type="button" id="bt-loja"><i>🛒</i>Loja</button>
       <button type="button" id="bt-album"><i>📖</i>Álbum</button>
       <button type="button" id="bt-config"><i>⚙️</i>Opções</button>
+      <button type="button" id="bt-time"><i>🗂️</i>Meus Pokémon</button>
+      <button type="button" id="bt-save"><i>💾</i>Save</button>
     </div>
 
     <div class="cartao" style="font-size:.84rem">
@@ -271,7 +274,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
   <footer>
     Jogo de fã, feito pra brincar 🥚 · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 6 — 30/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 7 — 30/09 · 🔄</button>
   </footer>
 </div>
 
@@ -320,7 +323,9 @@ let pet = ler('pet', null);
 let moedas = ler('moedas', 30);
 let loja = Object.assign({ chapeus:[], fundos:['quarto'], comidas:{} }, ler('loja', {}));
 let album = Array.isArray(ler('album', [])) ? ler('album', []) : [];
-const salvar = () => { if(pet && pet.fase === 'pet') passarTempo(); gravar('pet', pet); gravar('moedas', moedas); gravar('loja', loja); gravar('album', album); };
+let guardados = Array.isArray(ler('guardados', [])) ? ler('guardados', []) : [];   // 🗂️ os outros Pokémon (ficam pausados)
+const MAX_TIME = 6;
+const salvar = () => { if(pet && pet.fase === 'pet') passarTempo(); gravar('pet', pet); gravar('moedas', moedas); gravar('loja', loja); gravar('album', album); gravar('guardados', guardados); };
 
 /* ---------- catálogo ---------- */
 const COMIDAS = {
@@ -422,6 +427,7 @@ function mostrarEscolher(){
   $('busca-info').textContent = q ? `${lista.length ? lista.length : 'Nenhum'} Pokémon encontrado${lista.length === 1 ? '' : 's'}${lista.length >= 60 ? ' (mostrando 60)' : ''}` : `${INICIAIS.length} favoritos · pesquise pra ver todos os 1025`;
   $('escolhas').innerHTML = (q ? '' : `<button type="button" data-id="ovo"><span class="ovo-bt">🥚</span>Ovo misterioso</button>`) +
     lista.map(id => `<button type="button" data-id="${id}"><img loading="lazy" alt="" src="${arte(id)}">${POKE[id - 1].nome}${POKE[id - 1].evos.length ? '' : '<br><small style="color:var(--tinta-fraca)">não evolui</small>'}</button>`).join('');
+  $('voltar-time').hidden = !guardados.length || !!pet;
   trocarTela('escolher');
 }
 $('busca-pet').oninput = mostrarEscolher;
@@ -453,6 +459,77 @@ function nascer(){
   $('ok-nome').onclick = () => { pet.nome = $('novo-nome').value.replace(/[<>]/g, '').trim().slice(0, 14) || p.nome; salvar(); desenhar(); $('dlg').close(); falar('Oi! Cuida de mim? 🥺'); guardarNoAlbum(); };
   $('dlg').showModal();
 }
+/* =========================================================================
+   🗂️ Meus Pokémon (até 6, os guardados ficam pausados) e 💾 código de save
+   ========================================================================= */
+function guardarAtual(){ if(!pet) return; if(pet.fase === 'pet'){ passarTempo(); guardarNoAlbum(); } pet.pausadoEm = Date.now(); guardados.unshift(pet); pet = null; }
+function usar(i){
+  const novo = guardados.splice(i, 1)[0]; if(!novo) return;
+  guardarAtual(); pet = novo; pet.ultimo = Date.now(); delete pet.pausadoEm;   // o tempo não passou enquanto estava guardado
+  salvar(); trocarTela('jogo'); desenhar(); grito(pet.id); falar(pet.fase === 'ovo' ? 'Toque no ovo pra esquentar! 🔥' : `Oi! Voltei! 😄`);
+}
+function novoDoTime(){
+  if(guardados.length + (pet ? 1 : 0) >= MAX_TIME){ toast(`🗂️ Você já tem ${MAX_TIME} Pokémon! Solte um pra pegar outro.`); return; }
+  guardarAtual(); salvar(); if($('dlg').open) $('dlg').close(); mostrarEscolher();
+}
+function abrirTime(){
+  const cartao = (p, i) => `<div class="item${i < 0 ? ' usando' : ''}" style="cursor:default"><img alt="" loading="lazy" src="${p.fase === 'ovo' ? '' : arte(p.id, p.shiny)}" style="width:72px;height:72px;object-fit:contain;${p.fase === 'ovo' ? 'display:none' : ''}">${p.fase === 'ovo' ? '<i>🥚</i>' : ''}
+    <b>${esc(p.nome || 'Ovo')}${p.shiny ? ' ✨' : ''}</b><small>${p.fase === 'ovo' ? 'ainda no ovo' : `${POKE[p.id - 1].nome} · nível ${p.nivel}`}</small>
+    ${i < 0 ? '<small>✅ Com você agora</small>' : `<button type="button" class="mini" data-usar="${i}">🔄 Usar</button><button type="button" class="mini" data-soltar="${i}" style="margin-top:4px">👋 Soltar</button>`}</div>`;
+  const total = guardados.length + (pet ? 1 : 0);
+  $('dlg-corpo').innerHTML = `<h2>🗂️ Meus Pokémon</h2><p style="font-size:.82rem">${total}/${MAX_TIME} · Os guardados ficam <b>pausados</b>: não sentem fome nem sono até você voltar pra eles.</p>
+    <div class="itens" id="time">${pet ? cartao(pet, -1) : ''}${guardados.map((p, i) => cartao(p, i)).join('')}</div>
+    <button type="button" class="grande" id="time-novo"${total >= MAX_TIME ? ' disabled style="opacity:.5"' : ''}>➕ Pegar outro Pokémon</button><button type="button" class="mini" id="fechar">Fechar</button>`;
+  $('time').onclick = ev => {
+    const u = ev.target.closest('[data-usar]'), so = ev.target.closest('[data-soltar]');
+    if(u){ $('dlg').close(); usar(+u.dataset.usar); }
+    if(so){ const p = guardados[+so.dataset.soltar]; if(p && confirm(`Soltar ${p.nome || 'o ovo'}? Ele vai morar no 📖 Álbum e sai do seu time.`)){ guardados.splice(+so.dataset.soltar, 1); salvar(); abrirTime(); } }
+  };
+  $('time-novo').onclick = novoDoTime; $('fechar').onclick = () => $('dlg').close();
+  if(!$('dlg').open) $('dlg').showModal();
+}
+$('bt-time').onclick = abrirTime;
+$('voltar-time').onclick = () => { if(guardados.length) usar(0); };
+
+/* 💾 código de save: guarda tudo num texto (pra não perder ou levar pra outro aparelho) */
+const paraB64 = obj => { const b = new TextEncoder().encode(JSON.stringify(obj)); let t = ''; b.forEach(x => { t += String.fromCharCode(x); }); return btoa(t).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+const deB64 = t => { const x = atob(t.replace(/-/g, '+').replace(/_/g, '/')); return JSON.parse(new TextDecoder().decode(Uint8Array.from(x, c => c.charCodeAt(0)))); };
+const num = (x, a, b, d) => { x = +x; return isFinite(x) ? limitar(x, a, b) : d; };
+function limpaPet(p){
+  if(!p || typeof p !== 'object' || !POKE[(+p.id || 0) - 1]) return null;
+  const s = p.s || {};
+  return { fase:p.fase === 'ovo' ? 'ovo' : 'pet', id:+p.id, surpresa:!!p.surpresa, shiny:!!p.shiny, calor:num(p.calor, 0, 99, 0), nome:String(p.nome || '').replace(/[<>]/g, '').slice(0, 14),
+    nivel:num(p.nivel, 1, 999, 1), xp:num(p.xp, 0, 1e6, 0), nascEstagio:num(p.nascEstagio, 1, 3, 1), s:{ fome:num(s.fome, 0, 100, 80), feliz:num(s.feliz, 0, 100, 80), energia:num(s.energia, 0, 100, 80), limpeza:num(s.limpeza, 0, 100, 100), saude:num(s.saude, 0, 100, 100) },
+    cocos:num(p.cocos, 0, 3, 0), dormindo:!!p.dormindo, chapeu:CHAPEUS[p.chapeu] ? p.chapeu : 'nada', fundo:FUNDOS[p.fundo] ? p.fundo : 'quarto', nasceu:num(p.nasceu, 0, 9e15, Date.now()),
+    idadeMin:num(p.idadeMin, 0, 1e9, 0), carinhos:num(p.carinhos, 0, 1e9, 0), noturno:!!p.noturno, auto:!!p.auto, hue:num(p.hue, 0, 360, 0), vitorias:num(p.vitorias, 0, 1e6, 0), derrotas:num(p.derrotas, 0, 1e6, 0),
+    ferida:null, ultimo:Date.now() };
+}
+$('bt-save').onclick = () => {
+  if(pet && pet.fase === 'pet') passarTempo();
+  const codigo = 'GOTCHI1.' + paraB64({ pet, guardados, moedas, loja, album:album.slice(0, 30) });
+  $('dlg-corpo').innerHTML = `<h2>💾 Save</h2><p style="font-size:.84rem">O jogo já salva sozinho neste aparelho. Esse <b>código</b> é pra guardar num lugar seguro ou <b>levar pro outro celular</b>.</p>
+    <textarea id="save-cod" rows="4" readonly style="width:100%;margin-top:8px;border:2px solid var(--borda);border-radius:12px;padding:8px;font-family:monospace;font-size:.7rem;background:var(--cartao2);color:var(--tinta)">${esc(codigo)}</textarea>
+    <button type="button" class="grande" id="save-copiar" style="margin-top:8px">📋 Copiar o código</button>
+    <h3 style="margin-top:16px">📥 Carregar um save</h3>
+    <textarea id="save-colar" rows="3" placeholder="Cole aqui um código GOTCHI1…" style="width:100%;margin-top:6px;border:2px solid var(--borda);border-radius:12px;padding:8px;font-size:.8rem;background:var(--cartao2);color:var(--tinta)"></textarea>
+    <button type="button" class="mini" id="save-carregar">📥 Carregar</button><p id="save-msg" style="font-weight:700;margin-top:6px"></p>
+    <button type="button" class="mini" id="fechar">Fechar</button>`;
+  $('save-copiar').onclick = async () => { try{ await navigator.clipboard.writeText(codigo); $('save-copiar').textContent = '✅ Copiado!'; }catch(e){ $('save-cod').select(); $('save-copiar').textContent = 'Segure no código e copie 👆'; } };
+  $('save-carregar').onclick = () => {
+    const m = $('save-colar').value.match(/GOTCHI1\.([A-Za-z0-9_-]+)/); if(!m){ $('save-msg').textContent = '🤔 Cole um código que começa com GOTCHI1.'; return; }
+    let o; try{ o = deB64(m[1]); }catch(e){ $('save-msg').textContent = '😕 Esse código está quebrado.'; return; }
+    const novoPet = limpaPet(o.pet), novosG = (Array.isArray(o.guardados) ? o.guardados : []).map(limpaPet).filter(Boolean).slice(0, MAX_TIME - 1);
+    if(!novoPet && !novosG.length){ $('save-msg').textContent = '😕 Não achei nenhum Pokémon nesse código.'; return; }
+    if(!confirm('Carregar esse save? O que está neste aparelho agora vai ser trocado.')) return;
+    pet = novoPet || novosG.shift(); guardados = novosG; moedas = num(o.moedas, 0, 1e7, 0);
+    const L = o.loja || {}; loja = { chapeus:(Array.isArray(L.chapeus) ? L.chapeus : []).filter(k => CHAPEUS[k]), fundos:['quarto', ...(Array.isArray(L.fundos) ? L.fundos : []).filter(k => FUNDOS[k] && k !== 'quarto')], comidas:{} };
+    Object.keys(COMIDAS).forEach(k => { const q = num((L.comidas || {})[k], 0, 999, 0); if(q) loja.comidas[k] = q; });
+    album = (Array.isArray(o.album) ? o.album : []).filter(a => a && POKE[(+a.id || 0) - 1]).map(a => ({ nasceu:num(a.nasceu, 0, 9e15, 0), id:+a.id, nome:String(a.nome || '').replace(/[<>]/g, '').slice(0, 14), shiny:!!a.shiny, nivel:num(a.nivel, 1, 999, 1) })).slice(0, 60);
+    salvar(); $('dlg').close(); trocarTela('jogo'); desenhar(); confete(); toast('📥 Save carregado!');
+  };
+  $('fechar').onclick = () => $('dlg').close(); $('dlg').showModal();
+};
+
 function guardarNoAlbum(){
   const i = album.findIndex(a => a.nasceu === pet.nasceu);
   const reg = { nasceu:pet.nasceu, id:pet.id, nome:pet.nome, shiny:pet.shiny, nivel:pet.nivel };
@@ -969,12 +1046,12 @@ $('bt-config').onclick = () => {
     <label style="display:block;text-align:left;font-weight:700;font-size:.85rem">Nome do seu Pokémon<input type="text" id="renomear" maxlength="14" value="${esc(pet.nome)}" autocomplete="off"></label>
     <button type="button" class="mini" id="salvar-nome">💾 Salvar nome</button>
     <button type="button" class="mini" id="abrir-adm" style="margin-top:14px">👑 Área do ADM (com senha)</button>
-    <button type="button" class="mini" id="novo-pet" style="margin-top:8px">🥚 Começar com um Pokémon novo</button>
-    <p style="font-size:.75rem;color:var(--tinta-fraca);margin-top:4px">O de agora vai pro 📖 Álbum. Suas moedas, chapéus e fundos continuam!</p>
+    <button type="button" class="mini" id="novo-pet" style="margin-top:8px">🥚 Pegar outro Pokémon</button>
+    <p style="font-size:.75rem;color:var(--tinta-fraca);margin-top:4px">O de agora fica guardado em 🗂️ Meus Pokémon (até 6).</p>
     <button type="button" class="mini" id="fechar">Fechar</button>`;
   $('abrir-adm').onclick = () => abrirAdm();
   $('salvar-nome').onclick = () => { pet.nome = $('renomear').value.replace(/[<>]/g, '').trim().slice(0, 14) || pet.nome; salvar(); desenhar(); guardarNoAlbum(); toast('💾 Nome salvo!'); };
-  $('novo-pet').onclick = () => { if(!confirm(`Começar um Pokémon novo? ${pet.nome} vai morar no 📖 Álbum.`)) return; if(pet.fase === 'pet') guardarNoAlbum(); pet = null; salvar(); $('dlg').close(); mostrarEscolher(); };
+  $('novo-pet').onclick = () => novoDoTime();
   $('fechar').onclick = () => $('dlg').close(); $('dlg').showModal();
 };
 

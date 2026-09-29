@@ -30,4 +30,8 @@ O seu bichinho virtual Pokémon!
 ## Versão 6
 - 🤖 **Auto-comida**: ligado, o Pokémon come frutinha sozinho sempre que a barriga fica abaixo de 40% (até com o site fechado) e avisa quantas comeu.
 
+## Versão 7: save de Pokémon
+- 🗂️ **Meus Pokémon**: até 6 Pokémon; troque quando quiser. Os guardados ficam **pausados** (não sentem fome nem sono). Dá pra soltar (vai pro 📖 Álbum).
+- 💾 **Save**: um código GOTCHI1… com todos os Pokémon, moedas, loja e álbum, pra guardar ou levar pro outro celular. O código carregado é conferido e limpo antes de entrar no jogo.
+
 Tudo fica guardado só neste aparelho. Nomes, tipos e evoluções vêm do banco do *Quem é esse Pokémon?*; figuras e gritos do [PokeAPI](https://pokeapi.co). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.
