@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pescaria Maluca Pokémon</title>
+<meta name="description" content="O lago gira, os Pokémon abrem a boca e você tem que pescar na hora certa! Sozinho, contra o robô ou com um amigo no mesmo celular." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#1f7ae0" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Pescaria" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --marca:#1f7ae0; --marca2:#4da3ff; --amarelo:#ffc21a; --vermelho:#e5484d; --verde:#2e9e5b; --rosa:#ff5fa2;
+  --fundo:#e8f5ff; --tinta:#0f2740; --tinta-fraca:#58708a; --cartao:#ffffff; --cartao2:#f3f9ff; --borda:#cfe3f7; --sombra:rgba(20,70,140,.16);
+  --agua1:#7fd0ff; --agua2:#1f7ae0; --borda-lago:#f5dfa3;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#6fb6ff; --fundo:#0b1a2b; --tinta:#e6f3ff; --tinta-fraca:#9bb4cc; --cartao:#13263b; --cartao2:#1a3049; --borda:#2a4563; --sombra:rgba(0,0,0,.45);
+    --agua1:#2a6fb0; --agua2:#0d3563; --borda-lago:#6b5a3e;
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#6fb6ff; --fundo:#0b1a2b; --tinta:#e6f3ff; --tinta-fraca:#9bb4cc; --cartao:#13263b; --cartao2:#1a3049; --borda:#2a4563; --sombra:rgba(0,0,0,.45);
+  --agua1:#2a6fb0; --agua2:#0d3563; --borda-lago:#6b5a3e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+html,body{overflow-x:clip}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);min-height:100vh;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+h1,h2,h3{font-family:'Baloo 2','Rubik',sans-serif}
+main{max-width:620px;margin:0 auto;padding:10px 16px 40px}
+header.topo{display:flex;align-items:center;gap:8px;max-width:620px;margin:0 auto;padding:12px 16px 0}
+.logo{flex:1;display:flex;align-items:center;gap:8px;min-width:0;cursor:pointer}
+.logo img{width:40px;height:40px;flex:none}
+.logo>div{min-width:0}
+.logo h1{font-size:1.35rem;color:var(--marca);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo small{display:block;font-size:.72rem;color:var(--tinta-fraca)}
+.redondo{width:40px;height:40px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.1rem;cursor:pointer;display:grid;place-items:center;flex:none;box-shadow:0 3px 0 var(--borda)}
+.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:24px;padding:16px;margin-top:14px;box-shadow:0 6px 16px var(--sombra)}
+.grande{display:block;width:100%;border:none;border-radius:18px;padding:14px;font-size:1.15rem;font-weight:800;cursor:pointer;color:#fff;font-family:'Baloo 2','Rubik',sans-serif;
+  background:linear-gradient(180deg,var(--marca2),#1f6fd0);box-shadow:0 5px 0 #154f99;text-align:left;display:flex;gap:12px;align-items:center}
+.grande:active{transform:translateY(3px);box-shadow:0 2px 0 #154f99}
+.grande .ic{font-size:2rem}
+.grande small{display:block;font-family:'Rubik',sans-serif;font-weight:500;font-size:.8rem;opacity:.9}
+.grande.verde{background:linear-gradient(180deg,#49c47a,#23874b);box-shadow:0 5px 0 #196b3a}
+.grande.rosa{background:linear-gradient(180deg,#ff8cc0,#e8458e);box-shadow:0 5px 0 #a82a63}
+.grande.amarelo{background:linear-gradient(180deg,#ffd54d,#ffb300);box-shadow:0 5px 0 #b37a00;color:#3a2a00}
+.menu{display:grid;gap:12px;margin-top:14px}
+.mini{border:2px solid var(--borda);background:var(--cartao2);border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:.88rem;box-shadow:0 3px 0 var(--borda)}
+.aviso{font-size:.84rem;color:var(--tinta-fraca);line-height:1.45;margin-top:6px}
+main>section{animation:aparece .3s ease-out}
+@keyframes aparece{from{opacity:0;transform:translateY(8px)}}
+
+/* capa */
+.capa{text-align:center;padding:18px 12px;border-radius:24px;margin-top:12px;color:#fff;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 50% 120%,#7fd0ff,#1f7ae0 60%,#0d4a99)}
+.capa h2{font-size:2rem;line-height:1;text-shadow:0 3px 0 #0d3563}
+.capa p{margin-top:6px;font-weight:600}
+.capa .roda{font-size:3rem;display:inline-block;animation:gira 4s linear infinite;margin-top:8px}
+@keyframes gira{to{transform:rotate(360deg)}}
+.recs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;text-align:center}
+.recs div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:8px 4px}
+.recs b{display:block;font-family:'Baloo 2',sans-serif;font-size:1.25rem}
+.recs small{font-size:.72rem;color:var(--tinta-fraca)}
+
+/* jogo */
+.placar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px}
+.placar .jog{flex:1;background:var(--cartao);border:2px solid var(--borda);border-radius:16px;padding:6px 10px;display:flex;align-items:center;gap:8px;min-width:0}
+.placar .jog b{font-family:'Baloo 2',sans-serif;font-size:1.5rem;line-height:1}
+.placar .jog small{display:block;font-size:.72rem;color:var(--tinta-fraca);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.placar .jog .cor{width:14px;height:14px;border-radius:50%;flex:none}
+.placar .jog.tonto{animation:chacoalha .3s 3}
+.tempo{font-family:'Baloo 2',sans-serif;font-size:1.4rem;background:var(--amarelo);color:#3a2a00;border-radius:99px;padding:4px 12px;box-shadow:0 3px 0 #b37a00;flex:none}
+.tempo.acabando{background:var(--vermelho);color:#fff;box-shadow:0 3px 0 #9c2a2e;animation:pulo .5s infinite}
+.p2 .placar-topo{transform:rotate(180deg)}
+.placar-topo{margin-bottom:8px}
+.lago-caixa{position:relative;margin:10px auto 0;width:min(100%,460px);aspect-ratio:1}
+.lago{position:absolute;inset:0;border-radius:50%;touch-action:manipulation;user-select:none;-webkit-user-select:none;
+  background:radial-gradient(circle at 50% 50%,var(--agua1),var(--agua2) 70%);border:10px solid var(--borda-lago);box-shadow:0 10px 0 rgba(0,0,0,.12),inset 0 0 30px rgba(0,0,0,.25)}
+.lago:before{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.12) 0 3px,transparent 3px 26px);animation:gira 18s linear infinite}
+.lago .miolo{position:absolute;left:50%;top:50%;width:26%;height:26%;margin:-13% 0 0 -13%;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%,#9be38f,#3f9a4f);border:4px solid #2c7a3a;display:grid;place-items:center;font-size:clamp(1.4rem,7vw,2.4rem);box-shadow:0 4px 0 rgba(0,0,0,.2)}
+.lago .miolo span{display:inline-block}
+.p2 .lago:after{content:'';position:absolute;left:4%;right:4%;top:50%;border-top:3px dashed rgba(255,255,255,.6)}
+.peixe{position:absolute;left:0;top:0;width:18%;height:18%;border:none;background:none;padding:0;cursor:pointer;will-change:transform;z-index:2}
+.peixe .corpo{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 70%,rgba(0,40,90,.35),transparent 70%);transition:transform .15s}
+.peixe img,.peixe .emo{position:absolute;left:0;top:0;width:100%;height:100%;image-rendering:pixelated;transition:transform .18s;transform:translateY(22%) scale(.78);filter:brightness(.85) drop-shadow(0 2px 0 rgba(0,0,0,.2))}
+.peixe .emo{display:grid;place-items:center;font-size:clamp(1.4rem,7vw,2.2rem)}
+.peixe .boca{position:absolute;left:50%;top:-14%;transform:translateX(-50%) scale(0);font-size:clamp(.9rem,4vw,1.3rem);transition:transform .15s;pointer-events:none}
+.peixe.aberto img,.peixe.aberto .emo{transform:translateY(-10%) scale(1.08);filter:brightness(1.1) drop-shadow(0 0 8px #fff)}
+.peixe.aberto .corpo{background:radial-gradient(circle,rgba(255,255,255,.55),transparent 70%);transform:scale(1.2)}
+.peixe.aberto .boca{transform:translateX(-50%) scale(1)}
+.peixe.ruim.aberto .corpo{background:radial-gradient(circle,rgba(255,120,120,.45),transparent 70%)}
+.peixe.raro .corpo:after{content:'';position:absolute;inset:-4px;border-radius:50%;border:3px dashed #ffd84d;animation:gira 3s linear infinite}
+.pescado{position:fixed;z-index:40;pointer-events:none;width:64px;height:64px;transition:transform .7s cubic-bezier(.3,-.4,.6,1),opacity .7s}
+.pescado img,.pescado .emo{width:100%;height:100%;image-rendering:pixelated;font-size:2.4rem;display:grid;place-items:center}
+.linha{position:fixed;z-index:39;pointer-events:none;width:2px;background:#333;transform-origin:top center;transition:opacity .4s}
+.pontinho{position:fixed;z-index:41;pointer-events:none;font-weight:800;font-size:1.3rem;animation:sobe 1s ease-out forwards;text-shadow:0 2px 0 #fff,0 0 4px #fff}
+.pontinho.menos{color:var(--vermelho)} .pontinho.mais{color:#0d6b33}
+@keyframes sobe{to{transform:translateY(-50px);opacity:0}}
+.splash{position:fixed;z-index:41;pointer-events:none;font-size:1.8rem;animation:sobe .6s ease-out forwards}
+.evento{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none;background:rgba(255,255,255,.95);color:#0f2740;border-radius:18px;padding:8px 16px;font-family:'Baloo 2',sans-serif;font-size:1.3rem;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.2);animation:evento 1.8s ease-out forwards;white-space:nowrap}
+@keyframes evento{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}15%{transform:translate(-50%,-50%) scale(1.1);opacity:1}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
+.balde{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;min-height:44px;margin-top:10px;padding:6px;border-radius:16px;background:var(--cartao2);border:2px dashed var(--borda)}
+.balde img{width:38px;height:38px;image-rendering:pixelated;animation:pulo .35s}
+.balde .emo{font-size:1.6rem}
+.balde:empty:before{content:'🪣 Seu balde de peixes';color:var(--tinta-fraca);font-size:.85rem;align-self:center}
+@keyframes pulo{50%{transform:scale(1.25)}}
+@keyframes chacoalha{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.contagem{position:absolute;inset:0;display:grid;place-items:center;z-index:6;font-family:'Baloo 2',sans-serif;font-size:4rem;color:#fff;text-shadow:0 4px 0 #0d3563;pointer-events:none}
+
+/* pokédex */
+.dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:10px}
+.dex div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:6px;text-align:center}
+.dex img{width:64px;height:64px;image-rendering:pixelated}
+.dex .nao img{filter:brightness(0) opacity(.35)}
+.dex .emo{font-size:2.4rem;display:block;height:64px;line-height:64px}
+.dex .nao .emo{filter:grayscale(1) opacity(.35)}
+.dex b{display:block;font-size:.78rem}
+.dex small{font-size:.72rem;color:var(--tinta-fraca)}
+.dex .pts{font-weight:800;color:var(--marca)}
+
+dialog{border:none;border-radius:22px;padding:0;max-width:min(420px,calc(100vw - 32px));width:100%;background:var(--cartao);color:var(--tinta);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(5,20,40,.6)}
+.dlg{padding:20px;text-align:center}
+.dlg h2{font-size:1.6rem}
+.dlg .grandao{font-size:3rem;animation:pulo .6s}
+.dlg p{margin-top:6px;line-height:1.45}
+.dlg .grande{margin-top:14px;justify-content:center;text-align:center}
+.dlg .pegos{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;margin-top:8px}
+.dlg .pegos img{width:40px;height:40px;image-rendering:pixelated}
+.dlg .pegos .emo{font-size:1.6rem}
+.rodape{text-align:center;margin-top:22px;color:var(--tinta-fraca);font-size:.8rem}
+.versao{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:5px 12px;font-weight:700;cursor:pointer;margin-top:8px}
+.faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--marca);color:#fff;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:60;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.faixa-nova button{border:none;border-radius:99px;background:#fff;color:#154f99;font-weight:800;padding:6px 12px;cursor:pointer}
+.confete{position:fixed;top:-12px;width:10px;height:14px;z-index:70;pointer-events:none;animation:cai 3s linear forwards}
+@keyframes cai{to{transform:translateY(105vh) rotate(720deg)}}
+button:focus-visible{outline:3px solid #ffb300;outline-offset:2px}
+@media (max-width:420px){ .logo small{display:none} .logo h1{font-size:1.15rem} }
+@media (prefers-reduced-motion: reduce){ .lago:before,.capa .roda{animation:none} }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="logo" id="logo" title="Início"><img src="icone.svg" alt="" /><div><h1>Pescaria Maluca</h1><small>versão Pokémon 🎣</small></div></div>
+  <button class="redondo" id="som" type="button" title="Som">🔊</button>
+  <button class="redondo" id="tema" type="button" title="Claro ou escuro">🌙</button>
+</header>
+
+<main>
+  <!-- ========== INÍCIO ========== -->
+  <section id="tela-inicio">
+    <div class="capa">
+      <h2>🎣 Pescaria Maluca</h2>
+      <p>O lago gira, os Pokémon abrem a boca…<br>e você pesca na hora certa!</p>
+      <span class="roda">🌀</span>
+    </div>
+    <div class="menu">
+      <button class="grande" type="button" data-modo="solo"><span class="ic">🎣</span><span>Sozinho<small>1 minuto pra pescar o máximo de pontos</small></span></button>
+      <button class="grande verde" type="button" data-modo="robo"><span class="ic">🤖</span><span>Contra o Robô<small>o Treinador Robô também pesca, seja mais rápido!</small></span></button>
+      <button class="grande rosa" type="button" data-modo="dupla"><span class="ic">👫</span><span>2 jogadores<small>no mesmo celular: cada um pesca na sua metade do lago</small></span></button>
+      <button class="grande amarelo" type="button" id="ir-dex"><span class="ic">📖</span><span>Pokédex da pesca<small>todos os Pokémon que você já pescou</small></span></button>
+    </div>
+    <div class="cartao">
+      <h3>📜 Como joga</h3>
+      <p class="aviso">Os Pokémon ficam em volta do lago, que vai girando 🌀. De vez em quando cada um <b>abre a boca</b> 😮 e sobe. Toque nele <b>nessa hora</b> pra pescar! Se tocar com a boca fechada, ele foge 💦.</p>
+      <p class="aviso">Pokémon raros valem mais (tem até o <b>Kyogre</b> e o <b>Magikarp dourado</b> ✨). Mas cuidado com a 🥾 <b>bota velha</b> (-1) e o <b>Tentacool</b>, que queima e te deixa tonto (-2)! E às vezes o lago fica <b>maluco</b>: acelera, vira pro outro lado ou todo mundo abre a boca de uma vez!</p>
+      <div class="recs" id="recs"></div>
+    </div>
+    <div class="rodape">
+      Tudo fica guardado só neste aparelho.
+      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 29/09 · 🔄</button>
+    </div>
+  </section>
+
+  <!-- ========== JOGO ========== -->
+  <section id="tela-jogo" hidden>
+    <div class="placar placar-topo" id="placar-topo" hidden></div>
+    <div class="lago-caixa" id="lago-caixa">
+      <div class="lago" id="lago"><div class="miolo"><span id="miolo">🌀</span></div></div>
+    </div>
+    <div class="placar" id="placar"></div>
+    <div class="balde" id="balde"></div>
+    <div style="text-align:center;margin-top:12px"><button class="mini" type="button" id="desistir">🏳️ Parar</button></div>
+  </section>
+
+  <!-- ========== POKÉDEX ========== -->
+  <section id="tela-dex" hidden>
+    <button class="mini" type="button" id="dex-voltar">⬅️ Voltar</button>
+    <div class="cartao">
+      <h2>📖 Pokédex da pesca</h2>
+      <p class="aviso" id="dex-resumo"></p>
+      <div class="dex" id="dex"></div>
+    </div>
+  </section>
+</main>
+
+<dialog id="dlg"><div class="dlg" id="dlg-corpo"></div></dialog>
+
+<script>
+'use strict';
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('pescaria:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('pescaria:' + k, JSON.stringify(v)); }catch(e){} }
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+
+/* ---------- os Pokémon do lago ----------
+   p: pontos. w: chance de aparecer (maior = mais comum). ruim: tira ponto. */
+const PEIXES = [
+  { k:'129',  id:129, n:'Magikarp',  p:1,  w:30 },
+  { k:'118',  id:118, n:'Goldeen',   p:2,  w:13 },
+  { k:'116',  id:116, n:'Horsea',    p:2,  w:12 },
+  { k:'120',  id:120, n:'Staryu',    p:2,  w:12 },
+  { k:'54',   id:54,  n:'Psyduck',   p:2,  w:10 },
+  { k:'7',    id:7,   n:'Squirtle',  p:3,  w:8 },
+  { k:'158',  id:158, n:'Totodile',  p:3,  w:8 },
+  { k:'194',  id:194, n:'Wooper',    p:3,  w:8 },
+  { k:'393',  id:393, n:'Piplup',    p:3,  w:7 },
+  { k:'222',  id:222, n:'Corsola',   p:4,  w:5 },
+  { k:'349',  id:349, n:'Feebas',    p:5,  w:4 },
+  { k:'131',  id:131, n:'Lapras',    p:8,  w:2.5, raro:1 },
+  { k:'130',  id:130, n:'Gyarados',  p:10, w:2, raro:1 },
+  { k:'129s', id:129, n:'Magikarp dourado', p:15, w:1, raro:1, shiny:1 },
+  { k:'382',  id:382, n:'Kyogre',    p:25, w:.4, raro:1 },
+  { k:'72',   id:72,  n:'Tentacool', p:-2, w:5, ruim:1 },
+  { k:'bota', id:0,   n:'Bota velha', e:'🥾', p:-1, w:5, ruim:1 }
+];
+const PESO_TOTAL = PEIXES.reduce((s, x) => s + x.w, 0);
+function sortearPeixe(){ let r = Math.random() * PESO_TOTAL; for(const x of PEIXES){ r -= x.w; if(r <= 0) return x; } return PEIXES[0]; }
+const sprite = x => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${x.shiny ? 'shiny/' : ''}${x.id}.png`;
+const imgPeixe = x => x.e ? `<span class="emo">${x.e}</span>` : `<img src="${sprite(x)}" alt="${esc(x.n)}" draggable="false" onerror="this.outerHTML='<span class=&quot;emo&quot;>🐟</span>'" />`;
+
+/* ---------- guardado ---------- */
+let dex = ler('dex', {}); if(!dex || typeof dex !== 'object' || Array.isArray(dex)) dex = {};
+let rec = Object.assign({ solo:0, robo:0, vitorias:0, jogos:0, pescados:0 }, ler('rec', {}));
+let cfg = Object.assign({ som:true }, ler('cfg', {}));
+const salvar = () => { gravar('dex', dex); gravar('rec', rec); gravar('cfg', cfg); };
+
+/* ---------- som ---------- */
+let ac = null;
+function bip(freq, dur, tipo, quando, vol){
+  if(!cfg.som) return;
+  try{ ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const t = ac.currentTime + (quando || 0);
+    const o = ac.createOscillator(), g = ac.createGain(); o.type = tipo || 'sine'; o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(vol || .12, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur); }catch(e){}
+}
+const somPesca = raro => { bip(660, .08, 'square'); bip(990, .12, 'square', .07); if(raro){ bip(1320, .15, 'square', .15); bip(1760, .25, 'square', .25); } };
+const somSplash = () => { bip(300, .12, 'triangle'); bip(200, .15, 'triangle', .05); };
+const somRuim = () => bip(140, .3, 'sawtooth');
+const somFesta = () => [523, 659, 784, 1047].forEach((f, i) => bip(f, .2, 'triangle', i * .12));
+
+/* ---------- telas ---------- */
+function tela(n){ ['inicio', 'jogo', 'dex'].forEach(t => $('tela-' + t).hidden = t !== n); window.scrollTo(0, 0); }
+function mostrarInicio(){
+  parar();
+  $('recs').innerHTML = [['🎣', rec.solo, 'recorde sozinho'], ['🤖', rec.vitorias, 'vitórias no robô'], ['🐟', rec.pescados, 'Pokémon pescados']]
+    .map(([e, n, t]) => `<div><b>${e} ${n}</b><small>${t}</small></div>`).join('');
+  tela('inicio');
+}
+$('logo').onclick = mostrarInicio;
+
+/* ---------- o jogo ---------- */
+const QTD = 12, DURACAO = 60;
+let J = null;
+function novoJogo(modo){
+  const jogadores = modo === 'dupla'
+    ? [{ nome:'Jogador 1', cor:'#1f7ae0', pts:0, pegos:[] }, { nome:'Jogador 2', cor:'#e8458e', pts:0, pegos:[] }]
+    : modo === 'robo'
+      ? [{ nome:'Você', cor:'#1f7ae0', pts:0, pegos:[] }, { nome:'Treinador Robô 🤖', cor:'#2e9e5b', pts:0, pegos:[], robo:true }]
+      : [{ nome:'Você', cor:'#1f7ae0', pts:0, pegos:[] }];
+  J = { modo, jogadores, ang:0, vel:.45, dir:1, fim:0, comeco:performance.now() + 3000, ult:performance.now(), proxEvento:0, efeitos:{}, peixes:[], raf:0, acabou:false };
+  document.body.classList.toggle('p2', modo === 'dupla');
+  $('placar-topo').hidden = modo !== 'dupla';
+  $('balde').hidden = modo === 'dupla';
+  $('balde').innerHTML = '';
+  const lago = $('lago'); lago.querySelectorAll('.peixe,.evento,.contagem').forEach(x => x.remove());
+  for(let i = 0; i < QTD; i++){
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'peixe';
+    lago.appendChild(b);
+    const f = { el:b, i, abreEm:0, fechaEm:0 };
+    trocarPeixe(f, true);
+    J.peixes.push(f);
+  }
+  desenharPlacar();
+  tela('jogo');
+  contagem();
+  J.raf = requestAnimationFrame(passo);
+}
+function trocarPeixe(f, inicio){
+  const x = sortearPeixe(); f.tipo = x;
+  f.el.className = 'peixe' + (x.ruim ? ' ruim' : '') + (x.raro ? ' raro' : '');
+  f.el.innerHTML = `<span class="corpo"></span>${imgPeixe(x)}<span class="boca">${x.ruim ? '😈' : '😮'}</span>`;
+  f.el.setAttribute('aria-label', x.n);
+  const agora = performance.now();
+  f.abreEm = agora + (inicio ? 3000 : 0) + 600 + Math.random() * 3000; f.fechaEm = 0; f.pego = false;
+}
+function contagem(){
+  const c = document.createElement('div'); c.className = 'contagem'; $('lago').appendChild(c);
+  [3, 2, 1, '🎣!'].forEach((n, i) => setTimeout(() => { if(!J) return; c.textContent = n; bip(i === 3 ? 880 : 440, .15, 'triangle'); if(i === 3) setTimeout(() => c.remove(), 500); }, i * 750));
+  J.fim = J.comeco + DURACAO * 1000; J.proxEvento = J.comeco + 9000 + Math.random() * 5000;
+}
+function desenharPlacar(){
+  if(!J) return;
+  const agora = performance.now();
+  const s = Math.max(0, Math.ceil((J.fim - Math.max(agora, J.comeco)) / 1000));
+  const jog = (j, idx) => `<div class="jog ${j.tontoAte > agora ? 'tonto' : ''}" data-j="${idx}"><span class="cor" style="background:${j.cor}"></span><div style="min-width:0"><b>${j.pts}</b><small>${esc(j.nome)}${j.tontoAte > agora ? ' 😵' : ''}</small></div></div>`;
+  const tempo = `<span class="tempo ${s <= 10 ? 'acabando' : ''}">⏰ ${s}</span>`;
+  if(J.modo === 'dupla'){ $('placar-topo').innerHTML = jog(J.jogadores[1], 1) + tempo; $('placar').innerHTML = jog(J.jogadores[0], 0) + tempo; }
+  else $('placar').innerHTML = jog(J.jogadores[0], 0) + tempo + (J.jogadores[1] ? jog(J.jogadores[1], 1) : '');
+}
+function passo(agora){
+  if(!J) return;
+  const dt = Math.min(.05, (agora - J.ult) / 1000); J.ult = agora;
+  const jogando = agora >= J.comeco && !J.acabou;
+  const vel = J.vel * (J.efeitos.rapido > agora ? 2.4 : 1) * (J.efeitos.devagar > agora ? .4 : 1);
+  J.ang += vel * dt * J.dir;
+  const lago = $('lago'), S = lago.clientWidth, R = S * .37, c = S / 2 - S * .09;
+  const frenesi = J.efeitos.frenesi > agora;
+  J.peixes.forEach(f => {
+    const a = J.ang + f.i * Math.PI * 2 / QTD;
+    const bob = Math.sin(agora / 300 + f.i) * 2;
+    f.x = c + Math.cos(a) * R; f.y = c + Math.sin(a) * R + bob;
+    f.el.style.transform = `translate(${f.x}px,${f.y}px)`;
+    if(f.pego) return;
+    if(jogando && !f.fechaEm && agora >= f.abreEm){ f.fechaEm = agora + 750 + Math.random() * 450; }
+    if(f.fechaEm && agora >= f.fechaEm){ f.fechaEm = 0; f.abreEm = agora + 1600 + Math.random() * 2800; }
+    const aberto = jogando && (frenesi || (f.fechaEm && agora < f.fechaEm));
+    if(aberto !== f.aberto){ f.aberto = aberto; f.el.classList.toggle('aberto', aberto); }
+  });
+  $('miolo').style.transform = `rotate(${J.ang * 57}deg)`;
+  if(jogando){
+    if(agora >= J.proxEvento) eventoMaluco(agora);
+    J.jogadores.forEach((j, idx) => { if(j.robo) roboPensa(j, idx, agora); });
+  }
+  if(Math.floor(agora / 250) !== J.tick){ J.tick = Math.floor(agora / 250); desenharPlacar(); }
+  if(jogando && agora >= J.fim){ J.acabou = true; setTimeout(fimJogo, 400); }
+  J.raf = requestAnimationFrame(passo);
+}
+/* O robô olha o lago de tempos em tempos e às vezes pega um peixe aberto (e às vezes erra). */
+function roboPensa(j, idx, agora){
+  if(!j.proxOlhada){ j.proxOlhada = agora + 1200; return; }
+  if(agora < j.proxOlhada || j.tontoAte > agora) return;
+  j.proxOlhada = agora + 700 + Math.random() * 1100;
+  const abertos = J.peixes.filter(f => f.aberto && !f.pego && !f.tipo.ruim);
+  if(abertos.length && Math.random() < .5){
+    abertos.sort((a, b) => b.tipo.p - a.tipo.p);
+    pescar(abertos[Math.random() < .5 ? 0 : Math.floor(Math.random() * abertos.length)], idx);
+  }
+}
+function eventoMaluco(agora){
+  const ev = [
+    ['rapido', '⚡ Lago TURBO!'], ['virou', '🔄 Virou pro outro lado!'], ['frenesi', '😮 Todo mundo de boca aberta!'],
+    ['devagar', '🐢 Lago lentinho…'], ['raros', '✨ Chegaram Pokémon raros!']
+  ];
+  const [id, txt] = ev[Math.floor(Math.random() * ev.length)];
+  if(id === 'rapido') J.efeitos.rapido = agora + 4500;
+  if(id === 'devagar') J.efeitos.devagar = agora + 4000;
+  if(id === 'virou') J.dir *= -1;
+  if(id === 'frenesi') J.efeitos.frenesi = agora + 2200;
+  if(id === 'raros'){
+    const raros = PEIXES.filter(x => x.raro);
+    J.peixes.filter(f => !f.pego).sort(() => Math.random() - .5).slice(0, 3).forEach(f => { trocarPeixe(f); f.tipo = raros[Math.floor(Math.random() * raros.length)];
+      f.el.className = 'peixe raro'; f.el.innerHTML = `<span class="corpo"></span>${imgPeixe(f.tipo)}<span class="boca">😮</span>`; f.el.setAttribute('aria-label', f.tipo.n); });
+  }
+  const d = document.createElement('div'); d.className = 'evento'; d.textContent = txt; $('lago').appendChild(d); setTimeout(() => d.remove(), 1800);
+  bip(523, .1, 'square'); bip(784, .1, 'square', .1); bip(1047, .15, 'square', .2);
+  J.proxEvento = agora + 10000 + Math.random() * 6000;
+}
+function quemTocou(f){
+  if(J.modo !== 'dupla') return 0;
+  const S = $('lago').clientWidth; return (f.y + S * .09) < S / 2 ? 1 : 0;
+}
+$('lago').addEventListener('pointerdown', ev => {
+  const b = ev.target.closest('.peixe'); if(!b || !J || J.acabou) return;
+  ev.preventDefault();
+  const f = J.peixes.find(x => x.el === b); if(!f || f.pego) return;
+  const idx = quemTocou(f), j = J.jogadores[idx];
+  if(j.tontoAte > performance.now()){ bip(120, .1, 'square'); return; }
+  if(f.aberto) pescar(f, idx);
+  else fugiu(f);
+});
+/* Teclado: espaço pesca o primeiro Pokémon de boca aberta (modo sozinho ou robô). */
+document.addEventListener('keydown', ev => {
+  if(!J || J.acabou || J.modo === 'dupla' || ev.key !== ' ' || $('tela-jogo').hidden) return;
+  ev.preventDefault();
+  const f = J.peixes.find(x => x.aberto && !x.pego && !x.tipo.ruim) || J.peixes.find(x => x.aberto && !x.pego);
+  if(f) pescar(f, 0);
+});
+function posTela(f){ const r = f.el.getBoundingClientRect(); return { x:r.left + r.width / 2, y:r.top + r.height / 2, w:r.width }; }
+function flutuar(txt, x, y, cls){ const d = document.createElement('div'); d.className = 'pontinho ' + (cls || ''); d.textContent = txt; d.style.left = (x - 20) + 'px'; d.style.top = (y - 30) + 'px'; document.body.appendChild(d); setTimeout(() => d.remove(), 1000); }
+function fugiu(f){
+  const p = posTela(f); const s = document.createElement('div'); s.className = 'splash'; s.textContent = '💦'; s.style.left = (p.x - 16) + 'px'; s.style.top = (p.y - 20) + 'px';
+  document.body.appendChild(s); setTimeout(() => s.remove(), 600); somSplash();
+  /* Assusta: fica um tempinho sem abrir a boca. */
+  f.fechaEm = 0; f.aberto = false; f.el.classList.remove('aberto'); f.abreEm = performance.now() + 1500 + Math.random() * 1500;
+}
+function pescar(f, idx){
+  const j = J.jogadores[idx], x = f.tipo, p = posTela(f);
+  f.pego = true; f.aberto = false; f.el.classList.remove('aberto'); f.el.style.visibility = 'hidden';
+  j.pts = Math.max(0, j.pts + x.p); j.pegos.push(x);
+  if(!j.robo){ dex[x.k] = (dex[x.k] || 0) + 1; rec.pescados++; }
+  if(x.ruim){
+    somRuim(); flutuar((x.p) + ' ' + (x.id === 72 ? '🔥 Ai!' : '🥾'), p.x, p.y, 'menos');
+    if(x.id === 72) j.tontoAte = performance.now() + 1500;
+  } else { somPesca(x.raro); flutuar('+' + x.p + (x.raro ? ' ✨' : ''), p.x, p.y, 'mais'); }
+  /* Animação: a linha desce e o Pokémon voa pro balde (ou pro lado de quem pescou). */
+  const alvoY = J.modo === 'dupla' ? (idx === 1 ? -80 : innerHeight + 80) : (j.robo ? -80 : $('balde').getBoundingClientRect().top + 20);
+  const alvoX = j.robo ? innerWidth - 40 : innerWidth / 2;
+  const voa = document.createElement('div'); voa.className = 'pescado'; voa.innerHTML = imgPeixe(x);
+  voa.style.left = (p.x - 32) + 'px'; voa.style.top = (p.y - 32) + 'px'; document.body.appendChild(voa);
+  const linha = document.createElement('div'); linha.className = 'linha'; linha.style.left = p.x + 'px'; linha.style.top = (idx === 1 && J.modo === 'dupla' ? p.y : 0) + 'px';
+  linha.style.height = (idx === 1 && J.modo === 'dupla' ? 0 : p.y) + 'px'; document.body.appendChild(linha);
+  requestAnimationFrame(() => requestAnimationFrame(() => { voa.style.transform = `translate(${alvoX - p.x}px,${alvoY - p.y}px) scale(.6)`; voa.style.opacity = '.3'; linha.style.opacity = '0'; }));
+  setTimeout(() => { voa.remove(); linha.remove(); }, 750);
+  if(!j.robo && J.modo !== 'dupla'){ const b = $('balde'); b.insertAdjacentHTML('beforeend', imgPeixe(x)); while(b.children.length > 24) b.firstElementChild.remove(); }
+  salvar(); desenharPlacar();
+  /* Um Pokémon novo aparece no lugar. */
+  setTimeout(() => { if(!J || J.acabou) return; trocarPeixe(f); f.el.style.visibility = ''; }, 900);
+}
+function parar(){ if(!J) return; cancelAnimationFrame(J.raf); J = null; document.body.classList.remove('p2'); }
+function fimJogo(){
+  if(!J) return;
+  const js = J.jogadores, modo = J.modo;
+  parar();
+  rec.jogos++;
+  let titulo, texto, festa = false;
+  if(modo === 'solo'){
+    const novo = js[0].pts > rec.solo; if(novo){ rec.solo = js[0].pts; festa = true; }
+    titulo = `${js[0].pts} pontos!`;
+    texto = novo ? '🏆 <b>RECORDE NOVO!</b>' : `Seu recorde é ${rec.solo}. ${js[0].pts >= 40 ? 'Pescador profissional! 🎣' : 'Bora tentar de novo?'}`;
+  } else if(modo === 'robo'){
+    const ganhou = js[0].pts > js[1].pts, empate = js[0].pts === js[1].pts;
+    if(ganhou){ rec.vitorias++; festa = true; }
+    titulo = ganhou ? 'Você venceu! 🏆' : empate ? 'Empate! 🤝' : 'O Robô venceu… 🤖';
+    texto = `Você: <b>${js[0].pts}</b> · Robô: <b>${js[1].pts}</b>`;
+  } else {
+    const a = js[0].pts, b = js[1].pts; festa = true;
+    titulo = a === b ? 'Empate! 🤝' : (a > b ? 'Jogador 1 venceu! 🏆' : 'Jogador 2 venceu! 🏆');
+    texto = `Jogador 1: <b>${a}</b> · Jogador 2: <b>${b}</b>`;
+  }
+  salvar();
+  if(festa){ somFesta(); confete(); }
+  const meus = modo === 'dupla' ? js[0].pegos.concat(js[1].pegos) : js[0].pegos;
+  const melhor = meus.filter(x => !x.ruim).sort((x, y) => y.p - x.p)[0];
+  janela(`<div class="grandao">🎣</div><h2>${titulo}</h2><p>${texto}</p>
+    ${melhor ? `<p>Melhor peixe: <b>${esc(melhor.n)}</b> (+${melhor.p})</p>` : ''}
+    <div class="pegos">${meus.slice(0, 40).map(imgPeixe).join('')}</div>
+    <button class="grande" type="button" data-denovo="${modo}">🔁 Jogar de novo</button>
+    <button class="mini" type="button" data-fechar style="margin-top:10px">🏠 Início</button>`);
+}
+$('dlg-corpo').addEventListener('click', ev => {
+  const d = ev.target.closest('[data-denovo]'); if(d){ dlg.close(); novoJogo(d.dataset.denovo); return; }
+  if(ev.target.closest('[data-fechar]')){ dlg.close(); mostrarInicio(); }
+});
+document.querySelectorAll('[data-modo]').forEach(b => b.onclick = () => novoJogo(b.dataset.modo));
+$('desistir').onclick = mostrarInicio;
+
+/* ---------- pokédex ---------- */
+function mostrarDex(){
+  const tem = PEIXES.filter(x => dex[x.k]).length;
+  $('dex-resumo').textContent = `Você já pescou ${tem} de ${PEIXES.length} tipos. Os escurinhos ainda faltam!`;
+  $('dex').innerHTML = PEIXES.map(x => `<div class="${dex[x.k] ? '' : 'nao'}">${imgPeixe(x)}<b>${dex[x.k] ? esc(x.n) : '???'}</b>
+    <small>${dex[x.k] ? `pescado ${dex[x.k]}x` : 'ainda não'}</small><br><small class="pts">${x.p > 0 ? '+' : ''}${x.p} ${Math.abs(x.p) === 1 ? 'ponto' : 'pontos'}</small></div>`).join('');
+  tela('dex');
+}
+$('ir-dex').onclick = mostrarDex;
+$('dex-voltar').onclick = mostrarInicio;
+
+/* ---------- janela e festa ---------- */
+const dlg = $('dlg');
+function janela(html){ $('dlg-corpo').innerHTML = html; if(!dlg.open) dlg.showModal(); }
+dlg.addEventListener('cancel', () => setTimeout(mostrarInicio, 0));
+function confete(){ const cores = ['#1f7ae0', '#ffc21a', '#ff5fa2', '#2e9e5b', '#fff'];
+  for(let i = 0; i < 60; i++){ const c = document.createElement('i'); c.className = 'confete'; c.style.left = Math.random() * 100 + 'vw'; c.style.background = cores[i % cores.length];
+    c.style.animationDelay = Math.random() * .5 + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 3600); } }
+
+/* ---------- som e tema ---------- */
+const btSom = $('som'); function marcarSom(){ btSom.textContent = cfg.som ? '🔊' : '🔇'; }
+btSom.onclick = () => { cfg.som = !cfg.som; salvar(); marcarSom(); };
+const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function aplicarTema(t){ if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema'); btTema.textContent = estaEscuro() ? '☀️' : '🌙'; corDaBarra.setAttribute('content', estaEscuro() ? '#0b1a2b' : '#1f7ae0'); }
+aplicarTema(ler('tema', null));
+btTema.onclick = () => { const t = estaEscuro() ? 'claro' : 'escuro'; gravar('tema', t); aplicarTema(t); };
+
+marcarSom(); mostrarInicio();
+
+/* ---------- versão nova ---------- */
+const btRecarregar = $('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{ if(window.caches){ const n = await caches.keys(); await Promise.all(n.map(x => caches.delete(x))); } }catch(e){}
+  try{ if(navigator.serviceWorker){ const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(x => x.update().catch(() => {}))); } }catch(e){}
+  const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+};
+try{ if(new URL(location.href).searchParams.has('v')){ const l = new URL(location.href); l.searchParams.delete('v'); history.replaceState(null, '', l.pathname + l.search + l.hash); } }catch(e){}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(!jaTinha || document.querySelector('.faixa-nova')) return;
+    const f = document.createElement('div'); f.className = 'faixa-nova';
+    f.innerHTML = '<span>✨ Chegou versão nova!</span><button type="button">Carregar</button>';
+    f.querySelector('button').onclick = () => location.reload();
+    document.body.appendChild(f);
+  });
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); }).catch(() => {}); });
+}
+</script>
+</body>
+</html>
