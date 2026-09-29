@@ -47,4 +47,8 @@ O seu bichinho virtual Pokémon!
 - ➕ Adicionar amigo pelo código JUNTO1 (perfil + time + recado), ver o perfil e os Pokémon do amigo, 💬 conversa (frases prontas ou recado de até 120 letras, links viram [link]) e 🎾 chamar o Pokémon do amigo pra brincar no quarto.
 - Contador de recados novos, e os amigos vão junto no 💾 Save.
 
+## Versão 10: 👆 código de toque
+- No perfil do amigo, **👆 Mandar um toque** (💖 carinho, 🦘 pular, 🫂 abraço, 💃 dançar, 🎁 presentinho, 🤭 cócegas) gera um código TOQUE1.
+- Quem cola o código em 👥 Amigos vê o Pokémon reagir na hora ("Claude fez carinho em…"). Cada toque vale uma vez só; presentes valem até 5 por dia.
+
 Tudo fica guardado só neste aparelho. Nomes, tipos e evoluções vêm do banco do *Quem é esse Pokémon?*; figuras e gritos do [PokeAPI](https://pokeapi.co). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.
