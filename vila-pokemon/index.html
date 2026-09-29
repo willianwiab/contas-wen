@@ -317,6 +317,116 @@ main>section{animation:aparece .35s ease-out}
 :root[data-tema="escuro"] .dlg{background:radial-gradient(circle at 50% 0,#3a3218,transparent 55%)}
 @media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .dlg{background:radial-gradient(circle at 50% 0,#3a3218,transparent 55%)}}
 .dlg .grandao{animation:pulo .6s ease-out}
+/* ================= parte 2 e 3 ================= */
+.stats div:nth-child(7){background:#e3f7e8}.stats div:nth-child(8){background:#ffe6d6}.stats div:nth-child(9){background:#e6f3ff}
+.cartao.lugar .toldo.roxo{--cor:#8b5cf6}.cartao.lugar .toldo.amarelo{--cor:#ffb300}.cartao.lugar .toldo.azul{--cor:#3b8cff}
+.grande.roxo{background:linear-gradient(180deg,#a78bfa,#6d3fd9);box-shadow:0 5px 0 #4a28a0}
+.grande.amarelo{background:linear-gradient(180deg,#ffd54d,#ffb300);box-shadow:0 5px 0 #b37a00;color:#3a2a00}
+.grande.azul{background:linear-gradient(180deg,#6fb0ff,#2f7de0);box-shadow:0 5px 0 #1d56a3}
+button:focus-visible{outline:3px solid #ffb300;outline-offset:2px}
+
+/* casa assombrada */
+.achados{display:flex;gap:6px;justify-content:center;margin:10px 0 8px}
+.achados span{width:46px;height:46px;border-radius:12px;background:#2a1d45;display:grid;place-items:center;font-size:1.2rem;border:2px solid #4a3a70}
+.achados span.ok{background:#e9ddff;border-color:#8b5cf6;animation:pulo .4s}
+.achados img{width:42px;height:42px;image-rendering:pixelated}
+.quarto{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;padding:8px;border-radius:18px;touch-action:none;user-select:none;-webkit-user-select:none;
+  background:linear-gradient(180deg,#5b3f8c 0 55%,#6b4a2a 55%),repeating-linear-gradient(90deg,transparent 0 22px,rgba(0,0,0,.15) 22px 24px);background-blend-mode:multiply;border:4px solid #2a1d45;overflow:hidden;cursor:crosshair}
+.movel,.chao{aspect-ratio:1;border-radius:12px}
+.movel{border:none;background:rgba(255,255,255,.08);font-size:clamp(1.3rem,7vw,2rem);cursor:pointer;display:grid;place-items:center;padding:0;position:relative}
+.movel.visto:not(.achou){opacity:.35;filter:grayscale(1)}
+.movel.achou{background:rgba(190,160,255,.35)}
+.movel.achou img{width:100%;height:100%;image-rendering:pixelated;animation:pulo .4s}
+.movel.treme{animation:treme .25s infinite}
+@keyframes treme{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.movel.olhos:after{content:'👀';position:absolute;top:-4px;right:-2px;font-size:.9rem}
+.escuro{position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:radial-gradient(circle at var(--x,50%) var(--y,50%),rgba(255,240,180,.12) 0,transparent var(--r,70px),rgba(6,0,18,.96) calc(var(--r,70px) + 36px))}
+.bu{position:fixed;inset:0;z-index:80;display:grid;place-items:center;pointer-events:none;background:rgba(40,0,60,.55);animation:bu .9s ease-out forwards}
+.bu img,.bu .emo{width:min(60vw,260px);height:auto;image-rendering:pixelated;font-size:8rem}
+.bu b{position:absolute;font-family:'Baloo 2',sans-serif;font-size:4rem;color:#fff;text-shadow:0 4px 0 #6b3fd9;top:58%}
+@keyframes bu{0%{transform:scale(.2)}20%{transform:scale(1.1)}30%{transform:scale(1)}80%{opacity:1}100%{opacity:0}}
+
+/* palco */
+.artistas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:6px}
+.artistas button{border:2px solid var(--borda);background:var(--cartao2);border-radius:14px;padding:4px 2px;cursor:pointer;box-shadow:0 3px 0 var(--borda)}
+.artistas button[aria-pressed="true"]{border-color:#ffb300;box-shadow:0 0 0 3px #ffb300;background:#fff6d6}
+:root[data-tema="escuro"] .artistas button[aria-pressed="true"]{background:#3a3218}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .artistas button[aria-pressed="true"]{background:#3a3218}}
+.artistas img{width:56px;height:56px;image-rendering:pixelated;display:block;margin:0 auto}
+.artistas .emo{font-size:2rem;display:block}
+.artistas small{font-size:.66rem;font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini.musica[aria-pressed="true"]{background:#ffb300;border-color:#ffb300;color:#3a2a00}
+.palco-cena{position:relative;height:150px;border-radius:18px;overflow:hidden;display:grid;place-items:end center;
+  background:linear-gradient(180deg,#1a0b33,#4a1a6b 70%,#8a4a1a 70%,#6b3410)}
+.palco-cena:before{content:'';position:absolute;left:0;right:0;top:0;height:22px;background:repeating-linear-gradient(90deg,#c21e3a 0 20px,#a3162f 20px 40px);border-radius:0 0 50% 50%/0 0 100% 100%}
+.holofote{position:absolute;left:50%;top:0;width:220px;margin-left:-110px;height:140px;background:linear-gradient(180deg,rgba(255,240,160,.5),rgba(255,240,160,0));clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);animation:holofote 3s ease-in-out infinite}
+@keyframes holofote{50%{transform:rotate(8deg)}}
+.artista{position:relative;z-index:1;margin-bottom:14px}
+.artista img{width:110px;height:110px;image-rendering:pixelated;display:block}
+.artista .emo{font-size:4rem}
+.artista.danca-e{animation:dancaE .3s ease-out}.artista.danca-d{animation:dancaD .3s ease-out}
+@keyframes dancaE{40%{transform:translateY(-14px) rotate(-10deg)}}
+@keyframes dancaD{40%{transform:translateY(-14px) rotate(10deg)}}
+.artista.tonto{animation:chacoalha .35s}
+.artista.brilha:after{content:'✨';position:absolute;top:-6px;right:-10px;font-size:1.6rem}
+.julga{position:absolute;top:28px;left:0;right:0;text-align:center;font-weight:800;font-size:1.3rem;color:#fff;text-shadow:0 2px 0 #000;z-index:2}
+.julga.perf{color:#ffe066}.julga.ruim{color:#ff9aa2}
+.pista{position:relative;height:min(46vh,320px);margin-top:8px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-radius:18px;overflow:hidden;background:#1a1030;border:4px solid #2a1d45}
+.faixa{position:relative;border-right:2px solid rgba(255,255,255,.08)}
+.faixa:last-of-type{border-right:none}
+.faixa[data-f="0"]{background:linear-gradient(180deg,transparent,rgba(255,95,162,.15))}
+.faixa[data-f="1"]{background:linear-gradient(180deg,transparent,rgba(255,194,26,.15))}
+.faixa[data-f="2"]{background:linear-gradient(180deg,transparent,rgba(59,140,255,.15))}
+.alvo{position:absolute;left:0;right:0;bottom:40px;height:8px;margin-bottom:-4px;background:rgba(255,255,255,.85);box-shadow:0 0 12px #fff;border-radius:4px}
+.nota{position:absolute;left:50%;top:0;width:52px;height:52px;margin-left:-26px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 12px rgba(255,255,255,.6);will-change:transform}
+.nota.n0{background:radial-gradient(circle at 35% 35%,#ffc2dc,#ff5fa2)}
+.nota.n1{background:radial-gradient(circle at 35% 35%,#fff0a8,#ffb300)}
+.nota.n2{background:radial-gradient(circle at 35% 35%,#c2e0ff,#3b8cff)}
+.nota.acertou{animation:estoura .25s ease-out forwards}
+.nota.errou{opacity:.3;filter:grayscale(1)}
+@keyframes estoura{to{scale:1.8;opacity:0}}
+.botoes-palco{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px;touch-action:manipulation}
+.botoes-palco button{height:74px;border:none;border-radius:20px;font-size:2rem;cursor:pointer;color:#fff;user-select:none;-webkit-user-select:none}
+.botoes-palco .b0{background:linear-gradient(180deg,#ff8cc0,#e8458e);box-shadow:0 6px 0 #a82a63}
+.botoes-palco .b1{background:linear-gradient(180deg,#ffd54d,#ffb300);box-shadow:0 6px 0 #b37a00}
+.botoes-palco .b2{background:linear-gradient(180deg,#6fb0ff,#2f7de0);box-shadow:0 6px 0 #1d56a3}
+.botoes-palco button.aperta{animation:aperta .15s}
+@keyframes aperta{50%{transform:translateY(5px);box-shadow:0 1px 0 rgba(0,0,0,.3)}}
+
+/* ilha */
+.painel .mini:disabled{opacity:.55}
+.ferramentas{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 8px;margin-top:8px;scroll-snap-type:x proximity}
+.ferramentas button{flex:none;width:66px;border:2px solid var(--borda);background:var(--cartao2);border-radius:14px;padding:4px 2px;cursor:pointer;scroll-snap-align:start;box-shadow:0 3px 0 var(--borda)}
+.ferramentas button span{font-size:1.6rem;display:block;line-height:1.2}
+.ferramentas button small{font-size:.64rem;font-weight:700;line-height:1.2;display:block}
+.ferramentas button[aria-pressed="true"]{border-color:#3b8cff;box-shadow:0 0 0 3px #3b8cff;background:#e6f3ff}
+:root[data-tema="escuro"] .ferramentas button[aria-pressed="true"]{background:#1d3350}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .ferramentas button[aria-pressed="true"]{background:#1d3350}}
+.mapa{position:relative;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:2px;padding:6px;border-radius:18px;
+  background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.25) 0 3px,transparent 4px) 0 0/34px 26px,linear-gradient(180deg,#58b4ff,#2f7de0);border:4px solid #1d56a3;animation:ondas 6s linear infinite}
+@keyframes ondas{to{background-position:34px 0,0 0}}
+.tile{aspect-ratio:1;border:none;border-radius:9px;display:grid;place-items:center;position:relative;padding:0;cursor:pointer;min-width:0}
+.tile.mar{background:transparent;cursor:default}
+.tile.areia{background:#f5dfa3;box-shadow:inset 0 -3px 0 rgba(0,0,0,.08)}
+.tile.grama{background:#8fd98f;box-shadow:inset 0 -3px 0 rgba(0,0,0,.08)}
+.tile.lago{background:radial-gradient(circle at 35% 35%,#bfe6ff,#3b8cff)}
+.tile .cons{font-size:clamp(1rem,5.5vw,1.7rem);line-height:1}
+.tile .mora{position:absolute;width:125%;height:125%;image-rendering:pixelated;bottom:0;animation:respira 1.4s ease-in-out infinite;pointer-events:none}
+.tile:not(.mar):hover{filter:brightness(1.08)}
+.barquinho{grid-column:1/-1;text-align:center;color:#fff;font-weight:700;font-size:.8rem;padding:4px}
+.querem{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px;margin-top:8px}
+.quer-card{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:6px;text-align:center}
+.quer-card img{width:56px;height:56px;image-rendering:pixelated;filter:brightness(0) opacity(.45)}
+.quer-card.mora{border-color:#2e9e5b;background:#e3f7e8;color:#173024}
+.quer-card.mora img{filter:none}
+.quer-card .emo{font-size:2rem;display:block}
+.quer-card b{display:block;font-size:.8rem}
+.reqs{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:3px;font-size:.72rem;font-weight:700}
+.reqs span{background:var(--cartao);border-radius:99px;padding:1px 6px;border:1px solid var(--borda)}
+.reqs span.ok{background:#c9f0d4;border-color:#2e9e5b;color:#173024}
+.chegou{display:flex;justify-content:center;gap:4px;flex-wrap:wrap}
+.chegou img{width:96px;height:96px;image-rendering:pixelated;animation:pulo .6s ease-out}
 @media (max-width:480px){ .logo small{display:none} .logo h1{font-size:1.1rem} }
 @media (max-width:360px){ .logo img{display:none} }
 @media (max-width:360px){ .casa .vitrine{width:54px;height:48px} .casa .vitrine .ico{font-size:1.7rem} .casa .porta{width:26px;height:42px} .casa .placa b{font-size:.86rem} }
@@ -325,7 +435,7 @@ main>section{animation:aparece .35s ease-out}
 </head>
 <body>
 <header class="topo">
-  <div class="logo" id="logo" title="Voltar pra vila"><img src="icone.svg" alt="" /><div><h1>Vila Pokémon</h1><small>parte 1: lojinha e confeitaria</small></div></div>
+  <div class="logo" id="logo" title="Voltar pra vila"><img src="icone.svg" alt="" /><div><h1>Vila Pokémon</h1><small>loja, bolos, fantasmas, palco e ilha</small></div></div>
   <span class="moedas" id="moedas" aria-live="polite">🪙 0</span>
   <button class="redondo" id="som" type="button" title="Som">🔊</button>
   <button class="redondo" id="tema" type="button" title="Claro ou escuro">🌙</button>
@@ -353,7 +463,7 @@ main>section{animation:aparece .35s ease-out}
     <div class="rodape">
       Tudo fica guardado só neste aparelho.
       <br><button class="mini" type="button" id="zerar" style="margin-top:8px">🗑️ Começar a vila do zero</button>
-      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 29/09 · 🔄</button>
+      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 3 — 29/09 · 🔄</button>
     </div>
   </section>
 
@@ -375,7 +485,7 @@ main>section{animation:aparece .35s ease-out}
         <button class="grande" type="button" id="loja-abrir">🔔 Abrir a loja (1 minuto)</button>
       </div>
       <div class="linha" style="margin-top:10px;justify-content:center">
-        <button class="mini" type="button" id="loja-melhorar">⬆️ Melhorias da loja</button>
+        <button class="mini" type="button" id="loja-melhorar" data-melhorar="loja">⬆️ Melhorias da loja</button>
       </div>
     </div>
   </section>
@@ -392,7 +502,7 @@ main>section{animation:aparece .35s ease-out}
       <div id="conf-parado">
         <p class="aviso" style="font-size:.95rem">A Alcremie é a chefe! 👩‍🍳 Os clientes pedem um bolo, e você monta igualzinho: andares, massa, creme, fruta e enfeite. Quanto mais parecido e mais rápido, mais moedas! Cada turno tem <b>5 pedidos</b>.</p>
         <button class="grande rosa" type="button" id="conf-abrir" style="margin-top:12px">🎂 Abrir a confeitaria</button>
-        <div class="linha" style="margin-top:10px;justify-content:center"><button class="mini" type="button" id="conf-melhorar">⬆️ Melhorias da confeitaria</button></div>
+        <div class="linha" style="margin-top:10px;justify-content:center"><button class="mini" type="button" id="conf-melhorar" data-melhorar="conf">⬆️ Melhorias da confeitaria</button></div>
       </div>
       <div id="conf-jogo" hidden>
         <div class="tempo-barra"><i id="conf-tempo"></i></div>
@@ -406,6 +516,77 @@ main>section{animation:aparece .35s ease-out}
         </div>
         <button class="grande rosa" type="button" id="conf-entregar" style="margin-top:10px">🎂 Entregar o bolo</button>
       </div>
+    </div>
+  </section>
+
+  <!-- ========== CASA ASSOMBRADA ========== -->
+  <section id="tela-casa" hidden>
+    <button class="mini voltar" type="button" data-vila>⬅️ Vila</button>
+    <div class="cartao lugar">
+      <div class="toldo roxo" aria-hidden="true"></div>
+      <div class="painel">
+        <h2 class="titulo">👻 Casa Assombrada</h2>
+        <span class="relogio" id="casa-relogio"></span>
+      </div>
+      <div id="casa-parado">
+        <p class="aviso" style="font-size:.95rem">A casa do Gengar está cheia de <b>fantasmas escondidos</b> nos móveis! Passe o dedo pra mexer a 🔦 lanterna. Quando a luz passa num fantasma, o móvel <b>treme</b>. Toque pra procurar!</p>
+        <p class="aviso">Cuidado: procurar no lugar errado gasta 1 segundo, e o Gengar às vezes dá um <b>susto</b> (-3 segundos)! 😱</p>
+        <button class="grande roxo" type="button" id="casa-abrir" style="margin-top:12px">🔦 Entrar na casa</button>
+        <div class="linha" style="margin-top:10px;justify-content:center"><button class="mini" type="button" data-melhorar="casa">⬆️ Melhorias da casa</button></div>
+      </div>
+      <div id="casa-jogo" hidden>
+        <div class="tempo-barra"><i id="casa-tempo"></i></div>
+        <div class="achados" id="casa-achados"></div>
+        <div class="quarto" id="quarto"></div>
+        <div class="faixa-msg" id="casa-msg"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PALCO ========== -->
+  <section id="tela-palco" hidden>
+    <button class="mini voltar" type="button" data-vila>⬅️ Vila</button>
+    <div class="cartao lugar">
+      <div class="toldo amarelo" aria-hidden="true"></div>
+      <div class="painel">
+        <h2 class="titulo">🎤 Palco de Talentos</h2>
+        <span class="relogio" id="palco-placar"></span>
+      </div>
+      <div id="palco-parado">
+        <p class="aviso" style="font-size:.95rem">Escolha quem vai se apresentar e a música. As bolinhas descem, e quando chegarem na <b>linha branca</b>, aperte o botão da mesma cor! 🎵 (No computador dá pra usar as teclas <b>A S D</b> ou as setinhas.)</p>
+        <h3 style="margin-top:12px">⭐ Artista</h3>
+        <div class="artistas" id="palco-artistas"></div>
+        <h3 style="margin-top:12px">🎵 Música</h3>
+        <div class="linha" id="palco-musicas"></div>
+        <button class="grande amarelo" type="button" id="palco-abrir" style="margin-top:14px">🎤 Começar o show</button>
+        <div class="linha" style="margin-top:10px;justify-content:center"><button class="mini" type="button" data-melhorar="palco">⬆️ Melhorias do palco</button></div>
+      </div>
+      <div id="palco-jogo" hidden>
+        <div class="palco-cena" id="palco-cena"><div class="holofote"></div><div class="artista" id="palco-artista"></div><div class="julga" id="palco-julga"></div></div>
+        <div class="pista" id="pista"><div class="faixa" data-f="0"></div><div class="faixa" data-f="1"></div><div class="faixa" data-f="2"></div><div class="alvo"></div></div>
+        <div class="botoes-palco" id="botoes-palco">
+          <button type="button" data-lane="0" class="b0" aria-label="botão rosa">💗</button><button type="button" data-lane="1" class="b1" aria-label="botão amarelo">⭐</button><button type="button" data-lane="2" class="b2" aria-label="botão azul">💎</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ILHA ========== -->
+  <section id="tela-ilha" hidden>
+    <button class="mini voltar" type="button" data-vila>⬅️ Vila</button>
+    <div class="cartao lugar">
+      <div class="toldo azul" aria-hidden="true"></div>
+      <div class="painel">
+        <h2 class="titulo">🏝️ Ilha Pokémon</h2>
+        <button class="mini" type="button" id="ilha-coletar">💰 Coletar</button>
+      </div>
+      <p class="aviso">Escolha uma construção e toque na terra pra colocar. Cada Pokémon quer umas coisas pra vir morar aqui, e os moradores dão moedas pra você coletar (a cada 10 minutos)! 💰</p>
+      <div class="ferramentas" id="ilha-ferramentas"></div>
+      <div class="mapa" id="mapa"></div>
+      <div class="faixa-msg" id="ilha-msg"></div>
+      <h3 style="margin-top:12px">🏡 Quem quer morar na ilha?</h3>
+      <div class="querem" id="ilha-querem"></div>
+      <div class="linha" style="margin-top:12px;justify-content:center"><button class="mini" type="button" data-melhorar="ilha">⬆️ Melhorias da ilha</button></div>
     </div>
   </section>
 
@@ -523,12 +704,15 @@ const MELH_CONF = [
 ];
 
 /* ---------- estado ---------- */
-const NOVO = () => ({ moedas:30, loja:{}, conf:{}, estoque:{ maca:5, pocao:5, bola:5, pelucia:5 },
-  st:{ vendas:0, bravos:0, bolos:0, perfeitos:0, ganhou:0, recLoja:0, recConf:0 } });
+const NOVO = () => ({ moedas:30, loja:{}, conf:{}, casa:{}, palco:{}, ilha:{}, estoque:{ maca:5, pocao:5, bola:5, pelucia:5 },
+  mapa:{}, moradores:[], coleta:Date.now(),
+  st:{ vendas:0, bravos:0, bolos:0, perfeitos:0, ganhou:0, recLoja:0, recConf:0, fantasmas:0, recCasa:0, shows:0, recPalco:0 } });
 let E = ler('estado', null);
 if(!E || typeof E !== 'object') E = NOVO();
 E = Object.assign(NOVO(), E);
 E.st = Object.assign(NOVO().st, E.st || {});
+['loja', 'conf', 'casa', 'palco', 'ilha', 'mapa', 'estoque'].forEach(k => { if(!E[k] || typeof E[k] !== 'object' || Array.isArray(E[k])) E[k] = NOVO()[k]; });
+if(!Array.isArray(E.moradores)) E.moradores = [];
 let cfg = Object.assign({ som:true }, ler('cfg', {}));
 const salvar = () => { gravar('estado', E); gravar('cfg', cfg); };
 const nivel = (onde, id) => Math.max(0, Math.min(99, +(E[onde][id] || 0)));
@@ -556,23 +740,23 @@ const somErro = () => bip(160, .25, 'sawtooth');
 const somFesta = () => [523, 659, 784, 1047].forEach((f, i) => bip(f, .2, 'triangle', i * .12));
 
 /* ---------- telas ---------- */
-const TELAS = ['vila', 'loja', 'conf', 'melhorias'];
+const TELAS = ['vila', 'loja', 'conf', 'casa', 'palco', 'ilha', 'melhorias'];
 function tela(n){ TELAS.forEach(t => $('tela-' + t).hidden = t !== n); window.scrollTo(0, 0); }
 
 /* ---------- 🏘️ vila ---------- */
 const LUGARES = [
   { id:'loja', ico:'🏪', n:'Lojinha', cor:'#e5484d', txt:'venda coisas pros Pokémon' },
   { id:'conf', ico:'🍰', n:'Confeitaria', cor:'#ff5fa2', txt:'bolos da Alcremie' },
-  { id:'casa', ico:'👻', n:'Casa Assombrada', cor:'#6b3fd9', txt:'🔒 chega na parte 2', fechado:1 },
-  { id:'palco', ico:'🎤', n:'Palco de Talentos', cor:'#ffb300', txt:'🔒 chega na parte 2', fechado:1 },
-  { id:'ilha', ico:'🏝️', n:'Ilha', cor:'#3b8cff', txt:'🔒 chega na parte 3', fechado:1 }
+  { id:'casa', ico:'👻', n:'Casa Assombrada', cor:'#6b3fd9', txt:'ache os fantasmas' },
+  { id:'palco', ico:'🎤', n:'Palco', cor:'#ffb300', txt:'dance no ritmo' },
+  { id:'ilha', ico:'🏝️', n:'Ilha', cor:'#3b8cff', txt:'construa e chame moradores' }
 ];
 function nomeLoja(){
   const t = MELH_LOJA.reduce((s, m) => s + nivel('loja', m.id), 0);
   return t >= 12 ? '🏬 Shopping Pokémon' : t >= 8 ? '🏪 Mercadão' : t >= 4 ? '🏪 Loja' : t >= 1 ? '🏪 Lojinha' : '⛺ Barraquinha';
 }
 function mostrarVila(){
-  pararLoja(true); pararConf(true);
+  pararTudo();
   $('casas').innerHTML = LUGARES.map(l => `<button type="button" class="casa ${l.fechado ? 'fechada' : ''}" data-lugar="${l.id}" style="--cor:${l.cor}">
     <div class="telhado"><span class="chamine"></span></div>
     <div class="parede"><div class="toldinho"></div>
@@ -581,14 +765,16 @@ function mostrarVila(){
       ${l.fechado ? '<div class="obra">🚧 EM OBRA 🚧</div>' : ''}
       <small>${l.txt}</small></div></button>`).join('');
   /* Moradores: quem mais comprou aparece passeando. Começa com 3 e ganha mais com as melhorias. */
-  const tot = MELH_LOJA.concat(MELH_CONF).reduce((s, m) => s + nivel(MELH_LOJA.includes(m) ? 'loja' : 'conf', m.id), 0);
-  const ids = [25, 869, 133, 143, 39, 94, 1, 4, 7, 52, 175, 685, 700, 778, 113, 54];
+  const tot = Object.keys(MELH).reduce((s, onde) => s + MELH[onde].reduce((t, m) => t + nivel(onde, m.id), 0), 0);
+  /* Quem mora na ilha passeia primeiro. */
+  const ids = [...new Set(E.moradores.concat([25, 869, 133, 143, 39, 94, 1, 4, 7, 52, 175, 685, 700, 778, 113, 54]))];
   /* Cada um anda num ritmo diferente pela rua, pra não andarem todos juntos. */
-  $('moradores').innerHTML = ids.slice(0, Math.min(ids.length, 3 + tot)).map((id, i) =>
+  $('moradores').innerHTML = ids.slice(0, Math.min(ids.length, 3 + tot + E.moradores.length, 18)).map((id, i) =>
     `<span class="passeia" style="animation-duration:${14 + (i * 7) % 11}s;animation-delay:-${(i * 3.7) % 14}s;bottom:${(i % 3) * 9}px"><img src="${sprite(id)}" alt="" loading="lazy" onerror="this.parentNode.remove()" /></span>`).join('');
   $('stats').innerHTML = [
-    ['🛒', E.st.vendas, 'vendas'], ['🎂', E.st.bolos, 'bolos'], ['🌟', E.st.perfeitos, 'bolos perfeitos'],
-    ['🪙', E.st.ganhou, 'moedas ganhas'], ['🏆', E.st.recLoja, 'recorde da loja'], ['🏆', E.st.recConf, 'recorde da confeitaria']
+    ['🛒', E.st.vendas, 'vendas'], ['🌟', E.st.perfeitos, 'bolos perfeitos'], ['👻', E.st.fantasmas, 'fantasmas achados'],
+    ['🎤', E.st.shows, 'shows'], ['🏝️', E.moradores.length, 'moradores da ilha'], ['🪙', E.st.ganhou, 'moedas ganhas'],
+    ['🏆', E.st.recLoja, 'recorde da loja'], ['🏆', E.st.recConf, 'recorde dos bolos'], ['🏆', E.st.recPalco, 'recorde do palco']
   ].map(([e, n, t]) => `<div><b>${e} ${n}</b><small>${t}</small></div>`).join('');
   tela('vila');
 }
@@ -596,7 +782,7 @@ $('casas').onclick = ev => {
   const b = ev.target.closest('[data-lugar]'); if(!b) return;
   const l = LUGARES.find(x => x.id === b.dataset.lugar);
   if(l.fechado){ somErro(); janela(`<div class="grandao">${l.ico}</div><h2>${l.n}</h2><p>Esse lugar ainda está em construção 🚧</p><p>${l.txt.replace('🔒 ', '')}!</p><button class="grande" type="button" data-fechar>Tá bom!</button>`); return; }
-  if(l.id === 'loja') mostrarLoja(); else mostrarConf();
+  ({ loja:mostrarLoja, conf:mostrarConf, casa:mostrarCasa, palco:mostrarPalco, ilha:mostrarIlha })[l.id]();
 };
 document.querySelectorAll('[data-vila]').forEach(b => b.onclick = mostrarVila);
 $('logo').onclick = mostrarVila;
@@ -610,7 +796,7 @@ const multPreco = () => 1 + .2 * nivel('loja', 'placa');
 const pacienciaBase = () => 14 * (1 + .3 * nivel('loja', 'musica'));
 
 function mostrarLoja(){
-  pararConf(true);
+  pararTudo();
   $('loja-nome').textContent = nomeLoja();
   $('loja-msg').textContent = '';
   desenharPrateleiras(); desenharBalcao(); atualizarRelogioLoja();
@@ -740,7 +926,6 @@ $('prateleiras').onclick = ev => {
 };
 $('prateleiras').onkeydown = ev => { if((ev.key === 'Enter' || ev.key === ' ') && ev.target.dataset.item){ ev.preventDefault(); entregar(ev.target.dataset.item, ev.target); } };
 $('loja-abrir').onclick = abrirLoja;
-$('loja-melhorar').onclick = () => mostrarMelhorias('loja');
 
 /* ---------- 🍰 confeitaria ---------- */
 const PEDIDOS_TURNO = 5;
@@ -781,7 +966,7 @@ function desenharBolo(b, pequeno){
   return s + '</svg>';
 }
 function mostrarConf(){
-  pararLoja(true);
+  pararTudo();
   $('conf-parado').hidden = !!C; $('conf-jogo').hidden = !C;
   $('conf-relogio').textContent = '';
   tela('conf');
@@ -880,13 +1065,365 @@ function fecharConf(){
 }
 $('conf-abrir').onclick = abrirConf;
 $('conf-entregar').onclick = () => entregarBolo(false);
-$('conf-melhorar').onclick = () => mostrarMelhorias('conf');
+
+/* ---------- parar tudo ao trocar de lugar ---------- */
+function pararTudo(){ pararLoja(true); pararConf(); pararCasa(); pararPalco(); }
+
+/* ---------- 👻 casa assombrada ---------- */
+const FANTASMAS = [
+  { id:92, n:'Gastly' }, { id:93, n:'Haunter' }, { id:94, n:'Gengar' }, { id:200, n:'Misdreavus' }, { id:355, n:'Duskull' },
+  { id:353, n:'Shuppet' }, { id:607, n:'Litwick' }, { id:425, n:'Drifloon' }, { id:778, n:'Mimikyu' }, { id:708, n:'Phantump' },
+  { id:710, n:'Pumpkaboo' }, { id:302, n:'Sableye' }, { id:562, n:'Yamask' }, { id:429, n:'Mismagius' }, { id:609, n:'Chandelure' }, { id:887, n:'Dragapult' }
+];
+const MOVEIS = ['🛋️', '🪑', '🗄️', '🖼️', '🕯️', '📦', '🛏️', '🚪', '🪞', '🧸', '⚰️', '🎃', '🪴', '🕰️', '📚', '🧺', '🎩', '🗿'];
+const QTD_FANT = 5, CEL_CASA = 30;
+const MELH_CASA = [
+  { id:'lanterna', e:'🔦', n:'Lanterna forte', d:'A luz da lanterna fica maior.', custo:[40, 100] },
+  { id:'relogio',  e:'⏰', n:'Relógio',        d:'+10 segundos pra procurar.', custo:[50, 120] },
+  { id:'ima',      e:'🧲', n:'Ímã de moedas',  d:'+3 moedas por fantasma achado.', custo:[60, 140] },
+  { id:'detector', e:'👀', n:'Detector de fantasma', d:'Aparecem olhinhos 👀 quando a luz passa num fantasma.', custo:[150] }
+];
+let H = null; /* rodada: { cel, achados, fim, tempo, ganhou, timer } */
+const tempoCasa = () => 45 + 10 * nivel('casa', 'relogio');
+const raioLuz = () => 70 + 22 * nivel('casa', 'lanterna');
+
+function mostrarCasa(){ pararTudo(); $('casa-parado').hidden = false; $('casa-jogo').hidden = true; $('casa-relogio').textContent = ''; tela('casa'); }
+function embaralha(a){ for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function abrirCasa(){
+  const cel = Array.from({ length:CEL_CASA }, () => Math.random() < .7 ? { m:sorteia(MOVEIS) } : {});
+  /* Garante móveis suficientes pros fantasmas e sustos. */
+  for(let i = 0; cel.filter(c => c.m).length < 16; i++) if(!cel[i].m) cel[i].m = sorteia(MOVEIS);
+  const comMovel = embaralha(cel.map((c, i) => c.m ? i : -1).filter(i => i >= 0));
+  const quem = embaralha(FANTASMAS.slice()).slice(0, QTD_FANT);
+  quem.forEach((f, k) => cel[comMovel[k]].f = f);
+  cel[comMovel[QTD_FANT]].susto = true; cel[comMovel[QTD_FANT + 1]].susto = true;
+  H = { cel, quem, achados:0, tempo:tempoCasa(), ganhou:0 };
+  H.fim = Date.now() + H.tempo * 1000;
+  $('casa-parado').hidden = true; $('casa-jogo').hidden = false; $('casa-msg').textContent = '🔦 Passe o dedo pra iluminar!';
+  const q = $('quarto'); q.style.setProperty('--r', raioLuz() + 'px'); q.style.setProperty('--x', '50%'); q.style.setProperty('--y', '50%');
+  desenharQuarto(); desenharAchados();
+  bip(220, .4, 'sine'); bip(208, .5, 'sine', .3);
+  H.timer = setInterval(passoCasa, 200);
+}
+function desenharQuarto(){
+  $('quarto').innerHTML = H.cel.map((c, i) => c.m
+    ? `<button type="button" class="movel ${c.visto ? 'visto' : ''} ${c.achou ? 'achou' : ''}" data-i="${i}" aria-label="procurar no móvel">${c.achou ? imgPoke(c.f) : c.m}</button>`
+    : '<div class="chao"></div>').join('') + '<div class="escuro"></div>';
+}
+function desenharAchados(){
+  $('casa-achados').innerHTML = H.quem.map(f => {
+    const ok = H.cel.some(c => c.f === f && c.achou);
+    return `<span class="${ok ? 'ok' : ''}" title="${ok ? esc(f.n) : '?'}">${ok ? imgPoke(f) : '❔'}</span>`;
+  }).join('');
+}
+/* Treme (e mostra olhinhos) nos móveis com fantasma que estão dentro da luz. */
+function dicasDaLuz(){
+  if(!H) return;
+  const q = $('quarto'), r = raioLuz();
+  const x = parseFloat(q.dataset.x || q.clientWidth / 2), y = parseFloat(q.dataset.y || q.clientHeight / 2);
+  q.querySelectorAll('.movel').forEach(b => {
+    const c = H.cel[+b.dataset.i];
+    const cx = b.offsetLeft + b.offsetWidth / 2, cy = b.offsetTop + b.offsetHeight / 2;
+    const perto = Math.hypot(cx - x, cy - y) < r * .8 && c.f && !c.achou;
+    b.classList.toggle('treme', !!perto);
+    b.classList.toggle('olhos', !!(perto && nivel('casa', 'detector')));
+  });
+}
+function moverLuz(ev){
+  if(!H) return;
+  const q = $('quarto'), r = q.getBoundingClientRect();
+  const x = ev.clientX - r.left, y = ev.clientY - r.top;
+  q.dataset.x = x; q.dataset.y = y; q.style.setProperty('--x', x + 'px'); q.style.setProperty('--y', y + 'px');
+  dicasDaLuz();
+}
+$('quarto').addEventListener('pointermove', moverLuz);
+$('quarto').addEventListener('pointerdown', moverLuz);
+$('quarto').addEventListener('focusin', ev => {
+  const b = ev.target.closest('.movel'); if(!b || !H) return;
+  const q = $('quarto'), x = b.offsetLeft + b.offsetWidth / 2, y = b.offsetTop + b.offsetHeight / 2;
+  q.dataset.x = x; q.dataset.y = y; q.style.setProperty('--x', x + 'px'); q.style.setProperty('--y', y + 'px'); dicasDaLuz();
+});
+$('quarto').addEventListener('click', ev => {
+  const b = ev.target.closest('.movel'); if(!b || !H) return;
+  const c = H.cel[+b.dataset.i]; if(c.visto) return;
+  c.visto = true;
+  if(c.f){
+    c.achou = true; H.achados++; E.st.fantasmas++;
+    const g = 6 + 3 * nivel('casa', 'ima'); H.ganhou += g; ganhar(g, b);
+    $('casa-msg').textContent = `👻 Achou o ${c.f.n}!`;
+    bip(880, .1, 'triangle'); bip(1175, .2, 'triangle', .1);
+  } else if(c.susto){
+    H.fim -= 3000; susto(); $('casa-msg').textContent = '😱 BU! Era o Gengar! (-3 segundos)';
+  } else {
+    H.fim -= 1000; bip(180, .12, 'square'); $('casa-msg').textContent = sorteia(['Só poeira… 💨', 'Nada aqui… 🕸️', 'Uma meia velha… 🧦', 'Hmm, vazio.']) + ' (-1s)';
+  }
+  desenharQuarto(); desenharAchados(); dicasDaLuz(); salvar();
+  if(H.achados >= QTD_FANT) fimCasa(true);
+});
+function susto(){
+  bip(90, .5, 'sawtooth'); bip(70, .6, 'sawtooth', .1);
+  const d = document.createElement('div'); d.className = 'bu';
+  d.innerHTML = `${imgPoke({ id:94, n:'Gengar', emo:'👻' })}<b>BU!</b>`;
+  document.body.appendChild(d); setTimeout(() => d.remove(), 900);
+}
+function passoCasa(){
+  if(!H) return;
+  const s = Math.max(0, (H.fim - Date.now()) / 1000);
+  $('casa-tempo').style.width = (s / H.tempo * 100) + '%';
+  $('casa-relogio').textContent = `⏰ ${Math.ceil(s)}s · 👻 ${H.achados}/${QTD_FANT}`;
+  if(s <= 0) fimCasa(false);
+}
+function pararCasa(){ if(!H) return; clearInterval(H.timer); H = null; $('casa-parado').hidden = false; $('casa-jogo').hidden = true; $('casa-relogio').textContent = ''; salvar(); }
+function fimCasa(todos){
+  const sobra = Math.max(0, Math.ceil((H.fim - Date.now()) / 1000));
+  const bonus = todos ? 10 + sobra : 0;
+  if(bonus) ganhar(bonus);
+  const r = { achados:H.achados, total:H.ganhou + bonus, sobra };
+  pararCasa();
+  const recorde = r.total > E.st.recCasa; if(recorde) E.st.recCasa = r.total; salvar();
+  if(todos){ somFesta(); confete(); } else somErro();
+  janela(`<div class="grandao">${todos ? '🏆' : '⏰'}</div><h2>${todos ? 'Achou todos!' : 'Acabou o tempo!'}</h2>
+    <p>${todos ? `Você pegou todos os fantasmas e ainda sobraram <b>${sobra}s</b>! Bônus de <b>${bonus}</b> 🪙` : 'Os fantasmas que sobraram fugiram… 👻💨'}</p>
+    <p>👻 Fantasmas achados: <b>${r.achados}/${QTD_FANT}</b><br>🪙 Moedas ganhas: <b>${r.total}</b></p>
+    ${recorde && r.total > 0 ? '<p>🏆 <b>RECORDE NOVO!</b></p>' : ''}
+    <button class="grande roxo" type="button" data-fechar>Uhuu!</button>`);
+}
+$('casa-abrir').onclick = abrirCasa;
+
+/* ---------- 🎤 palco ---------- */
+const ARTISTAS = [
+  { id:39, n:'Jigglypuff', emo:'🎤' }, { id:25, n:'Pikachu', emo:'⚡' }, { id:648, n:'Meloetta', emo:'🎵' }, { id:730, n:'Primarina', emo:'🧜' },
+  { id:849, n:'Toxtricity', emo:'🎸' }, { id:94, n:'Gengar', emo:'👻' }, { id:700, n:'Sylveon', emo:'🎀' }, { id:812, n:'Rillaboom', emo:'🥁' }
+];
+const MUSICAS = [
+  { id:'facil',   n:'🐣 Fácil',   bpm:88,  queda:2000, meio:0,   duplo:0,   mult:1 },
+  { id:'medio',   n:'🔥 Médio',   bpm:108, queda:1600, meio:.3,  duplo:.06, mult:1.4 },
+  { id:'dificil', n:'😈 Difícil', bpm:128, queda:1250, meio:.45, duplo:.15, mult:1.9 }
+];
+const MELODIA = [523, 587, 659, 784, 880, 784, 659, 587, 523, 659, 784, 1047, 880, 784, 659, 523];
+const MELH_PALCO = [
+  { id:'mic',     e:'🎤', n:'Microfone de ouro', d:'+25% de moedas por show.', custo:[50, 110, 200] },
+  { id:'luzes',   e:'💡', n:'Luzes do palco',    d:'Fica mais fácil acertar no tempo.', custo:[60, 130] },
+  { id:'plateia', e:'👏', n:'Plateia animada',   d:'+5 moedas a cada 10 de combo.', custo:[80, 160] }
+];
+const DURACAO_SHOW = 30000;
+let P = null;
+const palcoEsc = () => Object.assign({ art:39, mus:'facil' }, cfg.palco || {});
+function mostrarPalco(){
+  pararTudo();
+  const e = palcoEsc();
+  $('palco-artistas').innerHTML = ARTISTAS.map(a => `<button type="button" data-art="${a.id}" aria-pressed="${a.id === e.art}">${imgPoke(a)}<small>${esc(a.n)}</small></button>`).join('');
+  $('palco-musicas').innerHTML = MUSICAS.map(m => `<button type="button" class="mini musica" data-mus="${m.id}" aria-pressed="${m.id === e.mus}">${m.n}</button>`).join('');
+  $('palco-parado').hidden = false; $('palco-jogo').hidden = true; $('palco-placar').textContent = '';
+  tela('palco');
+}
+$('palco-artistas').onclick = ev => { const b = ev.target.closest('[data-art]'); if(!b) return; cfg.palco = Object.assign(palcoEsc(), { art:+b.dataset.art }); salvar(); bip(660, .1, 'triangle');
+  $('palco-artistas').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); };
+$('palco-musicas').onclick = ev => { const b = ev.target.closest('[data-mus]'); if(!b) return; cfg.palco = Object.assign(palcoEsc(), { mus:b.dataset.mus }); salvar(); bip(520, .1, 'triangle');
+  $('palco-musicas').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); };
+function gerarMusica(m){
+  const beat = 60000 / m.bpm, notas = []; let t = 2200, lane = 1;
+  while(t < DURACAO_SHOW){
+    lane = Math.random() < .35 ? lane : (lane + 1 + Math.floor(Math.random() * 2)) % 3;
+    notas.push({ t, lane });
+    if(Math.random() < m.duplo) notas.push({ t, lane:(lane + 1 + Math.floor(Math.random() * 2)) % 3 });
+    t += Math.random() < m.meio ? beat / 2 : beat;
+  }
+  return notas;
+}
+function abrirPalco(){
+  const e = palcoEsc(), m = MUSICAS.find(x => x.id === e.mus) || MUSICAS[0], a = ARTISTAS.find(x => x.id === e.art) || ARTISTAS[0];
+  $('palco-parado').hidden = true; $('palco-jogo').hidden = false;
+  $('palco-artista').innerHTML = imgPoke(a); $('palco-julga').textContent = '3… 2… 1…';
+  document.querySelectorAll('#pista .nota').forEach(n => n.remove());
+  P = { m, a, notas:gerarMusica(m), prox:0, pontos:0, combo:0, maxCombo:0, perf:0, bom:0, erro:0, t0:performance.now(), beat:60000 / m.bpm, proxBeat:2200, idx:0 };
+  P.fimT = P.notas[P.notas.length - 1].t + 1500;
+  $('pista').scrollIntoView({ block:'center', behavior:'smooth' });
+  P.raf = requestAnimationFrame(passoPalco);
+}
+const janelaBom = () => 150 + 25 * nivel('palco', 'luzes');
+const janelaPerf = () => 65 + 12 * nivel('palco', 'luzes');
+function passoPalco(agora){
+  if(!P) return;
+  const el = agora - P.t0, pista = $('pista'), linha = pista.clientHeight - 44;
+  /* Batida de fundo, bem baixinha. */
+  if(el >= P.proxBeat && el < DURACAO_SHOW){ bip(95, .07, 'sine'); P.proxBeat += P.beat; }
+  if(el > 1800 && $('palco-julga').textContent.startsWith('3')) $('palco-julga').textContent = '';
+  while(P.prox < P.notas.length && P.notas[P.prox].t - el < P.m.queda){
+    const n = P.notas[P.prox++]; const d = document.createElement('div'); d.className = 'nota n' + n.lane;
+    pista.querySelector(`[data-f="${n.lane}"]`).appendChild(d); n.el = d;
+  }
+  for(let i = 0; i < P.prox; i++){
+    const n = P.notas[i]; if(n.feito) continue;
+    const y = (1 - (n.t - el) / P.m.queda) * linha;
+    n.el.style.transform = `translateY(${y - 26}px)`;
+    if(el - n.t > janelaBom()) julgar(n, 'erro');
+  }
+  $('palco-placar').textContent = `🎵 ${Math.round(P.pontos)} · 🔥 ${P.combo}`;
+  if(el > P.fimT) return fimPalco();
+  P.raf = requestAnimationFrame(passoPalco);
+}
+function julgar(n, tipo){
+  n.feito = true; n.el.classList.add(tipo === 'erro' ? 'errou' : 'acertou'); const el = n.el; setTimeout(() => el.remove(), 260);
+  const j = $('palco-julga'), art = $('palco-artista');
+  if(tipo === 'erro'){ P.erro++; P.combo = 0; j.textContent = '😵 Errou'; j.className = 'julga ruim'; art.className = 'artista tonto'; return; }
+  P[tipo]++; P.combo++; P.maxCombo = Math.max(P.maxCombo, P.combo);
+  P.pontos += (tipo === 'perf' ? 3 : 1) * (1 + Math.floor(P.combo / 10) * .5);
+  bip(MELODIA[P.idx++ % MELODIA.length], .16, 'triangle');
+  j.textContent = (tipo === 'perf' ? '🌟 Perfeito!' : '👍 Bom!') + (P.combo >= 5 ? ` ${P.combo}x` : ''); j.className = 'julga ' + tipo;
+  art.className = 'artista ' + (P.idx % 2 ? 'danca-e' : 'danca-d') + (P.combo >= 10 ? ' brilha' : '');
+}
+function apertar(lane){
+  if(!P) return;
+  const b = document.querySelector(`#botoes-palco [data-lane="${lane}"]`); b.classList.remove('aperta'); void b.offsetWidth; b.classList.add('aperta');
+  const el = performance.now() - P.t0;
+  let melhor = null;
+  for(let i = 0; i < P.prox; i++){ const n = P.notas[i]; if(n.feito || n.lane !== lane) continue; if(!melhor || Math.abs(n.t - el) < Math.abs(melhor.t - el)) melhor = n; }
+  if(!melhor) return;
+  const d = Math.abs(melhor.t - el);
+  if(d <= janelaPerf()) julgar(melhor, 'perf'); else if(d <= janelaBom()) julgar(melhor, 'bom');
+}
+$('botoes-palco').addEventListener('pointerdown', ev => { const b = ev.target.closest('[data-lane]'); if(b){ ev.preventDefault(); apertar(+b.dataset.lane); } });
+$('botoes-palco').addEventListener('keydown', ev => { const b = ev.target.closest('[data-lane]'); if(b && (ev.key === 'Enter' || ev.key === ' ')){ ev.preventDefault(); apertar(+b.dataset.lane); } });
+document.addEventListener('keydown', ev => {
+  if(!P || ev.repeat) return;
+  const k = { a:0, s:1, d:2, j:0, k:1, l:2, ArrowLeft:0, ArrowDown:1, ArrowUp:1, ArrowRight:2 }[ev.key];
+  if(k !== undefined){ ev.preventDefault(); apertar(k); }
+});
+function pararPalco(){ if(!P) return; cancelAnimationFrame(P.raf); P = null; document.querySelectorAll('#pista .nota').forEach(n => n.remove()); $('palco-parado').hidden = false; $('palco-jogo').hidden = true; $('palco-placar').textContent = ''; }
+function fimPalco(){
+  const tot = P.notas.length, acc = (P.perf + P.bom * .6) / tot;
+  const nota = acc >= .9 ? 'S' : acc >= .75 ? 'A' : acc >= .55 ? 'B' : 'C';
+  let moedas = Math.round(P.pontos / 3 * P.m.mult * (1 + .25 * nivel('palco', 'mic')));
+  moedas += Math.floor(P.maxCombo / 10) * 5 * nivel('palco', 'plateia');
+  const r = { nota, moedas, pontos:Math.round(P.pontos), perf:P.perf, bom:P.bom, erro:P.erro, maxCombo:P.maxCombo, a:P.a };
+  pararPalco();
+  E.st.shows++; if(moedas) ganhar(moedas);
+  const recorde = r.pontos > E.st.recPalco; if(recorde) E.st.recPalco = r.pontos; salvar();
+  if(nota === 'S' || nota === 'A' || recorde){ somFesta(); confete(); }
+  const frase = { S:'👑 SHOW PERFEITO! A plateia foi à loucura!', A:'🎉 Que show incrível!', B:'👏 Bom show!', C:'🐣 Treina mais um pouquinho!' }[nota];
+  janela(`<div class="grandao">🎤</div><h2>Nota ${nota}!</h2><p>${frase}</p>
+    <p>🌟 Perfeitos: <b>${r.perf}</b> · 👍 Bons: <b>${r.bom}</b> · 😵 Erros: <b>${r.erro}</b><br>🔥 Maior combo: <b>${r.maxCombo}</b><br>🎵 Pontos: <b>${r.pontos}</b> · 🪙 Moedas: <b>${r.moedas}</b></p>
+    ${recorde && r.pontos > 0 ? '<p>🏆 <b>RECORDE NOVO!</b></p>' : ''}
+    <button class="grande amarelo" type="button" data-fechar>Bis! 👏</button>`);
+}
+$('palco-abrir').onclick = abrirPalco;
+
+/* ---------- 🏝️ ilha ---------- */
+const COLS_I = 8, LIN_I = 7, PERIODO = 10 * 60 * 1000, MAX_ESPERA = 12 * 60 * 60 * 1000;
+const RAIOS = [[3.1, 2.2], [3.8, 2.9], [4.1, 3.3]];
+const CONSTR = [
+  { id:'flor',     e:'🌷', n:'Flores',   c:6 },   { id:'cogumelo', e:'🍄', n:'Cogumelo', c:10 }, { id:'pedra', e:'🪨', n:'Pedra', c:8 },
+  { id:'arvore',   e:'🌳', n:'Árvore',   c:12 },  { id:'palmeira', e:'🌴', n:'Palmeira', c:15 }, { id:'fogueira', e:'🔥', n:'Fogueira', c:20 },
+  { id:'lago',     e:'💧', n:'Laguinho', c:25 },  { id:'barraca',  e:'⛺', n:'Barraca',  c:30 }, { id:'casinha', e:'🏠', n:'Casinha', c:60 },
+  { id:'fonte',    e:'⛲', n:'Fonte',    c:90 },  { id:'torre',    e:'🗼', n:'Torre',    c:150 }, { id:'castelo', e:'🏰', n:'Castelo', c:300 }
+];
+const CONS = Object.fromEntries(CONSTR.map(x => [x.id, x]));
+const MORADORES_ILHA = [
+  { id:1,   n:'Bulbasaur',  quer:{ arvore:3 } },
+  { id:7,   n:'Squirtle',   quer:{ lago:2 } },
+  { id:4,   n:'Charmander', quer:{ fogueira:1, pedra:2 } },
+  { id:25,  n:'Pikachu',    quer:{ casinha:1 } },
+  { id:54,  n:'Psyduck',    quer:{ lago:1, flor:2 } },
+  { id:103, n:'Exeggutor',  quer:{ palmeira:3 } },
+  { id:285, n:'Shroomish',  quer:{ cogumelo:3 } },
+  { id:133, n:'Eevee',      quer:{ flor:4, barraca:1 } },
+  { id:37,  n:'Vulpix',     quer:{ fogueira:2, flor:1 } },
+  { id:278, n:'Wingull',    quer:{ palmeira:2, lago:1 } },
+  { id:95,  n:'Onix',       quer:{ pedra:5 } },
+  { id:94,  n:'Gengar',     quer:{ cogumelo:2, fogueira:1, pedra:1 } },
+  { id:143, n:'Snorlax',    quer:{ arvore:5, casinha:1 } },
+  { id:175, n:'Togepi',     quer:{ fonte:1, flor:3 } },
+  { id:131, n:'Lapras',     quer:{ lago:3, torre:1 } },
+  { id:151, n:'Mew',        quer:{ castelo:1, fonte:1, flor:5 } }
+];
+const MELH_ILHA = [
+  { id:'maior', e:'🏝️', n:'Ilha maior', d:'Aparece mais terra pra construir.', custo:[80, 220] },
+  { id:'barco', e:'⛵', n:'Barco de turistas', d:'Cada morador dá mais moedas na coleta.', custo:[120, 260] }
+];
+let ferr = 'flor';
+function ehTerra(r, c){ const [rx, ry] = RAIOS[Math.min(2, nivel('ilha', 'maior'))]; const dx = (c - 3.5) / rx, dy = (r - 3) / ry; return dx * dx + dy * dy <= 1; }
+function contar(){ const n = {}; Object.values(E.mapa).forEach(id => { n[id] = (n[id] || 0) + 1; }); return n; }
+const taxaIlha = () => 3 * (1 + nivel('ilha', 'barco'));
+function pendente(){
+  if(!E.moradores.length) return 0;
+  const passou = Math.min(Date.now() - (+E.coleta || Date.now()), MAX_ESPERA);
+  return Math.max(0, Math.floor(passou / PERIODO)) * taxaIlha() * E.moradores.length;
+}
+function mostrarIlha(){ pararTudo(); desenharIlha(); tela('ilha'); }
+function desenharIlha(){
+  $('ilha-ferramentas').innerHTML = CONSTR.map(x => `<button type="button" data-ferr="${x.id}" aria-pressed="${ferr === x.id}"><span>${x.e}</span><small>${x.n}<br>${x.c}🪙</small></button>`).join('')
+    + `<button type="button" data-ferr="remover" aria-pressed="${ferr === 'remover'}"><span>🧹</span><small>Tirar<br>volta ½</small></button>`;
+  /* Moradores ficam em lugares livres da terra, sempre nos mesmos pra não pular de lugar. */
+  const livres = [];
+  for(let r = 0; r < LIN_I; r++) for(let c = 0; c < COLS_I; c++) if(ehTerra(r, c) && !E.mapa[r + ',' + c]) livres.push(r + ',' + c);
+  const ondeMora = {}; const sobra = [];
+  E.moradores.forEach((id, k) => { if(!livres.length){ sobra.push(id); return; } const i = (k * 7 + 3) % livres.length; ondeMora[livres.splice(i, 1)[0]] = id; });
+  let h = '';
+  for(let r = 0; r < LIN_I; r++) for(let c = 0; c < COLS_I; c++){
+    const k = r + ',' + c, terra = ehTerra(r, c), b = E.mapa[k];
+    const praia = terra && [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].some(([a, d]) => !ehTerra(a, d));
+    const mor = ondeMora[k] ? MORADORES_ILHA.find(m => m.id === ondeMora[k]) : null;
+    h += `<button type="button" class="tile ${terra ? (praia ? 'areia' : 'grama') : 'mar'} ${b === 'lago' ? 'lago' : ''}" data-rc="${k}" ${terra ? '' : 'tabindex="-1"'} aria-label="${terra ? (b ? CONS[b].n : mor ? mor.n : 'terra livre') : 'mar'}">`
+      + `${b && b !== 'lago' ? `<span class="cons">${CONS[b].e}</span>` : ''}${mor ? `<img class="mora" src="${sprite(mor.id)}" alt="" loading="lazy" onerror="this.remove()" />` : ''}</button>`;
+  }
+  $('mapa').innerHTML = h + (sobra.length ? `<div class="barquinho">⛵ ${sobra.length} morador(es) passeando de barco</div>` : '');
+  const cont = contar();
+  $('ilha-querem').innerHTML = MORADORES_ILHA.map(m => {
+    const mora = E.moradores.includes(m.id);
+    return `<div class="quer-card ${mora ? 'mora' : ''}">${imgPoke(m)}<b>${esc(m.n)}</b><div class="reqs">${mora ? '✅ mora aqui!' :
+      Object.entries(m.quer).map(([id, q]) => `<span class="${(cont[id] || 0) >= q ? 'ok' : ''}">${CONS[id].e} ${Math.min(cont[id] || 0, q)}/${q}</span>`).join('')}</div></div>`;
+  }).join('');
+  const p = pendente();
+  $('ilha-coletar').textContent = E.moradores.length ? `💰 Coletar ${p} 🪙` : '💰 Sem moradores';
+  $('ilha-coletar').disabled = !p;
+}
+$('ilha-ferramentas').onclick = ev => { const b = ev.target.closest('[data-ferr]'); if(!b) return; ferr = b.dataset.ferr; bip(600, .06, 'triangle');
+  $('ilha-ferramentas').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); };
+$('mapa').onclick = ev => {
+  const t = ev.target.closest('[data-rc]'); if(!t) return;
+  const [r, c] = t.dataset.rc.split(',').map(Number), k = t.dataset.rc, msg = $('ilha-msg');
+  if(!ehTerra(r, c)){ msg.textContent = '🌊 Aí é mar! Compre "Ilha maior" pra ter mais terra.'; return; }
+  const b = E.mapa[k];
+  if(ferr === 'remover'){
+    if(!b){ msg.textContent = '🧹 Não tem nada pra tirar aí.'; return; }
+    delete E.mapa[k]; const volta = Math.floor(CONS[b].c / 2); if(volta) ganhar(volta, t);
+    msg.textContent = `🧹 Tirou ${CONS[b].n}. Voltaram ${volta} 🪙`; bip(300, .1, 'triangle'); salvar(); desenharIlha(); return;
+  }
+  if(b){ somErro(); msg.textContent = `Já tem ${CONS[b].n} aí. Use a 🧹 pra tirar.`; return; }
+  const x = CONS[ferr];
+  if(!gastar(x.c)){ somErro(); msg.textContent = `😢 Faltam moedas pra ${x.n} (custa ${x.c} 🪙).`; return; }
+  E.mapa[k] = ferr; salvar(); bip(700, .08, 'triangle'); bip(990, .12, 'triangle', .08);
+  msg.textContent = `${x.e} Colocou ${x.n}!`;
+  checarMoradores(); desenharIlha();
+};
+function checarMoradores(){
+  const cont = contar();
+  const novos = MORADORES_ILHA.filter(m => !E.moradores.includes(m.id) && Object.entries(m.quer).every(([id, q]) => (cont[id] || 0) >= q));
+  if(!novos.length) return;
+  if(!E.moradores.length) E.coleta = Date.now();
+  novos.forEach(m => E.moradores.push(m.id)); salvar();
+  somFesta(); confete();
+  janela(`<div class="chegou">${novos.map(m => imgPoke(m)).join('')}</div><h2>Morador novo! 🏡</h2>
+    <p><b>${novos.map(m => esc(m.n)).join(', ')}</b> ${novos.length > 1 ? 'vieram' : 'veio'} morar na sua ilha!</p>
+    <p>Agora ${novos.length > 1 ? 'eles dão' : 'ele dá'} moedas pra coletar e ${novos.length > 1 ? 'passeiam' : 'passeia'} pela vila. 🐾</p>
+    <button class="grande azul" type="button" data-fechar>Bem-vindo!</button>`);
+}
+$('ilha-coletar').onclick = () => {
+  const p = pendente(); if(!p) return;
+  const passou = Date.now() - E.coleta;
+  E.coleta = passou >= MAX_ESPERA ? Date.now() : Date.now() - (passou % PERIODO);
+  ganhar(p, $('ilha-coletar')); somMoeda(); $('ilha-msg').textContent = `💰 Os moradores te deram ${p} moedas!`; desenharIlha();
+};
+setInterval(() => { if(!$('tela-ilha').hidden){ const p = pendente(); const b = $('ilha-coletar'); if(E.moradores.length){ b.textContent = `💰 Coletar ${p} 🪙`; b.disabled = !p; } } }, 5000);
+
+const MELH = { loja:MELH_LOJA, conf:MELH_CONF, casa:MELH_CASA, palco:MELH_PALCO, ilha:MELH_ILHA };
 
 /* ---------- ⬆️ melhorias ---------- */
 let melhOnde = 'loja';
 function mostrarMelhorias(onde){
-  melhOnde = onde; const lista = onde === 'loja' ? MELH_LOJA : MELH_CONF;
-  $('melh-titulo').textContent = onde === 'loja' ? '⬆️ Melhorias da loja' : '⬆️ Melhorias da confeitaria';
+  melhOnde = onde; const lista = MELH[onde];
+  $('melh-titulo').textContent = '⬆️ Melhorias ' + ({ loja:'da loja', conf:'da confeitaria', casa:'da casa assombrada', palco:'do palco', ilha:'da ilha' })[onde];
   $('melh-moedas').textContent = E.moedas;
   $('melh-lista').innerHTML = lista.map(m => {
     const nv = nivel(onde, m.id), max = m.custo.length, preco = m.custo[nv];
@@ -900,14 +1437,15 @@ function mostrarMelhorias(onde){
 }
 $('melh-lista').onclick = ev => {
   const b = ev.target.closest('[data-comprar]'); if(!b) return;
-  const lista = melhOnde === 'loja' ? MELH_LOJA : MELH_CONF, m = lista.find(x => x.id === b.dataset.comprar);
+  const lista = MELH[melhOnde], m = lista.find(x => x.id === b.dataset.comprar);
   const nv = nivel(melhOnde, m.id); if(nv >= m.custo.length) return;
   if(!gastar(m.custo[nv])){ somErro(); return; }
   E[melhOnde][m.id] = nv + 1;
   if(m.id === 'prat'){ const it = ITENS[4 + nv]; E.estoque[it.id] = (E.estoque[it.id] || 0) + 5; }
   salvar(); somFesta(); mostrarMelhorias(melhOnde);
 };
-$('melh-voltar').onclick = () => melhOnde === 'loja' ? mostrarLoja() : mostrarConf();
+$('melh-voltar').onclick = () => ({ loja:mostrarLoja, conf:mostrarConf, casa:mostrarCasa, palco:mostrarPalco, ilha:mostrarIlha })[melhOnde]();
+document.querySelectorAll('[data-melhorar]').forEach(b => b.onclick = () => mostrarMelhorias(b.dataset.melhorar));
 
 /* ---------- janela e festa ---------- */
 const dlg = $('dlg');
