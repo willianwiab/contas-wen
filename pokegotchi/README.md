@@ -22,4 +22,9 @@ O seu bichinho virtual Pokémon!
 - 🌙 **Modo noturno** com senha própria (o código só guarda o hash): o Pokémon nunca mais precisa dormir e ganha brilho roxo e lua.
 - 🕹️ 3 joguinhos: 🍓 Frutinhas, 🕳️ Pega o Diglett (Dugtrio vale 3) e 🃏 Memória (6 pares).
 
+## Versão 5: mapa, batalhas e gesso
+- 🗺️ **Explorar**: um mapa com setas (ou teclado/toque) com 🏠 casa, 🏥 Centro Pokémon, 🏪 lojinha, 🌳 árvore de frutas (1 por dia), 💧 lago, 🌲 árvores e 🪙 moedas espalhadas (novas todo dia).
+- ⚔️ **Batalhas** na 🌿 grama alta (ou no botão Batalhar): ataque do tipo do seu Pokémon (com "super efetivo" e crítico), 🛡️ defender, 🍓 frutinha (2 por batalha) e 🏃 fugir.
+- 🩹 Ganhou com pouca vida: machucado leve (🩹 curativo). **Perdeu: precisa de 🦴 gesso!** No 🏥 Centro Pokémon é de graça, ou compre na loja; depois de alguns minutos ele sara sozinho. Machucado não batalha, não passeia e não treina.
+
 Tudo fica guardado só neste aparelho. Nomes, tipos e evoluções vêm do banco do *Quem é esse Pokémon?*; figuras e gritos do [PokeAPI](https://pokeapi.co). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.

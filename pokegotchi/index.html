@@ -64,6 +64,28 @@ button{font:inherit;color:inherit}
 .pet.dorme img{animation:respira 4s ease-in-out infinite;filter:brightness(.55) drop-shadow(0 8px 6px rgba(0,0,0,.18))}
 .pet.noturno img{filter:drop-shadow(0 0 14px #9a5cff) drop-shadow(0 0 4px #c9a8ff)}
 .pet .lua{position:absolute;left:-4%;top:4%;font-size:clamp(1.6rem,8vw,2.4rem);pointer-events:none}
+.pet .ferida{position:absolute;right:6%;top:38%;font-size:clamp(1.6rem,8vw,2.4rem);pointer-events:none;transform:rotate(-20deg)}
+.topo-mapa{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px}
+.mapa{display:grid;grid-template-columns:repeat(12,1fr);gap:0;margin-top:10px;border-radius:18px;overflow:hidden;border:3px solid var(--borda);box-shadow:0 6px 16px var(--sombra);background:#b8e2a0}
+.mapa div{aspect-ratio:1;display:grid;place-items:center;font-size:clamp(.9rem,5vw,1.5rem);position:relative;cursor:pointer}
+.mapa .t-chao{background:#cfe8a8}.mapa .t-grama{background:#8fcf6a}.mapa .t-agua{background:#6ec3f0}.mapa .t-arvore{background:#7fbf5e}
+.mapa .t-casa,.mapa .t-centro,.mapa .t-loja,.mapa .t-fruta{background:#e8d9b0}
+.mapa img{position:absolute;inset:-12%;width:124%;height:124%;object-fit:contain;image-rendering:pixelated;z-index:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.aviso-mapa{text-align:center;font-weight:700;margin-top:8px;min-height:2.6em;font-size:.9rem}
+.dpad{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(3,56px);gap:6px;justify-content:center;margin-top:6px}
+.dpad button{border:2px solid var(--borda);background:var(--cartao);border-radius:16px;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 0 var(--borda);touch-action:manipulation}
+.dpad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--borda)}
+.arena{position:relative;height:220px;border-radius:18px;overflow:hidden;background:linear-gradient(#bfe9ff 0 55%,#9fd27a 55%);margin-top:8px}
+.arena img{position:absolute;width:42%;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 6px 5px rgba(0,0,0,.25));transition:transform .15s}
+.arena .inimigo{right:4%;top:2%}.arena .meu{left:4%;bottom:0;transform:scaleX(-1)}
+.arena img.leva{animation:leva .4s}
+@keyframes leva{25%,75%{opacity:.2}50%{opacity:1}}
+.vida{position:absolute;background:rgba(255,255,255,.9);border-radius:10px;padding:4px 8px;font-size:.72rem;font-weight:800;color:#2a1f3d;width:46%}
+.vida .barra{height:8px;margin-top:2px}.vida.dele{left:4%;top:8px}.vida.minha{right:4%;bottom:10px}
+.log{min-height:2.8em;font-weight:700;margin:8px 0;font-size:.9rem}
+.golpes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.golpes button{border:2px solid var(--borda);background:var(--cartao2);border-radius:14px;padding:10px 4px;font-weight:800;cursor:pointer}
+.golpes button:disabled{opacity:.45;cursor:default}
 .pet.doente img{filter:saturate(.45) drop-shadow(0 8px 6px rgba(0,0,0,.18))}
 .pet.evolui img{animation:brilha 2.2s ease-in-out}
 @keyframes brilha{0%,100%{filter:none}20%,60%{filter:brightness(4) saturate(0)}40%,80%{filter:brightness(1.5)}}
@@ -175,7 +197,8 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
       <div class="balao" id="balao" hidden></div>
       <div class="ovo" id="ovo" hidden>🥚</div>
       <div class="rachado" id="rachado" hidden></div>
-      <div class="pet" id="pet" hidden><img id="pet-img" alt="" /><span class="chapeu" id="chapeu"></span><span class="lua" id="lua" hidden>🌙</span></div>
+      <div class="pet" id="pet" hidden><img id="pet-img" alt="" /><span class="chapeu" id="chapeu"></span><span class="lua" id="lua" hidden>🌙</span><span class="ferida" id="ferida" hidden></span></div>
+      <span class="brilho-shiny" id="ferida-selo" hidden style="left:10px;right:auto;color:#c0392b"></span>
       <div id="cocos"></div>
       <div class="noite-luz" id="luz" hidden></div>
       <span class="zzz" id="zzz" hidden>Z z z</span>
@@ -208,6 +231,9 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
       <button type="button" id="bt-noturno"><i>🌙</i>Noturno</button>
       <button type="button" id="bt-jogos"><i>🕹️</i>Joguinhos</button>
       <button type="button" id="bt-presente"><i>🎁</i>Presente</button>
+      <button type="button" id="bt-explorar"><i>🗺️</i>Explorar</button>
+      <button type="button" id="bt-batalhar"><i>⚔️</i>Batalhar</button>
+      <button type="button" id="bt-tratar"><i>🩹</i>Tratar</button>
     </div>
 
     <div class="menu">
@@ -228,10 +254,23 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
     </div>
   </section>
 
+  <!-- ===================== MAPA ===================== -->
+  <section id="tela-mapa" hidden>
+    <div class="topo-mapa"><button type="button" class="mini" id="voltar-casa">🏠 Voltar pra casa</button><b id="mapa-info"></b></div>
+    <div class="mapa" id="mapa"></div>
+    <p class="aviso-mapa" id="mapa-msg">Ande com as setas. Na 🌿 grama alta aparecem Pokémon selvagens!</p>
+    <div class="dpad">
+      <span></span><button type="button" data-d="0,-1" aria-label="Cima">⬆️</button><span></span>
+      <button type="button" data-d="-1,0" aria-label="Esquerda">⬅️</button><button type="button" id="dpad-meio" aria-label="Olhar">🔍</button><button type="button" data-d="1,0" aria-label="Direita">➡️</button>
+      <span></span><button type="button" data-d="0,1" aria-label="Baixo">⬇️</button><span></span>
+    </div>
+    <div class="cartao" style="font-size:.8rem"><b>Legenda:</b> 🏠 casa · 🏥 Centro Pokémon (cura e põe gesso de graça) · 🏪 loja · 🌳 árvore de frutas · 🪙 moeda · 🌿 grama alta (batalhas!) · 💧 lago · 🌲 árvore</div>
+  </section>
+
   <footer>
     Jogo de fã, feito pra brincar 🥚 · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 4 — 29/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 5 — 29/09 · 🔄</button>
   </footer>
 </div>
 
@@ -288,7 +327,9 @@ const COMIDAS = {
   poffin:{ e:'🧁', n:'Poffin', d:'Fome +30 · Feliz +10', p:5, fome:30, feliz:10 },
   suco:{ e:'🧃', n:'Suco de fruta', d:'Energia +25 · Fome +5', p:4, fome:5, energia:25 },
   bolo:{ e:'🍰', n:'Bolo de Alcremie', d:'Fome +40 · Feliz +25', p:12, fome:40, feliz:25 },
-  doce:{ e:'🍬', n:'Doce Raro', d:'Sobe 1 nível na hora!', p:30, fome:5, nivel:1 } };
+  doce:{ e:'🍬', n:'Doce Raro', d:'Sobe 1 nível na hora!', p:30, fome:5, nivel:1 },
+  curativo:{ e:'🩹', n:'Curativo', d:'Pra machucado leve', p:5, med:true },
+  gesso:{ e:'🦴', n:'Gesso', d:'Pra quando perde a batalha', p:15, med:true } };
 const CHAPEUS = { nada:{ e:'', n:'Sem chapéu', p:0 }, laco:{ e:'🎀', n:'Laço', p:10 }, bone:{ e:'🧢', n:'Boné', p:15 }, cartola:{ e:'🎩', n:'Cartola', p:25 },
   festa:{ e:'🥳', n:'Chapéu de festa', p:20 }, coroa:{ e:'👑', n:'Coroa', p:60 }, flor:{ e:'🌸', n:'Florzinha', p:12 }, estrela:{ e:'⭐', n:'Estrela', p:40 } };
 const FUNDOS = {
@@ -418,7 +459,7 @@ function guardarNoAlbum(){
 }
 
 /* ---------- desenhar ---------- */
-function trocarTela(t){ ['escolher', 'jogo'].forEach(x => { $('tela-' + x).hidden = x !== t; }); }
+function trocarTela(t){ ['escolher', 'jogo', 'mapa'].forEach(x => { $('tela-' + x).hidden = x !== t; }); }
 const noiteAgora = () => { const h = new Date().getHours(); return h >= 19 || h < 6; };
 const BARRAS = [['fome', '🍖 Barriga', 'var(--laranja)'], ['feliz', '😊 Felicidade', 'var(--amarelo)'], ['energia', '⚡ Energia', 'var(--azul)'], ['limpeza', '🫧 Limpeza', 'var(--roxo)'], ['saude', '❤️ Saúde', 'var(--vermelho)']];
 function desenhar(){
@@ -436,6 +477,8 @@ function desenhar(){
   const img = $('pet-img'); const src = arte(pet.id, pet.shiny); if(img.dataset.src !== src){ img.src = src; img.dataset.src = src; img.onerror = function(){ this.src = mini(pet.id); this.onerror = null; }; }
   $('chapeu').textContent = (CHAPEUS[pet.chapeu] || CHAPEUS.nada).e;
   $('shiny-selo').hidden = !pet.shiny;
+  checarFerida(); desenharFerida();
+  $('bt-tratar').disabled = !pet.ferida; $('bt-tratar').classList.toggle('alerta', !!(pet.ferida && !pet.ferida.tratado));
   $('pet').classList.toggle('noturno', !!pet.noturno); $('lua').hidden = !pet.noturno;
   if(pet.hue) $('pet-img').style.filter = `hue-rotate(${pet.hue}deg)` + (pet.noturno ? ' drop-shadow(0 0 14px #9a5cff)' : ''); else $('pet-img').style.filter = '';
   $('pet').classList.toggle('dorme', !!pet.dormindo); $('pet').classList.toggle('doente', doente());
@@ -453,7 +496,7 @@ function desenhar(){
   $('bt-comer').classList.toggle('alerta', pet.s.fome < 25); $('bt-brincar').classList.toggle('alerta', pet.s.feliz < 25 && !pet.dormindo);
   $('bt-banho').classList.toggle('alerta', pet.s.limpeza < 25); $('bt-dormir').classList.toggle('alerta', pet.s.energia < 20 && !pet.dormindo);
   $('bt-remedio').classList.toggle('alerta', doente()); $('bt-limpar').classList.toggle('alerta', (pet.cocos || 0) >= 2);
-  ['bt-comer', 'bt-brincar', 'bt-banho', 'bt-remedio', 'bt-passear', 'bt-treinar', 'bt-brinquedo', 'bt-escovar', 'bt-jogos', 'bt-presente'].forEach(id => { if(pet.dormindo) $(id).disabled = true; });
+  ['bt-comer', 'bt-brincar', 'bt-banho', 'bt-remedio', 'bt-passear', 'bt-treinar', 'bt-brinquedo', 'bt-escovar', 'bt-jogos', 'bt-presente', 'bt-explorar', 'bt-batalhar'].forEach(id => { if(pet.dormindo) $(id).disabled = true; });
   if(!pet.dormindo){ $('bt-comer').disabled = false; $('bt-brincar').disabled = false; $('bt-banho').disabled = false; }
 }
 /* o que ele fala sozinho */
@@ -463,6 +506,7 @@ function pedido(){
   if(!pet || pet.fase !== 'pet' || pet.evoluindo) return;
   if(pet.dormindo){ if(Math.random() < .3) falar('💤 zzz…'); return; }
   const s = pet.s;
+  if(pet.ferida && !pet.ferida.tratado) return falar(pet.ferida.tipo === 'grave' ? 'Ai… preciso de gesso 🤕🦴' : 'Ai, dodói… curativo? 🩹');
   if(doente()) return falar('Tô dodói… 🤒 remédio?');
   if(s.fome < 25) return falar('Tô com fome! 🍎');
   if(s.energia < 20) return falar('Tô com sono… 😴');
@@ -486,7 +530,7 @@ $('pet').onclick = () => {
 $('bt-comer').onclick = () => {
   const item = (k, c) => { const q = loja.comidas[k] || 0, gratis = c.p === 0;
     return `<button type="button" class="item" data-k="${k}"><i>${c.e}</i><b>${c.n}</b><small>${c.d}</small><small>${gratis ? '♾️ de graça' : q ? `Você tem ${q}` : `🪙 ${c.p} pra comprar`}</small></button>`; };
-  $('dlg-corpo').innerHTML = `<h2>🍎 Hora de comer!</h2><p style="font-size:.8rem">Você tem 🪙 ${moedas}</p><div class="itens">${Object.entries(COMIDAS).map(([k, c]) => item(k, c)).join('')}</div><button type="button" class="mini" id="fechar">Fechar</button>`;
+  $('dlg-corpo').innerHTML = `<h2>🍎 Hora de comer!</h2><p style="font-size:.8rem">Você tem 🪙 ${moedas}</p><div class="itens">${Object.entries(COMIDAS).filter(([, c]) => !c.med).map(([k, c]) => item(k, c)).join('')}</div><button type="button" class="mini" id="fechar">Fechar</button>`;
   $('dlg-corpo').querySelector('.itens').onclick = ev => { const b = ev.target.closest('[data-k]'); if(b){ $('dlg').close(); comer(b.dataset.k); } };
   $('fechar').onclick = () => $('dlg').close(); $('dlg').showModal();
 };
@@ -522,6 +566,7 @@ $('cocos').onclick = ev => { if(ev.target.closest('.coco')) $('bt-limpar').click
 /* ---------- mais coisas pra fazer ---------- */
 const mexer = (k, v) => { pet.s[k] = limitar(pet.s[k] + v, 0, 100); };
 $('bt-passear').onclick = () => {
+  if(machucado()){ falar('Tô machucado… 🤕'); return; }
   if(pet.s.energia < 15){ falar('Tô cansado pra passear… 😴'); return; }
   mexer('feliz', 15); mexer('energia', -10); mexer('fome', -8); mexer('limpeza', -10); animar('pula'); tocar([523, 587, 659, 698], .1);
   const r = Math.random();
@@ -531,6 +576,7 @@ $('bt-passear').onclick = () => {
   ganharXP(4); desenhar(); salvar();
 };
 $('bt-treinar').onclick = () => {
+  if(machucado()){ falar('Tô machucado… não dá pra treinar 🤕'); return; }
   if(pet.s.energia < 15 || pet.s.fome < 15){ falar(pet.s.fome < 15 ? 'Tô com fome pra treinar! 🍎' : 'Tô sem energia… 😴'); return; }
   mexer('energia', -15); mexer('fome', -10); mexer('feliz', 3); animar('pula'); efeito(null, sorteia(['💪', '🔥', '⚡', '💥']));
   tocar([220, 330, 440], .09, 'square'); falar(sorteia(['Hup! Hup! 💪', 'Tô ficando forte! 🔥', 'Mais uma! 💥'])); grito(pet.id); ganharXP(10); desenhar(); salvar();
@@ -607,6 +653,187 @@ $('bt-presente').onclick = () => {
   else if(r < .9){ const falta = Object.keys(CHAPEUS).filter(k => CHAPEUS[k].p && !loja.chapeus.includes(k)); if(falta.length){ const k = sorteia(falta); loja.chapeus.push(k); msg = `${CHAPEUS[k].e} ${CHAPEUS[k].n}`; } else { moedas += 15; msg = '🪙 15 moedas'; } }
   else { loja.comidas.doce = (loja.comidas.doce || 0) + 1; msg = '🍬 Doce Raro!!!'; }
   confete(); tocar([523, 659, 784, 1047], .1); falar(`Pra você: ${msg}! 🎁`); toast(`🎁 ${esc(pet.nome)} te deu: ${msg}`); desenhar(); salvar();
+};
+
+/* =========================================================================
+   🗺️ Mapa pra passear, ⚔️ batalhas na grama alta e 🩹 machucados (gesso!)
+   ========================================================================= */
+const MAPA = ['############',
+              '#H..gggg..F#',
+              '#...gggg...#',
+              '#..ww...C..#',
+              '#..ww.gg...#',
+              '#.....gg.L.#',
+              '#gg.......g#',
+              '#gggg.....g#',
+              '############'];
+const TILE = { '#':['t-arvore', '🌲'], '.':['t-chao', ''], 'g':['t-grama', '🌿'], 'w':['t-agua', '💧'], 'H':['t-casa', '🏠'], 'C':['t-centro', '🏥'], 'L':['t-loja', '🏪'], 'F':['t-fruta', '🌳'] };
+const tileEm = (x, y) => (MAPA[y] || '')[x] || '#';
+const livre = (x, y) => !'#w'.includes(tileEm(x, y));
+const machucado = () => pet && pet.ferida && pet.ferida.tipo;
+function checarFerida(){
+  if(!pet || !pet.ferida) return;
+  if(pet.ferida.tratado && Date.now() >= pet.ferida.ate){
+    const g = pet.ferida.tipo === 'grave'; pet.ferida = null; mexer('feliz', 15);
+    toast(g ? `🎉 ${pet.nome} tirou o gesso! Tá novinho!` : `🎉 ${pet.nome} sarou!`); falar(g ? 'Tirei o gesso! Tô bom! 💪' : 'Sarei! 😄'); salvar();
+  }
+}
+function desenharFerida(){
+  const f = pet && pet.ferida;
+  $('ferida').hidden = !f; $('ferida-selo').hidden = !f;
+  if(!f) return;
+  $('ferida').textContent = f.tipo === 'grave' ? (f.tratado ? '🦴' : '🤕') : (f.tratado ? '🩹' : '🤕');
+  const falta = Math.max(0, Math.ceil((f.ate - Date.now()) / 60000));
+  $('ferida-selo').textContent = f.tratado ? `${f.tipo === 'grave' ? '🦴 Gesso' : '🩹 Curativo'} · sara em ${falta} min` : f.tipo === 'grave' ? '🤕 Precisa de GESSO!' : '🤕 Precisa de curativo';
+}
+function podeAventura(){
+  if(machucado()){ falar(pet.ferida.tratado ? 'Tô me recuperando… 🩹 espera sarar!' : 'Tô machucado! Me trata! 🤕'); return false; }
+  if(pet.dormindo){ falar('💤 zzz…'); return false; }
+  if(!pet.noturno && pet.s.energia < 10){ falar('Tô cansado demais… 😴'); return false; }
+  if(doente()){ falar('Tô dodói… 🤒'); return false; }
+  return true;
+}
+/* ---------- 🗺️ o mapa ---------- */
+function abrirMapa(){
+  if(!podeAventura()) return;
+  pet.pos = pet.pos || { x:2, y:1 };
+  if(!Array.isArray(pet.moedasMapa) || pet.moedasDia !== new Date().toDateString()){   // moedas novas todo dia
+    pet.moedasDia = new Date().toDateString(); pet.moedasMapa = [];
+    const chao = []; MAPA.forEach((l, y) => [...l].forEach((c, x) => { if(c === '.' || c === 'g') chao.push([x, y]); }));
+    for(let i = 0; i < 5; i++){ const c = sorteia(chao); if(!pet.moedasMapa.some(m => m[0] === c[0] && m[1] === c[1])) pet.moedasMapa.push(c); }
+  }
+  trocarTela('mapa'); desenharMapa(); $('mapa-msg').textContent = 'Ande com as setas. Na 🌿 grama alta aparecem Pokémon selvagens!'; scrollTo(0, 0);
+}
+function desenharMapa(){
+  const P = pet.pos;
+  $('mapa').innerHTML = MAPA.map((l, y) => [...l].map((c, x) => { const [cls, e] = TILE[c]; const moeda = pet.moedasMapa.some(m => m[0] === x && m[1] === y);
+    return `<div class="${cls}" data-x="${x}" data-y="${y}">${moeda && c !== 'H' ? '🪙' : e}${P.x === x && P.y === y ? `<img alt="" src="${mini(pet.id)}">` : ''}</div>`; }).join('')).join('');
+  $('mapa-info').textContent = `🪙 ${moedas} · ⚡ ${Math.round(pet.s.energia)}%`;
+}
+function andar(dx, dy){
+  if(!pet || $('tela-mapa').hidden || $('dlg').open) return;
+  const x = pet.pos.x + dx, y = pet.pos.y + dy;
+  if(!livre(x, y)){ $('mapa-msg').textContent = tileEm(x, y) === 'w' ? '💧 Não dá pra entrar no lago!' : '🌲 Uma árvore no caminho!'; tocar([180], .05, 'square'); return; }
+  pet.pos = { x, y }; tocar([420], .03, 'square');
+  if(!pet.noturno) mexer('energia', -.4); mexer('fome', -.2); mexer('feliz', .3);
+  const t = tileEm(x, y);
+  const i = pet.moedasMapa.findIndex(m => m[0] === x && m[1] === y);
+  if(i >= 0){ pet.moedasMapa.splice(i, 1); const m = 2 + Math.floor(Math.random() * 4); moedas += m; $('mapa-msg').textContent = `✨ Achou 🪙 ${m}!`; tocar([988, 1319], .08); }
+  else if(t === 'H'){ $('mapa-msg').textContent = '🏠 Casa! Toque 🔍 pra entrar.'; }
+  else if(t === 'C'){ $('mapa-msg').textContent = '🏥 Centro Pokémon! Toque 🔍 pra entrar.'; }
+  else if(t === 'L'){ $('mapa-msg').textContent = '🏪 Lojinha! Toque 🔍 pra entrar.'; }
+  else if(t === 'F'){ $('mapa-msg').textContent = '🌳 Árvore de frutas! Toque 🔍 pra sacudir.'; }
+  else if(t === 'g'){ $('mapa-msg').textContent = '🌿 Grama alta… cuidado!'; if(Math.random() < .22){ desenharMapa(); salvar(); setTimeout(() => batalha(), 250); return; } }
+  else $('mapa-msg').textContent = '';
+  if(!pet.noturno && pet.s.energia < 8){ $('mapa-msg').textContent = '😴 Tô cansado… vamos pra casa?'; }
+  desenharMapa(); salvar();
+}
+function olhar(){
+  const t = tileEm(pet.pos.x, pet.pos.y);
+  if(t === 'H'){ trocarTela('jogo'); desenhar(); falar('Lar, doce lar! 🏠'); return; }
+  if(t === 'C'){
+    pet.s.saude = 100; mexer('energia', 30);
+    if(pet.ferida && !pet.ferida.tratado){ pet.ferida.tratado = true; pet.ferida.ate = Date.now() + (pet.ferida.tipo === 'grave' ? 8 : 3) * 60000; }
+    $('mapa-msg').textContent = pet.ferida ? `🏥 A enfermeira Chansey colocou ${pet.ferida.tipo === 'grave' ? 'o 🦴 gesso' : 'o 🩹 curativo'}! Agora é só esperar sarar.` : '🏥 A enfermeira Chansey cuidou de você! Saúde 100%! 💖';
+    tocar([523, 659, 784, 1047], .12, 'sine'); salvar(); desenharMapa(); return;
+  }
+  if(t === 'L'){ mostrarLoja(); $('dlg').showModal(); return; }
+  if(t === 'F'){
+    const hoje = new Date().toDateString(); if(pet.frutaDia === hoje){ $('mapa-msg').textContent = '🌳 Já caíram todas as frutas hoje. Volta amanhã!'; return; }
+    pet.frutaDia = hoje; const k = sorteia(['poffin', 'suco', 'bolo']); loja.comidas[k] = (loja.comidas[k] || 0) + 1; mexer('fome', 10);
+    $('mapa-msg').textContent = `🌳 Caiu uma fruta e um ${COMIDAS[k].e} ${COMIDAS[k].n}! Guardei pra você.`; tocar([660, 880], .08); salvar(); return;
+  }
+  $('mapa-msg').textContent = t === 'g' ? '🔍 Só grama… e barulhos estranhos 👀' : '🔍 Nada por aqui.';
+}
+$('bt-explorar').onclick = abrirMapa;
+$('voltar-casa').onclick = () => { trocarTela('jogo'); desenhar(); };
+document.querySelector('.dpad').onclick = ev => { const b = ev.target.closest('button'); if(!b) return; if(b.id === 'dpad-meio') return olhar(); const [dx, dy] = b.dataset.d.split(',').map(Number); andar(dx, dy); };
+$('mapa').onclick = ev => { const c = ev.target.closest('[data-x]'); if(!c) return; const x = +c.dataset.x, y = +c.dataset.y, dx = x - pet.pos.x, dy = y - pet.pos.y;
+  if(!dx && !dy) return olhar(); if(Math.abs(dx) + Math.abs(dy) === 1) andar(dx, dy); else andar(Math.abs(dx) > Math.abs(dy) ? Math.sign(dx) : 0, Math.abs(dx) > Math.abs(dy) ? 0 : Math.sign(dy)); };
+document.addEventListener('keydown', ev => { if($('tela-mapa').hidden || $('dlg').open) return;
+  const d = { ArrowUp:[0, -1], ArrowDown:[0, 1], ArrowLeft:[-1, 0], ArrowRight:[1, 0] }[ev.key]; if(d){ ev.preventDefault(); andar(...d); } else if(ev.key === ' ' || ev.key === 'Enter'){ ev.preventDefault(); olhar(); } });
+
+/* ---------- ⚔️ batalha ---------- */
+const SUPER = { 'Fogo':['Planta', 'Gelo', 'Inseto', 'Aço'], 'Água':['Fogo', 'Terra', 'Pedra'], 'Planta':['Água', 'Terra', 'Pedra'], 'Elétrico':['Água', 'Voador'],
+  'Gelo':['Planta', 'Terra', 'Voador', 'Dragão'], 'Lutador':['Normal', 'Gelo', 'Pedra', 'Sombrio', 'Aço'], 'Terra':['Fogo', 'Elétrico', 'Pedra', 'Aço', 'Venenoso'],
+  'Voador':['Planta', 'Lutador', 'Inseto'], 'Psíquico':['Lutador', 'Venenoso'], 'Inseto':['Planta', 'Psíquico', 'Sombrio'], 'Pedra':['Fogo', 'Gelo', 'Voador', 'Inseto'],
+  'Fantasma':['Fantasma', 'Psíquico'], 'Dragão':['Dragão'], 'Sombrio':['Psíquico', 'Fantasma'], 'Aço':['Gelo', 'Pedra', 'Fada'], 'Fada':['Lutador', 'Dragão', 'Sombrio'], 'Venenoso':['Planta', 'Fada'] };
+const efetivo = (atk, def) => def.tipos.some(t => (SUPER[TIPOS[atk.tipos[0]][0]] || []).includes(TIPOS[t][0])) ? 1.5 : 1;
+function batalha(){
+  if(!podeAventura()){ return; }
+  const nv = Math.max(1, pet.nivel + Math.floor(Math.random() * 4) - 2);
+  const inimigo = POKE[sorteia(INICIAIS.concat([16, 19, 21, 41, 43, 46, 48, 50, 69, 96, 100, 129, 161, 163, 165, 167, 187, 191, 194, 263, 265, 293, 298, 399, 403, 506, 519, 659, 661, 819, 821, 831, 919, 921]).filter(id => id !== pet.id)) - 1];
+  const eu = POKE[pet.id - 1];
+  const B = { ini:inimigo, nv, hpMax:22 + nv * 6, hp:0, meuMax:30 + pet.nivel * 6, meu:0, defesa:false, frutas:2, fim:false };
+  B.hp = B.hpMax; B.meu = Math.round(B.meuMax * (.5 + pet.s.saude / 200));
+  const golpe = TIPOS[eu.tipos[0]];
+  $('dlg-corpo').innerHTML = `<h2>⚔️ Um ${inimigo.nome} selvagem apareceu!</h2>
+    <div class="arena"><img class="inimigo" id="b-ini" alt="" src="${arte(inimigo.id)}"><img class="meu" id="b-meu" alt="" src="${arte(pet.id, pet.shiny)}">
+      <div class="vida dele">${inimigo.nome} · Nv ${nv}<div class="barra"><i id="b-hp" style="width:100%;background:var(--verde)"></i></div></div>
+      <div class="vida minha">${esc(pet.nome)} · Nv ${pet.nivel}<div class="barra"><i id="b-meuhp" style="width:${B.meu / B.meuMax * 100}%;background:var(--verde)"></i></div><span id="b-meutxt">${B.meu}/${B.meuMax}</span></div></div>
+    <p class="log" id="b-log">O que ${esc(pet.nome)} vai fazer?</p>
+    <div class="golpes" id="golpes">
+      <button type="button" data-g="atacar">${golpe[1]} Ataque ${golpe[0]}</button><button type="button" data-g="defender">🛡️ Defender</button>
+      <button type="button" data-g="fruta" id="b-fruta">🍓 Frutinha (2)</button><button type="button" data-g="fugir">🏃 Fugir</button></div>`;
+  const log = t => { $('b-log').textContent = t; };
+  const pintar = () => { const a = B.hp / B.hpMax, m = B.meu / B.meuMax;
+    $('b-hp').style.width = a * 100 + '%'; $('b-hp').style.background = a < .25 ? 'var(--vermelho)' : a < .5 ? 'var(--amarelo)' : 'var(--verde)';
+    $('b-meuhp').style.width = m * 100 + '%'; $('b-meuhp').style.background = m < .25 ? 'var(--vermelho)' : m < .5 ? 'var(--amarelo)' : 'var(--verde)'; $('b-meutxt').textContent = `${Math.max(0, B.meu)}/${B.meuMax}`;
+    $('b-fruta').textContent = `🍓 Frutinha (${B.frutas})`; $('b-fruta').disabled = !B.frutas || B.fim; };
+  const travar = v => document.querySelectorAll('#golpes button').forEach(b => { b.disabled = v; });
+  const piscar = id => { const i = $(id); i.classList.remove('leva'); void i.offsetWidth; i.classList.add('leva'); };
+  const dano = (atk, def, nivel, forca) => { const crit = Math.random() < .1, mult = efetivo(atk, def) * (crit ? 1.5 : 1); return { d:Math.max(1, Math.round((forca + nivel * 2) * (.85 + Math.random() * .3) * mult)), crit, sup:efetivo(atk, def) > 1 }; };
+  const vezDele = () => {
+    if(B.fim) return;
+    const r = dano(inimigo, eu, nv, 5); let d = r.d; if(B.defesa){ d = Math.ceil(d / 2); B.defesa = false; }
+    B.meu -= d; piscar('b-meu'); tocar([200, 150], .1, 'sawtooth'); grito(inimigo.id);
+    log(`${inimigo.nome} atacou! −${d}${r.sup ? ' · É super efetivo!' : ''}${r.crit ? ' · Golpe crítico!' : ''}`); pintar();
+    if(B.meu <= 0) return perdeu();
+    setTimeout(() => { travar(false); pintar(); }, 500);
+  };
+  const venceu = () => {
+    B.fim = true; travar(true); const m = 5 + nv * 2, xp = 10 + nv * 3; moedas += m; mexer('feliz', 15); if(!pet.noturno) mexer('energia', -10); mexer('fome', -8);
+    pet.vitorias = (pet.vitorias || 0) + 1;
+    if(B.meu < B.meuMax * .3){ pet.ferida = { tipo:'leve', tratado:false, ate:0 }; }
+    log(`🏆 ${esc(pet.nome)} venceu! +🪙 ${m} · +${xp} XP${pet.ferida ? ' · Mas se machucou um pouquinho… 🤕' : ''}`);
+    confete(); tocar([523, 659, 784, 1047], .12); ganharXP(xp); salvar(); desenhar();
+    $('golpes').insertAdjacentHTML('afterend', '<button type="button" class="grande" id="b-sair" style="margin-top:10px">🎉 Continuar</button>');
+    $('b-sair').onclick = () => { $('dlg').close(); if(!$('tela-mapa').hidden) desenharMapa(); };
+  };
+  const perdeu = () => {
+    B.fim = true; travar(true); pet.ferida = { tipo:'grave', tratado:false, ate:0 }; mexer('feliz', -20); pet.s.saude = limitar(pet.s.saude - 30, 0, 100); if(!pet.noturno) mexer('energia', -20);
+    pet.derrotas = (pet.derrotas || 0) + 1;
+    log(`😵 ${esc(pet.nome)} perdeu e se machucou! Precisa de 🦴 GESSO! Vá no 🏥 Centro Pokémon ou use um gesso da loja.`);
+    tocar([392, 330, 262, 196], .2, 'sine'); salvar(); desenhar();
+    $('golpes').insertAdjacentHTML('afterend', '<button type="button" class="grande" id="b-sair" style="margin-top:10px">🤕 Voltar</button>');
+    $('b-sair').onclick = () => { $('dlg').close(); if(!$('tela-mapa').hidden) desenharMapa(); };
+  };
+  $('golpes').onclick = ev => {
+    const b = ev.target.closest('[data-g]'); if(!b || B.fim || b.disabled) return; travar(true); const g = b.dataset.g;
+    if(g === 'atacar'){ const r = dano(eu, inimigo, pet.nivel, 7); B.hp -= r.d; piscar('b-ini'); tocar([660, 880], .07); grito(pet.id);
+      log(`${esc(pet.nome)} usou Ataque ${golpe[0]}! −${r.d}${r.sup ? ' · É super efetivo!' : ''}${r.crit ? ' · Golpe crítico!' : ''}`); pintar();
+      if(B.hp <= 0) return setTimeout(venceu, 500); }
+    if(g === 'defender'){ B.defesa = true; log(`🛡️ ${esc(pet.nome)} se defendeu!`); }
+    if(g === 'fruta'){ B.frutas--; const c = Math.round(B.meuMax * .35); B.meu = Math.min(B.meuMax, B.meu + c); log(`🍓 ${esc(pet.nome)} comeu uma frutinha! +${c}`); pintar(); }
+    if(g === 'fugir'){ if(Math.random() < .75){ B.fim = true; log('🏃 Fugiu!'); setTimeout(() => $('dlg').close(), 700); return; } log('🏃 Não conseguiu fugir!'); }
+    setTimeout(vezDele, 800);
+  };
+  $('dlg').showModal(); grito(inimigo.id); tocar([330, 392, 494, 659], .1, 'square');
+}
+$('bt-batalhar').onclick = () => batalha();
+
+/* ---------- 🩹 tratar ---------- */
+$('bt-tratar').onclick = () => {
+  if(!pet.ferida){ falar('Não tô machucado! 💪'); return; }
+  if(pet.ferida.tratado){ desenharFerida(); falar(`Já tô tratado! Faltam ${Math.max(1, Math.ceil((pet.ferida.ate - Date.now()) / 60000))} minutinhos 🩹`); return; }
+  const k = pet.ferida.tipo === 'grave' ? 'gesso' : 'curativo', c = COMIDAS[k];
+  if(!(loja.comidas[k] > 0)){
+    if(moedas < c.p){ toast(`🪙 O ${c.n.toLowerCase()} custa ${c.p}. Ou vá no 🏥 Centro Pokémon pelo mapa (é de graça)!`); return; }
+    if(!confirm(`Comprar ${c.e} ${c.n} por 🪙 ${c.p}? (No 🏥 Centro Pokémon do mapa é de graça!)`)) return;
+    moedas -= c.p;
+  }else loja.comidas[k]--;
+  pet.ferida.tratado = true; pet.ferida.ate = Date.now() + (k === 'gesso' ? 8 : 3) * 60000;
+  falar(k === 'gesso' ? 'Coloquei o gesso! 🦴 Logo fico bom!' : 'Curativo! 🩹 Obrigado!'); tocar([523, 659], .1, 'sine'); desenhar(); salvar();
 };
 
 /* ---------- 🕹️ joguinhos ---------- */
@@ -774,6 +1001,8 @@ function painelAdm(){
     <button type="button" class="item" data-a="tudo"><i>🎁</i><b>Ganhar a loja toda</b><small>chapéus, fundos e comidas</small></button>
     <button type="button" class="item" data-a="trocar"${vivo ? '' : ' disabled'}><i>🔄</i><b>Virar outro Pokémon</b><small>digite o nome ou número</small></button>
     <button type="button" class="item" data-a="noite"${vivo ? '' : ' disabled'}><i>🥱</i><b>Deixar com fome e sono</b><small>pra testar</small></button>
+    <button type="button" class="item" data-a="curar"${vivo ? '' : ' disabled'}><i>🩹</i><b>Curar machucado</b></button>
+    <button type="button" class="item" data-a="batalha"${vivo ? '' : ' disabled'}><i>⚔️</i><b>Batalha agora</b></button>
     </div>
     <input type="text" id="adm-poke" placeholder="Nome ou número (pra 🔄)" autocomplete="off">
     <p id="adm-msg" style="font-weight:700;margin:6px 0"></p>
@@ -793,6 +1022,8 @@ function painelAdm(){
     if(a === 'tudo'){ loja.chapeus = Object.keys(CHAPEUS); loja.fundos = Object.keys(FUNDOS); Object.keys(COMIDAS).forEach(k => { if(COMIDAS[k].p) loja.comidas[k] = (loja.comidas[k] || 0) + 10; }); msg('🎁 Ganhou tudo da loja!'); }
     if(a === 'trocar'){ const q = semAcento($('adm-poke').value.trim()); const p = POKE.find(x => String(x.id) === q || semAcento(x.nome) === q) || POKE.find(x => q && semAcento(x.nome).startsWith(q));
       if(!p){ msg('🤔 Não achei esse Pokémon.'); return; } const antigo = POKE[pet.id - 1].nome; pet.id = p.id; if(pet.nome === antigo) pet.nome = p.nome; pet.nascEstagio = estagio(p.id); grito(p.id); msg(`🔄 Virou ${p.nome}!`); guardarNoAlbum(); }
+    if(a === 'curar'){ pet.ferida = null; msg('🩹 Curado!'); }
+    if(a === 'batalha'){ pet.ferida = null; $('dlg').close(); batalha(); return; }
     if(a === 'noite'){ pet.s.fome = 10; pet.s.energia = 10; msg('🥱 Ele ficou com fome e sono.'); }
     if(a === 'sair'){ gravar('adm-liberado', ''); cfg.coroa = false; gravar('cfg', cfg); $('dlg').close(); toast('🚪 Saiu do ADM.'); desenhar(); return; }
     if(a === 'apagar'){ if(!confirm('Apagar TUDO do Pokégotchi neste aparelho?') || !confirm('Tem certeza MESMO? Não dá pra desfazer.')) return;
