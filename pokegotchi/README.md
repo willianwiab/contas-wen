@@ -34,4 +34,12 @@ O seu bichinho virtual Pokémon!
 - 🗂️ **Meus Pokémon**: até 6 Pokémon; troque quando quiser. Os guardados ficam **pausados** (não sentem fome nem sono). Dá pra soltar (vai pro 📖 Álbum).
 - 💾 **Save**: um código GOTCHI1… com todos os Pokémon, moedas, loja e álbum, pra guardar ou levar pro outro celular. O código carregado é conferido e limpo antes de entrar no jogo.
 
+## Versão 8
+- 🎨 Quarto novo (janela com sol ou lua e estrelas, prateleira de troféus, tapete e sombra) e botões em grupos (Cuidar, Brincar, Aventura, Especial).
+- 🏃 Física: o Pokémon anda sozinho pelo quarto e pula com gravidade quando você toca.
+- 🗺️ Mapa 24×16 com câmera que segue o Pokémon: rio com pontes, praia, mar, caverna escura (Pokémon raros), 💎 cristal (chapéu ou batalha lendária), 🎁 baús e 🧢 treinadores (1 por dia cada).
+- 🤝 Amizade: um segundo Pokémon no quarto (do seu time, visita de amigo por código VISITA1, ou o 🤖 Claude), brincar juntos, conversar e batalha amistosa (ninguém se machuca), com barra de amizade e prêmios.
+- 🔐 Senha secreta (só o hash no código) que libera o 🤖 Claude como amigo.
+- 👑 ADM: batalha lendária, forçar dia/noite, tempo turbo x10, resetar mapa, teleporte, amizade 100%, próximo ovo shiny e liberar o Claude.
+
 Tudo fica guardado só neste aparelho. Nomes, tipos e evoluções vêm do banco do *Quem é esse Pokémon?*; figuras e gritos do [PokeAPI](https://pokeapi.co). Jogo de fã; Pokémon é da Nintendo, Game Freak e The Pokémon Company.
