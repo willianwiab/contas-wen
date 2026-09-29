@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fazedor de Quiz</title>
+<meta name="description" content="Crie um quiz sobre você, mande o código pros amigos e veja o ranking de quem te conhece melhor!" />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#6b3fd9" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Quiz" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --marca:#6b3fd9; --marca2:#9b6bff; --amarelo:#ffc21a; --verde:#1fa35c; --vermelho:#e5484d; --azul:#3b8cff; --rosa:#ff5fa2;
+  --fundo:#f4f0ff; --fundo2:#e8defe; --tinta:#1f1740; --tinta-fraca:#6a6290; --cartao:#ffffff; --cartao2:#f8f5ff; --borda:#ddd2fb; --sombra:rgba(80,40,180,.14);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#b69bff; --marca2:#9b6bff; --fundo:#140f26; --fundo2:#1d1636; --tinta:#f1ecff; --tinta-fraca:#b1a8d6; --cartao:#211a3d; --cartao2:#2a224c; --borda:#3e3470; --sombra:rgba(0,0,0,.45);
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#b69bff; --marca2:#9b6bff; --fundo:#140f26; --fundo2:#1d1636; --tinta:#f1ecff; --tinta-fraca:#b1a8d6; --cartao:#211a3d; --cartao2:#2a224c; --borda:#3e3470; --sombra:rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);min-height:100vh;
+  background-image:radial-gradient(circle at 0% 0%,var(--fundo2) 0 20%,transparent 20.5%),radial-gradient(circle at 100% 40%,var(--fundo2) 0 14%,transparent 14.5%);background-attachment:fixed}
+.casca{max-width:560px;margin:0 auto;padding:12px 16px 50px}
+h1,h2,h3{font-family:'Baloo 2','Rubik',sans-serif;line-height:1.15}
+button,input,textarea,select{font:inherit;color:inherit}
+.topo{display:flex;align-items:center;gap:8px}
+.logo{flex:1;display:flex;align-items:center;gap:8px;min-width:0;cursor:pointer}
+.logo img{width:44px;height:44px}
+.logo h1{font-size:1.5rem;color:var(--marca)}
+.logo small{display:block;font-family:'Rubik',sans-serif;font-size:.74rem;color:var(--tinta-fraca);font-weight:500}
+.redondo{width:42px;height:42px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.15rem;cursor:pointer;display:grid;place-items:center;flex:none}
+.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:22px;padding:16px;margin-top:14px;box-shadow:0 6px 16px var(--sombra)}
+.cartao h2{font-size:1.25rem;margin-bottom:8px}
+.grande{display:block;width:100%;border:none;border-radius:16px;padding:14px;font-size:1.15rem;font-weight:800;cursor:pointer;color:#fff;background:linear-gradient(180deg,var(--marca2),var(--marca));box-shadow:0 5px 0 #4a28a0;font-family:'Baloo 2','Rubik',sans-serif}
+.grande:active{transform:translateY(3px);box-shadow:0 2px 0 #4a28a0}
+.grande.amarelo{background:linear-gradient(180deg,#ffd54d,#ffb300);color:#3a2a00;box-shadow:0 5px 0 #b37a00}
+.grande.verde{background:linear-gradient(180deg,#34c77b,#1fa35c);box-shadow:0 5px 0 #13693a}
+.mini{border:2px solid var(--borda);background:var(--cartao2);border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:.86rem}
+.mini:disabled{opacity:.45;cursor:default}
+.linha{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.linha > *{flex:1}
+input[type=text],textarea{width:100%;border:2px solid var(--borda);background:var(--cartao2);border-radius:12px;padding:10px;font-size:.95rem}
+textarea{resize:vertical}
+label.rot{display:block;font-weight:700;font-size:.85rem;margin-top:10px}
+.aviso{font-size:.8rem;color:var(--tinta-fraca);margin-top:6px;line-height:1.4}
+.aviso.forte{background:#fff4d6;color:#6b4d00;border-radius:12px;padding:8px 10px}
+:root[data-tema="escuro"] .aviso.forte{background:#3a2f10;color:#ffe29a}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .aviso.forte{background:#3a2f10;color:#ffe29a}}
+.msg{font-weight:700;margin-top:8px;min-height:1.2em}
+.msg.ruim{color:var(--vermelho)}
+/* avatar */
+.av{display:inline-grid;place-items:center;border-radius:50%;flex:none;overflow:hidden;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+.av img{width:88%;height:88%;object-fit:contain;image-rendering:pixelated}
+.escolhas{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:6px}
+.escolhas button{aspect-ratio:1;border:2px solid var(--borda);border-radius:12px;background:var(--cartao2);cursor:pointer;font-size:1.3rem;display:grid;place-items:center;padding:0}
+.escolhas button[aria-pressed="true"]{border-color:var(--marca);box-shadow:0 0 0 2px var(--marca)}
+.escolhas img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.avatar-grande{display:flex;justify-content:center;margin:6px 0}
+/* início */
+.menu-ini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.menu-ini button{border:2px solid var(--borda);background:var(--cartao);border-radius:20px;padding:16px 8px;cursor:pointer;font-weight:800;box-shadow:0 5px 0 var(--borda);font-size:.95rem}
+.menu-ini button i{display:block;font-style:normal;font-size:2rem;margin-bottom:4px}
+.menu-ini button small{display:block;font-weight:500;font-size:.72rem;color:var(--tinta-fraca);margin-top:2px}
+.lista > div{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--borda)}
+.lista > div:last-child{border-bottom:none}
+.lista .info{flex:1;min-width:0}
+.lista .info b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lista .info small{color:var(--tinta-fraca);font-size:.76rem}
+/* editor */
+.pergunta-ed{background:var(--cartao2);border:2px solid var(--borda);border-radius:16px;padding:10px;margin-top:10px}
+.pergunta-ed .cab{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-weight:800}
+.pergunta-ed .cab span{flex:1}
+.pergunta-ed .cab button{border:none;background:var(--cartao);border-radius:8px;padding:4px 7px;cursor:pointer}
+.opcao-ed{display:flex;gap:6px;align-items:center;margin-top:6px}
+.opcao-ed input[type=radio]{width:22px;height:22px;accent-color:var(--verde);flex:none}
+.opcao-ed input[type=text]{padding:8px}
+.contador{font-weight:800;color:var(--marca)}
+.ideias{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.ideias button{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:4px 10px;font-size:.76rem;cursor:pointer}
+/* jogar */
+.barra{height:12px;border-radius:99px;background:var(--cartao2);border:2px solid var(--borda);overflow:hidden;margin-top:6px}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,var(--amarelo),var(--rosa));transition:width .4s}
+.q-num{font-weight:800;color:var(--tinta-fraca);font-size:.85rem;margin-top:10px}
+.q-texto{font-family:'Baloo 2',sans-serif;font-size:1.45rem;margin:8px 0 12px;line-height:1.2}
+.ops{display:grid;gap:10px}
+.ops button{border:2px solid var(--borda);background:var(--cartao);border-radius:16px;padding:14px 12px;font-weight:800;font-size:1.02rem;cursor:pointer;text-align:left;box-shadow:0 4px 0 var(--borda);display:flex;gap:10px;align-items:center}
+.ops button b{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--cartao2);flex:none}
+.ops button:disabled{cursor:default}
+.ops button.certo{background:var(--verde);border-color:var(--verde);color:#fff;box-shadow:0 4px 0 #13693a}
+.ops button.errado{background:var(--vermelho);border-color:var(--vermelho);color:#fff;box-shadow:0 4px 0 #9b2327}
+.ops button.certo b,.ops button.errado b{background:rgba(255,255,255,.25)}
+.feedback{text-align:center;font-weight:800;font-size:1.1rem;margin-top:12px;min-height:1.4em}
+.resultado{text-align:center}
+.resultado .nota{font-family:'Baloo 2',sans-serif;font-size:3rem;color:var(--marca);line-height:1}
+.resultado .estrelas{font-size:2rem;letter-spacing:4px}
+.respostas li{list-style:none;padding:6px 0;border-bottom:1px dashed var(--borda);font-size:.88rem;text-align:left}
+.codigo{font-family:monospace;font-size:.7rem;word-break:break-all;background:var(--cartao2);border-radius:12px;padding:10px;margin-top:8px;max-height:120px;overflow:auto;user-select:all;text-align:left}
+/* ranking */
+.rank > div{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px dashed var(--borda);cursor:pointer;border-radius:12px}
+.rank > div:hover{background:var(--cartao2)}
+.rank .pos{font-weight:800;font-size:1.2rem;width:34px;text-align:center}
+.rank .pts{font-weight:800;font-size:1.05rem;color:var(--marca);text-align:right}
+.rank .pts small{display:block;font-size:.7rem;color:var(--tinta-fraca);font-weight:600}
+.stat-q{margin-top:8px;font-size:.86rem}
+.stat-q .barra i{background:linear-gradient(90deg,#34c77b,#1fa35c)}
+.abas{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.abas button{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:6px 12px;font-weight:700;cursor:pointer;font-size:.84rem}
+.abas button[aria-pressed="true"]{background:var(--marca);border-color:var(--marca);color:#fff}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:var(--amarelo);color:#2a1f00;border-radius:16px;padding:10px 16px;font-weight:800;z-index:60;box-shadow:0 8px 20px rgba(0,0,0,.25);animation:desce .4s;max-width:calc(100% - 28px);text-align:center}
+@keyframes desce{from{transform:translate(-50%,-80px)}}
+.confete{position:fixed;top:-20px;width:10px;height:14px;z-index:70;pointer-events:none;animation:cai 2.4s linear forwards}
+@keyframes cai{to{transform:translateY(110vh) rotate(720deg)}}
+.pula{animation:pula .45s}
+@keyframes pula{40%{transform:scale(1.06)}}
+.treme{animation:treme .4s}
+@keyframes treme{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+footer{text-align:center;margin-top:22px;color:var(--tinta-fraca);font-size:.78rem;line-height:1.5}
+.versao{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:5px 12px;font-weight:700;cursor:pointer;margin-top:8px}
+.faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--marca);color:#fff;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:70;font-weight:700}
+.faixa-nova button{border:none;border-radius:99px;padding:6px 12px;font-weight:800;background:var(--amarelo);color:#2a1f00;cursor:pointer}
+@media (max-width:360px){.escolhas{grid-template-columns:repeat(6,1fr)}}
+</style>
+</head>
+<body>
+<div class="casca">
+  <header class="topo">
+    <div class="logo" id="logo"><img src="icone.svg" alt="" /><h1>Fazedor de Quiz<small>Quem te conhece melhor?</small></h1></div>
+    <button type="button" class="redondo" id="som" aria-label="Som">🔊</button>
+    <button type="button" class="redondo" id="tema" aria-label="Claro ou escuro">🌙</button>
+  </header>
+
+  <!-- ===================== INÍCIO ===================== -->
+  <section id="tela-inicio">
+    <div class="cartao" style="text-align:center">
+      <div class="avatar-grande" id="ini-avatar"></div>
+      <h2 id="ini-nome">Oi!</h2>
+      <p style="font-size:.9rem">Crie um quiz sobre você, mande o código pros amigos e descubra <b>quem te conhece melhor</b>! 🏆</p>
+      <button type="button" class="mini" id="editar-perfil" style="margin-top:10px">🎨 Meu apelido e avatar</button>
+    </div>
+    <div class="menu-ini">
+      <button type="button" id="ir-criar"><i>✏️</i>Criar quiz<small>até 100 perguntas</small></button>
+      <button type="button" id="ir-responder"><i>🙋</i>Responder<small>cole o código do amigo</small></button>
+      <button type="button" id="ir-meus"><i>📋</i>Meus quizzes<small>e o 🏆 ranking</small></button>
+      <button type="button" id="ir-respondidos"><i>🏅</i>Respondidos<small>os quizzes que eu fiz</small></button>
+    </div>
+    <div class="cartao">
+      <h2>❓ Como funciona</h2>
+      <ol style="margin-left:18px;line-height:1.6;font-size:.9rem">
+        <li><b>✏️ Crie</b> um quiz sobre você e marque a resposta certa de cada pergunta.</li>
+        <li><b>📤 Mande o código</b> pros seus amigos.</li>
+        <li>Eles <b>🙋 respondem</b> e te mandam o <b>código das respostas</b>.</li>
+        <li>Cole os códigos em <b>📋 Meus quizzes</b> e veja o <b>🏆 ranking</b>!</li>
+      </ol>
+      <p class="aviso forte" style="margin-top:10px">🔒 <b>Segurança:</b> nunca coloque no quiz endereço, escola, telefone, senha ou nome completo. E só mande códigos pra quem você conhece!</p>
+    </div>
+  </section>
+
+  <!-- ===================== PERFIL ===================== -->
+  <section id="tela-perfil" hidden>
+    <div class="cartao">
+      <h2>🎨 Meu apelido e avatar</h2>
+      <div class="avatar-grande" id="perfil-avatar"></div>
+      <label class="rot">Apelido (não use o seu nome de verdade)<input type="text" id="apelido" maxlength="16" placeholder="Ex.: Mestre de Ger9" autocomplete="off"></label>
+      <label class="rot">Carinha ou Pokémon</label>
+      <div class="escolhas" id="escolha-rosto"></div>
+      <label class="rot">Cor do fundo</label>
+      <div class="escolhas" id="escolha-cor"></div>
+      <p class="aviso">📸 No lugar de foto de verdade, a gente usa avatar. Assim ninguém que você não conhece vê o seu rosto. 🔒</p>
+      <button type="button" class="grande" id="salvar-perfil" style="margin-top:12px">✅ Pronto</button>
+    </div>
+  </section>
+
+  <!-- ===================== EDITOR ===================== -->
+  <section id="tela-editor" hidden>
+    <div class="cartao">
+      <div style="display:flex;justify-content:space-between;align-items:center"><h2>✏️ Meu quiz</h2><span class="contador" id="contador">0/100</span></div>
+      <label class="rot">Nome do quiz<input type="text" id="titulo" maxlength="50" placeholder="Ex.: Quanto você me conhece?" autocomplete="off"></label>
+      <p class="aviso forte">🔒 Não coloque endereço, escola, telefone, senha ou nome completo nas perguntas.</p>
+      <div id="perguntas-ed"></div>
+      <button type="button" class="grande amarelo" id="add-pergunta" style="margin-top:12px">➕ Adicionar pergunta</button>
+      <p class="aviso" style="margin-top:10px">💡 <b>Ideias:</b> toque pra adicionar uma pergunta pronta (depois você muda as respostas!)</p>
+      <div class="ideias" id="ideias"></div>
+      <p class="msg ruim" id="editor-msg"></p>
+      <div class="linha"><button type="button" class="mini" id="editor-voltar">⬅️ Voltar</button><button type="button" class="grande verde" id="editor-publicar" style="flex:2">📤 Salvar e gerar código</button></div>
+    </div>
+  </section>
+
+  <!-- ===================== COMPARTILHAR ===================== -->
+  <section id="tela-compartilhar" hidden>
+    <div class="cartao" style="text-align:center">
+      <h2>🎉 Quiz pronto!</h2>
+      <p id="comp-info"></p>
+      <p style="font-size:.9rem;margin-top:8px">Mande esse código pros seus amigos. Eles colam em <b>🙋 Responder</b>.</p>
+      <div class="codigo" id="comp-codigo"></div>
+      <button type="button" class="grande" id="comp-copiar" style="margin-top:10px">📋 Copiar o código</button>
+      <button type="button" class="mini" id="comp-compartilhar" style="margin-top:8px;width:100%" hidden>📤 Mandar…</button>
+      <button type="button" class="mini" id="comp-ranking" style="margin-top:8px;width:100%">🏆 Ver o ranking deste quiz</button>
+      <button type="button" class="mini" id="comp-inicio" style="margin-top:8px;width:100%">🏠 Início</button>
+    </div>
+  </section>
+
+  <!-- ===================== RESPONDER (colar) ===================== -->
+  <section id="tela-responder" hidden>
+    <div class="cartao">
+      <h2>🙋 Responder um quiz</h2>
+      <p style="font-size:.9rem">Cole aqui o código que o seu amigo mandou (começa com <b>QUIZ</b>).</p>
+      <textarea id="colar-quiz" rows="4" placeholder="Cole o código aqui…" style="margin-top:8px"></textarea>
+      <p class="msg ruim" id="colar-msg"></p>
+      <div class="linha"><button type="button" class="mini" id="responder-voltar">⬅️ Voltar</button><button type="button" class="grande" id="responder-ok" style="flex:2">▶️ Começar!</button></div>
+    </div>
+  </section>
+
+  <!-- ===================== JOGAR ===================== -->
+  <section id="tela-jogar" hidden>
+    <div class="cartao">
+      <div style="display:flex;align-items:center;gap:10px"><span id="jogo-autor-av"></span><div style="flex:1;min-width:0"><b id="jogo-titulo"></b><br><small id="jogo-autor" style="color:var(--tinta-fraca)"></small></div><button type="button" class="redondo" id="jogo-sair" aria-label="Sair">✖️</button></div>
+      <div class="barra"><i id="jogo-barra" style="width:0"></i></div>
+      <p class="q-num" id="q-num"></p>
+      <p class="q-texto" id="q-texto"></p>
+      <div class="ops" id="ops"></div>
+      <p class="feedback" id="feedback"></p>
+      <button type="button" class="grande" id="proxima" hidden style="margin-top:10px">Próxima ➡️</button>
+    </div>
+  </section>
+
+  <!-- ===================== RESULTADO ===================== -->
+  <section id="tela-resultado" hidden>
+    <div class="cartao resultado">
+      <div class="avatar-grande" id="res-avatar"></div>
+      <h2 id="res-titulo"></h2>
+      <div class="nota" id="res-nota"></div>
+      <div class="estrelas" id="res-estrelas"></div>
+      <p id="res-frase" style="font-weight:700;margin-top:6px"></p>
+      <h3 style="margin-top:14px">📤 Mande as suas respostas</h3>
+      <p style="font-size:.86rem">Assim <b id="res-autor"></b> vê você no ranking!</p>
+      <div class="codigo" id="res-codigo"></div>
+      <button type="button" class="grande" id="res-copiar" style="margin-top:10px">📋 Copiar código das respostas</button>
+      <button type="button" class="mini" id="res-compartilhar" style="margin-top:8px;width:100%" hidden>📤 Mandar…</button>
+      <details style="margin-top:12px;text-align:left"><summary style="cursor:pointer;font-weight:700">👀 Ver as respostas certas</summary><ul class="respostas" id="res-lista" style="margin-top:6px"></ul></details>
+      <button type="button" class="mini" id="res-inicio" style="margin-top:12px;width:100%">🏠 Início</button>
+    </div>
+  </section>
+
+  <!-- ===================== MEUS QUIZZES ===================== -->
+  <section id="tela-meus" hidden>
+    <div class="cartao">
+      <div style="display:flex;justify-content:space-between;align-items:center"><h2>📋 Meus quizzes</h2><button type="button" class="mini" id="meus-voltar">🏠 Início</button></div>
+      <div class="lista" id="lista-meus"></div>
+      <button type="button" class="grande amarelo" id="meus-novo" style="margin-top:12px">✏️ Criar outro quiz</button>
+    </div>
+  </section>
+
+  <!-- ===================== RANKING ===================== -->
+  <section id="tela-ranking" hidden>
+    <div class="cartao">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 id="rk-titulo" style="min-width:0">🏆 Ranking</h2><button type="button" class="mini" id="rk-voltar">⬅️ Voltar</button></div>
+      <p id="rk-info" style="font-size:.86rem;color:var(--tinta-fraca)"></p>
+      <h3 style="margin-top:10px">📥 Colar respostas de um amigo</h3>
+      <textarea id="rk-colar" rows="2" placeholder="Cole o código das respostas (RESP…)" style="margin-top:6px"></textarea>
+      <button type="button" class="mini" id="rk-colar-ok" style="margin-top:6px;width:100%">➕ Adicionar ao ranking</button>
+      <p class="msg" id="rk-msg"></p>
+      <div class="abas" id="rk-abas"><button type="button" data-a="ranking" aria-pressed="true">🏆 Ranking</button><button type="button" data-a="perguntas" aria-pressed="false">📊 Perguntas</button><button type="button" data-a="quiz" aria-pressed="false">🔗 Código do quiz</button></div>
+      <div id="rk-corpo" style="margin-top:8px"></div>
+    </div>
+  </section>
+
+  <!-- ===================== RESPONDIDOS ===================== -->
+  <section id="tela-respondidos" hidden>
+    <div class="cartao">
+      <div style="display:flex;justify-content:space-between;align-items:center"><h2>🏅 Quizzes que eu respondi</h2><button type="button" class="mini" id="resp-voltar">🏠 Início</button></div>
+      <div class="lista" id="lista-respondidos"></div>
+    </div>
+  </section>
+
+  <footer>
+    Feito pra brincar com os amigos 🧠 · Tudo fica guardado só neste aparelho.<br>
+    Os Pokémon do avatar vêm do PokeAPI (jogo de fã).
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 30/09 · 🔄</button>
+  </footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('fazquiz:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('fazquiz:' + k, JSON.stringify(v)); }catch(e){} }
+const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const limpa = (t, n) => String(t == null ? '' : t).replace(/[<>]/g, '').replace(/https?:\/\/\S+|www\.\S+/gi, '[link]').replace(/\s+/g, ' ').trim().slice(0, n);
+const num = (x, a, b, d) => { x = +x; return isFinite(x) ? Math.max(a, Math.min(b, Math.floor(x))) : d; };
+const sorteia = a => a[Math.floor(Math.random() * a.length)];
+const MAX_P = 100;
+
+/* ---------- 🎨 avatar ---------- */
+const ROSTOS = ['😀', '😎', '🤠', '🥳', '🤓', '😺', '🐶', '🦊', '🐼', '🐸', '🦄', '🐲', '👾', '🤖', '👻', '⚽', '🎮', '🌟', '🔥', '🌈', '🍕', '🚀', '👑', '🐙'];
+const POKES = [25, 133, 4, 7, 1, 150, 94, 658, 908, 890, 448, 197, 143, 39, 54, 129, 384, 6];
+const CORES = ['#ffd54d', '#ff8fb8', '#8fd3ff', '#9be58a', '#c9a8ff', '#ffb27a', '#f4f4f4', '#2b2f77'];
+const sprite = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+function avatarHTML(av, tam){
+  av = av || {}; tam = tam || 44; const cor = CORES.includes(av.c) ? av.c : CORES[0];
+  const dentro = av.p && POKES.includes(+av.p) ? `<img alt="" src="${sprite(+av.p)}">` : `<span style="font-size:${tam * .55}px;line-height:1">${ROSTOS.includes(av.e) ? av.e : '😀'}</span>`;
+  return `<span class="av" style="width:${tam}px;height:${tam}px;background:${cor}">${dentro}</span>`;
+}
+const limpaAv = av => { av = av || {}; return { e:ROSTOS.includes(av.e) ? av.e : '😀', p:POKES.includes(+av.p) ? +av.p : 0, c:CORES.includes(av.c) ? av.c : CORES[0] }; };
+
+/* ---------- guardado ---------- */
+const cfg = Object.assign({ som:true }, ler('cfg', {}));
+let perfil = Object.assign({ apelido:'', av:{ e:'😀', p:0, c:'#ffd54d' } }, ler('perfil', {}));
+let meus = Array.isArray(ler('meus', [])) ? ler('meus', []) : [];            // quizzes que eu criei (com as respostas dos amigos)
+let respondidos = Array.isArray(ler('respondidos', [])) ? ler('respondidos', []) : [];
+const salvar = () => { gravar('perfil', perfil); gravar('meus', meus); gravar('respondidos', respondidos); gravar('cfg', cfg); };
+
+/* ---------- 🔊 sons ---------- */
+let ac = null;
+function tocar(notas, dur, tipo){
+  if(!cfg.som) return;
+  try{ ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    notas.forEach((f, i) => { const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + i * dur; o.type = tipo || 'triangle'; o.frequency.value = f;
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.18, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + dur * .95); o.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur); }); }catch(e){}
+}
+const somCerto = () => tocar([660, 880, 1175], .08), somErrado = () => tocar([220, 160], .16, 'sawtooth'), somClique = () => tocar([500], .04, 'square');
+
+/* ---------- 📦 códigos (compactados quando o navegador deixa) ---------- */
+const paraB64 = bytes => { let s = ''; bytes.forEach(x => { s += String.fromCharCode(x); }); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+const deB64 = t => Uint8Array.from(atob(t.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+async function empacotar(prefixo, obj){
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  if(window.CompressionStream){
+    try{ const s = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw')); const z = new Uint8Array(await new Response(s).arrayBuffer()); return prefixo + 'Z.' + paraB64(z); }catch(e){}
+  }
+  return prefixo + '.' + paraB64(bytes);
+}
+async function desempacotar(prefixo, texto){
+  const m = String(texto).match(new RegExp(prefixo + '(Z?)\\.([A-Za-z0-9_-]+)')); if(!m) return null;
+  let bytes = deB64(m[2]);
+  if(m[1]){ if(!window.DecompressionStream) throw new Error('sem descompressão'); const s = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw')); bytes = new Uint8Array(await new Response(s).arrayBuffer()); }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+async function copiar(texto, botao, rotulo){
+  try{ await navigator.clipboard.writeText(texto); botao.textContent = '✅ Copiado!'; }catch(e){ botao.textContent = 'Segure no código e copie 👆'; }
+  setTimeout(() => { botao.textContent = rotulo; }, 2500);
+}
+function mandar(botao, texto){ botao.hidden = !navigator.share; botao.onclick = () => navigator.share({ text:texto }).catch(() => {}); }
+
+/* ---------- telas ---------- */
+const TELAS = ['inicio', 'perfil', 'editor', 'compartilhar', 'responder', 'jogar', 'resultado', 'meus', 'ranking', 'respondidos'];
+function tela(t){ TELAS.forEach(x => { $('tela-' + x).hidden = x !== t; }); scrollTo(0, 0); }
+function mostrarInicio(){
+  $('ini-avatar').innerHTML = avatarHTML(perfil.av, 90);
+  $('ini-nome').textContent = perfil.apelido ? `Oi, ${perfil.apelido}! 👋` : 'Oi! Escolha um apelido 👇';
+  tela('inicio');
+}
+$('logo').onclick = mostrarInicio;
+
+/* ---------- 🎨 perfil ---------- */
+let avTemp = null;
+function abrirPerfil(depois){
+  avTemp = { ...limpaAv(perfil.av) }; $('apelido').value = perfil.apelido;
+  const pintar = () => {
+    $('perfil-avatar').innerHTML = avatarHTML(avTemp, 96);
+    $('escolha-rosto').innerHTML = ROSTOS.map(e => `<button type="button" data-e="${e}" aria-pressed="${!avTemp.p && avTemp.e === e}">${e}</button>`).join('') +
+      POKES.map(p => `<button type="button" data-p="${p}" aria-pressed="${avTemp.p === p}"><img alt="" loading="lazy" src="${sprite(p)}"></button>`).join('');
+    $('escolha-cor').innerHTML = CORES.map(c => `<button type="button" data-c="${c}" aria-pressed="${avTemp.c === c}" style="background:${c}"></button>`).join('');
+  };
+  pintar();
+  $('escolha-rosto').onclick = ev => { const b = ev.target.closest('button'); if(!b) return; if(b.dataset.p){ avTemp.p = +b.dataset.p; } else { avTemp.p = 0; avTemp.e = b.dataset.e; } somClique(); pintar(); };
+  $('escolha-cor').onclick = ev => { const b = ev.target.closest('button'); if(!b) return; avTemp.c = b.dataset.c; somClique(); pintar(); };
+  $('salvar-perfil').onclick = () => { perfil.apelido = limpa($('apelido').value, 16); perfil.av = avTemp; salvar(); tocar([523, 659, 784], .08); if(depois) depois(); else mostrarInicio(); };
+  tela('perfil');
+}
+$('editar-perfil').onclick = () => abrirPerfil();
+
+/* ---------- ✏️ editor ---------- */
+const IDEIAS = [
+  ['Qual é a minha cor favorita?', ['Azul', 'Vermelho', 'Verde', 'Roxo']], ['Qual é o meu Pokémon favorito?', ['Pikachu', 'Eevee', 'Charizard', 'Mewtwo']],
+  ['Qual é a minha comida favorita?', ['Pizza', 'Hambúrguer', 'Macarrão', 'Sushi']], ['Qual é o meu jogo favorito?', ['Minecraft', 'Pokémon', 'Roblox', 'Brawl Stars']],
+  ['Qual animal eu mais gosto?', ['Cachorro', 'Gato', 'Dinossauro', 'Coruja']], ['O que eu mais gosto de fazer?', ['Jogar videogame', 'Desenhar', 'Jogar bola', 'Assistir desenho']],
+  ['Qual é o meu doce favorito?', ['Chocolate', 'Sorvete', 'Bolo', 'Brigadeiro']], ['Qual superpoder eu queria ter?', ['Voar', 'Ficar invisível', 'Super força', 'Teletransporte']],
+  ['Qual é a minha estação do ano favorita?', ['Verão', 'Inverno', 'Primavera', 'Outono']], ['O que eu quero ser quando crescer?', ['Cientista', 'Jogador', 'Youtuber', 'Criador de jogos']],
+  ['Qual é o meu esporte favorito?', ['Futebol', 'Natação', 'Basquete', 'Nenhum']], ['Eu tenho medo de…', ['Escuro', 'Aranha', 'Altura', 'Nada!']],
+  ['Qual é o meu desenho favorito?', ['Pokémon', 'Bob Esponja', 'Gumball', 'Outro']], ['Café da manhã preferido?', ['Pão', 'Cereal', 'Panqueca', 'Fruta']],
+  ['Eu prefiro…', ['Praia', 'Montanha', 'Cidade', 'Floresta']], ['Qual é o meu número da sorte?', ['3', '7', '10', '13']]];
+let ed = null;   // quiz sendo editado
+function novaPergunta(p, ops){ return { p:p || '', ops:(ops || ['', '']).slice(0, 4), c:0 }; }
+function abrirEditor(quiz){
+  if(!perfil.apelido){ abrirPerfil(() => abrirEditor(quiz)); toast('Primeiro, escolha o seu apelido e avatar! 🎨'); return; }
+  ed = quiz ? JSON.parse(JSON.stringify(quiz)) : { id:Math.random().toString(36).slice(2, 10), titulo:'', perguntas:[novaPergunta()], respostas:[], criado:Date.now() };
+  $('titulo').value = ed.titulo; $('editor-msg').textContent = '';
+  $('ideias').innerHTML = IDEIAS.map((x, i) => `<button type="button" data-i="${i}">${esc(x[0])}</button>`).join('');
+  desenharEditor(); tela('editor');
+}
+function desenharEditor(){
+  $('contador').textContent = `${ed.perguntas.length}/${MAX_P}`;
+  $('add-pergunta').disabled = ed.perguntas.length >= MAX_P; $('add-pergunta').style.opacity = ed.perguntas.length >= MAX_P ? .5 : 1;
+  $('perguntas-ed').innerHTML = ed.perguntas.map((q, i) => `<div class="pergunta-ed" data-q="${i}">
+    <div class="cab"><span>Pergunta ${i + 1}</span><button type="button" data-acao="sobe" title="Subir"${i ? '' : ' disabled'}>⬆️</button><button type="button" data-acao="desce" title="Descer"${i < ed.perguntas.length - 1 ? '' : ' disabled'}>⬇️</button><button type="button" data-acao="apaga" title="Apagar">🗑️</button></div>
+    <textarea rows="2" data-campo="p" maxlength="120" placeholder="Escreva a pergunta…">${esc(q.p)}</textarea>
+    ${q.ops.map((o, j) => `<div class="opcao-ed"><input type="radio" name="c${i}" data-certo="${j}"${q.c === j ? ' checked' : ''} aria-label="Resposta certa"><input type="text" data-op="${j}" maxlength="50" value="${esc(o)}" placeholder="Resposta ${j + 1}">${q.ops.length > 2 ? `<button type="button" class="mini" data-acao="tira" data-j="${j}" style="padding:6px 8px">✖</button>` : ''}</div>`).join('')}
+    ${q.ops.length < 4 ? '<button type="button" class="mini" data-acao="mais" style="margin-top:6px">➕ Resposta</button>' : ''}
+    <p class="aviso">🟢 Marque a bolinha da resposta <b>certa</b>.</p></div>`).join('');
+}
+$('perguntas-ed').addEventListener('input', ev => {
+  const card = ev.target.closest('[data-q]'); if(!card) return; const q = ed.perguntas[+card.dataset.q];
+  if(ev.target.dataset.campo === 'p') q.p = ev.target.value;
+  if(ev.target.dataset.op != null) q.ops[+ev.target.dataset.op] = ev.target.value;
+});
+$('perguntas-ed').addEventListener('change', ev => { const card = ev.target.closest('[data-q]'); if(card && ev.target.dataset.certo != null){ ed.perguntas[+card.dataset.q].c = +ev.target.dataset.certo; somClique(); } });
+$('perguntas-ed').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-acao]'); if(!b) return; const i = +b.closest('[data-q]').dataset.q, P = ed.perguntas, a = b.dataset.acao;
+  if(a === 'apaga'){ if(P.length === 1){ P[0] = novaPergunta(); } else P.splice(i, 1); }
+  if(a === 'sobe' && i > 0) [P[i - 1], P[i]] = [P[i], P[i - 1]];
+  if(a === 'desce' && i < P.length - 1) [P[i + 1], P[i]] = [P[i], P[i + 1]];
+  if(a === 'mais' && P[i].ops.length < 4) P[i].ops.push('');
+  if(a === 'tira'){ const j = +b.dataset.j; P[i].ops.splice(j, 1); if(P[i].c >= P[i].ops.length) P[i].c = 0; else if(P[i].c > j) P[i].c--; }
+  somClique(); desenharEditor();
+});
+$('add-pergunta').onclick = () => { if(ed.perguntas.length >= MAX_P) return; ed.perguntas.push(novaPergunta()); desenharEditor(); somClique();
+  const cards = document.querySelectorAll('.pergunta-ed'); const ult = cards[cards.length - 1]; ult.scrollIntoView({ behavior:'smooth', block:'center' }); ult.querySelector('textarea').focus(); };
+$('ideias').onclick = ev => { const b = ev.target.closest('[data-i]'); if(!b || ed.perguntas.length >= MAX_P) return; const [p, ops] = IDEIAS[+b.dataset.i];
+  const vazia = ed.perguntas.findIndex(q => !q.p.trim() && q.ops.every(o => !o.trim()));
+  if(vazia >= 0) ed.perguntas[vazia] = novaPergunta(p, ops); else ed.perguntas.push(novaPergunta(p, ops));
+  desenharEditor(); somClique(); toast('💡 Pergunta adicionada! Marque a resposta certa 🟢'); };
+$('titulo').oninput = ev => { ed.titulo = ev.target.value; };
+$('editor-voltar').onclick = () => { if(confirm('Sair do editor? O que não foi salvo vai sumir.')) mostrarInicio(); };
+const PROIBIDO = /(rua|avenida|av\.|apto|apartamento|cep|telefone|celular|whats|zap|senha|escola|col[eé]gio|endere[cç]o|\b\d{8,}\b)/i;
+$('editor-publicar').onclick = async () => {
+  ed.titulo = limpa($('titulo').value, 50) || `Quiz do ${perfil.apelido}`;
+  const perguntas = [];
+  for(let i = 0; i < ed.perguntas.length; i++){
+    const q = ed.perguntas[i], p = limpa(q.p, 120), ops = q.ops.map(o => limpa(o, 50));
+    const cheias = ops.map((o, j) => [o, j]).filter(([o]) => o);
+    if(!p && !cheias.length) continue;   // pergunta vazia: ignora
+    if(!p){ $('editor-msg').textContent = `✏️ Escreva a pergunta ${i + 1}.`; return; }
+    if(cheias.length < 2){ $('editor-msg').textContent = `✏️ A pergunta ${i + 1} precisa de pelo menos 2 respostas.`; return; }
+    if(!ops[q.c]){ $('editor-msg').textContent = `🟢 Marque a resposta certa da pergunta ${i + 1}.`; return; }
+    perguntas.push({ p, ops:cheias.map(x => x[0]), c:cheias.findIndex(x => x[1] === q.c) });
+  }
+  if(!perguntas.length){ $('editor-msg').textContent = '✏️ Escreva pelo menos 1 pergunta!'; return; }
+  const tudo = ed.titulo + ' ' + perguntas.map(q => q.p + ' ' + q.ops.join(' ')).join(' ');
+  if(PROIBIDO.test(tudo) && !confirm('🔒 Parece que o quiz tem endereço, telefone, escola ou senha. Isso não é seguro! Tem certeza que quer continuar?')) return;
+  const velho = meus.find(x => x.id === ed.id);
+  const quiz = { id:ed.id, titulo:ed.titulo, perguntas, respostas:velho ? velho.respostas : [], criado:ed.criado || Date.now(), editado:Date.now() };
+  if(velho && velho.respostas.length && JSON.stringify(velho.perguntas) !== JSON.stringify(perguntas)){
+    if(!confirm('Você mudou as perguntas. As respostas antigas dos amigos podem não bater mais. Continuar?')) return;
+  }
+  meus = [quiz, ...meus.filter(x => x.id !== quiz.id)]; salvar();
+  await mostrarCompartilhar(quiz); confete(); tocar([523, 659, 784, 1047], .1);
+};
+const codigoQuiz = quiz => empacotar('QUIZ1', { i:quiz.id, t:quiz.titulo, a:perfil.apelido, av:perfil.av, q:quiz.perguntas.map(x => [x.p, x.ops, x.c]) });
+async function mostrarCompartilhar(quiz){
+  const c = await codigoQuiz(quiz);
+  $('comp-info').innerHTML = `<b>${esc(quiz.titulo)}</b> · ${quiz.perguntas.length} pergunta${quiz.perguntas.length > 1 ? 's' : ''}`;
+  $('comp-codigo').textContent = c; $('comp-copiar').onclick = () => copiar(c, $('comp-copiar'), '📋 Copiar o código');
+  mandar($('comp-compartilhar'), `🧠 Será que você me conhece? Responda o meu quiz no Fazedor de Quiz! Cole em "Responder": ${c}`);
+  $('comp-ranking').onclick = () => abrirRanking(quiz.id);
+  tela('compartilhar');
+}
+$('comp-inicio').onclick = mostrarInicio;
+$('ir-criar').onclick = () => abrirEditor();
+
+/* ---------- 🙋 responder ---------- */
+let jogo = null;
+function limpaQuiz(o){
+  if(!o || !Array.isArray(o.q)) return null;
+  const perguntas = o.q.slice(0, MAX_P).map(x => { if(!Array.isArray(x)) return null; const ops = (Array.isArray(x[1]) ? x[1] : []).slice(0, 4).map(y => limpa(y, 50)).filter(Boolean);
+    const p = limpa(x[0], 120); const c = num(x[2], 0, ops.length - 1, 0); return p && ops.length >= 2 ? { p, ops, c } : null; }).filter(Boolean);
+  if(!perguntas.length) return null;
+  return { id:limpa(o.i, 12) || 'x', titulo:limpa(o.t, 50) || 'Quiz', autor:limpa(o.a, 16) || 'Amigo', av:limpaAv(o.av), perguntas };
+}
+$('ir-responder').onclick = () => { $('colar-quiz').value = ''; $('colar-msg').textContent = ''; tela('responder'); };
+$('responder-voltar').onclick = mostrarInicio;
+$('responder-ok').onclick = async () => {
+  let o; try{ o = await desempacotar('QUIZ1', $('colar-quiz').value); }catch(e){ $('colar-msg').textContent = '😕 Esse código está quebrado. Peça pro amigo mandar de novo.'; return; }
+  if(!o){ $('colar-msg').textContent = /RESP1/.test($('colar-quiz').value) ? '🤔 Esse é um código de RESPOSTAS. Cole ele em 📋 Meus quizzes → 🏆 Ranking.' : '🤔 Cole um código que começa com QUIZ1.'; return; }
+  const quiz = limpaQuiz(o); if(!quiz){ $('colar-msg').textContent = '😕 Esse quiz está vazio ou quebrado.'; return; }
+  if(meus.some(x => x.id === quiz.id)){ $('colar-msg').textContent = '😄 Esse quiz é seu! Mande ele pros seus amigos.'; return; }
+  if(!perfil.apelido){ abrirPerfil(() => comecarJogo(quiz)); toast('Escolha o seu apelido e avatar pro ranking! 🎨'); return; }
+  comecarJogo(quiz);
+};
+function comecarJogo(quiz){
+  jogo = { quiz, i:0, respostas:[], acertos:0 };
+  $('jogo-titulo').textContent = quiz.titulo; $('jogo-autor').textContent = `Quiz de ${quiz.autor}`; $('jogo-autor-av').innerHTML = avatarHTML(quiz.av, 46);
+  mostrarPergunta(); tela('jogar');
+}
+function mostrarPergunta(){
+  const q = jogo.quiz.perguntas[jogo.i], tot = jogo.quiz.perguntas.length;
+  $('q-num').textContent = `Pergunta ${jogo.i + 1} de ${tot} · ✅ ${jogo.acertos}`; $('jogo-barra').style.width = jogo.i / tot * 100 + '%';
+  $('q-texto').textContent = q.p; $('feedback').textContent = ''; $('proxima').hidden = true;
+  $('ops').innerHTML = q.ops.map((o, j) => `<button type="button" data-j="${j}"><b>${'ABCD'[j]}</b><span>${esc(o)}</span></button>`).join('');
+}
+$('ops').onclick = ev => {
+  const b = ev.target.closest('[data-j]'); if(!b || b.disabled) return;
+  const q = jogo.quiz.perguntas[jogo.i], j = +b.dataset.j, certo = j === q.c;
+  jogo.respostas.push(j); if(certo) jogo.acertos++;
+  document.querySelectorAll('#ops button').forEach(x => { x.disabled = true; if(+x.dataset.j === q.c) x.classList.add('certo'); });
+  if(!certo){ b.classList.add('errado', 'treme'); somErrado(); $('feedback').textContent = sorteia(['❌ Errou! Essa não era…', '😅 Quase!', '❌ Não era essa!']); }
+  else{ b.classList.add('pula'); somCerto(); $('feedback').textContent = sorteia(['✅ Acertou!', '🎉 Isso aí!', '⭐ Mandou bem!', '🔥 Você me conhece!']); }
+  $('proxima').hidden = false; $('proxima').textContent = jogo.i + 1 >= jogo.quiz.perguntas.length ? 'Ver resultado 🏁' : 'Próxima ➡️';
+  $('q-num').textContent = `Pergunta ${jogo.i + 1} de ${jogo.quiz.perguntas.length} · ✅ ${jogo.acertos}`;
+};
+$('proxima').onclick = () => { jogo.i++; if(jogo.i >= jogo.quiz.perguntas.length) terminarJogo(); else mostrarPergunta(); };
+$('jogo-sair').onclick = () => { if(confirm('Parar o quiz? As respostas vão sumir.')) mostrarInicio(); };
+const fraseNota = p => p === 1 ? '🏆 PERFEITO! Você me conhece demais!' : p >= .8 ? '🌟 Você me conhece muito bem!' : p >= .5 ? '😄 Você me conhece mais ou menos!' : p > 0 ? '🤔 Precisa me conhecer melhor!' : '😂 Você não me conhece nada!';
+async function terminarJogo(){
+  const q = jogo.quiz, tot = q.perguntas.length, p = jogo.acertos / tot, est = p === 1 ? 3 : p >= .6 ? 2 : p > 0 ? 1 : 0;
+  $('jogo-barra').style.width = '100%';
+  const cod = await empacotar('RESP1', { i:q.id, a:perfil.apelido, av:perfil.av, r:jogo.respostas, t:Date.now() });
+  respondidos = [{ id:q.id, titulo:q.titulo, autor:q.autor, av:q.av, acertos:jogo.acertos, tot, codigo:cod, t:Date.now() }, ...respondidos.filter(x => x.id !== q.id)].slice(0, 50); salvar();
+  $('res-avatar').innerHTML = avatarHTML(perfil.av, 90); $('res-titulo').textContent = q.titulo;
+  $('res-nota').textContent = `${jogo.acertos}/${tot}`; $('res-estrelas').textContent = '⭐'.repeat(est) + '☆'.repeat(3 - est); $('res-frase').textContent = fraseNota(p);
+  $('res-autor').textContent = q.autor; $('res-codigo').textContent = cod;
+  $('res-copiar').onclick = () => copiar(cod, $('res-copiar'), '📋 Copiar código das respostas');
+  mandar($('res-compartilhar'), `🧠 Respondi o seu quiz "${q.titulo}" e acertei ${jogo.acertos}/${tot}! Cole em Meus quizzes → Ranking: ${cod}`);
+  $('res-lista').innerHTML = q.perguntas.map((x, i) => `<li>${jogo.respostas[i] === x.c ? '✅' : '❌'} <b>${esc(x.p)}</b><br>Certa: ${esc(x.ops[x.c])}${jogo.respostas[i] !== x.c ? ` · você: ${esc(x.ops[jogo.respostas[i]] || '?')}` : ''}</li>`).join('');
+  tela('resultado'); if(p >= .8) confete(); tocar(p >= .5 ? [523, 659, 784, 1047] : [392, 330, 262], .12);
+}
+$('res-inicio').onclick = mostrarInicio;
+
+/* ---------- 📋 meus quizzes e 🏆 ranking ---------- */
+function mostrarMeus(){
+  $('lista-meus').innerHTML = meus.length ? meus.map(q => { const lider = [...q.respostas].sort((a, b) => b.acertos - a.acertos)[0];
+    return `<div><span style="font-size:1.8rem">🧠</span><div class="info"><b>${esc(q.titulo)}</b><small>${q.perguntas.length} perguntas · ${q.respostas.length} amigo${q.respostas.length === 1 ? '' : 's'} responderam${lider ? ` · 🥇 ${esc(lider.a)}` : ''}</small></div>
+      <button type="button" class="mini" data-rk="${q.id}">🏆</button><button type="button" class="mini" data-ed="${q.id}">✏️</button><button type="button" class="mini" data-del="${q.id}">🗑️</button></div>`; }).join('')
+    : '<p style="font-size:.9rem">Você ainda não criou nenhum quiz. Bora criar? ✏️</p>';
+  tela('meus');
+}
+$('lista-meus').onclick = ev => {
+  const rk = ev.target.closest('[data-rk]'), e = ev.target.closest('[data-ed]'), d = ev.target.closest('[data-del]');
+  if(rk) abrirRanking(rk.dataset.rk);
+  if(e) abrirEditor(meus.find(q => q.id === e.dataset.ed));
+  if(d){ const q = meus.find(x => x.id === d.dataset.del); if(q && confirm(`Apagar o quiz "${q.titulo}" e o ranking dele?`)){ meus = meus.filter(x => x !== q); salvar(); mostrarMeus(); } }
+};
+$('ir-meus').onclick = mostrarMeus; $('meus-voltar').onclick = mostrarInicio; $('meus-novo').onclick = () => abrirEditor();
+let rkId = null, rkAba = 'ranking';
+function abrirRanking(id){ rkId = id; rkAba = 'ranking'; $('rk-colar').value = ''; $('rk-msg').textContent = ''; desenharRanking(); tela('ranking'); }
+async function desenharRanking(){
+  const q = meus.find(x => x.id === rkId); if(!q){ mostrarMeus(); return; }
+  $('rk-titulo').textContent = `🏆 ${q.titulo}`;
+  const tot = q.perguntas.length;
+  q.respostas.forEach(r => { r.acertos = q.perguntas.reduce((n, x, i) => n + (r.r[i] === x.c ? 1 : 0), 0); });
+  const lista = [...q.respostas].sort((a, b) => b.acertos - a.acertos || a.t - b.t);
+  $('rk-info').textContent = `${tot} pergunta${tot > 1 ? 's' : ''} · ${lista.length} amigo${lista.length === 1 ? '' : 's'} responderam`;
+  document.querySelectorAll('#rk-abas button').forEach(b => b.setAttribute('aria-pressed', b.dataset.a === rkAba));
+  const corpo = $('rk-corpo');
+  if(rkAba === 'ranking'){
+    corpo.innerHTML = lista.length ? `<div class="rank">${lista.map((r, i) => `<div data-ver="${esc(r.a)}"><span class="pos">${['🥇', '🥈', '🥉'][i] || i + 1}</span>${avatarHTML(r.av, 44)}<div class="info" style="flex:1;min-width:0"><b>${esc(r.a)}</b><div class="barra" style="margin-top:4px"><i style="width:${r.acertos / tot * 100}%"></i></div></div>
+      <div class="pts">${r.acertos}/${tot}<small>${Math.round(r.acertos / tot * 100)}%</small></div></div>`).join('')}</div><p class="aviso">Toque num amigo pra ver as respostas dele.</p>`
+      : '<p style="font-size:.9rem">Ninguém respondeu ainda. Mande o código do quiz (aba 🔗) pros amigos e cole aqui os códigos das respostas deles! 📥</p>';
+  }
+  if(rkAba === 'perguntas'){
+    corpo.innerHTML = q.perguntas.map((x, i) => { const ac = q.respostas.filter(r => r.r[i] === x.c).length, n = q.respostas.length;
+      return `<div class="stat-q"><b>${i + 1}. ${esc(x.p)}</b><br><small>✅ ${esc(x.ops[x.c])} · ${n ? `${ac} de ${n} acertaram` : 'ninguém respondeu ainda'}</small><div class="barra"><i style="width:${n ? ac / n * 100 : 0}%"></i></div></div>`; }).join('') +
+      (q.respostas.length ? `<p class="aviso" style="margin-top:10px">😮 A mais difícil: <b>${esc(q.perguntas.map((x, i) => [x, q.respostas.filter(r => r.r[i] === x.c).length]).sort((a, b) => a[1] - b[1])[0][0].p)}</b></p>` : '');
+  }
+  if(rkAba === 'quiz'){
+    const c = await codigoQuiz(q);
+    corpo.innerHTML = `<p style="font-size:.88rem">Mande pros amigos que ainda não responderam:</p><div class="codigo">${esc(c)}</div><button type="button" class="grande" id="rk-copiar" style="margin-top:8px">📋 Copiar o código do quiz</button>`;
+    $('rk-copiar').onclick = () => copiar(c, $('rk-copiar'), '📋 Copiar o código do quiz');
+  }
+}
+$('rk-abas').onclick = ev => { const b = ev.target.closest('[data-a]'); if(b){ rkAba = b.dataset.a; desenharRanking(); } };
+$('rk-corpo').onclick = ev => {
+  const v = ev.target.closest('[data-ver]'); if(!v) return; const q = meus.find(x => x.id === rkId), r = q.respostas.find(x => x.a === v.dataset.ver); if(!r) return;
+  const html = q.perguntas.map((x, i) => `<li>${r.r[i] === x.c ? '✅' : '❌'} <b>${esc(x.p)}</b><br>${esc(r.a)}: ${esc(x.ops[r.r[i]] || '—')}${r.r[i] !== x.c ? ` · certa: ${esc(x.ops[x.c])}` : ''}</li>`).join('');
+  $('rk-corpo').innerHTML = `<button type="button" class="mini" id="rk-volta-lista">⬅️ Ranking</button><div style="display:flex;align-items:center;gap:10px;margin-top:10px">${avatarHTML(r.av, 56)}<div><b>${esc(r.a)}</b><br>${r.acertos}/${q.perguntas.length} · ${fraseNota(r.acertos / q.perguntas.length)}</div></div>
+    <ul class="respostas" style="margin-top:8px">${html}</ul><button type="button" class="mini" id="rk-tirar" style="margin-top:10px;width:100%">🗑️ Tirar ${esc(r.a)} do ranking</button>`;
+  $('rk-volta-lista').onclick = desenharRanking;
+  $('rk-tirar').onclick = () => { if(confirm(`Tirar ${r.a} do ranking?`)){ q.respostas = q.respostas.filter(x => x !== r); salvar(); desenharRanking(); } };
+};
+$('rk-colar-ok').onclick = async () => {
+  const msg = t => { $('rk-msg').textContent = t; };
+  let o; try{ o = await desempacotar('RESP1', $('rk-colar').value); }catch(e){ msg('😕 Esse código está quebrado.'); return; }
+  if(!o){ msg(/QUIZ1/.test($('rk-colar').value) ? '🤔 Esse é o código do QUIZ. Aqui vai o código das RESPOSTAS (RESP1…).' : '🤔 Cole um código que começa com RESP1.'); return; }
+  const q = meus.find(x => x.id === rkId);
+  if(limpa(o.i, 12) !== q.id){ const outro = meus.find(x => x.id === limpa(o.i, 12)); msg(outro ? `🤔 Essas respostas são do quiz "${outro.titulo}"! Coloquei lá.` : '🤔 Essas respostas são de outro quiz.'); if(!outro) return; }
+  const alvo = meus.find(x => x.id === limpa(o.i, 12));
+  const a = limpa(o.a, 16) || 'Amigo', r = (Array.isArray(o.r) ? o.r : []).slice(0, alvo.perguntas.length).map((x, i) => num(x, 0, alvo.perguntas[i].ops.length - 1, -1));
+  const reg = { a, av:limpaAv(o.av), r, t:num(o.t, 0, 9e15, Date.now()) };
+  const i = alvo.respostas.findIndex(x => x.a === a);
+  if(i >= 0) alvo.respostas[i] = reg; else alvo.respostas.push(reg);
+  salvar(); $('rk-colar').value = '';
+  if(alvo === q){ msg(i >= 0 ? `🔄 Atualizei as respostas de ${a}!` : `🎉 ${a} entrou no ranking!`); confete(); tocar([523, 659, 784, 1047], .1); rkAba = 'ranking'; desenharRanking(); }
+};
+$('rk-voltar').onclick = mostrarMeus;
+
+/* ---------- 🏅 respondidos ---------- */
+function mostrarRespondidos(){
+  $('lista-respondidos').innerHTML = respondidos.length ? respondidos.map((r, i) => `<div>${avatarHTML(r.av, 44)}<div class="info"><b>${esc(r.titulo)}</b><small>de ${esc(r.autor)} · você acertou ${r.acertos}/${r.tot} · ${new Date(r.t).toLocaleDateString('pt-BR')}</small></div>
+    <button type="button" class="mini" data-cod="${i}">📋</button></div>`).join('') + '<p class="aviso">📋 copia de novo o código das suas respostas, se o amigo não recebeu.</p>'
+    : '<p style="font-size:.9rem">Você ainda não respondeu nenhum quiz. Peça o código pros amigos! 🙋</p>';
+  tela('respondidos');
+}
+$('lista-respondidos').onclick = ev => { const b = ev.target.closest('[data-cod]'); if(b) copiar(respondidos[+b.dataset.cod].codigo, b, '📋'); };
+$('ir-respondidos').onclick = mostrarRespondidos; $('resp-voltar').onclick = mostrarInicio;
+
+/* ---------- enfeites ---------- */
+let filaToast = [], ocupado = false;
+function toast(t){ filaToast.push(t); if(ocupado) return; const vai = () => { const x = filaToast.shift(); if(!x){ ocupado = false; return; } ocupado = true;
+  const d = document.createElement('div'); d.className = 'toast'; d.textContent = x; document.body.appendChild(d); setTimeout(() => { d.remove(); vai(); }, 2300); }; vai(); }
+function confete(){ const cores = ['#6b3fd9', '#ffc21a', '#ff5fa2', '#3b8cff', '#1fa35c', '#fff'];
+  for(let i = 0; i < 60; i++){ const c = document.createElement('i'); c.className = 'confete'; c.style.left = Math.random() * 100 + 'vw'; c.style.background = sorteia(cores);
+    c.style.animationDelay = Math.random() * .5 + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 3200); } }
+const btSom = $('som'); function marcarSom(){ btSom.textContent = cfg.som ? '🔊' : '🔇'; }
+btSom.onclick = () => { cfg.som = !cfg.som; salvar(); marcarSom(); };
+const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function aplicarTema(t){ if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema'); btTema.textContent = estaEscuro() ? '☀️' : '🌙'; corDaBarra.setAttribute('content', estaEscuro() ? '#140f26' : '#6b3fd9'); }
+aplicarTema(ler('tema', null));
+btTema.onclick = () => { const t = estaEscuro() ? 'claro' : 'escuro'; gravar('tema', t); aplicarTema(t); };
+
+marcarSom(); mostrarInicio();
+
+/* ---------- versão nova ---------- */
+const btRecarregar = $('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{ if(window.caches){ const n = await caches.keys(); await Promise.all(n.map(x => caches.delete(x))); } }catch(e){}
+  try{ if(navigator.serviceWorker){ const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(x => x.update().catch(() => {}))); } }catch(e){}
+  const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+};
+try{ if(new URL(location.href).searchParams.has('v')){ const l = new URL(location.href); l.searchParams.delete('v'); history.replaceState(null, '', l.pathname + l.search + l.hash); } }catch(e){}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(!jaTinha || document.querySelector('.faixa-nova')) return;
+    const f = document.createElement('div'); f.className = 'faixa-nova';
+    f.innerHTML = '<span>✨ Chegou versão nova!</span><button type="button">Carregar</button>';
+    f.querySelector('button').onclick = () => location.reload();
+    document.body.appendChild(f);
+  });
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); }).catch(() => {}); });
+}
+</script>
+</body>
+</html>
