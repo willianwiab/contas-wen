@@ -62,6 +62,8 @@ button{font:inherit;color:inherit}
 .pet.come img{animation:come .3s ease-in-out 4}
 @keyframes come{50%{transform:scale(1.06,.94)}}
 .pet.dorme img{animation:respira 4s ease-in-out infinite;filter:brightness(.55) drop-shadow(0 8px 6px rgba(0,0,0,.18))}
+.pet.noturno img{filter:drop-shadow(0 0 14px #9a5cff) drop-shadow(0 0 4px #c9a8ff)}
+.pet .lua{position:absolute;left:-4%;top:4%;font-size:clamp(1.6rem,8vw,2.4rem);pointer-events:none}
 .pet.doente img{filter:saturate(.45) drop-shadow(0 8px 6px rgba(0,0,0,.18))}
 .pet.evolui img{animation:brilha 2.2s ease-in-out}
 @keyframes brilha{0%,100%{filter:none}20%,60%{filter:brightness(4) saturate(0)}40%,80%{filter:brightness(1.5)}}
@@ -173,7 +175,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
       <div class="balao" id="balao" hidden></div>
       <div class="ovo" id="ovo" hidden>🥚</div>
       <div class="rachado" id="rachado" hidden></div>
-      <div class="pet" id="pet" hidden><img id="pet-img" alt="" /><span class="chapeu" id="chapeu"></span></div>
+      <div class="pet" id="pet" hidden><img id="pet-img" alt="" /><span class="chapeu" id="chapeu"></span><span class="lua" id="lua" hidden>🌙</span></div>
       <div id="cocos"></div>
       <div class="noite-luz" id="luz" hidden></div>
       <span class="zzz" id="zzz" hidden>Z z z</span>
@@ -200,6 +202,12 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
       <button type="button" id="bt-brinquedo"><i>🧸</i>Brinquedo</button>
       <button type="button" id="bt-escovar"><i>🪥</i>Escovar</button>
       <button type="button" id="bt-foto"><i>📸</i>Foto</button>
+      <button type="button" id="bt-conversar"><i>🗣️</i>Conversar</button>
+      <button type="button" id="bt-abracar"><i>🫂</i>Abraçar</button>
+      <button type="button" id="bt-colorir"><i>🎨</i>Colorir</button>
+      <button type="button" id="bt-noturno"><i>🌙</i>Noturno</button>
+      <button type="button" id="bt-jogos"><i>🕹️</i>Joguinhos</button>
+      <button type="button" id="bt-presente"><i>🎁</i>Presente</button>
     </div>
 
     <div class="menu">
@@ -223,7 +231,7 @@ input[type=text]{width:100%;border:2px solid var(--borda);background:var(--carta
   <footer>
     Jogo de fã, feito pra brincar 🥚 · Figuras e gritos: PokeAPI<br>
     Pokémon é da Nintendo, Game Freak e The Pokémon Company.
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 3 — 29/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 4 — 29/09 · 🔄</button>
   </footer>
 </div>
 
@@ -310,11 +318,12 @@ function passarTempo(){
   const fora = min > 2;   // ficou fora do site
   if(fora) min = Math.min(min, 8 * 60) * .5;   // no máximo 8 horas, e pela metade
   const s = pet.s;
+  if(pet.noturno){ pet.dormindo = false; s.energia = 100; }
   if(pet.dormindo){
     s.fome -= min * .15; s.limpeza -= min * .05; s.energia += min * 1.5;
     if(s.energia >= 100){ s.energia = 100; pet.dormindo = false; if(!fora) falar('Bom dia! ☀️'); }
   }else{
-    s.fome -= min * POR_MIN.fome; s.feliz -= min * POR_MIN.feliz; s.limpeza -= min * (POR_MIN.limpeza + .15 * (pet.cocos || 0)); s.energia -= min * POR_MIN.energia;
+    s.fome -= min * POR_MIN.fome; s.feliz -= min * POR_MIN.feliz; s.limpeza -= min * (POR_MIN.limpeza + .15 * (pet.cocos || 0)); s.energia -= pet.noturno ? 0 : min * POR_MIN.energia;
     pet.tempoCoco = (pet.tempoCoco || 0) + min;
     while(pet.tempoCoco > 40){ pet.tempoCoco -= 40; if((pet.cocos || 0) < 3) pet.cocos = (pet.cocos || 0) + 1; }
   }
@@ -427,6 +436,8 @@ function desenhar(){
   const img = $('pet-img'); const src = arte(pet.id, pet.shiny); if(img.dataset.src !== src){ img.src = src; img.dataset.src = src; img.onerror = function(){ this.src = mini(pet.id); this.onerror = null; }; }
   $('chapeu').textContent = (CHAPEUS[pet.chapeu] || CHAPEUS.nada).e;
   $('shiny-selo').hidden = !pet.shiny;
+  $('pet').classList.toggle('noturno', !!pet.noturno); $('lua').hidden = !pet.noturno;
+  if(pet.hue) $('pet-img').style.filter = `hue-rotate(${pet.hue}deg)` + (pet.noturno ? ' drop-shadow(0 0 14px #9a5cff)' : ''); else $('pet-img').style.filter = '';
   $('pet').classList.toggle('dorme', !!pet.dormindo); $('pet').classList.toggle('doente', doente());
   $('luz').hidden = !pet.dormindo; $('zzz').hidden = !pet.dormindo;
   $('pet-nome').textContent = pet.nome + (cfg.coroa && admLiberado() ? ' 👑' : '') + (doente() ? ' 🤒' : '');
@@ -442,7 +453,7 @@ function desenhar(){
   $('bt-comer').classList.toggle('alerta', pet.s.fome < 25); $('bt-brincar').classList.toggle('alerta', pet.s.feliz < 25 && !pet.dormindo);
   $('bt-banho').classList.toggle('alerta', pet.s.limpeza < 25); $('bt-dormir').classList.toggle('alerta', pet.s.energia < 20 && !pet.dormindo);
   $('bt-remedio').classList.toggle('alerta', doente()); $('bt-limpar').classList.toggle('alerta', (pet.cocos || 0) >= 2);
-  ['bt-comer', 'bt-brincar', 'bt-banho', 'bt-remedio', 'bt-passear', 'bt-treinar', 'bt-brinquedo', 'bt-escovar'].forEach(id => { if(pet.dormindo) $(id).disabled = true; });
+  ['bt-comer', 'bt-brincar', 'bt-banho', 'bt-remedio', 'bt-passear', 'bt-treinar', 'bt-brinquedo', 'bt-escovar', 'bt-jogos', 'bt-presente'].forEach(id => { if(pet.dormindo) $(id).disabled = true; });
   if(!pet.dormindo){ $('bt-comer').disabled = false; $('bt-brincar').disabled = false; $('bt-banho').disabled = false; }
 }
 /* o que ele fala sozinho */
@@ -495,6 +506,7 @@ $('bt-banho').onclick = () => {
   tocar([880, 990, 1100, 990], .07, 'sine'); falar('Que cheirinho bom! 🫧'); ganharXP(3); desenhar(); salvar();
 };
 $('bt-dormir').onclick = () => {
+  if(pet.noturno){ falar('Eu sou noturno! Não preciso dormir 🌙✨'); return; }
   if(pet.dormindo){ pet.dormindo = false; falar(pet.s.energia < 60 ? 'Ainda tô com soninho… 🥱' : 'Bom dia! ☀️'); }
   else{ pet.dormindo = true; falar('Boa noite… 💤'); tocar([392, 330, 262], .2, 'sine'); ganharXP(2); }
   desenhar(); salvar();
@@ -553,18 +565,119 @@ $('bt-foto').onclick = async () => {
   catch(e){ toast('😕 Não deu pra salvar a foto aqui.'); }
 };
 
+/* ---------- 🗣️ 🫂 🎨 🌙 🎁 ---------- */
+const PAPOS = ['Sabia que eu gosto de você? 💖', 'Qual é a sua cor favorita? A minha é a do meu tipo! 🎨', 'Hoje eu sonhei que era gigante! 😮', 'Me conta uma piada! 😂',
+  'Vamos passear depois? 🌳', 'Eu queria ser um detetive! 🕵️', 'Você é o melhor treinador do mundo! 🏆', 'Qual Pokémon você acha mais legal? 🤔',
+  'Ontem eu vi uma estrela cadente! 🌠', 'Quando eu crescer vou evoluir! ✨', 'Eu adoro frutinhas! 🍓', 'Vamos jogar um joguinho? 🕹️'];
+$('bt-conversar').onclick = () => { if(pet.dormindo){ falar('💤 zzz…'); return; } mexer('feliz', 4); falar(sorteia(PAPOS)); grito(pet.id); animar('pula'); ganharXP(2); desenhar(); salvar(); };
+$('bt-abracar').onclick = () => {
+  if(pet.dormindo){ falar('💤 …abraço quentinho…'); mexer('feliz', 3); desenhar(); salvar(); return; }
+  mexer('feliz', 12); for(let i = 0; i < 6; i++) setTimeout(() => efeito(null, sorteia(['💖', '💞', '🫂', '💕'])), i * 120);
+  tocar([523, 659, 784], .12, 'sine'); falar(sorteia(['Que abraço gostoso! 🥰', 'Eu te amo! 💖', 'Abraço de urso! 🧸'])); ganharXP(3); desenhar(); salvar();
+};
+$('bt-colorir').onclick = () => { pet.hue = ((pet.hue || 0) + 45) % 360; falar(pet.hue ? 'Fiquei colorido! 🌈' : 'Voltei ao normal! 😄'); tocar([700, 900], .06); desenhar(); salvar(); };
+const NOTURNO_HASH = '2d59a45811ddfc24f7c9e3f4f6350aacacef3f4b50dc9e0ea10f222d5d2844e0';
+async function hashNoturno(t){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('noturno:' + t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+let errosNot = 0, travaNot = 0;
+$('bt-noturno').onclick = () => {
+  if(pet.noturno){
+    if(!confirm(`Desligar o modo noturno? ${pet.nome} vai voltar a precisar dormir.`)) return;
+    pet.noturno = false; salvar(); desenhar(); falar('Voltei a ter soninho… 🥱'); return;
+  }
+  $('dlg-corpo').innerHTML = `<h2>🌙 Modo noturno</h2><p style="font-size:.86rem">Com a senha, ${esc(pet.nome)} <b>nunca mais precisa dormir</b> e vira um Pokémon da noite, com brilho roxo! 🌙✨</p>
+    <input type="password" inputmode="numeric" maxlength="30" id="not-senha" placeholder="Senha do modo noturno" autocomplete="off" style="width:100%;border:2px solid var(--borda);border-radius:12px;padding:10px;font:inherit;margin-top:8px;background:var(--cartao2);color:var(--tinta)">
+    <button type="button" class="grande" id="not-ok" style="margin-top:10px">🌙 Ativar</button><p id="not-msg" style="color:var(--vermelho);font-weight:700;margin-top:6px"></p><button type="button" class="mini" id="fechar">Fechar</button>`;
+  $('fechar').onclick = () => $('dlg').close();
+  $('not-ok').onclick = async () => {
+    if(Date.now() < travaNot){ $('not-msg').textContent = '⏳ Espere um minuto.'; return; }
+    let ok = false; try{ ok = await hashNoturno($('not-senha').value.trim()) === NOTURNO_HASH; }catch(e){}
+    if(!ok){ if(++errosNot >= 5){ travaNot = Date.now() + 60000; errosNot = 0; } $('not-msg').textContent = '❌ Senha errada.'; $('not-senha').value = ''; return; }
+    pet.noturno = true; pet.dormindo = false; pet.s.energia = 100; salvar(); desenhar(); $('dlg').close();
+    confete(); tocar([392, 494, 587, 784], .15, 'sine'); falar('Agora eu sou NOTURNO! 🌙✨'); toast('🌙 Modo noturno ligado! Nunca mais precisa dormir.');
+  };
+  $('dlg').showModal();
+};
+$('bt-presente').onclick = () => {
+  const hoje = new Date().toDateString();
+  if(pet.presenteDia === hoje){ falar('Já te dei um presente hoje! Volta amanhã 🎁'); return; }
+  pet.presenteDia = hoje;
+  const r = Math.random(); let msg;
+  if(r < .4){ const m = 5 + Math.floor(Math.random() * 11); moedas += m; msg = `🪙 ${m} moedas`; }
+  else if(r < .7){ const k = sorteia(['poffin', 'suco', 'bolo']); loja.comidas[k] = (loja.comidas[k] || 0) + 1; msg = `${COMIDAS[k].e} ${COMIDAS[k].n}`; }
+  else if(r < .9){ const falta = Object.keys(CHAPEUS).filter(k => CHAPEUS[k].p && !loja.chapeus.includes(k)); if(falta.length){ const k = sorteia(falta); loja.chapeus.push(k); msg = `${CHAPEUS[k].e} ${CHAPEUS[k].n}`; } else { moedas += 15; msg = '🪙 15 moedas'; } }
+  else { loja.comidas.doce = (loja.comidas.doce || 0) + 1; msg = '🍬 Doce Raro!!!'; }
+  confete(); tocar([523, 659, 784, 1047], .1); falar(`Pra você: ${msg}! 🎁`); toast(`🎁 ${esc(pet.nome)} te deu: ${msg}`); desenhar(); salvar();
+};
+
+/* ---------- 🕹️ joguinhos ---------- */
+function recompensa(pontos, emoji){
+  const ganho = Math.max(0, pontos); moedas += ganho; pet.s.feliz = limitar(pet.s.feliz + 10 + ganho * 1.5, 0, 100);
+  if(!pet.noturno) pet.s.energia = limitar(pet.s.energia - 12, 0, 100); pet.s.fome = limitar(pet.s.fome - 5, 0, 100);
+  ganharXP(5 + ganho); salvar(); desenhar();
+  $('dlg-corpo').innerHTML = `<h2>🎉 Fim!</h2><p style="font-size:3rem">${emoji}</p><p><b>${pontos}</b> ponto${pontos === 1 ? '' : 's'}!</p><p>+🪙 ${ganho} · 😊 ${esc(pet.nome)} adorou brincar!</p>
+    <button type="button" class="grande" id="de-novo" style="margin-top:10px">🕹️ Outro joguinho</button><button type="button" class="mini" id="fechar">Fechar</button>`;
+  $('de-novo').onclick = menuJogos; $('fechar').onclick = () => $('dlg').close(); falar('Foi muito divertido! 🎾'); animar('pula');
+}
+function menuJogos(){
+  if(pet.s.energia < 10 && !pet.noturno){ if($('dlg').open) $('dlg').close(); falar('Tô cansado demais… 😴'); return; }
+  $('dlg-corpo').innerHTML = `<h2>🕹️ Joguinhos</h2><p style="font-size:.84rem">Escolha um! Todos dão 🪙 moedas e deixam ${esc(pet.nome)} feliz.</p>
+    <div class="itens" id="lista-jogos">
+      <button type="button" class="item" data-j="frutas"><i>🍓</i><b>Frutinhas</b><small>Pegue as frutas</small></button>
+      <button type="button" class="item" data-j="diglett"><i>🕳️</i><b>Pega o Diglett</b><small>Toque quando ele sair do buraco</small></button>
+      <button type="button" class="item" data-j="memoria"><i>🃏</i><b>Memória</b><small>Ache os pares de Pokémon</small></button>
+    </div><button type="button" class="mini" id="fechar">Fechar</button>`;
+  $('lista-jogos').onclick = ev => { const b = ev.target.closest('[data-j]'); if(!b) return; ({ frutas:jogoFrutas, diglett:jogoDiglett, memoria:jogoMemoria })[b.dataset.j](); };
+  $('fechar').onclick = () => $('dlg').close();
+  if(!$('dlg').open) $('dlg').showModal();
+}
+$('bt-jogos').onclick = menuJogos;
+let pararJogo = null;
+function jogoDiglett(){
+  let pontos = 0, t = 20, vivo = true;
+  $('dlg-corpo').innerHTML = `<h2>🕳️ Pega o Diglett!</h2><p style="font-size:.82rem">Toque no Diglett! O Dugtrio vale 3!</p>
+    <div class="jogo" id="jogo" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:44px 10px 10px;background:linear-gradient(#bff0c4,#8fd08a)">
+    <span class="placar-j" id="pj">🕳️ 0</span><span class="tempo-j" id="tj">⏱️ 20</span>
+    ${Array.from({ length:9 }, (_, i) => `<button type="button" data-b="${i}" style="border:none;border-radius:50%;background:radial-gradient(ellipse at 50% 70%,#5a3a1a 0 45%,#7a5230 46%);cursor:pointer;padding:0;position:relative;overflow:hidden"></button>`).join('')}</div>
+    <button type="button" class="mini" id="fechar">Parar</button>`;
+  const buracos = [...$('jogo').querySelectorAll('[data-b]')];
+  const sai = () => { if(!vivo) return; const b = sorteia(buracos); if(b.dataset.tem) return; const trio = Math.random() < .2;
+    b.dataset.tem = trio ? '3' : '1'; b.innerHTML = `<img alt="" src="${mini(trio ? 51 : 50)}" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated">`;
+    setTimeout(() => { if(b.dataset.tem){ delete b.dataset.tem; b.innerHTML = ''; } }, trio ? 1100 : 1500); };
+  buracos.forEach(b => { b.onclick = () => { if(!b.dataset.tem) return; pontos += +b.dataset.tem; tocar([500 + pontos * 15], .07); delete b.dataset.tem; b.innerHTML = '💥'; setTimeout(() => { if(!b.dataset.tem) b.innerHTML = ''; }, 250); $('pj').textContent = `🕳️ ${pontos}`; }; });
+  const spawn = setInterval(sai, 700), timer = setInterval(() => { t--; $('tj').textContent = `⏱️ ${t}`; if(t <= 0){ parar(); recompensa(pontos, '🕳️'); } }, 1000);
+  const parar = () => { vivo = false; clearInterval(spawn); clearInterval(timer); };
+  pararJogo = parar;
+  $('fechar').onclick = () => { parar(); $('dlg').close(); };
+}
+function jogoMemoria(){
+  const ids = [25, 1, 4, 7, 133, 39].map(x => x); const cartas = [...ids, ...ids].sort(() => Math.random() - .5);
+  let abertas = [], achados = 0, jogadas = 0, travado = false;
+  $('dlg-corpo').innerHTML = `<h2>🃏 Memória</h2><p style="font-size:.82rem">Vire duas cartas e ache os pares!</p><p style="font-weight:800" id="mj">🃏 Jogadas: 0</p>
+    <div id="mesa" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px">${cartas.map((id, i) => `<button type="button" data-i="${i}" style="aspect-ratio:1;border:2px solid var(--borda);border-radius:12px;background:linear-gradient(135deg,var(--marca2),var(--marca));cursor:pointer;font-size:1.6rem;color:#fff;padding:2px">?</button>`).join('')}</div>
+    <button type="button" class="mini" id="fechar">Parar</button>`;
+  const bts = [...$('mesa').children];
+  const mostra = (b, id) => { b.innerHTML = `<img alt="" src="${mini(id)}" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated">`; b.style.background = 'var(--cartao2)'; };
+  const esconde = b => { b.textContent = '?'; b.style.background = ''; };
+  $('mesa').onclick = ev => {
+    const b = ev.target.closest('[data-i]'); if(!b || travado || b.dataset.ok || abertas.includes(b)) return;
+    const id = cartas[+b.dataset.i]; mostra(b, id); tocar([600], .05); abertas.push(b);
+    if(abertas.length === 2){ jogadas++; $('mj').textContent = `🃏 Jogadas: ${jogadas}`; const [a, c] = abertas;
+      if(cartas[+a.dataset.i] === cartas[+c.dataset.i]){ a.dataset.ok = c.dataset.ok = '1'; a.style.borderColor = c.style.borderColor = 'var(--verde)'; abertas = []; achados++; tocar([700, 900], .08);
+        if(achados === ids.length) setTimeout(() => recompensa(Math.max(3, 20 - Math.max(0, jogadas - 6)), '🃏'), 500); }
+      else{ travado = true; setTimeout(() => { esconde(a); esconde(c); abertas = []; travado = false; }, 800); } }
+  };
+  $('fechar').onclick = () => $('dlg').close();
+}
+
 /* ---------- 🎾 minijogo: pegar as frutinhas ---------- */
-$('bt-brincar').onclick = () => {
-  if(pet.s.energia < 10){ falar('Tô cansado demais… 😴'); return; }
+$('bt-brincar').onclick = menuJogos;
+function jogoFrutas(){
   let pontos = 0, t = 20, timer = 0, spawn = 0;
   $('dlg-corpo').innerHTML = `<h2>🎾 Pegue as frutinhas!</h2><p style="font-size:.82rem">Toque nas frutas antes que sumam. As 💣 tiram só 1 ponto!</p>
     <div class="jogo" id="jogo"><span class="placar-j" id="pj">🍓 0</span><span class="tempo-j" id="tj">⏱️ 20</span></div><button type="button" class="mini" id="fechar">Parar</button>`;
   const J = $('jogo');
-  const fim = () => { clearInterval(timer); clearInterval(spawn);
-    const ganho = Math.max(0, pontos); moedas += ganho; pet.s.feliz = limitar(pet.s.feliz + 10 + ganho * 1.5, 0, 100); pet.s.energia = limitar(pet.s.energia - 12, 0, 100); pet.s.fome = limitar(pet.s.fome - 5, 0, 100);
-    ganharXP(5 + ganho); salvar(); desenhar();
-    $('dlg-corpo').innerHTML = `<h2>🎉 Fim!</h2><p style="font-size:3rem">🍓</p><p><b>${pontos}</b> ponto${pontos === 1 ? '' : 's'}!</p><p>+🪙 ${ganho} · 😊 ${esc(pet.nome)} adorou brincar!</p><button type="button" class="grande" id="fechar" style="margin-top:10px">Legal!</button>`;
-    $('fechar').onclick = () => $('dlg').close(); falar('Foi muito divertido! 🎾'); animar('pula'); };
+  const fim = () => { clearInterval(timer); clearInterval(spawn); recompensa(pontos, '🍓'); };
+  pararJogo = () => { clearInterval(timer); clearInterval(spawn); };
   spawn = setInterval(() => {
     const bomba = Math.random() < .08, b = document.createElement('button'); b.className = 'fruta'; b.type = 'button';
     b.textContent = bomba ? '💣' : sorteia(['🍓', '🍎', '🍇', '🍑', '🫐', '🍒']);
@@ -574,9 +687,8 @@ $('bt-brincar').onclick = () => {
   }, 650);
   timer = setInterval(() => { t--; $('tj').textContent = `⏱️ ${t}`; if(t <= 0) fim(); }, 1000);
   $('fechar').onclick = () => { clearInterval(timer); clearInterval(spawn); $('dlg').close(); };
-  $('dlg').showModal();
-};
-$('dlg').addEventListener('close', () => { document.querySelectorAll('.fruta').forEach(f => f.remove()); $('dlg-corpo').onclick = null; });
+}
+$('dlg').addEventListener('close', () => { document.querySelectorAll('.fruta').forEach(f => f.remove()); $('dlg-corpo').onclick = null; if(pararJogo){ pararJogo(); pararJogo = null; } });
 
 /* ---------- 🛒 loja ---------- */
 let abaLoja = 'chapeus';
