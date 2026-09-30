@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Onde está o Pikachu?</title>
+<meta name="description" content="Uma multidão de Pokémon e só um Pikachu escondido! Ache rapidinho antes do tempo acabar." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#f5b700" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Cadê o Pika" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --marca:#e0a000; --amarelo:#ffd43b; --vermelho:#e5484d; --verde:#2e9e5b; --azul:#3b8cff;
+  --fundo:#fff8e1; --tinta:#2a2100; --tinta-fraca:#7a6a3a; --cartao:#ffffff; --cartao2:#fffbef; --borda:#f3dfa0; --sombra:rgba(150,110,0,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){ --marca:#ffd43b; --fundo:#1a1608; --tinta:#fff6d6; --tinta-fraca:#c9b77a; --cartao:#26200c; --cartao2:#2f2810; --borda:#4a3f18; --sombra:rgba(0,0,0,.45); }
+}
+:root[data-tema="escuro"]{ --marca:#ffd43b; --fundo:#1a1608; --tinta:#fff6d6; --tinta-fraca:#c9b77a; --cartao:#26200c; --cartao2:#2f2810; --borda:#4a3f18; --sombra:rgba(0,0,0,.45); }
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+html,body{overflow-x:clip}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);min-height:100vh;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+h1,h2,h3{font-family:'Baloo 2','Rubik',sans-serif}
+main{max-width:720px;margin:0 auto;padding:10px 16px 40px}
+header.topo{display:flex;align-items:center;gap:8px;max-width:720px;margin:0 auto;padding:12px 16px 0}
+.logo{flex:1;display:flex;align-items:center;gap:8px;min-width:0;cursor:pointer}
+.logo img{width:40px;height:40px;flex:none}
+.logo>div{min-width:0}
+.logo h1{font-size:1.3rem;color:var(--marca);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo small{display:block;font-size:.72rem;color:var(--tinta-fraca)}
+.redondo{width:40px;height:40px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.1rem;cursor:pointer;display:grid;place-items:center;flex:none;box-shadow:0 3px 0 var(--borda)}
+.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:24px;padding:16px;margin-top:14px;box-shadow:0 6px 16px var(--sombra)}
+.grande{width:100%;border:none;border-radius:18px;padding:14px;font-size:1.1rem;font-weight:800;cursor:pointer;color:#3a2a00;font-family:'Baloo 2','Rubik',sans-serif;
+  background:linear-gradient(180deg,#ffe066,#f5b700);box-shadow:0 5px 0 #b38600;text-align:left;display:flex;gap:12px;align-items:center}
+.grande:active{transform:translateY(3px);box-shadow:0 2px 0 #b38600}
+.grande .ic{font-size:2rem}
+.grande small{display:block;font-family:'Rubik',sans-serif;font-weight:500;font-size:.8rem;opacity:.85}
+.grande.azul{background:linear-gradient(180deg,#6fb0ff,#2f7de0);box-shadow:0 5px 0 #1d56a3;color:#fff}
+.grande.rosa{background:linear-gradient(180deg,#ff8cc0,#e8458e);box-shadow:0 5px 0 #a82a63;color:#fff}
+.grande.centro{justify-content:center;text-align:center}
+.menu{display:grid;gap:12px;margin-top:14px}
+.mini{border:2px solid var(--borda);background:var(--cartao2);border-radius:12px;padding:7px 11px;font-weight:700;cursor:pointer;font-size:.86rem;box-shadow:0 3px 0 var(--borda)}
+.mini:disabled{opacity:.45;cursor:default}
+.aviso{font-size:.86rem;color:var(--tinta-fraca);line-height:1.45;margin-top:6px}
+main>section{animation:aparece .3s ease-out}
+@keyframes aparece{from{opacity:0;transform:translateY(8px)}}
+
+.capa{text-align:center;padding:18px 12px 12px;border-radius:24px;margin-top:12px;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 50% 30%,#fff3b0,#ffd43b 55%,#f5b700)}
+.capa h2{font-size:2rem;line-height:1.05;color:#3a2a00;text-shadow:0 2px 0 #fff8}
+.capa p{margin-top:4px;font-weight:600;color:#5a4500}
+.capa .lupa{display:inline-block;font-size:3rem;animation:procura 2.4s ease-in-out infinite}
+@keyframes procura{25%{transform:translate(-18px,-4px) rotate(-10deg)}75%{transform:translate(18px,4px) rotate(10deg)}}
+.capa img{width:72px;height:72px;image-rendering:pixelated;position:absolute;right:10px;bottom:6px;opacity:.9;animation:espia 3s ease-in-out infinite}
+@keyframes espia{0%,60%,100%{transform:translateY(60%)}70%,90%{transform:translateY(0)}}
+.recs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;text-align:center}
+.recs div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:8px 4px}
+.recs b{display:block;font-family:'Baloo 2',sans-serif;font-size:1.25rem}
+.recs small{font-size:.72rem;color:var(--tinta-fraca)}
+
+/* jogo */
+.barra{display:flex;gap:8px;align-items:center;margin-top:8px}
+.alvo{flex:1;display:flex;align-items:center;gap:8px;background:var(--cartao);border:3px solid var(--marca);border-radius:16px;padding:4px 10px 4px 4px;min-width:0}
+.alvo img{width:54px;height:54px;image-rendering:pixelated;flex:none;background:#fff3c4;border-radius:12px}
+.alvo b{font-family:'Baloo 2',sans-serif;font-size:1.05rem;line-height:1.05;display:block}
+.alvo small{font-size:.74rem;color:var(--tinta-fraca);display:block}
+.info{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex:none}
+.pilula{background:var(--cartao);border:2px solid var(--borda);border-radius:99px;padding:3px 10px;font-weight:800;font-size:.9rem;white-space:nowrap}
+.pilula.tempo{background:var(--amarelo);border-color:#e0a000;color:#3a2a00}
+.pilula.tempo.acabando{background:var(--vermelho);border-color:#9c2a2e;color:#fff;animation:pulo .5s infinite}
+@keyframes pulo{50%{transform:scale(1.12)}}
+.tempo-barra{height:8px;border-radius:99px;background:var(--cartao2);border:2px solid var(--borda);overflow:hidden;margin-top:8px}
+.tempo-barra i{display:block;height:100%;background:linear-gradient(90deg,#e5484d,#ffd43b 40%,#2e9e5b);transition:width .2s linear}
+.janela{position:relative;margin-top:8px;border-radius:20px;overflow:auto;border:4px solid var(--borda);box-shadow:0 6px 16px var(--sombra);max-height:72vh;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
+.cena{position:relative;width:100%;aspect-ratio:5/6;overflow:hidden;cursor:crosshair;user-select:none;-webkit-user-select:none}
+.janela.zoom .cena{width:190%}
+@media (min-width:600px){ .cena{aspect-ratio:4/3} }
+.cena img.p{position:absolute;image-rendering:pixelated;pointer-events:none;transform-origin:50% 50%}
+.cena img.p.mexe{animation:mexe 1.8s ease-in-out infinite}
+@keyframes mexe{50%{translate:0 -4%}}
+.cena .deco{position:absolute;pointer-events:none;opacity:.85}
+.cena .circ{position:absolute;border-radius:50%;border:5px dashed #fff;box-shadow:0 0 0 4px rgba(224,160,0,.9),0 0 30px #fff;pointer-events:none;animation:circ 1s ease-in-out infinite;z-index:999}
+@keyframes circ{50%{transform:scale(1.08)}}
+.cena .achou{position:absolute;border-radius:50%;border:6px solid #2e9e5b;box-shadow:0 0 0 5px #fff,0 0 40px #fff;pointer-events:none;z-index:1000;animation:achou .5s ease-out}
+@keyframes achou{from{transform:scale(3);opacity:0}}
+.cena.fim img.p:not(.o-alvo){opacity:.25;filter:grayscale(1);transition:opacity .4s}
+.cena img.o-alvo.grande-alvo{z-index:1001 !important;scale:1.5;transition:scale .4s;filter:drop-shadow(0 0 10px #fff)}
+.cena .x{position:absolute;font-size:2rem;pointer-events:none;z-index:1002;animation:some .7s ease-out forwards;translate:-50% -50%}
+@keyframes some{to{opacity:0;transform:scale(1.6)}}
+.cena .carregando{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-size:1.2rem;background:rgba(255,255,255,.7);color:#3a2a00;z-index:2000}
+.acoes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.chacoalha{animation:chacoalha .35s}
+@keyframes chacoalha{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:400;background:#2a2100;color:#fff;font-weight:800;border-radius:16px;padding:8px 16px;box-shadow:0 6px 20px rgba(0,0,0,.3);animation:toast 1.8s ease-out forwards;pointer-events:none;white-space:nowrap}
+@keyframes toast{0%{transform:translate(-50%,-60px)}15%{transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
+
+/* temas da cena */
+.t-praia{background:linear-gradient(180deg,#8fd3ff 0 22%,#4da3ff 22% 38%,#f5dfa3 38%)}
+.t-floresta{background:radial-gradient(circle at 20% 30%,#b9f0a8,transparent 40%),linear-gradient(180deg,#9be38f,#4c9a4f)}
+.t-cidade{background:linear-gradient(180deg,#cfe8ff 0 25%,#b8c2cc 25% 30%,#dde3e8 30%)}
+.t-neve{background:linear-gradient(180deg,#e3f2fd,#ffffff 40%,#dbeafe)}
+.t-espaco{background:radial-gradient(circle at 70% 20%,#3a2a80,transparent 40%),radial-gradient(circle at 20% 80%,#6b2a80,transparent 40%),#0b0b26}
+.t-vulcao{background:linear-gradient(180deg,#ffb38a 0 20%,#8a3a1a 20% 26%,#5a2a1a 26%)}
+.t-doces{background:repeating-linear-gradient(45deg,#ffe0f0 0 30px,#fff3f9 30px 60px)}
+
+.album{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;margin-top:10px}
+.album div{background:var(--cartao2);border:2px solid var(--borda);border-radius:12px;padding:5px;text-align:center}
+.album img{width:56px;height:56px;image-rendering:pixelated}
+.album .nao img{filter:brightness(0) opacity(.3)}
+.album b{display:block;font-size:.7rem}
+.album small{font-size:.68rem;color:var(--tinta-fraca)}
+
+dialog{border:none;border-radius:22px;padding:0;max-width:min(420px,calc(100vw - 32px));width:100%;background:var(--cartao);color:var(--tinta);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(40,30,0,.55)}
+.dlg{padding:20px;text-align:center}
+.dlg h2{font-size:1.6rem}
+.dlg .grandao{font-size:3rem;animation:pulo .6s}
+.dlg .grandao img{width:110px;height:110px;image-rendering:pixelated}
+.dlg p{margin-top:6px;line-height:1.45}
+.dlg .grande{margin-top:14px}
+.rodape{text-align:center;margin-top:22px;color:var(--tinta-fraca);font-size:.8rem}
+.versao{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:5px 12px;font-weight:700;cursor:pointer;margin-top:8px}
+.faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--marca);color:#3a2a00;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:60;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.faixa-nova button{border:none;border-radius:99px;background:#fff;color:#3a2a00;font-weight:800;padding:6px 12px;cursor:pointer}
+.confete{position:fixed;top:-12px;width:10px;height:14px;z-index:70;pointer-events:none;animation:cai 3s linear forwards}
+@keyframes cai{to{transform:translateY(105vh) rotate(720deg)}}
+button:focus-visible{outline:3px solid #2f7de0;outline-offset:2px}
+@media (max-width:420px){ .logo small{display:none} .logo h1{font-size:1.1rem} }
+@media (prefers-reduced-motion: reduce){ .cena img.p.mexe,.capa .lupa,.capa img{animation:none} }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="logo" id="logo" title="Início"><img src="icone.svg" alt="" /><div><h1>Onde está o Pikachu?</h1><small>ache o Pokémon escondido 🔍</small></div></div>
+  <button class="redondo" id="som" type="button" title="Som">🔊</button>
+  <button class="redondo" id="tema" type="button" title="Claro ou escuro">🌙</button>
+</header>
+
+<main>
+  <!-- ========== INÍCIO ========== -->
+  <section id="tela-inicio">
+    <div class="capa">
+      <h2>Onde está<br>o Pikachu?</h2>
+      <p>No meio da multidão de Pokémon…</p>
+      <span class="lupa">🔍</span>
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" alt="" onerror="this.remove()" />
+    </div>
+    <div class="menu">
+      <button class="grande" type="button" data-modo="pika"><span class="ic">⚡</span><span>Onde está o Pikachu?<small>10 fases, cada vez mais Pokémon e mais parecidos com ele!</small></span></button>
+      <button class="grande azul" type="button" data-modo="achados"><span class="ic">🔍</span><span>Achados e Perdidos<small>cada fase é um Pokémon diferente. Quantos você acha em 1 minuto?</small></span></button>
+      <button class="grande rosa" type="button" id="ir-album"><span class="ic">📖</span><span>Álbum de detetive<small>os Pokémon que você já achou</small></span></button>
+    </div>
+    <div class="cartao">
+      <h3>🕵️ Como joga</h3>
+      <p class="aviso">Olhe a figura em cima: é o Pokémon que você tem que achar. Ele está escondido na multidão, às vezes atrás dos outros, virado ou pequenininho! <b>Toque nele</b> pra achar.</p>
+      <p class="aviso">Tocou no Pokémon errado? Perde 3 segundos ⏰. Tem <b>3 dicas 💡</b> por jogo e a <b>lupa 🔍</b> pra dar zoom. E às vezes tem um <b>Pokémon shiny ✨</b> escondido que vale pontos extras!</p>
+      <div class="recs" id="recs"></div>
+    </div>
+    <div class="rodape">
+      Tudo fica guardado só neste aparelho.
+      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 30/09 · 🔄</button>
+    </div>
+  </section>
+
+  <!-- ========== JOGO ========== -->
+  <section id="tela-jogo" hidden>
+    <div class="barra">
+      <div class="alvo" id="alvo"></div>
+      <div class="info"><span class="pilula tempo" id="tempo">⏰ 0</span><span class="pilula" id="pontos">⭐ 0</span></div>
+    </div>
+    <div class="tempo-barra"><i id="tempo-barra"></i></div>
+    <div class="janela" id="janela"><div class="cena" id="cena"></div></div>
+    <div class="acoes">
+      <button class="mini" type="button" id="dica">💡 Dica (3)</button>
+      <button class="mini" type="button" id="zoom">🔍 Lupa</button>
+      <button class="mini" type="button" id="parar">🏳️ Parar</button>
+    </div>
+  </section>
+
+  <!-- ========== ÁLBUM ========== -->
+  <section id="tela-album" hidden>
+    <button class="mini" type="button" id="album-voltar">⬅️ Voltar</button>
+    <div class="cartao">
+      <h2>📖 Álbum de detetive</h2>
+      <p class="aviso" id="album-resumo"></p>
+      <div class="album" id="album"></div>
+    </div>
+  </section>
+</main>
+
+<dialog id="dlg"><div class="dlg" id="dlg-corpo"></div></dialog>
+
+<script>
+'use strict';
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('ondepika:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('ondepika:' + k, JSON.stringify(v)); }catch(e){} }
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const sorteia = a => a[Math.floor(Math.random() * a.length)];
+const url = (id, shiny) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shiny ? 'shiny/' : ''}${id}.png`;
+
+/* ---------- Pokémon ---------- */
+/* Amarelinhos e parecidos com o Pikachu: aparecem mais nas fases difíceis. */
+const PARECIDOS = [26, 172, 417, 587, 702, 777, 877, 921, 922, 311, 312, 135, 778, 694, 239, 179, 309, 54, 27, 63, 404, 403, 125, 81, 100, 101, 823, 938];
+const MULTIDAO = [1, 4, 7, 10, 16, 19, 21, 23, 29, 32, 35, 37, 39, 41, 43, 46, 48, 50, 52, 56, 58, 60, 66, 69, 72, 74, 77, 79, 84, 86, 88, 90, 92, 95, 96, 98, 102,
+  104, 106, 107, 108, 109, 111, 113, 114, 116, 118, 120, 122, 123, 124, 126, 127, 128, 129, 131, 132, 133, 137, 138, 140, 143, 147, 152, 155, 158, 161, 163, 165, 167,
+  170, 173, 174, 175, 177, 183, 187, 190, 191, 193, 194, 196, 197, 198, 200, 201, 203, 204, 206, 209, 211, 213, 214, 215, 216, 218, 220, 222, 223, 225, 226, 228, 231,
+  234, 235, 236, 238, 240, 241, 246, 252, 255, 258, 261, 263, 265, 270, 273, 276, 278, 280, 283, 285, 287, 290, 293, 296, 298, 300, 302, 303, 304, 307, 315, 316, 318,
+  320, 322, 325, 327, 328, 333, 335, 336, 339, 341, 343, 345, 347, 349, 351, 353, 355, 357, 359, 360, 361, 363, 366, 370, 371, 374, 387, 390, 393, 396, 399, 401, 406,
+  408, 410, 412, 415, 418, 420, 422, 425, 427, 431, 433, 434, 436, 438, 439, 440, 441, 442, 443, 446, 447, 449, 451, 453, 455, 456, 459, 479, 495, 498, 501, 504,
+  506, 509, 511, 513, 515, 517, 519, 522, 524, 527, 529, 531, 532, 535, 538, 539, 540, 543, 546, 548, 550, 551, 554, 556, 557, 559, 561, 562, 564, 566, 568, 570,
+  572, 574, 577, 580, 582, 585, 590, 592, 594, 595, 597, 599, 602, 605, 607, 610, 613, 615, 616, 618, 619, 621, 622, 624, 626, 627, 629, 631, 632, 633, 636, 650,
+  653, 656, 659, 661, 664, 667, 669, 672, 674, 677, 679, 682, 684, 686, 688, 690, 692, 696, 698, 701, 703, 704, 707, 708, 710, 712, 714, 722, 725, 728, 731, 734,
+  736, 739, 741, 742, 744, 746, 747, 749, 751, 753, 755, 757, 759, 761, 764, 765, 766, 767, 769, 771, 774, 775, 779, 780, 781, 782, 810, 813, 816, 819, 821, 824,
+  827, 829, 831, 833, 835, 837, 840, 843, 845, 846, 848, 850, 852, 854, 856, 859, 868, 870, 871, 872, 874, 875, 876, 878, 885, 906, 909, 912, 915, 917, 919, 924,
+  926, 928, 932, 935, 940, 942, 944, 946, 948, 951, 953, 955, 957, 960, 962, 963, 965, 967, 968, 969, 971, 973, 974, 976, 977, 978, 996, 999, 1012];
+/* Pokémon que podem ser o procurado no modo Achados e Perdidos. */
+const ALVOS = [
+  [25, 'Pikachu'], [94, 'Gengar'], [133, 'Eevee'], [151, 'Mew'], [143, 'Snorlax'], [54, 'Psyduck'], [39, 'Jigglypuff'], [4, 'Charmander'], [7, 'Squirtle'],
+  [1, 'Bulbasaur'], [129, 'Magikarp'], [52, 'Meowth'], [658, 'Greninja'], [448, 'Lucario'], [778, 'Mimikyu'], [150, 'Mewtwo'], [700, 'Sylveon'], [197, 'Umbreon'],
+  [6, 'Charizard'], [131, 'Lapras'], [393, 'Piplup'], [656, 'Froakie'], [908, 'Meowscarada'], [869, 'Alcremie'], [906, 'Sprigatito'], [25, 'Pikachu'], [175, 'Togepi'],
+  [255, 'Torchic'], [258, 'Mudkip'], [722, 'Rowlet'], [725, 'Litten'], [728, 'Popplio'], [813, 'Scorbunny'], [816, 'Sobble'], [887, 'Dragapult'], [384, 'Rayquaza'],
+  [249, 'Lugia'], [382, 'Kyogre'], [483, 'Dialga'], [890, 'Eternatus'], [149, 'Dragonite'], [59, 'Arcanine'], [137, 'Porygon'], [202, 'Wobbuffet'], [196, 'Espeon']
+];
+const NOMES = Object.fromEntries(ALVOS);
+NOMES[25] = 'Pikachu';
+const TEMAS = [
+  { id:'praia', nome:'🏖️ Praia', deco:['🌴', '🐚', '⛱️', '🦀'] }, { id:'floresta', nome:'🌳 Floresta', deco:['🌳', '🌲', '🍄', '🌼'] },
+  { id:'cidade', nome:'🏙️ Cidade', deco:['🏠', '🏢', '🚗', '🌳'] }, { id:'neve', nome:'❄️ Neve', deco:['⛄', '🌲', '❄️', '🏔️'] },
+  { id:'espaco', nome:'🌌 Espaço', deco:['⭐', '🪐', '🌙', '☄️'] }, { id:'vulcao', nome:'🌋 Vulcão', deco:['🌋', '🔥', '🪨', '💎'] },
+  { id:'doces', nome:'🍭 Terra dos Doces', deco:['🍭', '🧁', '🍩', '🍬'] }
+];
+
+/* ---------- guardado ---------- */
+let rec = Object.assign({ pika:0, achados:0, fases:0, shinies:0, venceu:0 }, ler('rec', {}));
+let album = ler('album', {}); if(!album || typeof album !== 'object' || Array.isArray(album)) album = {};
+let cfg = Object.assign({ som:true }, ler('cfg', {}));
+const salvar = () => { gravar('rec', rec); gravar('album', album); gravar('cfg', cfg); };
+
+/* ---------- som ---------- */
+let ac = null;
+function bip(freq, dur, tipo, quando, vol){
+  if(!cfg.som) return;
+  try{ ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const t = ac.currentTime + (quando || 0);
+    const o = ac.createOscillator(), g = ac.createGain(); o.type = tipo || 'sine'; o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(vol || .12, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur); }catch(e){}
+}
+const somAchou = () => [784, 988, 1175, 1568].forEach((f, i) => bip(f, .15, 'triangle', i * .08));
+const somErro = () => bip(160, .25, 'sawtooth');
+const somShiny = () => [1319, 1760, 2093, 2637].forEach((f, i) => bip(f, .12, 'sine', i * .06, .08));
+
+/* ---------- telas ---------- */
+function tela(n){ ['inicio', 'jogo', 'album'].forEach(t => $('tela-' + t).hidden = t !== n); window.scrollTo(0, 0); }
+function mostrarInicio(){
+  parar();
+  $('recs').innerHTML = [['⚡', rec.pika, 'recorde Pikachu'], ['🔍', rec.achados, 'recorde Achados'], ['✨', rec.shinies, 'shinies achados']]
+    .map(([e, n, t]) => `<div><b>${e} ${n}</b><small>${t}</small></div>`).join('');
+  tela('inicio');
+}
+$('logo').onclick = mostrarInicio;
+
+/* ---------- o jogo ---------- */
+const FASES_PIKA = 10;
+let J = null;
+function novoJogo(modo){
+  J = { modo, fase:0, pontos:0, dicas:3, timer:0, total: modo === 'achados' ? 60 : 0, achados:0 };
+  J.fimTotal = modo === 'achados' ? Date.now() + 60000 : 0;
+  $('janela').classList.remove('zoom');
+  tela('jogo');
+  proximaFase();
+  J.timer = setInterval(relogio, 200);
+}
+function tempoDaFase(f){ return Math.max(20, 45 - f * 2); }
+/* Monta a multidão. Tudo em porcentagem da cena, então a lupa só aumenta. */
+async function proximaFase(){
+  const f = ++J.fase, pika = J.modo === 'pika';
+  const tema = TEMAS[(f - 1) % TEMAS.length];
+  const alvoId = pika ? 25 : sorteia(ALVOS.filter(a => !J.ultimo || a[0] !== J.ultimo))[0];
+  J.ultimo = alvoId; J.alvoId = alvoId; J.nome = NOMES[alvoId] || 'Pikachu';
+  const qtd = pika ? Math.min(150, 26 + f * 12) : Math.min(120, 30 + J.achados * 6);
+  const tam = pika ? Math.max(8.5, 15 - f * .6) : Math.max(9, 14 - J.achados * .35);
+  const nParecidos = pika ? Math.round(qtd * Math.min(.6, .08 + f * .055)) : 0;
+  const cena = $('cena'); cena.className = 'cena t-' + tema.id; cena.innerHTML = '<div class="carregando">🔍 Espalhando os Pokémon…</div>';
+  $('alvo').innerHTML = `<img src="${url(alvoId)}" alt="" /><div style="min-width:0"><b>Ache o ${esc(J.nome)}!</b><small>${pika ? `Fase ${f} de ${FASES_PIKA}` : `Achados: ${J.achados}`} · ${tema.nome} · ${qtd} Pokémon</small></div>`;
+  const ids = [];
+  for(let i = 0; i < qtd; i++){
+    let id = i < nParecidos ? sorteia(PARECIDOS) : sorteia(MULTIDAO);
+    if(id === alvoId) id = 1;
+    ids.push(id);
+  }
+  /* Espalha em grade com bagunça, pra cobrir a cena toda sem virar um bolo num canto. */
+  const cols = Math.ceil(Math.sqrt(qtd * 1.2)), lins = Math.ceil(qtd / cols);
+  const lugares = [];
+  for(let r = 0; r < lins; r++) for(let c = 0; c < cols; c++) lugares.push([(c + .5) / cols * 100, (r + .5) / lins * 100]);
+  lugares.sort(() => Math.random() - .5);
+  const itens = ids.map((id, i) => {
+    const [cx, cy] = lugares[i % lugares.length];
+    const s = tam * (.75 + Math.random() * .6);
+    return { id, x:cx + (Math.random() - .5) * (100 / cols) * .9, y:cy + (Math.random() - .5) * (100 / lins) * .9, s, z:Math.floor(Math.random() * 500),
+      giro:(Math.random() - .5) * 40, vira:Math.random() < .5, shiny:false };
+  });
+  /* Às vezes tem um shiny escondido (não precisa achar, é bônus). */
+  if(Math.random() < .35) sorteia(itens).shiny = true;
+  /* O procurado. Ninguém fica bem na frente dele: quem tapar o meio dele sai. */
+  const alvo = { id:alvoId, x:8 + Math.random() * 84, y:8 + Math.random() * 84, s:tam * (pika ? Math.max(.7, 1 - f * .025) : .95), z:Math.floor(200 + Math.random() * 200),
+    giro:(Math.random() - .5) * (pika ? f * 5 : 20), vira:Math.random() < .5, alvo:true };
+  const H = cena.clientHeight / cena.clientWidth || 1.2;
+  const perto = it => Math.hypot(it.x - alvo.x, (it.y - alvo.y) * H) < alvo.s * .45 && it.z > alvo.z;
+  const lista = itens.filter(it => !perto(it)).concat([alvo]);
+  J.itens = lista; J.alvo = alvo;
+  /* Espera as imagens carregarem (até 5 segundos) antes de valer o tempo. */
+  const unicos = [...new Set(lista.map(it => url(it.id, it.shiny)))];
+  await Promise.race([Promise.all(unicos.map(u => new Promise(ok => { const im = new Image(); im.onload = im.onerror = ok; im.src = u; }))), new Promise(ok => setTimeout(ok, 5000))]);
+  if(!J || J.fase !== f) return;
+  const decos = Array.from({ length:8 }, () => `<span class="deco" style="left:${Math.random() * 92}%;top:${Math.random() * 92}%;font-size:${1.4 + Math.random() * 1.6}rem">${sorteia(tema.deco)}</span>`).join('');
+  cena.innerHTML = decos + lista.map(it => `<img class="p ${it.alvo ? 'o-alvo' : ''} ${Math.random() < .15 ? 'mexe' : ''}" src="${url(it.id, it.shiny)}" alt="" draggable="false"
+    style="left:${it.x - it.s / 2}%;top:${(it.y - it.s / 2 / H)}%;width:${it.s}%;z-index:${it.z};transform:rotate(${it.giro}deg) scaleX(${it.vira ? -1 : 1})" />`).join('');
+  J.fimFase = Date.now() + tempoDaFase(f) * 1000; J.tempoFase = tempoDaFase(f); J.jogando = true;
+  atualizarDica(); relogio();
+}
+function relogio(){
+  if(!J) return;
+  let s, tot;
+  if(J.modo === 'achados'){ s = (J.fimTotal - Date.now()) / 1000; tot = 60; }
+  else { s = J.jogando ? (J.fimFase - Date.now()) / 1000 : J.tempoFase || 45; tot = J.tempoFase || 45; }
+  s = Math.max(0, s);
+  const t = $('tempo'); t.textContent = '⏰ ' + Math.ceil(s); t.classList.toggle('acabando', s <= 8);
+  $('tempo-barra').style.width = Math.min(100, s / tot * 100) + '%';
+  $('pontos').textContent = '⭐ ' + J.pontos;
+  if(s <= 0 && (J.jogando || J.modo === 'achados')) fimDeJogo(false);
+}
+/* Toque: vale se caiu perto do meio de algum Pokémon (mesmo se outro estiver na frente do procurado). */
+$('cena').addEventListener('pointerdown', ev => {
+  if(!J || !J.jogando) return;
+  const r = $('cena').getBoundingClientRect(), x = (ev.clientX - r.left) / r.width * 100, y = (ev.clientY - r.top) / r.height * 100;
+  const H = r.height / r.width;
+  const dentro = it => Math.hypot(x - it.x, (y - it.y) * H) < it.s * .38;
+  if(dentro(J.alvo)) return achou();
+  const shiny = J.itens.find(it => it.shiny && !it.pego && dentro(it));
+  if(shiny){ shiny.pego = true; J.pontos += 300; rec.shinies++; salvar(); somShiny(); marca(x, y, '✨'); toast('✨ Achou um shiny! +300'); return; }
+  if(J.itens.some(it => !it.alvo && dentro(it))){
+    somErro(); marca(x, y, '❌');
+    if(J.modo === 'achados') J.fimTotal -= 3000; else J.fimFase -= 3000;
+    const j = $('janela'); j.classList.remove('chacoalha'); void j.offsetWidth; j.classList.add('chacoalha');
+    relogio();
+  }
+});
+function marca(x, y, e){ const m = document.createElement('span'); m.className = 'x'; m.textContent = e; m.style.left = x + '%'; m.style.top = y + '%'; $('cena').appendChild(m); setTimeout(() => m.remove(), 700); }
+function achou(){
+  J.jogando = false; somAchou();
+  const a = J.alvo, cena = $('cena'), H = cena.clientHeight / cena.clientWidth;
+  const circ = document.createElement('div'); circ.className = 'achou';
+  const d = a.s * 1.3; circ.style.width = d + '%'; circ.style.height = (d / H) + '%'; circ.style.left = (a.x - d / 2) + '%'; circ.style.top = (a.y - d / 2 / H) + '%';
+  cena.appendChild(circ); cena.classList.add('fim'); cena.querySelector('.o-alvo').classList.add('grande-alvo');
+  const sobra = J.modo === 'achados' ? 0 : Math.max(0, Math.ceil((J.fimFase - Date.now()) / 1000));
+  const ganho = 100 + sobra * 10 + (J.modo === 'pika' ? J.fase * 20 : 0);
+  J.pontos += ganho; J.achados++; rec.fases++;
+  album[J.alvoId] = (album[J.alvoId] || 0) + 1; salvar();
+  toast(`🎉 Achou o ${J.nome}! +${ganho}`);
+  if(J.modo === 'achados') J.fimTotal += 5000;
+  setTimeout(() => {
+    if(!J) return;
+    if(J.modo === 'pika' && J.fase >= FASES_PIKA) return fimDeJogo(true);
+    proximaFase();
+  }, 1600);
+}
+function parar(){ if(!J) return; clearInterval(J.timer); J = null; }
+function fimDeJogo(venceu){
+  if(!J) return;
+  const r = { modo:J.modo, pontos:J.pontos, fase:J.fase, achados:J.achados, alvo:J.alvo, nome:J.nome, alvoId:J.alvoId };
+  J.jogando = false;
+  /* Mostra onde ele estava. */
+  if(!venceu && r.modo === 'pika' && J.alvo){ const cena = $('cena'); cena.classList.add('fim'); const o = cena.querySelector('.o-alvo'); if(o) o.classList.add('grande-alvo'); }
+  parar();
+  const chave = r.modo === 'pika' ? 'pika' : 'achados';
+  const recorde = r.pontos > rec[chave]; if(recorde) rec[chave] = r.pontos;
+  if(venceu) rec.venceu++;
+  salvar();
+  if(venceu || recorde){ somAchou(); confete(); } else somErro();
+  setTimeout(() => janela(`<div class="grandao">${venceu ? '🏆' : r.modo === 'achados' ? '⏰' : `<img src="${url(r.alvoId)}" alt="" />`}</div>
+    <h2>${venceu ? 'Detetive MESTRE!' : r.modo === 'achados' ? 'Acabou o tempo!' : `Ele estava ali!`}</h2>
+    <p>${venceu ? 'Você achou o Pikachu nas 10 fases! 🕵️⚡' : r.modo === 'achados' ? `Você achou <b>${r.achados}</b> Pokémon!` : `O ${esc(r.nome)} fugiu na fase <b>${r.fase}</b>… Olha onde ele estava escondido! 👀`}</p>
+    <p>⭐ Pontos: <b>${r.pontos}</b></p>${recorde && r.pontos > 0 ? '<p>🏆 <b>RECORDE NOVO!</b></p>' : ''}
+    <button class="grande centro" type="button" data-denovo="${r.modo}">🔁 Jogar de novo</button>
+    <button class="mini" type="button" data-fechar style="margin-top:10px">🏠 Início</button>`), venceu || r.modo === 'achados' ? 300 : 1400);
+}
+$('dlg-corpo').addEventListener('click', ev => {
+  const d = ev.target.closest('[data-denovo]'); if(d){ dlg.close(); novoJogo(d.dataset.denovo); return; }
+  if(ev.target.closest('[data-fechar]')){ dlg.close(); mostrarInicio(); }
+});
+document.querySelectorAll('[data-modo]').forEach(b => b.onclick = () => novoJogo(b.dataset.modo));
+$('parar').onclick = mostrarInicio;
+
+/* ---------- dica e lupa ---------- */
+function atualizarDica(){ $('dica').textContent = `💡 Dica (${J ? J.dicas : 0})`; $('dica').disabled = !J || !J.dicas; }
+$('dica').onclick = () => {
+  if(!J || !J.jogando || !J.dicas) return;
+  J.dicas--; atualizarDica(); bip(660, .1, 'triangle');
+  /* Mostra a regiãozinha, não o lugar exato. */
+  const a = J.alvo, cena = $('cena'), H = cena.clientHeight / cena.clientWidth, d = 34;
+  const cx = Math.min(100 - d / 2, Math.max(d / 2, a.x + (Math.random() - .5) * 14)), cy = Math.min(100 - d / 2 / H, Math.max(d / 2 / H, a.y + (Math.random() - .5) * 14 / H));
+  const c = document.createElement('div'); c.className = 'circ'; c.style.width = d + '%'; c.style.height = (d / H) + '%'; c.style.left = (cx - d / 2) + '%'; c.style.top = (cy - d / 2 / H) + '%';
+  cena.appendChild(c); setTimeout(() => c.remove(), 2200);
+};
+$('zoom').onclick = () => { const j = $('janela'); j.classList.toggle('zoom'); $('zoom').textContent = j.classList.contains('zoom') ? '🔍 Tirar lupa' : '🔍 Lupa';
+  if(j.classList.contains('zoom')){ j.scrollLeft = (j.scrollWidth - j.clientWidth) / 2; j.scrollTop = (j.scrollHeight - j.clientHeight) / 2; } };
+
+/* ---------- álbum ---------- */
+function mostrarAlbum(){
+  const unicos = [...new Map(ALVOS.map(a => [a[0], a[1]])).entries()];
+  const tem = unicos.filter(([id]) => album[id]).length;
+  $('album-resumo').textContent = `Você já achou ${tem} de ${unicos.length} Pokémon. Os escurinhos você ainda não achou!`;
+  $('album').innerHTML = unicos.map(([id, n]) => `<div class="${album[id] ? '' : 'nao'}"><img src="${url(id)}" alt="" loading="lazy" /><b>${album[id] ? esc(n) : '???'}</b><small>${album[id] ? `achou ${album[id]}x` : 'ainda não'}</small></div>`).join('');
+  tela('album');
+}
+$('ir-album').onclick = mostrarAlbum;
+$('album-voltar').onclick = mostrarInicio;
+
+/* ---------- janela, toast e festa ---------- */
+const dlg = $('dlg');
+function janela(html){ $('dlg-corpo').innerHTML = html; if(!dlg.open) dlg.showModal(); }
+dlg.addEventListener('cancel', () => setTimeout(mostrarInicio, 0));
+function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1800); }
+function confete(){ const cores = ['#ffd43b', '#e5484d', '#2f7de0', '#2e9e5b', '#ff8cc0', '#fff'];
+  for(let i = 0; i < 60; i++){ const c = document.createElement('i'); c.className = 'confete'; c.style.left = Math.random() * 100 + 'vw'; c.style.background = cores[i % cores.length];
+    c.style.animationDelay = Math.random() * .5 + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 3600); } }
+
+/* ---------- som e tema ---------- */
+const btSom = $('som'); function marcarSom(){ btSom.textContent = cfg.som ? '🔊' : '🔇'; }
+btSom.onclick = () => { cfg.som = !cfg.som; salvar(); marcarSom(); };
+const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
+function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function aplicarTema(t){ if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema'); btTema.textContent = estaEscuro() ? '☀️' : '🌙'; corDaBarra.setAttribute('content', estaEscuro() ? '#1a1608' : '#f5b700'); }
+aplicarTema(ler('tema', null));
+btTema.onclick = () => { const t = estaEscuro() ? 'claro' : 'escuro'; gravar('tema', t); aplicarTema(t); };
+
+marcarSom(); mostrarInicio();
+
+/* ---------- versão nova ---------- */
+const btRecarregar = $('recarregar');
+btRecarregar.onclick = async () => {
+  btRecarregar.textContent = 'buscando a mais nova…';
+  try{ if(window.caches){ const n = await caches.keys(); await Promise.all(n.map(x => caches.delete(x))); } }catch(e){}
+  try{ if(navigator.serviceWorker){ const r = await navigator.serviceWorker.getRegistrations(); await Promise.all(r.map(x => x.update().catch(() => {}))); } }catch(e){}
+  const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+};
+try{ if(new URL(location.href).searchParams.has('v')){ const l = new URL(location.href); l.searchParams.delete('v'); history.replaceState(null, '', l.pathname + l.search + l.hash); } }catch(e){}
+if('serviceWorker' in navigator){
+  const jaTinha = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(!jaTinha || document.querySelector('.faixa-nova')) return;
+    const f = document.createElement('div'); f.className = 'faixa-nova';
+    f.innerHTML = '<span>✨ Chegou versão nova!</span><button type="button">Carregar</button>';
+    f.querySelector('button').onclick = () => location.reload();
+    document.body.appendChild(f);
+  });
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); }).catch(() => {}); });
+}
+</script>
+</body>
+</html>
