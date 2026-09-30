@@ -154,6 +154,16 @@ dialog::backdrop{background:rgba(20,15,5,.6)}
 .faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#fff;color:#1b1b1b;border:3px solid #1b1b1b;box-shadow:4px 4px 0 #1b1b1b;padding:8px 8px 8px 14px;display:flex;gap:10px;align-items:center;z-index:60}
 .faixa-nova button{border:2px solid #1b1b1b;background:var(--amarelo);font-weight:700;padding:4px 10px;cursor:pointer}
 button:focus-visible{outline:3px solid var(--azul);outline-offset:3px}
+/* a lupa do Claude andando pela cena */
+.lupa-claude{position:absolute;z-index:3500;pointer-events:none;translate:-50% -50%;transition:left 1s ease-in-out,top 1s ease-in-out;display:flex;flex-direction:column;align-items:center}
+.lupa-claude .vidro{width:54px;height:54px;border-radius:50%;border:4px solid #7048e8;background:rgba(201,168,255,.25);box-shadow:0 0 0 2px #fff,3px 3px 0 #1b1b1b;position:relative}
+.lupa-claude .vidro:after{content:'';position:absolute;right:-14px;bottom:-12px;width:18px;height:6px;background:#7048e8;border:2px solid #1b1b1b;border-radius:3px;transform:rotate(45deg)}
+.lupa-claude img{position:absolute;left:-22px;top:-22px;width:38px;height:38px;image-rendering:pixelated}
+.lupa-claude em{font-style:normal;white-space:nowrap;background:#fff;color:#1b1b1b;border:2px solid #1b1b1b;border-radius:10px;padding:0 6px;font-size:.85rem;margin-top:10px}
+.lupa-claude em:empty{display:none}
+.versus{display:flex;align-items:center;gap:4px;font-family:'Bangers',sans-serif;font-size:1.2rem;letter-spacing:1px;white-space:nowrap}
+.versus small{font-family:'Patrick Hand',sans-serif;font-size:.95rem}
+.versus img{width:30px;height:30px;image-rendering:pixelated}
 @media (max-width:400px){ .jornal .nome b{font-size:1.2rem} .capa h1{font-size:2.3rem} .relogio{width:64px} .procura .foto{width:52px;height:52px} .procura .foto img{width:48px;height:48px} }
 @media (prefers-reduced-motion: reduce){ .cena img.p{animation:none !important} .capa .lupa,.capa .espiao{animation:none} }
 </style>
@@ -177,6 +187,7 @@ button:focus-visible{outline:3px solid var(--azul);outline-offset:3px}
     </div>
     <div class="menu">
       <button class="botao quadro amarelo torto2" type="button" data-modo="pika"><span class="ic">⚡</span><span><b>Onde está o Pikachu?</b>10 casos, cada vez mais Pokémon e mais parecidos com ele!</span></button>
+      <button class="botao quadro torto" type="button" data-modo="claude" style="background:#c9a8ff;color:#1b1b1b"><span class="ic"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/150.png" alt="" style="width:46px;height:46px;image-rendering:pixelated" onerror="this.outerHTML='🤖'" /></span><span><b>Contra o Claude</b>Eu procuro junto com você! Olha a minha lupa andando. Quem achar primeiro ganha a rodada!</span></button>
       <button class="botao quadro azul torto" type="button" data-modo="achados"><span class="ic">🔍</span><span><b>Achados e Perdidos</b>Qualquer um dos 1025 pode ser o procurado. Quantos você acha em 1 minuto?</span></button>
       <button class="botao quadro vermelho torto2" type="button" id="ir-album"><span class="ic">📒</span><span><b>Álbum de fichas</b>Os 1025 Pokémon. Complete as fichas achando eles!</span></button>
     </div>
@@ -186,7 +197,7 @@ button:focus-visible{outline:3px solid var(--azul);outline-offset:3px}
       <p>Toque no Pokémon do cartaz <b>PROCURA-SE</b>. Errou? Perde 3 segundos. Tem <b>3 dicas 💡</b> e a <b>lupa 🔍</b>. E às vezes tem um <b>shiny ✨</b> escondido que vale pontos extras!</p>
       <div class="carimbos" id="recs"></div>
     </div>
-    <div class="rodape">Tudo fica guardado só neste aparelho.<br><button class="pilha" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 30/09 · 🔄</button></div>
+    <div class="rodape">Tudo fica guardado só neste aparelho.<br><button class="pilha" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 3 — 30/09 · 🔄</button></div>
   </section>
 
   <!-- ========== CASO ========== -->
@@ -338,7 +349,7 @@ const somShiny = () => [1319, 1760, 2093, 2637].forEach((f, i) => bip(f, .12, 's
 function tela(n){ ['inicio', 'jogo', 'album'].forEach(t => $('tela-' + t).hidden = t !== n); window.scrollTo(0, 0); }
 function mostrarInicio(){
   parar();
-  $('recs').innerHTML = [['⚡', rec.pika, 'recorde Pikachu'], ['🔍', rec.achados, 'recorde Achados'], ['📒', Object.keys(album).length, 'fichas de 1025']]
+  $('recs').innerHTML = [['⚡', rec.pika, 'recorde Pikachu'], ['🔍', rec.achados, 'recorde Achados'], ['🤖', rec.claude || 0, 'vitórias no Claude']]
     .map(([e, n, t]) => `<div class="carimbo"><b>${e} ${n}</b><small>${t}</small></div>`).join('');
   tela('inicio');
 }
@@ -348,7 +359,7 @@ $('logo').onclick = mostrarInicio;
 const FASES_PIKA = 10;
 let J = null;
 function novoJogo(modo){
-  J = { modo, fase:0, pontos:0, dicas:3, achados:0, recentes:[] };
+  J = { modo, fase:0, pontos:0, dicas:3, achados:0, recentes:[], voce:0, claudeP:0 };
   J.fimTotal = modo === 'achados' ? Date.now() + 60000 : 0;
   $('janela').classList.remove('zoom'); $('zoom').textContent = '🔍 Lupa';
   tela('jogo');
@@ -372,7 +383,7 @@ function pontosNoLugar(l, n){
   return res;
 }
 async function proximaFase(){
-  const f = ++J.fase, pika = J.modo === 'pika';
+  const f = ++J.fase, pika = J.modo === 'pika', claude = J.modo === 'claude';
   const mapa = pika ? MAPAS[(f - 1) % MAPAS.length] : sorteia(MAPAS.filter(m => m !== J.mapa));
   J.mapa = mapa;
   /* Quem é o procurado e em qual lugar do mapa ele mora. */
@@ -386,11 +397,11 @@ async function proximaFase(){
     J.recentes = [alvoId].concat(J.recentes).slice(0, 30);
   }
   J.alvoId = alvoId; J.nome = POKE[alvoId - 1].nome;
-  const qtd = pika ? Math.min(150, 30 + f * 12) : Math.min(130, 40 + J.achados * 7);
-  const tam = pika ? Math.max(8.5, 14 - f * .55) : Math.max(8.5, 13 - J.achados * .35);
+  const qtd = pika ? Math.min(150, 30 + f * 12) : claude ? Math.min(140, 45 + f * 9) : Math.min(130, 40 + J.achados * 7);
+  const tam = pika ? Math.max(8.5, 14 - f * .55) : claude ? Math.max(8.5, 13 - f * .4) : Math.max(8.5, 13 - J.achados * .35);
   const cena = $('cena'); cena.className = 'cena'; cena.innerHTML = `<svg class="fundo" viewBox="0 0 100 120" preserveAspectRatio="none" aria-hidden="true">${mapa.svg}</svg><div class="carregando">🔍 Investigando o local…</div>`;
   $('procura').innerHTML = `<div class="foto"><img src="${url(alvoId)}" alt="" /></div><div class="txt"><i>PROCURA-SE</i><b>${esc(J.nome)}</b><small>nº ${alvoId} · mora: ${esc(lugarAlvo.nome)} · ${esc(mapa.nome)}</small></div>`;
-  $('caso').textContent = pika ? `Caso ${f} de ${FASES_PIKA} · ${qtd} Pokémon` : `Achados: ${J.achados} · ${qtd} Pokémon`;
+  $('caso').innerHTML = pika ? `Caso ${f} de ${FASES_PIKA} · ${qtd} Pokémon` : claude ? placarClaude() : `Achados: ${J.achados} · ${qtd} Pokémon`;
   /* Distribui a multidão pelos lugares, conforme o tamanho de cada um. */
   const areaTot = mapa.lugares.reduce((s, l) => s + l.area, 0);
   const itens = [];
@@ -419,6 +430,7 @@ async function proximaFase(){
   cena.insertAdjacentHTML('beforeend', lista.map(it => `<img class="p ${it.alvo ? 'o-alvo' : ''} ${it.anim}" src="${url(it.id, it.shiny)}" alt="" draggable="false" onerror="this.remove()"
     style="left:${it.x - it.s / 2}%;top:${it.y - it.s / 2 * R}%;width:${it.s}%;z-index:${it.z};transform:rotate(${it.giro}deg) scaleX(${it.vira ? -1 : 1})" />`).join(''));
   J.fimFase = Date.now() + tempoDaFase(f) * 1000; J.tempoFase = tempoDaFase(f); J.jogando = true;
+  if(claude) comecarClaude(f);
   atualizarDica(); relogio();
 }
 function relogio(){
@@ -430,6 +442,7 @@ function relogio(){
   $('tempo').textContent = Math.ceil(s); $('relogio').classList.toggle('acabando', s <= 8);
   $('pavio').style.width = Math.min(100, s / tot * 100) + '%';
   $('pontos').textContent = J.pontos;
+  if(J.modo === 'claude'){ if(J.jogando) passoClaude(); return; }
   if(s <= 0 && (J.jogando || J.modo === 'achados')) fimDeJogo(false);
 }
 /* Vale o toque perto do meio de um Pokémon (mesmo que outro esteja um pouquinho na frente do procurado). */
@@ -442,7 +455,7 @@ $('cena').addEventListener('pointerdown', ev => {
   if(shiny){ shiny.pego = true; J.pontos += 300; rec.shinies++; salvar(); somShiny(); marca(x, y, '✨ +300', 'pow'); aviso(`✨ Achou um ${POKE[shiny.id - 1].nome} shiny!`); return; }
   if(J.itens.some(it => !it.alvo && dentro(it))){
     somErro(); marca(x, y, 'ERROU!', 'x');
-    if(J.modo === 'achados') J.fimTotal -= 3000; else J.fimFase -= 3000;
+    if(J.modo === 'achados') J.fimTotal -= 3000; else if(J.modo === 'claude'){ J.cl.acha -= 2000; marca(x, y + 6, '+2s pro Claude', 'x'); } else J.fimFase -= 3000;
     const m = document.querySelector('.moldura'); m.classList.remove('chacoalha'); void m.offsetWidth; m.classList.add('chacoalha');
     relogio();
   }
@@ -458,11 +471,63 @@ function achou(){
   const sobra = J.modo === 'achados' ? 0 : Math.max(0, Math.ceil((J.fimFase - Date.now()) / 1000));
   const ganho = 100 + sobra * 10 + (J.modo === 'pika' ? J.fase * 20 : 0);
   J.pontos += ganho; J.achados++; rec.fases++;
+  if(J.modo === 'claude'){ J.voce++; tirarLupa(); $('caso').innerHTML = placarClaude(); falar(sorteia(['Aaah, você foi mais rápido!', 'Nããão! Eu tava quase!', 'Boa, detetive!', 'Como você achou tão rápido?!'])); }
   const novo = !album[J.alvoId];
   album[J.alvoId] = (album[J.alvoId] || 0) + 1; salvar();
   aviso(`🎉 ${J.nome}! +${ganho}${novo ? ' · ficha nova no álbum!' : ''}`);
   if(J.modo === 'achados') J.fimTotal += 5000;
-  setTimeout(() => { if(!J) return; if(J.modo === 'pika' && J.fase >= FASES_PIKA) return fimDeJogo(true); proximaFase(); }, 1700);
+  setTimeout(() => { if(!J) return; if(J.modo === 'pika' && J.fase >= FASES_PIKA) return fimDeJogo(true); if(J.modo === 'claude' && J.fase >= RODADAS_CLAUDE) return fimClaude(); proximaFase(); }, 1700);
+}
+/* ---------- 🤖 Contra o Claude ----------
+   Eu (Claude) não consigo jogar ao vivo, então aqui tem um Claude-robô: a lupa roxa passeia pela cena
+   e acha o procurado depois de um tempinho. Quem achar primeiro ganha a rodada. */
+const RODADAS_CLAUDE = 10;
+const placarClaude = () => `<span class="versus">🧒 Você ${J.voce || 0} × ${J.claudeP || 0} Claude<img src="${url(150)}" alt="" /><small>· ${J.fase}/${RODADAS_CLAUDE}</small></span>`;
+function comecarClaude(f){
+  const l = document.createElement('div'); l.className = 'lupa-claude'; l.innerHTML = `<div class="vidro"><img src="${url(150)}" alt="" /></div><em></em>`;
+  l.style.left = '50%'; l.style.top = '50%'; $('cena').appendChild(l);
+  /* Fica mais rápido a cada rodada, mas nunca instantâneo. */
+  const t = (8000 + Math.random() * 9000) * Math.max(.55, 1 - f * .045);
+  J.cl = { el:l, acha:Date.now() + t, prox:Date.now() + 600, indo:false, errou:Math.random() < .3 ? Date.now() + t * .5 : 0 };
+  falar(sorteia(['Hmm… onde será que ele está? 🔍', 'Vou achar primeiro! 😎', 'Deixa eu ver…', 'Esse vai ser difícil!']));
+}
+function falar(t){ if(J && J.cl && J.cl.el.isConnected){ const e = J.cl.el.querySelector('em'); e.textContent = t; clearTimeout(J.cl.fala); J.cl.fala = setTimeout(() => { if(e.isConnected) e.textContent = ''; }, 1800); } }
+function moverLupa(x, y){ const e = J.cl.el; e.style.left = x + '%'; e.style.top = y + '%'; }
+function tirarLupa(){ if(J && J.cl && J.cl.el) J.cl.el.remove(); }
+function passoClaude(){
+  const c = J.cl, agora = Date.now(); if(!c) return;
+  if(c.errou && agora >= c.errou){
+    c.errou = 0; const it = sorteia(J.itens.filter(i => !i.alvo)); moverLupa(it.x, it.y);
+    setTimeout(() => { if(J && J.jogando && J.cl === c){ marca(it.x, it.y, 'CLAUDE ERROU!', 'x'); falar('Ops, não era esse! 😅'); } }, 1000);
+    c.prox = agora + 2200; return;
+  }
+  if(!c.indo && agora >= c.acha - 1400){ c.indo = true; moverLupa(J.alvo.x, J.alvo.y); falar('Espera… 👀'); return; }
+  if(c.indo && agora >= c.acha) return claudeAchou();
+  if(!c.indo && agora >= c.prox){
+    /* Procura mais perto do lugar certo conforme o tempo passa, igual detetive. */
+    const perto = 1 - (c.acha - agora) / 17000, a = J.alvo;
+    const x = Math.random() < perto ? a.x + (Math.random() - .5) * 40 : 8 + Math.random() * 84, y = Math.random() < perto ? a.y + (Math.random() - .5) * 40 : 8 + Math.random() * 84;
+    moverLupa(Math.min(95, Math.max(5, x)), Math.min(95, Math.max(5, y)));
+    if(Math.random() < .25) falar(sorteia(['Não é esse…', 'Hmm, hmm…', 'Será aqui?', 'Cadê você?', 'Tô chegando perto!']));
+    c.prox = agora + 1100 + Math.random() * 600;
+  }
+}
+function claudeAchou(){
+  J.jogando = false; J.claudeP = (J.claudeP || 0) + 1; somErro();
+  destacar(); marca(J.alvo.x, J.alvo.y, 'CLAUDE ACHOU!', 'pow'); falar('ACHEI! 🎉');
+  $('caso').innerHTML = placarClaude();
+  aviso(`🤖 O Claude achou o ${J.nome} primeiro!`);
+  setTimeout(() => { if(!J) return; tirarLupa(); if(J.fase >= RODADAS_CLAUDE) return fimClaude(); proximaFase(); }, 2000);
+}
+function fimClaude(){
+  const v = J.voce || 0, c = J.claudeP || 0; parar();
+  if(v > c){ rec.claude = (rec.claude || 0) + 1; salvar(); somAchou(); confete(); } else somErro();
+  janela(`<div class="grandao">${v > c ? '🏆' : v === c ? '🤝' : `<img src="${url(150)}" alt="" />`}</div>
+    <h2>${v > c ? 'VOCÊ VENCEU!' : v === c ? 'EMPATE!' : 'O CLAUDE VENCEU!'}</h2>
+    <p>Você <b>${v}</b> × <b>${c}</b> Claude</p>
+    <p>${v > c ? 'Você é um detetive melhor que eu! 🕵️ Revanche?' : v === c ? 'Ficou igualzinho! Desempata?' : 'Hehe, dessa vez eu ganhei! 😎 Mas aposto que na próxima você me vence!'}</p>
+    <button class="botao quadro amarelo" type="button" data-denovo="claude"><b>🔁 Revanche!</b></button>
+    <button class="pilha" type="button" data-fechar style="margin-top:12px">📰 Capa</button>`);
 }
 function parar(){ if(!J) return; clearInterval(J.timer); J = null; }
 function fimDeJogo(venceu){
