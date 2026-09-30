@@ -1,13 +1,14 @@
 # 🕵️ Onde está o Pikachu?
 
-Tipo "Onde está o Wally", só que com Pokémon! Uma multidão de Pokémon e só um procurado escondido.
+Gibi de detetive: ache o Pokémon do cartaz **PROCURA-SE** no meio da multidão!
 
-- ⚡ **Onde está o Pikachu?**: 10 fases. A cada fase tem mais Pokémon (até 150), eles ficam menores e aparecem mais **parecidos com o Pikachu** (Raichu, Pichu, Pachirisu, Dedenne, Togedemaru, Morpeko, Pawmi, Mimikyu…). Tempo de 45s caindo até 27s.
-- 🔍 **Achados e Perdidos**: 1 minuto, cada fase é um Pokémon diferente (45 possíveis). Achou? Ganha +5s.
-- Tocar no Pokémon errado tira 3 segundos. 3 **dicas 💡** por jogo (mostram a regiãozinha) e **lupa 🔍** pra dar zoom.
-- ✨ Às vezes tem um **shiny** escondido: +300 pontos.
-- 7 cenários: praia, floresta, cidade, neve, espaço, vulcão e terra dos doces.
-- 📖 **Álbum de detetive** com os Pokémon que você já achou, e recordes.
-- O Pokémon procurado nunca fica totalmente tapado: quem estaria na frente do meio dele é tirado.
+- **Todos os 1025 Pokémon** (nomes e tipos iguais ao Quem é esse Pokémon).
+- **7 mapas desenhados** (praia, floresta, cidade, montanha de neve, vulcão, espaço e cemitério). Cada mapa tem **lugares certos**: voadores no céu, Pokémon de água no mar e nos lagos, de fogo na lava, insetos e plantas nas árvores, aço nos prédios, fantasmas na casa assombrada… Cada Pokémon só aparece num lugar que combina com o tipo dele. O desenho é sempre o mesmo; o que muda é onde cada um está dentro do seu lugar.
+- Quem está mais embaixo fica na frente (profundidade), e ninguém tapa o meio do procurado.
+- ⚡ **Onde está o Pikachu?**: 10 casos, até 150 Pokémon, com cada vez mais parecidos com ele (Raichu, Pichu, Pachirisu, Dedenne, Togedemaru, Morpeko, Pawmi, Mimikyu…).
+- 🔍 **Achados e Perdidos**: 1 minuto; o procurado pode ser qualquer um dos 1025 (no lugar do mapa que combina com ele). Achou? +5s.
+- Errou: -3s. 3 dicas 💡, lupa 🔍 (zoom 2x) e shiny ✨ escondido (+300).
+- 📒 **Álbum de fichas** com os 1025, separado por geração.
+- Visual de gibi: papel com pontinhos, contorno preto grosso, sombra dura, listras vermelhas e fontes Bangers e Patrick Hand.
 
 Tudo fica guardado só neste aparelho.
