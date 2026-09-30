@@ -16,13 +16,13 @@ function criarPalco(){
   palco.setAlwaysOnTop(true, 'screen-saver');
   palco.setVisibleOnAllWorkspaces(true);
   palco.setIgnoreMouseEvents(true, { forward:true });
-  palco.loadFile('palco.html');
+  palco.loadFile(path.join(__dirname, 'palco.html'));
 }
 function abrirConfig(){
   if(config && !config.isDestroyed()){ config.show(); config.focus(); return; }
   config = new BrowserWindow({ width:400, height:680, title:'Pokémon Andarilho', icon:path.join(__dirname, 'icone.png'), autoHideMenuBar:true,
     webPreferences:{ contextIsolation:true, nodeIntegration:false } });
-  config.loadFile('config.html');
+  config.loadFile(path.join(__dirname, 'config.html'));
 }
 /* O palco avisa quando o mouse está em cima de um Pokémon (aí ele recebe o clique) ou não (aí o clique passa). */
 ipcMain.on('mouse', (_, pegar) => { if(palco && !palco.isDestroyed()) palco.setIgnoreMouseEvents(!pegar, { forward:true }); });
