@@ -1,0 +1,14 @@
+{
+  "name": "Pokémon Andarilho",
+  "short_name": "Andarilho",
+  "description": "Um Pokémon 3D que fica andando pelo seu computador, por cima de qualquer site!",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#4263eb",
+  "theme_color": "#3b5bdb",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
