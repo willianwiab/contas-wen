@@ -379,8 +379,9 @@ main>section{animation:aparece .3s ease-out}
 const $ = id => document.getElementById(id);
 const sorteio = n => Math.floor(Math.random() * n);
 const ULTIMO_ID = 1025;
-/* Shinies bem diferentes do normal: as primeiras fases usam só esses, pra ninguém travar logo no começo. */
-const FACEIS = [4, 6, 7, 54, 94, 129, 130, 132, 133, 150, 151, 197, 212, 248, 257, 282, 373, 376, 384, 445, 448, 658, 778, 25, 1, 172, 175, 196, 359, 571];
+/* Shinies bem diferentes do normal: as primeiras fases (e o começo do Desafio) usam só esses, pra ninguém travar logo no começo.
+   Nada de shiny parecido com o normal aqui (o Garchomp, o Pikachu e o Mewtwo saíram por isso). */
+const FACEIS = [4, 6, 38, 54, 95, 129, 130, 131, 132, 133, 149, 151, 181, 196, 208, 212, 214, 229, 248, 282, 334, 373, 376, 384, 448, 571, 609, 612, 658];
 const sprite = (id, shiny) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shiny ? 'shiny/' : ''}${id}.png`;
 
 /* ═════════ guardar ═════════ */
