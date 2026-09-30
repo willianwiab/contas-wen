@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Caçada Shiny</title>
+<meta name="description" content="Vários Pokémon iguais e um deles é shiny! Ache o brilhante antes do tempo acabar. Cada fase tem mais Pokémon e menos tempo." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#7b3fe4" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Caçada Shiny" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --marca:#7b3fe4; --marca2:#a06bff; --amarelo:#ffc21a; --vermelho:#e5484d; --verde:#2e9e5b;
+  --fundo:#f3edff; --tinta:#24133f; --tinta-fraca:#6c5a8a; --cartao:#ffffff; --cartao2:#f8f4ff; --borda:#e0d2fb; --sombra:rgba(80,40,160,.16);
+  --grama1:#8fe08a; --grama2:#4fae5a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --marca:#b58cff; --fundo:#140b24; --tinta:#efe6ff; --tinta-fraca:#a996c9; --cartao:#21143a; --cartao2:#2a1a48; --borda:#3d2a63; --sombra:rgba(0,0,0,.45);
+    --grama1:#2f6b3a; --grama2:#1c4526;
+  }
+}
+:root[data-tema="escuro"]{
+  --marca:#b58cff; --fundo:#140b24; --tinta:#efe6ff; --tinta-fraca:#a996c9; --cartao:#21143a; --cartao2:#2a1a48; --borda:#3d2a63; --sombra:rgba(0,0,0,.45);
+  --grama1:#2f6b3a; --grama2:#1c4526;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+html,body{overflow-x:clip}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);min-height:100vh;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+h1,h2,h3{font-family:'Baloo 2','Rubik',sans-serif}
+main{max-width:620px;margin:0 auto;padding:10px 16px 40px}
+header.topo{display:flex;align-items:center;gap:8px;max-width:620px;margin:0 auto;padding:12px 16px 0}
+.logo{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+.logo img{width:40px;height:40px;flex:none;cursor:pointer}
+.logo h1{font-size:1.35rem;color:var(--marca);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo small{display:block;font-size:.72rem;color:var(--tinta-fraca)}
+.redondo{width:40px;height:40px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.1rem;cursor:pointer;display:grid;place-items:center;flex:none;box-shadow:0 3px 0 var(--borda)}
+.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:24px;padding:16px;margin-top:14px;box-shadow:0 6px 16px var(--sombra)}
+.grande{width:100%;border:none;border-radius:18px;padding:14px;font-size:1.15rem;font-weight:800;cursor:pointer;color:#fff;font-family:'Baloo 2','Rubik',sans-serif;
+  background:linear-gradient(180deg,var(--marca2),#6a2fd6);box-shadow:0 5px 0 #4a1c9e;text-align:left;display:flex;gap:12px;align-items:center}
+.grande:active{transform:translateY(3px);box-shadow:0 2px 0 #4a1c9e}
+.grande .ic{font-size:2rem}
+.grande small{display:block;font-family:'Rubik',sans-serif;font-weight:500;font-size:.8rem;opacity:.9}
+.grande.amarelo{background:linear-gradient(180deg,#ffd54d,#ffb300);box-shadow:0 5px 0 #b37a00;color:#3a2a00}
+.grande.verde{background:linear-gradient(180deg,#49c47a,#23874b);box-shadow:0 5px 0 #196b3a}
+.menu{display:grid;gap:12px;margin-top:14px}
+.mini{border:2px solid var(--borda);background:var(--cartao2);border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:.88rem;box-shadow:0 3px 0 var(--borda)}
+.mini:disabled{opacity:.45;cursor:default}
+.aviso{font-size:.84rem;color:var(--tinta-fraca);line-height:1.45;margin-top:6px}
+main>section{animation:aparece .3s ease-out}
+@keyframes aparece{from{opacity:0;transform:translateY(8px)}}
+
+/* capa */
+.capa{text-align:center;padding:20px 12px;border-radius:24px;margin-top:12px;color:#fff;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 50% 120%,#ffd54d,#a06bff 55%,#4a1c9e)}
+.capa h2{font-size:2.1rem;line-height:1;text-shadow:0 3px 0 #3a1580}
+.capa p{margin-top:6px;font-weight:600}
+.capa .duo{display:flex;justify-content:center;gap:8px;margin-top:8px}
+.capa .duo img{width:96px;height:96px;image-rendering:pixelated}
+.capa .duo img+img{animation:brilha 1.6s ease-in-out infinite}
+@keyframes brilha{50%{filter:drop-shadow(0 0 10px #fff6a8) brightness(1.15)}}
+.recs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;text-align:center}
+.recs div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:8px 4px}
+.recs b{display:block;font-family:'Baloo 2',sans-serif;font-size:1.25rem}
+.recs small{font-size:.72rem;color:var(--tinta-fraca)}
+
+/* jogo */
+.hud{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.hud span{background:var(--cartao);border:2px solid var(--borda);border-radius:99px;padding:4px 10px;font-weight:700;font-size:.9rem}
+.hud .adm{border-color:#ff922b;color:#ff922b}
+.barra{height:12px;border-radius:99px;background:var(--cartao2);border:2px solid var(--borda);margin-top:8px;overflow:hidden}
+.barra i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#49c47a,#ffd54d);transform-origin:left;border-radius:99px}
+.barra.acabando i{background:var(--vermelho)}
+.dica{margin-top:8px;text-align:center;font-weight:700;min-height:1.4em}
+.campo{position:relative;margin:10px auto 0;width:min(100%,520px);aspect-ratio:1;border-radius:22px;padding:6px;
+  background:radial-gradient(circle at 50% 30%,var(--grama1),var(--grama2));border:4px solid var(--borda);box-shadow:0 8px 0 var(--sombra);
+  display:grid;gap:2px;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.campo.noite:after{content:'';position:absolute;inset:0;border-radius:18px;pointer-events:none;background:radial-gradient(circle at var(--lx,50%) var(--ly,50%),transparent 0,transparent 22%,rgba(5,0,20,.93) 38%)}
+.poke{position:relative;border:none;background:none;padding:0;cursor:pointer;border-radius:12px;min-width:0;min-height:0;overflow:hidden;transition:transform .25s}
+.poke img{width:100%;height:100%;image-rendering:pixelated;transform:scale(1.2);pointer-events:none;display:block}
+.poke.espelho img{transform:scale(-1.2,1.2)}
+.poke.balanca{animation:balanca var(--v,1.4s) ease-in-out infinite}
+@keyframes balanca{25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
+.poke.errou{animation:chacoalha .3s 2;background:rgba(229,72,77,.35)}
+.poke.sumiu{opacity:.12;pointer-events:none}
+.poke.achou{background:radial-gradient(circle,#fff6a8,transparent 70%);animation:pulo .5s 3;z-index:2}
+.poke.revela{outline:4px dashed #ffd54d;outline-offset:-4px}
+@keyframes chacoalha{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes pulo{50%{transform:scale(1.3)}}
+.carregando{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.4);font-size:1.2rem}
+.acoes{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.estrelinha{position:fixed;z-index:40;pointer-events:none;font-size:1.4rem;animation:voa .9s ease-out forwards}
+@keyframes voa{to{transform:translate(var(--dx),var(--dy)) scale(.3);opacity:0}}
+.pontinho{position:fixed;z-index:41;pointer-events:none;font-weight:800;font-size:1.3rem;animation:sobe 1s ease-out forwards;text-shadow:0 2px 0 #fff,0 0 4px #fff;color:#6a2fd6}
+.pontinho.menos{color:var(--vermelho)}
+@keyframes sobe{to{transform:translateY(-50px);opacity:0}}
+.faixa{position:fixed;left:50%;top:40%;z-index:45;transform:translate(-50%,-50%);pointer-events:none;background:var(--cartao);border:3px solid var(--marca);color:var(--tinta);border-radius:20px;padding:10px 20px;font-family:'Baloo 2',sans-serif;font-size:1.5rem;text-align:center;box-shadow:0 8px 0 var(--sombra);animation:faixa 1.4s ease-out forwards;white-space:nowrap}
+@keyframes faixa{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}15%{transform:translate(-50%,-50%) scale(1.1);opacity:1}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
+
+/* fim, coleção, janelas */
+.fim{text-align:center}
+.fim h2{font-size:2rem;color:var(--marca)}
+.fim .grandao{font-family:'Baloo 2',sans-serif;font-size:3rem;line-height:1;margin:6px 0}
+.dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:10px}
+.dex div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:6px;text-align:center}
+.dex img{width:64px;height:64px;image-rendering:pixelated}
+.dex small{display:block;font-size:.7rem;color:var(--tinta-fraca);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dex b{font-size:.75rem}
+.fundo-janela{position:fixed;inset:0;z-index:50;background:rgba(20,5,40,.6);display:grid;place-items:center;padding:16px}
+.janela{background:var(--cartao);border-radius:22px;padding:18px;width:min(100%,420px);max-height:90vh;overflow:auto;border:2px solid var(--borda)}
+.janela h3{font-size:1.4rem;color:var(--marca)}
+.janela input{width:100%;margin-top:10px;padding:12px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao2);color:var(--tinta);font-size:1rem}
+.janela input.erro{border-color:var(--vermelho);animation:chacoalha .3s 2}
+.adm-grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.adm-btn{background:linear-gradient(45deg,#845ef7,#e64980);border:none;color:#fff;padding:12px 8px;border-radius:12px;cursor:pointer;font-weight:800;font-size:.88rem}
+.adm-btn.perigo{background:linear-gradient(45deg,#e03131,#c92a2a)}
+.adm-btn.dourado{background:linear-gradient(45deg,#ffd43b,#f76707);color:#1a1a1a}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:60;background:var(--tinta);color:var(--fundo);padding:10px 16px;border-radius:14px;font-weight:700;animation:aparece .2s}
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="logo"><img src="icone.svg" alt="" id="logo-img" /><div><h1>Caçada Shiny</h1><small>Ache o Pokémon brilhante ✨</small></div></div>
+  <button class="redondo" type="button" id="b-som" aria-label="Som">🔊</button>
+  <button class="redondo" type="button" id="b-tema" aria-label="Tema">🌗</button>
+</header>
+
+<main>
+  <!-- capa -->
+  <section id="s-capa">
+    <div class="capa">
+      <h2>✨ Caçada Shiny ✨</h2>
+      <p>Um deles é diferente. Consegue achar?</p>
+      <div class="duo"><img id="capa-a" alt="" /><img id="capa-b" alt="" /></div>
+    </div>
+    <div class="recs">
+      <div><b id="r-fase">0</b><small>🏆 Melhor fase</small></div>
+      <div><b id="r-pontos">0</b><small>⭐ Recorde</small></div>
+      <div><b id="r-colecao">0</b><small>📖 Shinies</small></div>
+    </div>
+    <div class="menu">
+      <button class="grande" type="button" id="b-jogar"><span class="ic">🔍</span><span>Caçar!<small>Comece da fase 1 com 3 vidas</small></span></button>
+      <button class="grande amarelo" type="button" id="b-colecao"><span class="ic">📖</span><span>Minha coleção<small>Todo shiny que você achou fica guardado aqui</small></span></button>
+    </div>
+    <div class="cartao">
+      <h3>Como jogar</h3>
+      <p class="aviso">👆 Toque no Pokémon <b>shiny</b> (o da cor diferente) antes do tempo acabar.<br>
+      ❌ Tocou no errado? Perde uma vida ❤️ e um pouco de tempo.<br>
+      ⏱️ Achou rápido? Ganha mais pontos. Acertos seguidos fazem <b>combo</b>!<br>
+      🔍 A <b>lupa</b> esconde metade dos errados. Você ganha uma a cada 5 fases.<br>
+      📈 A cada fase: mais Pokémon, menos tempo. Depois eles começam a <b>virar</b>, <b>balançar</b>, <b>trocar de lugar</b>… e na fase 20 fica <b>de noite</b> 🔦!</p>
+    </div>
+  </section>
+
+  <!-- jogo -->
+  <section id="s-jogo" hidden>
+    <div class="hud">
+      <span id="h-fase">Fase 1</span>
+      <span id="h-vidas">❤️❤️❤️</span>
+      <span id="h-pontos">⭐ 0</span>
+      <span id="h-combo" hidden>🔥 x2</span>
+      <span class="adm" id="h-adm" hidden>🔓 ADM</span>
+    </div>
+    <div class="barra" id="barra"><i id="barra-i"></i></div>
+    <div class="dica" id="dica">Ache o shiny!</div>
+    <div class="campo" id="campo"></div>
+    <div class="acoes">
+      <button class="mini" type="button" id="b-lupa">🔍 Lupa (1)</button>
+      <button class="mini" type="button" id="b-pausa">⏸️ Pausar</button>
+      <button class="mini" type="button" id="b-sair">🏠 Sair</button>
+    </div>
+  </section>
+
+  <!-- fim -->
+  <section id="s-fim" hidden>
+    <div class="cartao fim">
+      <h2 id="f-titulo">Fim de jogo!</h2>
+      <div class="grandao" id="f-pontos">0</div>
+      <p class="aviso" id="f-texto"></p>
+      <div class="dex" id="f-achados"></div>
+      <div class="menu">
+        <button class="grande" type="button" id="b-denovo"><span class="ic">🔁</span><span>Jogar de novo</span></button>
+        <button class="grande amarelo" type="button" id="b-inicio"><span class="ic">🏠</span><span>Início</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- coleção -->
+  <section id="s-colecao" hidden>
+    <div class="cartao">
+      <div style="display:flex;align-items:center;gap:8px"><h3 style="flex:1">📖 Minha coleção shiny</h3><button class="mini" type="button" id="b-voltar">⬅️ Voltar</button></div>
+      <p class="aviso" id="c-texto"></p>
+      <div class="dex" id="c-lista"></div>
+    </div>
+  </section>
+</main>
+
+<div class="fundo-janela" id="j-senha" hidden>
+  <div class="janela">
+    <h3>🔒 Senha</h3>
+    <input type="password" id="senha" autocomplete="off" />
+    <div class="acoes"><button class="mini" type="button" id="b-senha-ok">Entrar</button><button class="mini" type="button" id="b-senha-x">Cancelar</button></div>
+  </div>
+</div>
+<div class="fundo-janela" id="j-adm" hidden>
+  <div class="janela">
+    <h3>👑 Jojo adm</h3>
+    <p class="aviso">Poderes de administrador (só neste aparelho).</p>
+    <div class="adm-grade" id="adm-grade"></div>
+    <div class="acoes"><button class="mini" type="button" id="b-adm-x">Fechar</button></div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const sorteio = n => Math.floor(Math.random() * n);
+const ULTIMO_ID = 1025;
+/* Shinies bem diferentes do normal: as primeiras fases usam só esses, pra ninguém travar logo no começo. */
+const FACEIS = [4, 6, 7, 54, 94, 129, 130, 132, 133, 150, 151, 197, 212, 248, 257, 282, 373, 376, 384, 445, 448, 658, 778, 25, 1, 172, 175, 196, 359, 571];
+const sprite = (id, shiny) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shiny ? 'shiny/' : ''}${id}.png`;
+
+/* ═════════ guardar ═════════ */
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('shiny:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('shiny:' + k, JSON.stringify(v)); }catch(e){} }
+const REC = ler('recordes', { fase:0, pontos:0 });
+let COLECAO = ler('colecao', {});   // { id: { nome, vezes } }
+let somLigado = ler('som', true);
+
+/* ═════════ tema ═════════ */
+function aplicarTema(t){ if(t) document.documentElement.dataset.tema = t; else delete document.documentElement.dataset.tema; }
+aplicarTema(ler('tema', null));
+$('b-tema').onclick = () => {
+  const escuroAgora = document.documentElement.dataset.tema ? document.documentElement.dataset.tema === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches;
+  const t = escuroAgora ? 'claro' : 'escuro'; aplicarTema(t); gravar('tema', t);
+};
+
+/* ═════════ som ═════════ */
+let ac = null;
+function bip(freq, dur = .12, tipo = 'sine', vol = .15, atraso = 0){
+  if(!somLigado) return;
+  try{
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + atraso;
+    o.type = tipo; o.frequency.value = freq; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur);
+  }catch(e){}
+}
+const somAcerto = () => [880, 1175, 1568].forEach((f, i) => bip(f, .15, 'triangle', .14, i * .07));
+const somErro = () => { bip(180, .25, 'square', .08); try{ navigator.vibrate && navigator.vibrate(120); }catch(e){} };
+const somTique = () => bip(1200, .04, 'square', .03);
+function mostrarSom(){ $('b-som').textContent = somLigado ? '🔊' : '🔇'; }
+mostrarSom();
+$('b-som').onclick = () => { somLigado = !somLigado; gravar('som', somLigado); mostrarSom(); };
+
+/* ═════════ nomes (PokeAPI, com cache) ═════════ */
+const NOMES = ler('nomes', {});
+async function nomeDe(id){
+  if(NOMES[id]) return NOMES[id];
+  try{
+    const r = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}/`, { signal:AbortSignal.timeout ? AbortSignal.timeout(4000) : undefined });
+    const j = await r.json(); const n = j.name.charAt(0).toUpperCase() + j.name.slice(1);
+    NOMES[id] = n; gravar('nomes', NOMES); return n;
+  }catch(e){ return '#' + id; }
+}
+
+/* ═════════ telas ═════════ */
+function tela(id){ ['s-capa', 's-jogo', 's-fim', 's-colecao'].forEach(s => $(s).hidden = s !== id); scrollTo(0, 0); }
+function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1800); }
+function faixa(t){ const d = document.createElement('div'); d.className = 'faixa'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1400); }
+function pontinho(x, y, t, menos){ const d = document.createElement('div'); d.className = 'pontinho' + (menos ? ' menos' : ''); d.textContent = t; d.style.left = x + 'px'; d.style.top = y + 'px'; document.body.appendChild(d); setTimeout(() => d.remove(), 1000); }
+function estrelas(x, y){
+  for(let i = 0; i < 10; i++){
+    const d = document.createElement('div'); d.className = 'estrelinha'; d.textContent = ['✨', '⭐', '🌟'][i % 3];
+    const a = Math.PI * 2 * i / 10; d.style.left = x + 'px'; d.style.top = y + 'px';
+    d.style.setProperty('--dx', Math.cos(a) * 90 + 'px'); d.style.setProperty('--dy', Math.sin(a) * 90 + 'px');
+    document.body.appendChild(d); setTimeout(() => d.remove(), 900);
+  }
+}
+
+function mostrarCapa(){
+  $('r-fase').textContent = REC.fase; $('r-pontos').textContent = REC.pontos.toLocaleString('pt-BR');
+  $('r-colecao').textContent = Object.keys(COLECAO).length;
+  const id = FACEIS[sorteio(FACEIS.length)];
+  $('capa-a').src = sprite(id, false); $('capa-b').src = sprite(id, true);
+  tela('s-capa');
+}
+
+/* ═════════ regras de cada fase ═════════ */
+function regras(fase){
+  return {
+    lado: Math.min(3 + Math.floor((fase - 1) / 2), 9),       // 3x3 → 9x9
+    tempo: Math.max(5, 16 - (fase - 1) * .5),                // segundos
+    faceis: fase <= 6,
+    espelho: fase >= 5,
+    balanca: fase >= 9,
+    troca: fase >= 13,                                        // trocam de lugar
+    noite: fase >= 20                                         // só dá pra ver perto do dedo
+  };
+}
+
+/* ═════════ partida ═════════ */
+let J = null;       // estado da partida
+let timer = null;
+let admLigado = false;
+try{ admLigado = sessionStorage.getItem('shiny:adm') === '1'; }catch(e){}
+
+function novaPartida(){
+  J = { fase:1, vidas:3, pontos:0, combo:0, lupas:1, achados:[], rodada:null, pausado:false };
+  tela('s-jogo'); atualizarHUD(); novaRodada();
+}
+
+function atualizarHUD(){
+  $('h-fase').textContent = 'Fase ' + J.fase;
+  $('h-vidas').textContent = admLigado ? '❤️ ∞' : ('❤️'.repeat(J.vidas) + '🖤'.repeat(Math.max(0, 3 - J.vidas)));
+  $('h-pontos').textContent = '⭐ ' + J.pontos.toLocaleString('pt-BR');
+  $('h-combo').hidden = J.combo < 2; $('h-combo').textContent = '🔥 x' + J.combo;
+  $('h-adm').hidden = !admLigado;
+  $('b-lupa').textContent = `🔍 Lupa (${admLigado ? '∞' : J.lupas})`;
+  $('b-lupa').disabled = !admLigado && J.lupas < 1;
+}
+
+function carregar(src){
+  return new Promise((ok, erro) => { const im = new Image(); im.onload = () => ok(im); im.onerror = erro; im.src = src; });
+}
+
+async function escolherPokemon(r, tentativas = 0){
+  const id = r.faceis ? FACEIS[sorteio(FACEIS.length)] : 1 + sorteio(ULTIMO_ID);
+  try{ await Promise.all([carregar(sprite(id, false)), carregar(sprite(id, true))]); return id; }
+  catch(e){ if(tentativas > 6) throw e; return escolherPokemon(r, tentativas + 1); }
+}
+
+async function novaRodada(){
+  clearInterval(timer);
+  const r = regras(J.fase);
+  const campo = $('campo');
+  campo.className = 'campo'; campo.innerHTML = '<div class="carregando">✨ Procurando Pokémon…</div>';
+  campo.style.gridTemplateColumns = `repeat(${r.lado},minmax(0,1fr))`;
+  $('dica').textContent = 'Ache o shiny!';
+  let id;
+  try{ id = await escolherPokemon(r); }
+  catch(e){ campo.innerHTML = '<div class="carregando">📡 Sem internet? Toque pra tentar de novo</div>'; campo.onclick = () => { campo.onclick = null; novaRodada(); }; return; }
+  if(!J || $('s-jogo').hidden) return;
+
+  const total = r.lado * r.lado;
+  const alvo = sorteio(total);
+  campo.innerHTML = '';
+  for(let i = 0; i < total; i++){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'poke'; b.dataset.i = i; b.setAttribute('aria-label', 'Pokémon');
+    if(r.espelho && Math.random() < .5) b.classList.add('espelho');
+    if(r.balanca){ b.classList.add('balanca'); b.style.setProperty('--v', (0.9 + Math.random() * 1.2).toFixed(2) + 's'); b.style.animationDelay = (-Math.random() * 2).toFixed(2) + 's'; }
+    const im = document.createElement('img'); im.alt = ''; im.draggable = false; im.src = sprite(id, i === alvo);
+    b.appendChild(im); campo.appendChild(b);
+  }
+  if(r.noite){ campo.classList.add('noite'); }
+  J.rodada = { id, alvo, r, tempoMax:r.tempo * 1000, resta:r.tempo * 1000, acabou:false, ultimoTique:0 };
+  nomeDe(id).then(n => { if(J && J.rodada && J.rodada.id === id) $('dica').textContent = `Ache o ${n} shiny!`; });
+  $('b-pausa').textContent = '⏸️ Pausar'; J.pausado = false;
+  let antes = performance.now(), trocaEm = 2500;
+  timer = setInterval(() => {
+    const agora = performance.now(), dt = agora - antes; antes = agora;
+    if(J.pausado || J.rodada.acabou) return;
+    J.rodada.resta -= dt;
+    const f = Math.max(0, J.rodada.resta / J.rodada.tempoMax);
+    $('barra-i').style.transform = `scaleX(${f})`;
+    $('barra').classList.toggle('acabando', f < .3);
+    if(f < .3 && agora - J.rodada.ultimoTique > 500){ J.rodada.ultimoTique = agora; somTique(); }
+    if(r.troca){ trocaEm -= dt; if(trocaEm <= 0){ trocaEm = Math.max(1200, 3000 - J.fase * 60); embaralhar(); } }
+    if(J.rodada.resta <= 0) acabouTempo();
+  }, 50);
+  $('barra-i').style.transform = 'scaleX(1)';
+}
+
+/* troca dois pedaços do campo de lugar (o shiny inclusive) */
+function embaralhar(){
+  const campo = $('campo'); const filhos = [...campo.children].filter(b => !b.classList.contains('sumiu'));
+  for(let k = 0; k < Math.max(2, filhos.length / 4); k++){
+    const a = filhos[sorteio(filhos.length)], b = filhos[sorteio(filhos.length)];
+    if(a === b) continue;
+    const marca = document.createElement('span'); campo.replaceChild(marca, a); campo.replaceChild(a, b); campo.replaceChild(b, marca);
+  }
+}
+
+$('campo').addEventListener('click', ev => {
+  const b = ev.target.closest('.poke'); if(!b || !J || !J.rodada || J.rodada.acabou || J.pausado) return;
+  const x = ev.clientX, y = ev.clientY;
+  if(+b.dataset.i === J.rodada.alvo) return acertou(b, x, y);
+  b.classList.add('errou'); setTimeout(() => b.classList.remove('errou'), 600);
+  somErro(); J.combo = 0; J.rodada.resta -= 1500;
+  pontinho(x, y, '-1 ❤️', true);
+  if(!admLigado){ J.vidas--; if(J.vidas <= 0){ atualizarHUD(); return perdeu('Acabaram as vidas!'); } }
+  atualizarHUD();
+});
+/* a lanterna da noite segue o dedo */
+$('campo').addEventListener('pointermove', ev => {
+  const c = $('campo'); if(!c.classList.contains('noite')) return;
+  const q = c.getBoundingClientRect();
+  c.style.setProperty('--lx', ((ev.clientX - q.left) / q.width * 100) + '%');
+  c.style.setProperty('--ly', ((ev.clientY - q.top) / q.height * 100) + '%');
+});
+$('campo').addEventListener('pointerdown', ev => { const c = $('campo'); if(!c.classList.contains('noite')) return; const q = c.getBoundingClientRect(); c.style.setProperty('--lx', ((ev.clientX - q.left) / q.width * 100) + '%'); c.style.setProperty('--ly', ((ev.clientY - q.top) / q.height * 100) + '%'); });
+
+function acertou(b, x, y){
+  const R = J.rodada; R.acabou = true; clearInterval(timer);
+  b.classList.add('achou'); somAcerto(); estrelas(x, y);
+  J.combo++;
+  const rapidez = Math.max(0, R.resta / R.tempoMax);
+  const ganho = Math.round((100 + J.fase * 20 + rapidez * 200) * Math.min(J.combo, 5));
+  J.pontos += ganho; pontinho(x, y, '+' + ganho);
+  const nome = NOMES[R.id] || '#' + R.id;
+  const achado = { id:R.id, nome }; J.achados.push(achado);
+  const c = COLECAO[R.id] || { nome, vezes:0 }; c.vezes++; COLECAO[R.id] = c; gravar('colecao', COLECAO);
+  if(!NOMES[R.id]) nomeDe(R.id).then(n => { if(n.startsWith('#')) return; achado.nome = n; c.nome = n; gravar('colecao', COLECAO); });
+  J.fase++;
+  let msg = `✨ ${nome} shiny!`;
+  if((J.fase - 1) % 5 === 0){ J.lupas++; msg += ' +1 🔍'; }
+  if(J.fase === 5) msg = '🔄 Agora eles viram!';
+  if(J.fase === 9) msg = '〰️ Agora eles balançam!';
+  if(J.fase === 13) msg = '🔀 Agora eles trocam de lugar!';
+  if(J.fase === 20) msg = '🌙 Ficou de noite! Use a lanterna 🔦';
+  faixa(msg); atualizarHUD();
+  setTimeout(() => { if(J && !$('s-jogo').hidden) novaRodada(); }, 1300);
+}
+
+function acabouTempo(){
+  const R = J.rodada; R.acabou = true; clearInterval(timer);
+  somErro(); J.combo = 0;
+  const certo = $('campo').querySelector(`[data-i="${R.alvo}"]`); if(certo) certo.classList.add('achou', 'revela');
+  $('campo').classList.remove('noite');
+  if(!admLigado) J.vidas--;
+  atualizarHUD();
+  if(J.vidas <= 0) return setTimeout(() => perdeu('O tempo acabou!'), 1200);
+  faixa('⏰ Tempo! Olha ele ali');
+  setTimeout(() => { if(J && !$('s-jogo').hidden) novaRodada(); }, 1800);
+}
+
+function perdeu(porque){
+  clearInterval(timer);
+  const fase = J.fase - 1;
+  let novo = false;
+  if(fase > REC.fase){ REC.fase = fase; novo = true; }
+  if(J.pontos > REC.pontos){ REC.pontos = J.pontos; novo = true; }
+  gravar('recordes', REC);
+  $('f-titulo').textContent = novo ? '🏆 Novo recorde!' : porque;
+  $('f-pontos').textContent = '⭐ ' + J.pontos.toLocaleString('pt-BR');
+  const n = J.achados.length;
+  $('f-texto').textContent = n ? `Você achou ${n} shin${n > 1 ? 'ies' : 'y'} e chegou na fase ${J.fase}! Melhor fase: ${REC.fase}.` : 'Nenhum shiny dessa vez… tenta de novo!';
+  $('f-achados').innerHTML = J.achados.map(a => `<div><img src="${sprite(a.id, true)}" alt="" /><small>${a.nome}</small></div>`).join('');
+  tela('s-fim');
+}
+
+$('b-lupa').onclick = () => {
+  if(!J || !J.rodada || J.rodada.acabou) return;
+  if(!admLigado){ if(J.lupas < 1) return; J.lupas--; }
+  const errados = [...$('campo').children].filter(b => +b.dataset.i !== J.rodada.alvo && !b.classList.contains('sumiu'));
+  errados.sort(() => Math.random() - .5).slice(0, Math.ceil(errados.length / 2)).forEach(b => b.classList.add('sumiu'));
+  bip(660, .2, 'triangle'); atualizarHUD();
+};
+$('b-pausa').onclick = () => {
+  if(!J) return; J.pausado = !J.pausado;
+  $('b-pausa').textContent = J.pausado ? '▶️ Continuar' : '⏸️ Pausar';
+  $('campo').style.visibility = J.pausado ? 'hidden' : '';
+};
+$('b-sair').onclick = () => { if(J && J.fase > 1 && !confirm('Sair da caçada? Seus pontos contam como fim de jogo.')) return; if(J && J.fase > 1){ $('campo').style.visibility = ''; return perdeu('Você saiu'); } clearInterval(timer); J = null; mostrarCapa(); };
+$('b-jogar').onclick = novaPartida;
+$('b-denovo').onclick = novaPartida;
+$('b-inicio').onclick = () => { J = null; mostrarCapa(); };
+document.addEventListener('visibilitychange', () => { if(document.hidden && J && !J.pausado && !$('s-jogo').hidden) $('b-pausa').click(); });
+
+/* ═════════ coleção ═════════ */
+function mostrarColecao(){
+  const ids = Object.keys(COLECAO).map(Number).sort((a, b) => a - b);
+  $('c-texto').textContent = ids.length ? `${ids.length} de ${ULTIMO_ID} Pokémon shiny encontrados.` : 'Ainda vazia! Vá caçar e os shinies que você achar aparecem aqui.';
+  $('c-lista').innerHTML = ids.map(id => `<div><img src="${sprite(id, true)}" alt="" loading="lazy" /><small>#${id} ${COLECAO[id].nome}</small><b>x${COLECAO[id].vezes}</b></div>`).join('');
+  tela('s-colecao');
+}
+$('b-colecao').onclick = mostrarColecao;
+$('b-voltar').onclick = mostrarCapa;
+
+/* ═════════ 👑 Jojo adm ═════════
+   Mesma senha do ADM dos outros jogos. Só guardo a impressão digital (SHA-256), nunca a senha.
+   Entrada secreta: 5 toques rápidos no ícone do título. */
+const ADM_HASH = '94898e3200212db557166a21a82fd97bcbbd85f387e40cf731a53897bec90bb7';
+async function hash(t){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+let toquesLogo = [], errosSenha = 0;
+$('logo-img').addEventListener('click', () => {
+  const agora = Date.now(); toquesLogo = toquesLogo.filter(t => agora - t < 3000).concat(agora);
+  if(toquesLogo.length < 5) return; toquesLogo = [];
+  if(J && !J.pausado && !$('s-jogo').hidden) $('b-pausa').click();
+  if(admLigado) return abrirAdm();
+  if(errosSenha >= 5) return toast('🔒 Travado. Recarregue a página.');
+  $('senha').value = ''; $('senha').classList.remove('erro'); $('j-senha').hidden = false; setTimeout(() => $('senha').focus(), 50);
+});
+async function conferirSenha(){
+  let ok = false; try{ ok = (await hash('jojo-adm:' + $('senha').value)) === ADM_HASH; }catch(e){}
+  if(!ok){ errosSenha++; $('senha').classList.remove('erro'); void $('senha').offsetWidth; $('senha').classList.add('erro'); if(errosSenha >= 5){ $('j-senha').hidden = true; toast('🔒 Travado. Recarregue a página.'); } return; }
+  admLigado = true; try{ sessionStorage.setItem('shiny:adm', '1'); }catch(e){}
+  $('j-senha').hidden = true; abrirAdm(); if(J) atualizarHUD();
+}
+$('b-senha-ok').onclick = conferirSenha;
+$('senha').addEventListener('keydown', e => { if(e.key === 'Enter') conferirSenha(); });
+$('b-senha-x').onclick = () => $('j-senha').hidden = true;
+const PODERES = [
+  ['dourado', '✨ Mostrar o shiny', () => { if(J && J.rodada && !J.rodada.acabou){ const b = $('campo').querySelector(`[data-i="${J.rodada.alvo}"]`); b && b.classList.add('revela'); } else toast('Só dentro da caçada!'); }],
+  ['', '⏭️ Pular 5 fases', () => { if(!J) return toast('Comece uma caçada primeiro!'); J.fase += 5; atualizarHUD(); novaRodada(); }],
+  ['', '⏱️ Tempo cheio', () => { if(J && J.rodada) J.rodada.resta = J.rodada.tempoMax; }],
+  ['', '⭐ +10.000 pontos', () => { if(J){ J.pontos += 10000; atualizarHUD(); } }],
+  ['dourado', '📖 Ganhar 50 shinies', () => { for(let i = 0; i < 50; i++){ const id = 1 + sorteio(ULTIMO_ID); const c = COLECAO[id] || { nome:NOMES[id] || '#' + id, vezes:0 }; c.vezes++; COLECAO[id] = c; } gravar('colecao', COLECAO); }],
+  ['', '🚪 Sair do ADM', () => { admLigado = false; try{ sessionStorage.removeItem('shiny:adm'); }catch(e){} if(J) atualizarHUD(); $('j-adm').hidden = true; }],
+  ['perigo', '💥 Apagar tudo', () => { if(!confirm('⚠️ Apagar recordes e coleção? Não dá pra desfazer!')) return; COLECAO = {}; REC.fase = 0; REC.pontos = 0; gravar('colecao', COLECAO); gravar('recordes', REC); if(!J) mostrarCapa(); }]
+];
+function abrirAdm(){
+  $('adm-grade').innerHTML = PODERES.map((p, i) => `<button type="button" class="adm-btn ${p[0]}" data-poder="${i}">${p[1]}</button>`).join('');
+  $('j-adm').hidden = false;
+}
+$('adm-grade').onclick = ev => { const b = ev.target.closest('[data-poder]'); if(!b) return; const p = PODERES[+b.dataset.poder]; p[2](); if(admLigado && !p[1].startsWith('🚪')) toast('✅ ' + p[1]); };
+$('b-adm-x').onclick = () => $('j-adm').hidden = true;
+
+mostrarCapa();
+if('serviceWorker' in navigator) addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => setTimeout(() => r.update().catch(() => {}), 3000)).catch(() => {}); });
+</script>
+</body>
+</html>
