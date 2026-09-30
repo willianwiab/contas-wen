@@ -1,0 +1,14 @@
+{
+  "name": "Onde está o Pikachu?",
+  "short_name": "Cadê o Pika",
+  "description": "Uma multidão de Pokémon e só um Pikachu escondido! Ache rapidinho.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff8e1",
+  "theme_color": "#f5b700",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
