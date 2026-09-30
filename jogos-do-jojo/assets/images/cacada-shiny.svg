@@ -12,7 +12,7 @@
     <circle cx="40" cy="330" r="70"/><path d="M-30 330 H110"/><circle cx="40" cy="330" r="17"/>
   </g>
   <circle cx="130" cy="190" r="120" fill="url(#b)"/>
-  <text x="25" y="205" font-size="52" text-anchor="middle">⚪</text><text x="95" y="223" font-size="52" text-anchor="middle">⚪</text><text x="165" y="205" font-size="52" text-anchor="middle">⚪</text><text x="235" y="223" font-size="52" text-anchor="middle">✨</text>
+  <text x="25" y="205" font-size="52" text-anchor="middle">🔍</text><text x="95" y="223" font-size="52" text-anchor="middle">⭐</text><text x="165" y="205" font-size="52" text-anchor="middle">🌟</text><text x="235" y="223" font-size="52" text-anchor="middle">✨</text>
   <text x="430" y="176" text-anchor="middle" font-family="'Trebuchet MS',Verdana,sans-serif"
         font-size="38" font-weight="bold" fill="#ffd54d">Caçada Shiny</text>
   <text x="430" y="204" text-anchor="middle" font-family="'Trebuchet MS',Verdana,sans-serif"
