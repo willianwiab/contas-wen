@@ -4,194 +4,213 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Onde está o Pikachu?</title>
-<meta name="description" content="Uma multidão de Pokémon e só um Pikachu escondido! Ache rapidinho antes do tempo acabar." />
+<meta name="description" content="Gibi de detetive: ache o Pokémon escondido na multidão! Todos os 1025 Pokémon, cada um no seu lugar do mapa." />
 <link rel="icon" type="image/svg+xml" href="icone.svg" />
 <link rel="manifest" href="manifest.webmanifest" />
-<meta name="theme-color" content="#f5b700" />
+<meta name="theme-color" content="#fdf3d8" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-title" content="Cadê o Pika" />
 <link rel="apple-touch-icon" href="icone.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Patrick+Hand&display=swap" rel="stylesheet" />
 <style>
+/* Visual de GIBI DE DETETIVE: papel, tinta preta, contorno grosso, sombra dura e listras vermelhas. */
 :root{
-  --marca:#e0a000; --amarelo:#ffd43b; --vermelho:#e5484d; --verde:#2e9e5b; --azul:#3b8cff;
-  --fundo:#fff8e1; --tinta:#2a2100; --tinta-fraca:#7a6a3a; --cartao:#ffffff; --cartao2:#fffbef; --borda:#f3dfa0; --sombra:rgba(150,110,0,.18);
+  --papel:#fdf3d8; --papel2:#fff9ea; --tinta:#1b1b1b; --tinta2:#5b5140; --vermelho:#e03131; --azul:#1c7ed6; --amarelo:#ffd43b; --verde:#2f9e44;
+  --ponto:rgba(27,27,27,.07); --caixa:#ffffff;
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-tema="claro"]){ --marca:#ffd43b; --fundo:#1a1608; --tinta:#fff6d6; --tinta-fraca:#c9b77a; --cartao:#26200c; --cartao2:#2f2810; --borda:#4a3f18; --sombra:rgba(0,0,0,.45); }
+  :root:not([data-tema="claro"]){ --papel:#1b1d2a; --papel2:#242737; --tinta:#f3ecd8; --tinta2:#b9b09a; --ponto:rgba(255,255,255,.05); --caixa:#2a2d3f; }
 }
-:root[data-tema="escuro"]{ --marca:#ffd43b; --fundo:#1a1608; --tinta:#fff6d6; --tinta-fraca:#c9b77a; --cartao:#26200c; --cartao2:#2f2810; --borda:#4a3f18; --sombra:rgba(0,0,0,.45); }
+:root[data-tema="escuro"]{ --papel:#1b1d2a; --papel2:#242737; --tinta:#f3ecd8; --tinta2:#b9b09a; --ponto:rgba(255,255,255,.05); --caixa:#2a2d3f; }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none !important}
 html,body{overflow-x:clip}
-body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background:var(--fundo);min-height:100vh;-webkit-tap-highlight-color:transparent}
+body{font-family:'Patrick Hand','Comic Sans MS',system-ui,sans-serif;font-size:1.08rem;color:var(--tinta);min-height:100vh;-webkit-tap-highlight-color:transparent;
+  background:radial-gradient(var(--ponto) 1.3px,transparent 1.6px) 0 0/9px 9px,var(--papel)}
 button{font:inherit;color:inherit}
-h1,h2,h3{font-family:'Baloo 2','Rubik',sans-serif}
-main{max-width:720px;margin:0 auto;padding:10px 16px 40px}
-header.topo{display:flex;align-items:center;gap:8px;max-width:720px;margin:0 auto;padding:12px 16px 0}
-.logo{flex:1;display:flex;align-items:center;gap:8px;min-width:0;cursor:pointer}
-.logo img{width:40px;height:40px;flex:none}
-.logo>div{min-width:0}
-.logo h1{font-size:1.3rem;color:var(--marca);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.logo small{display:block;font-size:.72rem;color:var(--tinta-fraca)}
-.redondo{width:40px;height:40px;border-radius:50%;border:2px solid var(--borda);background:var(--cartao);font-size:1.1rem;cursor:pointer;display:grid;place-items:center;flex:none;box-shadow:0 3px 0 var(--borda)}
-.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:24px;padding:16px;margin-top:14px;box-shadow:0 6px 16px var(--sombra)}
-.grande{width:100%;border:none;border-radius:18px;padding:14px;font-size:1.1rem;font-weight:800;cursor:pointer;color:#3a2a00;font-family:'Baloo 2','Rubik',sans-serif;
-  background:linear-gradient(180deg,#ffe066,#f5b700);box-shadow:0 5px 0 #b38600;text-align:left;display:flex;gap:12px;align-items:center}
-.grande:active{transform:translateY(3px);box-shadow:0 2px 0 #b38600}
-.grande .ic{font-size:2rem}
-.grande small{display:block;font-family:'Rubik',sans-serif;font-weight:500;font-size:.8rem;opacity:.85}
-.grande.azul{background:linear-gradient(180deg,#6fb0ff,#2f7de0);box-shadow:0 5px 0 #1d56a3;color:#fff}
-.grande.rosa{background:linear-gradient(180deg,#ff8cc0,#e8458e);box-shadow:0 5px 0 #a82a63;color:#fff}
-.grande.centro{justify-content:center;text-align:center}
-.menu{display:grid;gap:12px;margin-top:14px}
-.mini{border:2px solid var(--borda);background:var(--cartao2);border-radius:12px;padding:7px 11px;font-weight:700;cursor:pointer;font-size:.86rem;box-shadow:0 3px 0 var(--borda)}
-.mini:disabled{opacity:.45;cursor:default}
-.aviso{font-size:.86rem;color:var(--tinta-fraca);line-height:1.45;margin-top:6px}
-main>section{animation:aparece .3s ease-out}
-@keyframes aparece{from{opacity:0;transform:translateY(8px)}}
+.titulo,h1,h2,h3{font-family:'Bangers','Impact',sans-serif;letter-spacing:1.2px;font-weight:400}
+main{max-width:600px;margin:0 auto;padding:6px 16px 40px}
 
-.capa{text-align:center;padding:18px 12px 12px;border-radius:24px;margin-top:12px;position:relative;overflow:hidden;
-  background:radial-gradient(circle at 50% 30%,#fff3b0,#ffd43b 55%,#f5b700)}
-.capa h2{font-size:2rem;line-height:1.05;color:#3a2a00;text-shadow:0 2px 0 #fff8}
-.capa p{margin-top:4px;font-weight:600;color:#5a4500}
-.capa .lupa{display:inline-block;font-size:3rem;animation:procura 2.4s ease-in-out infinite}
-@keyframes procura{25%{transform:translate(-18px,-4px) rotate(-10deg)}75%{transform:translate(18px,4px) rotate(10deg)}}
-.capa img{width:72px;height:72px;image-rendering:pixelated;position:absolute;right:10px;bottom:6px;opacity:.9;animation:espia 3s ease-in-out infinite}
-@keyframes espia{0%,60%,100%{transform:translateY(60%)}70%,90%{transform:translateY(0)}}
-.recs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;text-align:center}
-.recs div{background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:8px 4px}
-.recs b{display:block;font-family:'Baloo 2',sans-serif;font-size:1.25rem}
-.recs small{font-size:.72rem;color:var(--tinta-fraca)}
+/* quadrinho: contorno + sombra dura */
+.quadro{background:var(--caixa);border:3px solid var(--tinta);border-radius:6px;box-shadow:5px 5px 0 var(--tinta)}
+.torto{transform:rotate(-1deg)} .torto2{transform:rotate(.8deg)}
+
+/* cabeçalho de jornal */
+.jornal{max-width:600px;margin:0 auto;padding:12px 16px 0;display:flex;align-items:center;gap:8px}
+.jornal .nome{flex:1;min-width:0;cursor:pointer}
+.jornal .nome b{display:block;font-family:'Bangers',sans-serif;font-size:1.45rem;line-height:.95;letter-spacing:1.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jornal .nome b span{color:var(--vermelho)}
+.jornal .nome small{display:block;font-size:.85rem;color:var(--tinta2);border-top:2px solid var(--tinta);margin-top:3px;padding-top:1px}
+.redondo{width:42px;height:42px;border-radius:50%;border:3px solid var(--tinta);background:var(--caixa);font-size:1.1rem;cursor:pointer;display:grid;place-items:center;flex:none;box-shadow:3px 3px 0 var(--tinta)}
+.redondo:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--tinta)}
+.listras{height:10px;margin:10px 0 0;background:repeating-linear-gradient(90deg,var(--vermelho) 0 14px,#fff 14px 28px);border:3px solid var(--tinta);border-left:none;border-right:none}
+
+/* capa */
+.capa{position:relative;margin-top:14px;padding:18px 14px 14px;overflow:hidden;text-align:center;
+  background:radial-gradient(circle,rgba(0,0,0,.08) 1.4px,transparent 1.7px) 0 0/8px 8px,var(--amarelo);color:#1b1b1b}
+.capa h1{font-size:2.9rem;line-height:.9;color:#fff;-webkit-text-stroke:2px #1b1b1b;text-shadow:4px 4px 0 #1b1b1b}
+.capa .balao{display:inline-block;background:#fff;border:3px solid #1b1b1b;border-radius:20px;padding:4px 14px;margin-top:10px;position:relative;font-size:1.1rem}
+.capa .balao:after{content:'';position:absolute;left:30px;bottom:-14px;border:10px solid transparent;border-top-color:#1b1b1b}
+.capa .lupa{position:absolute;right:8px;top:4px;font-size:3.2rem;animation:procura 2.6s ease-in-out infinite}
+.capa .espiao{position:absolute;left:8px;bottom:-4px;width:70px;height:70px;image-rendering:pixelated;animation:espia 3.4s ease-in-out infinite}
+@keyframes procura{25%{transform:translate(-12px,-6px) rotate(-12deg)}75%{transform:translate(6px,4px) rotate(8deg)}}
+@keyframes espia{0%,55%,100%{transform:translateY(70%)}65%,90%{transform:translateY(0)}}
+.menu{display:grid;gap:14px;margin-top:18px}
+.botao{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:12px 14px;cursor:pointer;font-size:1.05rem;line-height:1.15}
+.botao:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--tinta)}
+.botao .ic{font-size:2rem;flex:none;width:52px;height:52px;display:grid;place-items:center;border:3px solid var(--tinta);border-radius:50%;background:var(--papel)}
+.botao b{display:block;font-family:'Bangers',sans-serif;font-size:1.45rem;letter-spacing:1px;font-weight:400}
+.botao.vermelho{background:var(--vermelho);color:#fff}.botao.vermelho .ic{background:#fff}
+.botao.azul{background:var(--azul);color:#fff}.botao.azul .ic{background:#fff}
+.botao.amarelo{background:var(--amarelo);color:#1b1b1b}
+.nota{margin-top:18px;padding:14px;background:var(--papel2)}
+.nota h3{font-size:1.4rem}
+.nota p{margin-top:6px;line-height:1.3;color:var(--tinta2)}
+.nota p b{color:var(--tinta)}
+.carimbos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px;text-align:center}
+.carimbo{border:3px dashed var(--vermelho);border-radius:10px;padding:6px 2px;color:var(--vermelho);transform:rotate(-3deg)}
+.carimbo:nth-child(2){transform:rotate(2deg);border-color:var(--azul);color:var(--azul)}
+.carimbo:nth-child(3){transform:rotate(-1deg);border-color:var(--verde);color:var(--verde)}
+.carimbo b{display:block;font-family:'Bangers',sans-serif;font-size:1.6rem;font-weight:400}
+.carimbo small{font-size:.85rem}
+.rodape{text-align:center;margin-top:22px;color:var(--tinta2);font-size:.95rem}
+.pilha{border:2px solid var(--tinta);background:var(--caixa);border-radius:99px;padding:4px 12px;cursor:pointer;margin-top:8px;box-shadow:2px 2px 0 var(--tinta)}
 
 /* jogo */
-.barra{display:flex;gap:8px;align-items:center;margin-top:8px}
-.alvo{flex:1;display:flex;align-items:center;gap:8px;background:var(--cartao);border:3px solid var(--marca);border-radius:16px;padding:4px 10px 4px 4px;min-width:0}
-.alvo img{width:54px;height:54px;image-rendering:pixelated;flex:none;background:#fff3c4;border-radius:12px}
-.alvo b{font-family:'Baloo 2',sans-serif;font-size:1.05rem;line-height:1.05;display:block}
-.alvo small{font-size:.74rem;color:var(--tinta-fraca);display:block}
-.info{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex:none}
-.pilula{background:var(--cartao);border:2px solid var(--borda);border-radius:99px;padding:3px 10px;font-weight:800;font-size:.9rem;white-space:nowrap}
-.pilula.tempo{background:var(--amarelo);border-color:#e0a000;color:#3a2a00}
-.pilula.tempo.acabando{background:var(--vermelho);border-color:#9c2a2e;color:#fff;animation:pulo .5s infinite}
-@keyframes pulo{50%{transform:scale(1.12)}}
-.tempo-barra{height:8px;border-radius:99px;background:var(--cartao2);border:2px solid var(--borda);overflow:hidden;margin-top:8px}
-.tempo-barra i{display:block;height:100%;background:linear-gradient(90deg,#e5484d,#ffd43b 40%,#2e9e5b);transition:width .2s linear}
-.janela{position:relative;margin-top:8px;border-radius:20px;overflow:auto;border:4px solid var(--borda);box-shadow:0 6px 16px var(--sombra);max-height:72vh;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
-.cena{position:relative;width:100%;aspect-ratio:5/6;overflow:hidden;cursor:crosshair;user-select:none;-webkit-user-select:none}
-.janela.zoom .cena{width:190%}
-@media (min-width:600px){ .cena{aspect-ratio:4/3} }
-.cena img.p{position:absolute;image-rendering:pixelated;pointer-events:none;transform-origin:50% 50%}
-.cena img.p.mexe{animation:mexe 1.8s ease-in-out infinite}
-@keyframes mexe{50%{translate:0 -4%}}
-.cena .deco{position:absolute;pointer-events:none;opacity:.85}
-.cena .circ{position:absolute;border-radius:50%;border:5px dashed #fff;box-shadow:0 0 0 4px rgba(224,160,0,.9),0 0 30px #fff;pointer-events:none;animation:circ 1s ease-in-out infinite;z-index:999}
+.topo-jogo{display:flex;gap:10px;align-items:stretch;margin-top:8px}
+.procura{flex:1;min-width:0;display:flex;gap:10px;align-items:center;padding:6px 10px 6px 6px;background:#f7e7c1;color:#1b1b1b;transform:rotate(-1.2deg)}
+.procura .foto{width:62px;height:62px;flex:none;border:3px solid #1b1b1b;background:#fff;display:grid;place-items:center}
+.procura .foto img{width:58px;height:58px;image-rendering:pixelated}
+.procura .txt{min-width:0}
+.procura .txt i{display:block;white-space:nowrap;font-style:normal;font-family:'Bangers',sans-serif;font-size:1.05rem;color:var(--vermelho);letter-spacing:2px;line-height:1}
+.procura .txt b{display:block;font-family:'Bangers',sans-serif;font-size:1.5rem;font-weight:400;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.procura .txt small{display:block;font-size:.85rem;line-height:1.1}
+.relogio{flex:none;width:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--amarelo);color:#1b1b1b;transform:rotate(1.5deg)}
+.relogio b{font-family:'Bangers',sans-serif;font-size:2rem;line-height:1;font-weight:400}
+.relogio small{font-size:.8rem}
+.relogio.acabando{background:var(--vermelho);color:#fff;animation:treme .4s infinite}
+@keyframes treme{25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+.placar{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:1.05rem}
+.placar b{font-family:'Bangers',sans-serif;font-weight:400;font-size:1.3rem;letter-spacing:1px}
+.pavio{height:10px;border:3px solid var(--tinta);border-radius:99px;background:var(--caixa);overflow:hidden;margin-top:4px}
+.pavio i{display:block;height:100%;background:repeating-linear-gradient(45deg,var(--vermelho) 0 8px,#ff8787 8px 16px);transition:width .2s linear}
+.moldura{position:relative;margin-top:10px;padding:8px;background:#fff;border:3px solid #1b1b1b;box-shadow:6px 6px 0 var(--tinta)}
+.janela{position:relative;overflow:auto;max-height:70vh;border:2px solid #1b1b1b;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
+.cena{position:relative;width:100%;aspect-ratio:5/6;overflow:hidden;cursor:crosshair;user-select:none;-webkit-user-select:none;background:#cfe8ff}
+.janela.zoom .cena{width:200%}
+.cena svg.fundo{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cena img.p{position:absolute;image-rendering:pixelated;pointer-events:none;transform-origin:50% 60%}
+.cena img.p.mexe{animation:mexe 1.6s ease-in-out infinite}
+.cena img.p.nada{animation:nada 2.4s ease-in-out infinite}
+.cena img.p.voa{animation:voa 2s ease-in-out infinite}
+@keyframes mexe{50%{translate:0 -3%}}
+@keyframes nada{50%{translate:4% 0}}
+@keyframes voa{50%{translate:0 -8%}}
+.cena .rotulo{position:absolute;font-family:'Bangers',sans-serif;font-size:.85rem;letter-spacing:1px;color:#1b1b1b;background:#fff;border:2px solid #1b1b1b;padding:0 5px;pointer-events:none;z-index:2000;opacity:.85}
+.cena .circ{position:absolute;border-radius:50%;border:5px dashed var(--vermelho);box-shadow:0 0 0 3px #fff;pointer-events:none;animation:circ .9s ease-in-out infinite;z-index:3000}
 @keyframes circ{50%{transform:scale(1.08)}}
-.cena .achou{position:absolute;border-radius:50%;border:6px solid #2e9e5b;box-shadow:0 0 0 5px #fff,0 0 40px #fff;pointer-events:none;z-index:1000;animation:achou .5s ease-out}
+.cena .achou{position:absolute;border-radius:50%;border:6px solid var(--verde);box-shadow:0 0 0 4px #fff,0 0 0 8px #1b1b1b;pointer-events:none;z-index:3001;animation:achou .45s ease-out}
 @keyframes achou{from{transform:scale(3);opacity:0}}
-.cena.fim img.p:not(.o-alvo){opacity:.25;filter:grayscale(1);transition:opacity .4s}
-.cena img.o-alvo.grande-alvo{z-index:1001 !important;scale:1.5;transition:scale .4s;filter:drop-shadow(0 0 10px #fff)}
-.cena .x{position:absolute;font-size:2rem;pointer-events:none;z-index:1002;animation:some .7s ease-out forwards;translate:-50% -50%}
-@keyframes some{to{opacity:0;transform:scale(1.6)}}
-.cena .carregando{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-size:1.2rem;background:rgba(255,255,255,.7);color:#3a2a00;z-index:2000}
-.acoes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.cena .pow{position:absolute;z-index:3002;pointer-events:none;font-family:'Bangers',sans-serif;font-size:2rem;color:#fff;-webkit-text-stroke:1.5px #1b1b1b;text-shadow:3px 3px 0 #1b1b1b;translate:-50% -120%;animation:pow .9s ease-out forwards}
+@keyframes pow{0%{transform:scale(.3)}30%{transform:scale(1.2)}100%{transform:scale(1);opacity:0}}
+.cena.fim img.p:not(.o-alvo){filter:grayscale(1) brightness(.7);opacity:.45;transition:opacity .4s}
+.cena img.o-alvo.destaque{z-index:3000 !important;scale:1.6;transition:scale .4s;filter:drop-shadow(0 0 0 #fff) drop-shadow(3px 3px 0 #1b1b1b)}
+.cena .x{position:absolute;pointer-events:none;z-index:3003;font-family:'Bangers',sans-serif;font-size:1.8rem;color:var(--vermelho);-webkit-text-stroke:1px #1b1b1b;translate:-50% -50%;animation:pow .7s ease-out forwards}
+.cena .carregando{position:absolute;inset:0;display:grid;place-items:center;z-index:4000;background:rgba(253,243,216,.85);font-family:'Bangers',sans-serif;font-size:1.6rem;color:#1b1b1b;letter-spacing:1px}
+.ferramentas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.ferramentas button{padding:8px 14px;cursor:pointer;font-size:1.05rem}
+.ferramentas button:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--tinta)}
+.ferramentas button:disabled{opacity:.45;cursor:default}
 .chacoalha{animation:chacoalha .35s}
-@keyframes chacoalha{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:400;background:#2a2100;color:#fff;font-weight:800;border-radius:16px;padding:8px 16px;box-shadow:0 6px 20px rgba(0,0,0,.3);animation:toast 1.8s ease-out forwards;pointer-events:none;white-space:nowrap}
-@keyframes toast{0%{transform:translate(-50%,-60px)}15%{transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
+@keyframes chacoalha{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.aviso-rapido{position:fixed;top:14px;left:50%;z-index:500;translate:-50% 0;background:#fff;color:#1b1b1b;border:3px solid #1b1b1b;box-shadow:4px 4px 0 #1b1b1b;border-radius:18px;padding:6px 14px;font-size:1.1rem;white-space:nowrap;animation:avis 1.8s ease-out forwards;pointer-events:none}
+@keyframes avis{0%{transform:translateY(-70px)}15%{transform:translateY(0)}80%{opacity:1}100%{opacity:0}}
 
-/* temas da cena */
-.t-praia{background:linear-gradient(180deg,#8fd3ff 0 22%,#4da3ff 22% 38%,#f5dfa3 38%)}
-.t-floresta{background:radial-gradient(circle at 20% 30%,#b9f0a8,transparent 40%),linear-gradient(180deg,#9be38f,#4c9a4f)}
-.t-cidade{background:linear-gradient(180deg,#cfe8ff 0 25%,#b8c2cc 25% 30%,#dde3e8 30%)}
-.t-neve{background:linear-gradient(180deg,#e3f2fd,#ffffff 40%,#dbeafe)}
-.t-espaco{background:radial-gradient(circle at 70% 20%,#3a2a80,transparent 40%),radial-gradient(circle at 20% 80%,#6b2a80,transparent 40%),#0b0b26}
-.t-vulcao{background:linear-gradient(180deg,#ffb38a 0 20%,#8a3a1a 20% 26%,#5a2a1a 26%)}
-.t-doces{background:repeating-linear-gradient(45deg,#ffe0f0 0 30px,#fff3f9 30px 60px)}
+/* álbum */
+.abas{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.abas button{border:2px solid var(--tinta);background:var(--caixa);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:.95rem;box-shadow:2px 2px 0 var(--tinta)}
+.abas button[aria-pressed="true"]{background:var(--vermelho);color:#fff}
+.album{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px;margin-top:12px}
+.figura{background:var(--caixa);border:2px solid var(--tinta);padding:4px;text-align:center;box-shadow:3px 3px 0 var(--tinta)}
+.figura:nth-child(3n){transform:rotate(1.5deg)} .figura:nth-child(3n+1){transform:rotate(-1deg)}
+.figura img{width:60px;height:60px;image-rendering:pixelated}
+.figura.nao img{filter:brightness(0);opacity:.25}
+.figura b{display:block;font-size:.8rem;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.figura small{font-size:.75rem;color:var(--tinta2)}
 
-.album{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;margin-top:10px}
-.album div{background:var(--cartao2);border:2px solid var(--borda);border-radius:12px;padding:5px;text-align:center}
-.album img{width:56px;height:56px;image-rendering:pixelated}
-.album .nao img{filter:brightness(0) opacity(.3)}
-.album b{display:block;font-size:.7rem}
-.album small{font-size:.68rem;color:var(--tinta-fraca)}
-
-dialog{border:none;border-radius:22px;padding:0;max-width:min(420px,calc(100vw - 32px));width:100%;background:var(--cartao);color:var(--tinta);box-shadow:0 20px 50px rgba(0,0,0,.35)}
-dialog::backdrop{background:rgba(40,30,0,.55)}
+dialog{border:3px solid #1b1b1b;border-radius:6px;padding:0;max-width:min(420px,calc(100vw - 32px));width:100%;background:var(--papel2);color:var(--tinta);box-shadow:8px 8px 0 #1b1b1b}
+dialog::backdrop{background:rgba(20,15,5,.6)}
 .dlg{padding:20px;text-align:center}
-.dlg h2{font-size:1.6rem}
-.dlg .grandao{font-size:3rem;animation:pulo .6s}
-.dlg .grandao img{width:110px;height:110px;image-rendering:pixelated}
-.dlg p{margin-top:6px;line-height:1.45}
-.dlg .grande{margin-top:14px}
-.rodape{text-align:center;margin-top:22px;color:var(--tinta-fraca);font-size:.8rem}
-.versao{border:2px solid var(--borda);background:var(--cartao);border-radius:99px;padding:5px 12px;font-weight:700;cursor:pointer;margin-top:8px}
-.faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--marca);color:#3a2a00;border-radius:99px;padding:8px 8px 8px 16px;display:flex;gap:10px;align-items:center;z-index:60;box-shadow:0 8px 20px rgba(0,0,0,.3)}
-.faixa-nova button{border:none;border-radius:99px;background:#fff;color:#3a2a00;font-weight:800;padding:6px 12px;cursor:pointer}
-.confete{position:fixed;top:-12px;width:10px;height:14px;z-index:70;pointer-events:none;animation:cai 3s linear forwards}
+.dlg h2{font-size:2.2rem;color:var(--vermelho);-webkit-text-stroke:1px #1b1b1b}
+.dlg .grandao{font-size:3.2rem}
+.dlg .grandao img{width:120px;height:120px;image-rendering:pixelated}
+.dlg p{margin-top:6px;line-height:1.3}
+.dlg .botao{margin-top:14px;justify-content:center;text-align:center}
+.confete{position:fixed;top:-12px;width:10px;height:14px;z-index:70;pointer-events:none;animation:cai 3s linear forwards;border:1px solid #1b1b1b}
 @keyframes cai{to{transform:translateY(105vh) rotate(720deg)}}
-button:focus-visible{outline:3px solid #2f7de0;outline-offset:2px}
-@media (max-width:420px){ .logo small{display:none} .logo h1{font-size:1.1rem} }
-@media (prefers-reduced-motion: reduce){ .cena img.p.mexe,.capa .lupa,.capa img{animation:none} }
+.faixa-nova{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#fff;color:#1b1b1b;border:3px solid #1b1b1b;box-shadow:4px 4px 0 #1b1b1b;padding:8px 8px 8px 14px;display:flex;gap:10px;align-items:center;z-index:60}
+.faixa-nova button{border:2px solid #1b1b1b;background:var(--amarelo);font-weight:700;padding:4px 10px;cursor:pointer}
+button:focus-visible{outline:3px solid var(--azul);outline-offset:3px}
+@media (max-width:400px){ .jornal .nome b{font-size:1.2rem} .capa h1{font-size:2.3rem} .relogio{width:64px} .procura .foto{width:52px;height:52px} .procura .foto img{width:48px;height:48px} }
+@media (prefers-reduced-motion: reduce){ .cena img.p{animation:none !important} .capa .lupa,.capa .espiao{animation:none} }
 </style>
 </head>
 <body>
-<header class="topo">
-  <div class="logo" id="logo" title="Início"><img src="icone.svg" alt="" /><div><h1>Onde está o Pikachu?</h1><small>ache o Pokémon escondido 🔍</small></div></div>
+<header class="jornal">
+  <div class="nome" id="logo" title="Capa"><b>ONDE ESTÁ O <span>PIKACHU?</span></b><small>🕵️ Jornal do Detetive Pokémon · edição 1025</small></div>
   <button class="redondo" id="som" type="button" title="Som">🔊</button>
-  <button class="redondo" id="tema" type="button" title="Claro ou escuro">🌙</button>
+  <button class="redondo" id="tema" type="button" title="Dia ou noite">🌙</button>
 </header>
+<div class="listras" aria-hidden="true"></div>
 
 <main>
-  <!-- ========== INÍCIO ========== -->
+  <!-- ========== CAPA ========== -->
   <section id="tela-inicio">
-    <div class="capa">
-      <h2>Onde está<br>o Pikachu?</h2>
-      <p>No meio da multidão de Pokémon…</p>
-      <span class="lupa">🔍</span>
-      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" alt="" onerror="this.remove()" />
+    <div class="capa quadro torto">
+      <h1>ONDE ESTÁ<br>O PIKACHU?</h1>
+      <div class="balao">Todos os 1025 Pokémon, cada um no seu lugar!</div>
+      <img class="espiao" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" alt="" onerror="this.remove()" />
+      <span class="lupa" aria-hidden="true">🔍</span>
     </div>
     <div class="menu">
-      <button class="grande" type="button" data-modo="pika"><span class="ic">⚡</span><span>Onde está o Pikachu?<small>10 fases, cada vez mais Pokémon e mais parecidos com ele!</small></span></button>
-      <button class="grande azul" type="button" data-modo="achados"><span class="ic">🔍</span><span>Achados e Perdidos<small>cada fase é um Pokémon diferente. Quantos você acha em 1 minuto?</small></span></button>
-      <button class="grande rosa" type="button" id="ir-album"><span class="ic">📖</span><span>Álbum de detetive<small>os Pokémon que você já achou</small></span></button>
+      <button class="botao quadro amarelo torto2" type="button" data-modo="pika"><span class="ic">⚡</span><span><b>Onde está o Pikachu?</b>10 casos, cada vez mais Pokémon e mais parecidos com ele!</span></button>
+      <button class="botao quadro azul torto" type="button" data-modo="achados"><span class="ic">🔍</span><span><b>Achados e Perdidos</b>Qualquer um dos 1025 pode ser o procurado. Quantos você acha em 1 minuto?</span></button>
+      <button class="botao quadro vermelho torto2" type="button" id="ir-album"><span class="ic">📒</span><span><b>Álbum de fichas</b>Os 1025 Pokémon. Complete as fichas achando eles!</span></button>
     </div>
-    <div class="cartao">
-      <h3>🕵️ Como joga</h3>
-      <p class="aviso">Olhe a figura em cima: é o Pokémon que você tem que achar. Ele está escondido na multidão, às vezes atrás dos outros, virado ou pequenininho! <b>Toque nele</b> pra achar.</p>
-      <p class="aviso">Tocou no Pokémon errado? Perde 3 segundos ⏰. Tem <b>3 dicas 💡</b> por jogo e a <b>lupa 🔍</b> pra dar zoom. E às vezes tem um <b>Pokémon shiny ✨</b> escondido que vale pontos extras!</p>
-      <div class="recs" id="recs"></div>
+    <div class="nota quadro">
+      <h3>🕵️ Manual do detetive</h3>
+      <p>Cada mapa tem seus lugares: <b>voadores no céu</b>, <b>Pokémon de água no mar e nos lagos</b>, <b>de fogo na lava</b>, <b>fantasmas no cemitério</b>, <b>insetos nas árvores</b>… Pense onde ele moraria e procure lá!</p>
+      <p>Toque no Pokémon do cartaz <b>PROCURA-SE</b>. Errou? Perde 3 segundos. Tem <b>3 dicas 💡</b> e a <b>lupa 🔍</b>. E às vezes tem um <b>shiny ✨</b> escondido que vale pontos extras!</p>
+      <div class="carimbos" id="recs"></div>
     </div>
-    <div class="rodape">
-      Tudo fica guardado só neste aparelho.
-      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 30/09 · 🔄</button>
-    </div>
+    <div class="rodape">Tudo fica guardado só neste aparelho.<br><button class="pilha" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 30/09 · 🔄</button></div>
   </section>
 
-  <!-- ========== JOGO ========== -->
+  <!-- ========== CASO ========== -->
   <section id="tela-jogo" hidden>
-    <div class="barra">
-      <div class="alvo" id="alvo"></div>
-      <div class="info"><span class="pilula tempo" id="tempo">⏰ 0</span><span class="pilula" id="pontos">⭐ 0</span></div>
+    <div class="topo-jogo">
+      <div class="procura quadro" id="procura"></div>
+      <div class="relogio quadro" id="relogio"><b id="tempo">0</b><small>segundos</small></div>
     </div>
-    <div class="tempo-barra"><i id="tempo-barra"></i></div>
-    <div class="janela" id="janela"><div class="cena" id="cena"></div></div>
-    <div class="acoes">
-      <button class="mini" type="button" id="dica">💡 Dica (3)</button>
-      <button class="mini" type="button" id="zoom">🔍 Lupa</button>
-      <button class="mini" type="button" id="parar">🏳️ Parar</button>
+    <div class="placar"><span id="caso">Caso 1</span><span>⭐ <b id="pontos">0</b></span></div>
+    <div class="pavio"><i id="pavio"></i></div>
+    <div class="moldura"><div class="janela" id="janela"><div class="cena" id="cena"></div></div></div>
+    <div class="ferramentas">
+      <button class="quadro" type="button" id="dica">💡 Dica (3)</button>
+      <button class="quadro" type="button" id="zoom">🔍 Lupa</button>
+      <button class="quadro" type="button" id="parar">🏳️ Desistir</button>
     </div>
   </section>
 
   <!-- ========== ÁLBUM ========== -->
   <section id="tela-album" hidden>
-    <button class="mini" type="button" id="album-voltar">⬅️ Voltar</button>
-    <div class="cartao">
-      <h2>📖 Álbum de detetive</h2>
-      <p class="aviso" id="album-resumo"></p>
+    <div class="nota quadro" style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3>📒 Álbum de fichas</h3><button class="pilha" type="button" id="album-voltar" style="margin:0">⬅️ Capa</button></div>
+      <p id="album-resumo"></p>
+      <div class="abas" id="album-abas"></div>
       <div class="album" id="album"></div>
     </div>
   </section>
@@ -208,37 +227,94 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', 
 const sorteia = a => a[Math.floor(Math.random() * a.length)];
 const url = (id, shiny) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shiny ? 'shiny/' : ''}${id}.png`;
 
-/* ---------- Pokémon ---------- */
-/* Amarelinhos e parecidos com o Pikachu: aparecem mais nas fases difíceis. */
-const PARECIDOS = [26, 172, 417, 587, 702, 777, 877, 921, 922, 311, 312, 135, 778, 694, 239, 179, 309, 54, 27, 63, 404, 403, 125, 81, 100, 101, 823, 938];
-const MULTIDAO = [1, 4, 7, 10, 16, 19, 21, 23, 29, 32, 35, 37, 39, 41, 43, 46, 48, 50, 52, 56, 58, 60, 66, 69, 72, 74, 77, 79, 84, 86, 88, 90, 92, 95, 96, 98, 102,
-  104, 106, 107, 108, 109, 111, 113, 114, 116, 118, 120, 122, 123, 124, 126, 127, 128, 129, 131, 132, 133, 137, 138, 140, 143, 147, 152, 155, 158, 161, 163, 165, 167,
-  170, 173, 174, 175, 177, 183, 187, 190, 191, 193, 194, 196, 197, 198, 200, 201, 203, 204, 206, 209, 211, 213, 214, 215, 216, 218, 220, 222, 223, 225, 226, 228, 231,
-  234, 235, 236, 238, 240, 241, 246, 252, 255, 258, 261, 263, 265, 270, 273, 276, 278, 280, 283, 285, 287, 290, 293, 296, 298, 300, 302, 303, 304, 307, 315, 316, 318,
-  320, 322, 325, 327, 328, 333, 335, 336, 339, 341, 343, 345, 347, 349, 351, 353, 355, 357, 359, 360, 361, 363, 366, 370, 371, 374, 387, 390, 393, 396, 399, 401, 406,
-  408, 410, 412, 415, 418, 420, 422, 425, 427, 431, 433, 434, 436, 438, 439, 440, 441, 442, 443, 446, 447, 449, 451, 453, 455, 456, 459, 479, 495, 498, 501, 504,
-  506, 509, 511, 513, 515, 517, 519, 522, 524, 527, 529, 531, 532, 535, 538, 539, 540, 543, 546, 548, 550, 551, 554, 556, 557, 559, 561, 562, 564, 566, 568, 570,
-  572, 574, 577, 580, 582, 585, 590, 592, 594, 595, 597, 599, 602, 605, 607, 610, 613, 615, 616, 618, 619, 621, 622, 624, 626, 627, 629, 631, 632, 633, 636, 650,
-  653, 656, 659, 661, 664, 667, 669, 672, 674, 677, 679, 682, 684, 686, 688, 690, 692, 696, 698, 701, 703, 704, 707, 708, 710, 712, 714, 722, 725, 728, 731, 734,
-  736, 739, 741, 742, 744, 746, 747, 749, 751, 753, 755, 757, 759, 761, 764, 765, 766, 767, 769, 771, 774, 775, 779, 780, 781, 782, 810, 813, 816, 819, 821, 824,
-  827, 829, 831, 833, 835, 837, 840, 843, 845, 846, 848, 850, 852, 854, 856, 859, 868, 870, 871, 872, 874, 875, 876, 878, 885, 906, 909, 912, 915, 917, 919, 924,
-  926, 928, 932, 935, 940, 942, 944, 946, 948, 951, 953, 955, 957, 960, 962, 963, 965, 967, 968, 969, 971, 973, 974, 976, 977, 978, 996, 999, 1012];
-/* Pokémon que podem ser o procurado no modo Achados e Perdidos. */
-const ALVOS = [
-  [25, 'Pikachu'], [94, 'Gengar'], [133, 'Eevee'], [151, 'Mew'], [143, 'Snorlax'], [54, 'Psyduck'], [39, 'Jigglypuff'], [4, 'Charmander'], [7, 'Squirtle'],
-  [1, 'Bulbasaur'], [129, 'Magikarp'], [52, 'Meowth'], [658, 'Greninja'], [448, 'Lucario'], [778, 'Mimikyu'], [150, 'Mewtwo'], [700, 'Sylveon'], [197, 'Umbreon'],
-  [6, 'Charizard'], [131, 'Lapras'], [393, 'Piplup'], [656, 'Froakie'], [908, 'Meowscarada'], [869, 'Alcremie'], [906, 'Sprigatito'], [25, 'Pikachu'], [175, 'Togepi'],
-  [255, 'Torchic'], [258, 'Mudkip'], [722, 'Rowlet'], [725, 'Litten'], [728, 'Popplio'], [813, 'Scorbunny'], [816, 'Sobble'], [887, 'Dragapult'], [384, 'Rayquaza'],
-  [249, 'Lugia'], [382, 'Kyogre'], [483, 'Dialga'], [890, 'Eternatus'], [149, 'Dragonite'], [59, 'Arcanine'], [137, 'Porygon'], [202, 'Wobbuffet'], [196, 'Espeon']
+/* ---------- os 1025 Pokémon: "Nome~tipos" (a=Normal b=Fogo c=Água d=Planta e=Elétrico f=Gelo g=Lutador h=Venenoso
+   i=Terra j=Voador k=Psíquico l=Inseto m=Pedra n=Fantasma o=Dragão p=Sombrio q=Aço r=Fada) ---------- */
+const DADOS = 'Bulbasaur~dh|Ivysaur~dh|Venusaur~dh|Charmander~b|Charmeleon~b|Charizard~bj|Squirtle~c|Wartortle~c|Blastoise~c|Caterpie~l|Metapod~l|Butterfree~lj|Weedle~lh|Kakuna~lh|Beedrill~lh|Pidgey~aj|Pidgeotto~aj|Pidgeot~aj|Rattata~a|Raticate~a|Spearow~aj|Fearow~aj|Ekans~h|Arbok~h|Pikachu~e|Raichu~e|Sandshrew~i|Sandslash~i|Nidoran-F~h|Nidorina~h|Nidoqueen~hi|Nidoran-M~h|Nidorino~h|Nidoking~hi|Clefairy~r|Clefable~r|Vulpix~b|Ninetales~b|Jigglypuff~ar|Wigglytuff~ar|Zubat~hj|Golbat~hj|Oddish~dh|Gloom~dh|Vileplume~dh|Paras~ld|Parasect~ld|Venonat~lh|Venomoth~lh|Diglett~i|Dugtrio~i|Meowth~a|Persian~a|Psyduck~c|Golduck~c|Mankey~g|Primeape~g|Growlithe~b|Arcanine~b|Poliwag~c|Poliwhirl~c|Poliwrath~cg|Abra~k|Kadabra~k|Alakazam~k|Machop~g|Machoke~g|Machamp~g|Bellsprout~dh|Weepinbell~dh|Victreebel~dh|Tentacool~ch|Tentacruel~ch|Geodude~mi|Graveler~mi|Golem~mi|Ponyta~b|Rapidash~b|Slowpoke~ck|Slowbro~ck|Magnemite~eq|Magneton~eq|Farfetch’d~aj|Doduo~aj|Dodrio~aj|Seel~c|Dewgong~cf|Grimer~h|Muk~h|Shellder~c|Cloyster~cf|Gastly~nh|Haunter~nh|Gengar~nh|Onix~mi|Drowzee~k|Hypno~k|Krabby~c|Kingler~c|Voltorb~e|Electrode~e|Exeggcute~dk|Exeggutor~dk|Cubone~i|Marowak~i|Hitmonlee~g|Hitmonchan~g|Lickitung~a|Koffing~h|Weezing~h|Rhyhorn~im|Rhydon~im|Chansey~a|Tangela~d|Kangaskhan~a|Horsea~c|Seadra~c|Goldeen~c|Seaking~c|Staryu~c|Starmie~ck|Mr. Mime~kr|Scyther~lj|Jynx~fk|Electabuzz~e|Magmar~b|Pinsir~l|Tauros~a|Magikarp~c|Gyarados~cj|Lapras~cf|Ditto~a|Eevee~a|Vaporeon~c|Jolteon~e|Flareon~b|Porygon~a|Omanyte~mc|Omastar~mc|Kabuto~mc|Kabutops~mc|Aerodactyl~mj|Snorlax~a|Articuno~fj|Zapdos~ej|Moltres~bj|Dratini~o|Dragonair~o|Dragonite~oj|Mewtwo~k|Mew~k|Chikorita~d|Bayleef~d|Meganium~d|Cyndaquil~b|Quilava~b|Typhlosion~b|Totodile~c|Croconaw~c|Feraligatr~c|Sentret~a|Furret~a|Hoothoot~aj|Noctowl~aj|Ledyba~lj|Ledian~lj|Spinarak~lh|Ariados~lh|Crobat~hj|Chinchou~ce|Lanturn~ce|Pichu~e|Cleffa~r|Igglybuff~ar|Togepi~r|Togetic~rj|Natu~kj|Xatu~kj|Mareep~e|Flaaffy~e|Ampharos~e|Bellossom~d|Marill~cr|Azumarill~cr|Sudowoodo~m|Politoed~c|Hoppip~dj|Skiploom~dj|Jumpluff~dj|Aipom~a|Sunkern~d|Sunflora~d|Yanma~lj|Wooper~ci|Quagsire~ci|Espeon~k|Umbreon~p|Murkrow~pj|Slowking~ck|Misdreavus~n|Unown~k|Wobbuffet~k|Girafarig~ak|Pineco~l|Forretress~lq|Dunsparce~a|Gligar~ij|Steelix~qi|Snubbull~r|Granbull~r|Qwilfish~ch|Scizor~lq|Shuckle~lm|Heracross~lg|Sneasel~pf|Teddiursa~a|Ursaring~a|Slugma~b|Magcargo~bm|Swinub~fi|Piloswine~fi|Corsola~cm|Remoraid~c|Octillery~c|Delibird~fj|Mantine~cj|Skarmory~qj|Houndour~pb|Houndoom~pb|Kingdra~co|Phanpy~i|Donphan~i|Porygon2~a|Stantler~a|Smeargle~a|Tyrogue~g|Hitmontop~g|Smoochum~fk|Elekid~e|Magby~b|Miltank~a|Blissey~a|Raikou~e|Entei~b|Suicune~c|Larvitar~mi|Pupitar~mi|Tyranitar~mp|Lugia~kj|Ho-Oh~bj|Celebi~kd|Treecko~d|Grovyle~d|Sceptile~d|Torchic~b|Combusken~bg|Blaziken~bg|Mudkip~c|Marshtomp~ci|Swampert~ci|Poochyena~p|Mightyena~p|Zigzagoon~a|Linoone~a|Wurmple~l|Silcoon~l|Beautifly~lj|Cascoon~l|Dustox~lh|Lotad~cd|Lombre~cd|Ludicolo~cd|Seedot~d|Nuzleaf~dp|Shiftry~dp|Taillow~aj|Swellow~aj|Wingull~cj|Pelipper~cj|Ralts~kr|Kirlia~kr|Gardevoir~kr|Surskit~lc|Masquerain~lj|Shroomish~d|Breloom~dg|Slakoth~a|Vigoroth~a|Slaking~a|Nincada~li|Ninjask~lj|Shedinja~ln|Whismur~a|Loudred~a|Exploud~a|Makuhita~g|Hariyama~g|Azurill~ar|Nosepass~m|Skitty~a|Delcatty~a|Sableye~pn|Mawile~qr|Aron~qm|Lairon~qm|Aggron~qm|Meditite~gk|Medicham~gk|Electrike~e|Manectric~e|Plusle~e|Minun~e|Volbeat~l|Illumise~l|Roselia~dh|Gulpin~h|Swalot~h|Carvanha~cp|Sharpedo~cp|Wailmer~c|Wailord~c|Numel~bi|Camerupt~bi|Torkoal~b|Spoink~k|Grumpig~k|Spinda~a|Trapinch~i|Vibrava~io|Flygon~io|Cacnea~d|Cacturne~dp|Swablu~aj|Altaria~oj|Zangoose~a|Seviper~h|Lunatone~mk|Solrock~mk|Barboach~ci|Whiscash~ci|Corphish~c|Crawdaunt~cp|Baltoy~ik|Claydol~ik|Lileep~md|Cradily~md|Anorith~ml|Armaldo~ml|Feebas~c|Milotic~c|Castform~a|Kecleon~a|Shuppet~n|Banette~n|Duskull~n|Dusclops~n|Tropius~dj|Chimecho~k|Absol~p|Wynaut~k|Snorunt~f|Glalie~f|Spheal~fc|Sealeo~fc|Walrein~fc|Clamperl~c|Huntail~c|Gorebyss~c|Relicanth~cm|Luvdisc~c|Bagon~o|Shelgon~o|Salamence~oj|Beldum~qk|Metang~qk|Metagross~qk|Regirock~m|Regice~f|Registeel~q|Latias~ok|Latios~ok|Kyogre~c|Groudon~i|Rayquaza~oj|Jirachi~qk|Deoxys~k|Turtwig~d|Grotle~d|Torterra~di|Chimchar~b|Monferno~bg|Infernape~bg|Piplup~c|Prinplup~c|Empoleon~cq|Starly~aj|Staravia~aj|Staraptor~aj|Bidoof~a|Bibarel~ac|Kricketot~l|Kricketune~l|Shinx~e|Luxio~e|Luxray~e|Budew~dh|Roserade~dh|Cranidos~m|Rampardos~m|Shieldon~mq|Bastiodon~mq|Burmy~l|Wormadam~ld|Mothim~lj|Combee~lj|Vespiquen~lj|Pachirisu~e|Buizel~c|Floatzel~c|Cherubi~d|Cherrim~d|Shellos~c|Gastrodon~ci|Ambipom~a|Drifloon~nj|Drifblim~nj|Buneary~a|Lopunny~a|Mismagius~n|Honchkrow~pj|Glameow~a|Purugly~a|Chingling~k|Stunky~hp|Skuntank~hp|Bronzor~qk|Bronzong~qk|Bonsly~m|Mime Jr.~kr|Happiny~a|Chatot~aj|Spiritomb~np|Gible~oi|Gabite~oi|Garchomp~oi|Munchlax~a|Riolu~g|Lucario~gq|Hippopotas~i|Hippowdon~i|Skorupi~hl|Drapion~hp|Croagunk~hg|Toxicroak~hg|Carnivine~d|Finneon~c|Lumineon~c|Mantyke~cj|Snover~df|Abomasnow~df|Weavile~pf|Magnezone~eq|Lickilicky~a|Rhyperior~im|Tangrowth~d|Electivire~e|Magmortar~b|Togekiss~rj|Yanmega~lj|Leafeon~d|Glaceon~f|Gliscor~ij|Mamoswine~fi|Porygon-Z~a|Gallade~kg|Probopass~mq|Dusknoir~n|Froslass~fn|Rotom~en|Uxie~k|Mesprit~k|Azelf~k|Dialga~qo|Palkia~co|Heatran~bq|Regigigas~a|Giratina~no|Cresselia~k|Phione~c|Manaphy~c|Darkrai~p|Shaymin~d|Arceus~a|Victini~kb|Snivy~d|Servine~d|Serperior~d|Tepig~b|Pignite~bg|Emboar~bg|Oshawott~c|Dewott~c|Samurott~c|Patrat~a|Watchog~a|Lillipup~a|Herdier~a|Stoutland~a|Purrloin~p|Liepard~p|Pansage~d|Simisage~d|Pansear~b|Simisear~b|Panpour~c|Simipour~c|Munna~k|Musharna~k|Pidove~aj|Tranquill~aj|Unfezant~aj|Blitzle~e|Zebstrika~e|Roggenrola~m|Boldore~m|Gigalith~m|Woobat~kj|Swoobat~kj|Drilbur~i|Excadrill~iq|Audino~a|Timburr~g|Gurdurr~g|Conkeldurr~g|Tympole~c|Palpitoad~ci|Seismitoad~ci|Throh~g|Sawk~g|Sewaddle~ld|Swadloon~ld|Leavanny~ld|Venipede~lh|Whirlipede~lh|Scolipede~lh|Cottonee~dr|Whimsicott~dr|Petilil~d|Lilligant~d|Basculin~c|Sandile~ip|Krokorok~ip|Krookodile~ip|Darumaka~b|Darmanitan~b|Maractus~d|Dwebble~lm|Crustle~lm|Scraggy~pg|Scrafty~pg|Sigilyph~kj|Yamask~n|Cofagrigus~n|Tirtouga~cm|Carracosta~cm|Archen~mj|Archeops~mj|Trubbish~h|Garbodor~h|Zorua~p|Zoroark~p|Minccino~a|Cinccino~a|Gothita~k|Gothorita~k|Gothitelle~k|Solosis~k|Duosion~k|Reuniclus~k|Ducklett~cj|Swanna~cj|Vanillite~f|Vanillish~f|Vanilluxe~f|Deerling~ad|Sawsbuck~ad|Emolga~ej|Karrablast~l|Escavalier~lq|Foongus~dh|Amoonguss~dh|Frillish~cn|Jellicent~cn|Alomomola~c|Joltik~le|Galvantula~le|Ferroseed~dq|Ferrothorn~dq|Klink~q|Klang~q|Klinklang~q|Tynamo~e|Eelektrik~e|Eelektross~e|Elgyem~k|Beheeyem~k|Litwick~nb|Lampent~nb|Chandelure~nb|Axew~o|Fraxure~o|Haxorus~o|Cubchoo~f|Beartic~f|Cryogonal~f|Shelmet~l|Accelgor~l|Stunfisk~ie|Mienfoo~g|Mienshao~g|Druddigon~o|Golett~in|Golurk~in|Pawniard~pq|Bisharp~pq|Bouffalant~a|Rufflet~aj|Braviary~aj|Vullaby~pj|Mandibuzz~pj|Heatmor~b|Durant~lq|Deino~po|Zweilous~po|Hydreigon~po|Larvesta~lb|Volcarona~lb|Cobalion~qg|Terrakion~mg|Virizion~dg|Tornadus~j|Thundurus~ej|Reshiram~ob|Zekrom~oe|Landorus~ij|Kyurem~of|Keldeo~cg|Meloetta~ak|Genesect~lq|Chespin~d|Quilladin~d|Chesnaught~dg|Fennekin~b|Braixen~b|Delphox~bk|Froakie~c|Frogadier~c|Greninja~cp|Bunnelby~a|Diggersby~ai|Fletchling~aj|Fletchinder~bj|Talonflame~bj|Scatterbug~l|Spewpa~l|Vivillon~lj|Litleo~ba|Pyroar~ba|Flabébé~r|Floette~r|Florges~r|Skiddo~d|Gogoat~d|Pancham~g|Pangoro~gp|Furfrou~a|Espurr~k|Meowstic~k|Honedge~qn|Doublade~qn|Aegislash~qn|Spritzee~r|Aromatisse~r|Swirlix~r|Slurpuff~r|Inkay~pk|Malamar~pk|Binacle~mc|Barbaracle~mc|Skrelp~hc|Dragalge~ho|Clauncher~c|Clawitzer~c|Helioptile~ea|Heliolisk~ea|Tyrunt~mo|Tyrantrum~mo|Amaura~mf|Aurorus~mf|Sylveon~r|Hawlucha~gj|Dedenne~er|Carbink~mr|Goomy~o|Sliggoo~o|Goodra~o|Klefki~qr|Phantump~nd|Trevenant~nd|Pumpkaboo~nd|Gourgeist~nd|Bergmite~f|Avalugg~f|Noibat~jo|Noivern~jo|Xerneas~r|Yveltal~pj|Zygarde~oi|Diancie~mr|Hoopa~kn|Volcanion~bc|Rowlet~dj|Dartrix~dj|Decidueye~dn|Litten~b|Torracat~b|Incineroar~bp|Popplio~c|Brionne~c|Primarina~cr|Pikipek~aj|Trumbeak~aj|Toucannon~aj|Yungoos~a|Gumshoos~a|Grubbin~l|Charjabug~le|Vikavolt~le|Crabrawler~g|Crabominable~gf|Oricorio~bj|Cutiefly~lr|Ribombee~lr|Rockruff~m|Lycanroc~m|Wishiwashi~c|Mareanie~hc|Toxapex~hc|Mudbray~i|Mudsdale~i|Dewpider~cl|Araquanid~cl|Fomantis~d|Lurantis~d|Morelull~dr|Shiinotic~dr|Salandit~hb|Salazzle~hb|Stufful~ag|Bewear~ag|Bounsweet~d|Steenee~d|Tsareena~d|Comfey~r|Oranguru~ak|Passimian~g|Wimpod~lc|Golisopod~lc|Sandygast~ni|Palossand~ni|Pyukumuku~c|Type: Null~a|Silvally~a|Minior~mj|Komala~a|Turtonator~bo|Togedemaru~eq|Mimikyu~nr|Bruxish~ck|Drampa~ao|Dhelmise~nd|Jangmo-o~o|Hakamo-o~og|Kommo-o~og|Tapu Koko~er|Tapu Lele~kr|Tapu Bulu~dr|Tapu Fini~cr|Cosmog~k|Cosmoem~k|Solgaleo~kq|Lunala~kn|Nihilego~mh|Buzzwole~lg|Pheromosa~lg|Xurkitree~e|Celesteela~qj|Kartana~dq|Guzzlord~po|Necrozma~k|Magearna~qr|Marshadow~gn|Poipole~h|Naganadel~ho|Stakataka~mq|Blacephalon~bn|Zeraora~e|Meltan~q|Melmetal~q|Grookey~d|Thwackey~d|Rillaboom~d|Scorbunny~b|Raboot~b|Cinderace~b|Sobble~c|Drizzile~c|Inteleon~c|Skwovet~a|Greedent~a|Rookidee~j|Corvisquire~j|Corviknight~jq|Blipbug~l|Dottler~lk|Orbeetle~lk|Nickit~p|Thievul~p|Gossifleur~d|Eldegoss~d|Wooloo~a|Dubwool~a|Chewtle~c|Drednaw~cm|Yamper~e|Boltund~e|Rolycoly~m|Carkol~mb|Coalossal~mb|Applin~do|Flapple~do|Appletun~do|Silicobra~i|Sandaconda~i|Cramorant~jc|Arrokuda~c|Barraskewda~c|Toxel~eh|Toxtricity~eh|Sizzlipede~bl|Centiskorch~bl|Clobbopus~g|Grapploct~g|Sinistea~n|Polteageist~n|Hatenna~k|Hattrem~k|Hatterene~kr|Impidimp~pr|Morgrem~pr|Grimmsnarl~pr|Obstagoon~pa|Perrserker~q|Cursola~n|Sirfetch’d~g|Mr. Rime~fk|Runerigus~in|Milcery~r|Alcremie~r|Falinks~g|Pincurchin~e|Snom~fl|Frosmoth~fl|Stonjourner~m|Eiscue~f|Indeedee~ka|Morpeko~ep|Cufant~q|Copperajah~q|Dracozolt~eo|Arctozolt~ef|Dracovish~co|Arctovish~cf|Duraludon~qo|Dreepy~on|Drakloak~on|Dragapult~on|Zacian~r|Zamazenta~g|Eternatus~ho|Kubfu~g|Urshifu~gp|Zarude~pd|Regieleki~e|Regidrago~o|Glastrier~f|Spectrier~n|Calyrex~kd|Wyrdeer~ak|Kleavor~lm|Ursaluna~ia|Basculegion~cn|Sneasler~gh|Overqwil~ph|Enamorus~rj|Sprigatito~d|Floragato~d|Meowscarada~dp|Fuecoco~b|Crocalor~b|Skeledirge~bn|Quaxly~c|Quaxwell~c|Quaquaval~cg|Lechonk~a|Oinkologne~a|Tarountula~l|Spidops~l|Nymble~l|Lokix~lp|Pawmi~e|Pawmo~eg|Pawmot~eg|Tandemaus~a|Maushold~a|Fidough~r|Dachsbun~r|Smoliv~da|Dolliv~da|Arboliva~da|Squawkabilly~aj|Nacli~m|Naclstack~m|Garganacl~m|Charcadet~b|Armarouge~bk|Ceruledge~bn|Tadbulb~e|Bellibolt~e|Wattrel~ej|Kilowattrel~ej|Maschiff~p|Mabosstiff~p|Shroodle~ha|Grafaiai~ha|Bramblin~dn|Brambleghast~dn|Toedscool~id|Toedscruel~id|Klawf~m|Capsakid~d|Scovillain~db|Rellor~l|Rabsca~lk|Flittle~k|Espathra~k|Tinkatink~rq|Tinkatuff~rq|Tinkaton~rq|Wiglett~c|Wugtrio~c|Bombirdier~jp|Finizen~c|Palafin~c|Varoom~qh|Revavroom~qh|Cyclizar~oa|Orthworm~q|Glimmet~mh|Glimmora~mh|Greavard~n|Houndstone~n|Flamigo~jg|Cetoddle~f|Cetitan~f|Veluza~ck|Dondozo~c|Tatsugiri~oc|Annihilape~gn|Clodsire~hi|Farigiraf~ak|Dudunsparce~a|Kingambit~pq|Great Tusk~ig|Scream Tail~rk|Brute Bonnet~dp|Flutter Mane~nr|Slither Wing~lg|Sandy Shocks~ei|Iron Treads~iq|Iron Bundle~fc|Iron Hands~ge|Iron Jugulis~pj|Iron Moth~bh|Iron Thorns~me|Frigibax~of|Arctibax~of|Baxcalibur~of|Gimmighoul~n|Gholdengo~qn|Wo-Chien~pd|Chien-Pao~pf|Ting-Lu~pi|Chi-Yu~pb|Roaring Moon~op|Iron Valiant~rg|Koraidon~go|Miraidon~eo|Walking Wake~co|Iron Leaves~dk|Dipplin~do|Poltchageist~dn|Sinistcha~dn|Okidogi~hg|Munkidori~hk|Fezandipiti~hr|Ogerpon~d|Archaludon~qo|Hydrapple~do|Gouging Fire~bo|Raging Bolt~eo|Iron Boulder~mk|Iron Crown~qk|Terapagos~a|Pecharunt~hn';
+const T = { normal:0, fogo:1, agua:2, planta:3, eletrico:4, gelo:5, lutador:6, veneno:7, terra:8, voador:9, psiquico:10, inseto:11, pedra:12, fantasma:13, dragao:14, sombrio:15, aco:16, fada:17 };
+const POKE = DADOS.split('|').map((x, i) => { const [n, t] = x.split('~'); return { id:i + 1, nome:n, tipos:[...t].map(c => c.charCodeAt(0) - 97) }; });
+const GERACOES = [[1, 151], [152, 251], [252, 386], [387, 493], [494, 649], [650, 721], [722, 809], [810, 905], [906, 1025]];
+/* Parecidos com o Pikachu: aparecem perto dele nas fases difíceis. */
+const PARECIDOS = [26, 172, 417, 587, 702, 777, 877, 921, 922, 311, 312, 135, 778, 694, 239, 179, 309, 404, 403, 125, 823, 938];
+
+/* ---------- os mapas ----------
+   Cada lugar do mapa (em % da cena) só aceita Pokémon de certos tipos.
+   O desenho de fundo é fixo; o que muda a cada caso é onde cada um fica dentro do seu lugar. */
+const MAPAS = [
+  { id:'praia', nome:'🏖️ Praia', lugares:[
+    { nome:'céu', r:[[0, 0, 100, 20]], tipos:[T.voador], anim:'voa' },
+    { nome:'mar', r:[[0, 22, 100, 50]], tipos:[T.agua], anim:'nada' },
+    { nome:'areia', r:[[0, 54, 100, 100]], tipos:[T.normal, T.terra, T.pedra, T.eletrico, T.lutador], pika:true } ],
+    svg:`<defs><linearGradient id="ceuP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6ec6ff"/><stop offset="1" stop-color="#c9ecff"/></linearGradient></defs>
+    <rect width="100" height="27" fill="url(#ceuP)"/><circle cx="84" cy="8" r="6" fill="#ffd43b" stroke="#1b1b1b" stroke-width=".6"/>
+    <rect y="26" width="100" height="36" fill="#2f8fe0"/><path d="M0 30 q5 -2 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" fill="none" stroke="#bfe6ff" stroke-width=".8"/>
+    <path d="M0 44 q5 -2 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" fill="none" stroke="#bfe6ff" stroke-width=".8"/>
+    <path d="M0 62 q25 -6 50 -2 t50 0 V120 H0z" fill="#f5dfa3" stroke="#1b1b1b" stroke-width=".6"/>
+    <path d="M8 120 q2 -30 6 -48" stroke="#8a5a2b" stroke-width="2.2" fill="none"/><path d="M14 72 q-8 -2 -12 4 M14 72 q8 -3 12 3 M14 72 q-2 -7 -8 -9 M14 72 q4 -6 10 -6" stroke="#2f9e44" stroke-width="2" fill="none"/>
+    <path d="M90 120 q-2 -26 -5 -40" stroke="#8a5a2b" stroke-width="2.2" fill="none"/><path d="M85 80 q-8 -2 -12 4 M85 80 q8 -3 12 3 M85 80 q-2 -7 -8 -9 M85 80 q4 -6 10 -6" stroke="#2f9e44" stroke-width="2" fill="none"/>
+    <circle cx="30" cy="104" r="2" fill="#fff" stroke="#1b1b1b" stroke-width=".4"/><circle cx="66" cy="96" r="1.6" fill="#ff8787" stroke="#1b1b1b" stroke-width=".4"/>` },
+  { id:'floresta', nome:'🌳 Floresta', lugares:[
+    { nome:'céu', r:[[0, 0, 100, 12]], tipos:[T.voador], anim:'voa' },
+    { nome:'árvores', r:[[0, 15, 100, 38]], tipos:[T.inseto, T.planta] },
+    { nome:'lago', r:[[56, 60, 94, 80]], tipos:[T.agua], anim:'nada' },
+    { nome:'chão', r:[[0, 42, 54, 100], [54, 42, 100, 56], [54, 84, 100, 100]], tipos:[T.normal, T.planta, T.inseto, T.fada, T.veneno, T.eletrico, T.terra], pika:true } ],
+    svg:`<rect width="100" height="18" fill="#b9e6ff"/><rect y="17" width="100" height="103" fill="#8fd18a"/>
+    <g stroke="#1b1b1b" stroke-width=".6"><rect x="6" y="30" width="4" height="22" fill="#8a5a2b"/><rect x="30" y="28" width="4" height="22" fill="#8a5a2b"/><rect x="56" y="30" width="4" height="20" fill="#8a5a2b"/><rect x="82" y="28" width="4" height="22" fill="#8a5a2b"/>
+    <circle cx="8" cy="26" r="12" fill="#2f9e44"/><circle cx="32" cy="24" r="13" fill="#37b24d"/><circle cx="58" cy="26" r="12" fill="#2f9e44"/><circle cx="84" cy="24" r="13" fill="#37b24d"/>
+    <circle cx="20" cy="20" r="9" fill="#40c057"/><circle cx="70" cy="20" r="9" fill="#40c057"/>
+    <ellipse cx="75" cy="84" rx="21" ry="14" fill="#4dabf7"/></g>
+    <path d="M60 84 q4 -1 8 0 M78 88 q4 -1 8 0" stroke="#fff" stroke-width=".7" fill="none"/>
+    <circle cx="14" cy="96" r="1.4" fill="#ff6b6b"/><circle cx="40" cy="110" r="1.4" fill="#fff"/><circle cx="30" cy="70" r="1.4" fill="#ffd43b"/>` },
+  { id:'cidade', nome:'🏙️ Cidade', lugares:[
+    { nome:'céu', r:[[0, 0, 100, 14]], tipos:[T.voador], anim:'voa' },
+    { nome:'prédios', r:[[0, 17, 100, 42]], tipos:[T.aco, T.eletrico, T.psiquico] },
+    { nome:'rua', r:[[0, 46, 100, 72]], tipos:[T.normal, T.lutador, T.sombrio, T.veneno, T.eletrico], pika:true },
+    { nome:'praça', r:[[0, 76, 100, 100]], tipos:[T.planta, T.inseto, T.fada, T.normal] } ],
+    svg:`<rect width="100" height="20" fill="#cfe8ff"/>
+    <g stroke="#1b1b1b" stroke-width=".6"><rect x="2" y="16" width="20" height="38" fill="#adb5bd"/><rect x="24" y="10" width="18" height="44" fill="#868e96"/><rect x="44" y="18" width="22" height="36" fill="#ced4da"/><rect x="68" y="8" width="14" height="46" fill="#868e96"/><rect x="84" y="20" width="15" height="34" fill="#adb5bd"/></g>
+    <g fill="#ffe066">${Array.from({ length:30 }, (_, i) => `<rect x="${4 + (i % 10) * 9.6}" y="${22 + Math.floor(i / 10) * 9}" width="3" height="3"/>`).join('')}</g>
+    <rect y="54" width="100" height="36" fill="#495057" stroke="#1b1b1b" stroke-width=".6"/><path d="M0 72 H100" stroke="#fff" stroke-width="1.2" stroke-dasharray="6 5"/>
+    <rect y="90" width="100" height="30" fill="#8fd18a" stroke="#1b1b1b" stroke-width=".6"/><circle cx="12" cy="98" r="5" fill="#2f9e44" stroke="#1b1b1b" stroke-width=".5"/><circle cx="88" cy="100" r="5" fill="#2f9e44" stroke="#1b1b1b" stroke-width=".5"/>` },
+  { id:'neve', nome:'❄️ Montanha de Neve', lugares:[
+    { nome:'céu', r:[[0, 0, 100, 14]], tipos:[T.voador], anim:'voa' },
+    { nome:'montanha', r:[[0, 17, 100, 40]], tipos:[T.pedra, T.terra, T.aco, T.dragao] },
+    { nome:'lago congelado', r:[[3, 45, 44, 68]], tipos:[T.agua, T.gelo], anim:'nada' },
+    { nome:'neve', r:[[48, 44, 100, 70], [0, 72, 100, 100]], tipos:[T.gelo, T.normal, T.eletrico, T.lutador], pika:true } ],
+    svg:`<rect width="100" height="40" fill="#dbeafe"/><path d="M-5 50 L25 12 L45 38 L65 8 L105 50 z" fill="#adb5bd" stroke="#1b1b1b" stroke-width=".6"/>
+    <path d="M25 12 L31 20 L27 22 L22 18 z M65 8 L72 17 L66 19 L60 14 z" fill="#fff"/>
+    <rect y="48" width="100" height="72" fill="#f8f9fa" stroke="#1b1b1b" stroke-width=".6"/>
+    <ellipse cx="24" cy="68" rx="23" ry="13" fill="#a5d8ff" stroke="#1b1b1b" stroke-width=".6"/><path d="M12 64 l6 4 M26 70 l6 -3" stroke="#fff" stroke-width=".8"/>
+    <g fill="#fff" stroke="#1b1b1b" stroke-width=".4"><circle cx="80" cy="104" r="4"/><circle cx="80" cy="98" r="3"/></g>
+    <g fill="#74c0fc">${Array.from({ length:14 }, (_, i) => `<circle cx="${(i * 37) % 100}" cy="${(i * 23) % 44}" r=".7"/>`).join('')}</g>` },
+  { id:'vulcao', nome:'🌋 Vulcão', lugares:[
+    { nome:'fumaça', r:[[0, 0, 100, 14], [0, 16, 26, 46], [74, 16, 100, 46]], tipos:[T.voador, T.dragao], anim:'voa' },
+    { nome:'lava', r:[[32, 18, 68, 44], [0, 50, 100, 64]], tipos:[T.fogo], anim:'mexe' },
+    { nome:'rochas', r:[[0, 68, 100, 100]], tipos:[T.pedra, T.terra, T.lutador, T.aco, T.eletrico, T.fogo], pika:true } ],
+    svg:`<rect width="100" height="120" fill="#ffb38a"/><g fill="#868e96" opacity=".7"><circle cx="30" cy="8" r="7"/><circle cx="45" cy="6" r="8"/><circle cx="62" cy="9" r="7"/></g>
+    <path d="M10 70 L40 22 L60 22 L90 70z" fill="#6b3a1f" stroke="#1b1b1b" stroke-width=".6"/><path d="M40 22 L60 22 L56 30 L50 26 L44 32z" fill="#ff6b00"/>
+    <path d="M45 26 q5 20 -4 34 M55 26 q-3 18 6 34" stroke="#ff922b" stroke-width="2.5" fill="none"/>
+    <rect y="60" width="100" height="18" fill="#ff6b00" stroke="#1b1b1b" stroke-width=".6"/><path d="M0 64 q5 -2 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0" stroke="#ffd43b" stroke-width="1" fill="none"/>
+    <rect y="78" width="100" height="42" fill="#5a2a1a" stroke="#1b1b1b" stroke-width=".6"/><g fill="#3b1d12"><circle cx="20" cy="96" r="4"/><circle cx="70" cy="108" r="5"/><circle cx="46" cy="88" r="3"/></g>` },
+  { id:'espaco', nome:'🌌 Espaço', lugares:[
+    { nome:'espaço', r:[[0, 0, 100, 64]], tipos:[T.psiquico, T.fantasma, T.dragao, T.fada], anim:'voa' },
+    { nome:'lua', r:[[0, 68, 100, 100]], tipos:[T.pedra, T.aco, T.eletrico, T.normal], pika:true } ],
+    svg:`<rect width="100" height="120" fill="#0b0b26"/><g fill="#fff">${Array.from({ length:40 }, (_, i) => `<circle cx="${(i * 41) % 100}" cy="${(i * 29) % 78}" r="${i % 3 ? .35 : .7}"/>`).join('')}</g>
+    <circle cx="78" cy="18" r="9" fill="#e599f7" stroke="#1b1b1b" stroke-width=".6"/><ellipse cx="78" cy="18" rx="15" ry="3" fill="none" stroke="#ffd43b" stroke-width="1"/>
+    <path d="M0 84 q25 -8 50 -3 t50 -2 V120 H0z" fill="#ced4da" stroke="#1b1b1b" stroke-width=".6"/><g fill="#adb5bd" stroke="#1b1b1b" stroke-width=".4"><ellipse cx="20" cy="100" rx="6" ry="2.5"/><ellipse cx="72" cy="108" rx="8" ry="3"/></g>` },
+  { id:'cemiterio', nome:'👻 Cemitério', lugares:[
+    { nome:'céu da noite', r:[[0, 0, 52, 48]], tipos:[T.fantasma, T.voador, T.sombrio], anim:'voa' },
+    { nome:'casa assombrada', r:[[57, 16, 96, 52]], tipos:[T.fantasma, T.psiquico] },
+    { nome:'túmulos', r:[[0, 56, 100, 100]], tipos:[T.sombrio, T.veneno, T.fantasma, T.normal, T.eletrico], pika:true } ],
+    svg:`<rect width="100" height="120" fill="#2b2140"/><circle cx="18" cy="12" r="7" fill="#fff3bf" stroke="#1b1b1b" stroke-width=".6"/>
+    <g stroke="#1b1b1b" stroke-width=".6"><path d="M58 64 V30 L76 16 L96 30 V64z" fill="#5c4a72"/><rect x="72" y="46" width="8" height="18" fill="#2b2140"/><rect x="62" y="34" width="6" height="6" fill="#ffd43b"/><rect x="84" y="34" width="6" height="6" fill="#ffd43b"/></g>
+    <rect y="62" width="100" height="58" fill="#3f5a3a" stroke="#1b1b1b" stroke-width=".6"/>
+    <g fill="#868e96" stroke="#1b1b1b" stroke-width=".5">${[[10, 80], [30, 92], [52, 78], [74, 96], [90, 82], [20, 108], [62, 110]].map(([x, y]) => `<path d="M${x - 3} ${y} v-6 a3 3 0 0 1 6 0 v6z"/>`).join('')}</g>
+    <path d="M40 30 q4 8 0 14" stroke="#495057" stroke-width="1.5" fill="none"/>` }
 ];
-const NOMES = Object.fromEntries(ALVOS);
-NOMES[25] = 'Pikachu';
-const TEMAS = [
-  { id:'praia', nome:'🏖️ Praia', deco:['🌴', '🐚', '⛱️', '🦀'] }, { id:'floresta', nome:'🌳 Floresta', deco:['🌳', '🌲', '🍄', '🌼'] },
-  { id:'cidade', nome:'🏙️ Cidade', deco:['🏠', '🏢', '🚗', '🌳'] }, { id:'neve', nome:'❄️ Neve', deco:['⛄', '🌲', '❄️', '🏔️'] },
-  { id:'espaco', nome:'🌌 Espaço', deco:['⭐', '🪐', '🌙', '☄️'] }, { id:'vulcao', nome:'🌋 Vulcão', deco:['🌋', '🔥', '🪨', '💎'] },
-  { id:'doces', nome:'🍭 Terra dos Doces', deco:['🍭', '🧁', '🍩', '🍬'] }
-];
+/* Para cada lugar, a lista de Pokémon que moram ali (tem pelo menos um dos tipos). */
+for(const m of MAPAS) for(const l of m.lugares){
+  l.pool = POKE.filter(p => p.tipos.some(t => l.tipos.includes(t))).map(p => p.id);
+  l.area = l.r.reduce((s, [x0, y0, x1, y1]) => s + (x1 - x0) * (y1 - y0), 0);
+}
 
 /* ---------- guardado ---------- */
 let rec = Object.assign({ pika:0, achados:0, fases:0, shinies:0, venceu:0 }, ler('rec', {}));
@@ -262,68 +338,86 @@ const somShiny = () => [1319, 1760, 2093, 2637].forEach((f, i) => bip(f, .12, 's
 function tela(n){ ['inicio', 'jogo', 'album'].forEach(t => $('tela-' + t).hidden = t !== n); window.scrollTo(0, 0); }
 function mostrarInicio(){
   parar();
-  $('recs').innerHTML = [['⚡', rec.pika, 'recorde Pikachu'], ['🔍', rec.achados, 'recorde Achados'], ['✨', rec.shinies, 'shinies achados']]
-    .map(([e, n, t]) => `<div><b>${e} ${n}</b><small>${t}</small></div>`).join('');
+  $('recs').innerHTML = [['⚡', rec.pika, 'recorde Pikachu'], ['🔍', rec.achados, 'recorde Achados'], ['📒', Object.keys(album).length, 'fichas de 1025']]
+    .map(([e, n, t]) => `<div class="carimbo"><b>${e} ${n}</b><small>${t}</small></div>`).join('');
   tela('inicio');
 }
 $('logo').onclick = mostrarInicio;
 
-/* ---------- o jogo ---------- */
+/* ---------- o caso ---------- */
 const FASES_PIKA = 10;
 let J = null;
 function novoJogo(modo){
-  J = { modo, fase:0, pontos:0, dicas:3, timer:0, total: modo === 'achados' ? 60 : 0, achados:0 };
+  J = { modo, fase:0, pontos:0, dicas:3, achados:0, recentes:[] };
   J.fimTotal = modo === 'achados' ? Date.now() + 60000 : 0;
-  $('janela').classList.remove('zoom');
+  $('janela').classList.remove('zoom'); $('zoom').textContent = '🔍 Lupa';
   tela('jogo');
   proximaFase();
   J.timer = setInterval(relogio, 200);
 }
-function tempoDaFase(f){ return Math.max(20, 45 - f * 2); }
-/* Monta a multidão. Tudo em porcentagem da cena, então a lupa só aumenta. */
+const tempoDaFase = f => Math.max(25, 50 - f * 2.5);
+/* Espalha n pontos dentro dos retângulos de um lugar, em grade bagunçada (cobre tudo sem amontoar). */
+function pontosNoLugar(l, n){
+  const res = [];
+  l.r.forEach(([x0, y0, x1, y1], k) => {
+    const a = (x1 - x0) * (y1 - y0), q = k === l.r.length - 1 ? n - res.length : Math.round(n * a / l.area);
+    if(q <= 0) return;
+    const prop = (x1 - x0) / ((y1 - y0) / 1.2), cols = Math.max(1, Math.round(Math.sqrt(q * prop))), lins = Math.max(1, Math.ceil(q / cols));
+    const cel = [];
+    for(let r = 0; r < lins; r++) for(let c = 0; c < cols; c++) cel.push([c, r]);
+    cel.sort(() => Math.random() - .5);
+    for(let i = 0; i < q; i++){ const [c, r] = cel[i % cel.length];
+      res.push([x0 + (c + .15 + Math.random() * .7) * (x1 - x0) / cols, y0 + (r + .15 + Math.random() * .7) * (y1 - y0) / lins]); }
+  });
+  return res;
+}
 async function proximaFase(){
   const f = ++J.fase, pika = J.modo === 'pika';
-  const tema = TEMAS[(f - 1) % TEMAS.length];
-  const alvoId = pika ? 25 : sorteia(ALVOS.filter(a => !J.ultimo || a[0] !== J.ultimo))[0];
-  J.ultimo = alvoId; J.alvoId = alvoId; J.nome = NOMES[alvoId] || 'Pikachu';
-  const qtd = pika ? Math.min(150, 26 + f * 12) : Math.min(120, 30 + J.achados * 6);
-  const tam = pika ? Math.max(8.5, 15 - f * .6) : Math.max(9, 14 - J.achados * .35);
-  const nParecidos = pika ? Math.round(qtd * Math.min(.6, .08 + f * .055)) : 0;
-  const cena = $('cena'); cena.className = 'cena t-' + tema.id; cena.innerHTML = '<div class="carregando">🔍 Espalhando os Pokémon…</div>';
-  $('alvo').innerHTML = `<img src="${url(alvoId)}" alt="" /><div style="min-width:0"><b>Ache o ${esc(J.nome)}!</b><small>${pika ? `Fase ${f} de ${FASES_PIKA}` : `Achados: ${J.achados}`} · ${tema.nome} · ${qtd} Pokémon</small></div>`;
-  const ids = [];
-  for(let i = 0; i < qtd; i++){
-    let id = i < nParecidos ? sorteia(PARECIDOS) : sorteia(MULTIDAO);
-    if(id === alvoId) id = 1;
-    ids.push(id);
+  const mapa = pika ? MAPAS[(f - 1) % MAPAS.length] : sorteia(MAPAS.filter(m => m !== J.mapa));
+  J.mapa = mapa;
+  /* Quem é o procurado e em qual lugar do mapa ele mora. */
+  let alvoId, lugarAlvo;
+  if(pika){ alvoId = 25; lugarAlvo = mapa.lugares.find(l => l.pika); }
+  else {
+    /* Sorteia entre todos que moram no mapa (sem preferir o céu), e depois um lugar que combina com ele. */
+    const todos = [...new Set(mapa.lugares.flatMap(l => l.pool))];
+    do alvoId = sorteia(todos); while(J.recentes.includes(alvoId));
+    lugarAlvo = sorteia(mapa.lugares.filter(l => l.pool.includes(alvoId)));
+    J.recentes = [alvoId].concat(J.recentes).slice(0, 30);
   }
-  /* Espalha em grade com bagunça, pra cobrir a cena toda sem virar um bolo num canto. */
-  const cols = Math.ceil(Math.sqrt(qtd * 1.2)), lins = Math.ceil(qtd / cols);
-  const lugares = [];
-  for(let r = 0; r < lins; r++) for(let c = 0; c < cols; c++) lugares.push([(c + .5) / cols * 100, (r + .5) / lins * 100]);
-  lugares.sort(() => Math.random() - .5);
-  const itens = ids.map((id, i) => {
-    const [cx, cy] = lugares[i % lugares.length];
-    const s = tam * (.75 + Math.random() * .6);
-    return { id, x:cx + (Math.random() - .5) * (100 / cols) * .9, y:cy + (Math.random() - .5) * (100 / lins) * .9, s, z:Math.floor(Math.random() * 500),
-      giro:(Math.random() - .5) * 40, vira:Math.random() < .5, shiny:false };
+  J.alvoId = alvoId; J.nome = POKE[alvoId - 1].nome;
+  const qtd = pika ? Math.min(150, 30 + f * 12) : Math.min(130, 40 + J.achados * 7);
+  const tam = pika ? Math.max(8.5, 14 - f * .55) : Math.max(8.5, 13 - J.achados * .35);
+  const cena = $('cena'); cena.className = 'cena'; cena.innerHTML = `<svg class="fundo" viewBox="0 0 100 120" preserveAspectRatio="none" aria-hidden="true">${mapa.svg}</svg><div class="carregando">🔍 Investigando o local…</div>`;
+  $('procura').innerHTML = `<div class="foto"><img src="${url(alvoId)}" alt="" /></div><div class="txt"><i>PROCURA-SE</i><b>${esc(J.nome)}</b><small>nº ${alvoId} · mora: ${esc(lugarAlvo.nome)} · ${esc(mapa.nome)}</small></div>`;
+  $('caso').textContent = pika ? `Caso ${f} de ${FASES_PIKA} · ${qtd} Pokémon` : `Achados: ${J.achados} · ${qtd} Pokémon`;
+  /* Distribui a multidão pelos lugares, conforme o tamanho de cada um. */
+  const areaTot = mapa.lugares.reduce((s, l) => s + l.area, 0);
+  const itens = [];
+  mapa.lugares.forEach(l => {
+    const n = Math.max(3, Math.round(qtd * l.area / areaTot));
+    const nPar = pika && l.pika ? Math.round(n * Math.min(.55, .06 + f * .05)) : 0;
+    pontosNoLugar(l, n).forEach(([x, y], i) => {
+      let id = i < nPar ? Math.floor(sorteia(PARECIDOS)) : sorteia(l.pool);
+      if(id === alvoId) id = sorteia(l.pool.filter(x => x !== alvoId));
+      const s = tam * (.75 + Math.random() * .55);
+      itens.push({ id, x, y, s, giro:(Math.random() - .5) * 26, vira:Math.random() < .5, anim:Math.random() < .25 ? (l.anim || 'mexe') : '', shiny:false });
+    });
   });
-  /* Às vezes tem um shiny escondido (não precisa achar, é bônus). */
   if(Math.random() < .35) sorteia(itens).shiny = true;
-  /* O procurado. Ninguém fica bem na frente dele: quem tapar o meio dele sai. */
-  const alvo = { id:alvoId, x:8 + Math.random() * 84, y:8 + Math.random() * 84, s:tam * (pika ? Math.max(.7, 1 - f * .025) : .95), z:Math.floor(200 + Math.random() * 200),
-    giro:(Math.random() - .5) * (pika ? f * 5 : 20), vira:Math.random() < .5, alvo:true };
-  const H = cena.clientHeight / cena.clientWidth || 1.2;
-  const perto = it => Math.hypot(it.x - alvo.x, (it.y - alvo.y) * H) < alvo.s * .45 && it.z > alvo.z;
-  const lista = itens.filter(it => !perto(it)).concat([alvo]);
+  const [ax, ay] = pontosNoLugar(lugarAlvo, 1)[0];
+  const alvo = { id:alvoId, x:ax, y:ay, s:tam * (pika ? Math.max(.72, 1 - f * .025) : .95), giro:(Math.random() - .5) * (pika ? 8 + f * 3 : 18), vira:Math.random() < .5, alvo:true, anim:'' };
+  /* Quem está mais embaixo fica na frente (profundidade). Ninguém pode tapar o meio do procurado. */
+  const R = 1.2;
+  const lista = itens.filter(it => !(it.y > alvo.y && Math.hypot(it.x - alvo.x, (it.y - alvo.y) * R) < alvo.s * .5)).concat([alvo]);
+  lista.forEach(it => { it.z = Math.round(it.y * 10); });
   J.itens = lista; J.alvo = alvo;
-  /* Espera as imagens carregarem (até 5 segundos) antes de valer o tempo. */
   const unicos = [...new Set(lista.map(it => url(it.id, it.shiny)))];
-  await Promise.race([Promise.all(unicos.map(u => new Promise(ok => { const im = new Image(); im.onload = im.onerror = ok; im.src = u; }))), new Promise(ok => setTimeout(ok, 5000))]);
+  await Promise.race([Promise.all(unicos.map(u => new Promise(ok => { const im = new Image(); im.onload = im.onerror = ok; im.src = u; }))), new Promise(ok => setTimeout(ok, 6000))]);
   if(!J || J.fase !== f) return;
-  const decos = Array.from({ length:8 }, () => `<span class="deco" style="left:${Math.random() * 92}%;top:${Math.random() * 92}%;font-size:${1.4 + Math.random() * 1.6}rem">${sorteia(tema.deco)}</span>`).join('');
-  cena.innerHTML = decos + lista.map(it => `<img class="p ${it.alvo ? 'o-alvo' : ''} ${Math.random() < .15 ? 'mexe' : ''}" src="${url(it.id, it.shiny)}" alt="" draggable="false"
-    style="left:${it.x - it.s / 2}%;top:${(it.y - it.s / 2 / H)}%;width:${it.s}%;z-index:${it.z};transform:rotate(${it.giro}deg) scaleX(${it.vira ? -1 : 1})" />`).join('');
+  cena.querySelector('.carregando').remove();
+  cena.insertAdjacentHTML('beforeend', lista.map(it => `<img class="p ${it.alvo ? 'o-alvo' : ''} ${it.anim}" src="${url(it.id, it.shiny)}" alt="" draggable="false" onerror="this.remove()"
+    style="left:${it.x - it.s / 2}%;top:${it.y - it.s / 2 * R}%;width:${it.s}%;z-index:${it.z};transform:rotate(${it.giro}deg) scaleX(${it.vira ? -1 : 1})" />`).join(''));
   J.fimFase = Date.now() + tempoDaFase(f) * 1000; J.tempoFase = tempoDaFase(f); J.jogando = true;
   atualizarDica(); relogio();
 }
@@ -331,67 +425,64 @@ function relogio(){
   if(!J) return;
   let s, tot;
   if(J.modo === 'achados'){ s = (J.fimTotal - Date.now()) / 1000; tot = 60; }
-  else { s = J.jogando ? (J.fimFase - Date.now()) / 1000 : J.tempoFase || 45; tot = J.tempoFase || 45; }
+  else { tot = J.tempoFase || tempoDaFase(1); s = J.jogando ? (J.fimFase - Date.now()) / 1000 : tot; }
   s = Math.max(0, s);
-  const t = $('tempo'); t.textContent = '⏰ ' + Math.ceil(s); t.classList.toggle('acabando', s <= 8);
-  $('tempo-barra').style.width = Math.min(100, s / tot * 100) + '%';
-  $('pontos').textContent = '⭐ ' + J.pontos;
+  $('tempo').textContent = Math.ceil(s); $('relogio').classList.toggle('acabando', s <= 8);
+  $('pavio').style.width = Math.min(100, s / tot * 100) + '%';
+  $('pontos').textContent = J.pontos;
   if(s <= 0 && (J.jogando || J.modo === 'achados')) fimDeJogo(false);
 }
-/* Toque: vale se caiu perto do meio de algum Pokémon (mesmo se outro estiver na frente do procurado). */
+/* Vale o toque perto do meio de um Pokémon (mesmo que outro esteja um pouquinho na frente do procurado). */
 $('cena').addEventListener('pointerdown', ev => {
   if(!J || !J.jogando) return;
-  const r = $('cena').getBoundingClientRect(), x = (ev.clientX - r.left) / r.width * 100, y = (ev.clientY - r.top) / r.height * 100;
-  const H = r.height / r.width;
-  const dentro = it => Math.hypot(x - it.x, (y - it.y) * H) < it.s * .38;
+  const r = $('cena').getBoundingClientRect(), x = (ev.clientX - r.left) / r.width * 100, y = (ev.clientY - r.top) / r.height * 100, R = r.height / r.width;
+  const dentro = it => Math.hypot(x - it.x, (y - it.y) * R) < it.s * .38;
   if(dentro(J.alvo)) return achou();
   const shiny = J.itens.find(it => it.shiny && !it.pego && dentro(it));
-  if(shiny){ shiny.pego = true; J.pontos += 300; rec.shinies++; salvar(); somShiny(); marca(x, y, '✨'); toast('✨ Achou um shiny! +300'); return; }
+  if(shiny){ shiny.pego = true; J.pontos += 300; rec.shinies++; salvar(); somShiny(); marca(x, y, '✨ +300', 'pow'); aviso(`✨ Achou um ${POKE[shiny.id - 1].nome} shiny!`); return; }
   if(J.itens.some(it => !it.alvo && dentro(it))){
-    somErro(); marca(x, y, '❌');
+    somErro(); marca(x, y, 'ERROU!', 'x');
     if(J.modo === 'achados') J.fimTotal -= 3000; else J.fimFase -= 3000;
-    const j = $('janela'); j.classList.remove('chacoalha'); void j.offsetWidth; j.classList.add('chacoalha');
+    const m = document.querySelector('.moldura'); m.classList.remove('chacoalha'); void m.offsetWidth; m.classList.add('chacoalha');
     relogio();
   }
 });
-function marca(x, y, e){ const m = document.createElement('span'); m.className = 'x'; m.textContent = e; m.style.left = x + '%'; m.style.top = y + '%'; $('cena').appendChild(m); setTimeout(() => m.remove(), 700); }
+function marca(x, y, t, cls){ const m = document.createElement('span'); m.className = cls; m.textContent = t; m.style.left = x + '%'; m.style.top = y + '%'; $('cena').appendChild(m); setTimeout(() => m.remove(), 900); }
+function destacar(){
+  const a = J.alvo, cena = $('cena'), R = cena.clientHeight / cena.clientWidth, d = a.s * 1.4;
+  const c = document.createElement('div'); c.className = 'achou'; c.style.width = d + '%'; c.style.height = (d / R) + '%'; c.style.left = (a.x - d / 2) + '%'; c.style.top = (a.y - d / 2 / R) + '%';
+  cena.appendChild(c); cena.classList.add('fim'); const o = cena.querySelector('.o-alvo'); if(o) o.classList.add('destaque');
+}
 function achou(){
-  J.jogando = false; somAchou();
-  const a = J.alvo, cena = $('cena'), H = cena.clientHeight / cena.clientWidth;
-  const circ = document.createElement('div'); circ.className = 'achou';
-  const d = a.s * 1.3; circ.style.width = d + '%'; circ.style.height = (d / H) + '%'; circ.style.left = (a.x - d / 2) + '%'; circ.style.top = (a.y - d / 2 / H) + '%';
-  cena.appendChild(circ); cena.classList.add('fim'); cena.querySelector('.o-alvo').classList.add('grande-alvo');
+  J.jogando = false; somAchou(); destacar(); marca(J.alvo.x, J.alvo.y, sorteia(['ACHEI!', 'PEGUEI!', 'BINGO!', 'CASO RESOLVIDO!']), 'pow');
   const sobra = J.modo === 'achados' ? 0 : Math.max(0, Math.ceil((J.fimFase - Date.now()) / 1000));
   const ganho = 100 + sobra * 10 + (J.modo === 'pika' ? J.fase * 20 : 0);
   J.pontos += ganho; J.achados++; rec.fases++;
+  const novo = !album[J.alvoId];
   album[J.alvoId] = (album[J.alvoId] || 0) + 1; salvar();
-  toast(`🎉 Achou o ${J.nome}! +${ganho}`);
+  aviso(`🎉 ${J.nome}! +${ganho}${novo ? ' · ficha nova no álbum!' : ''}`);
   if(J.modo === 'achados') J.fimTotal += 5000;
-  setTimeout(() => {
-    if(!J) return;
-    if(J.modo === 'pika' && J.fase >= FASES_PIKA) return fimDeJogo(true);
-    proximaFase();
-  }, 1600);
+  setTimeout(() => { if(!J) return; if(J.modo === 'pika' && J.fase >= FASES_PIKA) return fimDeJogo(true); proximaFase(); }, 1700);
 }
 function parar(){ if(!J) return; clearInterval(J.timer); J = null; }
 function fimDeJogo(venceu){
   if(!J) return;
-  const r = { modo:J.modo, pontos:J.pontos, fase:J.fase, achados:J.achados, alvo:J.alvo, nome:J.nome, alvoId:J.alvoId };
+  const r = { modo:J.modo, pontos:J.pontos, fase:J.fase, achados:J.achados, nome:J.nome, alvoId:J.alvoId };
+  const mostrar = !venceu && J.jogando;
   J.jogando = false;
-  /* Mostra onde ele estava. */
-  if(!venceu && r.modo === 'pika' && J.alvo){ const cena = $('cena'); cena.classList.add('fim'); const o = cena.querySelector('.o-alvo'); if(o) o.classList.add('grande-alvo'); }
+  if(mostrar) destacar();
   parar();
   const chave = r.modo === 'pika' ? 'pika' : 'achados';
   const recorde = r.pontos > rec[chave]; if(recorde) rec[chave] = r.pontos;
   if(venceu) rec.venceu++;
   salvar();
   if(venceu || recorde){ somAchou(); confete(); } else somErro();
-  setTimeout(() => janela(`<div class="grandao">${venceu ? '🏆' : r.modo === 'achados' ? '⏰' : `<img src="${url(r.alvoId)}" alt="" />`}</div>
-    <h2>${venceu ? 'Detetive MESTRE!' : r.modo === 'achados' ? 'Acabou o tempo!' : `Ele estava ali!`}</h2>
-    <p>${venceu ? 'Você achou o Pikachu nas 10 fases! 🕵️⚡' : r.modo === 'achados' ? `Você achou <b>${r.achados}</b> Pokémon!` : `O ${esc(r.nome)} fugiu na fase <b>${r.fase}</b>… Olha onde ele estava escondido! 👀`}</p>
-    <p>⭐ Pontos: <b>${r.pontos}</b></p>${recorde && r.pontos > 0 ? '<p>🏆 <b>RECORDE NOVO!</b></p>' : ''}
-    <button class="grande centro" type="button" data-denovo="${r.modo}">🔁 Jogar de novo</button>
-    <button class="mini" type="button" data-fechar style="margin-top:10px">🏠 Início</button>`), venceu || r.modo === 'achados' ? 300 : 1400);
+  setTimeout(() => janela(`<div class="grandao">${venceu ? '🏆' : `<img src="${url(r.alvoId)}" alt="" />`}</div>
+    <h2>${venceu ? 'DETETIVE MESTRE!' : r.modo === 'achados' ? 'ACABOU O TEMPO!' : 'ELE FUGIU!'}</h2>
+    <p>${venceu ? 'Você achou o Pikachu nos 10 casos! 🕵️⚡' : r.modo === 'achados' ? `Você achou <b>${r.achados}</b> Pokémon! O último era o <b>${esc(r.nome)}</b>.` : `O ${esc(r.nome)} escapou no caso <b>${r.fase}</b>… Olha onde ele estava! 👀`}</p>
+    <p>⭐ Pontos: <b>${r.pontos}</b>${recorde && r.pontos > 0 ? ' · 🏆 <b>RECORDE!</b>' : ''}</p>
+    <button class="botao quadro amarelo" type="button" data-denovo="${r.modo}"><b>🔁 Jogar de novo</b></button>
+    <button class="pilha" type="button" data-fechar style="margin-top:12px">📰 Capa</button>`), mostrar ? 1500 : 300);
 }
 $('dlg-corpo').addEventListener('click', ev => {
   const d = ev.target.closest('[data-denovo]'); if(d){ dlg.close(); novoJogo(d.dataset.denovo); return; }
@@ -405,32 +496,35 @@ function atualizarDica(){ $('dica').textContent = `💡 Dica (${J ? J.dicas : 0}
 $('dica').onclick = () => {
   if(!J || !J.jogando || !J.dicas) return;
   J.dicas--; atualizarDica(); bip(660, .1, 'triangle');
-  /* Mostra a regiãozinha, não o lugar exato. */
-  const a = J.alvo, cena = $('cena'), H = cena.clientHeight / cena.clientWidth, d = 34;
-  const cx = Math.min(100 - d / 2, Math.max(d / 2, a.x + (Math.random() - .5) * 14)), cy = Math.min(100 - d / 2 / H, Math.max(d / 2 / H, a.y + (Math.random() - .5) * 14 / H));
-  const c = document.createElement('div'); c.className = 'circ'; c.style.width = d + '%'; c.style.height = (d / H) + '%'; c.style.left = (cx - d / 2) + '%'; c.style.top = (cy - d / 2 / H) + '%';
+  const a = J.alvo, cena = $('cena'), R = cena.clientHeight / cena.clientWidth, d = 34;
+  const cx = Math.min(100 - d / 2, Math.max(d / 2, a.x + (Math.random() - .5) * 14)), cy = Math.min(100 - d / 2 / R, Math.max(d / 2 / R, a.y + (Math.random() - .5) * 14 / R));
+  const c = document.createElement('div'); c.className = 'circ'; c.style.width = d + '%'; c.style.height = (d / R) + '%'; c.style.left = (cx - d / 2) + '%'; c.style.top = (cy - d / 2 / R) + '%';
   cena.appendChild(c); setTimeout(() => c.remove(), 2200);
 };
 $('zoom').onclick = () => { const j = $('janela'); j.classList.toggle('zoom'); $('zoom').textContent = j.classList.contains('zoom') ? '🔍 Tirar lupa' : '🔍 Lupa';
   if(j.classList.contains('zoom')){ j.scrollLeft = (j.scrollWidth - j.clientWidth) / 2; j.scrollTop = (j.scrollHeight - j.clientHeight) / 2; } };
 
 /* ---------- álbum ---------- */
+let geracao = 0;
 function mostrarAlbum(){
-  const unicos = [...new Map(ALVOS.map(a => [a[0], a[1]])).entries()];
-  const tem = unicos.filter(([id]) => album[id]).length;
-  $('album-resumo').textContent = `Você já achou ${tem} de ${unicos.length} Pokémon. Os escurinhos você ainda não achou!`;
-  $('album').innerHTML = unicos.map(([id, n]) => `<div class="${album[id] ? '' : 'nao'}"><img src="${url(id)}" alt="" loading="lazy" /><b>${album[id] ? esc(n) : '???'}</b><small>${album[id] ? `achou ${album[id]}x` : 'ainda não'}</small></div>`).join('');
+  const tem = Object.keys(album).length;
+  $('album-resumo').textContent = `Você tem ${tem} de 1025 fichas. As escuras ainda faltam: ache esses Pokémon nos Achados e Perdidos!`;
+  $('album-abas').innerHTML = GERACOES.map(([a, b], i) => { const n = POKE.slice(a - 1, b).filter(p => album[p.id]).length;
+    return `<button type="button" data-ger="${i}" aria-pressed="${i === geracao}">Ger ${i + 1} · ${n}/${b - a + 1}</button>`; }).join('');
+  const [a, b] = GERACOES[geracao];
+  $('album').innerHTML = POKE.slice(a - 1, b).map(p => `<div class="figura ${album[p.id] ? '' : 'nao'}"><img src="${url(p.id)}" alt="" loading="lazy" /><b>${album[p.id] ? esc(p.nome) : '???'}</b><small>nº ${p.id}${album[p.id] ? ` · ${album[p.id]}x` : ''}</small></div>`).join('');
   tela('album');
 }
+$('album-abas').onclick = ev => { const b = ev.target.closest('[data-ger]'); if(b){ geracao = +b.dataset.ger; mostrarAlbum(); } };
 $('ir-album').onclick = mostrarAlbum;
 $('album-voltar').onclick = mostrarInicio;
 
-/* ---------- janela, toast e festa ---------- */
+/* ---------- janela, aviso e festa ---------- */
 const dlg = $('dlg');
 function janela(html){ $('dlg-corpo').innerHTML = html; if(!dlg.open) dlg.showModal(); }
 dlg.addEventListener('cancel', () => setTimeout(mostrarInicio, 0));
-function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1800); }
-function confete(){ const cores = ['#ffd43b', '#e5484d', '#2f7de0', '#2e9e5b', '#ff8cc0', '#fff'];
+function aviso(t){ document.querySelectorAll('.aviso-rapido').forEach(x => x.remove()); const d = document.createElement('div'); d.className = 'aviso-rapido'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1800); }
+function confete(){ const cores = ['#ffd43b', '#e03131', '#1c7ed6', '#2f9e44', '#fff'];
   for(let i = 0; i < 60; i++){ const c = document.createElement('i'); c.className = 'confete'; c.style.left = Math.random() * 100 + 'vw'; c.style.background = cores[i % cores.length];
     c.style.animationDelay = Math.random() * .5 + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 3600); } }
 
@@ -439,7 +533,7 @@ const btSom = $('som'); function marcarSom(){ btSom.textContent = cfg.som ? '�
 btSom.onclick = () => { cfg.som = !cfg.som; salvar(); marcarSom(); };
 const btTema = $('tema'), corDaBarra = document.querySelector('meta[name="theme-color"]');
 function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
-function aplicarTema(t){ if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema'); btTema.textContent = estaEscuro() ? '☀️' : '🌙'; corDaBarra.setAttribute('content', estaEscuro() ? '#1a1608' : '#f5b700'); }
+function aplicarTema(t){ if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema'); btTema.textContent = estaEscuro() ? '☀️' : '🌙'; corDaBarra.setAttribute('content', estaEscuro() ? '#1b1d2a' : '#fdf3d8'); }
 aplicarTema(ler('tema', null));
 btTema.onclick = () => { const t = estaEscuro() ? 'claro' : 'escuro'; gravar('tema', t); aplicarTema(t); };
 
@@ -459,7 +553,7 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if(!jaTinha || document.querySelector('.faixa-nova')) return;
     const f = document.createElement('div'); f.className = 'faixa-nova';
-    f.innerHTML = '<span>✨ Chegou versão nova!</span><button type="button">Carregar</button>';
+    f.innerHTML = '<span>✨ Edição nova do jornal!</span><button type="button">Abrir</button>';
     f.querySelector('button').onclick = () => location.reload();
     document.body.appendChild(f);
   });
