@@ -175,12 +175,12 @@ button:focus-visible{outline:3px solid #ffb300;outline-offset:2px}
     <div class="cartao">
       <h3>📜 Como joga</h3>
       <p class="aviso">Os Pokémon ficam em volta do lago, que vai girando 🌀. De vez em quando cada um <b>abre a boca</b> 😮 e sobe. Toque nele <b>nessa hora</b> pra pescar! Se tocar com a boca fechada, ele foge 💦.</p>
-      <p class="aviso">Pokémon raros valem mais (tem até o <b>Kyogre</b> e o <b>Magikarp dourado</b> ✨). Mas cuidado com a 🥾 <b>bota velha</b> (-1) e o <b>Tentacool</b>, que queima e te deixa tonto (-2)! E às vezes o lago fica <b>maluco</b>: acelera, vira pro outro lado ou todo mundo abre a boca de uma vez!</p>
+      <p class="aviso">Pokémon raros valem mais (tem até o <b>Kyogre</b>, <b>Lugia</b>, <b>Palkia</b>, o <b>Magikarp dourado</b> e o <b>Gyarados vermelho</b> ✨). Mas cuidado com a 🥾 <b>bota velha</b> (-1) e o <b>Tentacool</b> e o <b>Qwilfish</b>, que queimam ou espetam e te deixam tonto (-2)! E às vezes o lago fica <b>maluco</b>: acelera, vira pro outro lado ou todo mundo abre a boca de uma vez!</p>
       <div class="recs" id="recs"></div>
     </div>
     <div class="rodape">
       Tudo fica guardado só neste aparelho.
-      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 1 — 29/09 · 🔄</button>
+      <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 2 — 30/09 · 🔄</button>
     </div>
   </section>
 
@@ -233,7 +233,42 @@ const PEIXES = [
   { k:'130',  id:130, n:'Gyarados',  p:10, w:2, raro:1 },
   { k:'129s', id:129, n:'Magikarp dourado', p:15, w:1, raro:1, shiny:1 },
   { k:'382',  id:382, n:'Kyogre',    p:25, w:.4, raro:1 },
+  { k:'223',  id:223, n:'Remoraid',  p:1,  w:10 },
+  { k:'456',  id:456, n:'Finneon',   p:2,  w:9 },
+  { k:'170',  id:170, n:'Chinchou',  p:2,  w:8 },
+  { k:'98',   id:98,  n:'Krabby',    p:2,  w:9 },
+  { k:'90',   id:90,  n:'Shellder',  p:2,  w:9 },
+  { k:'60',   id:60,  n:'Poliwag',   p:2,  w:9 },
+  { k:'183',  id:183, n:'Marill',    p:2,  w:8 },
+  { k:'270',  id:270, n:'Lotad',     p:2,  w:8 },
+  { k:'418',  id:418, n:'Buizel',    p:3,  w:7 },
+  { k:'258',  id:258, n:'Mudkip',    p:3,  w:7 },
+  { k:'656',  id:656, n:'Froakie',   p:3,  w:7 },
+  { k:'728',  id:728, n:'Popplio',   p:3,  w:7 },
+  { k:'816',  id:816, n:'Sobble',    p:3,  w:7 },
+  { k:'501',  id:501, n:'Oshawott',  p:3,  w:7 },
+  { k:'912',  id:912, n:'Quaxly',    p:3,  w:7 },
+  { k:'960',  id:960, n:'Wiglett',   p:2,  w:8 },
+  { k:'339',  id:339, n:'Barboach',  p:2,  w:8 },
+  { k:'226',  id:226, n:'Mantine',   p:4,  w:5 },
+  { k:'134',  id:134, n:'Vaporeon',  p:5,  w:4 },
+  { k:'779',  id:779, n:'Bruxish',   p:4,  w:5 },
+  { k:'593',  id:593, n:'Jellicent', p:5,  w:4 },
+  { k:'121',  id:121, n:'Starmie',   p:5,  w:4 },
+  { k:'230',  id:230, n:'Kingdra',   p:8,  w:2.5, raro:1 },
+  { k:'350',  id:350, n:'Milotic',   p:9,  w:2.2, raro:1 },
+  { k:'658',  id:658, n:'Greninja',  p:9,  w:2.2, raro:1 },
+  { k:'730',  id:730, n:'Primarina', p:8,  w:2.5, raro:1 },
+  { k:'964',  id:964, n:'Palafin',   p:9,  w:2, raro:1 },
+  { k:'977',  id:977, n:'Dondozo',   p:10, w:2, raro:1 },
+  { k:'321',  id:321, n:'Wailord',   p:12, w:1.5, raro:1 },
+  { k:'490',  id:490, n:'Manaphy',   p:18, w:.7, raro:1 },
+  { k:'245',  id:245, n:'Suicune',   p:20, w:.6, raro:1 },
+  { k:'249',  id:249, n:'Lugia',     p:25, w:.4, raro:1 },
+  { k:'484',  id:484, n:'Palkia',    p:25, w:.4, raro:1 },
+  { k:'130s', id:130, n:'Gyarados vermelho', p:30, w:.3, raro:1, shiny:1 },
   { k:'72',   id:72,  n:'Tentacool', p:-2, w:5, ruim:1 },
+  { k:'211',  id:211, n:'Qwilfish',  p:-2, w:3, ruim:1, fala:'Espetou!' },
   { k:'bota', id:0,   n:'Bota velha', e:'🥾', p:-1, w:5, ruim:1 }
 ];
 const PESO_TOTAL = PEIXES.reduce((s, x) => s + x.w, 0);
@@ -411,8 +446,8 @@ function pescar(f, idx){
   j.pts = Math.max(0, j.pts + x.p); j.pegos.push(x);
   if(!j.robo){ dex[x.k] = (dex[x.k] || 0) + 1; rec.pescados++; }
   if(x.ruim){
-    somRuim(); flutuar((x.p) + ' ' + (x.id === 72 ? '🔥 Ai!' : '🥾'), p.x, p.y, 'menos');
-    if(x.id === 72) j.tontoAte = performance.now() + 1500;
+    somRuim(); flutuar((x.p) + ' ' + (x.id === 72 ? '🔥 Ai!' : x.id === 211 ? '🦔 Espetou!' : '🥾'), p.x, p.y, 'menos');
+    if(x.id === 72 || x.id === 211) j.tontoAte = performance.now() + 1500;
   } else { somPesca(x.raro); flutuar('+' + x.p + (x.raro ? ' ✨' : ''), p.x, p.y, 'mais'); }
   /* Animação: a linha desce e o Pokémon voa pro balde (ou pro lado de quem pescou). */
   const alvoY = J.modo === 'dupla' ? (idx === 1 ? -80 : innerHeight + 80) : (j.robo ? -80 : $('balde').getBoundingClientRect().top + 20);
