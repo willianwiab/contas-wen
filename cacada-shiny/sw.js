@@ -1,7 +1,7 @@
 /* Guarda a casca do site (página, ícone, manifesto) pra abrir rápido e funcionar sem internet. */
 /* O número sobe sempre que eu quero que todo mundo largue o que estava
    guardado. Quem estava com versão velha pega a nova na primeira visita. */
-const CACHE = 'cacada-shiny-v2';
+const CACHE = 'cacada-shiny-v3';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {

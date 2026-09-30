@@ -23,4 +23,15 @@ Vários Pokémon iguais na grama e **um deles é shiny**. Ache o brilhante antes
 - 👑 **Jojo adm**: 5 toques rápidos no ícone do título, mesma senha dos outros jogos (só a impressão digital SHA-256 fica no código). Mostrar o shiny, pular fases, ir pro Chefão, tempo cheio, vidas infinitas…
 - 🌗 Tema claro e escuro, 🔊 som liga/desliga.
 
+## Versão 3: igual ao Quem é esse Pokémon?
+- 👤 **Perfil**: apelido e foto (a foto pode ser qualquer shiny que você já achou ✨).
+- 🎖️ **Nível de treinador** com XP: cada shiny dá XP (o Chefão dá mais).
+- 🪙 **Moedas**: 1 por shiny, 5 por Chefão, 10 por missão e as da recompensa diária.
+- 🛒 **Loja**: 🖼️ fundos do perfil, 🔲 molduras, 🏷️ títulos, 🌿 **campos** (praia, neve, caverna, vulcão, jardim, espaço: muda o fundo onde os Pokémon ficam) e 🔍 lupas extras pra próxima partida.
+- 🎯 **3 missões por dia** (+50 XP e 🪙 10 cada) e 🔥 **recompensa diária** com sequência de 7 dias.
+- 👥 **Amigos por código** (`CACA1.…`): quem cola vê seu perfil enfeitado, nível, coleção e recordes. Não existe pesquisa de estranhos.
+- ⚔️ **Desafio** (`SHINYDESAFIO1.…`): 10 fases com **os mesmos Pokémon nos mesmos lugares** pros dois (sai tudo de uma semente, com um sorteio próprio pra cada fase). O amigo joga e aparece quem venceu.
+- 🎬 **Histórico** das últimas 30 partidas.
+- 👑 O **Jojo adm** ganhou: +500 moedas, +1.000 XP, ganhar a loja toda, completar missões e o título "Jojo adm".
+
 As imagens e os nomes vêm da [PokeAPI](https://pokeapi.co/). Tudo fica guardado só neste aparelho. Os recordes da primeira versão (só Clássico) passam sozinhos pro Clássico.
