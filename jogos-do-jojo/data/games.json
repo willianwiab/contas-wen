@@ -5,6 +5,582 @@
   },
   "jogos": [
     {
+      "slug": "cacada-shiny",
+      "nome": "Caçada Shiny",
+      "descricao": "Vários Pokémon iguais e um deles é shiny! Ache o brilhante antes do tempo acabar. Cada fase tem mais Pokémon e menos tempo.",
+      "comoFunciona": "Aparece uma grade de Pokémon iguais na grama e só um é shiny. A grade começa em 3×3 e vai até 9×9, e o tempo diminui a cada fase. Depois eles começam a virar, balançar, trocar de lugar, e na fase 20 fica de noite.",
+      "objetivo": "Achar o maior número de shinies seguidos sem perder as 3 vidas.",
+      "mecanicas": [
+        "Grade de 3×3 até 9×9 Pokémon",
+        "3 vidas: errar ou deixar o tempo acabar tira uma",
+        "Combo de até x5 por acertos seguidos",
+        "🔍 Lupa que esconde metade dos errados",
+        "Fase 5: viram · Fase 9: balançam · Fase 13: trocam de lugar",
+        "Fase 20: de noite, só enxerga perto do dedo",
+        "📖 Coleção com todo shiny que você achou",
+        "Qualquer Pokémon de 1 a 1025",
+        "Jojo adm com senha secreta"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Média",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "100 + 20 por fase + bônus de rapidez, multiplicado pelo combo (até x5).",
+      "popularidade": 95,
+      "imagem": "assets/images/cacada-shiny.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../cacada-shiny/index.html",
+      "galeria": [],
+      "historia": "Um Pokémon shiny se escondeu no meio de vários iguais. Só um olho de caçador acha!",
+      "comoJogar": "Toque no Pokémon de cor diferente antes da barra de tempo acabar. Tocar no errado tira uma vida e um pouco de tempo. Use a lupa quando estiver difícil.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        },
+        {
+          "tecla": "🔍",
+          "acao": "Usar a lupa"
+        },
+        {
+          "tecla": "⏸️",
+          "acao": "Pausar"
+        }
+      ],
+      "curiosidades": [
+        "Nas 6 primeiras fases só aparecem Pokémon com shiny bem diferente, tipo o Charizard preto e o Gyarados vermelho.",
+        "Depois pode vir qualquer um dos 1025, até os de shiny quase igual ao normal."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "pescaria-pokemon",
+      "nome": "Pesca Maluca Pokémon",
+      "descricao": "Jogue o anzol, escolha a profundidade e fisgue Pokémon! Quanto mais fundo, mais raro. Loja, álbum, conquistas, climas e lugares.",
+      "comoFunciona": "Você joga o anzol e escolhe até onde ele desce. Quando aparece MORDEU!, tem que tocar rápido. São 12 camadas de profundidade e 4 lugares, cada um com seus Pokémon. Tem também o Lago Maluco, o lago que gira.",
+      "objetivo": "Pescar todos os Pokémon do álbum, até o Arceus no Núcleo do Ultra-Espaço.",
+      "mecanicas": [
+        "12 camadas de profundidade, da Superfície ao NÚCLEO",
+        "4 lugares: Mar, Polo Norte, Vulcão e Ultra-Espaço",
+        "✨ Shiny: 1 em 150, vale ×5",
+        "Eventos por mês e clima que muda a cada minuto",
+        "Loja com anzóis, iscas, barcos, linhas e redes",
+        "📖 Álbum e 🏆 30 conquistas",
+        "🌀 Lago Maluco: lago que gira, solo, robô e 2 jogadores",
+        "Jojo adm com senha secreta"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Média",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "Cada Pokémon vale moedas conforme a raridade; shiny vale 5 vezes.",
+      "popularidade": 93,
+      "imagem": "assets/images/pescaria-pokemon.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../pescaria-pokemon/index.html",
+      "galeria": [],
+      "historia": "Igual à Pesca Maluca, só que com Pokémon!",
+      "comoJogar": "Toque pra jogar o anzol. Enquanto ele desce, toque de novo pra parar. Quando aparecer MORDEU!, toque rápido pra fisgar.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        }
+      ],
+      "curiosidades": [
+        "No Núcleo do Ultra-Espaço mora o Arceus, que é quase impossível de pegar."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "vila-pokemon",
+      "nome": "Vila Pokémon",
+      "descricao": "Cuide da sua vila Pokémon: venda na Lojinha, faça bolos na Confeitaria da Alcremie, cace fantasmas, dance no palco e monte sua ilha!",
+      "comoFunciona": "A vila tem vários lugares, e as moedas que você ganha num servem em todos. Cada lugar é um joguinho diferente e tem melhorias pra comprar.",
+      "objetivo": "Deixar a vila cada vez maior e trazer todos os Pokémon pra morar na ilha.",
+      "mecanicas": [
+        "🏪 Lojinha: venda o que os Pokémon pedem no balão",
+        "🍰 Confeitaria da Alcremie: monte o bolo igual ao pedido",
+        "👻 Casa Assombrada: ache os fantasmas com a lanterna",
+        "🎤 Palco de Talentos: jogo de ritmo com 8 artistas",
+        "🏝️ Ilha: construa e traga 16 Pokémon pra morar",
+        "⬆️ Melhorias em todos os lugares"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "Moedas por venda, bolo, fantasma e música; o Mewtwo VIP paga o triplo.",
+      "popularidade": 90,
+      "imagem": "assets/images/vila-pokemon.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../vila-pokemon/index.html",
+      "galeria": [],
+      "historia": "Uma vila inteira cheia de Pokémon, e quem cuida dela é você.",
+      "comoJogar": "Escolha um lugar da vila e jogue. As moedas servem pra melhorar tudo e construir na ilha.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        }
+      ],
+      "curiosidades": [
+        "O Snorlax e o Munchlax só querem comida, e a Chansey só compra cura."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "pokegotchi",
+      "nome": "Pokégotchi",
+      "descricao": "O seu bichinho virtual Pokémon: choque o ovo, cuide, brinque, batalhe e veja ele evoluir!",
+      "comoFunciona": "Você escolhe um Pokémon (ou um ovo misterioso), choca o ovo e cuida dele. Ele sente fome, sono e fica sujo, até com o site fechado. Cuidar dá XP, e ele evolui.",
+      "objetivo": "Criar o Pokémon mais feliz e evoluído, e encher o álbum.",
+      "mecanicas": [
+        "🥚 Chocar o ovo (1 em 20 nasce shiny)",
+        "📊 Barriga, felicidade, energia, limpeza e saúde",
+        "🍎 Comer, 🎾 brincar, 🛁 banho, 💤 dormir",
+        "⭐ Evolui nos níveis 8 e 18",
+        "🗺️ Mapa pra explorar e ⚔️ batalhas na grama alta",
+        "🕹️ Joguinhos: Frutinhas, Pega o Diglett e Memória",
+        "🗂️ Até 6 Pokémon e código de save",
+        "👥 Perfil, amigos por código e conversa",
+        "Jojo adm com senha secreta"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "XP por cuidar, brincar e batalhar; moedas pra loja.",
+      "popularidade": 92,
+      "imagem": "assets/images/pokegotchi.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../pokegotchi/index.html",
+      "galeria": [],
+      "historia": "Um bichinho virtual como os de antigamente, mas o bichinho é um Pokémon.",
+      "comoJogar": "Cuide das barras do seu Pokémon: dê comida, brinque, dê banho e deixe ele dormir. Ele nunca morre, mas fica tristinho sem cuidado.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        }
+      ],
+      "curiosidades": [
+        "Todos os 1025 Pokémon podem ser escolhidos.",
+        "Mesmo com o site fechado, ele continua sentindo fome, mas só pela metade da velocidade."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "quem-e-esse-pokemon",
+      "nome": "Quem é esse Pokémon?",
+      "descricao": "Adivinhe o Pokémon pela sombra! Níveis, recorde, dicas, troféus, loja, amigos e desafio.",
+      "comoFunciona": "Aparece a sombra de um Pokémon e você diz quem é, escolhendo entre 4 opções ou escrevendo o nome. Tem vários níveis, jeitos de jogar e tipos de pergunta (sombra, grito, cor, evolução, letras embaralhadas).",
+      "objetivo": "Acertar o máximo de Pokémon e ganhar todos os troféus.",
+      "mecanicas": [
+        "Níveis Fácil, Médio, Difícil (1025 Pokémon) ou por geração",
+        "10 perguntas, contra o tempo, 3 vidas, Chefão, Escada e mais",
+        "Sombra, grito, cor, evolução e letras embaralhadas",
+        "💡 Dicas e 🔥 sequência",
+        "✨ Shiny e modo shiny",
+        "🏆 1.125 troféus, 🪙 AcertoPoke e loja",
+        "👥 Amigos por código e ⚔️ desafio",
+        "🎬 Gravar vídeo da partida",
+        "Jojo adm com senha secreta"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Média",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "10 pontos por acerto (menos com dica) + bônus de sequência.",
+      "popularidade": 96,
+      "imagem": "assets/images/quem-e-esse-pokemon.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../quem-e-esse-pokemon/index.html",
+      "galeria": [],
+      "historia": "É o jogo da abertura do desenho: a sombra aparece e alguém grita quem é!",
+      "comoJogar": "Olhe a sombra e escolha o nome certo (ou escreva). No computador, as teclas 1 a 4 escolhem a resposta.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        },
+        {
+          "tecla": "1 · 2 · 3 · 4",
+          "acao": "Escolher a resposta"
+        }
+      ],
+      "curiosidades": [
+        "Aceita um errinho de letra quando você escreve o nome."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "detetive-pokemon",
+      "nome": "Detetive Pokémon",
+      "descricao": "A Alcremie VMAX desapareceu! Veja a gravação, leia a perícia, interrogue os suspeitos e descubra qual Pokémon levou ela.",
+      "comoFunciona": "Cada caso tem vários suspeitos com tipo, cor, peso, altura e região. As pistas falam dessas coisas, e juntas deixam só um culpado. Dá pra inocentar, interrogar e culpar.",
+      "objetivo": "Descobrir o culpado usando o menor número de pistas.",
+      "mecanicas": [
+        "📹 Gravação da câmera com o vulto",
+        "📋 Relatório e pistas da perícia",
+        "✅ Inocentar, 🎤 interrogar e ⚖️ culpar",
+        "🕵️ 18+ detetives com habilidades especiais",
+        "💾 O caso fica salvo",
+        "🛒 Loja, 🎯 missões e 📅 prêmio de todo dia",
+        "👥 Amigos e ⚔️ desafio com o mesmo caso",
+        "Jojo adm com senha secreta"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Média",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "Quanto menos pistas usar, mais pontos. Prender o errado custa uma estrela.",
+      "popularidade": 88,
+      "imagem": "assets/images/detetive-pokemon.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../detetive-pokemon/index.html",
+      "galeria": [],
+      "historia": "A Alcremie VMAX, o bolo gigante, vive sumindo. Alguém tem que descobrir quem levou!",
+      "comoJogar": "Leia as pistas, risque os inocentes e, quando tiver certeza, culpe o suspeito.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        }
+      ],
+      "curiosidades": [
+        "As pistas são inventadas pelo jogo a cada caso.",
+        "Existe um personagem especial com 1 chance em 1 milhão de ser o culpado."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "dittospokedex",
+      "nome": "Ditto's Pokédex",
+      "descricao": "Os 1025 Pokémon: quais já chegaram no Pokémon GO, quais ainda não, e quais você já pegou.",
+      "comoFunciona": "Uma Pokédex com todos os 1025 Pokémon, mostrando quem já tem no Pokémon GO. Você marca os que pegou, filtra, procura e vê tipos, evoluções e doces.",
+      "objetivo": "Marcar todos os Pokémon que existem no GO.",
+      "mecanicas": [
+        "Os 1025 Pokémon com foto",
+        "❌ não chegou · 🟡 falta pegar · ✅ peguei",
+        "Filtros por geração e pesquisa",
+        "Tipos, fraquezas e evoluções",
+        "🎮 Quem é? com sombra e som",
+        "🏅 27 medalhas e ✨ modo shiny",
+        "🤝 Código pra mostrar pro amigo"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Site (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "",
+      "popularidade": 80,
+      "imagem": "assets/images/dittospokedex.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../dittospokedex/index.html",
+      "galeria": [],
+      "historia": "O Ditto se transforma em qualquer Pokémon, então nada melhor que ele pra cuidar da Pokédex.",
+      "comoJogar": "Procure um Pokémon e toque em \"Peguei!\". O placar mostra quantos você já tem.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        }
+      ],
+      "curiosidades": [
+        "O botão \"Ditto, se transforma!\" sorteia um Pokémon."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "godex",
+      "nome": "GOdex",
+      "descricao": "Marque quais Pokémon você já pegou no Pokémon GO, com shiny, sombroso, sortudo e fantasia, e veja qual é o mais raro da sua coleção.",
+      "comoFunciona": "Uma Pokédex do Pokémon GO onde você marca os que tem, com todas as variações. Os dados vêm da PokéAPI, e o site calcula qual é o mais raro da sua coleção.",
+      "objetivo": "Descobrir qual é o Pokémon mais raro que você tem.",
+      "mecanicas": [
+        "Marcar tenho, ✨ shiny, sombroso, sortudo, fundo e fantasia",
+        "Ficha com tipos e figurinha",
+        "🏆 Ranking dos mais raros da coleção",
+        "Funciona sem internet depois de aberto"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Site (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "",
+      "popularidade": 72,
+      "imagem": "assets/images/godex.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../godex/index.html",
+      "galeria": [],
+      "historia": "Todo treinador quer saber: qual é o Pokémon mais raro da minha coleção?",
+      "comoJogar": "Procure o Pokémon, abra a ficha e marque o que você tem.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        }
+      ],
+      "curiosidades": [
+        "Marcar o shiny troca a figurinha pela shiny."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "butterpoke",
+      "nome": "ButterPoke",
+      "descricao": "Digite o número da carta de Pokémon e o ButterPoke mostra quanto ela vale. Com coleção, jogos de cartas e duelo.",
+      "comoFunciona": "Você digita o número da carta e o site busca o preço. Se existir mais de uma carta com aquele número, ele pergunta o nome. Tem também jogos com as cartas, duelo e sua coleção.",
+      "objetivo": "Saber quanto vale cada carta da sua coleção.",
+      "mecanicas": [
+        "💰 Preço da carta pelo número",
+        "⭐ Favoritas e minha coleção",
+        "🎲 Jogos: qual vale mais, que carta é essa, acha a intrusa",
+        "⚔️ Duelo de cartas",
+        "📦 Vale a pena abrir um pacote?",
+        "Modo claro e escuro"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Site (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "",
+      "popularidade": 85,
+      "imagem": "assets/images/butterpoke.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../butterpoke/index.html",
+      "galeria": [],
+      "historia": "O nome é Butterfree + Pokémon, então a cara do site é a dela: asa branca, corpo roxo e olhões vermelhos.",
+      "comoJogar": "Digite o número do cantinho da carta e veja o preço.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        }
+      ],
+      "curiosidades": [
+        "Existe uma carta \"25\" em quase toda coleção, por isso o site pergunta o nome quando tem mais de uma."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "seu-album-pokemon",
+      "nome": "Seu Álbum Pokémon",
+      "descricao": "O álbum das suas cartas Pokémon: quantas você tem de cada, as repetidas pra trocar e as que você quer.",
+      "comoFunciona": "Você acha a carta pelo nome ou número e coloca no fichário. As repetidas vão sozinhas pra lista de troca, e tem lista de desejos e código pra levar o álbum pra outro aparelho.",
+      "objetivo": "Completar o álbum.",
+      "mecanicas": [
+        "📖 Fichário de 9 bolsos por página",
+        "🔁 Repetidas pra trocar",
+        "💖 Lista de desejos",
+        "🤝 Trocar com amigos por código",
+        "💾 Código pra guardar o álbum"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Site (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "",
+      "popularidade": 74,
+      "imagem": "assets/images/seu-album-pokemon.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../seu-album-pokemon/index.html",
+      "galeria": [],
+      "historia": "Um álbum de figurinhas, só que das suas cartas Pokémon de verdade.",
+      "comoJogar": "Procure a carta, toque nela e use o − e o + pra dizer quantas você tem.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        }
+      ],
+      "curiosidades": [
+        "Tendo 3 cartas iguais, 2 vão sozinhas pra lista de troca."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
+      "slug": "olho-na-carta",
+      "nome": "Olho na Carta",
+      "descricao": "Não leve carta Pokémon falsa pra casa: checklist, lupa e comparador pela câmera, suas cartas, lista de desejos e balança de troca.",
+      "comoFunciona": "Dez testes pra conferir se a carta é falsa (luz, borda, verso, textura, fonte, holo…), com lupa e comparador pela câmera. Tem também balança de troca com preço real e o histórico de quem trocou com você.",
+      "objetivo": "Nunca sair perdendo numa troca.",
+      "mecanicas": [
+        "✅ 10 testes pra achar carta falsa",
+        "🔍 Lupa e comparador de verso pela câmera",
+        "⚖️ Balança de troca com preço real",
+        "📋 Suas cartas e lista de desejos",
+        "📜 Histórico de quem trocou com você",
+        "Funciona sem internet"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Site (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "",
+      "popularidade": 70,
+      "imagem": "assets/images/olho-na-carta.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../olho-na-carta/index.html",
+      "galeria": [],
+      "historia": "Na mesa da loja, com a carta na mão, é a hora que mais precisa saber se ela é de verdade.",
+      "comoJogar": "Pegue a carta e faça os testes um por um, marcando a caixinha.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        }
+      ],
+      "curiosidades": [
+        "Funciona sem internet justamente pra ajudar na loja."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "jogo-do-nada-jojo",
       "nome": "Jogo do Nada",
       "descricao": "Um emoji te dá uma tarefa só: não fazer nada. Você vai fazer alguma coisa — e aí a logo vira prata, pega fogo, vira obsidiana, as letras soltam e viram um portal pro outro mundo, onde o emoji vira o SQUISHYMAN.",
