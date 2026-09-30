@@ -5,7 +5,7 @@
   const $ = id => document.getElementById(id);
   const naExtensao = typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
   const PADRAO = { ligado:true, pets:[{ id:25, shiny:false }], tamanho:'M', som:true, seguir:false, estilo:'3d' };
-  const MAX = 3;
+  const MAX = 10;
   const mini = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`;
   const semAcento = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));

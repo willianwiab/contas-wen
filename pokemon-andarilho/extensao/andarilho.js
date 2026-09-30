@@ -21,7 +21,7 @@
   function limpa(c){
     c = Object.assign({}, PADRAO, c && typeof c === 'object' ? c : {});
     const pets = Array.isArray(c.pets) ? c.pets : [];
-    c.pets = pets.slice(0, 3).map(p => ({ id:Math.max(1, Math.min(1025, Math.floor(+p.id) || 25)), shiny:!!p.shiny }));
+    c.pets = pets.slice(0, 10).map(p => ({ id:Math.max(1, Math.min(1025, Math.floor(+p.id) || 25)), shiny:!!p.shiny }));
     if(!c.pets.length) c.pets = [{ id:25, shiny:false }];
     if(!TAMANHOS[c.tamanho]) c.tamanho = 'M';
     if(!['3d', 'animado'].includes(c.estilo)) c.estilo = '3d';
@@ -50,6 +50,20 @@
     .balao.on{opacity:1;transform:translate(-50%,0) scale(1)}
     .efeito{position:absolute;pointer-events:none;font-size:22px;animation:sobe 1.3s ease-out forwards}
     @keyframes sobe{from{transform:translate(0,0) scale(.6);opacity:1}to{transform:translate(var(--dx,0px),-70px) scale(1.2);opacity:0}}
+    .menu{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:10px;display:none;gap:4px;background:#fff;border:2px solid #1b1b1b;border-radius:16px;
+      padding:6px;box-shadow:3px 3px 0 #1b1b1b;flex-direction:column;align-items:stretch;z-index:5;font:700 12px/1.1 system-ui,-apple-system,'Segoe UI',sans-serif;color:#1b1b1b}
+    .menu.on{display:flex}
+    .menu .bts{display:flex;gap:4px}
+    .menu button{all:unset;cursor:pointer;width:40px;height:40px;border-radius:12px;background:#eef2ff;border:2px solid #c5d0fa;display:grid;place-items:center;font-size:22px;box-sizing:border-box}
+    .menu button:hover{background:#dbe4ff}
+    .barrinhas{display:grid;grid-template-columns:repeat(4,40px);gap:4px;text-align:center}
+    .barrinhas i{display:block;height:6px;border-radius:9px;background:#e9ecef;overflow:hidden;border:1px solid #adb5bd}
+    .barrinhas i b{display:block;height:100%;background:#51cf66}
+    .barrinhas i b.meio{background:#fcc419} .barrinhas i b.baixo{background:#ff6b6b}
+    .precisa{position:absolute;top:-6px;left:-6px;font-size:22px;pointer-events:none;animation:pede 1s ease-in-out infinite}
+    @keyframes pede{50%{transform:translateY(-6px) scale(1.15)}}
+    .mosca{position:absolute;font-size:14px;pointer-events:none;animation:voamosca 1.6s linear infinite}
+    @keyframes voamosca{0%{transform:translate(0,0)}25%{transform:translate(18px,-10px)}50%{transform:translate(4px,-22px)}75%{transform:translate(-14px,-8px)}100%{transform:translate(0,0)}}
     .zzz{position:absolute;right:-6px;top:0;font:800 18px system-ui,sans-serif;color:#5c7cfa;pointer-events:none;animation:zz 2s ease-in-out infinite}
     @keyframes zz{0%{transform:translate(0,10px);opacity:0}40%{opacity:1}100%{transform:translate(14px,-22px);opacity:0}}
     @media (prefers-reduced-motion: reduce){ .efeito,.zzz{animation-duration:.01ms} }
@@ -67,7 +81,9 @@
     const s = TAMANHOS[cfg.tamanho];
     const el = document.createElement('div'); el.className = 'pet';
     el.style.width = s + 'px'; el.style.height = s + 'px';
-    el.innerHTML = `<div class="sombra"></div><div class="corpo"><img alt="" draggable="false" /></div><div class="balao"></div>`;
+    el.innerHTML = `<div class="sombra"></div><div class="corpo"><img alt="" draggable="false" /></div><div class="balao"></div>
+      <div class="menu"><div class="bts"><button data-c="comer" title="Dar comida">🍎</button><button data-c="dormir" title="Pôr pra dormir">😴</button><button data-c="banho" title="Dar banho">🛁</button><button data-c="dentes" title="Escovar os dentes">🪥</button></div>
+      <div class="barrinhas"><i title="fome"><b></b></i><i title="sono"><b></b></i><i title="limpeza"><b></b></i><i title="dentes"><b></b></i></div></div>`;
     const img = el.querySelector('img');
     img.src = imagem(p, cfg.estilo);
     /* Se o animado não existir (os mais novos), usa a foto 3D; se nem ela carregar (site que bloqueia imagens de fora), some. */
@@ -75,8 +91,9 @@
     raiz.appendChild(el);
     const pet = { ...p, el, img, corpo:el.querySelector('.corpo'), balao:el.querySelector('.balao'), s,
       x:Math.random() * Math.max(1, innerWidth - s), y:-s - i * 60, vx:0, vy:0, dir:Math.random() < .5 ? -1 : 1,
-      estado:'cair', ate:0, passo:Math.random() * 10, zzz:null, fala:0 };
-    ligarToques(pet);
+      estado:'cair', ate:0, passo:Math.random() * 10, zzz:null, fala:0, chave:i + ':' + p.id, menu:el.querySelector('.menu') };
+    pet.nec = carregarNec(pet.chave);
+    ligarToques(pet); ligarMenu(pet);
     return pet;
   }
   function montar(){
@@ -162,6 +179,7 @@
     pet.el.addEventListener('dblclick', ev => { ev.preventDefault(); efeito(pet, '💖', 6); falar(pet, 'Eu te amo! 💖'); });
   }
   function clicou(pet){
+    abrirMenu(pet);
     const acordou = pet.estado === 'dormir';
     efeito(pet, sorte(['❤️', '💛', '✨', '⭐']), 3); grito(pet);
     falar(pet, acordou ? 'Hã?! Eu tava dormindo! 😴' : sorte(FALAS)(nomeDe(pet.id)));
@@ -215,7 +233,7 @@
         if(pet.x >= maxX){ pet.x = maxX; if(podeSubir) comecarSubir(pet, 1, agora); else pet.dir = -1; }
         if(agora >= pet.ate) escolher(pet, agora);
         /* Acorda se o mouse chegar pertinho. */
-        if(pet.estado === 'dormir' && Math.hypot(mouse.x - (pet.x + pet.s / 2), mouse.y - (pet.y + pet.s / 2)) < pet.s * .8 && agora - mouse.quando < 200){
+        if(pet.estado === 'dormir' && !pet.soneca && Math.hypot(mouse.x - (pet.x + pet.s / 2), mouse.y - (pet.y + pet.s / 2)) < pet.s * .8 && agora - mouse.quando < 200){
           dormir(pet, false); pet.estado = 'parado'; pet.ate = agora + 1500; falar(pet, '! 😲', 1200);
         }
       }
@@ -237,6 +255,86 @@
     requestAnimationFrame(quadro);
   }
 
+  /* ---------- 🍎😴🛁🪥 cuidados (igual bichinho virtual) ----------
+     Cada um tem fome, sono, limpeza e dentes (100 = tudo ótimo). Vai caindo com o tempo, mesmo com o computador desligado
+     (mais devagar e só até 8 horas). Quando fica baixo, ele pede. */
+  const NECS = ['fome', 'sono', 'limpo', 'dentes'];
+  const PEDIDOS = { fome:['🍎', 'Tô com fome! 🍎', 'Me dá comida? 🥺'], sono:['😴', 'Tô com sono… 🥱', 'Quero dormir… 😴'], limpo:['🛁', 'Tô sujinho! 🛁', 'Quero tomar banho!'], dentes:['🪥', 'Escova meus dentes? 🪥', 'Meus dentes… 😬'] };
+  const PERDE = { fome:2, sono:1.4, limpo:1, dentes:1.2 }; /* por minuto */
+  let necSalvas = {};
+  function carregarNec(chave){
+    const n = necSalvas[chave], agora = Date.now();
+    const base = { fome:90, sono:90, limpo:90, dentes:90, quando:agora };
+    if(!n || typeof n !== 'object') return base;
+    const r = Object.assign(base, n);
+    const min = Math.min(8 * 60, Math.max(0, (agora - (+r.quando || agora)) / 60000)) * .5;
+    NECS.forEach(k => { r[k] = Math.max(0, Math.min(100, (+r[k] || 0) - PERDE[k] * min)); });
+    r.quando = agora; return r;
+  }
+  function salvarNec(){
+    pets.forEach(p => { p.nec.quando = Date.now(); necSalvas[p.chave] = p.nec; });
+    const k = Object.keys(necSalvas); if(k.length > 30) k.slice(0, k.length - 30).forEach(x => delete necSalvas[x]);
+    if(naExtensao) chrome.storage.local.set({ andarilhoNec:necSalvas });
+    else { try{ localStorage.setItem('andarilho:nec', JSON.stringify(necSalvas)); }catch(e){} }
+  }
+  function abrirMenu(pet){
+    pets.forEach(p => { if(p !== pet) p.menu.classList.remove('on'); });
+    pet.menu.classList.add('on'); desenharNec(pet);
+    clearTimeout(pet.fechaMenu); pet.fechaMenu = setTimeout(() => pet.menu.classList.remove('on'), 6000);
+  }
+  function desenharNec(pet){
+    pet.menu.querySelectorAll('.barrinhas b').forEach((b, i) => { const v = pet.nec[NECS[i]]; b.style.width = v + '%'; b.className = v < 30 ? 'baixo' : v < 60 ? 'meio' : ''; });
+    /* O que ele mais precisa aparece na cabeça dele. */
+    const pior = NECS.slice().sort((a, b) => pet.nec[a] - pet.nec[b])[0];
+    let ic = pet.el.querySelector('.precisa');
+    if(pet.nec[pior] < 30 && pet.estado !== 'dormir'){ if(!ic){ ic = document.createElement('span'); ic.className = 'precisa'; pet.el.appendChild(ic); } ic.textContent = PEDIDOS[pior][0]; }
+    else if(ic) ic.remove();
+    const moscas = pet.el.querySelectorAll('.mosca');
+    if(pet.nec.limpo < 25 && !moscas.length) for(let i = 0; i < 2; i++){ const m = document.createElement('span'); m.className = 'mosca'; m.textContent = '🪰'; m.style.left = (pet.s * (.2 + i * .5)) + 'px'; m.style.top = (pet.s * .25) + 'px'; m.style.animationDelay = (i * .7) + 's'; pet.el.appendChild(m); }
+    if(pet.nec.limpo >= 25) moscas.forEach(m => m.remove());
+  }
+  function ligarMenu(pet){
+    pet.menu.addEventListener('pointerdown', ev => ev.stopPropagation());
+    pet.menu.addEventListener('pointerup', ev => ev.stopPropagation());
+    pet.menu.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const b = ev.target.closest('[data-c]'); if(!b) return;
+      cuidar(pet, b.dataset.c); abrirMenu(pet);
+    });
+  }
+  function cuidar(pet, c){
+    const n = nomeDe(pet.id);
+    if(c === 'comer'){
+      if(pet.nec.fome > 95){ falar(pet, 'Tô cheio! 😵'); return; }
+      pet.nec.fome = Math.min(100, pet.nec.fome + 35); pet.nec.dentes = Math.max(0, pet.nec.dentes - 10);
+      efeito(pet, sorte(['🍎', '🍓', '🍌', '🍪', '🍙', '🫐']), 3); falar(pet, sorte(['Nham nham! 😋', 'Que delícia!', 'Hmm, gostoso!']));
+    }
+    if(c === 'dormir'){
+      pet.estado = 'dormir'; pet.ate = performance.now() + 20000; pet.soneca = true; dormir(pet, true); pet.menu.classList.remove('on');
+      falar(pet, 'Boa noite… 😴', 1500); return salvarNec();
+    }
+    if(c === 'banho'){ pet.nec.limpo = 100; efeito(pet, '🫧', 6); falar(pet, sorte(['Que cheirinho bom! 🛁', 'Banho gostoso!', 'Tô limpinho! ✨'])); }
+    if(c === 'dentes'){ pet.nec.dentes = 100; efeito(pet, '🪥', 1); efeito(pet, '✨', 3); falar(pet, sorte(['Dentes brilhando! ✨', 'Escovadinho! 😁', 'Hálito fresquinho!'])); }
+    if(NECS.every(k => pet.nec[k] >= 80)) setTimeout(() => { efeito(pet, '💖', 4); falar(pet, `O ${n} está muito feliz! 💖`); }, 900);
+    desenharNec(pet); salvarNec();
+  }
+  /* A cada 5 segundos: gasta um pouquinho, dorme recupera, e quem precisa pede. */
+  setInterval(() => {
+    if(document.hidden) return;
+    for(const pet of pets){
+      const dorme = pet.estado === 'dormir';
+      NECS.forEach(k => { pet.nec[k] = Math.max(0, pet.nec[k] - PERDE[k] / 12); });
+      if(dorme) pet.nec.sono = Math.min(100, pet.nec.sono + (pet.soneca ? 4 : 1.5));
+      if(dorme && pet.soneca && pet.nec.sono >= 100){ pet.soneca = false; pet.ate = 0; }
+      const pior = NECS.slice().sort((a, b) => pet.nec[a] - pet.nec[b])[0];
+      if(!dorme && pet.nec[pior] < 30 && Math.random() < .2) falar(pet, sorte(PEDIDOS[pior].slice(1)));
+      if(!dorme && pet.nec.sono < 10 && Math.random() < .15){ pet.estado = 'dormir'; pet.ate = performance.now() + 12000; pet.soneca = true; dormir(pet, true); falar(pet, 'Não aguento mais… 😴', 1500); }
+      desenharNec(pet);
+    }
+  }, 5000);
+  setInterval(salvarNec, 15000);
+  addEventListener('pagehide', salvarNec);
+
   /* Dois Pokémon pertinho às vezes fazem festa. */
   setInterval(() => {
     if(pets.length < 2) return;
@@ -251,10 +349,10 @@
     addEventListener('resize', () => pets.forEach(p => { p.x = Math.min(p.x, Math.max(0, innerWidth - p.s)); }));
   }
   if(naExtensao){
-    chrome.storage.local.get('andarilho', r => comecar(r && r.andarilho));
+    chrome.storage.local.get(['andarilho', 'andarilhoNec'], r => { necSalvas = (r && r.andarilhoNec) || {}; comecar(r && r.andarilho); });
     chrome.storage.onChanged.addListener((mud, area) => { if(area === 'local' && mud.andarilho) aplicar(mud.andarilho.newValue); });
   } else {
-    let salvo = null; try{ salvo = JSON.parse(localStorage.getItem('andarilho:cfg') || 'null'); }catch(e){}
+    let salvo = null; try{ salvo = JSON.parse(localStorage.getItem('andarilho:cfg') || 'null'); necSalvas = JSON.parse(localStorage.getItem('andarilho:nec') || '{}') || {}; }catch(e){}
     comecar(salvo);
     addEventListener('andarilho-cfg', ev => aplicar(ev.detail));
     addEventListener('storage', ev => { if(ev.key === 'andarilho:cfg'){ try{ aplicar(JSON.parse(ev.newValue)); }catch(e){} } });
