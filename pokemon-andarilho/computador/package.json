@@ -10,5 +10,29 @@
   },
   "devDependencies": {
     "electron": "^44.5.1"
+  },
+  "author": "Jojo e Claude",
+  "build": {
+    "appId": "com.jojo.pokemonandarilho",
+    "productName": "Pokemon Andarilho",
+    "files": [
+      "main.js",
+      "preload.js",
+      "palco.html",
+      "palco.js",
+      "config.html",
+      "icone.png",
+      "extensao/**"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "icone-256.png"
+    },
+    "portable": {
+      "artifactName": "PokemonAndarilho.exe"
+    }
   }
 }
