@@ -9,6 +9,8 @@ Gibi de detetive: ache o Pokémon do cartaz **PROCURA-SE** no meio da multidão!
 - 🤖 **Contra o Claude**: 10 rodadas. Um Claude-robô procura junto (a lupa roxa com o Mewtwo passeia pela cena, fala e às vezes erra). Ele acha em ~8–17s, cada rodada um pouco mais rápido. Quem achar primeiro ganha a rodada; tocar no errado dá +2s pro Claude.
 - 🔍 **Achados e Perdidos**: 1 minuto; o procurado pode ser qualquer um dos 1025 (no lugar do mapa que combina com ele). Achou? +5s.
 - Errou: -3s. 3 dicas 💡, lupa 🔍 (zoom 2x) e shiny ✨ escondido (+300).
+- 👥 **Amigos** (igual ao Quem é esse Pokémon): ficha com apelido e foto de Pokémon, código `ONDE1.` pra mandar, lista de amigos com recordes e o álbum deles (mostra quais fichas vocês têm iguais e quais faltam).
+- ⚔️ **Desafio** (`PROCURA1.`): você procura 10 Pokémon e manda o código; o amigo procura **os mesmos 10**, com o mesmo mapa, o mesmo procurado e cada Pokémon no mesmo lugar (sorteio com semente). Se o tempo acaba, a rodada passa. Placar Você × Amigo.
 - 📒 **Álbum de fichas** com os 1025, separado por geração.
 - Visual de gibi: papel com pontinhos, contorno preto grosso, sombra dura, listras vermelhas e fontes Bangers e Patrick Hand.
 
