@@ -51,6 +51,17 @@ header.topo{display:flex;align-items:center;gap:8px;max-width:620px;margin:0 aut
 .grande .ic{font-size:2rem}
 .grande small{display:block;font-family:'Rubik',sans-serif;font-weight:500;font-size:.8rem;opacity:.9}
 .grande.amarelo{background:linear-gradient(180deg,#ffd54d,#ffb300);box-shadow:0 5px 0 #b37a00;color:#3a2a00}
+.grande.laranja{background:linear-gradient(180deg,#ffa94d,#f76707);box-shadow:0 5px 0 #a8480a}
+.grande.rosa{background:linear-gradient(180deg,#ff8cc0,#e8458e);box-shadow:0 5px 0 #a82a63}
+.dupla{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dupla .grande{padding:12px 10px;gap:8px;font-size:1.05rem}
+.dupla .grande .ic{font-size:1.6rem}
+.lista-conq{display:grid;gap:8px;margin-top:10px}
+.conq{display:flex;gap:10px;align-items:center;background:var(--cartao2);border:2px solid var(--borda);border-radius:14px;padding:8px 12px;opacity:.6}
+.conq.tem{opacity:1;border-color:var(--amarelo)}
+.conq span{font-size:1.6rem}
+.conq small{display:block;font-size:.78rem;color:var(--tinta-fraca)}
+.campo.chefao{border-color:#ffc21a;box-shadow:0 8px 0 var(--sombra),0 0 0 4px #ffc21a55,0 0 24px #ffc21a88}
 .grande.verde{background:linear-gradient(180deg,#49c47a,#23874b);box-shadow:0 5px 0 #196b3a}
 .menu{display:grid;gap:12px;margin-top:14px}
 .mini{border:2px solid var(--borda);background:var(--cartao2);border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:.88rem;box-shadow:0 3px 0 var(--borda)}
@@ -148,8 +159,13 @@ main>section{animation:aparece .3s ease-out}
       <div><b id="r-colecao">0</b><small>📖 Shinies</small></div>
     </div>
     <div class="menu">
-      <button class="grande" type="button" id="b-jogar"><span class="ic">🔍</span><span>Caçar!<small>Comece da fase 1 com 3 vidas</small></span></button>
-      <button class="grande amarelo" type="button" id="b-colecao"><span class="ic">📖</span><span>Minha coleção<small>Todo shiny que você achou fica guardado aqui</small></span></button>
+      <button class="grande" type="button" data-modo="classico"><span class="ic">🔍</span><span>Clássico<small>3 vidas, cada fase mais difícil · Chefão a cada 10</small></span></button>
+      <button class="grande laranja" type="button" data-modo="relampago"><span class="ic">⚡</span><span>Relâmpago<small>60 segundos: ache o máximo que der! <b id="r-rel"></b></small></span></button>
+      <button class="grande verde" type="button" data-modo="calmo"><span class="ic">🐢</span><span>Calmo<small>Sem tempo e sem vidas, pra caçar tranquilo</small></span></button>
+      <div class="dupla">
+        <button class="grande amarelo" type="button" id="b-colecao"><span class="ic">📖</span><span>Coleção</span></button>
+        <button class="grande rosa" type="button" id="b-conq"><span class="ic">🏆</span><span>Conquistas<small id="r-conq"></small></span></button>
+      </div>
     </div>
     <div class="cartao">
       <h3>Como jogar</h3>
@@ -157,6 +173,7 @@ main>section{animation:aparece .3s ease-out}
       ❌ Tocou no errado? Perde uma vida ❤️ e um pouco de tempo.<br>
       ⏱️ Achou rápido? Ganha mais pontos. Acertos seguidos fazem <b>combo</b>!<br>
       🔍 A <b>lupa</b> esconde metade dos errados. Você ganha uma a cada 5 fases.<br>
+      👑 A cada 10 fases vem o <b>Chefão</b>: um lendário com <b>2 shinies</b> escondidos. Venceu? +1 ❤️!<br>
       📈 A cada fase: mais Pokémon, menos tempo. Depois eles começam a <b>virar</b>, <b>balançar</b>, <b>trocar de lugar</b>… e na fase 20 fica <b>de noite</b> 🔦!</p>
     </div>
   </section>
@@ -191,6 +208,15 @@ main>section{animation:aparece .3s ease-out}
         <button class="grande" type="button" id="b-denovo"><span class="ic">🔁</span><span>Jogar de novo</span></button>
         <button class="grande amarelo" type="button" id="b-inicio"><span class="ic">🏠</span><span>Início</span></button>
       </div>
+    </div>
+  </section>
+
+  <!-- conquistas -->
+  <section id="s-conq" hidden>
+    <div class="cartao">
+      <div style="display:flex;align-items:center;gap:8px"><h3 style="flex:1">🏆 Conquistas</h3><button class="mini" type="button" id="b-voltar2">⬅️ Voltar</button></div>
+      <p class="aviso" id="q-texto"></p>
+      <div class="lista-conq" id="q-lista"></div>
     </div>
   </section>
 
@@ -231,7 +257,6 @@ const sprite = (id, shiny) => `https://raw.githubusercontent.com/PokeAPI/sprites
 /* ═════════ guardar ═════════ */
 function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('shiny:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
 function gravar(k, v){ try{ localStorage.setItem('shiny:' + k, JSON.stringify(v)); }catch(e){} }
-const REC = ler('recordes', { fase:0, pontos:0 });
 let COLECAO = ler('colecao', {});   // { id: { nome, vezes } }
 let somLigado = ler('som', true);
 
@@ -273,7 +298,7 @@ async function nomeDe(id){
 }
 
 /* ═════════ telas ═════════ */
-function tela(id){ ['s-capa', 's-jogo', 's-fim', 's-colecao'].forEach(s => $(s).hidden = s !== id); scrollTo(0, 0); }
+function tela(id){ ['s-capa', 's-jogo', 's-fim', 's-colecao', 's-conq'].forEach(s => $(s).hidden = s !== id); scrollTo(0, 0); }
 function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1800); }
 function faixa(t){ const d = document.createElement('div'); d.className = 'faixa'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1400); }
 function pontinho(x, y, t, menos){ const d = document.createElement('div'); d.className = 'pontinho' + (menos ? ' menos' : ''); d.textContent = t; d.style.left = x + 'px'; d.style.top = y + 'px'; document.body.appendChild(d); setTimeout(() => d.remove(), 1000); }
@@ -287,15 +312,69 @@ function estrelas(x, y){
 }
 
 function mostrarCapa(){
-  $('r-fase').textContent = REC.fase; $('r-pontos').textContent = REC.pontos.toLocaleString('pt-BR');
+  $('r-fase').textContent = RECS.classico.fase; $('r-pontos').textContent = RECS.classico.pontos.toLocaleString('pt-BR');
+  $('r-rel').textContent = RECS.relampago.achados ? `(recorde: ${RECS.relampago.achados})` : '';
+  $('r-conq').textContent = `${CONQUISTADAS.length} de ${CONQ.length}`;
   $('r-colecao').textContent = Object.keys(COLECAO).length;
   const id = FACEIS[sorteio(FACEIS.length)];
   $('capa-a').src = sprite(id, false); $('capa-b').src = sprite(id, true);
   tela('s-capa');
 }
 
+/* ═════════ modos ═════════
+   Clássico: 3 vidas e tempo por fase. Relâmpago: 60 segundos no total, acha quantos der.
+   Calmo: sem tempo e sem vidas, pra caçar com calma. */
+const MODOS = {
+  classico:  { nome:'Clássico', ic:'🔍' },
+  relampago: { nome:'Relâmpago', ic:'⚡' },
+  calmo:     { nome:'Calmo', ic:'🐢' }
+};
+const RELAMPAGO_MS = 60000;
+/* Lendários e míticos: é deles a fase do Chefão. */
+const LENDARIOS = [144,145,146,150,151,243,244,245,249,250,251,377,378,379,380,381,382,383,384,385,386,480,481,482,483,484,485,486,487,488,490,491,492,493,494,638,639,640,641,642,643,644,645,646,647,648,649,716,717,718,719,720,721,785,786,787,788,789,790,791,792,800,801,802,807,808,809,888,889,890,891,892,894,895,896,897,898,1001,1002,1003,1004,1007,1008,1017,1024,1025];
+
+/* ═════════ recordes, estatísticas e conquistas ═════════ */
+const RECS = ler('recs2', null) || (() => {
+  const velho = ler('recordes', { fase:0, pontos:0 });   // da primeira versão, que só tinha o clássico
+  return { classico:{ fase:velho.fase, pontos:velho.pontos }, relampago:{ achados:0, pontos:0 }, calmo:{ achados:0 } };
+})();
+gravar('recs2', RECS);
+const STATS = Object.assign({ achados:0, chefoes:0, partidas:0, maiorCombo:0, rapido:false, semErro:0, adm:false }, ler('stats', {}));
+let CONQUISTADAS = ler('conq', []);
+const distintos = () => Object.keys(COLECAO).length;
+const CONQ = [
+  ['primeiro', '✨', 'Primeiro brilho', 'Ache o seu primeiro shiny', () => STATS.achados >= 1],
+  ['cacador', '🎯', 'Caçador', 'Ache 50 shinies no total', () => STATS.achados >= 50],
+  ['mestre', '🏹', 'Mestre caçador', 'Ache 250 shinies no total', () => STATS.achados >= 250],
+  ['lenda', '🌟', 'Lenda dos shinies', 'Ache 1.000 shinies no total', () => STATS.achados >= 1000],
+  ['col25', '📖', 'Colecionador', '25 Pokémon diferentes na coleção', () => distintos() >= 25],
+  ['col100', '📚', 'Enciclopédia', '100 Pokémon diferentes na coleção', () => distintos() >= 100],
+  ['col300', '🏛️', 'Museu Shiny', '300 Pokémon diferentes na coleção', () => distintos() >= 300],
+  ['fase10', '🔟', 'Esquentando', 'Chegue na fase 10 do Clássico', () => RECS.classico.fase >= 10],
+  ['fase20', '🌙', 'Caçador noturno', 'Chegue na fase 20 do Clássico (a noite!)', () => RECS.classico.fase >= 20],
+  ['fase30', '🔥', 'Olho de águia', 'Chegue na fase 30 do Clássico', () => RECS.classico.fase >= 30],
+  ['fase50', '👁️', 'Olho mágico', 'Chegue na fase 50 do Clássico', () => RECS.classico.fase >= 50],
+  ['chefao', '👑', 'Derrubou o Chefão', 'Vença uma fase do Chefão', () => STATS.chefoes >= 1],
+  ['chefao5', '🐉', 'Caçador de lendas', 'Vença 5 fases do Chefão', () => STATS.chefoes >= 5],
+  ['combo10', '💥', 'Combo x10', 'Acerte 10 seguidas sem errar nem perder tempo', () => STATS.maiorCombo >= 10],
+  ['combo25', '☄️', 'Imparável', 'Combo de 25', () => STATS.maiorCombo >= 25],
+  ['raio', '⚡', 'Rápido como um raio', 'Ache um shiny em menos de 1 segundo (fase 5 pra cima)', () => STATS.rapido],
+  ['perfeito', '💎', 'Perfeito', '10 fases seguidas sem tocar em nenhum errado', () => STATS.semErro >= 10],
+  ['rel15', '🌩️', 'Relâmpago', 'Ache 15 shinies no modo Relâmpago', () => RECS.relampago.achados >= 15],
+  ['rel30', '🌪️', 'Tempestade', 'Ache 30 shinies no modo Relâmpago', () => RECS.relampago.achados >= 30],
+  ['calmo50', '🐢', 'Paciência de monge', 'Ache 50 shinies numa partida do modo Calmo', () => RECS.calmo.achados >= 50],
+  ['adm', '🤫', '???', 'Segredo!', () => STATS.adm]
+];
+function checarConquistas(){
+  const novas = CONQ.filter(c => !CONQUISTADAS.includes(c[0]) && c[4]());
+  if(!novas.length) return;
+  novas.forEach((c, i) => { CONQUISTADAS.push(c[0]); setTimeout(() => { toast(`🏆 ${c[1]} ${c[2]}!`); bip(988, .12, 'triangle', .12); bip(1319, .2, 'triangle', .12, .1); }, 700 + i * 1900); });
+  gravar('conq', CONQUISTADAS);
+}
+function salvarStats(){ gravar('stats', STATS); gravar('recs2', RECS); }
+
 /* ═════════ regras de cada fase ═════════ */
-function regras(fase){
+function regras(fase, modo){
   return {
     lado: Math.min(3 + Math.floor((fase - 1) / 2), 9),       // 3x3 → 9x9
     tempo: Math.max(5, 16 - (fase - 1) * .5),                // segundos
@@ -303,7 +382,8 @@ function regras(fase){
     espelho: fase >= 5,
     balanca: fase >= 9,
     troca: fase >= 13,                                        // trocam de lugar
-    noite: fase >= 20                                         // só dá pra ver perto do dedo
+    noite: fase >= 20,                                        // só dá pra ver perto do dedo
+    chefao: modo !== 'calmo' && fase % 10 === 0               // lendário com 2 shinies
   };
 }
 
@@ -313,13 +393,18 @@ let timer = null;
 let admLigado = false;
 try{ admLigado = sessionStorage.getItem('shiny:adm') === '1'; }catch(e){}
 
-function novaPartida(){
-  J = { fase:1, vidas:3, pontos:0, combo:0, lupas:1, achados:[], rodada:null, pausado:false };
+function novaPartida(modo){
+  modo = MODOS[modo] ? modo : (J && J.modo) || 'classico';
+  J = { modo, fase:1, vidas:3, pontos:0, combo:0, semErro:0, lupas:1, achados:[], rodada:null, pausado:false, relogio:RELAMPAGO_MS };
+  STATS.partidas++; salvarStats();
+  $('barra').hidden = modo === 'calmo';
+  $('barra-i').style.transform = 'scaleX(1)';
   tela('s-jogo'); atualizarHUD(); novaRodada();
 }
 
 function atualizarHUD(){
-  $('h-fase').textContent = 'Fase ' + J.fase;
+  $('h-fase').textContent = `${MODOS[J.modo].ic} Fase ${J.fase}`;
+  $('h-vidas').hidden = J.modo !== 'classico';
   $('h-vidas').textContent = admLigado ? '❤️ ∞' : ('❤️'.repeat(J.vidas) + '🖤'.repeat(Math.max(0, 3 - J.vidas)));
   $('h-pontos').textContent = '⭐ ' + J.pontos.toLocaleString('pt-BR');
   $('h-combo').hidden = J.combo < 2; $('h-combo').textContent = '🔥 x' + J.combo;
@@ -333,56 +418,72 @@ function carregar(src){
 }
 
 async function escolherPokemon(r, tentativas = 0){
-  const id = r.faceis ? FACEIS[sorteio(FACEIS.length)] : 1 + sorteio(ULTIMO_ID);
+  const lista = r.chefao ? LENDARIOS : r.faceis ? FACEIS : null;
+  const id = lista ? lista[sorteio(lista.length)] : 1 + sorteio(ULTIMO_ID);
   try{ await Promise.all([carregar(sprite(id, false)), carregar(sprite(id, true))]); return id; }
   catch(e){ if(tentativas > 6) throw e; return escolherPokemon(r, tentativas + 1); }
 }
 
+function grito(id){
+  if(!somLigado) return;
+  try{ const a = new Audio(`https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`); a.volume = .3; a.play().catch(() => {}); }catch(e){}
+}
+
 async function novaRodada(){
   clearInterval(timer);
-  const r = regras(J.fase);
+  const r = regras(J.fase, J.modo);
   const campo = $('campo');
   campo.className = 'campo'; campo.innerHTML = '<div class="carregando">✨ Procurando Pokémon…</div>';
   campo.style.gridTemplateColumns = `repeat(${r.lado},minmax(0,1fr))`;
-  $('dica').textContent = 'Ache o shiny!';
+  $('dica').textContent = r.chefao ? '👑 CHEFÃO! Ache os 2 shinies!' : 'Ache o shiny!';
+  const minhaPartida = J;
   let id;
   try{ id = await escolherPokemon(r); }
   catch(e){ campo.innerHTML = '<div class="carregando">📡 Sem internet? Toque pra tentar de novo</div>'; campo.onclick = () => { campo.onclick = null; novaRodada(); }; return; }
-  if(!J || $('s-jogo').hidden) return;
+  if(J !== minhaPartida || $('s-jogo').hidden) return;
 
   const total = r.lado * r.lado;
-  const alvo = sorteio(total);
+  const alvos = new Set();
+  while(alvos.size < (r.chefao ? 2 : 1)) alvos.add(sorteio(total));
   campo.innerHTML = '';
+  if(r.chefao) campo.classList.add('chefao');
   for(let i = 0; i < total; i++){
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'poke'; b.dataset.i = i; b.setAttribute('aria-label', 'Pokémon');
     if(r.espelho && Math.random() < .5) b.classList.add('espelho');
     if(r.balanca){ b.classList.add('balanca'); b.style.setProperty('--v', (0.9 + Math.random() * 1.2).toFixed(2) + 's'); b.style.animationDelay = (-Math.random() * 2).toFixed(2) + 's'; }
-    const im = document.createElement('img'); im.alt = ''; im.draggable = false; im.src = sprite(id, i === alvo);
+    const im = document.createElement('img'); im.alt = ''; im.draggable = false; im.src = sprite(id, alvos.has(i));
     b.appendChild(im); campo.appendChild(b);
   }
   if(r.noite){ campo.classList.add('noite'); }
-  J.rodada = { id, alvo, r, tempoMax:r.tempo * 1000, resta:r.tempo * 1000, acabou:false, ultimoTique:0 };
-  nomeDe(id).then(n => { if(J && J.rodada && J.rodada.id === id) $('dica').textContent = `Ache o ${n} shiny!`; });
-  $('b-pausa').textContent = '⏸️ Pausar'; J.pausado = false;
+  const tempo = r.tempo * 1000 * (r.chefao ? 1.6 : 1);
+  J.rodada = { id, alvos, faltam:alvos.size, r, tempoMax:tempo, resta:tempo, gasto:0, acabou:false, ultimoTique:0, errou:false };
+  if(r.chefao) faixa('👑 CHEFÃO! 2 shinies!');
+  nomeDe(id).then(n => { if(J && J.rodada && J.rodada.id === id) $('dica').textContent = r.chefao ? `👑 CHEFÃO: ache os 2 ${n} shiny!` : `Ache o ${n} shiny!`; });
+  $('b-pausa').textContent = '⏸️ Pausar'; J.pausado = false; $('campo').style.visibility = '';
   let antes = performance.now(), trocaEm = 2500;
   timer = setInterval(() => {
     const agora = performance.now(), dt = agora - antes; antes = agora;
     if(J.pausado || J.rodada.acabou) return;
-    J.rodada.resta -= dt;
-    const f = Math.max(0, J.rodada.resta / J.rodada.tempoMax);
-    $('barra-i').style.transform = `scaleX(${f})`;
-    $('barra').classList.toggle('acabando', f < .3);
-    if(f < .3 && agora - J.rodada.ultimoTique > 500){ J.rodada.ultimoTique = agora; somTique(); }
+    J.rodada.gasto += dt;
+    let f = 1;
+    if(J.modo === 'classico'){ J.rodada.resta -= dt; f = Math.max(0, J.rodada.resta / J.rodada.tempoMax); }
+    if(J.modo === 'relampago'){ J.relogio -= dt; f = Math.max(0, J.relogio / RELAMPAGO_MS); }
+    if(J.modo !== 'calmo'){
+      $('barra-i').style.transform = `scaleX(${f})`;
+      $('barra').classList.toggle('acabando', f < .3);
+      if(f < .3 && agora - J.rodada.ultimoTique > 500){ J.rodada.ultimoTique = agora; somTique(); }
+    }
     if(r.troca){ trocaEm -= dt; if(trocaEm <= 0){ trocaEm = Math.max(1200, 3000 - J.fase * 60); embaralhar(); } }
-    if(J.rodada.resta <= 0) acabouTempo();
+    if(J.modo === 'classico' && J.rodada.resta <= 0) acabouTempo();
+    if(J.modo === 'relampago' && J.relogio <= 0) acabouRelogio();
   }, 50);
-  $('barra-i').style.transform = 'scaleX(1)';
+  if(J.modo === 'classico') $('barra-i').style.transform = 'scaleX(1)';
 }
 
-/* troca dois pedaços do campo de lugar (o shiny inclusive) */
+/* troca pedaços do campo de lugar (o shiny inclusive) */
 function embaralhar(){
-  const campo = $('campo'); const filhos = [...campo.children].filter(b => !b.classList.contains('sumiu'));
+  const campo = $('campo'); const filhos = [...campo.children].filter(b => !b.classList.contains('sumiu') && !b.classList.contains('achou'));
   for(let k = 0; k < Math.max(2, filhos.length / 4); k++){
     const a = filhos[sorteio(filhos.length)], b = filhos[sorteio(filhos.length)];
     if(a === b) continue;
@@ -392,68 +493,105 @@ function embaralhar(){
 
 $('campo').addEventListener('click', ev => {
   const b = ev.target.closest('.poke'); if(!b || !J || !J.rodada || J.rodada.acabou || J.pausado) return;
+  if(b.classList.contains('achou')) return;
   const x = ev.clientX, y = ev.clientY;
-  if(+b.dataset.i === J.rodada.alvo) return acertou(b, x, y);
+  if(J.rodada.alvos.has(+b.dataset.i)) return acertou(b, x, y);
   b.classList.add('errou'); setTimeout(() => b.classList.remove('errou'), 600);
-  somErro(); J.combo = 0; J.rodada.resta -= 1500;
+  somErro(); J.combo = 0; J.semErro = 0; J.rodada.errou = true;
+  if(J.modo === 'calmo'){ atualizarHUD(); return; }
+  if(J.modo === 'relampago'){ J.relogio -= 3000; pontinho(x, y, '-3s', true); atualizarHUD(); return; }
+  J.rodada.resta -= 1500;
   pontinho(x, y, '-1 ❤️', true);
   if(!admLigado){ J.vidas--; if(J.vidas <= 0){ atualizarHUD(); return perdeu('Acabaram as vidas!'); } }
   atualizarHUD();
 });
 /* a lanterna da noite segue o dedo */
-$('campo').addEventListener('pointermove', ev => {
+function lanterna(ev){
   const c = $('campo'); if(!c.classList.contains('noite')) return;
   const q = c.getBoundingClientRect();
   c.style.setProperty('--lx', ((ev.clientX - q.left) / q.width * 100) + '%');
   c.style.setProperty('--ly', ((ev.clientY - q.top) / q.height * 100) + '%');
-});
-$('campo').addEventListener('pointerdown', ev => { const c = $('campo'); if(!c.classList.contains('noite')) return; const q = c.getBoundingClientRect(); c.style.setProperty('--lx', ((ev.clientX - q.left) / q.width * 100) + '%'); c.style.setProperty('--ly', ((ev.clientY - q.top) / q.height * 100) + '%'); });
+}
+$('campo').addEventListener('pointermove', lanterna);
+$('campo').addEventListener('pointerdown', lanterna);
 
 function acertou(b, x, y){
-  const R = J.rodada; R.acabou = true; clearInterval(timer);
+  const R = J.rodada;
   b.classList.add('achou'); somAcerto(); estrelas(x, y);
+  R.faltam--;
+  if(R.faltam > 0){ pontinho(x, y, '1 de 2! ✨'); return; }   // chefão: falta o outro
+  R.acabou = true; clearInterval(timer);
+  setTimeout(() => grito(R.id), 250);
   J.combo++;
-  const rapidez = Math.max(0, R.resta / R.tempoMax);
-  const ganho = Math.round((100 + J.fase * 20 + rapidez * 200) * Math.min(J.combo, 5));
-  J.pontos += ganho; pontinho(x, y, '+' + ganho);
+  if(!R.errou) J.semErro++;
+  STATS.achados++;
+  STATS.maiorCombo = Math.max(STATS.maiorCombo, J.combo);
+  STATS.semErro = Math.max(STATS.semErro, J.semErro);
+  if(J.fase >= 5 && R.gasto < 1000) STATS.rapido = true;
+  const rapidez = J.modo === 'classico' ? Math.max(0, R.resta / R.tempoMax) : J.modo === 'relampago' ? Math.max(0, 1 - R.gasto / R.tempoMax) : 0;
+  let ganho = Math.round((100 + J.fase * 20 + rapidez * 200) * Math.min(J.combo, 5));
   const nome = NOMES[R.id] || '#' + R.id;
+  let msg = `✨ ${nome} shiny!`;
+  if(R.r.chefao){
+    ganho *= 2; STATS.chefoes++;
+    if(J.modo === 'classico'){ J.vidas = Math.min(5, J.vidas + 1); msg = '👑 Chefão vencido! +1 ❤️'; }
+    else { J.relogio += 5000; msg = '👑 Chefão vencido! +5s'; }
+  } else if(J.modo === 'relampago'){ J.relogio += 1000; }
+  J.pontos += ganho; pontinho(x, y, '+' + ganho);
   const achado = { id:R.id, nome }; J.achados.push(achado);
   const c = COLECAO[R.id] || { nome, vezes:0 }; c.vezes++; COLECAO[R.id] = c; gravar('colecao', COLECAO);
   if(!NOMES[R.id]) nomeDe(R.id).then(n => { if(n.startsWith('#')) return; achado.nome = n; c.nome = n; gravar('colecao', COLECAO); });
   J.fase++;
-  let msg = `✨ ${nome} shiny!`;
   if((J.fase - 1) % 5 === 0){ J.lupas++; msg += ' +1 🔍'; }
   if(J.fase === 5) msg = '🔄 Agora eles viram!';
   if(J.fase === 9) msg = '〰️ Agora eles balançam!';
   if(J.fase === 13) msg = '🔀 Agora eles trocam de lugar!';
   if(J.fase === 20) msg = '🌙 Ficou de noite! Use a lanterna 🔦';
-  faixa(msg); atualizarHUD();
-  setTimeout(() => { if(J && !$('s-jogo').hidden) novaRodada(); }, 1300);
+  faixa(msg); atualizarHUD(); salvarStats(); checarConquistas();
+  setTimeout(() => { if(J && !$('s-jogo').hidden && !J.acabou) novaRodada(); }, 1300);
+}
+
+function mostrarOnde(){
+  $('campo').classList.remove('noite');
+  J.rodada.alvos.forEach(i => { const b = $('campo').querySelector(`[data-i="${i}"]`); if(b) b.classList.add('achou', 'revela'); });
 }
 
 function acabouTempo(){
   const R = J.rodada; R.acabou = true; clearInterval(timer);
-  somErro(); J.combo = 0;
-  const certo = $('campo').querySelector(`[data-i="${R.alvo}"]`); if(certo) certo.classList.add('achou', 'revela');
-  $('campo').classList.remove('noite');
+  somErro(); J.combo = 0; J.semErro = 0;
+  mostrarOnde();
   if(!admLigado) J.vidas--;
   atualizarHUD();
   if(J.vidas <= 0) return setTimeout(() => perdeu('O tempo acabou!'), 1200);
-  faixa('⏰ Tempo! Olha ele ali');
+  faixa(R.r.chefao ? '⏰ O Chefão escapou!' : '⏰ Tempo! Olha ele ali');
   setTimeout(() => { if(J && !$('s-jogo').hidden) novaRodada(); }, 1800);
+}
+
+function acabouRelogio(){
+  J.rodada.acabou = true; J.acabou = true; clearInterval(timer);
+  somErro(); mostrarOnde(); faixa('⚡ Acabou o tempo!');
+  setTimeout(() => perdeu('⚡ Fim do Relâmpago!'), 1400);
 }
 
 function perdeu(porque){
   clearInterval(timer);
-  const fase = J.fase - 1;
+  if(!J) return;
+  J.acabou = true;
+  const n = J.achados.length, R = RECS[J.modo];
   let novo = false;
-  if(fase > REC.fase){ REC.fase = fase; novo = true; }
-  if(J.pontos > REC.pontos){ REC.pontos = J.pontos; novo = true; }
-  gravar('recordes', REC);
-  $('f-titulo').textContent = novo ? '🏆 Novo recorde!' : porque;
+  if(J.modo === 'classico'){
+    if(J.fase - 1 > R.fase){ R.fase = J.fase - 1; novo = true; }
+    if(J.pontos > R.pontos){ R.pontos = J.pontos; novo = true; }
+  } else if(J.modo === 'relampago'){
+    if(n > R.achados){ R.achados = n; novo = true; }
+    if(J.pontos > R.pontos){ R.pontos = J.pontos; novo = true; }
+  } else if(n > R.achados){ R.achados = n; novo = true; }
+  salvarStats(); checarConquistas();
+  $('campo').style.visibility = '';
+  $('f-titulo').textContent = novo && n ? '🏆 Novo recorde!' : porque;
   $('f-pontos').textContent = '⭐ ' + J.pontos.toLocaleString('pt-BR');
-  const n = J.achados.length;
-  $('f-texto').textContent = n ? `Você achou ${n} shin${n > 1 ? 'ies' : 'y'} e chegou na fase ${J.fase}! Melhor fase: ${REC.fase}.` : 'Nenhum shiny dessa vez… tenta de novo!';
+  const rec = J.modo === 'classico' ? `Melhor fase: ${R.fase}.` : `Recorde: ${R.achados} shinies.`;
+  $('f-texto').textContent = n ? `${MODOS[J.modo].ic} ${MODOS[J.modo].nome}: você achou ${n} shin${n > 1 ? 'ies' : 'y'}! ${rec}` : 'Nenhum shiny dessa vez… tenta de novo!';
   $('f-achados').innerHTML = J.achados.map(a => `<div><img src="${sprite(a.id, true)}" alt="" /><small>${a.nome}</small></div>`).join('');
   tela('s-fim');
 }
@@ -461,7 +599,7 @@ function perdeu(porque){
 $('b-lupa').onclick = () => {
   if(!J || !J.rodada || J.rodada.acabou) return;
   if(!admLigado){ if(J.lupas < 1) return; J.lupas--; }
-  const errados = [...$('campo').children].filter(b => +b.dataset.i !== J.rodada.alvo && !b.classList.contains('sumiu'));
+  const errados = [...$('campo').children].filter(b => !J.rodada.alvos.has(+b.dataset.i) && !b.classList.contains('sumiu'));
   errados.sort(() => Math.random() - .5).slice(0, Math.ceil(errados.length / 2)).forEach(b => b.classList.add('sumiu'));
   bip(660, .2, 'triangle'); atualizarHUD();
 };
@@ -470,20 +608,33 @@ $('b-pausa').onclick = () => {
   $('b-pausa').textContent = J.pausado ? '▶️ Continuar' : '⏸️ Pausar';
   $('campo').style.visibility = J.pausado ? 'hidden' : '';
 };
-$('b-sair').onclick = () => { if(J && J.fase > 1 && !confirm('Sair da caçada? Seus pontos contam como fim de jogo.')) return; if(J && J.fase > 1){ $('campo').style.visibility = ''; return perdeu('Você saiu'); } clearInterval(timer); J = null; mostrarCapa(); };
-$('b-jogar').onclick = novaPartida;
-$('b-denovo').onclick = novaPartida;
+$('b-sair').onclick = () => {
+  if(J && J.achados.length){ if(!confirm('Sair da caçada? Seus pontos contam como fim de jogo.')) return; return perdeu('Você saiu'); }
+  clearInterval(timer); J = null; mostrarCapa();
+};
+document.querySelectorAll('[data-modo]').forEach(b => b.onclick = () => novaPartida(b.dataset.modo));
+$('b-denovo').onclick = () => novaPartida();
 $('b-inicio').onclick = () => { J = null; mostrarCapa(); };
 document.addEventListener('visibilitychange', () => { if(document.hidden && J && !J.pausado && !$('s-jogo').hidden) $('b-pausa').click(); });
 
-/* ═════════ coleção ═════════ */
+/* ═════════ coleção e conquistas ═════════ */
 function mostrarColecao(){
   const ids = Object.keys(COLECAO).map(Number).sort((a, b) => a - b);
   $('c-texto').textContent = ids.length ? `${ids.length} de ${ULTIMO_ID} Pokémon shiny encontrados.` : 'Ainda vazia! Vá caçar e os shinies que você achar aparecem aqui.';
   $('c-lista').innerHTML = ids.map(id => `<div><img src="${sprite(id, true)}" alt="" loading="lazy" /><small>#${id} ${COLECAO[id].nome}</small><b>x${COLECAO[id].vezes}</b></div>`).join('');
   tela('s-colecao');
 }
+function mostrarConquistas(){
+  $('q-texto').textContent = `${CONQUISTADAS.length} de ${CONQ.length} conquistas · ${STATS.achados} shinies achados · ${STATS.chefoes} chefões vencidos`;
+  $('q-lista').innerHTML = CONQ.map(c => {
+    const tem = CONQUISTADAS.includes(c[0]);
+    return `<div class="conq${tem ? ' tem' : ''}"><span>${tem ? c[1] : '🔒'}</span><div><b>${c[2]}</b><small>${c[3]}</small></div></div>`;
+  }).join('');
+  tela('s-conq');
+}
 $('b-colecao').onclick = mostrarColecao;
+$('b-conq').onclick = mostrarConquistas;
+$('b-voltar2').onclick = mostrarCapa;
 $('b-voltar').onclick = mostrarCapa;
 
 /* ═════════ 👑 Jojo adm ═════════
@@ -504,19 +655,21 @@ async function conferirSenha(){
   let ok = false; try{ ok = (await hash('jojo-adm:' + $('senha').value)) === ADM_HASH; }catch(e){}
   if(!ok){ errosSenha++; $('senha').classList.remove('erro'); void $('senha').offsetWidth; $('senha').classList.add('erro'); if(errosSenha >= 5){ $('j-senha').hidden = true; toast('🔒 Travado. Recarregue a página.'); } return; }
   admLigado = true; try{ sessionStorage.setItem('shiny:adm', '1'); }catch(e){}
+  STATS.adm = true; salvarStats(); checarConquistas();
   $('j-senha').hidden = true; abrirAdm(); if(J) atualizarHUD();
 }
 $('b-senha-ok').onclick = conferirSenha;
 $('senha').addEventListener('keydown', e => { if(e.key === 'Enter') conferirSenha(); });
 $('b-senha-x').onclick = () => $('j-senha').hidden = true;
 const PODERES = [
-  ['dourado', '✨ Mostrar o shiny', () => { if(J && J.rodada && !J.rodada.acabou){ const b = $('campo').querySelector(`[data-i="${J.rodada.alvo}"]`); b && b.classList.add('revela'); } else toast('Só dentro da caçada!'); }],
+  ['dourado', '✨ Mostrar o shiny', () => { if(J && J.rodada && !J.rodada.acabou){ J.rodada.alvos.forEach(i => { const b = $('campo').querySelector(`[data-i="${i}"]`); b && b.classList.add('revela'); }); } else toast('Só dentro da caçada!'); }],
   ['', '⏭️ Pular 5 fases', () => { if(!J) return toast('Comece uma caçada primeiro!'); J.fase += 5; atualizarHUD(); novaRodada(); }],
-  ['', '⏱️ Tempo cheio', () => { if(J && J.rodada) J.rodada.resta = J.rodada.tempoMax; }],
+  ['', '⏱️ Tempo cheio', () => { if(J && J.rodada){ J.rodada.resta = J.rodada.tempoMax; J.relogio = RELAMPAGO_MS; } }],
+  ['', '👑 Ir pro Chefão', () => { if(!J) return toast('Comece uma caçada primeiro!'); if(J.modo === 'calmo') return toast('No Calmo não tem Chefão!'); J.fase = Math.ceil((J.fase + 1) / 10) * 10; atualizarHUD(); novaRodada(); }],
   ['', '⭐ +10.000 pontos', () => { if(J){ J.pontos += 10000; atualizarHUD(); } }],
   ['dourado', '📖 Ganhar 50 shinies', () => { for(let i = 0; i < 50; i++){ const id = 1 + sorteio(ULTIMO_ID); const c = COLECAO[id] || { nome:NOMES[id] || '#' + id, vezes:0 }; c.vezes++; COLECAO[id] = c; } gravar('colecao', COLECAO); }],
   ['', '🚪 Sair do ADM', () => { admLigado = false; try{ sessionStorage.removeItem('shiny:adm'); }catch(e){} if(J) atualizarHUD(); $('j-adm').hidden = true; }],
-  ['perigo', '💥 Apagar tudo', () => { if(!confirm('⚠️ Apagar recordes e coleção? Não dá pra desfazer!')) return; COLECAO = {}; REC.fase = 0; REC.pontos = 0; gravar('colecao', COLECAO); gravar('recordes', REC); if(!J) mostrarCapa(); }]
+  ['perigo', '💥 Apagar tudo', () => { if(!confirm('⚠️ Apagar recordes e coleção? Não dá pra desfazer!')) return; COLECAO = {}; CONQUISTADAS = []; Object.assign(RECS, { classico:{ fase:0, pontos:0 }, relampago:{ achados:0, pontos:0 }, calmo:{ achados:0 } }); Object.keys(STATS).forEach(k => STATS[k] = typeof STATS[k] === 'boolean' ? false : 0); gravar('colecao', COLECAO); gravar('conq', CONQUISTADAS); salvarStats(); if(!J) mostrarCapa(); }]
 ];
 function abrirAdm(){
   $('adm-grade').innerHTML = PODERES.map((p, i) => `<button type="button" class="adm-btn ${p[0]}" data-poder="${i}">${p[1]}</button>`).join('');
