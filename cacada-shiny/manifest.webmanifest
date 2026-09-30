@@ -1,0 +1,14 @@
+{
+  "name": "Caçada Shiny",
+  "short_name": "Caçada Shiny",
+  "description": "Vários Pokémon iguais e um deles é shiny! Ache o brilhante antes do tempo acabar.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3edff",
+  "theme_color": "#7b3fe4",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
