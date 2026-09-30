@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pokémon Andarilho</title>
+<meta name="description" content="Um Pokémon 3D que fica andando pelo seu computador, por cima de qualquer site! Extensão do Chrome." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#3b5bdb" />
+<link rel="stylesheet" href="extensao/painel.css" />
+<style>
+/* Visual de "área de trabalho": papel de parede, janelas com barra de título e a barra de tarefas lá embaixo
+   (o Pokémon anda em cima dela). */
+:root{ --fundo1:#74c0fc; --fundo2:#4263eb; --janela:#ffffff; --titulo:#3b5bdb; --tinta:#1d2433; --fraca:#5b6477; --borda:#1d2433; }
+@media (prefers-color-scheme: dark){ :root:not([data-tema="claro"]){ --fundo1:#1c2a52; --fundo2:#0b1026; --janela:#1c2233; --titulo:#5c7cfa; --tinta:#e8ecf8; --fraca:#a7b0c8; } }
+:root[data-tema="escuro"]{ --fundo1:#1c2a52; --fundo2:#0b1026; --janela:#1c2233; --titulo:#5c7cfa; --tinta:#e8ecf8; --fraca:#a7b0c8; }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:clip}
+body{min-height:100vh;font:16px/1.45 system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--tinta);padding:18px 16px 190px;
+  background:radial-gradient(circle at 20% 15%,rgba(255,255,255,.35),transparent 30%),radial-gradient(circle at 85% 70%,rgba(255,255,255,.18),transparent 35%),linear-gradient(160deg,var(--fundo1),var(--fundo2)) fixed}
+.icones{position:fixed;top:14px;left:12px;display:grid;gap:14px;z-index:0}
+.icones span{display:grid;justify-items:center;width:64px;color:#fff;font-size:.72rem;text-shadow:0 1px 2px #000;text-align:center}
+.icones i{font-style:normal;font-size:1.9rem}
+@media (max-width:760px){ .icones{display:none} }
+.janela{position:relative;z-index:1;max-width:600px;margin:0 auto 22px;background:var(--janela);border:3px solid var(--borda);border-radius:12px;box-shadow:6px 6px 0 rgba(0,0,0,.35);overflow:hidden}
+.barra{display:flex;align-items:center;gap:8px;background:var(--titulo);color:#fff;padding:6px 10px;font-weight:800;border-bottom:3px solid var(--borda)}
+.barra .bolinhas{display:flex;gap:6px;margin-left:auto}
+.barra .bolinhas i{width:13px;height:13px;border-radius:50%;border:2px solid var(--borda);background:#ffd43b}
+.barra .bolinhas i:first-child{background:#51cf66}.barra .bolinhas i:last-child{background:#ff6b6b}
+.conteudo{padding:16px}
+h1{font-size:2rem;line-height:1.05;color:var(--titulo)}
+.sub{color:var(--fraca);margin-top:6px}
+.lista{margin:10px 0 0 20px;display:grid;gap:4px}
+.passos{counter-reset:p;display:grid;gap:10px;margin-top:10px}
+.passo{display:flex;gap:10px;align-items:flex-start}
+.passo:before{counter-increment:p;content:counter(p);flex:none;width:30px;height:30px;border-radius:50%;background:var(--titulo);color:#fff;font-weight:800;display:grid;place-items:center;border:2px solid var(--borda)}
+code{background:rgba(59,91,219,.12);border-radius:6px;padding:1px 6px;font-size:.92em}
+.baixar{display:inline-block;margin-top:6px;background:#ffd43b;color:#1d2433;border:3px solid var(--borda);border-radius:10px;padding:8px 14px;font-weight:800;text-decoration:none;box-shadow:3px 3px 0 var(--borda)}
+.baixar:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--borda)}
+.aviso{background:rgba(250,176,5,.15);border:2px dashed #f59f00;border-radius:10px;padding:8px 10px;margin-top:12px;font-size:.95rem}
+.janela .painel{color:var(--tinta)}
+:root[data-tema="escuro"] .meu,:root[data-tema="escuro"] .resultados button{background:#262d42;border-color:#3b4466;color:var(--tinta)}
+@media (prefers-color-scheme: dark){ :root:not([data-tema="claro"]) .meu,:root:not([data-tema="claro"]) .resultados button{background:#262d42;border-color:#3b4466;color:var(--tinta)} }
+.tarefas{position:fixed;left:0;right:0;bottom:0;height:40px;z-index:2;background:rgba(20,24,40,.85);backdrop-filter:blur(6px);border-top:2px solid rgba(255,255,255,.2);display:flex;align-items:center;gap:10px;padding:0 10px;color:#fff;font-weight:700;font-size:.9rem}
+.tarefas .iniciar{background:#51cf66;color:#0b2e14;border-radius:8px;padding:3px 10px}
+.tarefas .hora{margin-left:auto;font-variant-numeric:tabular-nums}
+.tarefas button{border:0;background:rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:4px 8px;cursor:pointer;font:inherit}
+</style>
+</head>
+<body>
+<div class="icones" aria-hidden="true"><span><i>🗂️</i>Meus jogos</span><span><i>🗑️</i>Lixeira</span><span><i>🎮</i>Pokémon</span></div>
+
+<div class="janela">
+  <div class="barra">🐾 pokemon-andarilho.exe<span class="bolinhas"><i></i><i></i><i></i></span></div>
+  <div class="conteudo">
+    <h1>Pokémon Andarilho</h1>
+    <p class="sub">Um Pokémon <b>3D</b> que fica andando pelo seu computador, <b>por cima de qualquer site</b>! Olha ele aí embaixo, andando na barra de tarefas 👇</p>
+    <ul class="lista">
+      <li>🚶 Anda, corre, pula e <b>dorme</b> quando você fica parado 💤</li>
+      <li>👆 <b>Toque</b> nele: ele pula, fala e faz o grito dele</li>
+      <li>✋ <b>Arraste</b> e <b>jogue longe</b>: ele cai e quica! 😵</li>
+      <li>💖 <b>Dois toques</b>: chuva de coração</li>
+      <li>🐭 Pode <b>seguir o mouse</b>, e dá pra ter até <b>3 Pokémon</b> juntos</li>
+    </ul>
+  </div>
+</div>
+
+<div class="janela">
+  <div class="barra">⚙️ Escolher Pokémon<span class="bolinhas"><i></i><i></i><i></i></span></div>
+  <div class="conteudo">
+    <div class="painel">
+      <div class="opcoes">
+        <label><input type="checkbox" id="ligado" /> Ligado</label>
+        <label><input type="checkbox" id="som" /> Som (grito)</label>
+        <label><input type="checkbox" id="seguir" /> Seguir o mouse</label>
+        <label>Tamanho <select id="tamanho"><option value="P">Pequeno</option><option value="M">Médio</option><option value="G">Grande</option></select></label>
+        <label style="grid-column:1/-1">Jeito <select id="estilo"><option value="3d">🧸 3D grande (bonito)</option><option value="animado">🎞️ Animado (mexe, mas é menor)</option></select></label>
+      </div>
+      <h3>🐾 Meus Pokémon andarilhos</h3>
+      <div class="meus" id="meus"></div>
+      <p class="dica" id="dica-meus"></p>
+      <h3>🔎 Escolher Pokémon (todos os 1025)</h3>
+      <input class="busca" id="busca" type="search" placeholder="Escreva o nome ou o número (ex: Gengar, 133)" autocomplete="off" />
+      <div class="resultados" id="resultados"></div>
+    </div>
+  </div>
+</div>
+
+<div class="janela">
+  <div class="barra">💾 Instalar no computador<span class="bolinhas"><i></i><i></i><i></i></span></div>
+  <div class="conteudo">
+    <p>Aqui no site ele só anda <b>nesta página</b>. Pra ele andar em <b>todos os sites</b>, instale a extensão no Chrome (ou Edge). <b>Peça ajuda pra um adulto!</b> 👨‍👩‍👦</p>
+    <div class="passos">
+      <div class="passo"><div>Baixe o ZIP e descompacte:<br><a class="baixar" href="https://github.com/willianwiab/contas-wen/archive/refs/heads/main.zip">⬇️ Baixar o ZIP</a></div></div>
+      <div class="passo"><div>Dentro dele, ache a pasta <code>pokemon-andarilho</code> → <code>extensao</code>. Deixe num lugar que você não vá apagar (a Área de Trabalho serve).</div></div>
+      <div class="passo"><div>No Chrome, digite <code>chrome://extensions</code> na barra de endereço (no Edge é <code>edge://extensions</code>).</div></div>
+      <div class="passo"><div>Ligue o <b>Modo do desenvolvedor</b> (interruptor lá em cima, à direita).</div></div>
+      <div class="passo"><div>Clique em <b>Carregar sem compactação</b> e escolha a pasta <code>extensao</code>.</div></div>
+      <div class="passo"><div>Pronto! Abra qualquer site e o Pikachu aparece caindo do céu 🎉 Pra trocar de Pokémon, clique na pecinha 🧩 do Chrome → <b>Pokémon Andarilho</b>.</div></div>
+    </div>
+    <p class="aviso">📱 <b>No celular não dá</b>: o Chrome do celular não aceita extensão. Mas aqui no site ele funciona! · 🔒 A extensão não manda nada pra lugar nenhum: ela só guarda qual Pokémon você escolheu.</p>
+  </div>
+</div>
+
+<div class="tarefas" role="contentinfo"><span class="iniciar">▶ Iniciar</span><span>🐾 Andarilho</span><button type="button" id="tema" title="Claro ou escuro">🌙</button><span class="hora" id="hora"></span></div>
+
+<script>var ANDARILHO_CHAO = 38;</script>
+<script src="extensao/nomes.js"></script>
+<script src="extensao/andarilho.js"></script>
+<script src="extensao/painel.js"></script>
+<script>
+'use strict';
+const relogio = () => { document.getElementById('hora').textContent = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }); };
+relogio(); setInterval(relogio, 10000);
+const btTema = document.getElementById('tema');
+function estaEscuro(){ const t = document.documentElement.getAttribute('data-tema'); return t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function aplicarTema(t){ if(t) document.documentElement.setAttribute('data-tema', t); else document.documentElement.removeAttribute('data-tema'); btTema.textContent = estaEscuro() ? '☀️' : '🌙'; }
+let temaSalvo = null; try{ temaSalvo = localStorage.getItem('andarilho:tema'); }catch(e){}
+aplicarTema(temaSalvo);
+btTema.onclick = () => { const t = estaEscuro() ? 'claro' : 'escuro'; try{ localStorage.setItem('andarilho:tema', t); }catch(e){} aplicarTema(t); };
+if('serviceWorker' in navigator) addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).catch(() => {}); });
+</script>
+</body>
+</html>
