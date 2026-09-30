@@ -5,7 +5,15 @@ Os cliques passam direto pros programas de baixo, menos quando você clica no Po
 
 **Peça ajuda pra um adulto na primeira vez.**
 
-## Windows
+## Windows — o jeito fácil
+
+Baixe **PokemonAndarilho.exe** e dê dois cliques (não precisa instalar nada):
+https://github.com/willianwiab/contas-wen/releases/download/andarilho/PokemonAndarilho.exe
+
+Se aparecer "O Windows protegeu o computador": **Mais informações** → **Executar assim mesmo**.
+Esse arquivo é montado sozinho pelo GitHub (`.github/workflows/andarilho-windows.yml`) a partir do código desta pasta.
+
+## Windows — pelo código
 
 1. Instale o **Node.js** (versão LTS) em https://nodejs.org (é só avançar, avançar, concluir).
 2. Baixe o ZIP do projeto: https://github.com/willianwiab/contas-wen/archive/refs/heads/main.zip e descompacte.
