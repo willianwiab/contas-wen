@@ -852,7 +852,7 @@
   const ceu = { cv:null, ctx:null, coisas:[], tipo:'', sujo:false, arco:null, sol:null, arcoAte:0 };
   const boneco = { el:null };
   function montarCeu(){
-    ceu.cv = document.createElement('canvas'); ceu.cv.className = 'ceu'; ceu.ctx = ceu.cv.getContext('2d');
+    ceu.cv = document.createElement('canvas'); ceu.cv.className = 'ceu'; ceu.cv.style.display = 'none'; ceu.ctx = ceu.cv.getContext('2d');
     ceu.arco = document.createElement('div'); ceu.arco.className = 'arco';
     ceu.sol = document.createElement('span'); ceu.sol.className = 'sol'; ceu.sol.textContent = '☀️';
     boneco.el = document.createElement('span'); boneco.el.className = 'boneco'; boneco.el.textContent = '⛄';
@@ -904,7 +904,9 @@
     if(!ceu.cv) return;
     ceu.arco.classList.toggle('on', Date.now() < ceu.arcoAte && ['sol', 'nada'].includes(ceu.tipo) && cfg.ligado);
     const ctx = ceu.ctx, W = ceu.cv.width, H = ceu.cv.height;
-    if(ceu.tipo !== 'chuva' && ceu.tipo !== 'neve'){ if(ceu.sujo){ ctx.clearRect(0, 0, W, H); ceu.sujo = false; } return; }
+    /* A tela de chuva/neve só existe enquanto está chovendo ou nevando. */
+    if(ceu.tipo !== 'chuva' && ceu.tipo !== 'neve' || !cfg.ligado){ if(ceu.sujo){ ctx.clearRect(0, 0, W, H); ceu.sujo = false; ceu.cv.style.display = 'none'; } return; }
+    if(!ceu.sujo) ceu.cv.style.display = '';
     ceu.sujo = true; ctx.clearRect(0, 0, W, H);
     const chuva = ceu.tipo === 'chuva', quantos = Math.round(W / (chuva ? 9 : 14));
     while(ceu.coisas.length < quantos) ceu.coisas.push({ x:Math.random() * W, y:Math.random() * H, v:chuva ? 650 + Math.random() * 300 : 35 + Math.random() * 45, r:2 + Math.random() * 2.5, f:Math.random() * 6 });

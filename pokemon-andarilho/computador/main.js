@@ -11,10 +11,26 @@ let palco = null, config = null, bandeja = null, escondido = false;
 app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
 
-/* Só pode ter um aberto. Se clicar no programa de novo, em vez de abrir outro, mostra a janela de escolher. */
-const temLock = app.requestSingleInstanceLock();
-if(!temLock) app.quit();
-app.on('second-instance', () => abrirConfig());
+/* Em alguns computadores com Windows, a placa de vídeo deixa a camada transparente toda preta ou branca
+   (tapando a tela). Desenhando sem a placa de vídeo a transparência funciona sempre. */
+app.disableHardwareAcceleration();
+
+/* Só pode ter um aberto. Se clicar no programa de novo, em vez de abrir outro, mostra a janela de escolher.
+   Mas se o que abriu agora for uma versão MAIS NOVA, o velho fecha sozinho e o novo fica no lugar. */
+const VERSAO = app.getVersion();
+const maisNova = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number);
+  for(let i = 0; i < 3; i++) if((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); return false; };
+let temLock = app.requestSingleInstanceLock({ versao:VERSAO });
+app.on('second-instance', (ev, argv, pasta, dados) => {
+  if(dados && maisNova(dados.versao, VERSAO)){ app.releaseSingleInstanceLock(); app.exit(0); return; }
+  abrirConfig();
+});
+/* Espera um pouquinho o velho fechar e tenta de novo. */
+const esperarLock = async () => {
+  for(let i = 0; i < 4 && !temLock; i++){ await new Promise(r => setTimeout(r, 1200)); temLock = app.requestSingleInstanceLock({ versao:VERSAO }); }
+  if(!temLock) app.quit();
+  return temLock;
+};
 
 function criarPalco(){
   const { x, y, width, height } = screen.getPrimaryDisplay().workArea;
@@ -42,8 +58,8 @@ function abrirConfig(){
 ipcMain.on('abrir-config', () => abrirConfig());
 ipcMain.on('mouse', (_, pegar) => { if(palco && !palco.isDestroyed()) palco.setIgnoreMouseEvents(!pegar, { forward:true }); });
 
-app.whenReady().then(() => {
-  if(!temLock) return;
+app.whenReady().then(esperarLock).then(ok => {
+  if(!ok) return;
   criarPalco();
   bandeja = new Tray(nativeImage.createFromPath(path.join(__dirname, 'icone.png')).resize({ width:16, height:16 }));
   bandeja.setToolTip('Pokémon Andarilho');
