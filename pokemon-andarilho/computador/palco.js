@@ -1,10 +1,10 @@
-/* Descobre se o mouse está em cima de um Pokémon. Se estiver, a janela pega o clique;
+/* Descobre se o mouse está em cima de um Pokémon (ou de um ovo, da casinha, de um presente). Se estiver, a janela pega o clique;
    se não, o clique passa pro programa de baixo. Enquanto arrasta, continua pegando. */
 let pegando = false, apertado = false;
 function conferir(x, y){
   const host = document.getElementById('pokemon-andarilho');
   const el = host && host.shadowRoot ? host.shadowRoot.elementFromPoint(x, y) : null;
-  const sobre = !!(el && el.closest && el.closest('.pet'));
+  const sobre = !!(el && el.closest && el.closest('.pet, .clicavel'));
   const quer = sobre || apertado;
   if(quer !== pegando){ pegando = quer; window.andarilhoPC.mouse(quer); }
 }

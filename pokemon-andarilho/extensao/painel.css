@@ -1,9 +1,9 @@
 /* Painel de escolha (menu da extensão e site). */
 .painel{font:15px/1.35 system-ui,-apple-system,'Segoe UI',sans-serif;color:#1d2433}
 .painel h3{font-size:1rem;margin:12px 0 6px}
-.opcoes{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.opcoes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}
 .opcoes label{display:flex;align-items:center;gap:6px;font-weight:600}
-.opcoes select{font:inherit;padding:3px 6px;border-radius:8px;border:2px solid #c5cfe0;background:#fff}
+.opcoes select{min-width:0;max-width:100%;font:inherit;padding:3px 6px;border-radius:8px;border:2px solid #c5cfe0;background:#fff}
 .opcoes input[type=checkbox]{width:18px;height:18px;accent-color:#3b5bdb}
 .meus{display:grid;gap:6px}
 .meu{display:flex;align-items:center;gap:8px;background:#eef2ff;border:2px solid #c5d0fa;border-radius:12px;padding:4px 8px}
@@ -19,3 +19,14 @@
 .resultados small{display:block;font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nada{grid-column:1/-1;text-align:center;color:#5b6477}
 button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #fab005;outline-offset:2px}
+.aniver{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-weight:600}
+.aniver select{font:inherit;padding:3px 6px;border-radius:8px;border:2px solid #c5cfe0;background:#fff}
+.aniver button,.modo button{font:inherit;font-weight:700;border:2px solid #c5d0fa;background:#fff;border-radius:10px;padding:4px 9px;cursor:pointer}
+.modo{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.modo button.on{background:#3b5bdb;border-color:#3b5bdb;color:#fff}
+.ovos:empty{display:none}
+.ovos{margin-top:6px}
+.meu.ovo{background:#fff9db;border-color:#ffe066}
+.meu.ovo small{color:#5b6477;white-space:nowrap}
+.ovinho{font-size:30px;width:44px;text-align:center;display:inline-block;animation:ovinho 1.4s ease-in-out infinite}
+@keyframes ovinho{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(-12deg)}90%{transform:rotate(12deg)}}

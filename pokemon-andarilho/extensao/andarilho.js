@@ -7,7 +7,10 @@
   window.__andarilho = true;
 
   const naExtensao = typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
-  const PADRAO = { ligado:true, pets:[{ id:25, shiny:false }], tamanho:'M', som:true, seguir:false, estilo:'3d' };
+  const PADRAO = { ligado:true, pets:[{ id:25, shiny:false }], tamanho:'M', som:true, seguir:false, estilo:'3d',
+    ovos:[], evoluir:true, casa:'cama', cor:'azul', clima:'auto', aniver:null, festa:0 };
+  const CORES = { azul:'#5c7cfa', rosa:'#f783ac', verde:'#51cf66', amarelo:'#fcc419', roxo:'#9775fa', vermelho:'#ff6b6b', laranja:'#ff922b' };
+  const MAX_PETS = 10, MAX_OVOS = 3;
   const TAMANHOS = { P:72, M:110, G:160 };
   const voa = id => typeof ANDARILHO_VOA !== 'undefined' && ANDARILHO_VOA.has(id);
   const tipoDe = id => typeof ANDARILHO_TIPO === 'string' ? ANDARILHO_TIPO.charCodeAt(id - 1) - 97 : 0;
@@ -30,6 +33,15 @@
     if(!TAMANHOS[c.tamanho]) c.tamanho = 'M';
     if(!['3d', 'animado'].includes(c.estilo)) c.estilo = '3d';
     c.ligado = c.ligado !== false; c.som = c.som !== false; c.seguir = !!c.seguir;
+    const ovos = Array.isArray(c.ovos) ? c.ovos : [];
+    c.ovos = ovos.slice(0, MAX_OVOS).map(o => ({ id:Math.max(1, Math.min(1025, Math.floor(+o.id) || 25)), shiny:!!o.shiny, surpresa:!!o.surpresa, ate:+o.ate || 0 }));
+    c.evoluir = c.evoluir !== false;
+    if(!['cama', 'casa'].includes(c.casa)) c.casa = 'cama';
+    if(!CORES[c.cor]) c.cor = 'azul';
+    if(!['auto', 'sol', 'chuva', 'neve', 'nada'].includes(c.clima)) c.clima = 'auto';
+    const a = c.aniver;
+    c.aniver = a && +a.d >= 1 && +a.d <= 31 && +a.m >= 1 && +a.m <= 12 ? { d:Math.floor(+a.d), m:Math.floor(+a.m) } : null;
+    c.festa = +c.festa || 0;
     return c;
   }
 
@@ -73,13 +85,77 @@
     .cama .pe{position:absolute;right:0;bottom:0;width:6%;height:55%;background:#8d5a2b;border:3px solid #4a2e14;border-radius:8px 8px 4px 4px}
     .cama .colchao{position:absolute;left:8%;right:4%;bottom:10%;height:30%;background:#fff;border:3px solid #4a2e14;border-radius:10px}
     .cama .travesseiro{position:absolute;left:13%;bottom:36%;width:22%;height:20%;background:#fff3bf;border:3px solid #4a2e14;border-radius:50%}
-    .cobertor{position:absolute;left:0;top:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(45deg,#748ffc 0 10px,#5c7cfa 10px 20px);border:3px solid #364fc7;border-radius:12px 12px 8px 8px}
+    .cobertor{position:absolute;left:0;top:0;pointer-events:none;z-index:3;--cor:#5c7cfa;background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--cor) 75%,#fff) 0 10px,var(--cor) 10px 20px);border:3px solid color-mix(in srgb,var(--cor) 60%,#000);border-radius:12px 12px 8px 8px}
+    .cobertor.some{display:none}
+    /* 🏠 a casinha */
+    .casa{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;z-index:0;--cor:#5c7cfa}
+    .casa .parede{position:absolute;left:8%;right:8%;bottom:0;height:58%;background:var(--cor);border:3px solid #2b2b2b;border-radius:4px}
+    .casa .telhado{position:absolute;left:0;right:0;bottom:56%;height:44%;background:#c92a2a;clip-path:polygon(50% 0,100% 100%,0 100%)}
+    .casa .telhado:after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 8px,rgba(0,0,0,.18) 8px 10px)}
+    .casa .chamine{position:absolute;right:20%;bottom:72%;width:11%;height:20%;background:#868e96;border:3px solid #2b2b2b;border-bottom:0}
+    .casa .porta{position:absolute;left:50%;bottom:0;width:26%;height:66%;transform:translateX(-50%);background:#8d5a2b;border:3px solid #4a2e14;border-bottom:0;border-radius:40px 40px 0 0}
+    .casa .porta:after{content:'';position:absolute;right:18%;top:52%;width:6px;height:6px;border-radius:50%;background:#fcc419}
+    .casa .janela{position:absolute;left:10%;top:16%;width:22%;height:32%;background:#a5d8ff;border:3px solid #2b2b2b;border-radius:4px;font-size:14px;display:grid;place-items:center;overflow:hidden}
+    .casa .janela.luz{background:#ffe066}
+    .casa .janela2{left:auto;right:10%}
+    .casa .fumaca{position:absolute;right:21%;bottom:94%;font-size:16px;opacity:0;pointer-events:none}
+    .casa.gente .fumaca{animation:fuma 2.4s ease-out infinite}
+    @keyframes fuma{0%{transform:translate(0,0) scale(.6);opacity:.8}100%{transform:translate(10px,-40px) scale(1.6);opacity:0}}
+    .casa .placa{position:absolute;left:50%;top:-24px;transform:translateX(-50%);font:800 12px system-ui,sans-serif;background:#fff;border:2px solid #2b2b2b;border-radius:8px;padding:1px 6px;white-space:nowrap;color:#2b2b2b}
+    .casa:hover .placa{background:#fff3bf}
+    .pet.dentro{visibility:hidden;pointer-events:none}
+    /* 🥚 ovos */
+    .ovo{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;z-index:1;transform-origin:50% 100%}
+    .ovo .casca{position:absolute;inset:0;background:#fffdf5;border:3px solid #2b2b2b;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;overflow:hidden;
+      box-shadow:inset -6px -6px 0 rgba(0,0,0,.08)}
+    .ovo .casca i{position:absolute;border-radius:50%;background:var(--pinta,#74c0fc)}
+    .ovo .rachado{position:absolute;left:20%;right:20%;top:38%;height:14px;display:none;
+      background:linear-gradient(135deg,transparent 45%,#2b2b2b 45% 55%,transparent 55%) 0 0/14px 14px repeat-x}
+    .ovo.quase .rachado{display:block}
+    .ovo .tempo{position:absolute;left:50%;top:-22px;transform:translateX(-50%);font:800 11px system-ui,sans-serif;background:#fff;border:2px solid #2b2b2b;border-radius:8px;padding:0 5px;white-space:nowrap;color:#2b2b2b}
+    .ovo{animation:balanca 2.4s ease-in-out infinite}
+    .ovo.quase{animation:balanca .5s ease-in-out infinite}
+    @keyframes balanca{0%,60%,100%{rotate:0deg}70%{rotate:-9deg}80%{rotate:9deg}90%{rotate:-5deg}}
+    .clarao{position:absolute;border-radius:50%;background:radial-gradient(#fff,rgba(255,255,255,0));pointer-events:none;animation:clarao 1s ease-out forwards;z-index:6}
+    @keyframes clarao{0%{transform:scale(.2);opacity:1}100%{transform:scale(2.4);opacity:0}}
+    .pet.evoluindo .corpo img{animation:evolui 2.6s ease-in-out}
+    @keyframes evolui{0%{filter:brightness(1)}20%,80%{filter:brightness(0) invert(1) drop-shadow(0 0 12px #fff)}40%{transform:scale(.6)}60%{transform:scale(1.25)}100%{filter:brightness(1)}}
+    /* menu: comidas, evolução */
+    .menu .linha{display:none;gap:4px;flex-wrap:wrap;max-width:220px;justify-content:center}
+    .menu .linha.on{display:flex}
+    .menu .linha button{width:34px;height:34px;font-size:19px}
+    .menu .evos button{width:46px;height:46px;background:#fff9db;border-color:#fcc419}
+    .menu .evos img{width:40px;height:40px;object-fit:contain;pointer-events:none}
+    .menu .xp{font-size:11px;text-align:center;color:#5b6477}
+    .menu .xp.pronto{color:#e67700}
+    /* 🌧️ clima */
+    .ceu{position:absolute;left:0;top:0;pointer-events:none;z-index:4}
+    .arco{position:absolute;left:50%;top:6%;width:min(90vw,900px);aspect-ratio:2/1;transform:translateX(-50%);border-radius:50% 50% 0 0/100% 100% 0 0;pointer-events:none;z-index:0;opacity:0;transition:opacity 3s;
+      background:radial-gradient(circle at 50% 100%,transparent 54%,#ff6b6b 54% 58%,#ff922b 58% 62%,#ffd43b 62% 66%,#51cf66 66% 70%,#339af0 70% 74%,#5c7cfa 74% 78%,#9775fa 78% 82%,transparent 82%)}
+    .arco.on{opacity:.28}
+    .sol{position:absolute;right:24px;top:18px;font-size:46px;pointer-events:none;z-index:0;display:none;animation:gira 20s linear infinite}
+    .sol.on{display:block}
+    @keyframes gira{to{rotate:360deg}}
+    .acessorio{position:absolute;left:50%;top:-14%;translate:-50% 0;font-size:calc(var(--s) * .32);pointer-events:none}
+    .boneco{position:absolute;left:0;top:0;font-size:46px;pointer-events:none;z-index:0;display:none}
+    .boneco.on{display:block}
+    /* 🎂 festa */
+    .faixa{position:absolute;left:50%;top:10px;transform:translateX(-50%);font:900 22px system-ui,sans-serif;color:#fff;background:linear-gradient(90deg,#f06595,#cc5de8,#5c7cfa);
+      border:3px solid #2b2b2b;border-radius:16px;padding:6px 18px;box-shadow:4px 4px 0 #2b2b2b;pointer-events:none;z-index:7;white-space:nowrap;animation:pula .8s ease-in-out infinite}
+    @keyframes pula{50%{transform:translateX(-50%) translateY(-6px) rotate(-1deg)}}
+    .confete{position:absolute;top:-30px;pointer-events:none;z-index:7;font-size:22px;animation:confete linear forwards}
+    @keyframes confete{to{transform:translateY(calc(100vh + 60px)) rotate(720deg)}}
+    .bolo{position:absolute;left:0;top:0;font-size:54px;pointer-events:none;z-index:2}
+    .borboleta{position:absolute;left:0;top:0;font-size:24px;pointer-events:none;z-index:3}
+    .presente{position:absolute;left:0;top:0;font-size:30px;pointer-events:auto;cursor:pointer;z-index:2;animation:pede 1s ease-in-out infinite}
+    .flash{position:absolute;inset:0;background:#fff;pointer-events:none;z-index:8;animation:flash .6s ease-out forwards}
+    @keyframes flash{from{opacity:.9}to{opacity:0}}
     .cama .placa{position:absolute;left:50%;top:-26px;transform:translateX(-50%);font:800 12px system-ui,sans-serif;background:#fff;border:2px solid #4a2e14;border-radius:8px;padding:1px 6px;white-space:nowrap;color:#4a2e14}
     .bola{position:absolute;left:0;top:0;pointer-events:none;z-index:2;font-size:26px;line-height:1}
     .pet{z-index:1}
     .zzz{position:absolute;right:-6px;top:0;font:800 18px system-ui,sans-serif;color:#5c7cfa;pointer-events:none;animation:zz 2s ease-in-out infinite}
     @keyframes zz{0%{transform:translate(0,10px);opacity:0}40%{opacity:1}100%{transform:translate(14px,-22px);opacity:0}}
-    @media (prefers-reduced-motion: reduce){ .efeito,.zzz{animation-duration:.01ms} }
+    @media (prefers-reduced-motion: reduce){ .efeito,.zzz,.confete{animation-duration:.01ms} .ovo,.sol,.faixa{animation:none} }
   </style>`;
   const juntar = () => { if(!host.isConnected) (document.body || document.documentElement).appendChild(host); };
 
@@ -120,6 +196,9 @@
   function falaDaHora(){ const h = new Date().getHours(); return h < 6 ? 'Já é muito tarde! Vai dormir! 🌙' : h < 12 ? 'Bom dia! ☀️' : h < 18 ? 'Boa tarde! 🌤️' : h < 22 ? 'Boa noite! 🌙' : 'Tá ficando tarde… 🥱'; }
   function algoPraFalar(pet){
     const r = Math.random();
+    if(ehAniver() && r < .3) return sorte(['Feliz aniversário!!! 🎂', 'Hoje é seu dia! 🥳', 'Cadê o bolo? 🎂😋', 'Parabéns! 🎉']);
+    if(ceu.tipo === 'chuva' && r < .45) return sorte(['Tá chovendo lá fora? 🌧️', 'Barulhinho de chuva… 🌧️', 'Pula na poça! 💦']);
+    if(ceu.tipo === 'neve' && r < .45) return sorte(['Bora fazer guerra de neve? ❄️', 'Cada floquinho é diferente! ❄️']);
     if(r < .35) return sorte(falasDoLugar());
     if(r < .55) return sorte(CURIOSIDADES);
     if(r < .65) return sorte(PIADAS);
@@ -131,32 +210,56 @@
   let cfg = limpa(null), pets = [], mouse = { x:-999, y:-999, quando:performance.now() };
   /* No programa do computador tem o botão ⚙️ pra abrir a janela de escolher. */
   const noPC = !!(window.andarilhoPC && window.andarilhoPC.abrirConfig);
-  function criarPet(p, i){
+  /* 🍕 Cada tipo tem uma comida favorita (ganha mais) e uma que acha "eca". */
+  const COMIDAS = ['🍎', '🍕', '🍰', '🍦', '🍙', '🥕', '🍓', '🍩', '🌶️', '🐟'];
+  const FAV = ['🍰', '🌶️', '🐟', '🥕', '🍕', '🍦', '🍙', '🍩', '🍕', '🍓', '🍓', '🍎', '🍙', '🍩', '🌶️', '🍕', '🐟', '🍰'];
+  const ECA = ['🌶️', '🍦', '🌶️', '🐟', '🥕', '🌶️', '🍰', '🥕', '🐟', '🌶️', '🌶️', '🌶️', '🍦', '🥕', '🍦', '🥕', '🍦', '🌶️'];
+  const favDe = id => FAV[tipoDe(id)] || '🍎', ecaDe = id => id === 143 ? '' : (ECA[tipoDe(id)] || '');
+  function criarPet(p, i, onde){
     const s = TAMANHOS[cfg.tamanho];
     const el = document.createElement('div'); el.className = 'pet';
-    el.style.width = s + 'px'; el.style.height = s + 'px';
+    el.style.width = s + 'px'; el.style.height = s + 'px'; el.style.setProperty('--s', s + 'px');
     el.innerHTML = `<div class="sombra"></div><div class="corpo"><img alt="" draggable="false" /></div><div class="balao"></div>
-      <div class="menu"><div class="bts"><button data-c="comer" title="Dar comida">🍎</button><button data-c="dormir" title="Pôr pra dormir">😴</button><button data-c="banho" title="Dar banho">🛁</button><button data-c="dentes" title="Escovar os dentes">🪥</button>${noPC ? '<button data-c="config" title="Escolher Pokémon">⚙️</button>' : ''}</div>
-      <div class="barrinhas"><i title="fome"><b></b></i><i title="sono"><b></b></i><i title="limpeza"><b></b></i><i title="dentes"><b></b></i></div></div>`;
+      <div class="menu"><div class="bts"><button data-c="comidas" title="Dar comida">🍎</button><button data-c="dormir" title="Pôr pra dormir">😴</button><button data-c="banho" title="Dar banho">🛁</button><button data-c="dentes" title="Escovar os dentes">🪥</button><button data-c="cantar" title="Cantar todo mundo junto">🎤</button>${noPC ? '<button data-c="config" title="Escolher Pokémon">⚙️</button>' : ''}</div>
+      <div class="linha comidas">${COMIDAS.map(c => `<button data-comida="${c}" title="Dar ${c}">${c}</button>`).join('')}</div>
+      <div class="linha evos"></div>
+      <div class="barrinhas"><i title="fome"><b></b></i><i title="sono"><b></b></i><i title="limpeza"><b></b></i><i title="dentes"><b></b></i></div><div class="xp"></div></div>`;
     const img = el.querySelector('img');
-    img.src = imagem(p, cfg.estilo);
-    /* Se o animado não existir (os mais novos), usa a foto 3D; se nem ela carregar (site que bloqueia imagens de fora), some. */
-    img.onerror = () => { if(img.src !== reserva(p)) img.src = reserva(p); else el.style.display = 'none'; };
     raiz.appendChild(el);
     const pet = { ...p, el, img, corpo:el.querySelector('.corpo'), balao:el.querySelector('.balao'), s,
-      x:Math.random() * Math.max(1, innerWidth - s), y:-s - i * 60, vx:0, vy:0, dir:Math.random() < .5 ? -1 : 1,
+      x:onde ? onde.x : Math.random() * Math.max(1, innerWidth - s), y:onde ? onde.y : -s - i * 60, vx:0, vy:onde ? -500 : 0, dir:Math.random() < .5 ? -1 : 1,
       estado:'cair', ate:0, passo:Math.random() * 10, zzz:null, fala:0, chave:i + ':' + p.id, menu:el.querySelector('.menu') };
+    trocarFoto(pet);
     pet.nec = carregarNec(pet.chave);
     ligarToques(pet); ligarMenu(pet);
     return pet;
   }
-  function montar(){
-    pets.forEach(p => p.el.remove()); pets = [];
-    host.style.display = cfg.ligado ? '' : 'none';
-    if(!cfg.ligado) return;
-    pets = cfg.pets.map(criarPet);
-    montarCama();
+  function trocarFoto(pet){
+    /* Se o animado não existir (os mais novos), usa a foto 3D; se nem ela carregar (site que bloqueia imagens de fora), some. */
+    pet.img.onerror = () => { if(pet.img.src !== reserva(pet)) pet.img.src = reserva(pet); else pet.el.style.display = 'none'; };
+    pet.el.style.display = '';
+    pet.img.src = imagem(pet, cfg.estilo);
   }
+  /* Monta os Pokémon. Quem já estava na tela continua onde está (só os novos aparecem). */
+  function montar(tudo){
+    host.style.display = cfg.ligado ? '' : 'none';
+    if(tudo || !cfg.ligado){ pets.forEach(p => p.el.remove()); pets = []; }
+    if(!cfg.ligado){ montarOvos(); return; }
+    const sobra = pets.slice(), novos = [];
+    cfg.pets.forEach((p, i) => {
+      let k = sobra.findIndex((v, j) => v && v.id === p.id && v.shiny === p.shiny && j === i);
+      if(k < 0) k = sobra.findIndex(v => v && v.id === p.id && v.shiny === p.shiny);
+      if(k >= 0){
+        const v = sobra[k]; sobra[k] = null;
+        const chave = i + ':' + p.id; if(v.chave !== chave){ v.chave = chave; }
+        novos.push(v);
+      } else { const onde = nascer[i]; delete nascer[i]; novos.push(criarPet(p, i, onde)); }
+    });
+    sobra.forEach(v => { if(v) v.el.remove(); });
+    pets = novos; pets.forEach(vestir);
+    montarCama(); montarOvos(); desenharCasa();
+  }
+  const nascer = {};
   function falar(pet, t, ms){
     pet.balao.textContent = t; pet.balao.classList.add('on');
     /* Não deixa o balão sair da tela quando ele está no cantinho. */
@@ -190,8 +293,17 @@
       const alvo = mouse.x - pet.s / 2;
       if(Math.abs(alvo - pet.x) > pet.s * .4){ pet.estado = Math.abs(alvo - pet.x) > 300 ? 'correr' : 'andar'; pet.dir = alvo > pet.x ? 1 : -1; pet.ate = agora + 700; return; }
     }
-    const r = Math.random();
+    const r = Math.random(), extra = Math.random();
     pet.naCama = false;
+    if(festando){ pet.estado = 'dancar'; pet.ate = agora + 3000; return; }
+    if(naCasa() && (extra < .07 || (ceu.tipo === 'chuva' && tipoDe(pet.id) === 1 && extra < .5))){ irDormir(pet, agora, 0, false, true); return; }
+    if(extra < .10){ cantar(pet, agora, 4200, letraDe(pet).slice(0, 3)); return; }
+    if(extra < .13 && !voa(pet.id)){ chamarBorboleta(); pet.estado = 'borboleta'; pet.ate = agora + 9000; falar(pet, sorte(['Uma borboleta! 🦋', 'Vou pegar! 🦋'])); return; }
+    if(borboleta.ativa && extra < .35 && !voa(pet.id)){ pet.estado = 'borboleta'; pet.ate = agora + 7000; return; }
+    if(extra > .985){ pet.estado = 'parado'; pet.ate = agora + 3000; darPresente(pet); return; }
+    if(extra > .975 && pets.length > 1){ tirarFoto(); return; }
+    if(ceu.tipo === 'chuva' && tipoGosta.chuva.includes(tipoDe(pet.id)) && extra < .2){ pet.estado = 'dancar'; pet.ate = agora + 3000; efeito(pet, '💧', 3); falar(pet, sorte(['Chuva! 💧😄', 'Splash! 💦'])); return; }
+    if(pet.frio && extra < .2){ pet.estado = 'parado'; pet.ate = agora + 2500; falar(pet, sorte(['Brrr! 🥶', 'Que frio! ❄️', 'Atchim! 🤧'])); return; }
     if(parado && r < .5){ irDormir(pet, agora, 10000 + Math.random() * 10000, false); return; }
     if(bola.ativa && Math.random() < .35 && !voa(pet.id)){ pet.estado = 'bola'; pet.ate = agora + 8000; return; }
     if(voa(pet.id) && r < .4){ pet.estado = 'voar'; pet.alvo = null; pet.ate = agora + 6000 + Math.random() * 8000; if(Math.random() < .4) falar(pet, sorte(['Vou voar! 🕊️', 'Lá do alto é mais bonito!', 'Wiiii! ✈️'])); return; }
@@ -232,18 +344,34 @@
     if(!bola.ativa){ bola.x = 40 + Math.random() * Math.max(10, innerWidth - 80); bola.vx = 0; }
     bola.ativa = true; bola.el.style.display = ''; bola.ate = performance.now() + 25000;
   }
-  /* 🛏️ A caminha fica no canto de baixo, à esquerda. Quem tem sono vai andando até ela. */
-  const cama = { el:null, cob:null, x:6, w:0, h:0 };
+  /* 🛏️ A caminha (ou 🏠 a casinha) fica no canto de baixo, à esquerda. Quem tem sono vai andando até ela.
+     Na casinha eles entram pela porta e somem lá dentro; clicando na casinha, todo mundo sai. */
+  const cama = { el:null, cob:null, x:6, w:0, h:0, modo:'' };
+  const naCasa = () => cfg.casa === 'casa';
   function montarCama(){
-    const S = TAMANHOS[cfg.tamanho];
-    cama.w = Math.round(S * 1.9); cama.h = Math.round(S * .7);
-    if(!cama.el){
-      cama.el = document.createElement('div'); cama.el.className = 'cama';
-      cama.el.innerHTML = '<div class="cabeceira"></div><div class="pe"></div><div class="colchao"></div><div class="travesseiro"></div><div class="placa">🛏️ caminha</div>';
+    const S = TAMANHOS[cfg.tamanho], modo = cfg.casa + ':' + cfg.tamanho;
+    if(cama.modo !== modo){
+      if(cama.el){ cama.el.remove(); cama.cob.remove(); }
+      cama.modo = modo;
       cama.cob = document.createElement('div'); cama.cob.className = 'cobertor';
+      if(naCasa()){
+        cama.w = Math.round(S * 1.7); cama.h = Math.round(S * 1.6);
+        cama.el = document.createElement('div'); cama.el.className = 'casa clicavel'; cama.el.title = 'Clique pra chamar quem está lá dentro';
+        cama.el.innerHTML = '<div class="chamine"></div><span class="fumaca">💨</span><div class="telhado"></div><div class="parede"><div class="janela"></div><div class="janela janela2"></div><div class="porta"></div></div><div class="placa">🏠 casinha</div>';
+        cama.cob.classList.add('some');
+        cama.el.addEventListener('pointerdown', ev => { ev.preventDefault(); ev.stopPropagation(); });
+        cama.el.addEventListener('click', ev => { ev.stopPropagation(); bateuNaPorta(); });
+      } else {
+        cama.w = Math.round(S * 1.9); cama.h = Math.round(S * .7);
+        cama.el = document.createElement('div'); cama.el.className = 'cama';
+        cama.el.innerHTML = '<div class="cabeceira"></div><div class="pe"></div><div class="colchao"></div><div class="travesseiro"></div><div class="placa">🛏️ caminha</div>';
+        /* Quem estava dentro da casinha sai quando ela vira cama. */
+        pets.forEach(p => { if(p.dentro) sairDeCasa(p, false); });
+      }
       raiz.appendChild(cama.el); raiz.appendChild(cama.cob);
     }
     cama.el.style.width = cama.w + 'px'; cama.el.style.height = cama.h + 'px';
+    cama.el.style.setProperty('--cor', CORES[cfg.cor]); cama.cob.style.setProperty('--cor', CORES[cfg.cor]);
     cama.cob.style.width = Math.round(cama.w * .62) + 'px'; cama.cob.style.height = Math.round(cama.h * .42) + 'px';
     posicionarCama();
   }
@@ -252,14 +380,45 @@
     const base = innerHeight - extraChao - 2;
     cama.el.style.transform = `translate(${cama.x}px, ${base - cama.h}px)`;
     cama.cob.style.transform = `translate(${cama.x + cama.w * .33}px, ${base - cama.h * .62}px)`;
+    if(boneco.el) boneco.el.style.transform = `translate(${innerWidth * .62}px, ${base - 50}px)`;
   }
   function vagaNaCama(pet){
+    if(naCasa()) return cama.x + cama.w / 2 - pet.s / 2;
     const k = pets.filter(p => p.naCama || p.estado === 'irCama').indexOf(pet);
     return cama.x + cama.w * .2 + ((Math.max(0, k) % 4) * cama.w * .17) - pet.s * .25;
   }
-  function irDormir(pet, agora, dur, soneca){
-    pet.estado = 'irCama'; pet.dormirPor = dur; pet.soneca = !!soneca; pet.naCama = false; pet.ate = agora + 30000;
-    if(Math.random() < .5 || soneca) falar(pet, sorte(['Vou pra caminha… 🛏️', 'Tô com soninho… 😴', 'Hora de dormir! 🌙']), 1600);
+  function irDormir(pet, agora, dur, soneca, visita){
+    pet.estado = 'irCama'; pet.dormirPor = dur; pet.soneca = !!soneca; pet.visita = !!visita; pet.naCama = false; pet.ate = agora + 30000;
+    if(visita) falar(pet, sorte(['Vou pra casinha! 🏠', 'Já volto! 🏠', 'Vou ver minha casa!']), 1600);
+    else if(Math.random() < .5 || soneca) falar(pet, sorte([naCasa() ? 'Vou dormir na casinha… 🏠' : 'Vou pra caminha… 🛏️', 'Tô com soninho… 😴', 'Hora de dormir! 🌙']), 1600);
+  }
+  /* Chegou na porta: entra e some. */
+  function entrarEmCasa(pet, agora){
+    pet.dentro = true; pet.naCama = true; pet.el.classList.add('dentro'); pet.menu.classList.remove('on');
+    pet.estado = pet.visita ? 'emCasa' : 'dormir'; pet.ate = agora + (pet.visita ? 5000 + Math.random() * 8000 : pet.dormirPor || 10000);
+    desenharCasa();
+  }
+  function sairDeCasa(pet, falando){
+    pet.dentro = false; pet.naCama = false; pet.soneca = false; pet.visita = false; pet.el.classList.remove('dentro'); dormir(pet, false);
+    pet.x = cama.x + cama.w / 2 - pet.s / 2; pet.y = chao(pet); pet.dir = 1;
+    pet.estado = 'andar'; pet.ate = performance.now() + 1500;
+    if(falando) falar(pet, falando, 1800);
+    desenharCasa();
+  }
+  function desenharCasa(){
+    if(!naCasa() || !cama.el) return;
+    const dentro = pets.filter(p => p.dentro), dorme = dentro.some(p => p.estado === 'dormir');
+    cama.el.classList.toggle('gente', dentro.length > 0);
+    const janelas = cama.el.querySelectorAll('.janela');
+    janelas.forEach((j, i) => { j.classList.toggle('luz', dentro.length > i); j.textContent = dentro.length > i ? (dorme ? '💤' : '👀') : ''; });
+    cama.el.querySelector('.placa').textContent = dentro.length ? `🏠 ${dentro.length} em casa` : '🏠 casinha';
+  }
+  function bateuNaPorta(){
+    const dentro = pets.filter(p => p.dentro);
+    if(dentro.length){ dentro.forEach((p, i) => setTimeout(() => sairDeCasa(p, sorte(['Oi! Cheguei! 👋', 'Alguém bateu? 🚪', 'Tô aqui! 😄', p.estado === 'dormir' ? 'Eu tava dormindo… 🥱' : 'Já saí!'])), i * 400)); return; }
+    /* Ninguém em casa: chama todo mundo pra entrar. */
+    const agora = performance.now();
+    pets.filter(p => !['arrastado', 'irCama'].includes(p.estado)).forEach(p => { dormir(p, false); irDormir(p, agora, 0, false, true); });
   }
   function pular(pet, forca){ pet.estado = 'cair'; pet.vy = -forca; pet.vx = pet.dir * (40 + Math.random() * 60); }
 
@@ -314,6 +473,11 @@
     const dt = Math.min(.05, (agora - ult) / 1000); ult = agora;
     if(!document.hidden) for(const pet of pets){
       const c = chao(pet), maxX = Math.max(0, innerWidth - pet.s);
+      if(pet.dentro){
+        /* Lá dentro da casinha: não aparece. Quando dá a hora, sai pela porta. */
+        if(agora >= pet.ate && !(pet.estado === 'dormir' && pet.soneca)) sairDeCasa(pet, pet.estado === 'dormir' ? sorte(['Bom dia! ☀️', 'Dormi tão bem! 😊']) : sorte(['Voltei! 😄', 'Minha casa é muito legal! 🏠']));
+        continue;
+      }
       if(pet.estado === 'arrastado'){ /* segue o dedo */ }
       else if(pet.estado === 'cair'){
         pet.vy += 1900 * dt; pet.x += pet.vx * dt; pet.y += pet.vy * dt;
@@ -344,9 +508,21 @@
         pet.y = c;
         const alvo = vagaNaCama(pet), dx = alvo - pet.x;
         pet.dir = dx > 0 ? 1 : -1;
-        if(Math.abs(dx) < 6){ pet.x = alvo; pet.naCama = true; pet.estado = 'dormir'; pet.ate = agora + (pet.dormirPor || 10000); dormir(pet, true); }
+        if(Math.abs(dx) < 6){
+          pet.x = alvo;
+          if(naCasa()) entrarEmCasa(pet, agora);
+          else if(pet.visita){ pet.estado = 'parado'; pet.ate = agora + 1000; pet.visita = false; }
+          else { pet.naCama = true; pet.estado = 'dormir'; pet.ate = agora + (pet.dormirPor || 10000); dormir(pet, true); }
+        }
         else pet.x += pet.dir * Math.min(Math.abs(dx), 110 * dt);
         if(agora >= pet.ate){ pet.estado = 'parado'; pet.ate = agora + 1000; }
+      } else if(pet.estado === 'borboleta'){
+        pet.y = c;
+        const alvo = borboleta.x - pet.s / 2, dx = alvo - pet.x;
+        pet.dir = dx > 0 ? 1 : -1;
+        if(!borboleta.ativa || agora >= pet.ate){ pet.estado = 'parado'; pet.ate = agora + 1000; if(Math.random() < .5) falar(pet, sorte(['Ela fugiu! 🦋', 'Quase peguei!'])); }
+        else if(Math.abs(dx) < pet.s * .25){ pular(pet, 650); if(Math.random() < .5) falar(pet, sorte(['Peguei! …ops, não! 🦋', 'Volta aqui! 🦋']), 1400); }
+        else pet.x += pet.dir * Math.min(Math.abs(dx), 170 * dt);
       } else if(pet.estado === 'bola'){
         pet.y = c;
         const alvo = bola.x - pet.s / 2, dx = alvo - pet.x;
@@ -372,20 +548,23 @@
         }
       }
       /* Passinho: sobe e desce e inclina enquanto anda (a foto 3D não mexe sozinha). */
-      const andando = ['andar', 'correr', 'subir', 'teto', 'irCama', 'bola'].includes(pet.estado);
+      const andando = ['andar', 'correr', 'subir', 'teto', 'irCama', 'bola', 'borboleta'].includes(pet.estado);
       pet.passo += dt * (pet.estado === 'correr' ? 16 : 9);
-      const pulo = pet.estado === 'dancar' ? -Math.abs(Math.sin(agora / 160)) * pet.s * .12 : pet.estado === 'sentar' ? pet.s * .05 : pet.estado === 'golpe' ? -Math.abs(Math.sin(agora / 90)) * pet.s * .05 : andando ? -Math.abs(Math.sin(pet.passo)) * pet.s * .07 : 0;
+      const festeja = pet.estado === 'dancar' || pet.estado === 'cantar';
+      const pulo = festeja ? -Math.abs(Math.sin(agora / 160)) * pet.s * .12 : pet.estado === 'sentar' ? pet.s * .05 : pet.estado === 'golpe' ? -Math.abs(Math.sin(agora / 90)) * pet.s * .05 : andando ? -Math.abs(Math.sin(pet.passo)) * pet.s * .07 : 0;
       /* Na parede fica deitado de lado (pés na parede); no teto fica de cabeça pra baixo; voando inclina. */
       const base = pet.estado === 'subir' ? (pet.lado < 0 ? 90 : -90) * (pet.dir > 0 ? -1 : 1) : pet.estado === 'teto' ? 180 : 0;
-      const giro = base + (pet.estado === 'dancar' ? Math.sin(agora / 130) * 18 : pet.estado === 'golpe' ? Math.sin(agora / 40) * 4 : andando ? Math.sin(pet.passo) * 5 : pet.estado === 'voar' ? Math.sin(agora / 300) * 8 : 0);
+      const giro = base + (festeja ? Math.sin(agora / (pet.estado === 'cantar' ? 200 : 130)) * 18 : pet.estado === 'golpe' ? Math.sin(agora / 40) * 4 : andando ? Math.sin(pet.passo) * 5 : pet.estado === 'voar' ? Math.sin(agora / 300) * 8 : 0);
       const respira = pet.estado === 'sentar' ? .86 : pet.estado === 'espreguicar' ? 1.12 : pet.estado === 'parado' || pet.estado === 'dormir' ? 1 + Math.sin(agora / (pet.estado === 'dormir' ? 700 : 400)) * .025 : 1;
       const olha = pet.estado === 'cair' || pet.estado === 'arrastado' ? (pet.vx > 0 ? 1 : pet.vx < 0 ? -1 : pet.dir) : pet.dir;
-      pet.el.style.transform = `translate(${pet.x}px, ${pet.y}px)`;
+      const treme = pet.frio && ['parado', 'sentar', 'andar'].includes(pet.estado) ? Math.sin(agora / 25) * 1.5 : 0;
+      pet.el.style.transform = `translate(${pet.x + treme}px, ${pet.y}px)`;
       /* As fotos olham pra esquerda; andando pra direita, vira o espelho. */
       pet.corpo.style.transform = `translateY(${pulo}px) scaleX(${olha > 0 ? -1 : 1}) rotate(${giro}deg) scaleY(${respira})`;
       pet.el.classList.toggle('no-ar', pet.y < c - 2);
       pet.el.classList.toggle('sem-sombra', ['subir', 'teto', 'voar'].includes(pet.estado));
     }
+    desenharCeu(dt); moverBorboleta(dt, agora);
     if(bola.ativa && bola.el){
       const tam = 26, maxX = innerWidth - tam;
       bola.x += bola.vx * dt; bola.vx *= Math.max(0, 1 - 1.4 * dt); bola.giro += bola.vx * dt * 3;
@@ -405,7 +584,7 @@
   let necSalvas = {};
   function carregarNec(chave){
     const n = necSalvas[chave], agora = Date.now();
-    const base = { fome:90, sono:90, limpo:90, dentes:90, quando:agora };
+    const base = { fome:90, sono:90, limpo:90, dentes:90, xp:0, quando:agora };
     if(!n || typeof n !== 'object') return base;
     const r = Object.assign(base, n);
     const min = Math.min(8 * 60, Math.max(0, (agora - (+r.quando || agora)) / 60000)) * .5;
@@ -419,11 +598,21 @@
     else { try{ localStorage.setItem('andarilho:nec', JSON.stringify(necSalvas)); }catch(e){} }
   }
   function abrirMenu(pet){
-    pets.forEach(p => { if(p !== pet) p.menu.classList.remove('on'); });
+    pets.forEach(p => { if(p !== pet){ p.menu.classList.remove('on'); p.menu.querySelector('.comidas').classList.remove('on'); } });
     pet.menu.classList.add('on'); desenharNec(pet);
-    clearTimeout(pet.fechaMenu); pet.fechaMenu = setTimeout(() => pet.menu.classList.remove('on'), 6000);
+    clearTimeout(pet.fechaMenu); pet.fechaMenu = setTimeout(() => { pet.menu.classList.remove('on'); pet.menu.querySelector('.comidas').classList.remove('on'); }, 8000);
   }
   function desenharNec(pet){
+    const evos = evosDe(pet.id), xp = +pet.nec.xp || 0, pronto = cfg.evoluir && evos.length && xp >= XP_EVO;
+    const linhaXp = pet.menu.querySelector('.xp'), linhaEvo = pet.menu.querySelector('.evos');
+    linhaXp.className = 'xp' + (pronto ? ' pronto' : '');
+    linhaXp.textContent = !cfg.evoluir ? '' : !evos.length ? '🌟 Já está na última evolução!' : pronto ? (evos.length > 1 ? '🌟 Escolha em quem ele vai evoluir:' : '🌟 Pronto! Toque pra evoluir:') : `🌟 ${xp}/${XP_EVO} pra evoluir (cuide dele!)`;
+    const chaveEvo = pronto ? evos.join(',') : '';
+    if(linhaEvo.dataset.k !== chaveEvo){
+      linhaEvo.dataset.k = chaveEvo;
+      linhaEvo.innerHTML = pronto ? evos.map(e => `<button data-evo="${e}" title="Evoluir em ${nomeDe(e)}"><img alt="${nomeDe(e)}" src="${BASE}home/${pet.shiny ? 'shiny/' : ''}${e}.png" /></button>`).join('') : '';
+    }
+    linhaEvo.classList.toggle('on', !!pronto);
     pet.menu.querySelectorAll('.barrinhas b').forEach((b, i) => { const v = pet.nec[NECS[i]]; b.style.width = v + '%'; b.className = v < 30 ? 'baixo' : v < 60 ? 'meio' : ''; });
     /* O que ele mais precisa aparece na cabeça dele. */
     const pior = NECS.slice().sort((a, b) => pet.nec[a] - pet.nec[b])[0];
@@ -439,26 +628,65 @@
     pet.menu.addEventListener('pointerup', ev => ev.stopPropagation());
     pet.menu.addEventListener('click', ev => {
       ev.stopPropagation();
-      const b = ev.target.closest('[data-c]'); if(!b) return;
-      cuidar(pet, b.dataset.c); abrirMenu(pet);
+      const f = ev.target.closest('[data-comida]'), e = ev.target.closest('[data-evo]'), b = ev.target.closest('[data-c]');
+      if(f){ comer(pet, f.dataset.comida); abrirMenu(pet); return; }
+      if(e){ pet.menu.classList.remove('on'); evoluir(pet, +e.dataset.evo); return; }
+      if(!b) return;
+      cuidar(pet, b.dataset.c); if(pet.menu.classList.contains('on') || b.dataset.c === 'comidas') abrirMenu(pet);
     });
   }
   function cuidar(pet, c){
     if(c === 'config'){ pet.menu.classList.remove('on'); window.andarilhoPC.abrirConfig(); return; }
     const n = nomeDe(pet.id);
-    if(c === 'comer'){
-      if(pet.nec.fome > 95){ falar(pet, 'Tô cheio! 😵'); return; }
-      pet.nec.fome = Math.min(100, pet.nec.fome + 35); pet.nec.dentes = Math.max(0, pet.nec.dentes - 10);
-      efeito(pet, sorte(['🍎', '🍓', '🍌', '🍪', '🍙', '🫐']), 3); falar(pet, sorte(['Nham nham! 😋', 'Que delícia!', 'Hmm, gostoso!']));
-    }
+    if(c === 'comidas'){ pet.menu.querySelector('.comidas').classList.toggle('on'); return; }
+    if(c === 'cantar'){ pet.menu.classList.remove('on'); cantarTodos(); return; }
     if(c === 'dormir'){
-      irDormir(pet, performance.now(), 20000, true); pet.menu.classList.remove('on');
+      irDormir(pet, performance.now(), 20000, true); pet.menu.classList.remove('on'); ganharXp(pet, 1);
       return salvarNec();
     }
-    if(c === 'banho'){ pet.nec.limpo = 100; efeito(pet, '🫧', 6); falar(pet, sorte(['Que cheirinho bom! 🛁', 'Banho gostoso!', 'Tô limpinho! ✨'])); }
-    if(c === 'dentes'){ pet.nec.dentes = 100; efeito(pet, '🪥', 1); efeito(pet, '✨', 3); falar(pet, sorte(['Dentes brilhando! ✨', 'Escovadinho! 😁', 'Hálito fresquinho!'])); }
-    if(NECS.every(k => pet.nec[k] >= 80)) setTimeout(() => { efeito(pet, '💖', 4); falar(pet, `O ${n} está muito feliz! 💖`); }, 900);
-    desenharNec(pet); salvarNec();
+    if(c === 'banho'){ pet.nec.limpo = 100; efeito(pet, '🫧', 6); falar(pet, sorte(['Que cheirinho bom! 🛁', 'Banho gostoso!', 'Tô limpinho! ✨'])); ganharXp(pet, 1); }
+    if(c === 'dentes'){ pet.nec.dentes = 100; efeito(pet, '🪥', 1); efeito(pet, '✨', 3); falar(pet, sorte(['Dentes brilhando! ✨', 'Escovadinho! 😁', 'Hálito fresquinho!'])); ganharXp(pet, 1); }
+    ficouFeliz(pet, n); desenharNec(pet); salvarNec();
+  }
+  function ficouFeliz(pet, n){ if(NECS.every(k => pet.nec[k] >= 80)) setTimeout(() => { efeito(pet, '💖', 4); falar(pet, `O ${n || nomeDe(pet.id)} está muito feliz! 💖`); }, 900); }
+  function comer(pet, comida){
+    const fav = favDe(pet.id), eca = ecaDe(pet.id);
+    if(comida === eca){ efeito(pet, '🤢', 2); falar(pet, sorte([`Eca! Não gosto de ${comida}! 🤢`, `${comida}?! Bléééé! 😝`, 'Isso não! 🙅'])); return; }
+    if(pet.nec.fome > 95){ falar(pet, 'Tô cheio! 😵'); return; }
+    efeito(pet, comida, 3);
+    if(pet.id === 143 || comida === fav){
+      pet.nec.fome = Math.min(100, pet.nec.fome + 60); efeito(pet, '😍', 3); ganharXp(pet, 2);
+      falar(pet, pet.id === 143 ? 'Eu amo TODAS as comidas! 😋' : sorte([`${comida} é minha comida favorita!!! 😍`, `EBA, ${comida}!!! 💖`, 'Minha preferida! 😍']), 2600);
+    } else { pet.nec.fome = Math.min(100, pet.nec.fome + 35); ganharXp(pet, 1); falar(pet, sorte(['Nham nham! 😋', 'Que delícia!', 'Hmm, gostoso!'])); }
+    pet.nec.dentes = Math.max(0, pet.nec.dentes - (['🍰', '🍦', '🍩', '🍓'].includes(comida) ? 18 : 10));
+    ficouFeliz(pet); desenharNec(pet); salvarNec();
+  }
+  /* 🌟 Experiência: cada cuidado dá pontinhos. Com 10 pontos ele pode evoluir (se a evolução estiver ligada). */
+  const XP_EVO = 10;
+  const evosDe = id => (typeof ANDARILHO_EVO !== 'undefined' && ANDARILHO_EVO[id]) || [];
+  function ganharXp(pet, n){
+    pet.nec.xp = Math.min(XP_EVO, (+pet.nec.xp || 0) + n);
+    if(cfg.evoluir && evosDe(pet.id).length && pet.nec.xp >= XP_EVO && !pet.avisouEvo){
+      pet.avisouEvo = true;
+      setTimeout(() => { efeito(pet, '✨', 5); falar(pet, 'Tô sentindo uma coisa… ✨ Me clica!', 4000); }, 1200);
+    }
+  }
+  function evoluir(pet, novo){
+    if(!evosDe(pet.id).includes(novo) || pet.evoluindo) return;
+    const antes = nomeDe(pet.id), i = pets.indexOf(pet);
+    pet.evoluindo = true; pet.estado = 'parado'; pet.ate = performance.now() + 4000;
+    pet.el.classList.add('evoluindo'); falar(pet, `O quê? O ${antes} está evoluindo! ✨`, 2600);
+    setTimeout(() => {
+      pet.id = novo; trocarFoto(pet);
+      if(i >= 0 && cfg.pets[i]) cfg.pets[i].id = novo;
+      delete necSalvas[pet.chave]; pet.chave = i + ':' + novo; pet.nec.xp = 0; pet.avisouEvo = false;
+      salvarCfg(); salvarNec();
+    }, 1300);
+    setTimeout(() => {
+      pet.el.classList.remove('evoluindo'); pet.evoluindo = false;
+      efeito(pet, '🎉', 4); efeito(pet, '⭐', 3); grito(pet);
+      falar(pet, `Parabéns! O ${antes} virou ${nomeDe(novo)}! 🎉`, 3500);
+    }, 2700);
   }
   /* A cada 5 segundos: gasta um pouquinho, dorme recupera, e quem precisa pede. */
   setInterval(() => {
@@ -469,8 +697,8 @@
       if(dorme) pet.nec.sono = Math.min(100, pet.nec.sono + (pet.soneca ? 4 : 1.5) * (pet.naCama ? 1.5 : 1));
       if(dorme && pet.soneca && pet.nec.sono >= 100){ pet.soneca = false; pet.ate = 0; }
       const pior = NECS.slice().sort((a, b) => pet.nec[a] - pet.nec[b])[0];
-      if(!dorme && pet.nec[pior] < 30 && Math.random() < .2) falar(pet, sorte(PEDIDOS[pior].slice(1)));
-      if(!dorme && pet.estado !== 'irCama' && pet.nec.sono < 10 && Math.random() < .15){ irDormir(pet, performance.now(), 15000, true); falar(pet, 'Não aguento mais… 😴', 1500); }
+      if(!dorme && pet.nec[pior] < 30 && Math.random() < .2) falar(pet, pior === 'fome' && Math.random() < .5 ? `Queria ${favDe(pet.id)}… 🥺` : sorte(PEDIDOS[pior].slice(1)));
+      if(!dorme && !pet.dentro && pet.estado !== 'irCama' && pet.nec.sono < 10 && Math.random() < .15){ irDormir(pet, performance.now(), 15000, true); falar(pet, 'Não aguento mais… 😴', 1500); }
       desenharNec(pet);
     }
   }, 5000);
@@ -494,11 +722,256 @@
       if(Math.abs(pets[i].x - pets[j].x) < pets[i].s * .7 && Math.random() < .3){ efeito(pets[i], '💞', 2); falar(pets[j], sorte(['Amigo! 💞', 'Oi, parceiro!', 'Vamos brincar juntos!'])); }
   }, 4000);
 
+  /* Guarda a configuração quando ela muda aqui mesmo (ovo chocou, Pokémon evoluiu) e avisa a janela de escolher. */
+  function salvarCfg(){
+    const c = JSON.parse(JSON.stringify(cfg));
+    if(naExtensao) chrome.storage.local.set({ andarilho:c });
+    else { try{ localStorage.setItem('andarilho:cfg', JSON.stringify(c)); }catch(e){} dispatchEvent(new CustomEvent('andarilho-cfg-pet', { detail:c })); }
+  }
+
+  /* ---------- 🥚 ovos ---------- */
+  const TIPO_COR = ['#adb5bd', '#ff6b6b', '#4dabf7', '#51cf66', '#fcc419', '#99e9f2', '#e8590c', '#be4bdb', '#d9a35b', '#a5d8ff', '#f783ac', '#94d82d', '#a68a64', '#7950f2', '#5c7cfa', '#495057', '#868e96', '#fcc2d7'];
+  let ovosEl = [];
+  const chaveOvo = o => o.id + ':' + o.ate;
+  function montarOvos(){
+    const lista = cfg.ligado ? cfg.ovos : [], S = TAMANHOS[cfg.tamanho];
+    ovosEl = ovosEl.filter(e => { const fica = lista.some(o => chaveOvo(o) === e.chave); if(!fica) e.el.remove(); return fica; });
+    lista.forEach(o => {
+      if(ovosEl.some(e => e.chave === chaveOvo(o))) return;
+      const el = document.createElement('div'); el.className = 'ovo clicavel'; el.title = 'Toque pra ajudar a chocar!';
+      const cor = o.surpresa ? TIPO_COR[(o.id * 7) % 18] : TIPO_COR[tipoDe(o.id)];
+      el.innerHTML = `<div class="casca" style="--pinta:${cor}"><i style="left:14%;top:22%;width:26%;height:20%"></i><i style="right:12%;top:40%;width:30%;height:24%"></i><i style="left:30%;bottom:10%;width:22%;height:16%"></i></div><div class="rachado"></div><span class="tempo"></span>`;
+      el.addEventListener('pointerdown', ev => { ev.preventDefault(); ev.stopPropagation(); });
+      el.addEventListener('click', ev => {
+        ev.stopPropagation();
+        const ov = cfg.ovos.find(x => chaveOvo(x) === chaveOvo(o)); if(!ov) return;
+        el.animate([{ rotate:'0deg' }, { rotate:'-14deg' }, { rotate:'14deg' }, { rotate:'0deg' }], { duration:350 });
+        const e = document.createElement('span'); e.className = 'efeito'; e.textContent = sorte(['💓', 'toc!', '✨', '🥚']); e.style.left = '30%'; el.appendChild(e); setTimeout(() => e.remove(), 1400);
+      });
+      raiz.appendChild(el);
+      ovosEl.push({ chave:chaveOvo(o), el, w:Math.round(S * .5), h:Math.round(S * .62) });
+    });
+    posicionarOvos(); tiqueOvos();
+  }
+  function posicionarOvos(){
+    ovosEl.forEach((e, k) => {
+      e.x = innerWidth - (k + 1) * (e.w + 26); e.y = innerHeight - extraChao - 4 - e.h;
+      e.el.style.width = e.w + 'px'; e.el.style.height = e.h + 'px';
+      e.el.style.transform = `translate(${e.x}px, ${e.y}px)`;
+    });
+  }
+  /* Só a aba que você está olhando choca (pra não nascer dois iguais em duas abas). */
+  const possoMexer = () => !document.hidden && (!naExtensao || document.hasFocus());
+  function tiqueOvos(){
+    const agora = Date.now();
+    cfg.ovos.forEach(o => {
+      const e = ovosEl.find(x => x.chave === chaveOvo(o)); if(!e) return;
+      const falta = Math.max(0, Math.ceil((o.ate - agora) / 1000));
+      e.el.querySelector('.tempo').textContent = `🥚 ${o.surpresa ? '???' : nomeDe(o.id)} · ${falta > 0 ? falta + 's' : 'nascendo!'}`;
+      e.el.classList.toggle('quase', falta <= 15);
+    });
+    const pronto = cfg.ovos.find(o => o.ate <= agora);
+    if(pronto && cfg.ligado && possoMexer()) chocar(pronto);
+  }
+  setInterval(tiqueOvos, 1000);
+  function chocar(o){
+    const e = ovosEl.find(x => x.chave === chaveOvo(o));
+    cfg.ovos = cfg.ovos.filter(x => x !== o);
+    if(cfg.pets.length >= MAX_PETS){ montarOvos(); salvarCfg(); return; }
+    if(e){
+      const c = document.createElement('div'); c.className = 'clarao';
+      c.style.cssText = `left:${e.x - e.w * .5}px;top:${e.y - e.h * .3}px;width:${e.w * 2}px;height:${e.w * 2}px`;
+      raiz.appendChild(c); setTimeout(() => c.remove(), 1100);
+      nascer[cfg.pets.length] = { x:Math.max(0, e.x + e.w / 2 - TAMANHOS[cfg.tamanho] / 2), y:e.y + e.h - TAMANHOS[cfg.tamanho] };
+    }
+    cfg.pets.push({ id:o.id, shiny:o.shiny });
+    montar(false); salvarCfg();
+    const bebe = pets[pets.length - 1];
+    if(bebe){ efeito(bebe, '🐣', 1); efeito(bebe, '✨', 5); grito(bebe); falar(bebe, `Nasci! Oi! 🐣 Eu sou o ${nomeDe(bebe.id)}!${o.shiny ? ' ✨' : ''}`, 4000); }
+  }
+
+  /* ---------- 🎤 música ---------- */
+  let audio = null;
+  function tocar(notas, bpm){
+    if(!cfg.som) return;
+    try{
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      if(audio.state === 'suspended') audio.resume();
+      const batida = 60 / bpm; let t = audio.currentTime + .05;
+      for(const [n, d] of notas){
+        if(n){
+          const o = audio.createOscillator(), g = audio.createGain();
+          o.type = 'triangle'; o.frequency.value = 440 * Math.pow(2, (n - 69) / 12);
+          g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.12, t + .02); g.gain.exponentialRampToValueAtTime(.001, t + d * batida * .95);
+          o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + d * batida);
+        }
+        t += d * batida;
+      }
+    }catch(e){}
+  }
+  const MUSICA = [[72, .5], [76, .5], [79, 1], [76, .5], [77, .5], [81, 1], [79, .5], [77, .5], [76, .5], [74, .5], [72, 1], [74, .5], [76, .5], [79, .5], [84, 1.5]];
+  const PARABENS = [[67, .75], [67, .25], [69, 1], [67, 1], [72, 1], [71, 2], [67, .75], [67, .25], [69, 1], [67, 1], [74, 1], [72, 2],
+    [67, .75], [67, .25], [79, 1], [76, 1], [72, 1], [71, 1], [69, 2], [77, .75], [77, .25], [76, 1], [72, 1], [74, 1], [72, 2]];
+  function cantar(pet, agora, dur, letras){
+    if(pet.dentro || pet.estado === 'arrastado') return;
+    dormir(pet, false); pet.naCama = false;
+    pet.estado = 'cantar'; pet.ate = agora + dur;
+    letras.forEach((l, k) => setTimeout(() => { if(pet.estado === 'cantar'){ falar(pet, l, 1300); efeito(pet, sorte(['🎵', '🎶']), 2); } }, k * 1400 + Math.random() * 300));
+  }
+  function letraDe(pet){
+    const n = nomeDe(pet.id), sil = n.slice(0, 2), sl = sil.toLowerCase();
+    return [`🎵 ${sil}-${sl}! ${sil}-${sl}! 🎵`, '🎶 La la laaa 🎶', `🎵 Eu sou o ${n}! 🎵`, '🎶 Uhuuu! 🎶'];
+  }
+  function cantarTodos(){
+    const agora = performance.now();
+    pets.forEach(p => { if(!p.dentro){ cantar(p, agora, 5600, letraDe(p)); if(!p.ultCanto || agora - p.ultCanto > 30000){ p.ultCanto = agora; ganharXp(p, 1); } } });
+    tocar(MUSICA, 130);
+  }
+
+  /* ---------- 🎂 festa de aniversário ---------- */
+  const ehAniver = () => { const a = cfg.aniver, h = new Date(); return !!a && a.d === h.getDate() && a.m === h.getMonth() + 1; };
+  let festando = false;
+  function festa(){
+    if(festando || !cfg.ligado) return; festando = true;
+    const faixa = document.createElement('div'); faixa.className = 'faixa'; faixa.textContent = '🎂 Feliz aniversário! 🎉'; raiz.appendChild(faixa);
+    const bolo = document.createElement('span'); bolo.className = 'bolo'; bolo.textContent = '🎂';
+    bolo.style.transform = `translate(${innerWidth / 2 - 27}px, ${innerHeight - extraChao - 64}px)`; raiz.appendChild(bolo);
+    for(let i = 0; i < 46; i++) setTimeout(() => {
+      const c = document.createElement('span'); c.className = 'confete'; c.textContent = sorte(['🎉', '🎊', '🎈', '⭐', '🟥', '🟨', '🟦', '🟩', '🟪']);
+      c.style.left = (Math.random() * 100) + 'vw'; c.style.animationDuration = (3 + Math.random() * 3) + 's'; raiz.appendChild(c); setTimeout(() => c.remove(), 6500);
+    }, i * 120);
+    const agora = performance.now();
+    pets.forEach((p, i) => { if(p.dentro) sairDeCasa(p, ''); setTimeout(() => cantar(p, performance.now(), 12000, ['🎂 Parabéns pra você! 🎶', '🎉 Nesta data querida! 🎶', '🎵 Muitas felicidades! 🎵', '🎈 Muitos anos de vida! 🎈', '🥳 É pique, é pique! 🎉', '🎂 Viva!!! 🎉']), 300 + i * 200); });
+    tocar(PARABENS, 120);
+    setTimeout(() => { faixa.remove(); bolo.remove(); festando = false; }, 14000);
+  }
+  setTimeout(() => { if(ehAniver()) festa(); }, 4000);
+  setInterval(() => { if(ehAniver() && !document.hidden) festa(); }, 20 * 60000);
+
+  /* ---------- 🌧️ clima ---------- */
+  const ceu = { cv:null, ctx:null, coisas:[], tipo:'', sujo:false, arco:null, sol:null, arcoAte:0 };
+  const boneco = { el:null };
+  function montarCeu(){
+    ceu.cv = document.createElement('canvas'); ceu.cv.className = 'ceu'; ceu.ctx = ceu.cv.getContext('2d');
+    ceu.arco = document.createElement('div'); ceu.arco.className = 'arco';
+    ceu.sol = document.createElement('span'); ceu.sol.className = 'sol'; ceu.sol.textContent = '☀️';
+    boneco.el = document.createElement('span'); boneco.el.className = 'boneco'; boneco.el.textContent = '⛄';
+    raiz.prepend(ceu.arco, ceu.sol, boneco.el); raiz.appendChild(ceu.cv);
+    tamanhoCeu();
+  }
+  function tamanhoCeu(){ if(ceu.cv){ ceu.cv.width = innerWidth; ceu.cv.height = innerHeight; ceu.coisas = []; } posicionarCama(); }
+  function climaAgora(){
+    if(cfg.clima !== 'auto') return cfg.clima;
+    /* No automático o tempo muda a cada 8 minutos (igual em todas as abas). */
+    let t = (Math.floor(Date.now() / 480000) * 2654435761) >>> 0;
+    t = Math.imul(t ^ (t >>> 15), 2246822507) >>> 0; t = (t ^ (t >>> 13)) % 100;
+    return t < 18 ? 'chuva' : t < 28 ? 'neve' : t < 60 ? 'sol' : 'nada';
+  }
+  const tipoGosta = { chuva:[2, 3], neve:[5] };
+  function vestir(pet){
+    let a = pet.el.querySelector('.acessorio');
+    const guarda = ceu.tipo === 'chuva' && !tipoGosta.chuva.includes(tipoDe(pet.id)) && !voa(pet.id);
+    if(guarda && !a){ a = document.createElement('span'); a.className = 'acessorio'; a.textContent = '☂️'; pet.el.appendChild(a); }
+    if(!guarda && a) a.remove();
+    pet.frio = ceu.tipo === 'neve' && ![5, 1].includes(tipoDe(pet.id));
+  }
+  function mudouClima(tipo, avisar){
+    const antes = ceu.tipo; ceu.tipo = tipo; ceu.coisas = [];
+    if(antes === 'chuva' && tipo !== 'chuva') ceu.arcoAte = Date.now() + 90000;
+    ceu.sol.classList.toggle('on', tipo === 'sol');
+    boneco.el.classList.toggle('on', tipo === 'neve');
+    pets.forEach(vestir);
+    if(!avisar) return;
+    pets.filter(p => !p.dentro).forEach((p, i) => setTimeout(() => {
+      const t = tipoDe(p.id), agora = performance.now();
+      if(tipo === 'chuva'){
+        if(tipoGosta.chuva.includes(t)){ falar(p, sorte(['Oba, chuva! 💧😄', 'Eu amo chuva! 🌧️💙']), 2400); p.estado = 'dancar'; p.ate = agora + 3000; }
+        else if(t === 1){ falar(p, 'Chuva não! Apaga meu fogo! 😣🔥', 2400); if(naCasa()) irDormir(p, agora, 0, false, true); }
+        else falar(p, sorte(['Começou a chover! ☂️', 'Ainda bem que tenho guarda-chuva! ☂️']), 2400);
+      } else if(tipo === 'neve'){
+        if(t === 5){ falar(p, 'NEVE!!! ❄️😍', 2400); p.estado = 'dancar'; p.ate = agora + 3000; }
+        else if(t === 1) falar(p, 'Eu sou quentinho! 🔥😎', 2400);
+        else falar(p, sorte(['Brrr, que frio! 🥶', 'Tá nevando! ❄️', 'Olha, um boneco de neve! ⛄']), 2400);
+      } else if(tipo === 'sol'){
+        if([1, 3].includes(t)) falar(p, 'Que sol gostoso! ☀️😎', 2400);
+        else if(t === 5) falar(p, 'Tá muito calor… 🥵', 2400);
+        else if(Math.random() < .5) falar(p, 'Dia lindo! ☀️', 2400);
+      } else if(antes === 'chuva' && Math.random() < .7) falar(p, 'Olha o arco-íris! 🌈', 2400);
+    }, i * 500 + 300));
+  }
+  setInterval(() => { if(cfg.ligado && ceu.cv){ const t = climaAgora(); if(t !== ceu.tipo) mudouClima(t, true); } }, 4000);
+  function desenharCeu(dt){
+    if(!ceu.cv) return;
+    ceu.arco.classList.toggle('on', Date.now() < ceu.arcoAte && ['sol', 'nada'].includes(ceu.tipo) && cfg.ligado);
+    const ctx = ceu.ctx, W = ceu.cv.width, H = ceu.cv.height;
+    if(ceu.tipo !== 'chuva' && ceu.tipo !== 'neve'){ if(ceu.sujo){ ctx.clearRect(0, 0, W, H); ceu.sujo = false; } return; }
+    ceu.sujo = true; ctx.clearRect(0, 0, W, H);
+    const chuva = ceu.tipo === 'chuva', quantos = Math.round(W / (chuva ? 9 : 14));
+    while(ceu.coisas.length < quantos) ceu.coisas.push({ x:Math.random() * W, y:Math.random() * H, v:chuva ? 650 + Math.random() * 300 : 35 + Math.random() * 45, r:2 + Math.random() * 2.5, f:Math.random() * 6 });
+    ctx.lineWidth = 2; ctx.strokeStyle = chuva ? 'rgba(90,140,230,.55)' : 'rgba(110,150,210,.7)'; ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    for(const c of ceu.coisas){
+      c.y += c.v * dt;
+      if(chuva){ c.x -= 60 * dt; ctx.moveTo(c.x, c.y); ctx.lineTo(c.x - 4, c.y + 14); }
+      else { c.f += dt * 2; c.x += Math.sin(c.f) * 20 * dt; ctx.moveTo(c.x + c.r, c.y); ctx.arc(c.x, c.y, c.r, 0, 6.3); }
+      if(c.y > H - extraChao){ c.y = -16; c.x = Math.random() * (W + 60); }
+    }
+    if(chuva) ctx.stroke(); else { ctx.fill(); ctx.lineWidth = 1; ctx.stroke(); }
+  }
+
+  /* ---------- 🦋 borboleta, 🎁 presente, 📸 foto ---------- */
+  const borboleta = { ativa:false, el:null, x:0, y:0, ate:0, t:0 };
+  function chamarBorboleta(){
+    if(!borboleta.el){ borboleta.el = document.createElement('span'); borboleta.el.className = 'borboleta'; borboleta.el.textContent = '🦋'; raiz.appendChild(borboleta.el); }
+    if(!borboleta.ativa){ borboleta.x = Math.random() * innerWidth; borboleta.y = innerHeight * .6; }
+    borboleta.ativa = true; borboleta.el.style.display = ''; borboleta.ate = performance.now() + 15000;
+  }
+  function moverBorboleta(dt, agora){
+    if(!borboleta.ativa) return;
+    borboleta.t += dt;
+    borboleta.x += Math.sin(borboleta.t * .9) * 90 * dt + Math.sin(borboleta.t * 3.1) * 40 * dt;
+    borboleta.y = innerHeight - extraChao - 120 + Math.sin(borboleta.t * 2.3) * 50 - (agora > borboleta.ate - 2500 ? (agora - borboleta.ate + 2500) * .3 : 0);
+    borboleta.x = Math.max(10, Math.min(innerWidth - 34, borboleta.x));
+    borboleta.el.style.transform = `translate(${borboleta.x}px, ${borboleta.y}px) scaleX(${Math.cos(borboleta.t * 18) > 0 ? 1 : .6})`;
+    if(agora >= borboleta.ate){ borboleta.ativa = false; borboleta.el.style.display = 'none'; }
+  }
+  const PRESENTES = ['💎', '🍬', '🌸', '⭐', '🪀', '🧸', '🍭', '🎈', '🪙', '🐚', '🍀', '🪁'];
+  function darPresente(pet){
+    if(raiz.querySelector('.presente')) return;
+    const g = document.createElement('span'); g.className = 'presente clicavel'; g.textContent = '🎁'; g.title = 'Abrir o presente!';
+    const x = Math.max(0, Math.min(innerWidth - 36, pet.x + pet.s / 2 + pet.dir * pet.s * .6));
+    g.style.left = x + 'px'; g.style.top = (innerHeight - extraChao - 40) + 'px';
+    g.addEventListener('pointerdown', ev => { ev.preventDefault(); ev.stopPropagation(); });
+    g.addEventListener('click', ev => {
+      ev.stopPropagation(); const coisa = sorte(PRESENTES);
+      g.textContent = coisa; g.style.animation = 'none'; g.style.fontSize = '44px';
+      falar(pet, `É pra você: ${coisa}! 💝`, 2600); efeito(pet, '💖', 3); ganharXp(pet, 1);
+      setTimeout(() => g.remove(), 2200);
+    });
+    raiz.appendChild(g); falar(pet, 'Trouxe um presente pra você! 🎁 Abre!', 3500);
+    setTimeout(() => g.remove(), 40000);
+  }
+  function tirarFoto(){
+    const f = document.createElement('div'); f.className = 'flash'; raiz.appendChild(f); setTimeout(() => f.remove(), 700);
+    pets.filter(p => !p.dentro && p.estado !== 'dormir').forEach((p, i) => setTimeout(() => { falar(p, sorte(['Xiiis! 📸', '😁✌️', 'Saí bonito? 📸']), 1800); p.estado = 'parado'; p.ate = performance.now() + 1800; }, i * 120));
+  }
+
   /* ---------- configuração ---------- */
-  function aplicar(nova){ const c = limpa(nova), refazer = JSON.stringify([c.pets, c.tamanho, c.estilo, c.ligado]) !== JSON.stringify([cfg.pets, cfg.tamanho, cfg.estilo, cfg.ligado]); cfg = c; if(refazer) montar(); }
+  function aplicar(nova){
+    const c = limpa(nova), antes = cfg;
+    const tudo = JSON.stringify([c.tamanho, c.estilo, c.ligado]) !== JSON.stringify([antes.tamanho, antes.estilo, antes.ligado]);
+    const mudouPets = JSON.stringify(c.pets) !== JSON.stringify(antes.pets);
+    cfg = c;
+    if(tudo || mudouPets) montar(tudo);
+    else { montarCama(); montarOvos(); }
+    pets.forEach(desenharNec); desenharCasa();
+    if(c.clima !== antes.clima && ceu.cv){ const t = climaAgora(); if(t !== ceu.tipo) mudouClima(t, true); }
+    if(c.festa !== antes.festa && Math.abs(Date.now() - c.festa) < 20000) festa();
+    else if(JSON.stringify(c.aniver) !== JSON.stringify(antes.aniver) && ehAniver()) festa();
+  }
   function comecar(inicial){
-    cfg = limpa(inicial); juntar(); montar(); requestAnimationFrame(quadro);
-    addEventListener('resize', () => { pets.forEach(p => { p.x = Math.min(p.x, Math.max(0, innerWidth - p.s)); }); posicionarCama(); });
+    cfg = limpa(inicial); juntar(); montarCeu(); montar(true); mudouClima(climaAgora(), false); requestAnimationFrame(quadro);
+    addEventListener('resize', () => { pets.forEach(p => { p.x = Math.min(p.x, Math.max(0, innerWidth - p.s)); }); tamanhoCeu(); posicionarOvos(); });
   }
   if(naExtensao){
     chrome.storage.local.get(['andarilho', 'andarilhoNec'], r => { necSalvas = (r && r.andarilhoNec) || {}; comecar(r && r.andarilho); });
