@@ -77,12 +77,14 @@
 
   /* ---------- os Pokémon ---------- */
   let cfg = limpa(null), pets = [], mouse = { x:-999, y:-999, quando:performance.now() };
+  /* No programa do computador tem o botão ⚙️ pra abrir a janela de escolher. */
+  const noPC = !!(window.andarilhoPC && window.andarilhoPC.abrirConfig);
   function criarPet(p, i){
     const s = TAMANHOS[cfg.tamanho];
     const el = document.createElement('div'); el.className = 'pet';
     el.style.width = s + 'px'; el.style.height = s + 'px';
     el.innerHTML = `<div class="sombra"></div><div class="corpo"><img alt="" draggable="false" /></div><div class="balao"></div>
-      <div class="menu"><div class="bts"><button data-c="comer" title="Dar comida">🍎</button><button data-c="dormir" title="Pôr pra dormir">😴</button><button data-c="banho" title="Dar banho">🛁</button><button data-c="dentes" title="Escovar os dentes">🪥</button></div>
+      <div class="menu"><div class="bts"><button data-c="comer" title="Dar comida">🍎</button><button data-c="dormir" title="Pôr pra dormir">😴</button><button data-c="banho" title="Dar banho">🛁</button><button data-c="dentes" title="Escovar os dentes">🪥</button>${noPC ? '<button data-c="config" title="Escolher Pokémon">⚙️</button>' : ''}</div>
       <div class="barrinhas"><i title="fome"><b></b></i><i title="sono"><b></b></i><i title="limpeza"><b></b></i><i title="dentes"><b></b></i></div></div>`;
     const img = el.querySelector('img');
     img.src = imagem(p, cfg.estilo);
@@ -303,6 +305,7 @@
     });
   }
   function cuidar(pet, c){
+    if(c === 'config'){ pet.menu.classList.remove('on'); window.andarilhoPC.abrirConfig(); return; }
     const n = nomeDe(pet.id);
     if(c === 'comer'){
       if(pet.nec.fome > 95){ falar(pet, 'Tô cheio! 😵'); return; }
