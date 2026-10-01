@@ -1,6 +1,6 @@
 {
   "name": "pokemon-andarilho",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Um Pokémon 3D que fica andando pela tela do computador, por cima de tudo.",
   "main": "main.js",
   "private": true,

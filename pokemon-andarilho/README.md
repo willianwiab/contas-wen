@@ -8,6 +8,9 @@ Um Pokémon **3D** (fotos do Pokémon HOME, nada de 8-bit) que fica andando pelo
 - Toque: pula, fala e faz o grito. Arraste e **jogue longe**: cai e quica. Dois toques: chuva de coração 💖.
 - Pode **seguir o mouse**. Até **10 Pokémon** juntos (fazem festa quando se encontram).
 - 🍎😴🛁🪥 **Cuidados** (tipo bichinho virtual): fome, sono, limpeza e dentes caem com o tempo (também com o computador desligado, mais devagar e só até 8 horas). Tocar no Pokémon abre o menu pra dar comida, pôr pra dormir, dar banho e escovar os dentes. Quando algo está baixo ele pede (ícone na cabeça e balão), fica com mosquinhas se estiver sujo e dorme sozinho se estiver morrendo de sono.
+- 🛏️ **Caminha** no canto de baixo à esquerda: com sono (sozinho, pelo menu ou de tanto ficar parado) eles andam até ela e dormem de cobertor (recupera o sono mais rápido).
+- 💃 Dançam, sentam, acenam, espirram, se espreguiçam, brincam de pega-pega, chutam uma bola ⚽ e usam o **golpe do tipo principal** (18 golpes, tipo dos 1025).
+- 💬 Falam sobre o **site aberto** (YouTube, Google, Roblox, Minecraft, jogos, os sites do Jojo…; no programa do computador, sobre o computador), **curiosidades** e **piadas** de Pokémon, a hora do dia, e reagem quando você rola a página ou digita muito.
 - Escolha entre **todos os 1025**, com shiny ✨, tamanho (P/M/G) e jeito (3D grande ou animado do Showdown).
 
 **Site** (`index.html`): o Pokémon anda na própria página (tem uma barra de tarefas de mentirinha), com o painel pra escolher e o passo a passo pra instalar.
