@@ -28,7 +28,8 @@ Igual, mas no passo 4 é o `iniciar-mac.command` (se o Mac reclamar: botão dire
 ## Usando
 
 - Aparece uma janela pra **escolher os Pokémon** (até 10). Pode fechar: eles continuam andando.
-- Perto do relógio aparece o ícone 🐾: clique nele pra **escolher de novo**, **esconder** ou **sair**.
+- Pra **escolher de novo**: toque num Pokémon → botão **⚙️**, ou aperte **Ctrl + Shift + P**, ou clique de novo no programa.
+- Perto do relógio aparece o ícone 🐾 (às vezes escondido na setinha ^): clique nele pra **escolher de novo**, **esconder** ou **sair**.
 - Toque no Pokémon pra abrir o menu: 🍎 comida, 😴 dormir, 🛁 banho e 🪥 escovar os dentes.
 
 É o mesmo Pokémon do site e da extensão (o arquivo `extensao/andarilho.js`), dentro de um programa feito com Electron.
