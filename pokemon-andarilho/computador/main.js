@@ -43,22 +43,47 @@ async function examinar(){
 }
 function mostrarDetetive(automatico){
   const gpu = (() => { try{ return JSON.stringify(app.getGPUFeatureStatus()).slice(0, 300); }catch(e){ return '?'; } })();
-  const texto = [`Versão ${VERSAO} · Windows ${process.getSystemVersion ? process.getSystemVersion() : ''} · modo seguro: ${modoSeguro ? 'sim' : 'não'}`,
+  const texto = [`Versão ${VERSAO} · Windows ${process.getSystemVersion ? process.getSystemVersion() : ''} · jeito: ${JEITOS[jeito.n].nome}`,
     '', problemas.length ? 'Problemas:' : 'Nenhum problema encontrado! 😄', ...problemas.slice(-8).map(p => '• ' + p), '', 'Placa de vídeo: ' + gpu].join('\n');
-  const r = dialog.showMessageBoxSync({ type:problemas.length ? 'warning' : 'info', title:'🕵️ Detetive do Pokémon Andarilho',
+  const r = caixinha({ type:problemas.length ? 'warning' : 'info', title:'🕵️ Detetive do Pokémon Andarilho',
     message:automatico ? 'Ops! Os Pokémon não conseguiram aparecer. 😣\nTire uma foto desta caixinha (tecla PrtSc) e mande pro Claude!' : 'Detetive do Pokémon Andarilho',
-    detail:texto, buttons:[modoSeguro ? '🔁 Tentar sem modo seguro' : '🛟 Tentar o modo seguro', '📂 Abrir o caderninho', 'OK'], defaultId:2, cancelId:2, noLink:true });
-  if(r === 0){ trocarModoSeguro(!modoSeguro); }
+    detail:texto, buttons:['🎨 Tentar outro jeito de desenhar', '📂 Abrir o caderninho', 'OK'], defaultId:2, cancelId:2, noLink:true });
+  if(r === 0){ proximoJeito(); }
   if(r === 1){ shell.openPath(path.join(app.getPath('userData'), 'registro.txt')); }
 }
-/* 🛟 Modo seguro: desenha sem a placa de vídeo e sem transparência esperta. Fica guardado pra próxima vez. */
-const arquivoSeguro = () => path.join(app.getPath('userData'), 'modo-seguro');
-let modoSeguro = false;
-try{ modoSeguro = fs.existsSync(arquivoSeguro()); }catch(e){}
-if(modoSeguro) app.disableHardwareAcceleration();
-function trocarModoSeguro(ligar){
-  try{ if(ligar) fs.writeFileSync(arquivoSeguro(), 'sim'); else fs.unlinkSync(arquivoSeguro()); }catch(e){}
-  app.releaseSingleInstanceLock(); app.relaunch(); app.exit(0);
+/* 🎨 Jeitos de desenhar. Em alguns computadores com Windows a placa de vídeo não mostra as janelas (ficam brancas
+   e os Pokémon somem). Então o programa tenta um jeito de cada vez e pergunta se você está vendo os Pokémon.
+   O jeito que funcionar fica guardado. */
+const JEITOS = [
+  { nome:'sem placa de vídeo', fazer:() => { app.disableHardwareAcceleration(); app.commandLine.appendSwitch('disable-gpu'); app.commandLine.appendSwitch('disable-gpu-compositing'); } },
+  { nome:'normal (placa de vídeo)', fazer:() => {} },
+  { nome:'placa de vídeo sem composição', fazer:() => { app.commandLine.appendSwitch('disable-direct-composition'); app.commandLine.appendSwitch('disable-gpu-compositing'); } },
+  { nome:'placa de vídeo com OpenGL', fazer:() => { app.commandLine.appendSwitch('use-angle', 'gl'); } },
+  { nome:'placa de vídeo antiga (D3D9)', fazer:() => { app.commandLine.appendSwitch('use-angle', 'd3d9'); app.commandLine.appendSwitch('disable-direct-composition'); } }
+];
+const arquivoJeito = () => path.join(app.getPath('userData'), 'jeito-de-desenhar.json');
+let jeito = { n:0, ok:false };
+try{ jeito = Object.assign(jeito, JSON.parse(fs.readFileSync(arquivoJeito(), 'utf8'))); }catch(e){}
+jeito.n = Math.max(0, Math.min(JEITOS.length - 1, Math.floor(+jeito.n) || 0));
+JEITOS[jeito.n].fazer();
+const guardarJeito = () => { try{ fs.writeFileSync(arquivoJeito(), JSON.stringify(jeito)); }catch(e){} };
+function reiniciar(){ guardarJeito(); app.releaseSingleInstanceLock(); app.relaunch(); app.exit(0); }
+function proximoJeito(){ jeito.n = (jeito.n + 1) % JEITOS.length; jeito.ok = false; anotar('trocando para o jeito: ' + JEITOS[jeito.n].nome); reiniciar(); }
+/* Pergunta se está vendo os Pokémon (a caixinha é do Windows, aparece mesmo se o resto estiver branco). */
+/* As nossas janelas ficam "sempre por cima"; durante a caixinha elas descem, senão tapam a caixinha. */
+function caixinha(opcoes){
+  const nossas = [palco, config].filter(w => w && !w.isDestroyed());
+  nossas.forEach(w => w.setAlwaysOnTop(false));
+  try{ return dialog.showMessageBoxSync(opcoes); }
+  finally{ nossas.forEach(w => { if(!w.isDestroyed()) w === palco ? w.setAlwaysOnTop(true, 'screen-saver') : w.setAlwaysOnTop(true, 'screen-saver', 1); }); }
+}
+function perguntarSeVe(){
+  const r = caixinha({ type:'question', title:'Pokémon Andarilho', noLink:true, defaultId:0, cancelId:2,
+    message:'Você está vendo os Pokémon andando na tela? 👀',
+    detail:`Teste ${jeito.n + 1} de ${JEITOS.length} (jeito: ${JEITOS[jeito.n].nome}).\nSe não estiver vendo, clique em "Não" que eu tento outro jeito de desenhar!`,
+    buttons:['✅ Sim, estou vendo!', '❌ Não, tá branco/vazio', 'Perguntar depois'] });
+  if(r === 0){ jeito.ok = true; guardarJeito(); anotar('funcionou com o jeito: ' + JEITOS[jeito.n].nome); }
+  if(r === 1){ anotar('não funcionou com o jeito: ' + JEITOS[jeito.n].nome); proximoJeito(); }
 }
 
 let palco = null, config = null, bandeja = null, escondido = false;
@@ -123,7 +148,7 @@ app.whenReady().then(esperarLock).then(ok => {
     { label:escondido ? '👀 Mostrar' : '🙈 Esconder', click:() => { escondido = !escondido; escondido ? palco.hide() : palco.showInactive(); bandeja.setContextMenu(menu()); } },
     { type:'separator' },
     { label:'🕵️ Detetive (ver problemas)', click:async () => { await examinar(); mostrarDetetive(false); } },
-    { label:modoSeguro ? '🛟 Desligar o modo seguro' : '🛟 Ligar o modo seguro', click:() => trocarModoSeguro(!modoSeguro) },
+    { label:'🎨 Tentar outro jeito de desenhar', click:proximoJeito },
     { type:'separator' },
     { label:'❌ Sair', click:() => app.quit() }
   ]);
@@ -131,9 +156,10 @@ app.whenReady().then(esperarLock).then(ok => {
   bandeja.on('click', abrirConfig);
   /* Na primeira vez abre a janela de escolher, pra ninguém ficar procurando. */
   abrirConfig();
-  anotar(`começou a versão ${VERSAO}${modoSeguro ? ' (modo seguro)' : ''}`);
-  /* Depois de 10 segundos confere se os Pokémon apareceram; se não, o detetive avisa. */
-  setTimeout(async () => { if(!(await examinar())) mostrarDetetive(true); }, 10000);
+  anotar(`começou a versão ${VERSAO} (jeito: ${JEITOS[jeito.n].nome})`);
+  /* Depois de 8 segundos confere se os Pokémon apareceram. Se der erro, o detetive avisa;
+     se não deu erro mas ainda não sabemos se dá pra ver, pergunta. */
+  setTimeout(async () => { if(!(await examinar())) mostrarDetetive(true); else if(!jeito.ok) perguntarSeVe(); }, 8000);
   /* Atalho: Ctrl + Shift + P abre a janela de escolher de qualquer lugar. */
   try{ globalShortcut.register('CommandOrControl+Shift+P', abrirConfig); }catch(e){}
 });
