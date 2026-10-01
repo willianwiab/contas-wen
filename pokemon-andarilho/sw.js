@@ -1,7 +1,7 @@
 /* Guarda a casca do site (página, ícone, manifesto) pra abrir rápido e funcionar sem internet. */
 /* O número sobe sempre que eu quero que todo mundo largue o que estava
    guardado. Quem estava com versão velha pega a nova na primeira visita. */
-const CACHE = 'andarilho-v6';
+const CACHE = 'andarilho-v7';
 const ARQUIVOS = ['./', './index.html', './extensao/andarilho.js', './extensao/painel.js', './extensao/nomes.js', './extensao/painel.css', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {
