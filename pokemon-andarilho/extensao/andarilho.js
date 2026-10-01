@@ -129,7 +129,11 @@
     .menu .xp{font-size:11px;text-align:center;color:#5b6477}
     .menu .xp.pronto{color:#e67700}
     /* 🌧️ clima */
-    .ceu{position:absolute;left:0;top:0;pointer-events:none;z-index:4}
+    .ceu{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:hidden}
+    .ceu i{position:absolute;top:-20px;display:block;animation:cai linear infinite}
+    .ceu .gota{width:2px;height:14px;background:rgba(90,140,230,.6);border-radius:2px;rotate:15deg}
+    .ceu .floco{width:7px;height:7px;background:#fff;border:1px solid rgba(110,150,210,.7);border-radius:50%}
+    @keyframes cai{to{transform:translate(var(--vento,0px),calc(100vh + 30px))}}
     .arco{position:absolute;left:50%;top:6%;width:min(90vw,900px);aspect-ratio:2/1;transform:translateX(-50%);border-radius:50% 50% 0 0/100% 100% 0 0;pointer-events:none;z-index:0;opacity:0;transition:opacity 3s;
       background:radial-gradient(circle at 50% 100%,transparent 54%,#ff6b6b 54% 58%,#ff922b 58% 62%,#ffd43b 62% 66%,#51cf66 66% 70%,#339af0 70% 74%,#5c7cfa 74% 78%,#9775fa 78% 82%,transparent 82%)}
     .arco.on{opacity:.28}
@@ -849,17 +853,29 @@
   setInterval(() => { if(ehAniver() && !document.hidden) festa(); }, 20 * 60000);
 
   /* ---------- 🌧️ clima ---------- */
-  const ceu = { cv:null, ctx:null, coisas:[], tipo:'', sujo:false, arco:null, sol:null, arcoAte:0 };
+  const ceu = { cv:null, tipo:'', arco:null, sol:null, arcoAte:0 };
   const boneco = { el:null };
   function montarCeu(){
-    ceu.cv = document.createElement('canvas'); ceu.cv.className = 'ceu'; ceu.cv.style.display = 'none'; ceu.ctx = ceu.cv.getContext('2d');
+    /* Chuva e neve são pinguinhos de verdade (sem "canvas": em alguns Windows o canvas deixava a tela preta). */
+    ceu.cv = document.createElement('div'); ceu.cv.className = 'ceu';
     ceu.arco = document.createElement('div'); ceu.arco.className = 'arco';
     ceu.sol = document.createElement('span'); ceu.sol.className = 'sol'; ceu.sol.textContent = '☀️';
     boneco.el = document.createElement('span'); boneco.el.className = 'boneco'; boneco.el.textContent = '⛄';
     raiz.prepend(ceu.arco, ceu.sol, boneco.el); raiz.appendChild(ceu.cv);
     tamanhoCeu();
   }
-  function tamanhoCeu(){ if(ceu.cv){ ceu.cv.width = innerWidth; ceu.cv.height = innerHeight; ceu.coisas = []; } posicionarCama(); }
+  function tamanhoCeu(){ encherCeu(); posicionarCama(); }
+  function encherCeu(){
+    if(!ceu.cv) return;
+    const chuva = ceu.tipo === 'chuva', neve = ceu.tipo === 'neve';
+    if(!cfg.ligado || (!chuva && !neve)){ ceu.cv.textContent = ''; return; }
+    const n = Math.min(160, Math.round(innerWidth / (chuva ? 12 : 18))); let h = '';
+    for(let i = 0; i < n; i++){
+      const dur = chuva ? .6 + Math.random() * .5 : 7 + Math.random() * 7;
+      h += `<i class="${chuva ? 'gota' : 'floco'}" style="left:${(Math.random() * 105).toFixed(1)}%;animation-duration:${dur.toFixed(2)}s;animation-delay:-${(Math.random() * dur).toFixed(2)}s;--vento:${chuva ? -40 : Math.round((Math.random() - .5) * 120)}px"></i>`;
+    }
+    ceu.cv.innerHTML = h;
+  }
   function climaAgora(){
     if(cfg.clima !== 'auto') return cfg.clima;
     /* No automático o tempo muda a cada 8 minutos (igual em todas as abas). */
@@ -876,7 +892,7 @@
     pet.frio = ceu.tipo === 'neve' && ![5, 1].includes(tipoDe(pet.id));
   }
   function mudouClima(tipo, avisar){
-    const antes = ceu.tipo; ceu.tipo = tipo; ceu.coisas = [];
+    const antes = ceu.tipo; ceu.tipo = tipo; encherCeu();
     if(antes === 'chuva' && tipo !== 'chuva') ceu.arcoAte = Date.now() + 90000;
     ceu.sol.classList.toggle('on', tipo === 'sol');
     boneco.el.classList.toggle('on', tipo === 'neve');
@@ -903,22 +919,6 @@
   function desenharCeu(dt){
     if(!ceu.cv) return;
     ceu.arco.classList.toggle('on', Date.now() < ceu.arcoAte && ['sol', 'nada'].includes(ceu.tipo) && cfg.ligado);
-    const ctx = ceu.ctx, W = ceu.cv.width, H = ceu.cv.height;
-    /* A tela de chuva/neve só existe enquanto está chovendo ou nevando. */
-    if(ceu.tipo !== 'chuva' && ceu.tipo !== 'neve' || !cfg.ligado){ if(ceu.sujo){ ctx.clearRect(0, 0, W, H); ceu.sujo = false; ceu.cv.style.display = 'none'; } return; }
-    if(!ceu.sujo) ceu.cv.style.display = '';
-    ceu.sujo = true; ctx.clearRect(0, 0, W, H);
-    const chuva = ceu.tipo === 'chuva', quantos = Math.round(W / (chuva ? 9 : 14));
-    while(ceu.coisas.length < quantos) ceu.coisas.push({ x:Math.random() * W, y:Math.random() * H, v:chuva ? 650 + Math.random() * 300 : 35 + Math.random() * 45, r:2 + Math.random() * 2.5, f:Math.random() * 6 });
-    ctx.lineWidth = 2; ctx.strokeStyle = chuva ? 'rgba(90,140,230,.55)' : 'rgba(110,150,210,.7)'; ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    for(const c of ceu.coisas){
-      c.y += c.v * dt;
-      if(chuva){ c.x -= 60 * dt; ctx.moveTo(c.x, c.y); ctx.lineTo(c.x - 4, c.y + 14); }
-      else { c.f += dt * 2; c.x += Math.sin(c.f) * 20 * dt; ctx.moveTo(c.x + c.r, c.y); ctx.arc(c.x, c.y, c.r, 0, 6.3); }
-      if(c.y > H - extraChao){ c.y = -16; c.x = Math.random() * (W + 60); }
-    }
-    if(chuva) ctx.stroke(); else { ctx.fill(); ctx.lineWidth = 1; ctx.stroke(); }
   }
 
   /* ---------- 🦋 borboleta, 🎁 presente, 📸 foto ---------- */
@@ -967,6 +967,7 @@
     if(tudo || mudouPets) montar(tudo);
     else { montarCama(); montarOvos(); }
     pets.forEach(desenharNec); desenharCasa();
+    if(c.ligado !== antes.ligado) encherCeu();
     if(c.clima !== antes.clima && ceu.cv){ const t = climaAgora(); if(t !== ceu.tipo) mudouClima(t, true); }
     if(c.festa !== antes.festa && Math.abs(Date.now() - c.festa) < 20000) festa();
     else if(JSON.stringify(c.aniver) !== JSON.stringify(antes.aniver) && ehAniver()) festa();
