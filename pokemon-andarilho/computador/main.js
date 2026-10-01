@@ -6,6 +6,11 @@ const path = require('path');
 
 let palco = null, config = null, bandeja = null, escondido = false;
 
+/* No Windows, a camada transparente por cima de tudo faz o Windows achar que as outras janelas do programa
+   estão "tapadas", e aí ele para de desenhar elas (a janela de escolher ficava branca). Isso desliga essa conta. */
+app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
+
 /* Só pode ter um aberto. Se clicar no programa de novo, em vez de abrir outro, mostra a janela de escolher. */
 const temLock = app.requestSingleInstanceLock();
 if(!temLock) app.quit();
@@ -24,9 +29,13 @@ function criarPalco(){
   palco.loadFile(path.join(__dirname, 'palco.html'));
 }
 function abrirConfig(){
-  if(config && !config.isDestroyed()){ config.show(); config.focus(); return; }
+  if(config && !config.isDestroyed()){ config.show(); config.moveTop(); config.focus(); return; }
   config = new BrowserWindow({ width:400, height:680, title:'Pokémon Andarilho', icon:path.join(__dirname, 'icone.png'), autoHideMenuBar:true,
-    webPreferences:{ contextIsolation:true, nodeIntegration:false } });
+    show:false, backgroundColor:'#f7f9ff',
+    webPreferences:{ contextIsolation:true, nodeIntegration:false, backgroundThrottling:false } });
+  /* Fica por cima da camada dos Pokémon (senão ela tapa a janela). */
+  config.setAlwaysOnTop(true, 'screen-saver', 1);
+  config.once('ready-to-show', () => { config.show(); config.moveTop(); config.focus(); });
   config.loadFile(path.join(__dirname, 'config.html'));
 }
 /* O palco avisa quando o mouse está em cima de um Pokémon (aí ele recebe o clique) ou não (aí o clique passa). */
