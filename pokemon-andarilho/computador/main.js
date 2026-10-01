@@ -11,10 +11,6 @@ let palco = null, config = null, bandeja = null, escondido = false;
 app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
 
-/* Em alguns computadores com Windows, a placa de vídeo deixa a camada transparente toda preta ou branca
-   (tapando a tela). Desenhando sem a placa de vídeo a transparência funciona sempre. */
-app.disableHardwareAcceleration();
-
 /* Só pode ter um aberto. Se clicar no programa de novo, em vez de abrir outro, mostra a janela de escolher.
    Mas se o que abriu agora for uma versão MAIS NOVA, o velho fecha sozinho e o novo fica no lugar. */
 const VERSAO = app.getVersion();
