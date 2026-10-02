@@ -23,8 +23,11 @@
     op.insertAdjacentHTML('beforeend', `
       <label>Dorme na <select id="casa"><option value="cama">🛏️ Caminha</option><option value="casa">🏠 Casinha</option></select></label>
       <label>Cor <select id="cor">${CORES.map(([v, t]) => `<option value="${v}">${t}</option>`).join('')}</select></label>
-      <label>Clima <select id="clima"><option value="auto">🔄 Muda sozinho</option><option value="sol">☀️ Sol</option><option value="chuva">🌧️ Chuva</option><option value="neve">❄️ Neve</option><option value="nada">🚫 Sem clima</option></select></label>
+      <label>Clima <select id="clima"><option value="auto">🔄 Muda sozinho</option><option value="sol">☀️ Sol</option><option value="chuva">🌧️ Chuva</option><option value="tempestade">⛈️ Tempestade</option><option value="neve">❄️ Neve</option><option value="vento">🌪️ Ventania</option><option value="nada">🚫 Sem clima</option></select></label>
       <label><input type="checkbox" id="evoluir" /> 🌟 Evoluir</label>
+      <label><input type="checkbox" id="ima" /> 🧲 Ímã no mouse</label>
+      <label><input type="checkbox" id="voz" /> 🔊 Falar com voz</label>
+      <div class="eventos" style="grid-column:1/-1">Agora: <button type="button" data-evento="ventania">🌪️ Ventania</button><button type="button" data-evento="terremoto">🌋 Terremoto</button><button type="button" data-evento="trovao">⛈️ Trovão</button><button type="button" data-evento="balao">🎈 Balões</button><button type="button" data-evento="pum">💨 Pum</button></div>
       <div class="aniver" style="grid-column:1/-1">🎂 Meu aniversário:
         <select id="aniver-d" aria-label="Dia"><option value="">dia</option>${Array.from({ length:31 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}</select>
         de <select id="aniver-m" aria-label="Mês"><option value="">mês</option>${MESES.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('')}</select>
@@ -50,7 +53,7 @@
   function desenhar(){
     $('ligado').checked = cfg.ligado; $('som').checked = cfg.som; $('seguir').checked = cfg.seguir;
     $('tamanho').value = cfg.tamanho; $('estilo').value = cfg.estilo;
-    $('casa').value = cfg.casa; $('cor').value = cfg.cor; $('clima').value = cfg.clima; $('evoluir').checked = cfg.evoluir !== false;
+    $('casa').value = cfg.casa; $('cor').value = cfg.cor; $('clima').value = cfg.clima; $('evoluir').checked = cfg.evoluir !== false; $('ima').checked = !!cfg.ima; $('voz').checked = !!cfg.voz;
     if(cfg.aniver){ $('aniver-d').value = cfg.aniver.d; $('aniver-m').value = cfg.aniver.m; }
     $('modo-junto').classList.toggle('on', !modoOvo); $('modo-ovo').classList.toggle('on', modoOvo);
     desenharOvos();
@@ -86,6 +89,8 @@
   function ligar(){
     ['ligado', 'som', 'seguir'].forEach(k => $(k).addEventListener('change', () => { cfg[k] = $(k).checked; salvar(); }));
     $('evoluir').addEventListener('change', () => { cfg.evoluir = $('evoluir').checked; salvar(); });
+    ['ima', 'voz'].forEach(k => $(k).addEventListener('change', () => { cfg[k] = $(k).checked; salvar(); }));
+    document.querySelector('.eventos').addEventListener('click', ev => { const b = ev.target.closest('[data-evento]'); if(b){ cfg.evento = { t:b.dataset.evento, q:Date.now() }; salvar(); } });
     ['tamanho', 'estilo', 'casa', 'cor', 'clima'].forEach(k => $(k).addEventListener('change', () => { cfg[k] = $(k).value; salvar(); }));
     $('busca').addEventListener('input', buscar);
     $('meus').addEventListener('keydown', ev => { const a = ev.target.closest('[data-apelido]'); if(!a) return; if(ev.key === 'Enter') salvarApelido(+a.dataset.apelido); if(ev.key === 'Escape'){ editando = -1; a.blur(); desenhar(); } });

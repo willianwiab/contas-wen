@@ -8,7 +8,8 @@
 
   const naExtensao = typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
   const PADRAO = { ligado:true, pets:[{ id:25, shiny:false }], tamanho:'M', som:true, seguir:false, estilo:'3d',
-    ovos:[], evoluir:true, casa:'cama', cor:'azul', clima:'auto', aniver:null, festa:0 };
+    ovos:[], evoluir:true, casa:'cama', cor:'azul', clima:'auto', aniver:null, festa:0, ima:false, voz:false, evento:null };
+  const EVENTOS = ['terremoto', 'balao', 'ventania', 'trovao', 'pum'];
   const CORES = { azul:'#5c7cfa', rosa:'#f783ac', verde:'#51cf66', amarelo:'#fcc419', roxo:'#9775fa', vermelho:'#ff6b6b', laranja:'#ff922b' };
   const MAX_PETS = 10, MAX_OVOS = 3;
   const TAMANHOS = { P:72, M:110, G:160 };
@@ -49,7 +50,9 @@
     c.evoluir = c.evoluir !== false;
     if(!['cama', 'casa'].includes(c.casa)) c.casa = 'cama';
     if(!CORES[c.cor]) c.cor = 'azul';
-    if(!['auto', 'sol', 'chuva', 'neve', 'nada'].includes(c.clima)) c.clima = 'auto';
+    if(!['auto', 'sol', 'chuva', 'tempestade', 'neve', 'vento', 'nada'].includes(c.clima)) c.clima = 'auto';
+    c.ima = !!c.ima; c.voz = !!c.voz;
+    c.evento = c.evento && EVENTOS.includes(c.evento.t) ? { t:c.evento.t, q:+c.evento.q || 0 } : null;
     const a = c.aniver;
     c.aniver = a && +a.d >= 1 && +a.d <= 31 && +a.m >= 1 && +a.m <= 12 ? { d:Math.floor(+a.d), m:Math.floor(+a.m) } : null;
     c.festa = +c.festa || 0;
@@ -100,6 +103,25 @@
     /* 🎮 minijogos */
     .placar{position:absolute;left:50%;top:10px;transform:translateX(-50%);font:900 18px system-ui,sans-serif;color:#1b1b1b;background:#fff3bf;border:3px solid #1b1b1b;
       border-radius:14px;padding:5px 14px;box-shadow:4px 4px 0 #1b1b1b;pointer-events:none;z-index:7;white-space:nowrap}
+    .prop{position:absolute;pointer-events:none;line-height:1;z-index:2;left:50%;translate:-50% 0}
+    .prop.banheira{bottom:-22%;font-size:calc(var(--s) * 1)}
+    .prop.livro{top:50%;font-size:calc(var(--s) * .34)}
+    .prop.panela{top:56%;font-size:calc(var(--s) * .36)}
+    .prop.skate{bottom:-16%;font-size:calc(var(--s) * .55)}
+    .prop.balaozinho{top:-62%;font-size:calc(var(--s) * .55);animation:pede 1.6s ease-in-out infinite}
+    .pipa{position:absolute;left:0;top:0;font-size:40px;pointer-events:none;z-index:3;line-height:1}
+    .linha-pipa{position:absolute;left:0;top:0;height:2px;background:#495057;transform-origin:0 50%;pointer-events:none;z-index:3}
+    .piscina{position:absolute;left:0;top:0;pointer-events:none;z-index:2;background:linear-gradient(rgba(116,192,252,.75),rgba(28,126,214,.85));border:4px solid #fff;border-bottom:0;border-radius:18px 18px 4px 4px;box-shadow:0 0 0 3px #1c7ed6}
+    .lua{position:absolute;left:24px;top:16px;font-size:46px;pointer-events:none;z-index:0;display:none;filter:drop-shadow(0 0 10px #ffe066)}
+    .lua.on{display:block}
+    .estrelas{position:absolute;inset:0;pointer-events:none;z-index:0;display:none}
+    .estrelas.on{display:block}
+    .estrelas i{position:absolute;color:#fcc419;font-size:14px;font-style:normal;text-shadow:0 0 6px #ffe066;animation:pisca 2s ease-in-out infinite}
+    @keyframes pisca{50%{opacity:.2;transform:scale(.6)}}
+    .raio{position:absolute;top:0;font-size:110px;pointer-events:none;z-index:8;animation:raio .55s ease-out forwards;line-height:1}
+    @keyframes raio{0%{opacity:0;transform:scaleY(.3)}20%{opacity:1;transform:scaleY(1.2)}100%{opacity:0}}
+    .flash.relampago{animation:relampago .8s ease-out forwards}
+    @keyframes relampago{0%{opacity:.75}12%{opacity:0}22%{opacity:.5}100%{opacity:0}}
     .fruta{position:absolute;left:0;top:0;font-size:34px;cursor:pointer;pointer-events:auto;z-index:6;line-height:1;user-select:none}
     .menu button{all:unset;cursor:pointer;width:40px;height:40px;border-radius:12px;background:#eef2ff;border:2px solid #c5d0fa;display:grid;place-items:center;font-size:22px;box-sizing:border-box}
     .menu button:hover{background:#dbe4ff}
@@ -163,6 +185,9 @@
     .ceu{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:hidden}
     .ceu i{position:absolute;top:-20px;display:block;animation:cai linear infinite}
     .ceu .gota{width:2px;height:14px;background:rgba(90,140,230,.6);border-radius:2px;rotate:15deg}
+    .ceu .folha{left:0;top:0;font-size:22px;animation-name:sopra;animation-timing-function:linear;animation-iteration-count:infinite}
+    @keyframes sopra{0%{transform:translate(-8vw,0) rotate(0)}25%{transform:translate(22vw,-30px) rotate(120deg)}50%{transform:translate(50vw,20px) rotate(240deg)}75%{transform:translate(78vw,-25px) rotate(360deg)}100%{transform:translate(108vw,10px) rotate(480deg)}}
+    .ceu.esquerda .folha{animation-direction:reverse}
     .ceu .floco{width:7px;height:7px;background:#fff;border:1px solid rgba(110,150,210,.7);border-radius:50%}
     @keyframes cai{to{transform:translate(var(--vento,0px),calc(100vh + 30px))}}
     .arco{position:absolute;left:50%;top:6%;width:min(90vw,900px);aspect-ratio:2/1;transform:translateX(-50%);border-radius:50% 50% 0 0/100% 100% 0 0;pointer-events:none;z-index:0;opacity:0;transition:opacity 3s;
@@ -232,7 +257,7 @@
   function algoPraFalar(pet){
     const r = Math.random();
     if(ehAniver() && r < .3) return sorte(['Feliz aniversário!!! 🎂', 'Hoje é seu dia! 🥳', 'Cadê o bolo? 🎂😋', 'Parabéns! 🎉']);
-    if(ceu.tipo === 'chuva' && r < .45) return sorte(['Tá chovendo lá fora? 🌧️', 'Barulhinho de chuva… 🌧️', 'Pula na poça! 💦']);
+    if(chove() && r < .45) return sorte(['Tá chovendo lá fora? 🌧️', 'Barulhinho de chuva… 🌧️', 'Pula na poça! 💦']);
     if(ceu.tipo === 'neve' && r < .45) return sorte(['Bora fazer guerra de neve? ❄️', 'Cada floquinho é diferente! ❄️']);
     if(r < .35) return sorte(falasDoLugar());
     if(r < .55) return sorte(CURIOSIDADES);
@@ -305,7 +330,21 @@
     if(c){ if(pet.roupa) c.textContent = pet.roupa; else c.remove(); }
     pet.el.classList.toggle('tem-chapeu', !!pet.roupa);
   }
+  /* 🔊 Fala de verdade (se a voz estiver ligada). */
+  let ultVoz = 0;
+  function voz(t){
+    if(!cfg.voz || !cfg.som || !window.speechSynthesis) return;
+    const limpo = String(t).replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}\u{1F3FB}-\u{1F3FF}]/gu, '').replace(/\s+/g, ' ').trim();
+    if(!/[a-zà-ú]/i.test(limpo) || speechSynthesis.speaking || Date.now() - ultVoz < 1200) return;
+    ultVoz = Date.now();
+    try{
+      const u = new SpeechSynthesisUtterance(limpo); u.lang = 'pt-BR'; u.pitch = 1.7; u.rate = 1.1; u.volume = .9;
+      const v = speechSynthesis.getVoices().find(x => /^pt/i.test(x.lang)); if(v) u.voice = v;
+      speechSynthesis.speak(u);
+    }catch(e){}
+  }
   function falar(pet, t, ms){
+    if(!pet.selvagem && pet.estado !== 'escondido') voz(t);
     pet.balao.textContent = t; pet.balao.classList.add('on');
     /* Não deixa o balão sair da tela quando ele está no cantinho. */
     const w = pet.balao.offsetWidth, cx = pet.x + pet.s / 2;
@@ -341,14 +380,18 @@
     const r = Math.random(), extra = Math.random();
     pet.naCama = false;
     if(jogo && jogo.tipo === 'pega' && !pet.pego){ pet.estado = 'fugir'; pet.ate = agora + 1e9; return; }
+    tirarProps(pet);
+    if(Math.random() < .004 && !festando) pum(pet);
+    if(ehNoite() && extra < .06){ irDormir(pet, agora, 12000 + Math.random() * 8000, false); falar(pet, 'Já é de noite… 🌙🥱', 1600); return; }
+    if(Math.random() < .16){ atividade(pet, agora); return; }
     if(festando){ pet.estado = 'dancar'; pet.ate = agora + 3000; return; }
-    if(naCasa() && (extra < .07 || (ceu.tipo === 'chuva' && tipoDe(pet.id) === 1 && extra < .5))){ irDormir(pet, agora, 0, false, true); return; }
+    if(naCasa() && (extra < .07 || (chove() && tipoDe(pet.id) === 1 && extra < .5))){ irDormir(pet, agora, 0, false, true); return; }
     if(extra < .10){ cantar(pet, agora, 4200, letraDe(pet).slice(0, 3)); return; }
     if(extra < .13 && !voa(pet.id)){ chamarBorboleta(); pet.estado = 'borboleta'; pet.ate = agora + 9000; falar(pet, sorte(['Uma borboleta! 🦋', 'Vou pegar! 🦋'])); return; }
     if(borboleta.ativa && extra < .35 && !voa(pet.id)){ pet.estado = 'borboleta'; pet.ate = agora + 7000; return; }
     if(extra > .985){ pet.estado = 'parado'; pet.ate = agora + 3000; darPresente(pet); return; }
     if(extra > .975 && pets.length > 1){ tirarFoto(); return; }
-    if(ceu.tipo === 'chuva' && tipoGosta.chuva.includes(tipoDe(pet.id)) && extra < .2){ pet.estado = 'dancar'; pet.ate = agora + 3000; efeito(pet, '💧', 3); falar(pet, sorte(['Chuva! 💧😄', 'Splash! 💦'])); return; }
+    if(chove() && tipoGosta.chuva.includes(tipoDe(pet.id)) && extra < .2){ pet.estado = 'dancar'; pet.ate = agora + 3000; efeito(pet, '💧', 3); falar(pet, sorte(['Chuva! 💧😄', 'Splash! 💦'])); return; }
     if(pet.frio && extra < .2){ pet.estado = 'parado'; pet.ate = agora + 2500; falar(pet, sorte(['Brrr! 🥶', 'Que frio! ❄️', 'Atchim! 🤧'])); return; }
     if(parado && r < .5){ irDormir(pet, agora, 10000 + Math.random() * 10000, false); return; }
     if(bola.ativa && Math.random() < .35 && !voa(pet.id)){ pet.estado = 'bola'; pet.ate = agora + 8000; return; }
@@ -584,6 +627,18 @@
         if(!borboleta.ativa || agora >= pet.ate){ pet.estado = 'parado'; pet.ate = agora + 1000; if(Math.random() < .5) falar(pet, sorte(['Ela fugiu! 🦋', 'Quase peguei!'])); }
         else if(Math.abs(dx) < pet.s * .25){ pular(pet, 650); if(Math.random() < .5) falar(pet, sorte(['Peguei! …ops, não! 🦋', 'Volta aqui! 🦋']), 1400); }
         else pet.x += pet.dir * Math.min(Math.abs(dx), 170 * dt);
+      } else if(pet.estado === 'balao'){
+        /* 🎈 Subindo pendurado no balão… até estourar! */
+        pet.y -= 50 * dt; pet.x = Math.max(0, Math.min(maxX, pet.x + Math.sin(agora / 700) * 40 * dt + (ventando() ? rajada.dir * 60 * dt : 0)));
+        if(agora >= pet.ate || pet.y < 10){ tirarProps(pet); efeito(pet, '💥', 2); falar(pet, sorte(['Pof! Aaaah! 😱', 'O balão estourou! 😵', 'Ops! 🎈💥']), 1600); pet.estado = 'cair'; pet.vy = 0; pet.vx = 0; }
+      } else if(pet.estado === 'ima'){
+        /* 🧲 Rodando em volta do mouse (sem ficar embaixo dele, pra não atrapalhar o clique). */
+        if(!cfg.ima || agora - mouse.quando > 2500){ pet.estado = 'cair'; pet.vx = 0; pet.vy = 0; }
+        else {
+          const k = pets.indexOf(pet), ang = agora / 900 + k * 2 * Math.PI / Math.max(1, pets.length), r = pet.s * .8 + 30;
+          const dx = mouse.x + Math.cos(ang) * r - pet.s / 2 - pet.x, dy = mouse.y + Math.sin(ang) * r - pet.s / 2 - pet.y;
+          pet.x += dx * Math.min(1, dt * 5); pet.y = Math.min(c, pet.y + dy * Math.min(1, dt * 5)); if(Math.abs(dx) > 3) pet.dir = dx > 0 ? 1 : -1;
+        }
       } else if(pet.estado === 'bola'){
         pet.y = c;
         const alvo = bola.x - pet.s / 2, dx = alvo - pet.x;
@@ -596,27 +651,35 @@
         } else pet.x += pet.dir * Math.min(Math.abs(dx), 200 * dt);
       } else {
         pet.y = pet.naCama && pet.estado === 'dormir' ? Math.min(c, innerHeight - extraChao - 2 - cama.h * .35 - pet.s) : c;
-        const v = pet.estado === 'correr' ? 190 : pet.estado === 'andar' ? 70 : 0;
-        pet.x += pet.dir * v * dt;
+        if(pet.estado === 'banho' || pet.estado === 'piscina') pet.y = c + pet.s * .28;
+        const v = pet.estado === 'correr' ? 190 : pet.estado === 'andar' ? 70 : pet.estado === 'skate' ? 280 : 0;
+        /* Com vento: a favor anda rápido, contra anda devagarzinho. */
+        pet.x += pet.dir * v * (v && ventando() ? (pet.dir === rajada.dir ? 1.6 : .55) : 1) * dt;
         /* Chegou na beirada da tela: às vezes sobe pela parede! (quem voa não precisa) */
-        const podeSubir = v > 0 && !voa(pet.id) && Math.random() < .45;
+        const podeSubir = v > 0 && !voa(pet.id) && pet.estado !== 'skate' && Math.random() < .45;
         if(pet.x <= 0){ pet.x = 0; if(podeSubir) comecarSubir(pet, -1, agora); else pet.dir = 1; }
         if(pet.x >= maxX){ pet.x = maxX; if(podeSubir) comecarSubir(pet, 1, agora); else pet.dir = -1; }
-        if(agora >= pet.ate){ if(pet.estado === 'dormir'){ pet.naCama = false; pet.soneca = false; falar(pet, sorte(['Bom dia! ☀️', 'Dormi tão bem! 😊', 'Acordei! 🥱'])); } escolher(pet, agora); }
+        if(agora >= pet.ate){ if(pet.estado === 'dormir'){ pet.naCama = false; pet.soneca = false; falar(pet, sorte(['Bom dia! ☀️', 'Dormi tão bem! 😊', 'Acordei! 🥱'])); } if(pet.estado === 'cozinhar') terminouCozinhar(pet); escolher(pet, agora); }
+        if(pet.estado === 'pipa') moverPipa(pet, agora);
         /* Acorda se o mouse chegar pertinho. */
         if(pet.estado === 'dormir' && !pet.soneca && !pet.naCama && Math.hypot(mouse.x - (pet.x + pet.s / 2), mouse.y - (pet.y + pet.s / 2)) < pet.s * .8 && agora - mouse.quando < 200){
           dormir(pet, false); pet.estado = 'parado'; pet.ate = agora + 1500; falar(pet, '! 😲', 1200);
         }
       }
       /* Passinho: sobe e desce e inclina enquanto anda (a foto 3D não mexe sozinha). */
-      const andando = ['andar', 'correr', 'subir', 'teto', 'irCama', 'bola', 'borboleta'].includes(pet.estado) || (pet.estado === 'fugir' && pet.correndo);
+      if(pet.temProps && !ATIVIDADES.includes(pet.estado)) tirarProps(pet);
+      if(cfg.ima && agora - mouse.quando < 600 && mouse.x > -999 && !pet.dentro && !jogo && !luta && IMA_OK.includes(pet.estado)){
+        tirarProps(pet); pet.naCama = false; pet.estado = 'ima'; pet.ate = agora + 1e9; if(Math.random() < .3) falar(pet, sorte(['Tô sendo puxado! 🧲', 'Uaaau! 🧲✨']), 1200);
+      }
+      const andando = ['andar', 'correr', 'subir', 'teto', 'irCama', 'bola', 'borboleta', 'skate'].includes(pet.estado) || (pet.estado === 'fugir' && pet.correndo);
       pet.passo += dt * (pet.estado === 'correr' ? 16 : 9);
       const festeja = pet.estado === 'dancar' || pet.estado === 'cantar';
       const pulo = festeja ? -Math.abs(Math.sin(agora / 160)) * pet.s * .12 : pet.estado === 'sentar' ? pet.s * .05 : pet.estado === 'golpe' ? -Math.abs(Math.sin(agora / 90)) * pet.s * .05 : andando ? -Math.abs(Math.sin(pet.passo)) * pet.s * .07 : 0;
       /* Na parede fica deitado de lado (pés na parede); no teto fica de cabeça pra baixo; voando inclina. */
       const base = pet.estado === 'subir' ? (pet.lado < 0 ? 90 : -90) * (pet.dir > 0 ? -1 : 1) : pet.estado === 'teto' ? 180 : pet.estado === 'desmaiado' ? 90
         : pet.estado === 'escondido' ? (pet.esconde === 'cima' ? 180 : pet.esconde === 'esquerda' ? 18 : pet.esconde === 'direita' ? -18 : 0) + Math.sin(agora / 400) * 4 : 0;
-      const giro = base + (festeja ? Math.sin(agora / (pet.estado === 'cantar' ? 200 : 130)) * 18 : pet.estado === 'golpe' ? Math.sin(agora / 40) * 4 : andando ? Math.sin(pet.passo) * 5 : pet.estado === 'voar' ? Math.sin(agora / 300) * 8 : 0);
+      const vento = ventando() && ['andar', 'correr', 'parado', 'sentar', 'skate', 'ler'].includes(pet.estado) ? rajada.dir * 9 + Math.sin(agora / 120) * 3 : 0;
+      const giro = base + vento + (pet.estado === 'balao' ? Math.sin(agora / 500) * 8 : pet.estado === 'ima' ? Math.sin(agora / 150) * 12 : 0) + (festeja ? Math.sin(agora / (pet.estado === 'cantar' ? 200 : 130)) * 18 : pet.estado === 'golpe' ? Math.sin(agora / 40) * 4 : andando ? Math.sin(pet.passo) * 5 : pet.estado === 'voar' ? Math.sin(agora / 300) * 8 : 0);
       const respira = pet.estado === 'sentar' ? .86 : pet.estado === 'espreguicar' ? 1.12 : pet.estado === 'parado' || pet.estado === 'dormir' ? 1 + Math.sin(agora / (pet.estado === 'dormir' ? 700 : 400)) * .025 : 1;
       const olha = pet.estado === 'cair' || pet.estado === 'arrastado' ? (pet.vx > 0 ? 1 : pet.vx < 0 ? -1 : pet.dir) : pet.dir;
       const treme = pet.frio && ['parado', 'sentar', 'andar'].includes(pet.estado) ? Math.sin(agora / 25) * 1.5 : 0;
@@ -624,9 +687,9 @@
       /* As fotos olham pra esquerda; andando pra direita, vira o espelho. */
       pet.corpo.style.transform = `translateY(${pulo}px) scaleX(${olha > 0 ? -1 : 1}) rotate(${giro}deg) scaleY(${respira})`;
       pet.el.classList.toggle('no-ar', pet.y < c - 2);
-      pet.el.classList.toggle('sem-sombra', ['subir', 'teto', 'voar', 'escondido'].includes(pet.estado));
+      pet.el.classList.toggle('sem-sombra', ['subir', 'teto', 'voar', 'escondido', 'balao', 'ima', 'piscina', 'banho'].includes(pet.estado));
     }
-    desenharCeu(dt); moverBorboleta(dt, agora); desenharSelvagem(agora, dt); moverJogo(agora, dt);
+    desenharCeu(dt); soprar(agora, dt); moverBorboleta(dt, agora); desenharSelvagem(agora, dt); moverJogo(agora, dt);
     if(bola.ativa && bola.el){
       const tam = 26, maxX = innerWidth - tam;
       bola.x += bola.vx * dt; bola.vx *= Math.max(0, 1 - 1.4 * dt); bola.giro += bola.vx * dt * 3;
@@ -713,7 +776,7 @@
       irDormir(pet, performance.now(), 20000, true); pet.menu.classList.remove('on'); ganharXp(pet, 1);
       return salvarNec();
     }
-    if(c === 'banho'){ pet.nec.limpo = 100; efeito(pet, '🫧', 6); falar(pet, sorte(['Que cheirinho bom! 🛁', 'Banho gostoso!', 'Tô limpinho! ✨'])); ganharXp(pet, 1); }
+    if(c === 'banho'){ pet.nec.limpo = 100; atividade(pet, performance.now(), 'banho'); falar(pet, sorte(['Que cheirinho bom! 🛁', 'Banho gostoso!', 'Tô limpinho! ✨'])); ganharXp(pet, 1); }
     if(c === 'dentes'){ pet.nec.dentes = 100; efeito(pet, '🪥', 1); efeito(pet, '✨', 3); falar(pet, sorte(['Dentes brilhando! ✨', 'Escovadinho! 😁', 'Hálito fresquinho!'])); ganharXp(pet, 1); }
     ficouFeliz(pet, n); desenharNec(pet); salvarNec();
   }
@@ -765,12 +828,14 @@
       NECS.forEach(k => { pet.nec[k] = Math.max(0, pet.nec[k] - PERDE[k] / 12); });
       if(dorme) pet.nec.sono = Math.min(100, pet.nec.sono + (pet.soneca ? 4 : 1.5) * (pet.naCama ? 1.5 : 1));
       if(dorme && pet.soneca && pet.nec.sono >= 100){ pet.soneca = false; pet.ate = 0; }
+      if(dorme && Math.random() < .12 && Date.now() - ultRonco > 6000){ ultRonco = Date.now(); if(!pet.dentro) falar(pet, sorte(['Zzz… ronc… 😴', 'Rooonc… shhh… 💤', 'Zzzz… 🍎… zzz']), 1800); somRuido(1, 150, .07); }
       const pior = NECS.slice().sort((a, b) => pet.nec[a] - pet.nec[b])[0];
       if(!dorme && pet.nec[pior] < 30 && Math.random() < .2) falar(pet, pior === 'fome' && Math.random() < .5 ? `Queria ${favDe(pet.id)}… 🥺` : sorte(PEDIDOS[pior].slice(1)));
       if(!dorme && !pet.dentro && pet.estado !== 'irCama' && pet.nec.sono < 10 && Math.random() < .15){ irDormir(pet, performance.now(), 15000, true); falar(pet, 'Não aguento mais… 😴', 1500); }
       desenharNec(pet);
     }
   }, 5000);
+  let ultRonco = 0;
   setInterval(salvarNec, 15000);
   addEventListener('pagehide', salvarNec);
 
@@ -932,11 +997,13 @@
   function tamanhoCeu(){ encherCeu(); posicionarCama(); }
   function encherCeu(){
     if(!ceu.cv) return;
-    const chuva = ceu.tipo === 'chuva', neve = ceu.tipo === 'neve';
-    if(!cfg.ligado || (!chuva && !neve)){ ceu.cv.textContent = ''; return; }
-    const n = Math.min(160, Math.round(innerWidth / (chuva ? 12 : 18))); let h = '';
+    const chuva = chove(), neve = ceu.tipo === 'neve';
+    if(!cfg.ligado || (!chuva && !neve)){ ceu.cv.textContent = ''; ceu.cv.dataset.k = ''; return; }
+    const k = chuva ? 'c' + ceu.tipo : 'n'; if(ceu.cv.dataset.k === k) return; ceu.cv.dataset.k = k;
+    let h = '';
+    const n = Math.min(200, Math.round(innerWidth / (ceu.tipo === 'tempestade' ? 8 : chuva ? 12 : 18)));
     for(let i = 0; i < n; i++){
-      const dur = chuva ? .6 + Math.random() * .5 : 7 + Math.random() * 7;
+      const dur = chuva ? (ceu.tipo === 'tempestade' ? .45 : .6) + Math.random() * .5 : 7 + Math.random() * 7;
       h += `<i class="${chuva ? 'gota' : 'floco'}" style="left:${(Math.random() * 105).toFixed(1)}%;animation-duration:${dur.toFixed(2)}s;animation-delay:-${(Math.random() * dur).toFixed(2)}s;--vento:${chuva ? -40 : Math.round((Math.random() - .5) * 120)}px"></i>`;
     }
     ceu.cv.innerHTML = h;
@@ -946,26 +1013,31 @@
     /* No automático o tempo muda a cada 8 minutos (igual em todas as abas). */
     let t = (Math.floor(Date.now() / 480000) * 2654435761) >>> 0;
     t = Math.imul(t ^ (t >>> 15), 2246822507) >>> 0; t = (t ^ (t >>> 13)) % 100;
-    return t < 18 ? 'chuva' : t < 28 ? 'neve' : t < 60 ? 'sol' : 'nada';
+    return t < 12 ? 'chuva' : t < 17 ? 'tempestade' : t < 25 ? 'neve' : t < 33 ? 'vento' : t < 60 ? 'sol' : 'nada';
   }
   const tipoGosta = { chuva:[2, 3], neve:[5] };
+  const chove = () => ceu.tipo === 'chuva' || ceu.tipo === 'tempestade';
+  const ventando = () => ceu.tipo === 'vento' || Date.now() < rajada.ate;
   function vestir(pet){
     let a = pet.el.querySelector('.acessorio');
-    const guarda = ceu.tipo === 'chuva' && !tipoGosta.chuva.includes(tipoDe(pet.id)) && !voa(pet.id);
+    const guarda = chove() && !tipoGosta.chuva.includes(tipoDe(pet.id)) && !voa(pet.id);
     if(guarda && !a){ a = document.createElement('span'); a.className = 'acessorio'; a.textContent = '☂️'; pet.el.appendChild(a); }
     if(!guarda && a) a.remove();
     pet.frio = ceu.tipo === 'neve' && ![5, 1].includes(tipoDe(pet.id));
   }
   function mudouClima(tipo, avisar){
     const antes = ceu.tipo; ceu.tipo = tipo; encherCeu();
-    if(antes === 'chuva' && tipo !== 'chuva') ceu.arcoAte = Date.now() + 90000;
+    if(['chuva', 'tempestade'].includes(antes) && !chove()) ceu.arcoAte = Date.now() + 90000;
     ceu.sol.classList.toggle('on', tipo === 'sol');
     boneco.el.classList.toggle('on', tipo === 'neve');
-    pets.forEach(vestir);
+    pets.forEach(vestir); atualizarNoite();
     if(!avisar) return;
     pets.filter(p => !p.dentro).forEach((p, i) => setTimeout(() => {
       const t = tipoDe(p.id), agora = performance.now();
-      if(tipo === 'chuva'){
+      if(tipo === 'tempestade' && t === 4){ falar(p, 'Raios! Eu adoro! ⚡😆', 2400); p.estado = 'dancar'; p.ate = agora + 3000; }
+      else if(tipo === 'tempestade') falar(p, sorte(['Vem tempestade! ⛈️😨', 'Que medo de trovão! 😱']), 2400);
+      else if(tipo === 'vento') falar(p, sorte(['Que ventania! 🌪️', 'Segura meu chapéu! 💨', 'Vou sair voando! 😱']), 2400);
+      else if(tipo === 'chuva'){
         if(tipoGosta.chuva.includes(t)){ falar(p, sorte(['Oba, chuva! 💧😄', 'Eu amo chuva! 🌧️💙']), 2400); p.estado = 'dancar'; p.ate = agora + 3000; }
         else if(t === 1){ falar(p, 'Chuva não! Apaga meu fogo! 😣🔥', 2400); if(naCasa()) irDormir(p, agora, 0, false, true); }
         else falar(p, sorte(['Começou a chover! ☂️', 'Ainda bem que tenho guarda-chuva! ☂️']), 2400);
@@ -977,7 +1049,7 @@
         if([1, 3].includes(t)) falar(p, 'Que sol gostoso! ☀️😎', 2400);
         else if(t === 5) falar(p, 'Tá muito calor… 🥵', 2400);
         else if(Math.random() < .5) falar(p, 'Dia lindo! ☀️', 2400);
-      } else if(antes === 'chuva' && Math.random() < .7) falar(p, 'Olha o arco-íris! 🌈', 2400);
+      } else if(['chuva', 'tempestade'].includes(antes) && Math.random() < .7) falar(p, 'Olha o arco-íris! 🌈', 2400);
     }, i * 500 + 300));
   }
   setInterval(() => { if(cfg.ligado && ceu.cv){ const t = climaAgora(); if(t !== ceu.tipo) mudouClima(t, true); } }, 4000);
@@ -1021,6 +1093,163 @@
   function tirarFoto(){
     const f = document.createElement('div'); f.className = 'flash'; raiz.appendChild(f); setTimeout(() => f.remove(), 700);
     pets.filter(p => !p.dentro && p.estado !== 'dormir').forEach((p, i) => setTimeout(() => { falar(p, sorte(['Xiiis! 📸', '😁✌️', 'Saí bonito? 📸']), 1800); p.estado = 'parado'; p.ate = performance.now() + 1800; }, i * 120));
+  }
+
+  /* ---------- 🔊 barulhos (trovão, pum, ronco, terremoto) ---------- */
+  function somRuido(dur, freq, vol){
+    if(!cfg.som) return;
+    try{
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      if(audio.state === 'suspended') audio.resume();
+      const n = Math.floor(audio.sampleRate * dur), buf = audio.createBuffer(1, n, audio.sampleRate), d = buf.getChannelData(0);
+      for(let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+      const src = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain(), t = audio.currentTime;
+      src.buffer = buf; f.type = 'lowpass'; f.frequency.value = freq;
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+      src.connect(f); f.connect(g); g.connect(audio.destination); src.start();
+    }catch(e){}
+  }
+
+  /* ---------- 🌪️ ventania ---------- */
+  const rajada = { ate:0, dir:1, prox:0, ativo:false };
+  function soprar(agora, dt){
+    const vai = cfg.ligado && ventando();
+    if(!vai){ if(rajada.ativo){ rajada.ativo = false; if(rajada.folhas) rajada.folhas.textContent = ''; } return; }
+    if(!rajada.ativo){
+      rajada.ativo = true;
+      if(ceu.tipo === 'vento' && Date.now() >= rajada.ate) rajada.dir = Math.floor(Date.now() / 480000) % 2 ? -1 : 1;
+      /* 🍃 Folhas voando de um lado pro outro (junto com a chuva ou a neve, se tiver). */
+      if(!rajada.folhas){ rajada.folhas = document.createElement('div'); rajada.folhas.className = 'ceu'; raiz.appendChild(rajada.folhas); }
+      rajada.folhas.classList.toggle('esquerda', rajada.dir < 0);
+      let h = '';
+      for(let i = 0; i < 26; i++){ const dur = 1.6 + Math.random() * 1.6;
+        h += `<i class="folha" style="top:${(Math.random() * 90).toFixed(1)}%;animation-duration:${dur.toFixed(2)}s;animation-delay:-${(Math.random() * dur).toFixed(2)}s">${sorte(['🍃', '🍂', '🍃', '💨', '🍁'])}</i>`; }
+      rajada.folhas.innerHTML = h;
+    }
+    if(bola.ativa) bola.vx += rajada.dir * 260 * dt;
+    if(agora >= rajada.prox){
+      rajada.prox = agora + (Date.now() < rajada.ate ? 1100 + Math.random() * 1400 : 2000 + Math.random() * 3000);
+      const p = sorte(pets.filter(q => !q.dentro && !['batalha', 'desmaiado', 'escondido', 'fugir', 'arrastado', 'irCama', 'ima', 'subir', 'teto'].includes(q.estado)));
+      if(p && !jogo){
+        dormir(p, false); p.naCama = false; tirarProps(p);
+        p.estado = 'cair'; p.vy = -350 - Math.random() * 500; p.vx = rajada.dir * (450 + Math.random() * 550);
+        falar(p, sorte(['Socorrooo! 🌪️', 'Wiiiiii! 😆', 'Tô voandooo! 💨', 'Me segura! 😱', 'Que ventaniaaa! 🌬️']), 1600);
+      }
+    }
+  }
+
+  /* ---------- ⛈️ trovão ---------- */
+  function relampago(){
+    if(!cfg.ligado) return;
+    const f = document.createElement('div'); f.className = 'flash relampago'; raiz.appendChild(f); setTimeout(() => f.remove(), 900);
+    const r = document.createElement('span'); r.className = 'raio'; r.textContent = '⚡'; r.style.left = (10 + Math.random() * 80) + 'vw'; raiz.appendChild(r); setTimeout(() => r.remove(), 600);
+    setTimeout(() => somRuido(2.4, 260, .55), 250);
+    pets.filter(p => !p.dentro && !['batalha', 'escondido', 'arrastado', 'balao', 'ima'].includes(p.estado)).forEach((p, i) => setTimeout(() => {
+      if(tipoDe(p.id) === 4){ efeito(p, '⚡', 3); if(Math.random() < .5) falar(p, 'Eba, energia! ⚡😆', 1500); }
+      else if(Math.random() < .5){ falar(p, sorte(['Ai! Que medo! 😱', 'AAAH! ⚡😨', 'Trovão! 🙉']), 1500); if(p.y >= chao(p) - 2) pular(p, 420); }
+    }, 300 + i * 120));
+  }
+  let proxRaio = 0;
+  setInterval(() => { if(document.hidden || ceu.tipo !== 'tempestade') return; if(Date.now() > proxRaio){ proxRaio = Date.now() + 7000 + Math.random() * 9000; relampago(); } }, 1000);
+
+  /* ---------- 🌋 terremoto ---------- */
+  let tremendo = false;
+  function terremoto(){
+    if(tremendo || !cfg.ligado) return; tremendo = true;
+    const passos = Array.from({ length:24 }, () => ({ transform:`translate(${((Math.random() - .5) * 18).toFixed(1)}px, ${((Math.random() - .5) * 12).toFixed(1)}px)` }));
+    host.animate([...passos, { transform:'none' }], { duration:4200, easing:'linear' });
+    somRuido(4, 110, .5);
+    pets.forEach((p, i) => { if(!p.dentro) setTimeout(() => falar(p, sorte(['Terremotooo! 😱', 'Tá tudo tremendo! 🌋', 'Socorro! 😨', 'Segura firme! 🫨']), 2000), i * 200); });
+    const t = setInterval(() => {
+      const p = sorte(pets.filter(q => !q.dentro && ['andar', 'parado', 'sentar', 'correr', 'dancar', 'ler', 'cozinhar', 'espreguicar'].includes(q.estado)));
+      if(p){ tirarProps(p); pular(p, 250 + Math.random() * 300); }
+    }, 300);
+    setTimeout(() => { clearInterval(t); tremendo = false; pets.forEach(p => { if(!p.dentro && Math.random() < .6) falar(p, sorte(['Ufa… passou! 😮‍💨', 'Que susto! 😵', 'Tá todo mundo bem? 🤕']), 2000); }); }, 4200);
+  }
+
+  /* ---------- 💨 pum (bem raro!) ---------- */
+  function pum(pet){
+    if(!pet || pet.dentro) return;
+    const e = document.createElement('span'); e.className = 'efeito'; e.textContent = '💨';
+    e.style.left = (pet.dir > 0 ? -pet.s * .15 : pet.s * .8) + 'px'; e.style.top = (pet.s * .6) + 'px'; e.style.setProperty('--dx', (-pet.dir * 40) + 'px');
+    pet.el.appendChild(e); setTimeout(() => e.remove(), 1400);
+    somRuido(.55, 190, .45);
+    falar(pet, sorte(['Ops… 😳', 'Desculpa! 🙊', 'Não fui eu! 😇', 'Hihi… 🤭']), 1800);
+    pets.filter(q => q !== pet && !q.dentro && Math.abs(q.x - pet.x) < pet.s * 2.5).forEach((q, i) => setTimeout(() => { falar(q, sorte(['Ecaaa! 🤢😂', 'Que fedor! 🤢', 'Quem foi?! 😂']), 1800); efeito(q, '🤢', 1); }, 500 + i * 250));
+  }
+
+  /* ---------- 🌙 noite ---------- */
+  const ehNoite = () => { const h = new Date().getHours(); return h >= 19 || h < 6; };
+  function atualizarNoite(){
+    if(!ceu.cv) return;
+    if(!ceu.lua){
+      ceu.lua = document.createElement('span'); ceu.lua.className = 'lua'; ceu.lua.textContent = '🌙';
+      ceu.estrelas = document.createElement('div'); ceu.estrelas.className = 'estrelas';
+      ceu.estrelas.innerHTML = Array.from({ length:14 }, (_, i) => `<i style="left:${(4 + Math.random() * 92).toFixed(1)}%;top:${(2 + Math.random() * 22).toFixed(1)}%;animation-delay:-${(Math.random() * 2).toFixed(2)}s">✦</i>`).join('');
+      raiz.prepend(ceu.lua, ceu.estrelas);
+    }
+    const on = cfg.ligado && cfg.clima !== 'nada' && ehNoite();
+    ceu.lua.classList.toggle('on', on); ceu.estrelas.classList.toggle('on', on && !chove() && ceu.tipo !== 'neve');
+    ceu.sol.classList.toggle('on', ceu.tipo === 'sol' && !ehNoite());
+  }
+  setInterval(atualizarNoite, 30000);
+
+  /* ---------- 🛁📖🪁🏊🍳🛹🎈 atividades ---------- */
+  const ATIVIDADES = ['banho', 'ler', 'pipa', 'piscina', 'cozinhar', 'skate', 'balao'];
+  const IMA_OK = ['andar', 'correr', 'parado', 'sentar', 'espreguicar', 'dancar', 'cair', 'voar', 'bola', 'borboleta', 'golpe', 'cantar', ...ATIVIDADES];
+  function tirarProps(pet){ (pet.props || []).forEach(e => e.remove()); pet.props = []; pet.temProps = false; }
+  function atividade(pet, agora, qual){
+    if(pet.dentro) return;
+    qual = qual || sorte(ehNoite() ? ['ler', 'ler', 'cozinhar', 'balao'] : ['ler', 'pipa', 'piscina', 'cozinhar', 'skate', 'skate', 'pipa', 'piscina', 'balao']);
+    tirarProps(pet); dormir(pet, false); pet.naCama = false; pet.menu.classList.remove('on');
+    pet.estado = qual; pet.temProps = true; pet.props = [];
+    const prop = (cls, t) => { const e = document.createElement('span'); e.className = 'prop ' + cls; e.textContent = t; pet.el.appendChild(e); pet.props.push(e); return e; };
+    const fora = (cls, t) => { const e = document.createElement(t ? 'span' : 'div'); e.className = cls; if(t) e.textContent = t; raiz.appendChild(e); pet.props.push(e); return e; };
+    if(qual === 'banho'){
+      prop('banheira', '🛁'); pet.ate = agora + 4500; pet.y = chao(pet);
+      for(let i = 0; i < 4; i++) setTimeout(() => { if(pet.estado === 'banho') efeito(pet, '🫧', 3); }, i * 900);
+    }
+    if(qual === 'ler'){ prop('livro', sorte(['📖', '📕', '📗', '📘'])); pet.ate = agora + 6000 + Math.random() * 4000; falar(pet, sorte(['Que história legal! 📖', 'Era uma vez… 📚', 'Shhh, tô lendo! 🤓', 'Esse livro é de Pokémon! 😍']), 2400); }
+    if(qual === 'pipa'){ fora('linha-pipa'); fora('pipa', '🪁'); pet.ate = agora + 8000 + Math.random() * 4000; pet.y = chao(pet); falar(pet, sorte(['Olha minha pipa! 🪁', 'Sobe, pipa! 🪁', 'Que vento bom! 💨']), 2200); moverPipa(pet, agora); }
+    if(qual === 'piscina'){
+      const w = pet.s * 1.7, h = pet.s * .5, pis = fora('piscina');
+      pis.style.width = w + 'px'; pis.style.height = h + 'px';
+      pis.style.transform = `translate(${Math.max(0, Math.min(innerWidth - w, pet.x - pet.s * .35))}px, ${innerHeight - extraChao - 4 - h}px)`;
+      pet.ate = agora + 7000 + Math.random() * 4000; efeito(pet, '💦', 4);
+      falar(pet, tipoDe(pet.id) === 2 ? 'Eu nasci pra isso! 💧😎' : tipoDe(pet.id) === 1 ? 'Ai, é molhado! 🔥😬' : sorte(['Tchibum! 💦', 'Que água gostosa! 🏊', 'Olha eu nadando! 🏊']), 2200);
+      for(let i = 1; i < 4; i++) setTimeout(() => { if(pet.estado === 'piscina') efeito(pet, '💦', 2); }, i * 1800);
+    }
+    if(qual === 'cozinhar'){
+      prop('panela', '🍳'); pet.ate = agora + 5000 + Math.random() * 2000; falar(pet, sorte(['Vou cozinhar! 👨‍🍳', 'Hora de fazer um lanche! 🍳', 'Receita secreta… 🤫']), 2200);
+      for(let i = 1; i < 4; i++) setTimeout(() => { if(pet.estado === 'cozinhar') efeito(pet, sorte(['♨️', '💨', '✨']), 2); }, i * 1300);
+    }
+    if(qual === 'skate'){ prop('skate', '🛹'); pet.ate = agora + 5000 + Math.random() * 4000; pet.dir = Math.random() < .5 ? -1 : 1; falar(pet, sorte(['Manobra radical! 🛹😎', 'Olha o skate! 🛹', 'Iuhuuu! 🛹']), 2000); }
+    if(qual === 'balao'){ prop('balaozinho', '🎈'); pet.ate = agora + 6000 + Math.random() * 4000; falar(pet, sorte(['Achei um balão! 🎈', 'Tô subindoooo! 🎈😆', 'Wiii! 🎈']), 2000); }
+  }
+  function moverPipa(pet, agora){
+    const [linha, pipa] = pet.props || []; if(!pipa) return;
+    const hx = pet.x + pet.s / 2, hy = pet.y + pet.s * .35;
+    const kx = Math.max(10, Math.min(innerWidth - 50, hx + (ventando() ? rajada.dir : pet.dir > 0 ? 1 : -1) * 150 + Math.sin(agora / 1300) * 50));
+    const ky = Math.max(10, hy - 220 + Math.sin(agora / 700) * 25);
+    pipa.style.transform = `translate(${kx - 20}px, ${ky - 20}px) rotate(${Math.sin(agora / 400) * 15}deg)`;
+    const dx = kx - hx, dy = ky - hy;
+    linha.style.width = Math.hypot(dx, dy) + 'px'; linha.style.transform = `translate(${hx}px, ${hy}px) rotate(${Math.atan2(dy, dx)}rad)`;
+  }
+  function terminouCozinhar(pet){
+    const prato = sorte(['🎂', '🍪', '🥞', '🍕', '🍩']);
+    efeito(pet, prato, 3); falar(pet, `Fiz ${prato}! Vem comer, gente! 😋`, 2600);
+    pets.forEach(p => { p.nec.fome = Math.min(100, p.nec.fome + 15); });
+    ganharXp(pet, 1);
+  }
+
+  /* ---------- botões de evento (janela de escolher) ---------- */
+  function evento(t){
+    const agora = performance.now();
+    if(t === 'terremoto') terremoto();
+    if(t === 'trovao'){ relampago(); setTimeout(relampago, 1600); }
+    if(t === 'pum') pum(sorte(pets.filter(p => !p.dentro)));
+    if(t === 'ventania'){ rajada.ate = Date.now() + 20000; rajada.dir = Math.random() < .5 ? -1 : 1; rajada.prox = 0; rajada.ativo = false; }
+    if(t === 'balao') pets.forEach((p, i) => { if(!p.dentro && !['batalha', 'escondido', 'fugir'].includes(p.estado)) setTimeout(() => atividade(p, performance.now(), 'balao'), i * 300); });
   }
 
   /* ---------- 🎩 roupinhas ---------- */
@@ -1281,6 +1510,9 @@
     pets.forEach(desenharNec); desenharCasa();
     if(c.ligado !== antes.ligado) encherCeu();
     if(c.clima !== antes.clima && ceu.cv){ const t = climaAgora(); if(t !== ceu.tipo) mudouClima(t, true); }
+    if(c.evento && (!antes.evento || c.evento.q !== antes.evento.q) && Math.abs(Date.now() - c.evento.q) < 20000) evento(c.evento.t);
+    if(c.ima !== antes.ima && !c.ima) pets.forEach(p => { if(p.estado === 'ima'){ p.estado = 'cair'; p.vx = 0; p.vy = 0; } });
+    atualizarNoite();
     if(c.festa !== antes.festa && Math.abs(Date.now() - c.festa) < 20000) festa();
     else if(JSON.stringify(c.aniver) !== JSON.stringify(antes.aniver) && ehAniver()) festa();
   }
