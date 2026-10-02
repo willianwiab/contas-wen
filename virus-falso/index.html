@@ -5,36 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>virus.exe (de mentira)</title>
 <meta name="description" content="Uma brincadeira de vírus de mentira: não faz nada no computador." />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦠</text></svg>" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='12' fill='%23111'/><text x='50' y='68' font-size='60' text-anchor='middle' fill='%23b91c1c' font-family='monospace'>!</text></svg>" />
 <style>
 /* Brincadeira de "vírus" de mentira. NÃO faz nada no computador: é só uma página.
    Conta quantas vezes foi aberta (no próprio navegador) e faz uma coisa diferente em cada vez:
    1ª pisca a tela, 2ª toca um alarme, 3ª em diante mostra as caixinhas e depois fica mudando de cor
    até alguém escrever "pare". Sempre começa com um aviso dizendo que não é vírus de verdade. */
-:root{--fundo:#0b0f14;--texto:#d7ffd9;--verde:#39ff6a;--caixa:#f3f4f6;--tinta:#111827;--azul:#2563eb}
+:root{--fundo:#050505;--texto:#d4d4d4;--verde:#c8c8c8;--caixa:#f2f2f2;--tinta:#111;--azul:#1f4fbf;--vermelho:#b91c1c}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--fundo);color:var(--texto);font:16px/1.45 ui-monospace,'Cascadia Mono',Consolas,monospace;overflow:hidden}
 .tela{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:16px}
 .tela.on{display:flex}
 /* aviso do começo */
-.aviso{max-width:520px;background:#fff;color:var(--tinta);border-radius:16px;padding:22px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.aviso{max-width:520px;background:#fff;color:var(--tinta);border-radius:6px;padding:22px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.5)}
 .aviso h1{margin:0 0 10px;font-size:1.35rem}
 .aviso p{margin:8px 0}
 .aviso .cuidado{background:#fff4d6;border:2px solid #f59f00;border-radius:10px;padding:8px 10px}
-.aviso button{margin-top:14px;font:700 1.05rem system-ui,sans-serif;border:0;border-radius:12px;background:var(--azul);color:#fff;padding:10px 18px;cursor:pointer}
+.aviso button{margin-top:14px;font:600 1rem system-ui,sans-serif;border:0;border-radius:4px;background:var(--azul);color:#fff;padding:10px 18px;cursor:pointer}
 .aviso small{display:block;margin-top:12px;color:#6b7280}
 .aviso a{color:#6b7280}
 /* "programa" */
-.terminal{width:min(720px,100%);max-height:80vh;overflow:hidden;white-space:pre-wrap;color:var(--verde);text-shadow:0 0 6px rgba(57,255,106,.6)}
+.terminal{width:min(720px,100%);max-height:80vh;overflow:hidden;white-space:pre-wrap;color:var(--verde)}
 .terminal .cursor{display:inline-block;width:10px;height:1.1em;background:var(--verde);vertical-align:-3px;animation:pisca 1s steps(1) infinite}
 @keyframes pisca{50%{opacity:0}}
 /* 1ª vez: tela piscando (devagar: 2 vezes por segundo, cores não muito fortes) */
 .piscando{animation:piscaTela .5s steps(1) infinite}
 @keyframes piscaTela{0%{background:#0b0f14}50%{background:#3a4a5a}}
 /* 2ª vez: alerta */
-.alerta{text-align:center;font:900 clamp(28px,7vw,64px)/1.1 system-ui,sans-serif;color:#ffd43b;animation:alertaPulsa 1s ease-in-out infinite}
-.alerta small{display:block;font-size:.35em;color:#fff;margin-top:14px;font-weight:700}
-@keyframes alertaPulsa{50%{transform:scale(1.06)}}
+.alerta{text-align:center;font:800 clamp(28px,7vw,64px)/1.1 system-ui,sans-serif;color:#fff}
+.alerta .faixa-alerta{display:inline-block;background:var(--vermelho);padding:10px 34px;letter-spacing:8px;animation:alertaPulsa 1s steps(1) infinite}
+.alerta small{display:block;font-size:.32em;color:#d4d4d4;margin-top:16px;font-weight:600;letter-spacing:1px}
+.alerta small.codigo-erro{font:500 .26em ui-monospace,Consolas,monospace;color:#8a8a8a}
+@keyframes alertaPulsa{50%{background:#5c0d0d}}
 /* 3ª vez: caixinhas */
 .caixa{position:relative;width:min(560px,100%);background:var(--caixa);color:var(--tinta);border-radius:10px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:0 12px 50px rgba(0,0,0,.6);overflow:hidden}
 .caixa .barra{background:#e5e7eb;padding:8px 12px;font-size:.9rem;color:#374151}
@@ -49,14 +51,14 @@ html,body{margin:0;height:100%;background:var(--fundo);color:var(--texto);font:1
 #fujao{position:relative;transition:transform .15s}
 /* depois do Continuar: muda de cor e pisca (devagar) até escrever "pare" */
 body.loucura{animation:arcoIris 4s linear infinite}
-@keyframes arcoIris{0%{background:#3b0764}25%{background:#0c4a6e}50%{background:#14532d}75%{background:#713f12}100%{background:#3b0764}}
+@keyframes arcoIris{0%{background:#2a0606}25%{background:#06142a}50%{background:#0b2a10}75%{background:#2a2306}100%{background:#2a0606}}
 .loucura #tela-loucura .grande-virus{animation:treme .25s infinite,piscaTexto .5s steps(1) infinite}
-.grande-virus{text-align:center;font:900 clamp(34px,9vw,90px)/1.05 system-ui,sans-serif;color:#fff}
+.grande-virus{text-align:center;font:800 clamp(34px,9vw,90px)/1.05 system-ui,sans-serif;color:#fff;letter-spacing:4px}
 .grande-virus small{display:block;font-size:.25em;font-weight:700;opacity:.85;margin-top:12px}
 @keyframes treme{25%{transform:translate(-3px,2px) rotate(-1deg)}75%{transform:translate(3px,-2px) rotate(1deg)}}
 @keyframes piscaTexto{50%{opacity:.45}}
 .digitado{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);font-size:1.4rem;color:#fff;opacity:.5;letter-spacing:4px;min-height:1.6em}
-.calmo{text-align:center;font:800 clamp(24px,5vw,40px)/1.2 system-ui,sans-serif;color:#d1fae5}
+.calmo{text-align:center;font:600 clamp(24px,5vw,40px)/1.2 system-ui,sans-serif;color:#d4d4d4}
 .calmo small{display:block;font-size:.5em;margin-top:10px;font-weight:600;color:#9ca3af}
 /* Quem pede "menos movimento" no computador não vê piscadas. */
 @media (prefers-reduced-motion: reduce){
@@ -70,11 +72,11 @@ body.loucura{animation:arcoIris 4s linear infinite}
 <!-- 0. Aviso: sempre aparece primeiro -->
 <section class="tela on" id="tela-aviso">
   <div class="aviso">
-    <h1>⚠️ Isto NÃO é um vírus de verdade!</h1>
+    <h1>Isto NÃO é um vírus de verdade.</h1>
     <p>É só uma <b>brincadeira</b>. É uma página da internet e <b>não pode fazer nada</b> no seu computador: não apaga, não copia e não manda nada.</p>
-    <p class="cuidado">💡 <b>Cuidado:</b> tem <b>luzes piscando</b> e <b>cores mudando</b>. Quem tem epilepsia ou passa mal com luz piscando não deve jogar.</p>
+    <p class="cuidado"><b>Cuidado:</b> tem <b>luzes piscando</b> e <b>cores mudando</b>. Quem tem epilepsia ou passa mal com luz piscando não deve jogar.</p>
     <p id="como-fechar">Pra fechar é só fechar a aba (o <b>X</b> lá em cima ou <b>Ctrl + W</b>).</p>
-    <button type="button" id="comecar">Entendi, bora! 🦠</button>
+    <button type="button" id="comecar">Entendi</button>
     <small id="vezes"></small>
     <small><a href="#" id="zerar">↺ começar do zero</a></small>
   </div>
@@ -82,7 +84,7 @@ body.loucura{animation:arcoIris 4s linear infinite}
 
 <!-- 1ª e 2ª vez: o "programa" -->
 <section class="tela" id="tela-programa"><div class="terminal" id="terminal"></div></section>
-<section class="tela" id="tela-alerta"><div class="alerta">⚠️ ALERTA ⚠️</div></section>
+<section class="tela" id="tela-alerta"><div class="alerta"><span class="faixa-alerta">ALERTA</span><small>Ameaça detectada em virus.exe</small><small class="codigo-erro">0x000000F4 · PROCESSO CRÍTICO</small></div></section>
 
 <!-- 3ª vez em diante: as caixinhas -->
 <section class="tela" id="tela-certeza">
@@ -102,7 +104,7 @@ body.loucura{animation:arcoIris 4s linear infinite}
 <section class="tela" id="tela-mesmo2">
   <div class="caixa" role="dialog" aria-labelledby="t3">
     <div class="barra">virus.exe</div>
-    <div class="conteudo"><p class="grande" id="t3">TEM CERTEZA QUE NÃO? 🤨</p></div>
+    <div class="conteudo"><p class="grande" id="t3">TEM CERTEZA QUE NÃO?</p></div>
     <div class="botoes"><button type="button" class="principal" data-ir="seguranca">Tá bom, sim</button><button type="button" data-ir="seguranca">Sim</button></div>
   </div>
 </section>
@@ -133,12 +135,12 @@ body.loucura{animation:arcoIris 4s linear infinite}
 </section>
 
 <!-- depois: cores mudando até escrever "pare" -->
-<section class="tela" id="tela-loucura"><div class="grande-virus">🦠 VÍRUS ATIVADO 🦠<small>muahahaha…</small></div></section>
+<section class="tela" id="tela-loucura"><div class="grande-virus">VÍRUS ATIVADO<small>virus.exe está em execução</small></div></section>
 <div class="digitado" id="digitado" aria-live="polite"></div>
 <!-- No celular não tem teclado físico: tocar na tela abre o teclado por este campo invisível. -->
 <input id="teclado" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Digite aqui"
   style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0;border:0;padding:0" />
-<section class="tela" id="tela-calmo"><div class="calmo">✅ Parou.<small>Tudo calmo de novo… por enquanto. 😏</small></div></section>
+<section class="tela" id="tela-calmo"><div class="calmo">Processo encerrado.<small>virus.exe foi finalizado.</small></div></section>
 
 <script>
 (() => {
@@ -186,11 +188,16 @@ body.loucura{animation:arcoIris 4s linear infinite}
     mostrar('programa'); tela();
     const ini = Date.now();
     document.body.classList.add('piscando');
-    await digitar(['> virus.exe', '> iniciando…']);
+    await digitar(['C:\\> virus.exe', 'Iniciando virus.exe...', 'Carregando módulos.......... OK', 'Verificando sistema......... OK', 'Executando processo 0x00F4...']);
     await esperar(Math.max(0, 3000 - (Date.now() - ini)));
     document.body.classList.remove('piscando');
   }
-  function vez2(){ mostrar('alerta'); tela(); alarme(5); }
+  /* 2ª vez: o alarme toca sem parar até escrever "pare". */
+  let repete = 0;
+  function vez2(){
+    mostrar('alerta'); tela(); esperandoPare = true; digitado = '';
+    alarme(5); repete = setInterval(() => alarme(5), 5000);
+  }
   function vez3(){ mostrar('certeza'); tela(); }
 
   /* O botão "Não" foge do mouse. */
@@ -207,24 +214,26 @@ body.loucura{animation:arcoIris 4s linear infinite}
   });
 
   /* Muda de cor e pisca até escrever "pare". */
-  let digitado = '';
+  let digitado = '', esperandoPare = false;
   function comecarLoucura(){
-    mostrar('loucura'); document.body.classList.add('loucura'); alarme(2);
+    mostrar('loucura'); document.body.classList.add('loucura'); alarme(2); esperandoPare = true;
     digitado = ''; $('digitado').textContent = '';
   }
   function parar(){
+    esperandoPare = false; clearInterval(repete);
+    if(audio){ try{ audio.close(); }catch(e){} audio = null; }
     document.body.classList.remove('loucura'); $('digitado').textContent = '';
     mostrar('calmo');
   }
   const letra = c => {
-    if(!document.body.classList.contains('loucura')) return;
+    if(!esperandoPare) return;
     digitado = (digitado + c.toLowerCase()).slice(-4);
     $('digitado').textContent = digitado;
     if(digitado === 'pare') parar();
   };
   addEventListener('keydown', ev => { if(ev.target === $('teclado') || ev.key.length !== 1) return; letra(ev.key); });
   $('teclado').addEventListener('input', () => { const v = $('teclado').value; $('teclado').value = ''; for(const c of v) letra(c); });
-  addEventListener('pointerdown', () => { if(document.body.classList.contains('loucura')) $('teclado').focus(); });
+  addEventListener('pointerdown', () => { if(esperandoPare) $('teclado').focus(); });
 
   $('comecar').addEventListener('click', () => {
     vezes++; try{ localStorage.setItem(CHAVE, vezes); }catch(e){}
