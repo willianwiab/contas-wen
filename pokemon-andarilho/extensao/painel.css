@@ -40,7 +40,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .troca select,.troca input{flex:1;min-width:0}
 .troca select{font:inherit;padding:5px 6px;border-radius:10px;border:2px solid #c5cfe0}
 .troca button,.codigo button{font:inherit;font-weight:700;border:2px solid #c5d0fa;background:#fff;border-radius:10px;padding:5px 9px;cursor:pointer;white-space:nowrap}
-.codigo b{font-family:ui-monospace,monospace;font-size:1.1rem;background:#eef2ff;padding:2px 6px;border-radius:6px;user-select:all}
+.codigo b{font-family:ui-monospace,monospace;font-size:1.1rem;background:#eef2ff;color:#1d2433;padding:2px 6px;border-radius:6px;user-select:all}
 .dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:4px;max-height:220px;overflow:auto}
 .dex span{text-align:center;border:2px solid #dde3ee;border-radius:10px;background:#fff}
 .dex img{width:44px;height:44px;object-fit:contain;display:block;margin:0 auto}
