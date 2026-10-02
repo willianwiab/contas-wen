@@ -1,0 +1,39 @@
+# Monta o Vírus de mentira pra Windows num arquivo só (VirusFalso.exe) e publica em Releases.
+name: Vírus de mentira para Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'virus-falso/**'
+      - '.github/workflows/virus-falso-windows.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: virus-falso/computador
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm install --no-save --no-audit --no-fund electron-builder@26
+      - run: node copiar.js
+      - run: npx electron-builder --win portable --publish never
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: virus-falso
+          name: Vírus de mentira (Windows)
+          body: |
+            🦠 Brincadeira: NÃO é vírus de verdade e não faz nada no computador. Tem luzes piscando.
+            Baixe o VirusFalso.exe e dê dois cliques. Pra fechar: Alt + F4 (Esc sai da tela cheia).
+            Se o Windows mostrar "O Windows protegeu o computador", clique em "Mais informações" → "Executar assim mesmo".
+          files: virus-falso/computador/dist/VirusFalso.exe
+          make_latest: false

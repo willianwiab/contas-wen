@@ -73,7 +73,7 @@ body.loucura{animation:arcoIris 4s linear infinite}
     <h1>⚠️ Isto NÃO é um vírus de verdade!</h1>
     <p>É só uma <b>brincadeira</b>. É uma página da internet e <b>não pode fazer nada</b> no seu computador: não apaga, não copia e não manda nada.</p>
     <p class="cuidado">💡 <b>Cuidado:</b> tem <b>luzes piscando</b> e <b>cores mudando</b>. Quem tem epilepsia ou passa mal com luz piscando não deve jogar.</p>
-    <p>Pra fechar é só fechar a aba (o <b>X</b> lá em cima ou <b>Ctrl + W</b>).</p>
+    <p id="como-fechar">Pra fechar é só fechar a aba (o <b>X</b> lá em cima ou <b>Ctrl + W</b>).</p>
     <button type="button" id="comecar">Entendi, bora! 🦠</button>
     <small id="vezes"></small>
     <small><a href="#" id="zerar">↺ começar do zero</a></small>
@@ -143,6 +143,8 @@ body.loucura{animation:arcoIris 4s linear infinite}
 <script>
 (() => {
   const $ = id => document.getElementById(id);
+  /* No programa de computador fecha diferente. */
+  if(/Electron/.test(navigator.userAgent)) $('como-fechar').innerHTML = 'Pra fechar é só apertar <b>Alt + F4</b> (ou <b>Esc</b> pra sair da tela cheia e clicar no <b>X</b>).';
   const CHAVE = 'virus-falso:vezes';
   let vezes = 0;
   try{ vezes = +localStorage.getItem(CHAVE) || 0; }catch(e){}
