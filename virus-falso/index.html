@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>virus.exe (de mentira)</title>
+<meta name="description" content="Uma brincadeira de vírus de mentira: não faz nada no computador." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦠</text></svg>" />
+<style>
+/* Brincadeira de "vírus" de mentira. NÃO faz nada no computador: é só uma página.
+   Conta quantas vezes foi aberta (no próprio navegador) e faz uma coisa diferente em cada vez:
+   1ª pisca a tela, 2ª toca um alarme, 3ª em diante mostra as caixinhas e depois fica mudando de cor
+   até alguém escrever "pare". Sempre começa com um aviso dizendo que não é vírus de verdade. */
+:root{--fundo:#0b0f14;--texto:#d7ffd9;--verde:#39ff6a;--caixa:#f3f4f6;--tinta:#111827;--azul:#2563eb}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--fundo);color:var(--texto);font:16px/1.45 ui-monospace,'Cascadia Mono',Consolas,monospace;overflow:hidden}
+.tela{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:16px}
+.tela.on{display:flex}
+/* aviso do começo */
+.aviso{max-width:520px;background:#fff;color:var(--tinta);border-radius:16px;padding:22px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.aviso h1{margin:0 0 10px;font-size:1.35rem}
+.aviso p{margin:8px 0}
+.aviso .cuidado{background:#fff4d6;border:2px solid #f59f00;border-radius:10px;padding:8px 10px}
+.aviso button{margin-top:14px;font:700 1.05rem system-ui,sans-serif;border:0;border-radius:12px;background:var(--azul);color:#fff;padding:10px 18px;cursor:pointer}
+.aviso small{display:block;margin-top:12px;color:#6b7280}
+.aviso a{color:#6b7280}
+/* "programa" */
+.terminal{width:min(720px,100%);max-height:80vh;overflow:hidden;white-space:pre-wrap;color:var(--verde);text-shadow:0 0 6px rgba(57,255,106,.6)}
+.terminal .cursor{display:inline-block;width:10px;height:1.1em;background:var(--verde);vertical-align:-3px;animation:pisca 1s steps(1) infinite}
+@keyframes pisca{50%{opacity:0}}
+/* 1ª vez: tela piscando (devagar: 2 vezes por segundo, cores não muito fortes) */
+.piscando{animation:piscaTela .5s steps(1) infinite}
+@keyframes piscaTela{0%{background:#0b0f14}50%{background:#3a4a5a}}
+/* 2ª vez: alerta */
+.alerta{text-align:center;font:900 clamp(28px,7vw,64px)/1.1 system-ui,sans-serif;color:#ffd43b;animation:alertaPulsa 1s ease-in-out infinite}
+.alerta small{display:block;font-size:.35em;color:#fff;margin-top:14px;font-weight:700}
+@keyframes alertaPulsa{50%{transform:scale(1.06)}}
+/* 3ª vez: caixinhas */
+.caixa{position:relative;width:min(560px,100%);background:var(--caixa);color:var(--tinta);border-radius:10px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;box-shadow:0 12px 50px rgba(0,0,0,.6);overflow:hidden}
+.caixa .barra{background:#e5e7eb;padding:8px 12px;font-size:.9rem;color:#374151}
+.caixa .conteudo{padding:18px 20px;max-height:68vh;overflow:auto}
+.caixa h2{margin:0 0 8px;font-size:1.2rem}
+.caixa ul{margin:6px 0 10px;padding-left:20px}
+.caixa li{margin:2px 0}
+.caixa .botoes{display:flex;justify-content:flex-end;gap:10px;padding:12px 16px;background:#e5e7eb}
+.caixa button{font:600 .95rem system-ui,sans-serif;min-width:96px;padding:7px 14px;border-radius:6px;border:1px solid #9ca3af;background:#fff;cursor:pointer}
+.caixa button.principal{background:var(--azul);color:#fff;border-color:var(--azul)}
+.caixa .grande{font-size:2.1rem;font-weight:900;text-align:center;margin:10px 0}
+#fujao{position:relative;transition:transform .15s}
+/* depois do Continuar: muda de cor e pisca (devagar) até escrever "pare" */
+body.loucura{animation:arcoIris 4s linear infinite}
+@keyframes arcoIris{0%{background:#3b0764}25%{background:#0c4a6e}50%{background:#14532d}75%{background:#713f12}100%{background:#3b0764}}
+.loucura #tela-loucura .grande-virus{animation:treme .25s infinite,piscaTexto .5s steps(1) infinite}
+.grande-virus{text-align:center;font:900 clamp(34px,9vw,90px)/1.05 system-ui,sans-serif;color:#fff}
+.grande-virus small{display:block;font-size:.25em;font-weight:700;opacity:.85;margin-top:12px}
+@keyframes treme{25%{transform:translate(-3px,2px) rotate(-1deg)}75%{transform:translate(3px,-2px) rotate(1deg)}}
+@keyframes piscaTexto{50%{opacity:.45}}
+.digitado{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);font-size:1.4rem;color:#fff;opacity:.5;letter-spacing:4px;min-height:1.6em}
+.calmo{text-align:center;font:800 clamp(24px,5vw,40px)/1.2 system-ui,sans-serif;color:#d1fae5}
+.calmo small{display:block;font-size:.5em;margin-top:10px;font-weight:600;color:#9ca3af}
+/* Quem pede "menos movimento" no computador não vê piscadas. */
+@media (prefers-reduced-motion: reduce){
+  .piscando,body.loucura,.loucura #tela-loucura .grande-virus,.alerta{animation:none !important}
+  body.loucura{background:#3b0764}
+}
+</style>
+</head>
+<body>
+
+<!-- 0. Aviso: sempre aparece primeiro -->
+<section class="tela on" id="tela-aviso">
+  <div class="aviso">
+    <h1>⚠️ Isto NÃO é um vírus de verdade!</h1>
+    <p>É só uma <b>brincadeira</b>. É uma página da internet e <b>não pode fazer nada</b> no seu computador: não apaga, não copia e não manda nada.</p>
+    <p class="cuidado">💡 <b>Cuidado:</b> tem <b>luzes piscando</b> e <b>cores mudando</b>. Quem tem epilepsia ou passa mal com luz piscando não deve jogar.</p>
+    <p>Pra fechar é só fechar a aba (o <b>X</b> lá em cima ou <b>Ctrl + W</b>).</p>
+    <button type="button" id="comecar">Entendi, bora! 🦠</button>
+    <small id="vezes"></small>
+    <small><a href="#" id="zerar">↺ começar do zero</a></small>
+  </div>
+</section>
+
+<!-- 1ª e 2ª vez: o "programa" -->
+<section class="tela" id="tela-programa"><div class="terminal" id="terminal"></div></section>
+<section class="tela" id="tela-alerta"><div class="alerta">⚠️ ALERTA ⚠️<small id="alerta-txt">virus.exe está acordando…</small></div></section>
+
+<!-- 3ª vez em diante: as caixinhas -->
+<section class="tela" id="tela-certeza">
+  <div class="caixa" role="dialog" aria-labelledby="t1">
+    <div class="barra">virus.exe</div>
+    <div class="conteudo"><h2 id="t1">Você tem certeza que quer abrir esse programa?</h2></div>
+    <div class="botoes"><button type="button" class="principal" data-ir="mesmo">Sim</button><button type="button" id="fujao">Não</button></div>
+  </div>
+</section>
+<section class="tela" id="tela-mesmo">
+  <div class="caixa" role="dialog" aria-labelledby="t2">
+    <div class="barra">virus.exe</div>
+    <div class="conteudo"><p class="grande" id="t2">TEM MESMO?</p></div>
+    <div class="botoes"><button type="button" class="principal" data-ir="seguranca">Sim</button><button type="button" data-ir="mesmo2">Não</button></div>
+  </div>
+</section>
+<section class="tela" id="tela-mesmo2">
+  <div class="caixa" role="dialog" aria-labelledby="t3">
+    <div class="barra">virus.exe</div>
+    <div class="conteudo"><p class="grande" id="t3">TEM CERTEZA QUE NÃO? 🤨</p></div>
+    <div class="botoes"><button type="button" class="principal" data-ir="seguranca">Tá bom, sim</button><button type="button" data-ir="seguranca">Sim</button></div>
+  </div>
+</section>
+<section class="tela" id="tela-seguranca">
+  <div class="caixa" role="dialog" aria-labelledby="t4">
+    <div class="barra">virus.exe</div>
+    <div class="conteudo">
+      <h2 id="t4">AVISO DE SEGURANÇA</h2>
+      <p>Este programa pode acessar informações do seu dispositivo.</p>
+      <p>Dependendo das permissões concedidas, este programa poderá acessar ou coletar:</p>
+      <ul>
+        <li>Dados pessoais e arquivos.</li>
+        <li>Imagens, fotos e vídeos.</li>
+        <li>Mensagens SMS — o envio de SMS pode custar dinheiro.</li>
+        <li>Contatos.</li>
+        <li>Informações do dispositivo.</li>
+        <li>Localização.</li>
+        <li>Câmera e microfone.</li>
+        <li>Dados de aplicativos e outros conteúdos armazenados.</li>
+      </ul>
+      <p><b>ATENÇÃO</b></p>
+      <p>Algumas funções deste programa podem gerar custos adicionais, especialmente o envio de mensagens SMS.</p>
+      <p>Não execute este programa caso você não confie na sua origem.</p>
+      <p><b>Deseja permitir que este programa continue?</b></p>
+    </div>
+    <div class="botoes"><button type="button" data-ir="loucura">Cancelar</button><button type="button" class="principal" data-ir="loucura">Continuar</button></div>
+  </div>
+</section>
+
+<!-- depois: cores mudando até escrever "pare" -->
+<section class="tela" id="tela-loucura"><div class="grande-virus">🦠 VÍRUS ATIVADO 🦠<small>muahahaha…</small></div></section>
+<div class="digitado" id="digitado" aria-live="polite"></div>
+<!-- No celular não tem teclado físico: tocar na tela abre o teclado por este campo invisível. -->
+<input id="teclado" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Digite aqui"
+  style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0;border:0;padding:0" />
+<section class="tela" id="tela-calmo"><div class="calmo">✅ Parou.<small>Tudo calmo de novo… por enquanto. 😏</small></div></section>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const CHAVE = 'virus-falso:vezes';
+  let vezes = 0;
+  try{ vezes = +localStorage.getItem(CHAVE) || 0; }catch(e){}
+  $('vezes').textContent = vezes ? `Você já abriu ${vezes} ${vezes === 1 ? 'vez' : 'vezes'}.` : '';
+  $('zerar').addEventListener('click', ev => { ev.preventDefault(); try{ localStorage.removeItem(CHAVE); }catch(e){} vezes = 0; $('vezes').textContent = 'Zerado! Agora é como se fosse a 1ª vez.'; });
+
+  const mostrar = id => { document.querySelectorAll('.tela').forEach(t => t.classList.toggle('on', t.id === 'tela-' + id)); };
+  const esperar = ms => new Promise(r => setTimeout(r, ms));
+  const tela = () => { try{ if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {}); }catch(e){} };
+
+  /* Escreve no "terminal" uma letra de cada vez. */
+  async function digitar(linhas){
+    const t = $('terminal'); t.textContent = '';
+    for(const l of linhas){
+      for(const c of l){ t.textContent += c; await esperar(18); }
+      t.textContent += '\n'; await esperar(260);
+    }
+    const cur = document.createElement('span'); cur.className = 'cursor'; t.appendChild(cur);
+  }
+
+  /* 🚨 Som de alarme feito na hora (sirene + bipes), sem arquivo nenhum. */
+  let audio = null;
+  function alarme(segundos){
+    try{
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = audio.currentTime, g = audio.createGain(); g.gain.value = .12; g.connect(audio.destination);
+      const sirene = audio.createOscillator(); sirene.type = 'sawtooth';
+      for(let i = 0; i < segundos * 2; i++){ sirene.frequency.setValueAtTime(650, t0 + i * .5); sirene.frequency.linearRampToValueAtTime(1100, t0 + i * .5 + .25); sirene.frequency.linearRampToValueAtTime(650, t0 + i * .5 + .5); }
+      sirene.connect(g); sirene.start(t0); sirene.stop(t0 + segundos);
+      for(let i = 0; i < segundos * 3; i++){
+        const b = audio.createOscillator(), bg = audio.createGain(); b.type = 'square'; b.frequency.value = 1800;
+        bg.gain.setValueAtTime(0, t0 + i / 3); bg.gain.linearRampToValueAtTime(.06, t0 + i / 3 + .01); bg.gain.linearRampToValueAtTime(0, t0 + i / 3 + .12);
+        b.connect(bg); bg.connect(audio.destination); b.start(t0 + i / 3); b.stop(t0 + i / 3 + .13);
+      }
+    }catch(e){}
+  }
+
+  async function vez1(){
+    mostrar('programa'); tela();
+    const ini = Date.now();
+    document.body.classList.add('piscando');
+    await digitar(['> virus.exe', '> iniciando…']);
+    await esperar(Math.max(0, 3000 - (Date.now() - ini)));
+    document.body.classList.remove('piscando');
+    await digitar(['> virus.exe', '> iniciando…', '> ERRO: o vírus ainda está dormindo 😴', '> tente abrir de novo…']);
+  }
+  async function vez2(){
+    mostrar('alerta'); tela(); alarme(5);
+    await esperar(5200);
+    $('alerta-txt').textContent = 'Ele quase acordou… abra mais uma vez. 😈';
+  }
+  function vez3(){ mostrar('certeza'); tela(); }
+
+  /* O botão "Não" foge do mouse. */
+  const fujao = $('fujao');
+  const fugir = () => { fujao.style.transform = `translate(${(Math.random() - .5) * 320}px, ${(Math.random() - .5) * 180}px)`; };
+  fujao.addEventListener('pointerenter', fugir);
+  fujao.addEventListener('click', ev => { ev.preventDefault(); fugir(); });
+
+  document.addEventListener('click', ev => {
+    const b = ev.target.closest('[data-ir]'); if(!b) return;
+    const ir = b.dataset.ir;
+    if(ir === 'loucura') return comecarLoucura();
+    mostrar(ir);
+  });
+
+  /* Muda de cor e pisca até escrever "pare". */
+  let digitado = '';
+  function comecarLoucura(){
+    mostrar('loucura'); document.body.classList.add('loucura'); alarme(2);
+    digitado = ''; $('digitado').textContent = '';
+  }
+  function parar(){
+    document.body.classList.remove('loucura'); $('digitado').textContent = '';
+    mostrar('calmo');
+  }
+  const letra = c => {
+    if(!document.body.classList.contains('loucura')) return;
+    digitado = (digitado + c.toLowerCase()).slice(-4);
+    $('digitado').textContent = digitado;
+    if(digitado === 'pare') parar();
+  };
+  addEventListener('keydown', ev => { if(ev.target === $('teclado') || ev.key.length !== 1) return; letra(ev.key); });
+  $('teclado').addEventListener('input', () => { const v = $('teclado').value; $('teclado').value = ''; for(const c of v) letra(c); });
+  addEventListener('pointerdown', () => { if(document.body.classList.contains('loucura')) $('teclado').focus(); });
+
+  $('comecar').addEventListener('click', () => {
+    vezes++; try{ localStorage.setItem(CHAVE, vezes); }catch(e){}
+    if(vezes === 1) vez1(); else if(vezes === 2) vez2(); else vez3();
+  });
+})();
+</script>
+</body>
+</html>
