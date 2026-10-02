@@ -1,0 +1,23 @@
+{
+  "name": "virus-falso",
+  "version": "1.0.0",
+  "description": "Um vírus de mentira: só pisca, toca alarme e mostra caixinhas. Não faz nada no computador.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "prestart": "node copiar.js",
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^44.5.1"
+  },
+  "author": "Jojo e Claude",
+  "build": {
+    "appId": "com.jojo.virusfalso",
+    "productName": "Virus Falso",
+    "files": ["main.js", "pagina.html", "icone-256.png"],
+    "directories": { "output": "dist" },
+    "win": { "target": "portable", "icon": "icone-256.png" },
+    "portable": { "artifactName": "VirusFalso.exe" }
+  }
+}
