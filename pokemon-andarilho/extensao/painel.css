@@ -30,3 +30,5 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .meu.ovo small{color:#5b6477;white-space:nowrap}
 .ovinho{font-size:30px;width:44px;text-align:center;display:inline-block;animation:ovinho 1.4s ease-in-out infinite}
 @keyframes ovinho{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(-12deg)}90%{transform:rotate(12deg)}}
+.meu b small{font-weight:500;color:#5b6477;font-size:.8em}
+.meu .apelido{flex:1;min-width:0;font:inherit;font-weight:700;padding:3px 6px;border:2px solid #3b5bdb;border-radius:8px}

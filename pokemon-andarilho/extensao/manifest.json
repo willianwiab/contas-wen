@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Pokémon Andarilho",
-  "version": "1.2.4",
+  "version": "1.3.0",
   "description": "Um Pokémon 3D que fica andando, pulando e dormindo por cima de qualquer site. Dá pra arrastar, jogar longe e fazer carinho. Escolha entre os 1025!",
   "permissions": ["storage"],
   "content_scripts": [

@@ -9,7 +9,13 @@
   const MAX = 10, MAX_OVOS = 3, CHOCAR = 60000;
   const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
   const CORES = [['azul', '🔵 Azul'], ['rosa', '🩷 Rosa'], ['verde', '🟢 Verde'], ['amarelo', '🟡 Amarelo'], ['roxo', '🟣 Roxo'], ['vermelho', '🔴 Vermelho'], ['laranja', '🟠 Laranja']];
-  let modoOvo = false;
+  let modoOvo = false, editando = -1;
+  const limpaApelido = t => Array.from(String(t || '').replace(/[<>&"'`\\{}\[\]\u0000-\u001f]/g, '').trim()).slice(0, 14).join('');
+  function salvarApelido(i){
+    const inp = document.querySelector(`[data-apelido="${i}"]`), p = cfg.pets[i];
+    if(inp && p){ const ap = limpaApelido(inp.value); if(ap) p.apelido = ap; else delete p.apelido; }
+    editando = -1; if(inp) inp.blur(); salvar();
+  }
   const total = () => cfg.pets.length + (cfg.ovos || []).length;
   /* As opções novas entram aqui (assim o menu da extensão, o site e o programa ganham elas juntos). */
   function montarExtras(){
@@ -48,8 +54,12 @@
     if(cfg.aniver){ $('aniver-d').value = cfg.aniver.d; $('aniver-m').value = cfg.aniver.m; }
     $('modo-junto').classList.toggle('on', !modoOvo); $('modo-ovo').classList.toggle('on', modoOvo);
     desenharOvos();
-    $('meus').innerHTML = cfg.pets.map((p, i) => `<div class="meu"><img src="${mini(p.id)}" alt="" /><b>${esc(ANDARILHO_NOMES[p.id - 1])}${p.shiny ? ' ✨' : ''}</b>
-      <button type="button" data-shiny="${i}" title="Shiny">${p.shiny ? '✨ shiny' : '☆ normal'}</button>${cfg.pets.length > 1 ? `<button type="button" data-tirar="${i}" title="Tirar">✖️</button>` : ''}</div>`).join('');
+    if(document.activeElement && document.activeElement.classList.contains('apelido')) return;
+    $('meus').innerHTML = cfg.pets.map((p, i) => `<div class="meu"><img src="${mini(p.id)}" alt="" />${editando === i
+        ? `<input class="apelido" data-apelido="${i}" maxlength="14" value="${esc(p.apelido || '')}" placeholder="${esc(ANDARILHO_NOMES[p.id - 1])}" aria-label="Apelido" />`
+        : `<b>${p.roupa ? p.roupa + ' ' : ''}${esc(p.apelido || ANDARILHO_NOMES[p.id - 1])}${p.apelido ? ` <small>(${esc(ANDARILHO_NOMES[p.id - 1])})</small>` : ''}${p.shiny ? ' ✨' : ''}</b>`}
+      <button type="button" data-nome="${i}" title="Dar um apelido">${editando === i ? '✅' : '✏️'}</button>
+      <button type="button" data-shiny="${i}" title="Shiny">${p.shiny ? '✨' : '☆'}</button>${cfg.pets.length > 1 ? `<button type="button" data-tirar="${i}" title="Tirar">✖️</button>` : ''}</div>`).join('');
     $('dica-meus').textContent = modoOvo
       ? (cfg.ovos.length >= MAX_OVOS ? `Já tem ${MAX_OVOS} ovos chocando! Espera nascer. 🥚` : total() >= MAX ? `Já tem ${MAX} Pokémon! Tire um pra caber o ovo.` : 'Toque num Pokémon lá embaixo pra ele vir num ovo 🥚 (nasce em 1 minuto).')
       : cfg.pets.length < MAX ? `Toque num Pokémon lá embaixo pra ele vir junto (até ${MAX}).` : `Já tem ${MAX}! Toque num lá embaixo pra trocar o último.`;
@@ -78,6 +88,8 @@
     $('evoluir').addEventListener('change', () => { cfg.evoluir = $('evoluir').checked; salvar(); });
     ['tamanho', 'estilo', 'casa', 'cor', 'clima'].forEach(k => $(k).addEventListener('change', () => { cfg[k] = $(k).value; salvar(); }));
     $('busca').addEventListener('input', buscar);
+    $('meus').addEventListener('keydown', ev => { const a = ev.target.closest('[data-apelido]'); if(!a) return; if(ev.key === 'Enter') salvarApelido(+a.dataset.apelido); if(ev.key === 'Escape'){ editando = -1; a.blur(); desenhar(); } });
+    $('meus').addEventListener('focusout', ev => { const a = ev.target.closest('[data-apelido]'); if(a) setTimeout(() => { if(editando === +a.dataset.apelido) salvarApelido(+a.dataset.apelido); }, 150); });
     const aniver = () => { const d = +$('aniver-d').value, m = +$('aniver-m').value; cfg.aniver = d && m ? { d, m } : null; salvar(); };
     $('aniver-d').addEventListener('change', aniver); $('aniver-m').addEventListener('change', aniver);
     $('festa').addEventListener('click', () => { cfg.festa = Date.now(); salvar(); });
@@ -101,7 +113,8 @@
       salvar();
     });
     $('meus').addEventListener('click', ev => {
-      const s = ev.target.closest('[data-shiny]'), t = ev.target.closest('[data-tirar]');
+      const s = ev.target.closest('[data-shiny]'), t = ev.target.closest('[data-tirar]'), n = ev.target.closest('[data-nome]');
+      if(n){ const i = +n.dataset.nome; if(editando === i) salvarApelido(i); else { editando = i; desenhar(); const inp = document.querySelector(`[data-apelido="${i}"]`); if(inp){ inp.focus(); inp.select(); } } return; }
       if(s){ const p = cfg.pets[+s.dataset.shiny]; p.shiny = !p.shiny; salvar(); }
       if(t){ cfg.pets.splice(+t.dataset.tirar, 1); salvar(); }
     });

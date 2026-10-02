@@ -18,17 +18,28 @@
     ['👊', 'Soco Dinâmico'], ['☠️', 'Bomba de Lodo'], ['🌋', 'Terremoto'], ['🌪️', 'Tornado'], ['🔮', 'Psíquico'], ['🐛', 'Picada'], ['🪨', 'Pedrada'],
     ['👻', 'Bola Sombria'], ['🐉', 'Fúria do Dragão'], ['🌑', 'Mordida'], ['⚙️', 'Cauda de Ferro'], ['✨', 'Brilho Mágico']];
   const nomeDe = id => (typeof ANDARILHO_NOMES !== 'undefined' && ANDARILHO_NOMES[id - 1]) || 'Pokémon';
+  const nomeDo = pet => pet.apelido || nomeDe(pet.id);
+  const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   const BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/';
   const imagem = (p, estilo) => estilo === 'animado'
     ? `${BASE}showdown/${p.shiny ? 'shiny/' : ''}${p.id}.gif`
     : `${BASE}home/${p.shiny ? 'shiny/' : ''}${p.id}.png`;
   const reserva = p => `${BASE}home/${p.shiny ? 'shiny/' : ''}${p.id}.png`;
 
+  /* ✏️ Apelido: só letras, números, espaço e emoji; no máximo 14 letras. */
+  const limpaApelido = t => typeof t === 'string' ? Array.from(t.replace(/[<>&"'`\\{}\[\]\u0000-\u001f]/g, '').trim()).slice(0, 14).join('') : '';
+  /* 🎩 Roupinhas (vão na cabeça). */
+  const ROUPAS = ['🎩', '👑', '🎀', '🧢', '🎓', '⛑️', '🌸', '🤠'];
   /* Confere a configuração que veio do armazenamento (pode ser de uma versão velha ou estar estragada). */
   function limpa(c){
     c = Object.assign({}, PADRAO, c && typeof c === 'object' ? c : {});
     const pets = Array.isArray(c.pets) ? c.pets : [];
-    c.pets = pets.slice(0, 10).map(p => ({ id:Math.max(1, Math.min(1025, Math.floor(+p.id) || 25)), shiny:!!p.shiny }));
+    c.pets = pets.slice(0, 10).map(p => {
+      const q = { id:Math.max(1, Math.min(1025, Math.floor(+p.id) || 25)), shiny:!!p.shiny };
+      const ap = limpaApelido(p.apelido); if(ap) q.apelido = ap;
+      if(ROUPAS.includes(p.roupa)) q.roupa = p.roupa;
+      return q;
+    });
     if(!c.pets.length) c.pets = [{ id:25, shiny:false }];
     if(!TAMANHOS[c.tamanho]) c.tamanho = 'M';
     if(!['3d', 'animado'].includes(c.estilo)) c.estilo = '3d';
@@ -69,7 +80,27 @@
     .menu{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:10px;display:none;gap:4px;background:#fff;border:2px solid #1b1b1b;border-radius:16px;
       padding:6px;box-shadow:3px 3px 0 #1b1b1b;flex-direction:column;align-items:stretch;z-index:5;font:700 12px/1.1 system-ui,-apple-system,'Segoe UI',sans-serif;color:#1b1b1b}
     .menu.on{display:flex}
-    .menu .bts{display:flex;gap:4px}
+    .menu .bts{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;max-width:220px}
+    .menu .titulo{text-align:center;font-size:13px;font-weight:800;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .menu .titulo small{font-weight:600;color:#5b6477}
+    .menu .jogos button,.menu .roupas button{width:auto;min-width:34px;padding:0 6px;font-size:13px;gap:3px;display:flex}
+    .chapeu{position:absolute;left:50%;top:-6%;translate:-50% 0;font-size:calc(var(--s) * .34);pointer-events:none;line-height:1;z-index:2}
+    .pet.tem-chapeu .acessorio{top:-40%}
+    /* ⚔️ batalha */
+    .vida{position:absolute;left:10%;right:10%;top:-16px;height:9px;border:2px solid #1b1b1b;border-radius:9px;background:#fff;overflow:hidden;pointer-events:none;z-index:3}
+    .vida b{display:block;height:100%;width:100%;background:#51cf66;transition:width .4s}
+    .vida b.meio{background:#fcc419} .vida b.baixo{background:#ff6b6b}
+    .tiro{position:absolute;left:0;top:0;font-size:30px;pointer-events:none;z-index:6}
+    .pet.selvagem{pointer-events:none}
+    .pokebola{position:absolute;left:0;top:0;width:44px;height:44px;border-radius:50%;cursor:pointer;pointer-events:auto;z-index:6;border:3px solid #1b1b1b;
+      background:linear-gradient(#e03131 0 46%,#1b1b1b 46% 54%,#fff 54%);box-shadow:3px 3px 0 rgba(0,0,0,.25);animation:pede 1s ease-in-out infinite}
+    .pokebola:after{content:'';position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;border:3px solid #1b1b1b}
+    .pokebola.balancando{animation:chacoalha .5s ease-in-out 3}
+    @keyframes chacoalha{25%{rotate:-25deg}75%{rotate:25deg}}
+    /* 🎮 minijogos */
+    .placar{position:absolute;left:50%;top:10px;transform:translateX(-50%);font:900 18px system-ui,sans-serif;color:#1b1b1b;background:#fff3bf;border:3px solid #1b1b1b;
+      border-radius:14px;padding:5px 14px;box-shadow:4px 4px 0 #1b1b1b;pointer-events:none;z-index:7;white-space:nowrap}
+    .fruta{position:absolute;left:0;top:0;font-size:34px;cursor:pointer;pointer-events:auto;z-index:6;line-height:1;user-select:none}
     .menu button{all:unset;cursor:pointer;width:40px;height:40px;border-radius:12px;background:#eef2ff;border:2px solid #c5d0fa;display:grid;place-items:center;font-size:22px;box-sizing:border-box}
     .menu button:hover{background:#dbe4ff}
     .barrinhas{display:grid;grid-template-columns:repeat(4,40px);gap:4px;text-align:center}
@@ -207,7 +238,7 @@
     if(r < .55) return sorte(CURIOSIDADES);
     if(r < .65) return sorte(PIADAS);
     if(r < .72) return falaDaHora();
-    return sorte(FALAS)(nomeDe(pet.id));
+    return sorte(FALAS)(nomeDo(pet));
   }
 
   /* ---------- os Pokémon ---------- */
@@ -224,7 +255,10 @@
     const el = document.createElement('div'); el.className = 'pet';
     el.style.width = s + 'px'; el.style.height = s + 'px'; el.style.setProperty('--s', s + 'px');
     el.innerHTML = `<div class="sombra"></div><div class="corpo"><img alt="" draggable="false" /></div><div class="balao"></div>
-      <div class="menu"><div class="bts"><button data-c="comidas" title="Dar comida">🍎</button><button data-c="dormir" title="Pôr pra dormir">😴</button><button data-c="banho" title="Dar banho">🛁</button><button data-c="dentes" title="Escovar os dentes">🪥</button><button data-c="cantar" title="Cantar todo mundo junto">🎤</button>${noPC ? '<button data-c="config" title="Escolher Pokémon">⚙️</button>' : ''}</div>
+      <div class="menu"><div class="titulo"></div><div class="bts"><button data-c="comidas" title="Dar comida">🍎</button><button data-c="dormir" title="Pôr pra dormir">😴</button><button data-c="banho" title="Dar banho">🛁</button><button data-c="dentes" title="Escovar os dentes">🪥</button>
+        <button data-c="cantar" title="Cantar todo mundo junto">🎤</button><button data-c="jogos" title="Minijogos">🎮</button><button data-c="batalha" title="Batalhar">⚔️</button><button data-c="roupas" title="Roupinhas">🎩</button>${noPC ? '<button data-c="config" title="Escolher Pokémon">⚙️</button>' : ''}</div>
+      <div class="linha jogos"><button data-jogo="frutas">🍎 Chuva de frutas</button><button data-jogo="esconde">🙈 Esconde-esconde</button><button data-jogo="pega">🏃 Pega-pega</button></div>
+      <div class="linha roupas">${ROUPAS.map(r => `<button data-roupa="${r}" title="Vestir ${r}">${r}</button>`).join('')}<button data-roupa="" title="Tirar">✖️</button></div>
       <div class="linha comidas">${COMIDAS.map(c => `<button data-comida="${c}" title="Dar ${c}">${c}</button>`).join('')}</div>
       <div class="linha evos"></div>
       <div class="barrinhas"><i title="fome"><b></b></i><i title="sono"><b></b></i><i title="limpeza"><b></b></i><i title="dentes"><b></b></i></div><div class="xp"></div></div>`;
@@ -233,7 +267,7 @@
     const pet = { ...p, el, img, corpo:el.querySelector('.corpo'), balao:el.querySelector('.balao'), s,
       x:onde ? onde.x : Math.random() * Math.max(1, innerWidth - s), y:onde ? onde.y : -s - i * 60, vx:0, vy:onde ? -500 : 0, dir:Math.random() < .5 ? -1 : 1,
       estado:'cair', ate:0, passo:Math.random() * 10, zzz:null, fala:0, chave:i + ':' + p.id, menu:el.querySelector('.menu') };
-    trocarFoto(pet);
+    trocarFoto(pet); vestirRoupa(pet);
     pet.nec = carregarNec(pet.chave);
     ligarToques(pet); ligarMenu(pet);
     return pet;
@@ -256,6 +290,7 @@
       if(k >= 0){
         const v = sobra[k]; sobra[k] = null;
         const chave = i + ':' + p.id; if(v.chave !== chave){ v.chave = chave; }
+        v.apelido = p.apelido; v.roupa = p.roupa; vestirRoupa(v);
         novos.push(v);
       } else { const onde = nascer[i]; delete nascer[i]; novos.push(criarPet(p, i, onde)); }
     });
@@ -264,6 +299,12 @@
     montarCama(); montarOvos(); desenharCasa();
   }
   const nascer = {};
+  function vestirRoupa(pet){
+    let c = pet.el.querySelector('.chapeu');
+    if(pet.roupa && !c){ c = document.createElement('span'); c.className = 'chapeu'; pet.el.appendChild(c); }
+    if(c){ if(pet.roupa) c.textContent = pet.roupa; else c.remove(); }
+    pet.el.classList.toggle('tem-chapeu', !!pet.roupa);
+  }
   function falar(pet, t, ms){
     pet.balao.textContent = t; pet.balao.classList.add('on');
     /* Não deixa o balão sair da tela quando ele está no cantinho. */
@@ -299,6 +340,7 @@
     }
     const r = Math.random(), extra = Math.random();
     pet.naCama = false;
+    if(jogo && jogo.tipo === 'pega' && !pet.pego){ pet.estado = 'fugir'; pet.ate = agora + 1e9; return; }
     if(festando){ pet.estado = 'dancar'; pet.ate = agora + 3000; return; }
     if(naCasa() && (extra < .07 || (ceu.tipo === 'chuva' && tipoDe(pet.id) === 1 && extra < .5))){ irDormir(pet, agora, 0, false, true); return; }
     if(extra < .10){ cantar(pet, agora, 4200, letraDe(pet).slice(0, 3)); return; }
@@ -339,7 +381,7 @@
   function usarGolpe(pet, agora){
     const [e, nome] = GOLPES[tipoDe(pet.id)] || GOLPES[0];
     pet.estado = 'golpe'; pet.ate = agora + 1400;
-    efeito(pet, e, 7); falar(pet, `${nomeDe(pet.id)} usou ${nome}! ${e}`, 2200);
+    efeito(pet, e, 7); falar(pet, `${nomeDo(pet)} usou ${nome}! ${e}`, 2200);
   }
   /* ⚽ Uma bola que os Pokémon chutam pela tela. */
   const bola = { ativa:false, x:0, vx:0, giro:0, el:null, ate:0 };
@@ -431,6 +473,7 @@
     let ini = null, rastro = [];
     pet.el.addEventListener('pointerdown', ev => {
       ev.preventDefault(); ev.stopPropagation();
+      if(cliqueDoJogo(pet)) return;
       try{ pet.el.setPointerCapture(ev.pointerId); }catch(e){}
       ini = { x:ev.clientX, y:ev.clientY, px:pet.x, py:pet.y, t:performance.now(), moveu:false }; rastro = [];
       pet.el.classList.add('pegado'); dormir(pet, false); pet.naCama = false;
@@ -462,9 +505,9 @@
     const acordou = pet.estado === 'dormir';
     if(acordou){ pet.naCama = false; pet.soneca = false; }
     efeito(pet, sorte(['❤️', '💛', '✨', '⭐']), 3); grito(pet);
-    falar(pet, acordou ? 'Hã?! Eu tava dormindo! 😴' : sorte(FALAS)(nomeDe(pet.id)));
+    falar(pet, acordou ? 'Hã?! Eu tava dormindo! 😴' : sorte(FALAS)(nomeDo(pet)));
     if(['subir', 'teto'].includes(pet.estado)){ pet.estado = 'cair'; pet.vx = 0; pet.vy = 0; dormir(pet, false); }
-    else if(pet.estado !== 'voar' && pet.y >= chao(pet) - 1) pular(pet, 600);
+    else if(!['voar', 'batalha', 'desmaiado', 'sentar', 'dancar'].includes(pet.estado) && pet.y >= chao(pet) - 1) pular(pet, 600);
   }
   addEventListener('pointermove', ev => { mouse = { x:ev.clientX, y:ev.clientY, quando:performance.now() }; }, { passive:true });
 
@@ -520,6 +563,20 @@
         }
         else pet.x += pet.dir * Math.min(Math.abs(dx), 110 * dt);
         if(agora >= pet.ate){ pet.estado = 'parado'; pet.ate = agora + 1000; }
+      } else if(pet.estado === 'batalha' || pet.estado === 'desmaiado'){
+        pet.y = c;
+      } else if(pet.estado === 'escondido'){
+        /* Espiando! De vez em quando mexe um pouquinho. */
+        if(Math.random() < .002) falar(pet, sorte(['hihi 🤭', '🤫', '…']), 900);
+      } else if(pet.estado === 'fugir'){
+        pet.y = c;
+        const dx = (pet.x + pet.s / 2) - mouse.x, perto = Math.abs(dx) < 280 && agora - mouse.quando < 1500;
+        if(perto){
+          pet.dir = dx >= 0 ? 1 : -1; pet.correndo = true;
+          pet.x += pet.dir * 240 * dt;
+          if((pet.x <= 1 || pet.x >= maxX - 1) && Math.abs(dx) < pet.s * 1.1){ pet.estado = 'cair'; pet.vy = -780; pet.vx = -pet.dir * 380; if(Math.random() < .5) falar(pet, 'Pulei! 😜', 1000); }
+        } else { pet.correndo = false; if(Math.random() < .004) falar(pet, sorte(['Não me pega! 😜', 'Tô aqui! 👋', 'Lá lá lá 🎶']), 1300); }
+        pet.x = Math.max(0, Math.min(maxX, pet.x));
       } else if(pet.estado === 'borboleta'){
         pet.y = c;
         const alvo = borboleta.x - pet.s / 2, dx = alvo - pet.x;
@@ -552,12 +609,13 @@
         }
       }
       /* Passinho: sobe e desce e inclina enquanto anda (a foto 3D não mexe sozinha). */
-      const andando = ['andar', 'correr', 'subir', 'teto', 'irCama', 'bola', 'borboleta'].includes(pet.estado);
+      const andando = ['andar', 'correr', 'subir', 'teto', 'irCama', 'bola', 'borboleta'].includes(pet.estado) || (pet.estado === 'fugir' && pet.correndo);
       pet.passo += dt * (pet.estado === 'correr' ? 16 : 9);
       const festeja = pet.estado === 'dancar' || pet.estado === 'cantar';
       const pulo = festeja ? -Math.abs(Math.sin(agora / 160)) * pet.s * .12 : pet.estado === 'sentar' ? pet.s * .05 : pet.estado === 'golpe' ? -Math.abs(Math.sin(agora / 90)) * pet.s * .05 : andando ? -Math.abs(Math.sin(pet.passo)) * pet.s * .07 : 0;
       /* Na parede fica deitado de lado (pés na parede); no teto fica de cabeça pra baixo; voando inclina. */
-      const base = pet.estado === 'subir' ? (pet.lado < 0 ? 90 : -90) * (pet.dir > 0 ? -1 : 1) : pet.estado === 'teto' ? 180 : 0;
+      const base = pet.estado === 'subir' ? (pet.lado < 0 ? 90 : -90) * (pet.dir > 0 ? -1 : 1) : pet.estado === 'teto' ? 180 : pet.estado === 'desmaiado' ? 90
+        : pet.estado === 'escondido' ? (pet.esconde === 'cima' ? 180 : pet.esconde === 'esquerda' ? 18 : pet.esconde === 'direita' ? -18 : 0) + Math.sin(agora / 400) * 4 : 0;
       const giro = base + (festeja ? Math.sin(agora / (pet.estado === 'cantar' ? 200 : 130)) * 18 : pet.estado === 'golpe' ? Math.sin(agora / 40) * 4 : andando ? Math.sin(pet.passo) * 5 : pet.estado === 'voar' ? Math.sin(agora / 300) * 8 : 0);
       const respira = pet.estado === 'sentar' ? .86 : pet.estado === 'espreguicar' ? 1.12 : pet.estado === 'parado' || pet.estado === 'dormir' ? 1 + Math.sin(agora / (pet.estado === 'dormir' ? 700 : 400)) * .025 : 1;
       const olha = pet.estado === 'cair' || pet.estado === 'arrastado' ? (pet.vx > 0 ? 1 : pet.vx < 0 ? -1 : pet.dir) : pet.dir;
@@ -566,9 +624,9 @@
       /* As fotos olham pra esquerda; andando pra direita, vira o espelho. */
       pet.corpo.style.transform = `translateY(${pulo}px) scaleX(${olha > 0 ? -1 : 1}) rotate(${giro}deg) scaleY(${respira})`;
       pet.el.classList.toggle('no-ar', pet.y < c - 2);
-      pet.el.classList.toggle('sem-sombra', ['subir', 'teto', 'voar'].includes(pet.estado));
+      pet.el.classList.toggle('sem-sombra', ['subir', 'teto', 'voar', 'escondido'].includes(pet.estado));
     }
-    desenharCeu(dt); moverBorboleta(dt, agora);
+    desenharCeu(dt); moverBorboleta(dt, agora); desenharSelvagem(agora, dt); moverJogo(agora, dt);
     if(bola.ativa && bola.el){
       const tam = 26, maxX = innerWidth - tam;
       bola.x += bola.vx * dt; bola.vx *= Math.max(0, 1 - 1.4 * dt); bola.giro += bola.vx * dt * 3;
@@ -602,11 +660,14 @@
     else { try{ localStorage.setItem('andarilho:nec', JSON.stringify(necSalvas)); }catch(e){} }
   }
   function abrirMenu(pet){
-    pets.forEach(p => { if(p !== pet){ p.menu.classList.remove('on'); p.menu.querySelector('.comidas').classList.remove('on'); } });
+    pets.forEach(p => { if(p !== pet){ p.menu.classList.remove('on'); fecharLinhas(p); } });
     pet.menu.classList.add('on'); desenharNec(pet);
-    clearTimeout(pet.fechaMenu); pet.fechaMenu = setTimeout(() => { pet.menu.classList.remove('on'); pet.menu.querySelector('.comidas').classList.remove('on'); }, 8000);
+    clearTimeout(pet.fechaMenu); pet.fechaMenu = setTimeout(() => { pet.menu.classList.remove('on'); fecharLinhas(pet); }, 9000);
   }
+  const fecharLinhas = (pet, menos) => pet.menu.querySelectorAll('.comidas, .jogos, .roupas').forEach(l => { if(l !== menos) l.classList.remove('on'); });
+  const abrirLinha = (pet, nome) => { const l = pet.menu.querySelector('.' + nome); fecharLinhas(pet, l); l.classList.toggle('on'); };
   function desenharNec(pet){
+    pet.menu.querySelector('.titulo').innerHTML = pet.apelido ? `${esc(pet.apelido)} <small>(${esc(nomeDe(pet.id))})</small>` : esc(nomeDe(pet.id));
     const evos = evosDe(pet.id), xp = +pet.nec.xp || 0, pronto = cfg.evoluir && evos.length && xp >= XP_EVO;
     const linhaXp = pet.menu.querySelector('.xp'), linhaEvo = pet.menu.querySelector('.evos');
     linhaXp.className = 'xp' + (pronto ? ' pronto' : '');
@@ -633,16 +694,20 @@
     pet.menu.addEventListener('click', ev => {
       ev.stopPropagation();
       const f = ev.target.closest('[data-comida]'), e = ev.target.closest('[data-evo]'), b = ev.target.closest('[data-c]');
+      const j = ev.target.closest('[data-jogo]'), r = ev.target.closest('[data-roupa]');
+      if(j){ pet.menu.classList.remove('on'); fecharLinhas(pet); comecarJogo(j.dataset.jogo); return; }
+      if(r){ vestirComo(pet, r.dataset.roupa); abrirMenu(pet); return; }
       if(f){ comer(pet, f.dataset.comida); abrirMenu(pet); return; }
       if(e){ pet.menu.classList.remove('on'); evoluir(pet, +e.dataset.evo); return; }
       if(!b) return;
-      cuidar(pet, b.dataset.c); if(pet.menu.classList.contains('on') || b.dataset.c === 'comidas') abrirMenu(pet);
+      cuidar(pet, b.dataset.c); if(pet.menu.classList.contains('on')) abrirMenu(pet);
     });
   }
   function cuidar(pet, c){
     if(c === 'config'){ pet.menu.classList.remove('on'); window.andarilhoPC.abrirConfig(); return; }
-    const n = nomeDe(pet.id);
-    if(c === 'comidas'){ pet.menu.querySelector('.comidas').classList.toggle('on'); return; }
+    const n = nomeDo(pet);
+    if(c === 'comidas' || c === 'jogos' || c === 'roupas'){ abrirLinha(pet, c); return; }
+    if(c === 'batalha'){ pet.menu.classList.remove('on'); iniciarBatalha(pet); return; }
     if(c === 'cantar'){ pet.menu.classList.remove('on'); cantarTodos(); return; }
     if(c === 'dormir'){
       irDormir(pet, performance.now(), 20000, true); pet.menu.classList.remove('on'); ganharXp(pet, 1);
@@ -652,7 +717,7 @@
     if(c === 'dentes'){ pet.nec.dentes = 100; efeito(pet, '🪥', 1); efeito(pet, '✨', 3); falar(pet, sorte(['Dentes brilhando! ✨', 'Escovadinho! 😁', 'Hálito fresquinho!'])); ganharXp(pet, 1); }
     ficouFeliz(pet, n); desenharNec(pet); salvarNec();
   }
-  function ficouFeliz(pet, n){ if(NECS.every(k => pet.nec[k] >= 80)) setTimeout(() => { efeito(pet, '💖', 4); falar(pet, `O ${n || nomeDe(pet.id)} está muito feliz! 💖`); }, 900); }
+  function ficouFeliz(pet, n){ if(NECS.every(k => pet.nec[k] >= 80)) setTimeout(() => { efeito(pet, '💖', 4); falar(pet, `O ${n || nomeDo(pet)} está muito feliz! 💖`); }, 900); }
   function comer(pet, comida){
     const fav = favDe(pet.id), eca = ecaDe(pet.id);
     if(comida === eca){ efeito(pet, '🤢', 2); falar(pet, sorte([`Eca! Não gosto de ${comida}! 🤢`, `${comida}?! Bléééé! 😝`, 'Isso não! 🙅'])); return; }
@@ -677,7 +742,7 @@
   }
   function evoluir(pet, novo){
     if(!evosDe(pet.id).includes(novo) || pet.evoluindo) return;
-    const antes = nomeDe(pet.id), i = pets.indexOf(pet);
+    const antes = nomeDo(pet), i = pets.indexOf(pet);
     pet.evoluindo = true; pet.estado = 'parado'; pet.ate = performance.now() + 4000;
     pet.el.classList.add('evoluindo'); falar(pet, `O quê? O ${antes} está evoluindo! ✨`, 2600);
     setTimeout(() => {
@@ -823,7 +888,7 @@
     letras.forEach((l, k) => setTimeout(() => { if(pet.estado === 'cantar'){ falar(pet, l, 1300); efeito(pet, sorte(['🎵', '🎶']), 2); } }, k * 1400 + Math.random() * 300));
   }
   function letraDe(pet){
-    const n = nomeDe(pet.id), sil = n.slice(0, 2), sl = sil.toLowerCase();
+    const n = nomeDo(pet), sil = Array.from(n).slice(0, 2).join(''), sl = sil.toLowerCase();
     return [`🎵 ${sil}-${sl}! ${sil}-${sl}! 🎵`, '🎶 La la laaa 🎶', `🎵 Eu sou o ${n}! 🎵`, '🎶 Uhuuu! 🎶'];
   }
   function cantarTodos(){
@@ -956,6 +1021,253 @@
   function tirarFoto(){
     const f = document.createElement('div'); f.className = 'flash'; raiz.appendChild(f); setTimeout(() => f.remove(), 700);
     pets.filter(p => !p.dentro && p.estado !== 'dormir').forEach((p, i) => setTimeout(() => { falar(p, sorte(['Xiiis! 📸', '😁✌️', 'Saí bonito? 📸']), 1800); p.estado = 'parado'; p.ate = performance.now() + 1800; }, i * 120));
+  }
+
+  /* ---------- 🎩 roupinhas ---------- */
+  function vestirComo(pet, r){
+    pet.roupa = ROUPAS.includes(r) ? r : undefined; vestirRoupa(pet);
+    const i = pets.indexOf(pet);
+    if(i >= 0 && cfg.pets[i]){ if(pet.roupa) cfg.pets[i].roupa = pet.roupa; else delete cfg.pets[i].roupa; salvarCfg(); }
+    if(pet.roupa){ efeito(pet, '✨', 3); falar(pet, sorte(['Fiquei bonito? 😎', 'Amei! 😍', 'Olha meu chapéu!'])); } else falar(pet, 'Tirei! 😄');
+  }
+
+  /* ---------- 📋 placar (minijogos e batalha) ---------- */
+  let placar = null;
+  function mostrarPlacar(t){ if(!placar){ placar = document.createElement('div'); placar.className = 'placar'; raiz.appendChild(placar); } placar.textContent = t; clearTimeout(placar.some); }
+  function sumirPlacar(ms){ if(!placar) return; const p = placar; clearTimeout(p.some); p.some = setTimeout(() => { p.remove(); if(placar === p) placar = null; }, ms || 0); }
+  const centro = q => [q.x + q.s / 2, q.y + q.s / 2];
+
+  /* ---------- ⚔️ batalha (de brincadeira!) ---------- */
+  const SUPER = { 1:[3, 5, 11, 16], 2:[1, 8, 12], 3:[2, 8, 12], 4:[2, 9], 5:[3, 8, 9, 14], 6:[0, 5, 12, 15, 16], 7:[3, 17], 8:[1, 4, 7, 12, 16], 9:[3, 6, 11],
+    10:[6, 7], 11:[3, 10, 15], 12:[1, 5, 9, 11], 13:[10, 13], 14:[14], 15:[10, 13], 16:[5, 12, 17], 17:[6, 14, 15] };
+  let luta = null;
+  function criarSelvagem(){
+    const s = TAMANHOS[cfg.tamanho], el = document.createElement('div'); el.className = 'pet selvagem';
+    el.style.width = s + 'px'; el.style.height = s + 'px'; el.style.setProperty('--s', s + 'px');
+    el.innerHTML = '<div class="sombra"></div><div class="corpo"><img alt="" draggable="false" /></div><div class="balao"></div>';
+    raiz.appendChild(el);
+    const w = { id:1 + Math.floor(Math.random() * 1025), shiny:Math.random() < .06, el, img:el.querySelector('img'), corpo:el.querySelector('.corpo'), balao:el.querySelector('.balao'), s, x:innerWidth + 10, y:0, dir:-1, selvagem:true, fala:0 };
+    w.img.onerror = () => { if(w.img.src !== reserva(w)) w.img.src = reserva(w); };
+    w.img.src = imagem(w, cfg.estilo);
+    return w;
+  }
+  function barraVida(q){ const v = document.createElement('div'); v.className = 'vida'; v.innerHTML = '<b></b>'; q.el.appendChild(v); return v; }
+  function iniciarBatalha(pet){
+    if(luta || jogo){ falar(pet, 'Agora não dá! Espera acabar 😅'); return; }
+    if(pet.dentro) return;
+    const agora = performance.now();
+    const outros = pets.filter(p => p !== pet && !p.dentro && !['arrastado', 'irCama', 'dormir', 'cair', 'subir', 'teto'].includes(p.estado));
+    const selvagem = !outros.length || Math.random() < .5;
+    const b = selvagem ? criarSelvagem() : sorte(outros);
+    const mid = innerWidth / 2, S = pet.s;
+    [pet, b].forEach((q, k) => {
+      q.x = Math.max(0, Math.min(innerWidth - q.s, k ? mid + 40 : mid - S - 40)); q.y = chao(q); q.dir = k ? -1 : 1;
+      if(!q.selvagem){ dormir(q, false); q.naCama = false; q.estado = 'batalha'; q.ate = agora + 1e9; q.menu.classList.remove('on'); }
+      efeito(q, '💨', 2);
+      q.vida = 100; q.barra = barraVida(q);
+    });
+    luta = { a:pet, b, selvagem };
+    mostrarPlacar(selvagem ? `🌿 Um ${nomeDe(b.id)}${b.shiny ? ' ✨' : ''} selvagem apareceu!` : `⚔️ ${nomeDo(pet)} vs ${nomeDo(b)}!`);
+    falar(pet, sorte(['Vamos batalhar! ⚔️', 'Eu escolho você! 😤', 'Bora!']), 1400);
+    setTimeout(() => turno(pet, b), 1600);
+  }
+  const lutaOk = () => luta && [luta.a, luta.b].every(q => q.selvagem || (pets.includes(q) && ['batalha', 'desmaiado'].includes(q.estado)));
+  function turno(atk, def){
+    if(!lutaOk()) return encerrarBatalha();
+    const [e, nome] = GOLPES[tipoDe(atk.id)] || GOLPES[0];
+    const sup = (SUPER[tipoDe(atk.id)] || []).includes(tipoDe(def.id)), crit = Math.random() < .12;
+    mostrarPlacar(`${e} ${nomeDo(atk)} usou ${nome}!`);
+    const t = document.createElement('span'); t.className = 'tiro'; t.textContent = e; raiz.appendChild(t);
+    const [x1, y1] = centro(atk), [x2, y2] = centro(def);
+    const anim = t.animate([{ transform:`translate(${x1 - 15}px, ${y1 - 15}px) scale(.6)` }, { transform:`translate(${x2 - 15}px, ${y2 - 15}px) scale(1.5)` }], { duration:450, easing:'ease-in' });
+    anim.onfinish = () => {
+      t.remove();
+      if(!lutaOk()) return encerrarBatalha();
+      const dano = Math.round((16 + Math.random() * 16) * (sup ? 1.5 : 1) * (crit ? 1.5 : 1));
+      def.vida = Math.max(0, def.vida - dano);
+      const b = def.barra.querySelector('b'); b.style.width = def.vida + '%'; b.className = def.vida < 25 ? 'baixo' : def.vida < 55 ? 'meio' : '';
+      def.corpo.animate([{ translate:'0 0' }, { translate:'-8px 0' }, { translate:'8px 0' }, { translate:'0 0' }], { duration:300 });
+      efeito(def, '💥', 2);
+      if(sup || crit) mostrarPlacar(`${e} ${nomeDo(atk)} usou ${nome}! ${sup ? 'É super efetivo! 💪' : ''}${crit ? ' Acerto crítico! ⭐' : ''}`);
+      if(def.vida <= 0) setTimeout(() => fimBatalha(atk, def), 600);
+      else setTimeout(() => turno(def, atk), 1100);
+    };
+  }
+  function fimBatalha(venc, perd){
+    if(!lutaOk()) return encerrarBatalha();
+    const agora = performance.now();
+    if(perd.selvagem) perd.desmaiado = true; else { perd.estado = 'desmaiado'; perd.ate = agora + 1e9; }
+    falar(perd, '😵', 2000);
+    if(!venc.selvagem){ venc.estado = 'dancar'; venc.ate = agora + 1e9; efeito(venc, '🏆', 1); efeito(venc, '⭐', 3); ganharXp(venc, 2); falar(venc, sorte(['Venci! 🏆', 'Uhuuu! 🎉', 'Ganhei! 😎']), 2200); }
+    if(perd.selvagem){
+      mostrarPlacar(`🏆 ${nomeDo(venc)} venceu! Clique na Pokébola pra capturar o ${nomeDe(perd.id)}!`);
+      const bola = document.createElement('div'); bola.className = 'pokebola clicavel'; bola.title = 'Capturar!';
+      bola.style.left = Math.max(4, perd.x - 50) + 'px'; bola.style.top = (chao(perd) + perd.s - 48) + 'px';
+      bola.addEventListener('pointerdown', ev => { ev.preventDefault(); ev.stopPropagation(); });
+      bola.addEventListener('click', ev => { ev.stopPropagation(); capturar(bola, perd); });
+      raiz.appendChild(bola); luta.bola = bola;
+      luta.foge = setTimeout(() => { bola.remove(); mostrarPlacar(`💨 O ${nomeDe(perd.id)} acordou e fugiu!`); fugirSelvagem(perd); encerrarBatalha(2500); }, 15000);
+    } else if(venc.selvagem){
+      mostrarPlacar(`😵 O ${nomeDe(venc.id)} selvagem venceu e foi embora!`);
+      setTimeout(() => { fugirSelvagem(venc); falar(perd, 'Ai… perdi 😵 Mas foi divertido!', 2400); encerrarBatalha(2500); }, 1500);
+    } else {
+      mostrarPlacar(`🏆 ${nomeDo(venc)} venceu!`);
+      setTimeout(() => { falar(perd, 'Foi só de brincadeira! 🤝', 2200); efeito(perd, '🤝', 1); encerrarBatalha(2500); }, 2200);
+    }
+  }
+  function capturar(bola, w){
+    if(!luta || luta.capturando) return; luta.capturando = true; clearTimeout(luta.foge);
+    bola.style.animation = 'none'; bola.style.transition = 'left .4s ease-in';
+    bola.style.left = (w.x + w.s / 2 - 22) + 'px';
+    mostrarPlacar('🔴 Pokébola, vai!');
+    setTimeout(() => { w.el.animate([{ opacity:1, scale:'1' }, { opacity:0, scale:'.1' }], { duration:350, fill:'forwards' }); bola.classList.add('balancando'); }, 400);
+    setTimeout(() => {
+      const cabe = cfg.pets.length + cfg.ovos.length < MAX_PETS;
+      if(cabe && Math.random() < .8){
+        mostrarPlacar(`✨ Pegou! O ${nomeDe(w.id)}${w.shiny ? ' shiny' : ''} entrou pro seu time!`);
+        nascer[cfg.pets.length] = { x:w.x, y:chao(w) };
+        cfg.pets.push({ id:w.id, shiny:w.shiny }); montar(false); salvarCfg();
+        const novo = pets[pets.length - 1]; if(novo){ efeito(novo, '✨', 5); falar(novo, 'Oi, treinador! 😄', 2500); }
+        bola.remove(); w.el.remove(); encerrarBatalha(3500);
+      } else {
+        mostrarPlacar(cabe ? `💨 Ah não! O ${nomeDe(w.id)} escapou!` : `🌳 Seu time está cheio (10)! O ${nomeDe(w.id)} voltou pra natureza.`);
+        bola.remove(); w.el.animate([{ opacity:0 }, { opacity:1 }], { duration:300, fill:'forwards' }); w.desmaiado = false;
+        setTimeout(() => { fugirSelvagem(w); encerrarBatalha(2500); }, 500);
+      }
+    }, 2100);
+  }
+  function fugirSelvagem(w){
+    if(!w || !w.selvagem || !w.el.isConnected) return;
+    w.desmaiado = false; w.fugindo = true; w.dir = 1;
+    w.el.animate([{ opacity:1 }, { opacity:0 }], { duration:1500, fill:'forwards' });
+    setTimeout(() => w.el.remove(), 1600);
+  }
+  function encerrarBatalha(ms){
+    if(!luta) return;
+    const l = luta; luta = null;
+    clearTimeout(l.foge); if(l.bola && !l.capturando) l.bola.remove();
+    const agora = performance.now();
+    [l.a, l.b].forEach(q => {
+      if(q.barra){ q.barra.remove(); q.barra = null; }
+      if(q.selvagem){ if(!q.fugindo && !l.capturando) fugirSelvagem(q); }
+      else if(['batalha', 'desmaiado', 'dancar'].includes(q.estado)){ q.estado = 'parado'; q.ate = agora + 1500; }
+    });
+    sumirPlacar(ms || 0);
+  }
+  function desenharSelvagem(agora, dt){
+    if(!luta || !luta.selvagem) return;
+    const w = luta.b; if(!w.el.isConnected) return;
+    if(w.fugindo) w.x += 260 * dt;
+    w.y = chao(w);
+    const pulo = w.desmaiado ? 0 : -Math.abs(Math.sin(agora / 220)) * w.s * .04;
+    w.el.style.transform = `translate(${w.x}px, ${w.y}px)`;
+    w.corpo.style.transform = `translateY(${pulo}px) scaleX(${w.dir > 0 ? -1 : 1}) rotate(${w.desmaiado ? 90 : 0}deg)`;
+  }
+
+  /* ---------- 🎮 minijogos ---------- */
+  let jogo = null;
+  const FRUTAS = ['🍎', '🍓', '🍌', '🍇', '🍒', '🍑', '🍍', '🍉'];
+  function comecarJogo(tipo){
+    if(jogo || luta){ return; }
+    const agora = performance.now();
+    pets.forEach(p => { if(p.dentro) sairDeCasa(p, ''); dormir(p, false); p.naCama = false; p.menu.classList.remove('on'); });
+    if(tipo === 'frutas'){
+      jogo = { tipo, fim:Date.now() + 25000, pontos:0, frutas:[], prox:0 };
+      falar(sorte(pets), 'Pega as frutas pra gente! 🍎', 2200);
+    } else if(tipo === 'esconde'){
+      jogo = { tipo, fim:Date.now() + 63000, pontos:0, total:pets.length };
+      mostrarPlacar('🙈 Fecha o olho! Eles vão se esconder… 3, 2, 1…');
+      pets.forEach(p => { p.el.style.transition = 'opacity .4s'; p.el.style.opacity = '0'; p.estado = 'parado'; p.ate = agora + 1e9; });
+      setTimeout(() => {
+        if(!jogo || jogo.tipo !== 'esconde') return;
+        const lados = ['esquerda', 'direita', 'baixo', 'cima'];
+        pets.forEach((p, i) => {
+          const lado = lados[(i + Math.floor(Math.random() * 4)) % 4], maxX = Math.max(0, innerWidth - p.s);
+          p.esconde = lado; p.achado = false; p.estado = 'escondido'; p.ate = agora + 1e9;
+          if(lado === 'esquerda'){ p.x = -p.s * .62; p.y = chao(p) - Math.random() * innerHeight * .4; p.dir = 1; }
+          if(lado === 'direita'){ p.x = innerWidth - p.s * .38; p.y = chao(p) - Math.random() * innerHeight * .4; p.dir = -1; }
+          if(lado === 'baixo'){ p.x = Math.random() * maxX; p.y = innerHeight - p.s * .3; }
+          if(lado === 'cima'){ p.x = Math.random() * maxX; p.y = -p.s * .62; }
+          p.el.style.opacity = '';
+        });
+        setTimeout(() => pets.forEach(p => { p.el.style.transition = ''; }), 500);
+      }, 1800);
+    } else if(tipo === 'pega'){
+      jogo = { tipo, fim:Date.now() + 30000, pontos:0, total:pets.length };
+      pets.forEach(p => { p.pego = false; p.estado = 'fugir'; p.ate = agora + 1e9; });
+      falar(sorte(pets), 'Duvido me pegar! 😜', 2200);
+    }
+    atualizarJogo();
+  }
+  function atualizarJogo(){
+    if(!jogo) return;
+    const falta = Math.max(0, Math.ceil((jogo.fim - Date.now()) / 1000));
+    if(jogo.tipo === 'frutas') mostrarPlacar(`🍎 Clique nas frutas! ${jogo.pontos} frutas · ⏱️ ${falta}s`);
+    if(jogo.tipo === 'esconde' && pets.some(p => p.estado === 'escondido' || p.achado)) mostrarPlacar(`🙈 Ache os Pokémon! ${jogo.pontos}/${jogo.total} · ⏱️ ${falta}s`);
+    if(jogo.tipo === 'pega') mostrarPlacar(`🏃 Clique nos Pokémon pra pegar! ${jogo.pontos}/${jogo.total} · ⏱️ ${falta}s`);
+    if(falta <= 0) acabarJogo(false);
+  }
+  setInterval(atualizarJogo, 500);
+  function acabarJogo(ganhou){
+    if(!jogo) return;
+    const j = jogo; jogo = null;
+    const agora = performance.now();
+    let txt = '';
+    if(j.tipo === 'frutas'){
+      j.frutas.forEach(f => f.el.remove());
+      txt = j.pontos ? `🏆 Você pegou ${j.pontos} frutas! Todo mundo comeu! 😋` : '🍎 Acabou! Tenta de novo!';
+      pets.forEach(p => { p.nec.fome = Math.min(100, p.nec.fome + j.pontos * 3); if(j.pontos) ganharXp(p, 1); });
+    }
+    if(j.tipo === 'esconde') txt = ganhou ? '🏆 Você achou todo mundo! 🎉' : `⏱️ Tempo! Você achou ${j.pontos} de ${j.total}.`;
+    if(j.tipo === 'pega') txt = ganhou ? '🏆 Você pegou todo mundo! 🎉' : `⏱️ Tempo! Você pegou ${j.pontos} de ${j.total}.`;
+    mostrarPlacar(txt); sumirPlacar(4500);
+    pets.forEach(p => {
+      if(p.estado === 'escondido'){ p.x = Math.max(0, Math.min(innerWidth - p.s, p.x)); p.y = Math.min(p.y, chao(p)); pular(p, 500); falar(p, 'Eu tava aqui! 😝', 1800); }
+      else if(['fugir', 'sentar', 'parado', 'dancar'].includes(p.estado)){ p.estado = 'dancar'; p.ate = agora + 2500; }
+      p.achado = false; p.pego = false;
+      if(ganhou || j.pontos) ganharXp(p, 1);
+    });
+    if(ganhou || j.pontos) efeito(sorte(pets), '🎉', 4);
+  }
+  /* Clique num Pokémon durante o jogo: achou (esconde-esconde) ou pegou (pega-pega). */
+  function cliqueDoJogo(pet){
+    if(!jogo) return false;
+    if(jogo.tipo === 'esconde' && pet.estado === 'escondido'){
+      pet.achado = true; jogo.pontos++;
+      pet.x = Math.max(0, Math.min(innerWidth - pet.s, pet.x)); pet.y = Math.min(Math.max(0, pet.y), chao(pet));
+      pular(pet, 450); efeito(pet, '⭐', 3); falar(pet, sorte(['Achou! 😆', 'Ahh, me achou! 🙈', 'Como você me viu?! 😲']), 1800); grito(pet);
+      if(jogo.pontos >= jogo.total) acabarJogo(true); else atualizarJogo();
+      return true;
+    }
+    if(jogo.tipo === 'pega' && !pet.pego){
+      pet.pego = true; jogo.pontos++; pet.estado = 'sentar'; pet.ate = performance.now() + 1e9;
+      efeito(pet, '⭐', 3); falar(pet, sorte(['Me pegou! 😆', 'Ahhh! Você é rápido! 😲', 'Tô pego! 🙌']), 1800); grito(pet);
+      if(jogo.pontos >= jogo.total) acabarJogo(true); else atualizarJogo();
+      return true;
+    }
+    return false;
+  }
+  function moverJogo(agora, dt){
+    if(!jogo || jogo.tipo !== 'frutas') return;
+    if(agora >= jogo.prox && Date.now() < jogo.fim){
+      jogo.prox = agora + 450 + Math.random() * 400;
+      const pedra = Math.random() < .15, f = document.createElement('span'); f.className = 'fruta clicavel'; f.textContent = pedra ? '🪨' : sorte(FRUTAS);
+      const fr = { el:f, x:20 + Math.random() * Math.max(10, innerWidth - 70), y:-40, v:130 + Math.random() * 120, pedra, giro:Math.random() * 360 };
+      f.addEventListener('pointerdown', ev => {
+        ev.preventDefault(); ev.stopPropagation();
+        if(!jogo || jogo.tipo !== 'frutas') return;
+        if(fr.pedra){ jogo.pontos = Math.max(0, jogo.pontos - 1); f.textContent = '💢'; }
+        else { jogo.pontos++; f.textContent = '✨'; const p = sorte(pets); if(p && Math.random() < .35) falar(p, sorte(['Boa! 😋', 'Nham! 🍎', 'Mais uma! 🙌']), 1000); }
+        fr.v = 0; jogo.frutas = jogo.frutas.filter(x => x !== fr); setTimeout(() => f.remove(), 250); atualizarJogo();
+      });
+      raiz.appendChild(f); jogo.frutas.push(fr);
+    }
+    jogo.frutas = jogo.frutas.filter(fr => {
+      fr.y += fr.v * dt; fr.giro += dt * 90;
+      fr.el.style.transform = `translate(${fr.x}px, ${fr.y}px) rotate(${Math.sin(fr.giro / 20) * 20}deg)`;
+      if(fr.y > innerHeight - extraChao - 30){ fr.el.remove(); return false; }
+      return true;
+    });
   }
 
   /* ---------- configuração ---------- */
