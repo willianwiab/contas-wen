@@ -51,7 +51,7 @@ html,body{margin:0;height:100%;background:var(--fundo);color:var(--texto);font:1
 #fujao{position:relative;transition:transform .15s}
 /* depois do Continuar: muda de cor e pisca (devagar) até escrever "pare" */
 body.loucura{animation:arcoIris 4s linear infinite}
-@keyframes arcoIris{0%{background:#2a0606}25%{background:#06142a}50%{background:#0b2a10}75%{background:#2a2306}100%{background:#2a0606}}
+@keyframes arcoIris{0%{background:#160303}25%{background:#030a16}50%{background:#041407}75%{background:#161203}100%{background:#160303}}
 .loucura #tela-loucura .grande-virus{animation:treme .25s infinite,piscaTexto .5s steps(1) infinite}
 .grande-virus{text-align:center;font:800 clamp(34px,9vw,90px)/1.05 system-ui,sans-serif;color:#fff;letter-spacing:4px}
 .grande-virus small{display:block;font-size:.25em;font-weight:700;opacity:.85;margin-top:12px}
@@ -61,8 +61,16 @@ body.loucura{animation:arcoIris 4s linear infinite}
 .calmo{text-align:center;font:600 clamp(24px,5vw,40px)/1.2 system-ui,sans-serif;color:#d4d4d4}
 .calmo small{display:block;font-size:.5em;margin-top:10px;font-weight:600;color:#9ca3af}
 /* Quem pede "menos movimento" no computador não vê piscadas. */
+/* Telas de erro: simples e sérias. */
+.erro{width:min(620px,100%);color:#e5e5e5;font:16px/1.6 system-ui,-apple-system,'Segoe UI',sans-serif;border-top:3px solid var(--vermelho);padding-top:18px}
+.erro h1{margin:0 0 14px;font-size:clamp(24px,4vw,34px);font-weight:500}
+.erro p{margin:6px 0;color:#bdbdbd}
+.erro .det{margin-top:18px;font:13px ui-monospace,Consolas,monospace;color:#7c7c7c}
+.erro b{color:#fff;font-weight:600}
+.erro .barra-prog{margin:18px 0 0;width:100%;height:4px;border:0;background:#2a2a2a}
+.erro .barra-prog i{background:#d4d4d4}
 /* 💻 texto hacker descendo atrás de tudo */
-.fluxo{position:fixed;inset:0;padding:10px 14px;font:12px/1.35 ui-monospace,Consolas,monospace;color:#7a7a7a;white-space:pre;overflow:hidden;pointer-events:none;z-index:0;display:flex;flex-direction:column;justify-content:flex-end;opacity:.55}
+.fluxo{position:fixed;inset:0;padding:10px 14px;font:11px/1.35 ui-monospace,Consolas,monospace;color:#7a7a7a;white-space:pre;overflow:hidden;pointer-events:none;z-index:0;display:flex;flex-direction:column;justify-content:flex-end;opacity:.16}
 .fluxo b{color:#b91c1c;font-weight:400} .fluxo i{color:#d4d4d4;font-style:normal}
 .tela{z-index:1}
 /* 📺 tela bugando: chiado, linhas de TV, rasgos e cores separadas */
@@ -104,7 +112,7 @@ body.sem-mouse,body.sem-mouse *{cursor:none !important}
 
 <!-- 1ª e 2ª vez: o "programa" -->
 <section class="tela" id="tela-programa"><div class="terminal" id="terminal"></div></section>
-<section class="tela" id="tela-alerta"><div class="alerta"><span class="faixa-alerta">ALERTA</span><small>Ameaça detectada em virus.exe</small><small class="codigo-erro">0x000000F4 · PROCESSO CRÍTICO</small></div></section>
+<section class="tela" id="tela-alerta"><div class="erro"><h1>Ameaça detectada</h1><p>O programa virus.exe executou uma operação não permitida.</p><p>Não desligue o computador.</p><p class="det">Código: 0x000000F4 · PROCESSO_CRITICO</p></div></section>
 
 <!-- 3ª vez em diante: as caixinhas -->
 <section class="tela" id="tela-certeza">
@@ -155,16 +163,16 @@ body.sem-mouse,body.sem-mouse *{cursor:none !important}
 </section>
 
 <!-- depois: cores mudando até escrever "pare" -->
-<section class="tela" id="tela-loucura"><div class="grande-virus">VÍRUS ATIVADO<small>virus.exe está em execução</small></div></section>
-<section class="tela" id="tela-contagem"><div class="contagem"><span id="numero">10</span><small id="contagem-txt">EXECUÇÃO EM</small><div class="barra-prog"><i id="prog"></i></div></div></section>
-<section class="tela" id="tela-comprometido"><div class="grande-virus">SISTEMA COMPROMETIDO<small id="comprometido-txt">virus.exe assumiu o controle</small></div></section>
+<section class="tela" id="tela-loucura"><div class="erro"><h1>virus.exe em execução</h1><p>Não desligue o computador.</p><p class="det">Iniciando processo 0x00F4…</p></div></section>
+<section class="tela" id="tela-contagem"><div class="erro"><h1>Execução automática</h1><p>O processo continuará em <b id="numero">10</b> segundos.</p><div class="barra-prog"><i id="prog"></i></div></div></section>
+<section class="tela" id="tela-comprometido"><div class="erro"><h1>O sistema encontrou um problema</h1><p>virus.exe assumiu o controle deste computador.</p><p class="det" id="comprometido-txt">Coletando informações: 0%</p></div></section>
 <div class="fluxo" id="fluxo" aria-hidden="true"></div>
 <div class="chiado" aria-hidden="true"></div>
 <div class="digitado" id="digitado" aria-live="polite"></div>
 <!-- No celular não tem teclado físico: tocar na tela abre o teclado por este campo invisível. -->
 <input id="teclado" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Digite aqui"
   style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0;border:0;padding:0" />
-<section class="tela" id="tela-calmo"><div class="calmo">Processo encerrado.<small>virus.exe foi finalizado.</small></div></section>
+<section class="tela" id="tela-calmo"><div class="erro"><h1>Processo encerrado</h1><p>virus.exe foi finalizado.</p></div></section>
 
 <script>
 (() => {
@@ -236,12 +244,7 @@ body.sem-mouse,body.sem-mouse *{cursor:none !important}
   /* 📺 Rasgos na tela de vez em quando. */
   let rasgoT = 0;
   function comecarBug(){
-    document.body.classList.add('bug', 'sem-mouse'); clearInterval(rasgoT);
-    rasgoT = setInterval(() => {
-      const r = document.createElement('div'); r.className = 'rasgo';
-      r.style.top = (Math.random() * 95) + 'vh'; r.style.height = (4 + Math.random() * 40) + 'px'; r.style.transform = `translateX(${(Math.random() - .5) * 60}px)`;
-      document.body.appendChild(r); setTimeout(() => r.remove(), 120 + Math.random() * 200);
-    }, 260);
+    document.body.classList.add('sem-mouse');
   }
   function pararBug(){ clearInterval(rasgoT); document.querySelectorAll('.rasgo').forEach(r => r.remove()); document.body.classList.remove('bug', 'sem-mouse'); }
   /* ⏱️ Bipe curtinho (pra contagem). */
@@ -266,6 +269,8 @@ body.sem-mouse,body.sem-mouse *{cursor:none !important}
   function comprometido(){
     if(!esperandoPare) return;
     mostrar('comprometido'); document.body.classList.add('loucura'); comecarFluxo(25);
+    let pct = 0; clearInterval(rasgoT);
+    rasgoT = setInterval(() => { if(pct < 100) pct = Math.min(100, pct + Math.floor(Math.random() * 4)); $('comprometido-txt').textContent = `Coletando informações: ${pct}%`; }, 900);
     alarme(5); repete = setInterval(() => alarme(5), 5000);
   }
 
