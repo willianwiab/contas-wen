@@ -61,7 +61,27 @@ body.loucura{animation:arcoIris 4s linear infinite}
 .calmo{text-align:center;font:600 clamp(24px,5vw,40px)/1.2 system-ui,sans-serif;color:#d4d4d4}
 .calmo small{display:block;font-size:.5em;margin-top:10px;font-weight:600;color:#9ca3af}
 /* Quem pede "menos movimento" no computador não vê piscadas. */
+/* 💻 texto hacker descendo atrás de tudo */
+.fluxo{position:fixed;inset:0;padding:10px 14px;font:12px/1.35 ui-monospace,Consolas,monospace;color:#7a7a7a;white-space:pre;overflow:hidden;pointer-events:none;z-index:0;display:flex;flex-direction:column;justify-content:flex-end;opacity:.55}
+.fluxo b{color:#b91c1c;font-weight:400} .fluxo i{color:#d4d4d4;font-style:normal}
+.tela{z-index:1}
+/* 📺 tela bugando: chiado, linhas de TV, rasgos e cores separadas */
+.chiado{position:fixed;inset:-50%;pointer-events:none;z-index:5;opacity:0;
+  background:repeating-radial-gradient(circle at 17% 32%,rgba(255,255,255,.07) 0 1px,transparent 1px 3px),repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);animation:chiado .18s steps(4) infinite}
+@keyframes chiado{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-1%)}}
+body.bug .chiado{opacity:1}
+body.bug .grande-virus,body.bug .alerta,body.bug .contagem{text-shadow:-4px 0 rgba(255,0,60,.75),4px 0 rgba(0,220,255,.7);animation:separa .35s steps(2) infinite}
+@keyframes separa{50%{text-shadow:3px 1px rgba(255,0,60,.75),-3px -1px rgba(0,220,255,.7);transform:translateX(2px) skewX(-2deg)}}
+.rasgo{position:fixed;left:0;right:0;z-index:6;pointer-events:none;background:rgba(255,255,255,.06);backdrop-filter:hue-rotate(90deg) saturate(3);border-top:1px solid rgba(255,255,255,.15)}
+body.sem-mouse,body.sem-mouse *{cursor:none !important}
+/* ⏱️ contagem regressiva */
+.contagem{text-align:center;color:#fff;font:800 clamp(80px,26vw,260px)/1 ui-monospace,Consolas,monospace}
+.contagem small{display:block;font:600 clamp(14px,2.6vw,22px) system-ui,sans-serif;letter-spacing:3px;color:#d4d4d4;margin-top:10px}
+.barra-prog{width:min(520px,80vw);height:14px;border:1px solid #777;margin:14px auto 0;background:#111}
+.barra-prog i{display:block;height:100%;width:0;background:#b91c1c;transition:width .9s linear}
 @media (prefers-reduced-motion: reduce){
+  .chiado,.rasgo{display:none !important}
+  body.bug .grande-virus,body.bug .alerta,body.bug .contagem{animation:none !important}
   .piscando,body.loucura,.loucura #tela-loucura .grande-virus,.alerta{animation:none !important}
   body.loucura{background:#3b0764}
 }
@@ -136,6 +156,10 @@ body.loucura{animation:arcoIris 4s linear infinite}
 
 <!-- depois: cores mudando até escrever "pare" -->
 <section class="tela" id="tela-loucura"><div class="grande-virus">VÍRUS ATIVADO<small>virus.exe está em execução</small></div></section>
+<section class="tela" id="tela-contagem"><div class="contagem"><span id="numero">10</span><small id="contagem-txt">EXECUÇÃO EM</small><div class="barra-prog"><i id="prog"></i></div></div></section>
+<section class="tela" id="tela-comprometido"><div class="grande-virus">SISTEMA COMPROMETIDO<small id="comprometido-txt">virus.exe assumiu o controle</small></div></section>
+<div class="fluxo" id="fluxo" aria-hidden="true"></div>
+<div class="chiado" aria-hidden="true"></div>
 <div class="digitado" id="digitado" aria-live="polite"></div>
 <!-- No celular não tem teclado físico: tocar na tela abre o teclado por este campo invisível. -->
 <input id="teclado" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Digite aqui"
@@ -187,15 +211,69 @@ body.loucura{animation:arcoIris 4s linear infinite}
   async function vez1(){
     mostrar('programa'); tela();
     const ini = Date.now();
-    document.body.classList.add('piscando');
+    document.body.classList.add('piscando', 'sem-mouse'); comecarFluxo(35);
     await digitar(['C:\\> virus.exe', 'Iniciando virus.exe...', 'Carregando módulos.......... OK', 'Verificando sistema......... OK', 'Executando processo 0x00F4...']);
     await esperar(Math.max(0, 3000 - (Date.now() - ini)));
-    document.body.classList.remove('piscando');
+    document.body.classList.remove('piscando', 'sem-mouse'); pararFluxo();
   }
+  /* 💻 Texto "hacker" descendo (tudo inventado: nenhum arquivo de verdade é lido). */
+  const PASTAS = ['sistema', 'drivers', 'temp', 'cache', 'modulos', 'kernel', 'rede', 'boot', 'servicos', 'registro'];
+  const hex = n => Array.from({ length:n }, () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0')).join(' ');
+  let fluxoT = 0;
+  function linhaHacker(){
+    const r = Math.random(), pct = Math.floor(Math.random() * 100), barra = '#'.repeat(Math.floor(pct / 5)).padEnd(20, '.');
+    if(r < .35) return `Escaneando C:/${PASTAS[Math.floor(Math.random() * PASTAS.length)]}/${Math.random().toString(36).slice(2, 8)}_${Math.floor(Math.random() * 999)}.dll ... <i>OK</i>`;
+    if(r < .55) return `0x${Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0').toUpperCase()}  ${hex(16)}`;
+    if(r < .72) return `[${barra}] ${String(pct).padStart(3)}%  processo ${Math.floor(Math.random() * 9000 + 1000)}`;
+    if(r < .85) return `<b>AVISO</b> acesso negado em setor ${Math.floor(Math.random() * 99999)} — tentando novamente`;
+    return `virus.exe &gt; injetando módulo ${Math.random().toString(36).slice(2, 6).toUpperCase()}... <i>sucesso</i>`;
+  }
+  function comecarFluxo(vel){
+    clearInterval(fluxoT); const f = $('fluxo');
+    fluxoT = setInterval(() => { f.insertAdjacentHTML('beforeend', '<div>' + linhaHacker() + '</div>'); while(f.children.length > 70) f.firstChild.remove(); }, vel || 45);
+  }
+  function pararFluxo(){ clearInterval(fluxoT); $('fluxo').innerHTML = ''; }
+  /* 📺 Rasgos na tela de vez em quando. */
+  let rasgoT = 0;
+  function comecarBug(){
+    document.body.classList.add('bug', 'sem-mouse'); clearInterval(rasgoT);
+    rasgoT = setInterval(() => {
+      const r = document.createElement('div'); r.className = 'rasgo';
+      r.style.top = (Math.random() * 95) + 'vh'; r.style.height = (4 + Math.random() * 40) + 'px'; r.style.transform = `translateX(${(Math.random() - .5) * 60}px)`;
+      document.body.appendChild(r); setTimeout(() => r.remove(), 120 + Math.random() * 200);
+    }, 260);
+  }
+  function pararBug(){ clearInterval(rasgoT); document.querySelectorAll('.rasgo').forEach(r => r.remove()); document.body.classList.remove('bug', 'sem-mouse'); }
+  /* ⏱️ Bipe curtinho (pra contagem). */
+  function bipe(freq, dur, vol){
+    try{
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
+      o.type = 'square'; o.frequency.value = freq; g.gain.setValueAtTime(vol || .08, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+      o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + dur);
+    }catch(e){}
+  }
+  let contagemT = 0, bipeT = 0;
+  function contagem(){
+    mostrar('contagem'); let n = 10; $('numero').textContent = n; $('prog').style.width = '0%';
+    const bipar = () => { if(!esperandoPare) return; bipe(1400, .08); const ms = 120 + n * 80; bipeT = setTimeout(bipar, ms); };
+    bipar();
+    contagemT = setInterval(() => {
+      n--; $('numero').textContent = Math.max(0, n); $('prog').style.width = ((10 - n) * 10) + '%';
+      if(n <= 0){ clearInterval(contagemT); clearTimeout(bipeT); comprometido(); }
+    }, 1000);
+  }
+  function comprometido(){
+    if(!esperandoPare) return;
+    mostrar('comprometido'); document.body.classList.add('loucura'); comecarFluxo(25);
+    alarme(5); repete = setInterval(() => alarme(5), 5000);
+  }
+
   /* 2ª vez: o alarme toca sem parar até escrever "pare". */
   let repete = 0;
   function vez2(){
     mostrar('alerta'); tela(); esperandoPare = true; digitado = '';
+    comecarBug(); comecarFluxo(60);
     alarme(5); repete = setInterval(() => alarme(5), 5000);
   }
   function vez3(){ mostrar('certeza'); tela(); }
@@ -218,9 +296,12 @@ body.loucura{animation:arcoIris 4s linear infinite}
   function comecarLoucura(){
     mostrar('loucura'); document.body.classList.add('loucura'); alarme(2); esperandoPare = true;
     digitado = ''; $('digitado').textContent = '';
+    comecarBug(); comecarFluxo(40);
+    setTimeout(() => { if(esperandoPare){ document.body.classList.remove('loucura'); contagem(); } }, 3000);
   }
   function parar(){
-    esperandoPare = false; clearInterval(repete);
+    esperandoPare = false; clearInterval(repete); clearInterval(contagemT); clearTimeout(bipeT);
+    pararBug(); pararFluxo();
     if(audio){ try{ audio.close(); }catch(e){} audio = null; }
     document.body.classList.remove('loucura'); $('digitado').textContent = '';
     mostrar('calmo');
