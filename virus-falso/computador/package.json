@@ -1,6 +1,6 @@
 {
   "name": "virus-falso",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Um vírus de mentira: só pisca, toca alarme e mostra caixinhas. Não faz nada no computador.",
   "main": "main.js",
   "private": true,
