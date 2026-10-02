@@ -82,7 +82,7 @@ body.loucura{animation:arcoIris 4s linear infinite}
 
 <!-- 1ª e 2ª vez: o "programa" -->
 <section class="tela" id="tela-programa"><div class="terminal" id="terminal"></div></section>
-<section class="tela" id="tela-alerta"><div class="alerta">⚠️ ALERTA ⚠️<small id="alerta-txt">virus.exe está acordando…</small></div></section>
+<section class="tela" id="tela-alerta"><div class="alerta">⚠️ ALERTA ⚠️</div></section>
 
 <!-- 3ª vez em diante: as caixinhas -->
 <section class="tela" id="tela-certeza">
@@ -189,13 +189,8 @@ body.loucura{animation:arcoIris 4s linear infinite}
     await digitar(['> virus.exe', '> iniciando…']);
     await esperar(Math.max(0, 3000 - (Date.now() - ini)));
     document.body.classList.remove('piscando');
-    await digitar(['> virus.exe', '> iniciando…', '> ERRO: o vírus ainda está dormindo 😴', '> tente abrir de novo…']);
   }
-  async function vez2(){
-    mostrar('alerta'); tela(); alarme(5);
-    await esperar(5200);
-    $('alerta-txt').textContent = 'Ele quase acordou… abra mais uma vez. 😈';
-  }
+  function vez2(){ mostrar('alerta'); tela(); alarme(5); }
   function vez3(){ mostrar('certeza'); tela(); }
 
   /* O botão "Não" foge do mouse. */
