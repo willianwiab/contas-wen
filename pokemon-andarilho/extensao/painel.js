@@ -27,7 +27,7 @@
       <label><input type="checkbox" id="evoluir" /> 🌟 Evoluir</label>
       <label><input type="checkbox" id="ima" /> 🧲 Ímã no mouse</label>
       <label><input type="checkbox" id="voz" /> 🔊 Falar com voz</label>
-      <div class="eventos" style="grid-column:1/-1">Agora: <button type="button" data-evento="ventania">🌪️ Ventania</button><button type="button" data-evento="terremoto">🌋 Terremoto</button><button type="button" data-evento="trovao">⛈️ Trovão</button><button type="button" data-evento="balao">🎈 Balões</button><button type="button" data-evento="pum">💨 Pum</button></div>
+      <div class="eventos" style="grid-column:1/-1">Agora: <button type="button" data-evento="ventania">🌪️ Ventania</button><button type="button" data-evento="terremoto">🌋 Terremoto</button><button type="button" data-evento="trovao">⛈️ Trovão</button><button type="button" data-evento="balao">🎈 Balões</button><button type="button" data-evento="pum">💨 Pum</button><button type="button" data-evento="fliperama">🕹️ Fliperama</button><button type="button" data-evento="chamar">🆘 Chamar os Pokémon</button></div>
       <div class="aniver" style="grid-column:1/-1">🎂 Meu aniversário:
         <select id="aniver-d" aria-label="Dia"><option value="">dia</option>${Array.from({ length:31 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}</select>
         de <select id="aniver-m" aria-label="Mês"><option value="">mês</option>${MESES.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('')}</select>
