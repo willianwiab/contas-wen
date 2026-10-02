@@ -146,6 +146,7 @@ app.whenReady().then(esperarLock).then(ok => {
   const menu = () => Menu.buildFromTemplate([
     { label:'🐾 Escolher Pokémon', click:abrirConfig },
     { label:'🆘 Chamar os Pokémon', click:() => { if(!palco || palco.isDestroyed()) return; if(escondido){ escondido = false; palco.showInactive(); bandeja.setContextMenu(menu()); } palco.webContents.executeJavaScript('window.andarilhoResgatar && andarilhoResgatar()').catch(() => {}); } },
+    { label:'🔇 Silêncio / 🔊 Som', click:() => { if(palco && !palco.isDestroyed()) palco.webContents.executeJavaScript('window.andarilhoSilencio && andarilhoSilencio()').catch(() => {}); } },
     { label:escondido ? '👀 Mostrar' : '🙈 Esconder', click:() => { escondido = !escondido; escondido ? palco.hide() : palco.showInactive(); bandeja.setContextMenu(menu()); } },
     { type:'separator' },
     { label:'🕵️ Detetive (ver problemas)', click:async () => { await examinar(); mostrarDetetive(false); } },

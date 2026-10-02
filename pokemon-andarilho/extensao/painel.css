@@ -34,3 +34,20 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .meu .apelido{flex:1;min-width:0;font:inherit;font-weight:700;padding:3px 6px;border:2px solid #3b5bdb;border-radius:8px}
 .eventos{display:flex;flex-wrap:wrap;align-items:center;gap:5px;font-weight:600}
 .eventos button{padding:3px 7px}
+.saldo-p{font-weight:800;margin:6px 0;background:#fff9db;border:2px solid #ffe066;border-radius:10px;padding:4px 8px}
+.notas{width:100%;box-sizing:border-box;font:inherit;padding:7px 10px;border-radius:10px;border:2px solid #c5cfe0;resize:vertical}
+.troca{display:flex;gap:6px;align-items:center;margin-top:6px}
+.troca select,.troca input{flex:1;min-width:0}
+.troca select{font:inherit;padding:5px 6px;border-radius:10px;border:2px solid #c5cfe0}
+.troca button,.codigo button{font:inherit;font-weight:700;border:2px solid #c5d0fa;background:#fff;border-radius:10px;padding:5px 9px;cursor:pointer;white-space:nowrap}
+.codigo b{font-family:ui-monospace,monospace;font-size:1.1rem;background:#eef2ff;padding:2px 6px;border-radius:6px;user-select:all}
+.dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:4px;max-height:220px;overflow:auto}
+.dex span{text-align:center;border:2px solid #dde3ee;border-radius:10px;background:#fff}
+.dex img{width:44px;height:44px;object-fit:contain;display:block;margin:0 auto}
+.dex small{font-size:.65rem;color:#5b6477}
+body.escuro{background:#1e2230 !important;color:#e9ecef}
+body.escuro .painel{color:#e9ecef}
+body.escuro .painel select,body.escuro .painel input,body.escuro .painel textarea,body.escuro .meu button,body.escuro .resultados button,body.escuro .dex span,body.escuro .troca button,body.escuro .eventos button,body.escuro .modo button:not(.on),body.escuro .aniver button{background:#2b3142;color:#e9ecef;border-color:#495057}
+body.escuro .meu{background:#2b3142;border-color:#495057}
+body.escuro .meu.ovo,body.escuro .saldo-p{background:#3b3420;border-color:#665c2a}
+body.escuro .dica,body.escuro .meu b small{color:#adb5bd}
