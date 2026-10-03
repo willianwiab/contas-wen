@@ -16,6 +16,8 @@ const vazio = () => ({
   lojas: {},                /* id da loja -> quando fica pronta */
   capturadas: 0, fugiram: 0, jogadas: 0,
   som: true,
+  gps: false,              /* a pessoa escolheu andar de verdade? */
+  viuAvisoGps: false,
   criado: Date.now()
 });
 
@@ -132,6 +134,83 @@ function pintarHud(){
   const falta = xpDoNivel(dados.nivel);
   $('#hudXp').textContent = `${dados.xp}/${falta}`;
   $('#hudBarra').style.width = Math.min(100, dados.xp / falta * 100) + '%';
+}
+
+/* =========================================================
+   📍 ANDAR DE VERDADE
+
+   Com o GPS ligado, quem move o boneco é a rua. A localização
+   não sai do aparelho — este jogo não tem servidor, não existe
+   pra onde mandar.
+   ========================================================= */
+function pintarGps(){
+  const t = $('#hudGps');
+  if(!gps.ligado){ t.classList.remove('on', 'ruim'); return; }
+  t.classList.add('on');
+  if(gps.erro){
+    t.classList.add('ruim');
+    $('#hudGpsTxt').textContent = '📍 ' + gps.erro;
+  }else if(!gps.origem){
+    t.classList.remove('ruim');
+    $('#hudGpsTxt').innerHTML =
+      '<span class="girando">📡</span> procurando onde cê está… (dá pra andar tocando)';
+  }else{
+    const ruim = gps.precisao > 40;
+    t.classList.toggle('ruim', ruim);
+    $('#hudGpsTxt').textContent = ruim
+      ? `📍 sinal fraco (erro de ~${gps.precisao} m) — tenta sair de dentro de casa`
+      : `📍 andando de verdade · precisão ~${gps.precisao} m`;
+  }
+  if(document.querySelector('#folha-ajustes.on')) pintarAjustes();
+}
+
+function trocarGps(){
+  if(gps.ligado){
+    desligarGps(pintarGps);
+    dados.gps = false;
+    gravar();
+    recado('🗺️ Voltou pro mapa. Toca pra andar.', 3000);
+    pintarAjustes();
+    return;
+  }
+  dados.gps = true;
+  dados.viuAvisoGps = true;
+  gravar();
+  ligarGps(pintarGps);
+  recado('📍 Ligando o GPS… pode demorar uns segundos.', 4000);
+  pintarAjustes();
+}
+
+function blocoGps(){
+  if(!temGps())
+    return `<div class="bloco"><h3>📍 Andar de verdade</h3>
+      <p>Este navegador não tem localização, então só dá pra jogar no mapa mesmo.</p></div>`;
+
+  const ligado = gps.ligado;
+  return `<div class="bloco"><h3>📍 Andar de verdade</h3>
+    <p>Igual ao Pokémon GO: o boneco anda <b>quando cê anda na rua</b>, e as cartas
+       nascem em volta de onde cê está de verdade.</p>
+    <div class="linha"><span><b>Usar a minha localização</b>
+      <small>${ligado ? 'ligado — quem manda é a rua' : 'desligado — cê anda tocando no mapa'}</small></span>
+      <button class="liga ${ligado ? 'on' : ''}" onclick="trocarGps()">
+        ${ligado ? '📍 ligado' : '🗺️ desligado'}</button></div>
+    ${ligado && gps.erro ? `<div class="aviso" style="margin-top:10px">
+        ⚠️ <b>${escapar(gps.erro)}</b><br>
+        ${gps.erro.includes('deixou') ? 'Pra liberar: nos ajustes do navegador, procura este site e deixa a localização.'
+          : 'Sinal de GPS costuma ser ruim dentro de casa. Tenta perto de uma janela ou na rua.'}
+        <br><br>Enquanto isso <b>dá pra jogar normal</b>: é só tocar no mapa pra andar.
+      </div>` : ''}
+    ${ligado && !gps.erro && gps.origem ? `<div class="linha">
+        <span>precisão agora</span><b>~${gps.precisao} m</b></div>
+      <div class="linha"><span>andou de verdade</span>
+        <b>${Math.round(andou / PX_POR_METRO)} m</b></div>` : ''}
+    <div class="aviso" style="margin-top:10px">
+      🚸 <b>Olha pra frente, não pro celular.</b> Não atravessa rua jogando, e combina com
+      um adulto até onde cê pode ir. O jogo espera — carro não.
+    </div>
+    <p style="color:var(--tinta3);font-size:.74rem;margin-top:9px">
+      A tua localização <b>não sai do aparelho</b>. Este jogo não tem servidor nenhum:
+      não existe pra onde mandar.</p></div>`;
 }
 
 /* =========================================================
@@ -477,6 +556,12 @@ function pintarAjuda(){
     <div class="bloco"><h3>🏃 Andar</h3>
       <p>Toca em qualquer lugar do mapa e o teu boneco vai até lá.
          A tela anda com ele.</p></div>
+    <div class="bloco"><h3>📍 Ou andar de verdade</h3>
+      <p>Em ⚙️ Ajustes dá pra ligar o <b>GPS</b>: aí o boneco só anda quando
+         <b>cê anda na rua</b>, igual ao Pokémon GO, e as cartas nascem em volta
+         de onde cê está mesmo.</p>
+      <p>🚸 Se ligar: <b>olha pra frente, não pro celular</b>, e combina com um adulto
+         até onde dá pra ir.</p></div>
     <div class="bloco"><h3>🎴 Achar carta</h3>
       <p>As cartas nascem sozinhas em volta de cê e ficam flutuando no chão.
          <b>Quanto mais rara, mais ela brilha</b> — a de coroa 👑 pisca.</p>
@@ -512,6 +597,7 @@ function pintarAjuda(){
 function pintarAjustes(){
   const ok = testarGuardar();
   $('#corpoAjustes').innerHTML =
+    blocoGps() +
     blocoInstalar() +
     (!ok || avisoSave ? `<div class="bloco"><div class="aviso">
         ⚠️ <b>Este navegador não está deixando guardar.</b> Dá pra jogar, mas o teu
@@ -531,7 +617,7 @@ function pintarAjustes(){
       <div class="linha"><span>cartas que voaram</span><b>${dados.fugiram}</b></div>
       <div class="linha"><span>acerto</span><b>${dados.jogadas
         ? Math.round(dados.capturadas / dados.jogadas * 100) : 0}%</b></div>
-      <div class="linha"><span>andou</span><b>${Math.round(andou / 10)} m</b></div>
+      <div class="linha"><span>andou</span><b>${Math.round(andou / PX_POR_METRO)} m</b></div>
       <div class="linha"><span>nível</span><b>${dados.nivel}</b></div>
     </div>
     <div class="bloco"><h3>🔄 Baralho</h3>
@@ -725,6 +811,8 @@ function entrar(){
     recado('⚠️ Este navegador não deixa guardar: o álbum <b>não vai ficar salvo</b>.', 6000);
   else
     recado('Toca no mapa pra andar. Acha as cartas brilhando 🎴', 4200);
+
+  if(dados.gps && temGps()) ligarGps(pintarGps);
 
   /* o resto do baralho chega sozinho, sem segurar o começo do jogo */
   if(deOndeVeio === 'internet')

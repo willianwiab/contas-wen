@@ -26,6 +26,34 @@ roda igual.
 
 **Toca no mapa** e o boneco anda até lá. A tela anda junto com ele.
 
+## 📍 Ou anda de verdade
+
+Em ⚙️ Ajustes dá pra ligar o **GPS**: aí o boneco só anda **quando cê anda na rua**, igual
+ao Pokémon GO, e as cartas nascem em volta de onde cê está mesmo.
+
+```js
+/* perto da pessoa, um grau de longitude vale 111.320 m vezes o cosseno
+   da latitude, e um grau de latitude vale 110.540 m */
+const mx = (lon - o.lon) * 111320 * Math.cos(o.lat * Math.PI / 180);
+const my = (o.lat - lat) * 110540;
+```
+
+Isso erra em escala de continente e acerta em escala de quarteirão — que é a escala deste
+jogo. **1 metro andado = 3,6 px no mapa.** Onde cê ligou o GPS vira o centro do mundo.
+
+A posição **escorrega** até o ponto novo em vez de teleportar: o sinal pula alguns metros
+mesmo com o celular parado, e teleporte fazia o boneco tremer. O círculo azul no chão é o
+quanto o GPS **tem certeza** — quanto maior, mais chutado.
+
+No GPS as cartas nascem **mais perto** (30 a 100 m em vez de 50 a 200): ninguém vai andar
+dois quarteirões de verdade atrás de uma carta comum.
+
+> 🚸 **Olha pra frente, não pro celular.** Não atravessa rua jogando, e combina com um
+> adulto até onde dá pra ir. O jogo espera — carro não.
+
+**A localização não sai do aparelho.** Este jogo não tem servidor nenhum: não existe pra
+onde mandar.
+
 As cartas nascem sozinhas num anel em volta de cê e ficam flutuando no chão. **Quanto mais
 rara, mais ela brilha** — a de coroa 👑 pisca. Carta **apagada e menorzinha** está longe
 (toca nela que cê anda até lá); carta **acesa** já dá pra capturar.
@@ -92,11 +120,18 @@ navegador.
 O iPhone não tem o convite automático que o Android e o Chrome têm, então lá os Ajustes
 **ensinam o caminho** em vez de mostrar um botão que não funcionaria.
 
-## O bairro é sempre o mesmo
+## O mundo é infinito
 
-O cenário nasce de uma **semente guardada no aparelho**. Se fosse sorteado toda vez, nunca
-daria pra dizer "a lojinha perto do lago" — e um lugar que muda de forma a cada visita não
-é um lugar.
+Se cê anda de verdade na rua, um mapa de tamanho fixo acabaria em cinco minutos. Então o
+mundo é feito de **pedaços de 520×520** que nascem em volta de cê conforme cê anda e somem
+quando ficam pra trás — nunca mais de 25 na tela.
+
+Cada pedaço nasce de uma conta em cima das **próprias coordenadas**, então a mesma esquina
+tem sempre as mesmas árvores: dá pra voltar num lugar e reconhecer. Conferido no teste —
+ir a 40.000 px de distância e voltar dá o cenário idêntico.
+
+As ruas seguem a grade do **mundo**, não a do pedaço (`cx % 3 === 0`), senão elas davam um
+degrau na emenda de um pedaço pro outro.
 
 ## O que o save guarda
 
@@ -116,6 +151,16 @@ desenhado em CSS, com o símbolo da raridade no meio.
 
 **A foto que não carrega.** Sem internet, a carta virava um ícone quebrado. Agora o
 `onerror` troca pelo verso 🎴 — o jogo continua jogável offline, só sem as artes.
+
+**O GPS que nunca responde.** Quando a pessoa **nega** a localização, o navegador não chama
+nem o acerto nem o erro — e nem o `timeout` que a gente pede vale. Conferido: **26 segundos
+e nenhum aviso**. O jogo ficava preso em "procurando onde cê está", *sem deixar nem andar
+com o dedo*. Agora tem um cão de guarda de 12 segundos, e o dedo só perde a vez quando o
+GPS **realmente** assumiu:
+
+```js
+const gpsMandando = () => gps.ligado && !!gps.origem && !gps.erro;
+```
 
 ## Som
 

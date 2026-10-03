@@ -40,8 +40,9 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
     repeating-linear-gradient(90deg, rgba(0,0,0,.035) 0 1px, transparent 1px 48px),
     var(--grama);
 }
-/* cada pedaço do cenário é um div solto: dá pra pôr muitos sem pesar,
-   e o navegador cuida de desenhar só o que está na tela */
+/* o mundo é feito de pedaços que nascem e somem em volta do
+   jogador; dentro de cada um, as peças são divs soltos */
+.pedaco{position:absolute;pointer-events:none}
 .peca{position:absolute;pointer-events:none}
 .rua{background:var(--rua);box-shadow:inset 0 0 0 2px var(--rua2)}
 .lago{background:radial-gradient(circle at 35% 30%,#8ee3ff,var(--agua));border-radius:50%;
@@ -68,6 +69,10 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 /* o alcance do braço: o que estiver dentro do círculo dá pra capturar */
 #alcance{position:absolute;z-index:4;border-radius:50%;pointer-events:none;
   border:2px dashed rgba(255,255,255,.5);background:rgba(255,255,255,.1)}
+/* o quanto o GPS tem certeza de onde cê está: quanto maior, mais chutado */
+#precisao{position:absolute;z-index:3;border-radius:50%;pointer-events:none;display:none;
+  background:rgba(47,128,237,.16);border:1px solid rgba(47,128,237,.4)}
+#precisao.on{display:block}
 
 /* ===================== AS CARTAS NO CHÃO =====================
    O verso é desenhado em CSS. Com emoji (🎴 e 🂠) virava um
@@ -131,6 +136,15 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 #baixo button:active{transform:translateY(2px)}
 
 /* ===================== RECADINHO ===================== */
+/* a tarja do GPS, embaixo do painel de cima */
+#hudGps{position:fixed;left:50%;transform:translateX(-50%);z-index:19;display:none;
+  top:calc(env(safe-area-inset-top) + 58px);
+  background:rgba(23,34,43,.92);color:#fff;border-radius:99px;padding:6px 13px;
+  font-size:.68rem;font-weight:800;white-space:nowrap;max-width:94vw;overflow:hidden;
+  text-overflow:ellipsis}
+#hudGps.on{display:block}
+#hudGps.ruim{background:rgba(192,57,43,.95)}
+
 #recado{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:40;
   background:rgba(23,34,43,.94);color:#fff;padding:10px 16px;border-radius:14px;
   font-size:.8rem;font-weight:700;text-align:center;max-width:88vw;
@@ -285,6 +299,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 <div id="palco">
   <div id="camera">
     <div id="mundo">
+      <div id="precisao"></div>
       <div id="alcance"></div>
       <div id="eu"><div class="boneco">🧒</div><div class="pe"></div></div>
     </div>
@@ -298,6 +313,9 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
     <div class="fora"><span class="dentro" id="hudBarra" style="width:0"></span></div>
   </div>
   <div class="chip" title="cartas diferentes no álbum"><span class="icocard"></span> <span class="n" id="hudCartas">0</span></div>
+</div>
+
+<div id="hudGps"><span id="hudGpsTxt"></span></div>
 </div>
 
 <div id="baixo">
@@ -371,8 +389,8 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   </div>
 </div>
 
-<script src="cartas.js?v=5"></script>
-<script src="mundo.js?v=5"></script>
-<script src="jogo.js?v=5"></script>
+<script src="cartas.js?v=6"></script>
+<script src="mundo.js?v=6"></script>
+<script src="jogo.js?v=6"></script>
 </body>
 </html>
