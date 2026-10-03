@@ -8,6 +8,12 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#1b6b3a">
 <link rel="icon" href="icone.svg">
+<link rel="apple-touch-icon" href="icone-180.png">
+<!-- o iPhone não lê o manifest pra isto: precisa destas três -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PokéTCG GO">
+<meta name="mobile-web-app-capable" content="yes">
 <style>
 :root{
   --grama:#4fa858; --grama2:#44984c; --mato:#2f7a3c;
@@ -365,8 +371,8 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   </div>
 </div>
 
-<script src="cartas.js?v=2"></script>
-<script src="mundo.js?v=2"></script>
-<script src="jogo.js?v=2"></script>
+<script src="cartas.js?v=3"></script>
+<script src="mundo.js?v=3"></script>
+<script src="jogo.js?v=3"></script>
 </body>
 </html>

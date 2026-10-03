@@ -512,6 +512,7 @@ function pintarAjuda(){
 function pintarAjustes(){
   const ok = testarGuardar();
   $('#corpoAjustes').innerHTML =
+    blocoInstalar() +
     (!ok || avisoSave ? `<div class="bloco"><div class="aviso">
         ⚠️ <b>Este navegador não está deixando guardar.</b> Dá pra jogar, mas o teu
         álbum <b>não vai ficar salvo</b> quando cê fechar.
@@ -580,6 +581,80 @@ function zerar(){
   pintarHud();
   pintarAjustes();
   recado('💀 Tudo zerado.');
+}
+
+/* =========================================================
+   INSTALAR NO APARELHO
+
+   Dá pra instalar nos dois: o Android e o computador têm um
+   convite de verdade (beforeinstallprompt), que o navegador
+   entrega UMA vez e a gente guarda pra usar quando a pessoa
+   quiser. O iPhone não tem esse convite — lá é na mão, pelo
+   botão de compartilhar, então o jeito certo é ensinar.
+   ========================================================= */
+let convite = null;
+
+const ehIphone = () => /iphone|ipad|ipod/i.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+const jaInstalado = () =>
+  (window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches) ||
+  (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+  navigator.standalone === true;
+
+window.addEventListener('beforeinstallprompt', ev => {
+  ev.preventDefault();       /* sem isto o navegador mostra do jeito dele, na hora errada */
+  convite = ev;
+  if(document.querySelector('#folha-ajustes.on')) pintarAjustes();
+});
+
+window.addEventListener('appinstalled', () => {
+  convite = null;
+  recado('📲 <b>Instalado!</b> Agora ele abre igual aplicativo.', 4000);
+  if(document.querySelector('#folha-ajustes.on')) pintarAjustes();
+});
+
+async function instalar(){
+  if(!convite) return;
+  convite.prompt();
+  const r = await convite.userChoice;
+  convite = null;            /* o convite só vale uma vez */
+  if(r && r.outcome === 'accepted') recado('📲 Instalando…', 3000);
+  pintarAjustes();
+}
+
+function blocoInstalar(){
+  if(jaInstalado())
+    return `<div class="bloco"><h3>📲 Instalado</h3>
+      <p>Cê já está jogando pelo aplicativo. 🎉</p></div>`;
+
+  if(convite)
+    return `<div class="bloco"><h3>📲 Instalar no aparelho</h3>
+      <p>Fica com ícone na tela, abre em tela cheia e <b>funciona sem internet</b>
+         (as fotos das cartas é que precisam da rede).</p>
+      <button class="liga on" style="width:100%;padding:13px;font-size:.9rem"
+        onclick="instalar()">📲 Instalar o PokéTCG GO</button></div>`;
+
+  if(ehIphone())
+    return `<div class="bloco"><h3>📲 Instalar no iPhone</h3>
+      <p>No iPhone o navegador não deixa eu instalar por botão — tem que ser na mão,
+         mas é rápido:</p>
+      <div class="linha"><span><b>1.</b> Aperta o <b>compartilhar</b> embaixo
+        <small>o quadradinho com a seta pra cima</small></span></div>
+      <div class="linha"><span><b>2.</b> Desce e escolhe <b>"Adicionar à Tela de Início"</b></span></div>
+      <div class="linha"><span><b>3.</b> Aperta <b>Adicionar</b></span></div>
+      <p style="color:var(--tinta3);font-size:.76rem;margin-top:8px">Precisa estar no
+         <b>Safari</b>. No Chrome do iPhone essa opção não aparece.</p></div>`;
+
+  return `<div class="bloco"><h3>📲 Instalar no aparelho</h3>
+    <p>Dá pra instalar, mas o teu navegador ainda não me ofereceu o botão.
+       Costuma aparecer depois de uns minutos de jogo.</p>
+    <div class="linha"><span><b>Android</b>
+      <small>menu ⋮ → "Instalar aplicativo" ou "Adicionar à tela inicial"</small></span></div>
+    <div class="linha"><span><b>Computador</b>
+      <small>Chrome ou Edge: o ícone de instalar ⊕ na barra de endereço</small></span></div>
+    <p style="color:var(--tinta3);font-size:.76rem;margin-top:8px">No Firefox do computador
+       não dá — ele não instala site nenhum.</p></div>`;
 }
 
 /* =========================================================
