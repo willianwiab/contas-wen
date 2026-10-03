@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>PokéTCG GO</title>
+<meta name="description" content="Ande pelo mapa e capture cartas de Pokémon de verdade.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b6b3a">
+<link rel="icon" href="icone.svg">
+<style>
+:root{
+  --grama:#4fa858; --grama2:#44984c; --mato:#2f7a3c;
+  --rua:#d9cdb4; --rua2:#c9bb9f; --agua:#3aa0ff;
+  --papel:#ffffff; --tinta:#17222b; --tinta2:#50616e; --tinta3:#8b9aa6;
+  --linha:#e3e9ee; --azul:#2f80ed; --vermelho:#eb5757; --ouro:#f2c200;
+  --sombra:0 8px 24px rgba(10,30,20,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:#2f7a3c;color:var(--tinta);
+  user-select:none;-webkit-user-select:none;
+}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+/* ===================== O MUNDO ===================== */
+#palco{position:fixed;inset:0;overflow:hidden;touch-action:none}
+#camera{position:absolute;inset:0}
+#mundo{position:absolute;left:0;top:0;transform-origin:0 0;
+  background:
+    repeating-linear-gradient(0deg,  rgba(0,0,0,.035) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.035) 0 1px, transparent 1px 48px),
+    var(--grama);
+}
+/* cada pedaço do cenário é um div solto: dá pra pôr muitos sem pesar,
+   e o navegador cuida de desenhar só o que está na tela */
+.peca{position:absolute;pointer-events:none}
+.rua{background:var(--rua);box-shadow:inset 0 0 0 2px var(--rua2)}
+.lago{background:radial-gradient(circle at 35% 30%,#8ee3ff,var(--agua));border-radius:50%;
+  box-shadow:inset 0 -6px 14px rgba(0,40,80,.25)}
+.arvore{font-size:30px;line-height:1;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.predio{background:#efe6d8;border:2px solid #cbbda6;border-radius:6px;
+  box-shadow:0 5px 0 #c4b49a, 0 10px 16px rgba(0,0,0,.18)}
+.predio .teto{height:34%;background:#e07a5f;border-bottom:2px solid #c4664c;
+  border-radius:4px 4px 0 0}
+.predio .jan{position:absolute;width:12px;height:12px;background:#9fd3ff;border:1px solid #7fb4e0;
+  border-radius:2px}
+.enfeite{font-size:18px;opacity:.85}
+
+/* ===================== O JOGADOR ===================== */
+#eu{position:absolute;width:40px;height:52px;z-index:6;pointer-events:none;
+  transition:left .9s linear, top .9s linear}
+#eu .boneco{font-size:34px;line-height:1;text-align:center;
+  filter:drop-shadow(0 4px 3px rgba(0,0,0,.35));animation:bole 1.1s infinite ease-in-out}
+#eu.andando .boneco{animation:anda .35s infinite ease-in-out}
+@keyframes bole{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes anda{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-5px) rotate(5deg)}}
+#eu .pe{position:absolute;left:50%;bottom:-3px;width:26px;height:9px;margin-left:-13px;
+  background:rgba(0,0,0,.2);border-radius:50%}
+/* o alcance do braço: o que estiver dentro do círculo dá pra capturar */
+#alcance{position:absolute;z-index:4;border-radius:50%;pointer-events:none;
+  border:2px dashed rgba(255,255,255,.5);background:rgba(255,255,255,.1)}
+
+/* ===================== AS CARTAS NO CHÃO =====================
+   O verso é desenhado em CSS. Com emoji (🎴 e 🂠) virava um
+   retângulo escuro em um aparelho e um quadradinho vazio em
+   outro — e carta tem que PARECER carta de longe. */
+.solta{position:absolute;z-index:5;width:44px;height:61px;margin:-30px 0 0 -22px;
+  border-radius:6px;padding:3px;cursor:pointer;
+  background:linear-gradient(150deg,#fdfdff,#d8dffb);
+  box-shadow:0 7px 13px rgba(0,0,0,.32);
+  animation:flutua 2.4s infinite ease-in-out}
+.solta .costas{width:100%;height:100%;border-radius:4px;display:grid;place-items:center;
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.1) 0 4px, transparent 4px 8px),
+    linear-gradient(150deg,#5b6ee0,#2b3578);
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4)}
+.solta .sim{font-size:14px;font-weight:900;line-height:1;letter-spacing:-1px;
+  text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.solta.r5 .sim,.solta.r6 .sim{font-size:17px}
+@keyframes flutua{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-9px) rotate(3deg)}}
+/* longe = menor e mais apagada, mas ainda dá pra ver de que
+   raridade é: é isso que faz valer a pena andar até lá */
+.solta.longe{opacity:.62;filter:grayscale(.3);transform:scale(.86)}
+.solta .faisca{position:absolute;inset:-9px;border-radius:9px;pointer-events:none}
+.solta.r3 .faisca{box-shadow:0 0 14px 3px rgba(94,232,154,.75)}
+.solta.r4 .faisca{box-shadow:0 0 16px 4px rgba(242,194,0,.85)}
+.solta.r5 .faisca{box-shadow:0 0 20px 6px rgba(255,158,216,.9)}
+.solta.r6 .faisca{box-shadow:0 0 26px 8px rgba(255,224,102,.95);animation:pulsa .9s infinite}
+@keyframes pulsa{0%,100%{opacity:.55}50%{opacity:1}}
+
+/* a lojinha */
+.loja{position:absolute;z-index:5;width:54px;height:54px;margin:-27px 0 0 -27px;
+  border-radius:50%;display:grid;place-items:center;font-size:25px;cursor:pointer;
+  background:radial-gradient(circle at 35% 30%,#9fd3ff,#2f80ed);
+  border:3px solid #fff;box-shadow:0 6px 14px rgba(0,0,0,.3)}
+.loja.pronta{animation:pulsa 1.4s infinite}
+.loja.vazia{background:radial-gradient(circle at 35% 30%,#d9d9d9,#9aa6b2);opacity:.75}
+
+/* ===================== O PAINEL DE CIMA ===================== */
+#hud{position:fixed;left:0;right:0;top:0;z-index:20;padding:calc(env(safe-area-inset-top) + 8px) 10px 0;
+  display:flex;gap:7px;align-items:flex-start;pointer-events:none}
+.chip{background:rgba(255,255,255,.95);border-radius:14px;padding:7px 11px;box-shadow:var(--sombra);
+  font-size:.74rem;font-weight:800;display:flex;gap:6px;align-items:center;pointer-events:auto}
+.chip .n{font-size:.95rem;color:var(--azul)}
+.chip.capinha .n{color:var(--vermelho)}
+#barraNivel{flex:1;background:rgba(255,255,255,.95);border-radius:14px;padding:7px 11px;
+  box-shadow:var(--sombra);pointer-events:auto}
+#barraNivel .topo{display:flex;justify-content:space-between;font-size:.66rem;font-weight:800;
+  color:var(--tinta2);margin-bottom:4px}
+#barraNivel .fora{height:7px;background:var(--linha);border-radius:99px;overflow:hidden}
+#barraNivel .dentro{display:block;height:100%;background:linear-gradient(90deg,#f2c200,#ff8a3d);
+  border-radius:99px;transition:width .4s}
+
+/* ===================== A BARRA DE BAIXO ===================== */
+#baixo{position:fixed;left:0;right:0;bottom:0;z-index:20;
+  padding:10px 10px calc(env(safe-area-inset-bottom) + 10px);
+  display:flex;gap:8px;justify-content:center}
+#baixo button{background:var(--papel);border-radius:17px;padding:11px 0;box-shadow:var(--sombra);
+  font-size:.7rem;font-weight:800;color:var(--tinta2);flex:1;max-width:120px;
+  display:flex;flex-direction:column;align-items:center;gap:3px}
+#baixo button .ic{font-size:1.25rem}
+#baixo button:active{transform:translateY(2px)}
+
+/* ===================== RECADINHO ===================== */
+#recado{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:40;
+  background:rgba(23,34,43,.94);color:#fff;padding:10px 16px;border-radius:14px;
+  font-size:.8rem;font-weight:700;text-align:center;max-width:88vw;
+  opacity:0;transition:opacity .25s, transform .25s;pointer-events:none}
+#recado.on{opacity:1;transform:translateX(-50%) translateY(-6px)}
+
+/* ===================== TELAS CHEIAS ===================== */
+.folha{position:fixed;inset:0;z-index:50;background:#f4f7f9;display:none;
+  flex-direction:column;padding-top:env(safe-area-inset-top)}
+.folha.on{display:flex}
+.folha .cabeca{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--papel);
+  border-bottom:1px solid var(--linha);flex:0 0 auto}
+.folha .cabeca h2{font-size:1.02rem;flex:1}
+.folha .cabeca .x{width:34px;height:34px;border-radius:50%;background:var(--linha);
+  font-size:1rem;font-weight:900;color:var(--tinta2)}
+.folha .corpo{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px;
+  padding-bottom:calc(env(safe-area-inset-bottom) + 24px);-webkit-overflow-scrolling:touch}
+
+/* ===================== A CAPTURA ===================== */
+/* um cartãozinho pro painel de cima, pelo mesmo motivo */
+.icocard{display:inline-block;width:11px;height:15px;border-radius:2px;
+  background:linear-gradient(150deg,#5b6ee0,#2b3578);
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.75), 0 1px 2px rgba(0,0,0,.25)}
+
+#captura{position:fixed;inset:0;z-index:60;display:none;
+  background:radial-gradient(circle at 50% 38%,#2b5f8f,#10243a 70%)}
+#captura.on{display:block}
+#capFundo{position:absolute;inset:0;overflow:hidden}
+#capFundo .chao{position:absolute;left:-10%;right:-10%;bottom:0;height:24%;
+  background:radial-gradient(ellipse at 50% 0,#4fa858,#2f7a3c);border-radius:50% 50% 0 0}
+#capCarta{position:absolute;left:50%;top:37%;transform:translate(-50%,-50%);z-index:3;
+  width:min(45vw,186px);transition:transform .3s}
+#capCarta img{width:100%;display:block;border-radius:9px;box-shadow:0 14px 34px rgba(0,0,0,.5)}
+#capCarta .vazia{aspect-ratio:245/342;border-radius:9px;display:grid;place-items:center;
+  background:linear-gradient(150deg,#3b4b7a,#243156);border:2px solid #cdd6ff;color:#cdd6ff;
+  font-size:2rem;box-shadow:0 14px 34px rgba(0,0,0,.5)}
+#capCarta.treme{animation:treme .42s}
+@keyframes treme{0%,100%{transform:translate(-50%,-50%) rotate(0)}
+  20%{transform:translate(-54%,-50%) rotate(-9deg)}60%{transform:translate(-46%,-50%) rotate(9deg)}}
+#capCarta.fugiu{animation:fugiu .7s forwards}
+@keyframes fugiu{to{transform:translate(-50%,-240%) rotate(32deg);opacity:0}}
+#capCarta.pegou{animation:pegou .8s forwards}
+@keyframes pegou{60%{transform:translate(-50%,-50%) scale(.3) rotate(10deg);opacity:.9}
+  100%{transform:translate(-50%,16vh) scale(.12) rotate(0);opacity:0}}
+
+/* o anel que aperta: quando ele encosta no alvo é o melhor momento */
+/* z-index acima da carta: na primeira versão o anel ficava ATRÁS
+   dela e o minigame inteiro era invisível */
+#anel{position:absolute;left:50%;top:37%;z-index:5;border:5px solid #fff;border-radius:50%;
+  transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 16px rgba(255,255,255,.55)}
+#alvo{position:absolute;left:50%;top:37%;z-index:4;border:3px dashed rgba(255,255,255,.6);
+  border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+#capInfo{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 12px);z-index:6;
+  text-align:center;color:#fff;padding:0 16px}
+#capInfo .nome{font-size:1.2rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+#capInfo .sub{font-size:.76rem;opacity:.9;margin-top:3px;font-weight:700}
+#capBaixo{position:absolute;left:0;right:0;bottom:0;z-index:6;
+  padding:14px 16px calc(env(safe-area-inset-bottom) + 16px);text-align:center}
+#capDica{color:#fff;font-size:.78rem;font-weight:700;margin-bottom:10px;min-height:1.2em;
+  text-shadow:0 2px 6px rgba(0,0,0,.6)}
+#btJogar{background:#fff;color:#17222b;font-weight:900;font-size:1.02rem;padding:15px 0;
+  border-radius:20px;width:100%;max-width:330px;box-shadow:0 8px 0 #c9d3da}
+#btJogar:active{transform:translateY(4px);box-shadow:0 4px 0 #c9d3da}
+#btJogar:disabled{opacity:.5;box-shadow:0 8px 0 #c9d3da}
+#btFugir{display:block;margin:10px auto 0;color:rgba(255,255,255,.8);font-size:.76rem;
+  font-weight:800;padding:8px 16px}
+
+/* a capinha voando */
+#capinha{position:absolute;left:50%;bottom:120px;z-index:7;font-size:30px;
+  transform:translateX(-50%);opacity:0;pointer-events:none}
+#capinha.vai{animation:vai .5s forwards}
+@keyframes vai{0%{opacity:1;bottom:120px;transform:translateX(-50%) scale(1) rotate(0)}
+  100%{opacity:1;bottom:60%;transform:translateX(-50%) scale(.35) rotate(420deg)}}
+
+/* ===================== O ÁLBUM ===================== */
+#albResumo{background:var(--papel);border-radius:16px;padding:14px;box-shadow:var(--sombra);
+  margin-bottom:12px;text-align:center}
+#albResumo .conta{font-size:1.9rem;font-weight:900;color:var(--azul);line-height:1.1}
+#albResumo .conta small{font-size:.8rem;color:var(--tinta3);font-weight:800}
+#albResumo .fora{height:9px;background:var(--linha);border-radius:99px;overflow:hidden;margin-top:10px}
+#albResumo .dentro{display:block;height:100%;background:linear-gradient(90deg,#2f80ed,#5ee89a);
+  border-radius:99px;transition:width .4s}
+#albFiltros{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;-webkit-overflow-scrolling:touch}
+#albFiltros button{flex:0 0 auto;background:var(--papel);border:1px solid var(--linha);
+  border-radius:99px;padding:8px 13px;font-size:.72rem;font-weight:800;color:var(--tinta2)}
+#albFiltros button.on{background:var(--azul);color:#fff;border-color:var(--azul)}
+#albGrade{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px}
+.mini{background:var(--papel);border-radius:10px;padding:5px;box-shadow:0 2px 7px rgba(0,0,0,.09);
+  position:relative;overflow:hidden}
+.mini img{width:100%;display:block;border-radius:6px}
+.mini .vazio{aspect-ratio:245/342;border-radius:6px;background:var(--linha);display:grid;
+  place-items:center;color:var(--tinta3);font-size:1.4rem}
+.mini .nm{display:block;font-size:.6rem;font-weight:800;color:var(--tinta2);margin-top:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.mini .qtd{position:absolute;right:7px;top:7px;background:var(--tinta);color:#fff;
+  border-radius:99px;padding:2px 7px;font-size:.6rem;font-weight:900}
+.mini.falta{opacity:.5}
+#albGrade .nada{grid-column:1/-1;text-align:center;color:var(--tinta3);font-size:.84rem;
+  padding:30px 10px;line-height:1.6}
+
+/* ===================== A FICHA DA CARTA ===================== */
+#ficha{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+  background:rgba(10,20,28,.82);padding:20px}
+#ficha.on{display:flex}
+#ficha .caixa{background:var(--papel);border-radius:20px;padding:16px;max-width:330px;width:100%;
+  text-align:center;max-height:88vh;overflow-y:auto}
+#ficha img{width:76%;display:block;margin:0 auto 12px;border-radius:9px;box-shadow:var(--sombra)}
+#ficha h3{font-size:1.1rem;margin-bottom:3px}
+#ficha .meta{font-size:.74rem;color:var(--tinta3);font-weight:700;margin-bottom:12px}
+#ficha .fechar{background:var(--azul);color:#fff;font-weight:900;padding:12px;border-radius:14px;
+  width:100%;margin-top:6px}
+
+.selo{display:inline-block;border-radius:99px;padding:3px 10px;font-size:.66rem;font-weight:900}
+
+/* ===================== AJUDA / AJUSTES ===================== */
+.bloco{background:var(--papel);border-radius:16px;padding:14px;box-shadow:var(--sombra);
+  margin-bottom:12px}
+.bloco h3{font-size:.92rem;margin-bottom:8px}
+.bloco p{font-size:.82rem;color:var(--tinta2);line-height:1.6;margin-bottom:8px}
+.bloco p:last-child{margin-bottom:0}
+.bloco .linha{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:10px 0;border-top:1px solid var(--linha)}
+.bloco .linha:first-of-type{border-top:0}
+.bloco .linha b{font-size:.84rem}
+.bloco .linha small{display:block;font-size:.7rem;color:var(--tinta3);font-weight:600;margin-top:2px}
+.bloco button.liga{background:var(--linha);color:var(--tinta2);font-weight:900;font-size:.74rem;
+  padding:9px 15px;border-radius:12px;flex:0 0 auto}
+.bloco button.liga.on{background:#5ee89a;color:#0d3b22}
+.bloco button.perigo{background:#ffe8e8;color:#c0392b;font-weight:900;font-size:.76rem;
+  padding:11px;border-radius:12px;width:100%}
+.bloco .aviso{background:#fff8e1;border:1px solid #ffe08a;border-radius:12px;padding:11px;
+  font-size:.76rem;color:#7a5c00;line-height:1.55}
+
+/* ===================== CARREGANDO / ERRO ===================== */
+#abertura{position:fixed;inset:0;z-index:90;background:linear-gradient(170deg,#1b6b3a,#0d3b22);
+  display:grid;place-items:center;text-align:center;padding:26px;color:#fff}
+#abertura.off{display:none}
+#abertura .logo{font-size:3.4rem;line-height:1}
+#abertura h1{font-size:1.7rem;margin:10px 0 6px;letter-spacing:-.02em}
+#abertura .lead{font-size:.86rem;opacity:.92;line-height:1.6;max-width:300px;margin:0 auto 18px}
+#abertura .estado{font-size:.8rem;font-weight:800;opacity:.9;min-height:2.4em;line-height:1.5}
+#abertura .btn{background:#fff;color:#0d3b22;font-weight:900;font-size:1rem;padding:14px 26px;
+  border-radius:16px;box-shadow:0 7px 0 rgba(0,0,0,.25);margin-top:6px}
+#abertura .btn:active{transform:translateY(3px);box-shadow:0 4px 0 rgba(0,0,0,.25)}
+#abertura .fino{font-size:.68rem;opacity:.7;margin-top:14px;line-height:1.5;max-width:300px}
+.girando{display:inline-block;animation:gira 1s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div id="palco">
+  <div id="camera">
+    <div id="mundo">
+      <div id="alcance"></div>
+      <div id="eu"><div class="boneco">🧒</div><div class="pe"></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="hud">
+  <div class="chip capinha" title="capinhas pra capturar">🛡️ <span class="n" id="hudCapinhas">0</span></div>
+  <div id="barraNivel">
+    <div class="topo"><span>nível <b id="hudNivel">1</b></span><span id="hudXp">0/50</span></div>
+    <div class="fora"><span class="dentro" id="hudBarra" style="width:0"></span></div>
+  </div>
+  <div class="chip" title="cartas diferentes no álbum"><span class="icocard"></span> <span class="n" id="hudCartas">0</span></div>
+</div>
+
+<div id="baixo">
+  <button onclick="abrir('album')"><span class="ic">📒</span>Álbum</button>
+  <button onclick="abrir('ajuda')"><span class="ic">❓</span>Como joga</button>
+  <button onclick="abrir('ajustes')"><span class="ic">⚙️</span>Ajustes</button>
+</div>
+
+<div id="recado"></div>
+
+<!-- ===================== CAPTURA ===================== -->
+<div id="captura">
+  <div id="capFundo"><div class="chao"></div></div>
+  <div id="capInfo">
+    <div class="nome" id="capNome">—</div>
+    <div class="sub" id="capSub">—</div>
+  </div>
+  <div id="alvo"></div>
+  <div id="anel"></div>
+  <div id="capCarta"></div>
+  <div id="capinha">🛡️</div>
+  <div id="capBaixo">
+    <div id="capDica"></div>
+    <button id="btJogar">Jogar a capinha</button>
+    <button id="btFugir">deixar essa pra lá</button>
+  </div>
+</div>
+
+<!-- ===================== ÁLBUM ===================== -->
+<div class="folha" id="folha-album">
+  <div class="cabeca"><h2>📒 Teu álbum</h2><button class="x" onclick="fechar()">✕</button></div>
+  <div class="corpo">
+    <div id="albResumo">
+      <div class="conta"><span id="albConta">0</span><small> de <span id="albTotal">0</span> cartas</small></div>
+      <div class="fora"><span class="dentro" id="albBarra" style="width:0"></span></div>
+      <div id="albExtra" style="font-size:.74rem;color:var(--tinta3);font-weight:700;margin-top:9px"></div>
+    </div>
+    <div id="albFiltros"></div>
+    <div id="albGrade"></div>
+  </div>
+</div>
+
+<!-- ===================== AJUDA ===================== -->
+<div class="folha" id="folha-ajuda">
+  <div class="cabeca"><h2>❓ Como joga</h2><button class="x" onclick="fechar()">✕</button></div>
+  <div class="corpo" id="corpoAjuda"></div>
+</div>
+
+<!-- ===================== AJUSTES ===================== -->
+<div class="folha" id="folha-ajustes">
+  <div class="cabeca"><h2>⚙️ Ajustes</h2><button class="x" onclick="fechar()">✕</button></div>
+  <div class="corpo" id="corpoAjustes"></div>
+</div>
+
+<!-- ===================== FICHA ===================== -->
+<div id="ficha" onclick="if(event.target===this)fecharFicha()">
+  <div class="caixa" id="fichaCaixa"></div>
+</div>
+
+<!-- ===================== ABERTURA ===================== -->
+<div id="abertura">
+  <div>
+    <div class="logo">🎴</div>
+    <h1>PokéTCG GO</h1>
+    <p class="lead">Ande pelo mapa, ache as cartas brilhando no chão
+      e jogue a capinha pra capturar.</p>
+    <div class="estado" id="aberturaEstado">
+      <span class="girando">⏳</span> buscando as cartas…</div>
+    <button class="btn" id="btEntrar" style="display:none">Começar a andar</button>
+    <p class="fino" id="aberturaFino"></p>
+  </div>
+</div>
+
+<script src="cartas.js?v=2"></script>
+<script src="mundo.js?v=2"></script>
+<script src="jogo.js?v=2"></script>
+</body>
+</html>
