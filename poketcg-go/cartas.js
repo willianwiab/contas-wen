@@ -19,7 +19,14 @@
 const CHAVE_BARALHO = 'poketcg-go:baralho';
 const API = 'https://api.pokemontcg.io/v2/cards';
 const POR_PAGINA = 250;
-const PAGINAS = [1, 2, 3];        /* ~750 cartas, iguais pra todo mundo */
+/* A PRIMEIRA página basta pra jogar: 250 cartas já dão álbum de
+   sobra. As outras entram depois, caladas, com o jogo já aberto.
+
+   Isso foi feito porque a primeira versão pedia as três de uma
+   vez e QUALQUER uma delas falhando derrubava a abertura inteira
+   — três chances de dar errado pra começar a jogar. */
+const PAGINA_1 = 1;
+const PAGINAS_DEPOIS = [2, 3];
 const VALIDADE = 7 * 24 * 3600 * 1000;
 
 /* ---------------------------------------------------------
@@ -143,20 +150,34 @@ function guardar(cartas){
   }catch(e){ /* sem espaço: o jogo roda igual, só busca de novo na próxima */ }
 }
 
+async function buscarPagina(n){
+  const url = `${API}?q=supertype:pokemon&pageSize=${POR_PAGINA}&page=${n}`;
+  const r = await pedirJSON(url, 4);
+  return (r.data || []).map(enxugar).filter(Boolean);
+}
+
 async function buscarDaInternet(aviso){
-  const achadas = [], vistos = new Set();
-  for(let i = 0; i < PAGINAS.length; i++){
-    if(aviso) aviso(`<span class="girando">⏳</span> buscando as cartas… ` +
-                    `<b>${achadas.length}</b> até agora`);
-    const url = `${API}?q=supertype:pokemon&pageSize=${POR_PAGINA}&page=${PAGINAS[i]}`;
-    const r = await pedirJSON(url, 3);
-    for(const bruta of (r.data || [])){
-      const c = enxugar(bruta);
-      if(c && !vistos.has(c.id)){ vistos.add(c.id); achadas.push(c); }
-    }
-  }
+  if(aviso) aviso('<span class="girando">⏳</span> buscando as cartas…');
+  const achadas = await buscarPagina(PAGINA_1);
   if(!achadas.length) throw new Error('a API respondeu sem carta nenhuma');
   return achadas;
+}
+
+/* as outras páginas, com o jogo já rodando: se falhar, ninguém
+   fica sabendo e o jogo continua com as 250 que já tem */
+async function crescerBaralho(aoCrescer){
+  const vistos = new Set(BARALHO.map(c => c.id));
+  for(const n of PAGINAS_DEPOIS){
+    try{
+      const novas = (await buscarPagina(n)).filter(c => !vistos.has(c.id));
+      for(const c of novas) vistos.add(c.id);
+      if(novas.length){
+        BARALHO = BARALHO.concat(novas);
+        guardar(BARALHO);
+        if(aoCrescer) aoCrescer(BARALHO.length);
+      }
+    }catch(e){ return; }
+  }
 }
 
 /* Devolve de onde o baralho veio, pra tela poder ser honesta:
@@ -194,6 +215,54 @@ async function encherBaralho(aviso){
 }
 
 const cartaPorId = id => BARALHO.find(c => c.id === id) || null;
+
+/* ---------------------------------------------------------
+   DIAGNÓSTICO
+
+   A rede do computador onde eu fui escrito bloqueia a API, então
+   eu NÃO consegui testar a busca de verdade antes de publicar.
+   Em vez de chutar uma causa, esta tela pergunta pra cada fonte
+   e mostra quem respondeu o quê — aí dá pra consertar o problema
+   certo em vez do provável.
+   --------------------------------------------------------- */
+const FONTES = [
+  { nome:'pokemontcg.io · teste simples',
+    url:'https://api.pokemontcg.io/v2/cards?pageSize=1' },
+  { nome:'pokemontcg.io · a busca do jogo',
+    url:`${API}?q=supertype:pokemon&pageSize=${POR_PAGINA}&page=1` },
+  { nome:'tcgdex.net · português',
+    url:'https://api.tcgdex.net/v2/pt/cards?name=pikachu' },
+  { nome:'tcgdex.net · inglês',
+    url:'https://api.tcgdex.net/v2/en/cards?name=pikachu' }
+];
+
+async function diagnosticar(aoVivo){
+  const saida = [];
+  for(const f of FONTES){
+    const t0 = Date.now();
+    let linha;
+    try{
+      const r = await fetch(f.url, { headers:{ Accept:'application/json' } });
+      const ms = Date.now() - t0;
+      if(!r.ok){
+        linha = { nome:f.nome, ok:false, detalhe:`HTTP ${r.status} ${r.statusText || ''}`.trim(), ms };
+      }else{
+        const j = await r.json();
+        const n = Array.isArray(j) ? j.length : (j.data ? j.data.length : 0);
+        const ex = Array.isArray(j) ? j[0] : (j.data && j.data[0]);
+        linha = { nome:f.nome, ok:true, ms,
+          detalhe:`${n} carta(s)` + (ex && ex.name ? ` · ex: ${ex.name}` : '') +
+                  (ex && ex.rarity ? ` · raridade: ${ex.rarity}` : ' · sem raridade na lista') };
+      }
+    }catch(e){
+      linha = { nome:f.nome, ok:false, ms:Date.now() - t0,
+        detalhe:String((e && e.message) || e) };
+    }
+    saida.push(linha);
+    if(aoVivo) aoVivo(saida);
+  }
+  return saida;
+}
 
 /* ---------------------------------------------------------
    SORTEAR UMA CARTA PRA NASCER NO MAPA

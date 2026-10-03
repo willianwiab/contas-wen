@@ -4,7 +4,7 @@
    pokemontcg.io, e copiar a arte deles pro nosso cache seria
    guardar desenho que não é nosso. Sem internet o jogo abre e
    roda; as cartas é que aparecem com o verso. */
-const CACHE = 'poketcg-go-v3';
+const CACHE = 'poketcg-go-v5';
 const MEUS = ['./', './index.html', './cartas.js', './mundo.js', './jogo.js',
   './manifest.webmanifest', './icone.svg', './icone-192.png', './icone-512.png',
   './icone-180.png', './icone-maskable-512.png'];
