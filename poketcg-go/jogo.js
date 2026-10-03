@@ -674,14 +674,41 @@ async function comecar(){
     bt.onclick = entrar;
   }catch(e){
     estado.innerHTML = `😵‍💫 <b>Não deu pra montar o baralho.</b><br>
-      <small style="font-weight:600">${explicarErro(e)}</small>`;
+      <small style="font-weight:600">${explicarErro(e)}</small>
+      <br><small style="opacity:.75;font-weight:600;font-size:.72rem">
+        detalhe: ${escapar(String((e && e.message) || e))}</small>`;
     fino.innerHTML = 'O jogo precisa de internet <b>na primeira vez</b> pra buscar as cartas. ' +
       'Depois disso ele abre sem.';
     bt.textContent = '🔄 Tentar de novo';
     bt.style.display = '';
     bt.onclick = () => { bt.style.display = 'none'; estado.innerHTML =
       '<span class="girando">⏳</span> buscando as cartas…'; comecar(); };
+    mostrarDiagnostico();
   }
+}
+
+/* a tela de "testar as fontes": o que aparecer aqui me diz o
+   problema de verdade, em vez de eu adivinhar daqui */
+function mostrarDiagnostico(){
+  const fino = $('#aberturaFino');
+  fino.insertAdjacentHTML('beforebegin',
+    `<button class="btn" id="btDiag" style="margin-top:10px;font-size:.84rem;padding:10px 18px">
+       🔎 Testar as fontes</button>
+     <div id="diagSaida" style="text-align:left;font-size:.68rem;line-height:1.5;margin-top:10px;
+       max-width:320px"></div>`);
+  $('#btDiag').onclick = async () => {
+    $('#btDiag').disabled = true;
+    $('#btDiag').textContent = '🔎 testando…';
+    const pinta = l => {
+      $('#diagSaida').innerHTML = l.map(x =>
+        `<div style="background:rgba(0,0,0,.25);border-radius:9px;padding:7px 9px;margin-bottom:5px">
+           ${x.ok ? '✅' : '❌'} <b>${escapar(x.nome)}</b><br>
+           <span style="opacity:.85">${escapar(x.detalhe)} · ${x.ms}ms</span></div>`).join('');
+    };
+    await diagnosticar(pinta);
+    $('#btDiag').textContent = '🔎 testar de novo';
+    $('#btDiag').disabled = false;
+  };
 }
 
 function entrar(){
@@ -698,6 +725,13 @@ function entrar(){
     recado('⚠️ Este navegador não deixa guardar: o álbum <b>não vai ficar salvo</b>.', 6000);
   else
     recado('Toca no mapa pra andar. Acha as cartas brilhando 🎴', 4200);
+
+  /* o resto do baralho chega sozinho, sem segurar o começo do jogo */
+  if(deOndeVeio === 'internet')
+    crescerBaralho(n => {
+      if(document.querySelector('#folha-album.on')) pintarAlbum();
+      recado(`🎴 o baralho cresceu: <b>${n}</b> cartas`, 2600);
+    });
 }
 
 $('#palco').addEventListener('pointerdown', tocouNoMapa);
