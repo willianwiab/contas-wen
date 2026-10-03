@@ -3,10 +3,11 @@
 Um clicker de Halloween. Cê clica na abóbora, ganha doce, compra melhoria pra ganhar mais
 por clique — e contrata monstro pra catar doce enquanto cê nem tá olhando.
 
-## 🚪 O jogo só abre na semana do Halloween
+## 🚪 O jogo só abre no mês do Halloween
 
-De **25 de outubro a 1º de novembro** ele abre sozinho. Fora dessa semana aparece uma porta
-fechada, com um relógio mostrando **dias, horas, minutos e segundos** até a próxima.
+**Outubro inteiro**, do dia 1º até o fim — e o 1º de novembro vale também, pra ninguém ser
+expulso no meio da noite do Halloween. Fora de outubro aparece uma porta fechada, com um
+relógio mostrando **dias, horas, minutos e segundos** até a próxima abertura.
 
 Só dia e hora deixava a tela parada — parecia que a contagem tinha travado. Com os segundos
 correndo dá pra ver que ela está mesmo andando.
@@ -246,7 +247,7 @@ avisos do navegador. Ele avisa em duas horas:
 
 - 🏆 **Troféu novo** — caindo vários de uma vez, sai **um aviso só** juntando todos. Três
   avisos seguidos viram incômodo, não notícia.
-- 🚪 **A porta abriu** — quando chega 25 de outubro, uma vez por ano.
+- 🚪 **A porta abriu** — quando chega 1º de outubro, uma vez por ano.
 
 Apertar de novo desliga.
 

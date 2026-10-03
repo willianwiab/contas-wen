@@ -577,7 +577,9 @@ function abrirSave(input){
 /* ---------------------------------------------------------
    A TRANCA DO HALLOWEEN
 
-   O jogo só abre de 25 de outubro a 1º de novembro. Quem
+   O jogo só abre em outubro, o mês do Halloween — e vale o
+   1º de novembro também, pra ninguém ser expulso no meio da
+   noite do Halloween. Quem
    sabe a senha entra quando quiser — e aí fica destravado
    pra sempre neste aparelho.
 
@@ -585,15 +587,15 @@ function abrirSave(input){
    no código, e quem abrir o arquivo acha. Pra valer de
    verdade precisaria de um servidor, que este jogo não tem.
    --------------------------------------------------------- */
-function naSemanaDoHalloween(d = new Date()){
+function noMesDoHalloween(d = new Date()){
   const m = d.getMonth(), dia = d.getDate();
-  return (m === 9 && dia >= 25) || (m === 10 && dia <= 1);
+  return m === 9 || (m === 10 && dia <= 1);
 }
 
 function proximaAbertura(){
   const hoje = new Date();
-  const esteAno = new Date(hoje.getFullYear(), 9, 25);
-  return hoje < esteAno ? esteAno : new Date(hoje.getFullYear() + 1, 9, 25);
+  const esteAno = new Date(hoje.getFullYear(), 9, 1);
+  return hoje < esteAno ? esteAno : new Date(hoje.getFullYear() + 1, 9, 1);
 }
 
 function pintarContagem(){
@@ -1372,15 +1374,15 @@ function tique(){
   pintarTudo();
 }
 
-/* a porta pode abrir com o jogo j\u00e1 aberto \u2014 25 de outubro chega
+/* a porta pode abrir com o jogo j\u00e1 aberto \u2014 1\u00ba de outubro chega
    enquanto algu\u00e9m est\u00e1 jogando, e isso merece um aviso */
 function conferirPorta(){
   const ano = new Date().getFullYear();
-  if(!naSemanaDoHalloween() || dados.avisouPorta === ano) return;
+  if(!noMesDoHalloween() || dados.avisouPorta === ano) return;
   dados.avisouPorta = ano;
   gravar();
-  avisar('\u{1F6AA} A porta abriu!', 'A casa assombrada est\u00e1 aberta \u2014 \u00e9 semana de Halloween \u{1F383}');
-  faixa('\u{1F6AA} A porta abriu \u2014 \u00e9 semana de Halloween!');
+  avisar('\u{1F6AA} A porta abriu!', 'A casa assombrada est\u00e1 aberta \u2014 \u00e9 m\u00eas de Halloween \u{1F383}');
+  faixa('\u{1F6AA} A porta abriu \u2014 \u00e9 m\u00eas de Halloween!');
   setTimeout(() => $('#faixaBonus').classList.remove('on'), 6000);
 }
 
@@ -1581,7 +1583,7 @@ function admTrofeus(dar){
 function admPorta(trancar){
   dados.destravado = !trancar;
   gravar();
-  if(trancar && !naSemanaDoHalloween()){
+  if(trancar && !noMesDoHalloween()){
     fecharAdm();
     $('#trava').classList.add('on');
     pintarContagem();
@@ -1709,7 +1711,7 @@ document.addEventListener('keydown', ev => {
   if(ev.code === 'Space' && rodando){ ev.preventDefault(); clicar(); }
 });
 
-if(naSemanaDoHalloween() || dados.destravado){
+if(noMesDoHalloween() || dados.destravado){
   comecarJogo();
 }else{
   $('#trava').classList.add('on');
