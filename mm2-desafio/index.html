@@ -306,6 +306,7 @@ input:focus,select:focus,button:focus-visible{outline:3px solid var(--amarelo);o
   }
   /* 👥 Amigos */
   function addAmigo(r){
+    if(r.nick === 'ClaudeRobo') return 'robo';
     if(perfil && r.nick === perfil.nick) return 'eu';
     const i = amigos.findIndex(a => a.nick === r.nick), novo = { nick:r.nick, papel:r.papel, mapa:r.mapa };
     if(i >= 0){ amigos[i] = novo; gravar('amigos', amigos); return 'ja'; }
@@ -355,7 +356,7 @@ input:focus,select:focus,button:focus-visible{outline:3px solid var(--amarelo);o
     const r = lerCodigo($('colar-amigo').value), m = $('msg-add');
     if(!r){ m.className = 'msg erro'; m.textContent = '❌ Código errado. Confira se copiou tudo.'; return; }
     const res = addAmigo(r); m.className = 'msg ' + (res === 'eu' ? 'erro' : 'ok');
-    m.textContent = res === 'eu' ? 'Esse é o seu próprio código! 😄' : res === 'ja' ? `${r.nick} já é seu amigo (atualizei o cartão).` : `✅ ${r.nick} agora é seu amigo!`;
+    m.textContent = res === 'robo' ? '🤖 Esse é o código do Claude! Ele já está na sua lista, aqui embaixo. Bora desafiar ele!' : res === 'eu' ? 'Esse é o seu próprio código! 😄' : res === 'ja' ? `${r.nick} já é seu amigo (atualizei o cartão).` : `✅ ${r.nick} agora é seu amigo!`;
     $('colar-amigo').value = ''; desenharAmigos();
   });
   $('amigos').addEventListener('click', ev => {
