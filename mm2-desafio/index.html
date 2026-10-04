@@ -66,6 +66,9 @@ input:focus,select:focus,button:focus-visible{outline:3px solid var(--amarelo);o
 .amigo b{display:block;word-break:break-all}
 .amigo small{color:var(--fraco)}
 .amigo .acoes{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.simulacao{grid-column:1/-1;background:#0b0c12;border-radius:12px;padding:10px;font-weight:700}
+.simulacao p{margin:3px 0}
+.simulacao .final{font-size:20px;font-weight:900;margin-top:6px}
 .amigo .acoes a,.amigo .acoes button{font:700 13px system-ui,sans-serif;border:0;border-radius:10px;padding:6px 10px;cursor:pointer;text-decoration:none;color:#fff;background:#3a3e4f}
 .msg{min-height:1.4em;font-weight:700;margin-top:8px}
 .msg.erro{color:#ff6b6b} .msg.ok{color:var(--verde)}
@@ -175,7 +178,10 @@ input:focus,select:focus,button:focus-visible{outline:3px solid var(--amarelo);o
     </div>
     <div class="painel">
       <h2>👥 Meus amigos</h2>
-      <div class="lista" id="amigos"></div>
+      <div class="amigo robo" style="--cor:#ffd60a"><span class="ic">🤖</span><div><b>Claude <small>(amigo robô do site)</small></b><small id="robo-info">Ele não tem Roblox: a partida é uma simulação aqui no site.</small></div>
+        <div class="acoes"><button type="button" id="desafiar-robo">⚔️ Desafiar o Claude</button></div>
+        <div class="simulacao" id="simulacao" style="display:none"></div></div>
+      <div class="lista" id="amigos" style="margin-top:8px"></div>
     </div>
     <div class="seguro">🛡️ Adicione só <b>amigos que você conhece de verdade</b> (da escola, da família, vizinhos). Se alguém que você não conhece pedir pra ser seu amigo ou pedir sua senha, <b>conte pra um adulto</b>.</div>
   </section>
@@ -316,6 +322,33 @@ input:focus,select:focus,button:focus-visible{outline:3px solid var(--amarelo);o
         <div class="acoes"><button type="button" data-desafiar="${i}">⚔️ Desafiar</button><a href="https://www.roblox.com/search/users?keyword=${encodeURIComponent(a.nick)}" target="_blank" rel="noopener">🔎 Achar no Roblox</a><button type="button" data-tirar="${i}">🗑️ Tirar</button></div></div>`;
     }).join('') : '<p class="vazio">Nenhum amigo ainda. Cole o código de um amigo ali em cima!</p>';
   }
+  /* 🤖 Claude, o amigo robô: a partida é sorteada (com um pouquinho de vantagem pra você no seu modo favorito). */
+  const ROBO = 'Claude 🤖';
+  function infoRobo(){
+    const contra = desafios.filter(d => d.amigo === ROBO), v = contra.filter(d => d.res === 'v').length, dd = contra.filter(d => d.res === 'd').length;
+    $('robo-info').textContent = contra.length ? `Placar contra o Claude: você ${v} x ${dd} Claude` : 'Ele não tem Roblox: a partida é uma simulação aqui no site.';
+  }
+  $('desafiar-robo').addEventListener('click', () => {
+    const b = $('desafiar-robo'); if(b.disabled) return; b.disabled = true;
+    const d = Math.floor(Math.random() * DESAFIOS.length), mapa = perfil && MAPAS.includes(perfil.mapa) ? perfil.mapa : MAPAS[Math.floor(Math.random() * MAPAS.length)];
+    const papelRobo = ['xerife', 'assassino', 'inocente'][Math.floor(Math.random() * 3)];
+    const chance = .5 + (perfil && perfil.mapa === mapa ? .08 : 0);
+    const sim = $('simulacao'); sim.style.display = ''; sim.innerHTML = `<p>🎯 ${esc(DESAFIOS[d])}</p><p>🗺️ ${esc(mapa)} · Claude joga de ${PAPEIS[papelRobo][0]} ${PAPEIS[papelRobo][1]}</p>`;
+    let eu = 0, ele = 0, r = 0;
+    const FRASES_EU = ['Você foi mais rápido! ⚡', 'Você se escondeu bem! 🫣', 'Mandou bem! 🎯', 'O Claude caiu na sua! 😆'], FRASES_ELE = ['O Claude te achou! 😱', 'O Claude foi mais rápido! 🤖', 'Quase! O Claude ganhou essa.', 'O Claude pegou mais moedas! 🪙'];
+    const rodada = () => {
+      r++; const ganhei = Math.random() < chance; ganhei ? eu++ : ele++;
+      sim.insertAdjacentHTML('beforeend', `<p>Rodada ${r}: ${ganhei ? '✅ ' + FRASES_EU[Math.floor(Math.random() * 4)] : '❌ ' + FRASES_ELE[Math.floor(Math.random() * 4)]}</p>`);
+      if(eu < 3 && ele < 3) return setTimeout(rodada, 700);
+      const venci = eu > ele;
+      sim.insertAdjacentHTML('beforeend', `<p class="final">${venci ? `🏆 Você ganhou! ${eu} x ${ele}` : `🤖 O Claude ganhou! ${ele} x ${eu}`}</p><p>${venci ? 'Claude: "Ah não! Revanche? 😅"' : 'Claude: "Boa partida! Tenta de novo! 😄"'}</p>`);
+      desafios.unshift({ amigo:ROBO, papel:papelRobo, desafio:d, onde:mapa, quando:Date.now(), res:venci ? 'v' : 'd', enviei:true });
+      desafios = desafios.slice(0, 50); gravar('desafios', desafios); infoRobo();
+      b.disabled = false; b.textContent = '🔁 Revanche';
+    };
+    setTimeout(rodada, 700);
+  });
+  infoRobo();
   $('copiar-amigo').addEventListener('click', () => copiar($('meu-codigo').textContent, $('msg-amigo')));
   $('link-amigo').addEventListener('click', () => copiar(`${LINK}#${$('meu-codigo').textContent}`, $('msg-amigo'), '✅ Link copiado!'));
   $('adicionar').addEventListener('click', () => {
