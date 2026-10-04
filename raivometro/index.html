@@ -360,11 +360,109 @@ mark { background: var(--beak); color: var(--beak-ink); border-radius: 3px; padd
 .ao-vivo::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #22a35a; }
 .ao-vivo.off::before { background: var(--muted); }
 
+
+/* ============ Rede do Raivômetro ============ */
+.rede { display: flex; flex-direction: column; gap: 16px; background: var(--surface); border: 3px solid var(--fg); border-radius: 22px; padding: 16px; box-shadow: 8px 8px 0 var(--red); }
+.rede h2 { margin: 0; }
+.rede-topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.eu { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: .9rem; cursor: pointer; background: none; border: 0; color: var(--fg); font-family: var(--body); padding: 0; }
+.eu img, .av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--fg); background: var(--bg); flex: none; }
+.rede-off { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.rede-off p { margin: 0; }
+.abas { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: thin; }
+.abas button { flex: none; font: inherit; font-size: .88rem; font-weight: 800; color: var(--fg); background: var(--bg); border: 2px solid var(--fg); border-radius: 999px; padding: 6px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.abas button[aria-selected="true"] { background: var(--fg); color: var(--bg); }
+.abas button:focus-visible, .chip:focus-visible, .eu:focus-visible { outline: 3px solid var(--beak); outline-offset: 2px; }
+.bolinha { background: var(--red); color: var(--red-ink); border-radius: 999px; font-size: .72rem; min-width: 20px; padding: 0 6px; text-align: center; }
+.painel { display: flex; flex-direction: column; gap: 14px; }
+.filtro-feed { display: flex; gap: 6px; }
+.chip { font: inherit; font-size: .82rem; font-weight: 800; color: var(--fg); background: var(--bg); border: 2px solid var(--line); border-radius: 999px; padding: 3px 12px; cursor: pointer; }
+.chip[aria-pressed="true"] { border-color: var(--fg); background: var(--beak); color: var(--beak-ink); }
+.feed { display: flex; flex-direction: column; gap: 18px; }
+.post { background: var(--bg); border: 3px solid var(--fg); border-radius: 16px; overflow: hidden; box-shadow: 4px 4px 0 var(--fg); }
+.post-cab { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+.post-cab .quem { display: flex; align-items: center; gap: 10px; min-width: 0; font: inherit; color: var(--fg); background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
+.post-cab .quem b { display: block; font-size: .95rem; overflow-wrap: anywhere; }
+.post-cab .quem small { color: var(--muted); font-size: .75rem; }
+.post-cab .menu { margin-left: auto; display: flex; gap: 6px; }
+.post-cab .menu button { font: inherit; font-size: .8rem; font-weight: 800; color: var(--fg); background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 2px 10px; cursor: pointer; }
+.post > img { display: block; width: 100%; background: #000; cursor: zoom-in; }
+.post .legenda { margin: 0; padding: 10px 12px 4px; overflow-wrap: anywhere; }
+.post .para { margin: 0; padding: 0 12px; font-size: .8rem; font-weight: 800; color: var(--red); }
+.post .reacoes, .post .coments { padding-left: 12px; padding-right: 12px; }
+.post .reacoes { padding-top: 6px; }
+.post.alvo { animation: brilho 2s ease-out; }
+.vazio-rede { text-align: center; color: var(--muted); font-weight: 600; padding: 24px 8px; border: 2px dashed var(--line); border-radius: 14px; }
+
+.editor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 640px) { .editor { grid-template-columns: 1fr; } }
+.tela-meme { position: sticky; top: 80px; }
+.tela-meme canvas { width: 100%; height: auto; display: block; border-radius: 12px; border: 3px solid var(--fg); background: var(--bg); cursor: crosshair; touch-action: manipulation; }
+.editor-ctrl { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.campo { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.campo input[type="text"], .perfil-form input[type="text"], .perfil-form textarea, .cartao-pessoa input[type="text"], .copiar input {
+  width: 100%; font: inherit; font-size: 1rem; color: var(--fg); background: var(--bg); border: 2px solid var(--fg); border-radius: 12px; padding: 8px 12px;
+}
+.campo input:focus-visible, .perfil-form input:focus-visible, .perfil-form textarea:focus-visible, .cartao-pessoa input:focus-visible { outline: 3px solid var(--beak); outline-offset: 1px; }
+.rot { font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; color: var(--muted); }
+.linha { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.modelos { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; width: 100%; }
+@media (max-width: 420px) { .modelos { grid-template-columns: repeat(4, 1fr); } }
+.modelos button { padding: 0; aspect-ratio: 1; border: 3px solid transparent; border-radius: 8px; overflow: hidden; cursor: pointer; background: var(--bg); }
+.modelos button[aria-pressed="true"] { border-color: var(--red); }
+.modelos img { width: 100%; height: 100%; object-fit: cover; display: block; }
+label.btn { display: inline-block; }
+input.sr:focus-visible + *, label.btn:focus-within { outline: 3px solid var(--beak); }
+#meme-destino { max-width: 100%; }
+
+.convite { display: flex; flex-direction: column; gap: 8px; background: var(--bg); border: 2px dashed var(--fg); border-radius: 14px; padding: 12px; }
+.convite p { margin: 0; }
+.copiar { display: flex; gap: 6px; }
+.copiar input { flex: 1; min-width: 0; font-size: .85rem; }
+.sub { font-family: var(--display); font-weight: 400; font-size: 1.05rem; margin: 6px 0 0; }
+.pessoas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pessoas li { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 2px solid var(--line); border-radius: 14px; padding: 8px 10px; }
+.pessoas li .nome { flex: 1; min-width: 0; font: inherit; color: var(--fg); background: none; border: 0; padding: 0; text-align: left; cursor: pointer; }
+.pessoas li .nome b { display: block; overflow-wrap: anywhere; }
+.pessoas li .nome small { color: var(--muted); font-size: .78rem; }
+.pessoas li .btn { flex: none; }
+.pessoas .vazio-li { color: var(--muted); font-size: .9rem; border-style: dashed; }
+
+.perfil-form { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 16px; }
+@media (max-width: 520px) { .perfil-form { grid-template-columns: 1fr; } }
+.foto-edit { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.foto-edit > img { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid var(--fg); box-shadow: 4px 4px 0 var(--red); background: var(--bg); }
+.avatares { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.avatares button { width: 34px; height: 34px; font-size: 1.2rem; border-radius: 50%; border: 2px solid var(--line); background: var(--bg); cursor: pointer; padding: 0; }
+.campos { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.campos textarea { resize: vertical; }
+.humores { display: flex; flex-wrap: wrap; gap: 6px; }
+.humores button { font: inherit; font-size: .82rem; font-weight: 800; color: var(--fg); background: var(--bg); border: 2px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer; }
+.humores button[aria-pressed="true"] { border-color: var(--fg); background: var(--red); color: var(--red-ink); }
+.grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.grade button { padding: 0; border: 2px solid var(--fg); border-radius: 8px; overflow: hidden; aspect-ratio: 1; cursor: pointer; background: var(--bg); }
+.grade img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.grade .vazio-rede { grid-column: 1 / -1; }
+
+.lb.modal { display: grid; place-items: center; grid-template-rows: 1fr; overflow-y: auto; }
+.lb.modal[hidden] { display: none; }
+.cartao-pessoa { position: relative; width: min(560px, 100%); display: flex; flex-direction: column; gap: 12px; background: var(--surface); color: var(--fg); border: 3px solid var(--fg); border-radius: 20px; padding: 18px; box-shadow: 8px 8px 0 var(--red); margin: auto; }
+.cartao-pessoa h3 { font-family: var(--display); font-weight: 400; margin: 0; font-size: 1.4rem; line-height: 1.1; overflow-wrap: anywhere; }
+.cartao-pessoa p { margin: 0; }
+.cartao-pessoa .fechar { position: absolute; right: 10px; top: 10px; width: 36px; height: 36px; padding: 0; color: var(--fg); background: var(--bg); border: 2px solid var(--fg); border-radius: 50%; }
+.lb .cartao-pessoa button.btn { color: var(--fg); background: var(--bg); border-color: var(--fg); }
+.lb .cartao-pessoa button.btn.red { background: var(--red); color: var(--red-ink); }
+.pessoa-topo { display: flex; gap: 14px; align-items: center; padding-right: 36px; }
+.pessoa-topo img { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 3px solid var(--fg); flex: none; }
+.pessoa-topo > div { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.mandar-btn { font: inherit; font-size: .85rem; font-weight: 800; color: var(--fg); background: var(--bg); border: 2px solid var(--line); border-radius: 999px; padding: 2px 10px; cursor: pointer; }
+
+body:not(.rede-on) .mandar-btn { display: none; }
 /* Confete de penas e modo fúria */
 .pena { position: fixed; top: -30px; z-index: 110; pointer-events: none; font-size: 24px; animation: cai var(--d, 2.5s) linear forwards; }
 @keyframes cai { to { transform: translate(var(--x, 0), 110vh) rotate(var(--r, 360deg)); } }
 body.furia .wrap { animation: tremer .15s linear infinite; }
-body.furia { background-color: color-mix(in srgb, var(--red) 30%, var(--bg)); }
+body.furia { background-color: #ffb3b0; }
 
 /* Aparecer ao rolar */
 .revela { opacity: 0; translate: 0 24px; transition: opacity .5s ease, translate .5s ease; }
@@ -394,6 +492,7 @@ body.furia { background-color: color-mix(in srgb, var(--red) 30%, var(--bg)); }
   </div>
 
   <nav class="nav" aria-label="Seções">
+    <a href="#rede">Rede</a>
     <a href="#caso">Caso da semana</a>
     <a href="#teste">Teste</a>
     <a href="#estresse">Desestressar</a>
@@ -404,6 +503,145 @@ body.furia { background-color: color-mix(in srgb, var(--red) 30%, var(--bg)); }
     <button type="button" class="ico" id="som" aria-pressed="false" aria-label="Ligar som" title="Som">🔇</button>
     <button type="button" class="ico" id="tema" aria-label="Trocar tema claro ou escuro" title="Tema">🌙</button>
   </nav>
+
+  <section class="rede" id="rede" aria-labelledby="rede-titulo">
+    <div class="rede-topo">
+      <h2 id="rede-titulo">Rede do Raivômetro</h2>
+      <div class="eu" id="eu"></div>
+    </div>
+    <div class="rede-off" id="rede-off">
+      <p><b>Crie memes, poste, mande para os amigos e reaja aos memes deles.</b></p>
+      <p id="rede-off-txt">Carregando a rede…</p>
+      <a class="btn red big" href="https://claude.ai/artifact/41xCEn2a2XcsN62xhMoryE" target="_blank" rel="noopener" id="rede-link-off" hidden>Abrir a Rede do Raivômetro</a>
+    </div>
+    <div id="rede-on" hidden>
+      <div class="abas" role="tablist" aria-label="Rede">
+        <button type="button" role="tab" id="aba-feed" aria-selected="true" aria-controls="painel-feed">🏠 Feed</button>
+        <button type="button" role="tab" id="aba-criar" aria-selected="false" aria-controls="painel-criar">🎨 Criar meme</button>
+        <button type="button" role="tab" id="aba-recebidos" aria-selected="false" aria-controls="painel-recebidos">📬 Recebidos <span class="bolinha" id="n-recebidos" hidden></span></button>
+        <button type="button" role="tab" id="aba-amigos" aria-selected="false" aria-controls="painel-amigos">👥 Amigos <span class="bolinha" id="n-pedidos" hidden></span></button>
+        <button type="button" role="tab" id="aba-perfil" aria-selected="false" aria-controls="painel-perfil">🙂 Meu perfil</button>
+      </div>
+
+      <div class="painel" role="tabpanel" id="painel-feed" aria-labelledby="aba-feed">
+        <div class="filtro-feed" role="group" aria-label="Mostrar">
+          <button type="button" class="chip" id="feed-todos" aria-pressed="true">Todo mundo</button>
+          <button type="button" class="chip" id="feed-amigos" aria-pressed="false">Só amigos</button>
+        </div>
+        <div class="feed" id="feed"></div>
+      </div>
+
+      <div class="painel" role="tabpanel" id="painel-criar" aria-labelledby="aba-criar" hidden>
+        <div class="editor">
+          <div class="tela-meme">
+            <canvas id="meme-cv" width="720" height="720" aria-label="Prévia do meme. Clique para colocar o carimbo escolhido."></canvas>
+          </div>
+          <div class="editor-ctrl">
+            <div class="campo">
+              <span class="rot">1. Escolha a imagem</span>
+              <label class="btn" for="meme-foto">📷 Usar uma foto minha</label>
+              <input type="file" id="meme-foto" accept="image/*" class="sr">
+              <div class="modelos" id="modelos" role="group" aria-label="Modelos"></div>
+              <button type="button" class="btn" id="mais-modelos">Ver mais modelos</button>
+            </div>
+            <div class="campo">
+              <label class="rot" for="txt-cima">2. Texto de cima</label>
+              <input type="text" id="txt-cima" maxlength="80" placeholder="QUANDO A INTERNET CAI">
+              <label class="rot" for="txt-baixo">Texto de baixo</label>
+              <input type="text" id="txt-baixo" maxlength="80" placeholder="NO MEIO DA PARTIDA">
+              <div class="linha">
+                <label class="tool" for="txt-tam">Tamanho <input type="range" id="txt-tam" min="30" max="110" value="64"></label>
+                <div class="swatches" id="txt-cores" role="group" aria-label="Cor do texto"></div>
+              </div>
+            </div>
+            <div class="campo">
+              <span class="rot">3. Carimbos (clique na imagem)</span>
+              <div class="stamps" id="meme-stamps" role="group" aria-label="Carimbos do meme"></div>
+              <button type="button" class="btn" id="meme-tirar">↩ Tirar último carimbo</button>
+            </div>
+            <div class="campo">
+              <label class="rot" for="meme-legenda">4. Legenda</label>
+              <input type="text" id="meme-legenda" maxlength="200" placeholder="Escreva alguma coisa…">
+              <label class="rot" for="meme-destino">Para onde vai</label>
+              <select id="meme-destino" class="btn"></select>
+              <button type="button" class="btn red big" id="meme-postar">🚀 Postar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="painel" role="tabpanel" id="painel-recebidos" aria-labelledby="aba-recebidos" hidden>
+        <p class="hint">Memes que os seus amigos mandaram para você. Só você e quem mandou veem aqui.</p>
+        <div class="feed" id="recebidos"></div>
+      </div>
+
+      <div class="painel" role="tabpanel" id="painel-amigos" aria-labelledby="aba-amigos" hidden>
+        <div class="convite">
+          <p><b>Chame os amigos.</b> Mande este link para eles:</p>
+          <div class="copiar">
+            <input type="text" id="link-convite" readonly value="https://claude.ai/artifact/41xCEn2a2XcsN62xhMoryE" aria-label="Link do Raivômetro">
+            <button type="button" class="btn red" id="copiar-convite">Copiar</button>
+          </div>
+          <p class="hint">Eles precisam ter uma conta no Claude e acesso de Contribuidor, que o dono libera no menu Compartilhar.</p>
+        </div>
+        <h3 class="sub">Pedidos de amizade</h3>
+        <ul class="pessoas" id="lista-pedidos"></ul>
+        <h3 class="sub">Meus amigos</h3>
+        <ul class="pessoas" id="lista-amigos"></ul>
+        <h3 class="sub">Pessoas na rede</h3>
+        <label class="busca"><span aria-hidden="true">🔎</span><span class="sr">Buscar pessoas</span><input type="search" id="busca-pessoas" placeholder="Buscar pelo apelido" autocomplete="off"></label>
+        <ul class="pessoas" id="lista-pessoas"></ul>
+      </div>
+
+      <div class="painel" role="tabpanel" id="painel-perfil" aria-labelledby="aba-perfil" hidden>
+        <form class="perfil-form" id="perfil-form">
+          <div class="foto-edit">
+            <img id="perfil-foto-prev" alt="Sua foto de perfil">
+            <label class="btn" for="perfil-foto">📷 Trocar foto</label>
+            <input type="file" id="perfil-foto" accept="image/*" class="sr">
+            <div class="avatares" id="avatares" role="group" aria-label="Ou escolha um avatar"></div>
+          </div>
+          <div class="campos">
+            <label class="rot" for="perfil-apelido">Apelido</label>
+            <input type="text" id="perfil-apelido" maxlength="24" required placeholder="Ex.: Passarinho Bravo">
+            <label class="rot" for="perfil-bio">Sobre você</label>
+            <textarea id="perfil-bio" maxlength="140" rows="3" placeholder="O que deixa você pistola?"></textarea>
+            <span class="rot">Nível de raiva do perfil</span>
+            <div class="humores" id="humores" role="group" aria-label="Nível de raiva"></div>
+            <button type="submit" class="btn red big" id="perfil-salvar">Salvar perfil</button>
+          </div>
+        </form>
+        <h3 class="sub">Meus memes</h3>
+        <div class="grade" id="meus-memes"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="lb modal" id="pessoa" hidden role="dialog" aria-modal="true" aria-labelledby="pessoa-nome">
+    <div class="cartao-pessoa">
+      <button type="button" class="fechar" id="pessoa-fechar" aria-label="Fechar">✕</button>
+      <div class="pessoa-topo">
+        <img id="pessoa-foto" alt="">
+        <div>
+          <h3 id="pessoa-nome"></h3>
+          <p id="pessoa-bio"></p>
+          <p class="hint" id="pessoa-info"></p>
+        </div>
+      </div>
+      <div id="pessoa-acoes" class="lab-acoes"></div>
+      <div class="grade" id="pessoa-memes"></div>
+    </div>
+  </div>
+
+  <div class="lb modal" id="mandar" hidden role="dialog" aria-modal="true" aria-labelledby="mandar-titulo">
+    <div class="cartao-pessoa">
+      <button type="button" class="fechar" id="mandar-fechar" aria-label="Fechar">✕</button>
+      <h3 id="mandar-titulo">📤 Mandar para um amigo</h3>
+      <label class="rot" for="mandar-msg">Mensagem (opcional)</label>
+      <input type="text" id="mandar-msg" maxlength="140" placeholder="Olha isso kkkkk">
+      <ul class="pessoas" id="mandar-lista"></ul>
+    </div>
+  </div>
 
   <header class="post-head" id="caso">
     <div class="kicker"><span class="pill">Caso da semana</span><span class="pill alt">Ficção</span></div>
@@ -533,6 +771,7 @@ body.furia { background-color: color-mix(in srgb, var(--red) 30%, var(--bg)); }
         <button type="button" class="btn" id="desfazer" disabled>↩ Desfazer</button>
         <button type="button" class="btn" id="limpar">🗑 Limpar tudo</button>
         <button type="button" class="btn red" id="baixar">⬇ Baixar a minha variante</button>
+        <button type="button" class="btn yellow" id="postar-variante" hidden>🚀 Postar na rede</button>
       </div>
       <p class="hint">Atalho: Ctrl+Z desfaz o último traço.</p>
     </div>
@@ -1222,7 +1461,15 @@ figs.forEach((f, idx) => {
 
 const lb = $("lb"), lbImg = $("lb-img"), lbCap = $("lb-cap"), lbCont = $("lb-cont"), lbTremer = $("lb-tremer");
 let lbI = 0, lbVolta = null, lbLista = figs;
+function lbNav(v) { $("lb-ant").hidden = $("lb-prox").hidden = !v; }
+function lbSolto(src, alt, cap, cont) {
+  lbVolta = document.activeElement; lbLista = []; lbNav(false);
+  lbImg.src = src; lbImg.alt = alt || ""; lbCap.textContent = cap || ""; lbCont.textContent = cont || "";
+  lbImg.classList.remove("tremendo"); lbTremer.setAttribute("aria-pressed", "false");
+  lb.hidden = false; document.body.style.overflow = "hidden"; $("lb-fechar").focus();
+}
 function lbMostra() {
+  lbNav(lbLista.length > 1);
   const f = lbLista[lbI];
   const src = f.querySelector(":scope > img");
   lbImg.src = src.src; lbImg.alt = src.alt;
@@ -1238,7 +1485,7 @@ function abrirLb(idx) {
   lbMostra(); $("lb-fechar").focus();
 }
 function fecharLb() { lb.hidden = true; document.body.style.overflow = ""; lbImg.removeAttribute("src"); lbVolta?.focus(); }
-function lbPasso(d) { lbI = (lbI + d + lbLista.length) % lbLista.length; lbMostra(); }
+function lbPasso(d) { if (lbLista.length < 2) return; lbI = (lbI + d + lbLista.length) % lbLista.length; lbMostra(); }
 $("lb-fechar").addEventListener("click", fecharLb);
 $("lb-ant").addEventListener("click", () => lbPasso(-1));
 $("lb-prox").addEventListener("click", () => lbPasso(1));
@@ -1401,12 +1648,7 @@ $("baixar").addEventListener("click", async () => {
     document.body.appendChild(a); a.click(); a.remove();
   } catch (e) {}
   // Também mostra em tela cheia, para salvar segurando o dedo na imagem
-  lbVolta = document.activeElement;
-  lbLista = [];
-  lbImg.src = c.toDataURL("image/png"); lbImg.alt = "A sua variante";
-  lbCap.textContent = "Se o download não começou, segure o dedo (ou clique com o botão direito) na imagem e salve.";
-  lbCont.textContent = "A sua variante";
-  lb.hidden = false; document.body.style.overflow = "hidden"; $("lb-fechar").focus();
+  lbSolto(c.toDataURL("image/png"), "A sua variante", "Se o download não começou, segure o dedo (ou clique com o botão direito) na imagem e salve.", "A sua variante");
 });
 
 /* ---------- Mural: reações e comentários ---------- */
@@ -1423,6 +1665,26 @@ const estado = {
   comentarios: {},                   // uid -> [{id, m, t, em}]
   abertos: new Set(),
 };
+const domId = (id) => id.replace(/[^A-Za-z0-9_-]/g, "_");
+function ligaInteracoes(el, id) {
+  const bar = document.createElement("div"); bar.className = "reacoes"; bar.setAttribute("role", "group"); bar.setAttribute("aria-label", "Reações");
+  TIPOS.forEach((t) => {
+    const b = document.createElement("button"); b.type = "button"; b.dataset.t = t.k; b.id = "r-" + domId(id) + "-" + t.k;
+    b.addEventListener("click", () => reagir(id, t.k));
+    bar.appendChild(b);
+  });
+  const cb = document.createElement("button"); cb.type = "button"; cb.className = "com"; cb.id = "c-" + domId(id);
+  cb.setAttribute("aria-expanded", "false");
+  cb.addEventListener("click", () => alternaComents(el));
+  bar.appendChild(cb);
+  const mb = document.createElement("button"); mb.type = "button"; mb.className = "mandar-btn"; mb.id = "e-" + domId(id);
+  mb.textContent = "📤"; mb.setAttribute("aria-label", "Mandar para um amigo"); mb.title = "Mandar para um amigo";
+  mb.addEventListener("click", () => abrirMandar(id.startsWith("p:") ? "post:" + id.slice(2) : "mural:" + id));
+  bar.appendChild(mb);
+  const box = document.createElement("div"); box.className = "coments"; box.hidden = true;
+  el.append(bar, box);
+}
+const alvos = () => [...cards, ...document.querySelectorAll(".post[data-id]")];
 cards.forEach((card, i) => {
   const id = "m" + (i + 1);
   card.dataset.id = id; card.id = "meme-" + (i + 1);
@@ -1437,18 +1699,7 @@ cards.forEach((card, i) => {
     lm.addEventListener("click", () => { const ab = card.classList.toggle("aberto"); lm.textContent = ab ? "Ler menos" : "Ler mais"; lm.setAttribute("aria-expanded", ab); });
     fc.appendChild(lm);
   }
-  const bar = document.createElement("div"); bar.className = "reacoes"; bar.setAttribute("role", "group"); bar.setAttribute("aria-label", "Reações");
-  TIPOS.forEach((t) => {
-    const b = document.createElement("button"); b.type = "button"; b.dataset.t = t.k; b.id = "r-" + id + "-" + t.k;
-    b.addEventListener("click", () => reagir(id, t.k));
-    bar.appendChild(b);
-  });
-  const cb = document.createElement("button"); cb.type = "button"; cb.className = "com"; cb.id = "c-" + id;
-  cb.setAttribute("aria-expanded", "false");
-  cb.addEventListener("click", () => alternaComents(card));
-  bar.appendChild(cb);
-  const box = document.createElement("div"); box.className = "coments"; box.hidden = true;
-  card.append(bar, box);
+  ligaInteracoes(card, id);
 });
 
 function contagens() {
@@ -1478,7 +1729,7 @@ let cacheC = {}, cacheCom = {};
 function pintaMural() {
   cacheC = contagens(); cacheCom = comentsPorMeme();
   let totR = 0, totC = 0;
-  cards.forEach((card) => {
+  alvos().forEach((card) => {
     const id = card.dataset.id, c = cacheC[id] || { rir: 0, raiva: 0, susto: 0 };
     card.querySelectorAll(".reacoes button[data-t]").forEach((b) => {
       const t = TIPOS.find((x) => x.k === b.dataset.t);
@@ -1544,8 +1795,8 @@ async function pintaComents(card) {
     ul = document.createElement("ul"); box.appendChild(ul);
     if (estado.modo === "compartilhado") {
       const f = document.createElement("form");
-      const inp = document.createElement("input"); inp.id = "txt-" + id; inp.maxLength = 280; inp.placeholder = "Escreva um comentário…"; inp.autocomplete = "off";
-      inp.setAttribute("aria-label", "Comentário sobre o meme " + id.slice(1));
+      const inp = document.createElement("input"); inp.id = "txt-" + domId(id); inp.maxLength = 280; inp.placeholder = "Escreva um comentário…"; inp.autocomplete = "off";
+      inp.setAttribute("aria-label", "Escreva um comentário");
       const b = document.createElement("button"); b.type = "submit"; b.className = "btn red"; b.textContent = "Enviar";
       f.append(inp, b);
       f.addEventListener("submit", (e) => { e.preventDefault(); comentar(id, inp); });
@@ -1657,13 +1908,651 @@ $("aleatorio").addEventListener("click", () => {
 });
 pintaMural();
 
+/* ============ Rede do Raivômetro ============ */
+const LINK = "https://claude.ai/artifact/41xCEn2a2XcsN62xhMoryE";
+const AVATARES = ["😡", "🐦", "🐥", "😺", "🐸", "👾", "🤖", "🦖", "🐷", "🦊"];
+const HUMORES = ["😌 Calmo", "🙂 De boa", "😠 Bravo", "😡 Pistola", "🤬 Explodindo"];
+const rede = {
+  ligada: false,
+  perfis: {},      // uid -> {apelido, bio, foto, humor, em}
+  posts: {},       // uid -> [{id, u, img?, ref?, legenda, para?, em}]
+  amigos: {},      // uid -> {lista: [uids], recusados: [uids]}
+  subs: {},
+  plat: {},        // uid -> perfil da conta Claude (nome e foto de reserva)
+  filtro: "todos",
+  els: new Map(),  // "uid/id" -> elemento do post
+  irPara: (location.hash || "").startsWith("#p-") ? location.hash.slice(3) : null,
+};
+
+function redeIndisponivel(motivo) {
+  $("rede-off").hidden = false; $("rede-on").hidden = true;
+  if (motivo === "fora") {
+    $("rede-off-txt").textContent = "A rede funciona na versão publicada no Claude. Lá você cria a sua conta, adiciona amigos e posta memes.";
+    $("rede-link-off").hidden = false;
+  } else {
+    $("rede-off-txt").textContent = "Entre na sua conta do Claude para usar a rede. Se já entrou, peça ao dono do Raivômetro para liberar o seu acesso.";
+  }
+}
+
+/* --- Avatares e nomes --- */
+const cacheEmoji = {};
+function emojiAvatar(e, cor = "#f2b01e") {
+  const k = e + cor;
+  if (cacheEmoji[k]) return cacheEmoji[k];
+  const c = document.createElement("canvas"); c.width = c.height = 128;
+  const x = c.getContext("2d");
+  x.fillStyle = cor; x.beginPath(); x.arc(64, 64, 64, 0, Math.PI * 2); x.fill();
+  x.font = "76px serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(e, 64, 70);
+  return (cacheEmoji[k] = c.toDataURL("image/png"));
+}
+const meuUid = () => estado.uid;
+const nomeDe = (u) => rede.perfis[u]?.apelido || rede.plat[u]?.name || "Alguém";
+const fotoDe = (u) => rede.perfis[u]?.foto || rede.plat[u]?.avatarUrl || emojiAvatar("🙂", "#ecc9cb");
+let buscandoPlat = false;
+async function resolvePlat() {
+  if (!estado.user || buscandoPlat) return;
+  const ids = new Set(Object.keys(rede.perfis));
+  Object.values(rede.posts).flat().forEach((p) => ids.add(p.u));
+  const faltam = [...ids].filter((u) => !rede.plat[u]);
+  if (!faltam.length) return;
+  buscandoPlat = true;
+  try { Object.assign(rede.plat, await estado.user.profiles(faltam)); } catch (e) {}
+  buscandoPlat = false;
+  agendaRender();
+}
+
+/* --- Amizades --- */
+const listaDe = (u) => (Array.isArray(rede.amigos[u]?.lista) ? rede.amigos[u].lista : []);
+const recusadosDe = (u) => (Array.isArray(rede.amigos[u]?.recusados) ? rede.amigos[u].recusados : []);
+function situacao(u) {
+  const eu = listaDe(meuUid()).includes(u), ele = listaDe(u).includes(meuUid());
+  if (eu && ele) return "amigos";
+  if (eu) return "enviei";
+  if (ele) return recusadosDe(meuUid()).includes(u) ? "nada" : "recebi";
+  return "nada";
+}
+const meusAmigos = () => Object.keys(rede.perfis).filter((u) => u !== meuUid() && situacao(u) === "amigos");
+let gravandoAmigos = Promise.resolve();
+function gravaAmigos(lista, recusados) {
+  rede.amigos[meuUid()] = { lista, recusados };
+  agendaRender();
+  gravandoAmigos = gravandoAmigos.then(() => estado.db.doc("amigos/" + meuUid()).set({ lista, recusados }))
+    .catch((e) => toast(e?.code === "invalid_argument" ? "Você ainda não tem permissão para adicionar amigos." : "Não deu para salvar. Tente de novo."));
+}
+function precisaPerfil() {
+  if (rede.perfis[meuUid()]?.apelido) return false;
+  toast("Crie a sua conta primeiro: escolha um apelido e uma foto.");
+  abrirAba("perfil");
+  return true;
+}
+function adicionar(u) {
+  if (precisaPerfil()) return;
+  const l = listaDe(meuUid()).filter((x) => x !== u);
+  l.push(u);
+  gravaAmigos(l, recusadosDe(meuUid()).filter((x) => x !== u));
+  if (situacao(u) === "amigos") { toast("Agora vocês são amigos! 🎉"); penas(16, ["🎉", "🐦", "⭐"]); }
+  else toast("Pedido de amizade enviado para " + nomeDe(u));
+  piado();
+}
+function remover(u) { gravaAmigos(listaDe(meuUid()).filter((x) => x !== u), recusadosDe(meuUid())); }
+function recusar(u) { gravaAmigos(listaDe(meuUid()), [...new Set([...recusadosDe(meuUid()), u])]); }
+function botaoAmizade(u) {
+  const b = document.createElement("button"); b.type = "button"; b.className = "btn";
+  const st = situacao(u);
+  if (st === "amigos") { b.textContent = "✓ Amigos"; b.title = "Desfazer amizade"; b.addEventListener("click", () => { remover(u); toast("Amizade desfeita"); }); }
+  else if (st === "enviei") { b.textContent = "⏳ Pedido enviado"; b.title = "Cancelar pedido"; b.addEventListener("click", () => { remover(u); toast("Pedido cancelado"); }); }
+  else if (st === "recebi") { b.className = "btn red"; b.textContent = "✓ Aceitar"; b.addEventListener("click", () => adicionar(u)); }
+  else { b.className = "btn yellow"; b.textContent = "➕ Adicionar"; b.addEventListener("click", () => adicionar(u)); }
+  return b;
+}
+
+/* --- Abas --- */
+const ABAS = ["feed", "criar", "recebidos", "amigos", "perfil"];
+function abrirAba(nome) {
+  rede.aba = nome;
+  ABAS.forEach((a) => {
+    $("aba-" + a).setAttribute("aria-selected", a === nome);
+    $("aba-" + a).tabIndex = a === nome ? 0 : -1;
+    $("painel-" + a).hidden = a !== nome;
+  });
+  if (nome === "recebidos") { guarda.set("vistos-" + meuUid(), Date.now()); }
+  if (nome === "criar") desenhaMeme();
+  agendaRender();
+}
+ABAS.forEach((a, i) => {
+  const b = $("aba-" + a);
+  b.addEventListener("click", () => abrirAba(a));
+  b.addEventListener("keydown", (e) => {
+    const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (!d) return;
+    const prox = ABAS[(i + d + ABAS.length) % ABAS.length];
+    abrirAba(prox); $("aba-" + prox).focus();
+  });
+});
+function vaiParaRede(aba) { abrirAba(aba); $("rede").scrollIntoView({ behavior: reduz ? "auto" : "smooth", block: "start" }); }
+
+/* --- Posts --- */
+function imgDoRef(ref) {
+  if (!ref) return null;
+  if (ref.startsWith("mural:")) return document.querySelector('.card[data-id="' + ref.slice(6) + '"] > img')?.src || null;
+  if (ref.startsWith("post:")) {
+    const [u, id] = ref.slice(5).split("/");
+    const p = (rede.posts[u] || []).find((x) => x.id === id);
+    return p ? (p.img || imgDoRef(p.ref)) : null;
+  }
+  return null;
+}
+async function copiar(txt, input) {
+  try { await navigator.clipboard.writeText(txt); toast("Link copiado! Agora é só colar para os amigos."); }
+  catch (e) { if (input) { input.focus(); input.select(); } toast("Selecione o link e copie."); }
+}
+function elPost(p) {
+  const chave = p.u + "/" + p.id;
+  let el = rede.els.get(chave);
+  if (!el) {
+    el = document.createElement("article"); el.className = "post"; el.dataset.id = "p:" + chave; el.id = "p-" + p.u + "-" + p.id;
+    const cab = document.createElement("div"); cab.className = "post-cab";
+    const quem = document.createElement("button"); quem.type = "button"; quem.className = "quem";
+    quem.addEventListener("click", () => abrirPessoa(p.u));
+    const av = document.createElement("img"); av.className = "av"; av.alt = "";
+    const nm = document.createElement("span");
+    quem.append(av, nm);
+    const menu = document.createElement("div"); menu.className = "menu";
+    const lk = document.createElement("button"); lk.type = "button"; lk.textContent = "🔗"; lk.title = "Copiar link deste meme"; lk.setAttribute("aria-label", "Copiar link deste meme");
+    lk.addEventListener("click", () => copiar(LINK + "#p-" + chave.replace("/", "-")));
+    menu.appendChild(lk);
+    if (p.u === meuUid() || estado.dono) {
+      const ap = document.createElement("button"); ap.type = "button"; ap.textContent = "🗑"; ap.title = "Apagar"; ap.setAttribute("aria-label", "Apagar este meme");
+      let confirma = false;
+      ap.addEventListener("click", async () => {
+        if (!confirma) { confirma = true; ap.textContent = "Apagar?"; setTimeout(() => { confirma = false; ap.textContent = "🗑"; }, 3000); return; }
+        try { await estado.db.doc("posts/" + p.u + "/m/" + p.id).delete(); toast("Meme apagado"); } catch (e) { toast("Não deu para apagar."); }
+      });
+      menu.appendChild(ap);
+    }
+    cab.append(quem, menu);
+    const para = document.createElement("p"); para.className = "para";
+    const im = document.createElement("img"); im.loading = "lazy"; im.decoding = "async";
+    im.addEventListener("click", () => lbSolto(im.src, im.alt, p.legenda || "", nomeDe(p.u)));
+    const leg = document.createElement("p"); leg.className = "legenda";
+    el.append(cab, para, im, leg);
+    ligaInteracoes(el, "p:" + chave);
+    rede.els.set(chave, el);
+  }
+  const [av, nm] = el.querySelector(".quem").children;
+  av.src = fotoDe(p.u);
+  nm.textContent = "";
+  const b = document.createElement("b"); b.textContent = nomeDe(p.u);
+  const sm = document.createElement("small"); sm.textContent = quando(p.em) + (rede.perfis[p.u]?.humor != null ? " · " + HUMORES[rede.perfis[p.u].humor] : "");
+  nm.append(b, sm);
+  const para = el.querySelector(".para");
+  para.hidden = !p.para;
+  if (p.para) para.textContent = p.para === meuUid() ? "📬 Mandou para você" : "📤 Você mandou para " + nomeDe(p.para);
+  const im = el.querySelector(":scope > img");
+  const src = p.img || imgDoRef(p.ref);
+  if (src && im.src !== src) im.src = src;
+  im.hidden = !src;
+  im.alt = src ? "Meme de " + nomeDe(p.u) : "";
+  const leg = el.querySelector(".legenda");
+  leg.textContent = src ? (p.legenda || "") : "Este meme foi apagado.";
+  leg.hidden = !leg.textContent;
+  return el;
+}
+const todosPosts = () => Object.values(rede.posts).flat().sort((a, b) => (b.em || 0) - (a.em || 0));
+function vazio(txt, botao, aba) {
+  const d = document.createElement("div"); d.className = "vazio-rede";
+  const p = document.createElement("p"); p.style.margin = "0 0 10px"; p.textContent = txt; d.appendChild(p);
+  if (botao) { const b = document.createElement("button"); b.type = "button"; b.className = "btn red"; b.textContent = botao; b.addEventListener("click", () => abrirAba(aba)); d.appendChild(b); }
+  return d;
+}
+function encheLista(box, posts, vazioEl) {
+  const usados = new Set();
+  const novos = posts.map((p) => { const el = elPost(p); usados.add(el); return el; });
+  [...box.children].forEach((c) => { if (!usados.has(c)) c.remove(); });
+  if (!novos.length) box.appendChild(vazioEl);
+  novos.forEach((el, i) => { if (box.children[i] !== el) box.insertBefore(el, box.children[i] || null); });
+}
+
+/* --- Render --- */
+let renderPedido = false;
+function agendaRender() {
+  if (renderPedido) return;
+  renderPedido = true;
+  requestAnimationFrame(() => { renderPedido = false; renderRede(); });
+}
+function renderRede() {
+  if (!rede.ligada) return;
+  const me = meuUid(), perfil = rede.perfis[me];
+  // Cabeçalho "eu"
+  const eu = $("eu"); eu.textContent = "";
+  const eb = document.createElement("button"); eb.type = "button"; eb.className = "eu";
+  if (perfil?.apelido) {
+    const im = document.createElement("img"); im.src = fotoDe(me); im.alt = "";
+    const t = document.createElement("span"); t.textContent = perfil.apelido;
+    eb.append(im, t); eb.addEventListener("click", () => abrirAba("perfil"));
+  } else {
+    eb.className = "btn red"; eb.textContent = "✨ Criar minha conta"; eb.addEventListener("click", () => abrirAba("perfil"));
+  }
+  eu.appendChild(eb);
+
+  const posts = todosPosts();
+  const amigos = new Set(meusAmigos());
+  // Feed
+  const publicos = posts.filter((p) => !p.para && (rede.filtro === "todos" || p.u === me || amigos.has(p.u))).slice(0, 80);
+  encheLista($("feed"), publicos, rede.filtro === "amigos"
+    ? vazio("Os seus amigos ainda não postaram nada. Que tal começar?", "🎨 Criar um meme", "criar")
+    : vazio("Ninguém postou ainda. Seja o primeiro a postar um meme!", "🎨 Criar um meme", "criar"));
+  // Recebidos
+  const recebidos = posts.filter((p) => p.para === me);
+  encheLista($("recebidos"), recebidos, vazio("Nenhum meme recebido ainda. Adicione amigos para trocar memes.", "👥 Ver amigos", "amigos"));
+  const visto = guarda.get("vistos-" + me, 0);
+  const novos = rede.aba === "recebidos" ? 0 : recebidos.filter((p) => (p.em || 0) > visto).length;
+  $("n-recebidos").hidden = !novos; $("n-recebidos").textContent = novos;
+
+  // Amigos
+  const pessoas = Object.keys(rede.perfis).filter((u) => u !== me && rede.perfis[u]?.apelido);
+  const pedidos = pessoas.filter((u) => situacao(u) === "recebi");
+  $("n-pedidos").hidden = !pedidos.length; $("n-pedidos").textContent = pedidos.length;
+  listaPessoas($("lista-pedidos"), pedidos, "Nenhum pedido agora.", true);
+  listaPessoas($("lista-amigos"), [...amigos], "Você ainda não tem amigos aqui. Adicione alguém lá embaixo ou mande o link.");
+  const q = norm($("busca-pessoas").value.trim());
+  listaPessoas($("lista-pessoas"), pessoas.filter((u) => !q || norm(nomeDe(u)).includes(q)), pessoas.length ? "Ninguém com esse apelido." : "Ainda não tem ninguém na rede. Mande o link para os amigos!");
+
+  // Meus memes
+  grade($("meus-memes"), posts.filter((p) => p.u === me && !p.para), "Você ainda não postou nenhum meme.");
+  if (!$("pessoa").hidden && rede.pessoaAberta) preenchePessoa(rede.pessoaAberta);
+  preencheDestino();
+  preenchePerfilForm();
+  $("postar-variante").hidden = false;
+  pintaMural();
+  resolvePlat();
+
+  if (rede.irPara) {
+    const el = document.getElementById("p-" + rede.irPara);
+    if (el) {
+      rede.irPara = null;
+      const recebido = el.parentElement?.id === "recebidos";
+      abrirAba(recebido ? "recebidos" : "feed");
+      setTimeout(() => { el.scrollIntoView({ behavior: reduz ? "auto" : "smooth", block: "center" }); el.classList.add("alvo"); }, 100);
+    }
+  }
+}
+function listaPessoas(ul, uids, vazioTxt, comRecusar) {
+  ul.textContent = "";
+  if (!uids.length) { const li = document.createElement("li"); li.className = "vazio-li"; li.textContent = vazioTxt; ul.appendChild(li); return; }
+  uids.sort((a, b) => nomeDe(a).localeCompare(nomeDe(b))).forEach((u) => {
+    const li = document.createElement("li");
+    const im = document.createElement("img"); im.className = "av"; im.src = fotoDe(u); im.alt = "";
+    const nm = document.createElement("button"); nm.type = "button"; nm.className = "nome";
+    const b = document.createElement("b"); b.textContent = nomeDe(u);
+    const sm = document.createElement("small"); const pf = rede.perfis[u];
+    sm.textContent = pf?.humor != null ? HUMORES[pf.humor] : (pf?.bio || "");
+    nm.append(b, sm); nm.addEventListener("click", () => abrirPessoa(u));
+    li.append(im, nm, botaoAmizade(u));
+    if (comRecusar) {
+      const r = document.createElement("button"); r.type = "button"; r.className = "btn"; r.textContent = "Agora não";
+      r.addEventListener("click", () => recusar(u));
+      li.appendChild(r);
+    }
+    ul.appendChild(li);
+  });
+}
+function grade(box, posts, vazioTxt) {
+  box.textContent = "";
+  if (!posts.length) { box.appendChild(vazio(vazioTxt)); return; }
+  posts.slice(0, 30).forEach((p) => {
+    const src = p.img || imgDoRef(p.ref);
+    if (!src) return;
+    const b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Ver meme: " + (p.legenda || "sem legenda"));
+    const im = document.createElement("img"); im.src = src; im.alt = ""; im.loading = "lazy";
+    b.appendChild(im);
+    b.addEventListener("click", () => {
+      fecharPessoa();
+      rede.irPara = p.u + "-" + p.id; abrirAba("feed");
+      $("rede").scrollIntoView({ block: "start" });
+    });
+    box.appendChild(b);
+  });
+}
+$("feed-todos").addEventListener("click", () => { rede.filtro = "todos"; $("feed-todos").setAttribute("aria-pressed", "true"); $("feed-amigos").setAttribute("aria-pressed", "false"); agendaRender(); });
+$("feed-amigos").addEventListener("click", () => { rede.filtro = "amigos"; $("feed-amigos").setAttribute("aria-pressed", "true"); $("feed-todos").setAttribute("aria-pressed", "false"); agendaRender(); });
+$("busca-pessoas").addEventListener("input", agendaRender);
+$("copiar-convite").addEventListener("click", () => copiar(LINK, $("link-convite")));
+
+/* --- Perfil de outra pessoa --- */
+function abrirPessoa(u) {
+  rede.pessoaAberta = u;
+  lbVoltaPessoa = document.activeElement;
+  preenchePessoa(u);
+  $("pessoa").hidden = false; document.body.style.overflow = "hidden";
+  $("pessoa-fechar").focus();
+}
+let lbVoltaPessoa = null;
+function fecharPessoa() { if ($("pessoa").hidden) return; $("pessoa").hidden = true; document.body.style.overflow = ""; rede.pessoaAberta = null; lbVoltaPessoa?.focus(); }
+function preenchePessoa(u) {
+  const pf = rede.perfis[u] || {};
+  $("pessoa-foto").src = fotoDe(u);
+  $("pessoa-nome").textContent = nomeDe(u) + (u === meuUid() ? " (você)" : "");
+  $("pessoa-bio").textContent = pf.bio || "";
+  const posts = todosPosts().filter((p) => p.u === u && !p.para);
+  const nAmigos = Object.keys(rede.perfis).filter((x) => x !== u && listaDe(u).includes(x) && listaDe(x).includes(u)).length;
+  $("pessoa-info").textContent = [pf.humor != null ? HUMORES[pf.humor] : "", posts.length + " memes", nAmigos + " amigos"].filter(Boolean).join(" · ");
+  const ac = $("pessoa-acoes"); ac.textContent = "";
+  if (u === meuUid()) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = "✏️ Editar perfil";
+    b.addEventListener("click", () => { fecharPessoa(); vaiParaRede("perfil"); });
+    ac.appendChild(b);
+  } else {
+    ac.appendChild(botaoAmizade(u));
+    if (situacao(u) === "amigos") {
+      const m = document.createElement("button"); m.type = "button"; m.className = "btn"; m.textContent = "📬 Fazer um meme para " + nomeDe(u);
+      m.addEventListener("click", () => { fecharPessoa(); editor.destino = u; vaiParaRede("criar"); });
+      ac.appendChild(m);
+    }
+  }
+  grade($("pessoa-memes"), posts, "Nenhum meme postado ainda.");
+}
+$("pessoa-fechar").addEventListener("click", fecharPessoa);
+$("pessoa").addEventListener("click", (e) => { if (e.target.id === "pessoa") fecharPessoa(); });
+
+/* --- Mandar para um amigo --- */
+let mandarRef = null, lbVoltaMandar = null;
+function abrirMandar(ref) {
+  if (!rede.ligada) { toast("Mandar para amigos funciona na versão publicada da rede."); return; }
+  if (precisaPerfil()) return;
+  mandarRef = ref; lbVoltaMandar = document.activeElement;
+  const ul = $("mandar-lista"); ul.textContent = "";
+  const amigos = meusAmigos();
+  if (!amigos.length) {
+    const li = document.createElement("li"); li.className = "vazio-li";
+    li.textContent = "Você ainda não tem amigos na rede. ";
+    const b = document.createElement("button"); b.type = "button"; b.className = "btn red"; b.textContent = "👥 Adicionar amigos";
+    b.addEventListener("click", () => { fecharMandar(); vaiParaRede("amigos"); });
+    li.appendChild(b); ul.appendChild(li);
+  }
+  amigos.forEach((u) => {
+    const li = document.createElement("li");
+    const im = document.createElement("img"); im.className = "av"; im.src = fotoDe(u); im.alt = "";
+    const nm = document.createElement("span"); nm.className = "nome"; const b0 = document.createElement("b"); b0.textContent = nomeDe(u); nm.appendChild(b0);
+    const b = document.createElement("button"); b.type = "button"; b.className = "btn red"; b.textContent = "📤 Mandar";
+    b.addEventListener("click", async () => {
+      b.disabled = true;
+      const ok = await postar({ ref: mandarRef, para: u, legenda: $("mandar-msg").value.trim().slice(0, 140) });
+      if (ok) { b.textContent = "✓ Mandado"; toast("Meme mandado para " + nomeDe(u) + "!"); piado(); } else b.disabled = false;
+    });
+    li.append(im, nm, b); ul.appendChild(li);
+  });
+  $("mandar").hidden = false; document.body.style.overflow = "hidden";
+  $("mandar-fechar").focus();
+}
+function fecharMandar() { $("mandar").hidden = true; document.body.style.overflow = ""; $("mandar-msg").value = ""; lbVoltaMandar?.focus(); }
+$("mandar-fechar").addEventListener("click", fecharMandar);
+$("mandar").addEventListener("click", (e) => { if (e.target.id === "mandar") fecharMandar(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (!$("mandar").hidden) fecharMandar(); else if (!$("pessoa").hidden) fecharPessoa();
+});
+
+/* --- Gravar posts --- */
+async function postar(dados) {
+  if (precisaPerfil()) return false;
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const doc = { em: Date.now(), legenda: dados.legenda || "" };
+  if (dados.img) doc.img = dados.img;
+  if (dados.ref) doc.ref = dados.ref;
+  if (dados.para) doc.para = dados.para;
+  try {
+    await estado.db.collection("posts/" + meuUid() + "/m").doc(id).set(doc);
+    return true;
+  } catch (e) {
+    if (e?.code === "invalid_argument") toast("Você ainda não tem permissão para postar. Peça acesso de Contribuidor ao dono.");
+    else if (e?.code === "quota_exceeded") toast("A rede está cheia. Apague alguns memes antigos.");
+    else toast("Não deu para postar. Tente de novo.");
+    return false;
+  }
+}
+function comprime(canvas, maxBytes = 190000) {
+  let w = canvas.width, h = canvas.height, q = 0.82, url;
+  for (let tent = 0; tent < 8; tent++) {
+    const c = document.createElement("canvas"); c.width = Math.round(w); c.height = Math.round(h);
+    const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(canvas, 0, 0, c.width, c.height);
+    url = c.toDataURL("image/jpeg", q);
+    if (url.length <= maxBytes) return url;
+    if (q > 0.55) q -= 0.12; else { w *= 0.8; h *= 0.8; }
+  }
+  return url;
+}
+
+/* --- Editor de memes --- */
+const editor = { base: null, carimbos: [], cor: "#ffffff", stamp: null, destino: "", mostrando: 12 };
+const mcv = $("meme-cv"), mctx = mcv.getContext("2d");
+function modelosLista() {
+  const fontes = [...STAGES, ...figs.map((f) => f.querySelector(":scope > img").src)];
+  return [...new Set(fontes)];
+}
+function usaBase(src) {
+  const im = new Image();
+  im.onload = () => { editor.base = im; editor.carimbos = []; desenhaMeme(); };
+  im.src = src;
+}
+function pintaModelos() {
+  const box = $("modelos"); box.textContent = "";
+  const lista = modelosLista();
+  lista.slice(0, editor.mostrando).forEach((src, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.id = "modelo-" + i; b.setAttribute("aria-label", "Modelo " + (i + 1));
+    b.setAttribute("aria-pressed", editor.base?.src === src);
+    const im = document.createElement("img"); im.src = src; im.alt = ""; im.loading = "lazy";
+    b.appendChild(im);
+    b.addEventListener("click", () => { usaBase(src); [...box.children].forEach((x) => x.setAttribute("aria-pressed", x === b)); });
+    box.appendChild(b);
+  });
+  $("mais-modelos").hidden = editor.mostrando >= lista.length;
+}
+$("mais-modelos").addEventListener("click", () => { editor.mostrando += 18; pintaModelos(); });
+function quebra(ctx, txt, larg) {
+  const pal = txt.split(/\s+/).filter(Boolean), linhas = [];
+  let l = "";
+  pal.forEach((p) => { const t = l ? l + " " + p : p; if (ctx.measureText(t).width > larg && l) { linhas.push(l); l = p; } else l = t; });
+  if (l) linhas.push(l);
+  return linhas;
+}
+function desenhaMeme() {
+  const W = 720;
+  const b = editor.base;
+  const H = b ? Math.max(360, Math.min(1080, Math.round(W * b.naturalHeight / b.naturalWidth))) : 720;
+  if (mcv.height !== H) mcv.height = H;
+  mctx.fillStyle = "#222"; mctx.fillRect(0, 0, W, H);
+  if (b) cobre(mctx, b, 0, 0, W, H);
+  editor.carimbos.forEach((c) => { mctx.font = c.t + "px serif"; mctx.textAlign = "center"; mctx.textBaseline = "middle"; mctx.fillText(c.s, c.x, c.y); });
+  const tam = Number($("txt-tam").value);
+  mctx.font = tam + "px Impact, 'Arial Black', 'Bowlby One', sans-serif";
+  mctx.textAlign = "center"; mctx.lineJoin = "round";
+  mctx.lineWidth = Math.max(4, tam / 8); mctx.strokeStyle = editor.cor === "#151515" ? "#ffffff" : "#000000"; mctx.fillStyle = editor.cor;
+  const escreve = (txt, deCima) => {
+    const linhas = quebra(mctx, txt.toUpperCase(), W - 40);
+    const lh = tam * 1.05;
+    linhas.forEach((ln, i) => {
+      const y = deCima ? 16 + lh * i : H - 16 - lh * (linhas.length - 1 - i);
+      mctx.textBaseline = deCima ? "top" : "bottom";
+      mctx.strokeText(ln, W / 2, y); mctx.fillText(ln, W / 2, y);
+    });
+  };
+  escreve($("txt-cima").value, true);
+  escreve($("txt-baixo").value, false);
+}
+["txt-cima", "txt-baixo", "txt-tam"].forEach((id) => $(id).addEventListener("input", desenhaMeme));
+["#ffffff", "#f2b01e", "#d8201f", "#151515"].forEach((c, i) => {
+  const b = document.createElement("button"); b.type = "button"; b.id = "txtcor-" + i; b.dataset.c = c; b.style.background = c;
+  b.setAttribute("aria-label", "Cor do texto " + (i + 1)); b.setAttribute("aria-pressed", c === editor.cor);
+  b.addEventListener("click", () => { editor.cor = c; [...$("txt-cores").children].forEach((x) => x.setAttribute("aria-pressed", x === b)); desenhaMeme(); });
+  $("txt-cores").appendChild(b);
+});
+STAMPS.forEach((s, i) => {
+  const b = document.createElement("button"); b.type = "button"; b.id = "mstamp-" + i; b.textContent = s; b.dataset.s = s;
+  b.setAttribute("aria-label", "Carimbo " + s); b.setAttribute("aria-pressed", "false");
+  b.addEventListener("click", () => { editor.stamp = editor.stamp === s ? null : s; [...$("meme-stamps").children].forEach((x) => x.setAttribute("aria-pressed", x.dataset.s === editor.stamp)); if (editor.stamp) toast("Clique na imagem para colocar " + s); });
+  $("meme-stamps").appendChild(b);
+});
+mcv.addEventListener("click", (e) => {
+  if (!editor.stamp) return;
+  const r = mcv.getBoundingClientRect();
+  editor.carimbos.push({ s: editor.stamp, x: (e.clientX - r.left) * mcv.width / r.width, y: (e.clientY - r.top) * mcv.height / r.height, t: Number($("txt-tam").value) * 1.4 });
+  beep(900, 0.05, "sine"); desenhaMeme();
+});
+$("meme-tirar").addEventListener("click", () => { editor.carimbos.pop(); desenhaMeme(); });
+function lerFoto(file, cb) {
+  if (!file || !file.type.startsWith("image/")) { toast("Escolha um arquivo de imagem."); return; }
+  const url = URL.createObjectURL(file);
+  const im = new Image();
+  im.onload = () => { cb(im); URL.revokeObjectURL(url); };
+  im.onerror = () => toast("Não deu para abrir essa imagem.");
+  im.src = url;
+}
+$("meme-foto").addEventListener("change", (e) => {
+  lerFoto(e.target.files[0], (im) => {
+    const esc = Math.min(1, 1080 / Math.max(im.naturalWidth, im.naturalHeight));
+    const c = document.createElement("canvas"); c.width = Math.round(im.naturalWidth * esc); c.height = Math.round(im.naturalHeight * esc);
+    c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+    usaBase(c.toDataURL("image/jpeg", 0.9));
+    [...$("modelos").children].forEach((x) => x.setAttribute("aria-pressed", "false"));
+  });
+  e.target.value = "";
+});
+function preencheDestino() {
+  const sel = $("meme-destino"), atual = editor.destino || sel.value;
+  sel.textContent = "";
+  const o = document.createElement("option"); o.value = ""; o.textContent = "📢 Postar no feed (todo mundo vê)"; sel.appendChild(o);
+  meusAmigos().forEach((u) => { const op = document.createElement("option"); op.value = u; op.textContent = "📬 Mandar só para " + nomeDe(u); sel.appendChild(op); });
+  sel.value = [...sel.options].some((x) => x.value === atual) ? atual : "";
+  editor.destino = "";
+  $("meme-postar").textContent = sel.value ? "📤 Mandar" : "🚀 Postar";
+}
+$("meme-destino").addEventListener("change", () => { $("meme-postar").textContent = $("meme-destino").value ? "📤 Mandar" : "🚀 Postar"; });
+$("meme-postar").addEventListener("click", async () => {
+  if (!editor.base) { toast("Escolha uma imagem primeiro."); return; }
+  const btn = $("meme-postar"); btn.disabled = true;
+  desenhaMeme();
+  const para = $("meme-destino").value;
+  const ok = await postar({ img: comprime(mcv), legenda: $("meme-legenda").value.trim().slice(0, 200), para: para || undefined });
+  btn.disabled = false;
+  if (!ok) return;
+  $("meme-legenda").value = ""; $("txt-cima").value = ""; $("txt-baixo").value = ""; editor.carimbos = [];
+  desenhaMeme();
+  penas(20, ["🎉", "😂", "🐦", "⭐"]); piado();
+  if (para) toast("Meme mandado para " + nomeDe(para) + "!");
+  else { toast("Meme postado! 🎉"); abrirAba("feed"); }
+});
+$("postar-variante").addEventListener("click", () => {
+  if (!rede.ligada) return;
+  usaBase(montarVariante().toDataURL("image/jpeg", 0.9));
+  vaiParaRede("criar");
+  toast("A sua variante está no criador. Escreva a legenda e poste!");
+});
+
+/* --- Meu perfil --- */
+const perfilForm = { foto: null, humor: 2, carregado: false };
+AVATARES.forEach((a, i) => {
+  const b = document.createElement("button"); b.type = "button"; b.id = "avatar-" + i; b.textContent = a; b.setAttribute("aria-label", "Avatar " + a);
+  b.addEventListener("click", () => { perfilForm.foto = emojiAvatar(a, ["#f2b01e", "#d8201f", "#2f6fe0", "#22a35a", "#f29ac0"][i % 5]); $("perfil-foto-prev").src = perfilForm.foto; });
+  $("avatares").appendChild(b);
+});
+HUMORES.forEach((h, i) => {
+  const b = document.createElement("button"); b.type = "button"; b.id = "humor-" + i; b.textContent = h;
+  b.addEventListener("click", () => { perfilForm.humor = i; pintaHumores(); });
+  $("humores").appendChild(b);
+});
+function pintaHumores() { [...$("humores").children].forEach((b, i) => b.setAttribute("aria-pressed", i === perfilForm.humor)); }
+pintaHumores();
+$("perfil-foto-prev").src = emojiAvatar("😡", "#f2b01e");
+$("perfil-foto").addEventListener("change", (e) => {
+  lerFoto(e.target.files[0], (im) => {
+    const lado = Math.min(im.naturalWidth, im.naturalHeight);
+    const c = document.createElement("canvas"); c.width = c.height = 200;
+    c.getContext("2d").drawImage(im, (im.naturalWidth - lado) / 2, (im.naturalHeight - lado) / 2, lado, lado, 0, 0, 200, 200);
+    perfilForm.foto = c.toDataURL("image/jpeg", 0.82);
+    $("perfil-foto-prev").src = perfilForm.foto;
+  });
+  e.target.value = "";
+});
+function preenchePerfilForm() {
+  const pf = rede.perfis[meuUid()];
+  if (perfilForm.carregado || !pf) return;
+  perfilForm.carregado = true;
+  $("perfil-apelido").value = pf.apelido || "";
+  $("perfil-bio").value = pf.bio || "";
+  perfilForm.humor = pf.humor ?? 2; pintaHumores();
+  perfilForm.foto = pf.foto || null;
+  $("perfil-foto-prev").src = fotoDe(meuUid());
+}
+$("perfil-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const apelido = $("perfil-apelido").value.trim().slice(0, 24);
+  if (!apelido) { toast("Escolha um apelido."); $("perfil-apelido").focus(); return; }
+  const novo = !rede.perfis[meuUid()]?.apelido;
+  const dados = { apelido, bio: $("perfil-bio").value.trim().slice(0, 140), humor: perfilForm.humor, foto: perfilForm.foto || $("perfil-foto-prev").src, em: rede.perfis[meuUid()]?.em || Date.now() };
+  $("perfil-salvar").disabled = true;
+  try {
+    await estado.db.doc("perfis/" + meuUid()).set(dados);
+    rede.perfis[meuUid()] = dados;
+    perfilForm.carregado = true;
+    if (novo) { toast("Conta criada! Bem-vindo à Rede do Raivômetro 🎉"); penas(30, ["🎉", "🐦", "⭐", "😡"]); abrirAba("amigos"); }
+    else toast("Perfil salvo!");
+    piado(); agendaRender();
+  } catch (err) {
+    toast(err?.code === "invalid_argument" ? "Você ainda não tem permissão para criar conta. Peça acesso de Contribuidor ao dono." : "Não deu para salvar. Tente de novo.");
+  }
+  $("perfil-salvar").disabled = false;
+});
+
+/* --- Ligar --- */
+function subPosts(u) {
+  if (rede.subs[u] || Object.keys(rede.subs).length >= 54) return;
+  rede.subs[u] = estado.db.collection("posts/" + u + "/m").orderBy("em", "desc").limit(40).onSnapshot((snap) => {
+    rede.posts[u] = snap.docs.map((d) => {
+      const x = d.data() || {};
+      return { id: d.id, u, em: Number(x.em) || 0, legenda: typeof x.legenda === "string" ? x.legenda : "",
+        img: typeof x.img === "string" && x.img.startsWith("data:image/") ? x.img : null,
+        ref: typeof x.ref === "string" ? x.ref : null, para: typeof x.para === "string" ? x.para : null };
+    }).filter((p) => !p.para || p.para === meuUid() || p.u === meuUid());
+    agendaRender();
+  }, () => {});
+}
+function iniciaRede() {
+  rede.ligada = true;
+  document.body.classList.add("rede-on");
+  $("rede-off").hidden = true; $("rede-on").hidden = false;
+  if (!estado.podeEscrever) toast("Você pode ver a rede. Para postar, peça acesso de Contribuidor ao dono.");
+  pintaModelos(); usaBase(STAGES[4]);
+  subPosts(meuUid());
+  estado.db.collection("perfis").onSnapshot((snap) => {
+    const p = {};
+    snap.docs.forEach((d) => {
+      const x = d.data() || {};
+      p[d.id] = { apelido: String(x.apelido || "").slice(0, 24), bio: String(x.bio || "").slice(0, 140),
+        humor: Number.isInteger(x.humor) && x.humor >= 0 && x.humor < HUMORES.length ? x.humor : null,
+        foto: typeof x.foto === "string" && x.foto.startsWith("data:image/") ? x.foto : null, em: Number(x.em) || 0 };
+    });
+    rede.perfis = p;
+    Object.keys(p).sort((a, b) => (p[b].em || 0) - (p[a].em || 0)).forEach(subPosts);
+    agendaRender();
+  }, () => {});
+  estado.db.collection("amigos").onSnapshot((snap) => {
+    const a = {};
+    snap.docs.forEach((d) => { const x = d.data() || {}; a[d.id] = { lista: Array.isArray(x.lista) ? x.lista.filter((v) => typeof v === "string") : [], recusados: Array.isArray(x.recusados) ? x.recusados.filter((v) => typeof v === "string") : [] }; });
+    rede.amigos = a;
+    agendaRender();
+  }, () => {});
+  abrirAba(rede.irPara ? "feed" : "feed");
+  setInterval(agendaRender, 60000);
+}
+
 /* Liga o banco compartilhado quando a página estiver publicada */
 (async () => {
-  if (!window.claude || !claude.use) return;
+  if (!window.claude || !claude.use) return redeIndisponivel("fora");
   const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
-  if (!db || !user) return;
+  if (!db || !user) return redeIndisponivel("sem-conta");
   const uid = await user.id();
-  if (!uid) return;
+  if (!uid) return redeIndisponivel("sem-conta");
   estado.db = db; estado.user = user; estado.uid = uid; estado.modo = "compartilhado";
   estado.dono = await user.isOwner();
   const pode = await user.can("data.write");
@@ -1683,6 +2572,7 @@ pintaMural();
     }
     pintaMural();
   }, () => {});
+  iniciaRede();
   db.collection("comentarios").onSnapshot((snap) => {
     const todos = {};
     snap.docs.forEach((d) => { const l = d.data()?.lista; if (Array.isArray(l)) todos[d.id] = l; });
