@@ -117,12 +117,15 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   const ler = (k, p) => { try{ return JSON.parse(localStorage.getItem('jornal-jojo:' + k)) ?? p; }catch(e){ return p; } };
   const gravar = (k, v) => { try{ localStorage.setItem('jornal-jojo:' + k, JSON.stringify(v)); }catch(e){} };
   const EXEMPLOS = [
-    { titulo:'Pintinho gigante é visto correndo pelo Roblox', secao:'games', fig:'🐔', texto:'Testemunhas dizem que um pintinho do tamanho de um prédio passou correndo pelo mapa Mansion 2 gritando "eu sempre volto!". Até agora ninguém conseguiu pegar ele.', autor:'Repórter Pena' },
+    { titulo:'Jogador de Roblox não para de brincar com sua skin de galinha', secao:'games', fig:'🐔', texto:'Um jogador de Roblox foi visto correndo, pulando e dançando o dia inteiro com sua skin de galinha. "Cocoricó! Eu sempre volto!", disse ele antes de sair batendo as asas pelo mapa. Os outros jogadores já estão pedindo uma skin igual.', autor:'Repórter Pena' },
     { titulo:'Snorlax dorme em cima da pista e cancela a corrida', secao:'pokemon', fig:'😴', texto:'A grande corrida de hoje foi adiada porque um Snorlax resolveu tirar uma soneca bem no meio da pista. Os organizadores tentaram acordar ele com uma flauta, mas ele só roncou mais alto.', autor:'Repórter Zzz' },
     { titulo:'Chove pizza na cidade e escolas fecham pra todo mundo comer', secao:'clima', fig:'🍕', texto:'A previsão era de chuva, mas ninguém esperava que fosse de pizza! Os meteorologistas avisam: amanhã pode cair sorvete. Leve uma colher.', autor:'Repórter Calabresa' }
   ];
   let noticias = ler('noticias', null);
   if(!noticias){ noticias = EXEMPLOS.map((n, i) => ({ ...n, id:'ex' + i, quando:Date.now() - (i + 1) * 3600e3, curtidas:Math.floor(Math.random() * 20) + 3, curti:false })); gravar('noticias', noticias); }
+  /* Quem já tinha a notícia de exemplo antiga do pintinho recebe a nova. */
+  const ex0 = noticias.find(n => n.id === 'ex0' && n.titulo === 'Pintinho gigante é visto correndo pelo Roblox');
+  if(ex0){ Object.assign(ex0, EXEMPLOS[0]); gravar('noticias', noticias); }
   let filtro = 'tudo', editando = null, figura = '📰';
 
   /* Seções e figuras */
