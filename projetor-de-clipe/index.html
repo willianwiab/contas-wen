@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Projetor de Clipe</title>
-<meta name="description" content="Projeta um clipe do YouTube em tela cheia, com luzes de show em volta. Começa com Oops!... I Did It Again." />
+<title>Bloco 13 no Palco</title>
+<meta name="description" content="Projeta um clipe do YouTube em tela cheia, com luzes de show em volta. Começa com o Bloco 13 cantando I'm not that innocent, e ele dança no palco." />
 <meta name="theme-color" content="#14061f" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -136,6 +136,37 @@ button.principal { background: var(--pink); border-color: var(--pink); color: #f
 .aviso { min-height: 1.4em; margin: 0; color: var(--gold); font-weight: 600; text-align: center; }
 :root[data-theme="light"] .aviso { color: #a3127a; }
 .dica { margin: 0; color: var(--muted); font-size: 14px; text-align: center; max-width: 60ch; }
+
+/* Bloco 13: dez blocos brancos de borda vermelha (2x5) com três amarelos em cima. Dança quando as
+   luzes estão ligadas; quando alguém diz "treze", os três amarelos caem pro lado e depois voltam. */
+.show { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; max-width: 960px; }
+.bloco { flex: none; width: min(40vw, 180px); }
+.bloco svg { width: 100%; height: auto; display: block; overflow: visible; }
+.dancando { transform-box: view-box; transform-origin: 50% 100%; animation: danca .9s ease-in-out infinite alternate; }
+@keyframes danca { from { transform: rotate(-6deg); } to { transform: rotate(6deg) translateY(-6px); } }
+.braco { transform-box: fill-box; transform-origin: 0 50%; animation: acena .45s ease-in-out infinite alternate; }
+.braco.esq { transform-origin: 100% 50%; animation-direction: alternate-reverse; }
+@keyframes acena { from { transform: rotate(-20deg); } to { transform: rotate(20deg); } }
+.desligado .dancando, .desligado .braco { animation-play-state: paused; }
+.tres { transform-box: view-box; transition: transform .45s cubic-bezier(.5,-.4,.6,1.4); }
+.solto .tres { transform: translate(-52px, 212px) rotate(-8deg); transform-origin: 80px 140px; }
+.balao {
+  position: relative;
+  margin: 0;
+  background: var(--surface);
+  border: 3px solid var(--gold);
+  border-radius: 18px;
+  padding: 12px 16px;
+  font-family: var(--display);
+  font-size: clamp(15px, 3.6vw, 24px);
+  line-height: 1.15;
+  color: var(--pink);
+  max-width: 260px;
+}
+.balao::after {
+  content: ""; position: absolute; left: -14px; top: 40%;
+  border: 12px solid transparent; border-right-color: var(--gold); border-left: 0;
+}
 </style>
 </head>
 <body>
@@ -145,8 +176,8 @@ button.principal { background: var(--pink); border-color: var(--pink); color: #f
   <div class="holofote h3" aria-hidden="true"></div>
 
   <header>
-    <h1>Projetor de Clipe</h1>
-    <p class="musica" id="musica">Tocando: Oops!... I Did It Again 🎤</p>
+    <h1>Bloco 13 no Palco</h1>
+    <p class="musica" id="musica">Tocando: Bloco 13 – I'm not that innocent 🎤</p>
   </header>
 
   <div class="luzes" id="luzes" aria-hidden="true"></div>
@@ -157,11 +188,45 @@ button.principal { background: var(--pink); border-color: var(--pink); color: #f
       allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
   </div>
 
+  <div class="show">
+    <div class="bloco" id="bloco" role="img" aria-label="Bloco 13 dançando: dez blocos brancos e três amarelos">
+      <svg viewBox="0 0 200 380" aria-hidden="true">
+        <g class="dancando">
+          <path d="M82 340 v26 h-14 M118 340 v26 h14" stroke="#6b2a7a" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect class="braco esq" x="24" y="206" width="36" height="9" rx="4.5" fill="#8a3a9c"/>
+          <rect class="braco" x="140" y="206" width="36" height="9" rx="4.5" fill="#8a3a9c"/>
+          <g stroke="#e0262f" stroke-width="4" fill="#fff">
+            <rect x="60" y="140" width="40" height="40"/><rect x="100" y="140" width="40" height="40"/>
+            <rect x="60" y="180" width="40" height="40"/><rect x="100" y="180" width="40" height="40"/>
+            <rect x="60" y="220" width="40" height="40"/><rect x="100" y="220" width="40" height="40"/>
+            <rect x="60" y="260" width="40" height="40"/><rect x="100" y="260" width="40" height="40"/>
+            <rect x="60" y="300" width="40" height="40"/><rect x="100" y="300" width="40" height="40"/>
+          </g>
+          <ellipse cx="84" cy="168" rx="9" ry="12" fill="#fff" stroke="#6b2a7a" stroke-width="3"/>
+          <ellipse cx="116" cy="168" rx="9" ry="12" fill="#fff" stroke="#6b2a7a" stroke-width="3"/>
+          <circle cx="86" cy="171" r="4.5" fill="#6b2a7a"/><circle cx="118" cy="171" r="4.5" fill="#6b2a7a"/>
+          <path d="M74 150 q10 -6 18 0 M108 150 q10 -6 18 0" stroke="#6b2a7a" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M86 194 q14 16 28 0 z" fill="#6b2a7a"/>
+          <g class="tres">
+            <g stroke="#e0b400" stroke-width="4" fill="#ffd23f">
+              <rect x="60" y="20" width="40" height="40"/><rect x="60" y="60" width="40" height="40"/><rect x="60" y="100" width="40" height="40"/>
+            </g>
+            <rect x="48" y="10" width="64" height="8" rx="3" fill="#e0262f"/>
+            <rect x="62" y="-12" width="36" height="24" rx="3" fill="#fff4c2" stroke="#e0262f" stroke-width="3"/>
+            <rect x="62" y="2" width="36" height="6" fill="#e0262f"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <p class="balao" id="balao" aria-live="polite">I'm not that innocent! 🎤</p>
+  </div>
+
   <div class="controles">
     <button class="principal" id="telaCheia">📽️ Projetar em tela cheia</button>
+    <button id="diz13">🔢 Diz “13”!</button>
     <button id="luzesBtn">💡 Desligar luzes</button>
     <button id="temaBtn">🌗 Tema claro</button>
-    <button id="voltar">🔁 Voltar pro clipe da Britney</button>
+    <button id="voltar">🔁 Voltar pro clipe do Bloco 13</button>
   </div>
 
   <form class="link" id="form">
@@ -175,7 +240,7 @@ button.principal { background: var(--pink); border-color: var(--pink); color: #f
 
 <script>
 (function () {
-  var PADRAO = { id: "bN2AziXBB7c", nome: "Oops!... I Did It Again 🎤", radio: true };
+  var PADRAO = { id: "bN2AziXBB7c", nome: "Bloco 13 – I'm not that innocent 🎤", radio: true };
   var CHAVE = "projetor-de-clipe";
   var video = document.getElementById("video");
   var musica = document.getElementById("musica");
@@ -267,6 +332,21 @@ button.principal { background: var(--pink); border-color: var(--pink); color: #f
     tocar(id, "vídeo escolhido ▶", true);
     salvar({ id: id });
     campo.value = "";
+  };
+
+  // dizer "13" faz ele cair em 10 e 3, igual no desenho
+  var bloco = document.getElementById("bloco");
+  var balao = document.getElementById("balao");
+  var frases = ["Ops! Caí de novo! 😅", "Treze? Lá vou eu… 💥", "Foi sem querer! 🙈", "I'm not that innocent! 😎"];
+  var vez = 0, timer;
+  document.getElementById("diz13").onclick = function () {
+    clearTimeout(timer);
+    bloco.classList.add("solto");
+    balao.textContent = frases[vez++ % frases.length];
+    timer = setTimeout(function () {
+      bloco.classList.remove("solto");
+      balao.textContent = "I'm not that innocent! 🎤";
+    }, 1600);
   };
 
   var s = salvo();
