@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arquivo Lost Media</title>
+<meta name="description" content="Casos reais de lost media: filmes, séries, jogos, animações e programas que sumiram (e alguns que foram encontrados)." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📼</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+<style>
+/* Arquivo Lost Media: casos reais de coisas que sumiram. Os dados ficam na lista CASOS lá embaixo. */
+:root{--fundo:#111214;--cartao:#1b1d21;--borda:#2c2f36;--texto:#e8e6e1;--fraco:#9a978f;--amarelo:#f5c542;
+  --perdido:#e5484d;--parcial:#f5a524;--achado:#30a46c;--lenda:#8e7cc3}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--fundo);color:var(--texto);font:16px/1.55 Inter,system-ui,sans-serif}
+.topo{text-align:center;padding:36px 16px 18px;border-bottom:1px solid var(--borda);
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 4px)}
+.topo h1{margin:0;font:400 clamp(34px,8vw,64px)/1.05 'Special Elite',monospace;color:var(--amarelo);letter-spacing:1px}
+.topo p{max-width:640px;margin:10px auto 0;color:var(--fraco)}
+main{max-width:1100px;margin:0 auto;padding:18px 16px 50px}
+.oque{background:var(--cartao);border:1px solid var(--borda);border-left:4px solid var(--amarelo);border-radius:8px;padding:14px 16px;margin-bottom:18px}
+.oque h2{margin:0 0 6px;font:400 22px 'Special Elite',monospace;color:var(--amarelo)}
+.oque p{margin:6px 0}
+.legenda{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.filtros{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.filtros button{font:600 14px Inter,sans-serif;background:transparent;color:var(--texto);border:1px solid var(--borda);border-radius:999px;padding:6px 14px;cursor:pointer}
+.filtros button.on{background:var(--amarelo);border-color:var(--amarelo);color:#111}
+.busca{width:100%;font:16px Inter,sans-serif;background:var(--cartao);color:var(--texto);border:1px solid var(--borda);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.contagem{color:var(--fraco);font-size:14px;margin:0 0 14px}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.caso{background:var(--cartao);border:1px solid var(--borda);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.caso .linha{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.caso .fig{font-size:36px;line-height:1}
+.caso h3{margin:4px 0 0;font:800 19px/1.2 Inter,sans-serif}
+.caso .meta{color:var(--fraco);font-size:13px}
+.caso p{margin:4px 0}
+.caso details{margin-top:auto;padding-top:6px}
+.caso summary{cursor:pointer;color:var(--amarelo);font-weight:600;font-size:14px}
+.selo{display:inline-block;font:700 11px Inter,sans-serif;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;border-radius:4px;color:#111;white-space:nowrap}
+.selo.perdido{background:var(--perdido);color:#fff}.selo.parcial{background:var(--parcial)}
+.selo.achado{background:var(--achado);color:#fff}.selo.lenda{background:var(--lenda);color:#fff}
+.vazio{color:var(--fraco);text-align:center;padding:30px}
+footer{color:var(--fraco);font-size:13px;text-align:center;padding:0 16px 30px}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--amarelo);outline-offset:2px}
+</style>
+</head>
+<body>
+<header class="topo">
+  <h1>📼 Arquivo Lost Media</h1>
+  <p>Filmes, séries, jogos, desenhos e programas que sumiram de verdade. E alguns que foram encontrados depois de muito tempo!</p>
+</header>
+<main>
+  <section class="oque">
+    <h2>O que é lost media?</h2>
+    <p><b>Lost media</b> ("mídia perdida") é qualquer coisa gravada ou criada que ninguém consegue mais encontrar: um filme cuja última cópia pegou fogo, um episódio de TV gravado por cima numa fita reaproveitada, um jogo online que fechou os servidores.</p>
+    <p>Tem gente no mundo todo procurando essas coisas em sótãos, museus e coleções antigas, e às vezes elas aparecem!</p>
+    <div class="legenda">
+      <span class="selo perdido">Perdido</span>
+      <span class="selo parcial">Achado em parte</span>
+      <span class="selo achado">Encontrado</span>
+      <span class="selo lenda">Lenda (não existe)</span>
+    </div>
+  </section>
+
+  <div class="filtros" id="filtros" role="group" aria-label="Filtrar por tema"></div>
+  <input class="busca" id="busca" type="search" placeholder="Buscar caso..." aria-label="Buscar caso" />
+  <p class="contagem" id="contagem"></p>
+  <div class="grade" id="grade"></div>
+</main>
+<footer>Todos os casos aqui são reais (menos os marcados como "lenda", que a gente explica por que não são). 📼</footer>
+
+<script>
+const TEMAS = {filme:'🎬 Filmes', serie:'📺 Séries', jogo:'🎮 Jogos', animacao:'✏️ Animação', programa:'📡 Programas', outros:'🌐 Outros'};
+const SELOS = {perdido:'Perdido', parcial:'Achado em parte', achado:'Encontrado', lenda:'Lenda'};
+
+const CASOS = [
+  {tema:'filme', fig:'🧛', titulo:'London After Midnight', ano:1927, status:'perdido',
+   resumo:'Filme de terror mudo com o ator Lon Chaney, famoso pelo personagem de dentes pontudos e chapéu.',
+   historia:'A última cópia conhecida queimou num incêndio no depósito de filmes do estúdio MGM em 1965. Em 2002 fizeram uma "reconstrução" usando só as fotos que sobraram do filme, mas o filme de verdade continua sumido. É um dos filmes perdidos mais procurados do mundo.'},
+  {tema:'filme', fig:'🤖', titulo:'Metropolis (cenas cortadas)', ano:1927, status:'achado',
+   resumo:'Filme alemão de ficção científica famoso pelo robô Maria. Depois da estreia, quase meia hora do filme foi cortada e sumiu.',
+   historia:'Por 80 anos ninguém achou as cenas cortadas. Em 2008, num museu de cinema em Buenos Aires (Argentina), acharam uma cópia antiga com quase todo o material que faltava! Em 2010 o filme foi relançado quase completo. Só alguns pedacinhos continuam perdidos.'},
+  {tema:'filme', fig:'🦅', titulo:'The Mountain Eagle', ano:1926, status:'perdido',
+   resumo:'O segundo filme dirigido por Alfred Hitchcock, o "mestre do suspense".',
+   historia:'Nenhuma cópia sobreviveu, só algumas fotos. O British Film Institute (o arquivo de filmes do Reino Unido) colocou esse filme na lista dos mais procurados.'},
+  {tema:'filme', fig:'🎩', titulo:'Humor Risk', ano:1921, status:'perdido',
+   resumo:'O primeiro filme dos Irmãos Marx, um grupo de comediantes muito famoso.',
+   historia:'O filme nunca foi lançado direito e as cópias sumiram. Existem várias histórias diferentes sobre o que aconteceu com ele, mas ninguém sabe ao certo.'},
+
+  {tema:'serie', fig:'🛸', titulo:'Doctor Who (episódios antigos)', ano:'1963–1969', status:'parcial',
+   resumo:'Série britânica de ficção científica sobre um viajante do tempo. Muitos episódios dos primeiros anos sumiram.',
+   historia:'Nos anos 1960 e 70 a BBC apagava ou jogava fora gravações antigas para economizar espaço e fitas. Muitos episódios de Doctor Who foram perdidos assim. Com o tempo, cópias foram aparecendo em outros países; em 2013 acharam 9 episódios numa emissora da Nigéria! Mesmo assim, 97 episódios continuam perdidos. Alguns foram refeitos como desenho animado usando o áudio que fãs gravaram da TV.'},
+  {tema:'serie', fig:'🏈', titulo:'Super Bowl I', ano:1967, status:'parcial',
+   resumo:'A transmissão da primeira final do futebol americano.',
+   historia:'As emissoras de TV não guardaram a gravação completa do jogo. Em 2011 apareceram fitas gravadas por um fã que estavam guardadas num sótão, mas não mostram o jogo inteiro. Em 2016 a NFL juntou vários pedaços de filmagens para "remontar" o jogo.'},
+
+  {tema:'jogo', fig:'🎮', titulo:'Nintendo PlayStation', ano:'1991', status:'achado',
+   resumo:'Antes do PlayStation da Sony existir, Nintendo e Sony estavam fazendo um videogame JUNTOS: um Super Nintendo com leitor de CD.',
+   historia:'O acordo entre as duas empresas acabou e o aparelho foi cancelado. Achavam que todos os protótipos tinham sido destruídos. Mas em 2015 apareceu um protótipo de verdade, que tinha sido comprado num leilão de coisas de uma empresa falida! Em 2020 ele foi vendido num leilão por 360 mil dólares.'},
+  {tema:'jogo', fig:'🦊', titulo:'Star Fox 2', ano:'1995', status:'achado',
+   resumo:'Continuação de Star Fox para o Super Nintendo, que estava quase pronta.',
+   historia:'A Nintendo cancelou o jogo pouco antes de lançar, porque o Nintendo 64 estava chegando. Por mais de 20 anos ele ficou guardado. Versões incompletas vazaram na internet, e finalmente em 2017 a Nintendo lançou o jogo oficialmente no Super Nintendo Classic Mini.'},
+  {tema:'jogo', fig:'⚡', titulo:'Pokémon Gold e Silver (demo de 1997)', ano:1997, status:'achado',
+   resumo:'Uma versão de testes de Pokémon Gold e Silver mostrada numa feira no Japão, com mapas e Pokémon diferentes da versão final.',
+   historia:'Por mais de 20 anos só existiam fotos dessa demo, tiradas na feira Spaceworld de 1997. Em 2018 o arquivo do jogo vazou na internet, e os fãs puderam ver Pokémon que foram cortados ou mudaram de visual antes do lançamento.'},
+  {tema:'jogo', fig:'🛰️', titulo:'Jogos do Satellaview', ano:'1995–2000', status:'parcial',
+   resumo:'Um acessório do Super Famicom (o Super Nintendo japonês) que recebia jogos por satélite!',
+   historia:'Os jogos eram transmitidos em horários marcados, e muitos só podiam ser jogados naquela hora, ao vivo. Como ninguém guardava tudo, vários jogos e programas do Satellaview se perderam. Fãs já recuperaram parte deles, mas ainda falta muita coisa.'},
+  {tema:'jogo', fig:'🐧', titulo:'Club Penguin (original)', ano:'2005–2017', status:'perdido',
+   resumo:'Jogo online de pinguins onde milhões de crianças se encontravam, faziam festas e decoravam iglus.',
+   historia:'O Club Penguin original fechou em 2017. Como o jogo funcionava nos servidores da empresa, quando eles desligaram, as festas, eventos e iglus de todo mundo sumiram junto. Esse é um tipo moderno de lost media: jogos online que acabam quando os servidores desligam.'},
+  {tema:'jogo', fig:'👾', titulo:'Polybius', ano:1981, status:'lenda',
+   resumo:'Dizem que era um fliperama misterioso que apareceu nos EUA em 1981 e sumiu sem deixar rastro.',
+   historia:'Não existe nenhuma prova de que esse jogo existiu: nenhuma foto, nenhuma máquina, nenhuma notícia da época. A história começou a circular na internet por volta do ano 2000. É uma lenda urbana, não lost media de verdade, mas é tão famosa que depois fizeram jogos inspirados nela.'},
+
+  {tema:'animacao', fig:'🐰', titulo:'Oswald, o Coelho Sortudo', ano:'1927–1928', status:'parcial',
+   resumo:'Antes do Mickey, Walt Disney criou o coelho Oswald. Vários desenhos dele sumiram.',
+   historia:'A Disney perdeu os direitos do Oswald em 1928 e por isso criou o Mickey Mouse! Muitos curtas do Oswald ficaram perdidos por décadas. Alguns foram reaparecendo: em 2011 acharam o desenho "Hungry Hobos" no Reino Unido. Outros continuam sumidos.'},
+  {tema:'animacao', fig:'🇦🇷', titulo:'El Apóstol', ano:1917, status:'perdido',
+   resumo:'O PRIMEIRO longa-metragem de animação do mundo, feito na Argentina por Quirino Cristiani.',
+   historia:'Foi lançado 20 anos antes de Branca de Neve, da Disney. Mas a única cópia queimou num incêndio em 1926, e nunca mais foi vista. Ou seja: o primeiro filme animado da história é lost media!'},
+
+  {tema:'programa', fig:'🌕', titulo:'Fitas originais da chegada à Lua', ano:1969, status:'perdido',
+   resumo:'As gravações originais, em qualidade mais alta, da transmissão de Neil Armstrong pisando na Lua.',
+   historia:'O que vimos na TV era uma versão de qualidade pior, convertida na hora. As fitas com o sinal original foram guardadas pela NASA, mas em 2009 a NASA explicou que elas provavelmente foram apagadas e reaproveitadas nos anos 70 e 80, quando faltavam fitas. A NASA restaurou as melhores cópias de TV que sobraram.'},
+  {tema:'programa', fig:'🇧🇷', titulo:'TV brasileira antiga', ano:'anos 1950–1970', status:'parcial',
+   resumo:'Grande parte dos programas dos primeiros anos da TV no Brasil, como os da TV Tupi, não existe mais.',
+   historia:'No começo muitos programas eram ao vivo e não eram gravados. Quando gravavam, as fitas eram caras e muitas vezes eram reaproveitadas. Incêndios também destruíram arquivos. Em 2021, um incêndio num galpão da Cinemateca Brasileira, em São Paulo, atingiu parte do acervo de filmes e documentos guardados lá.'},
+
+  {tema:'outros', fig:'🌐', titulo:'O primeiro site da internet', ano:1991, status:'achado',
+   resumo:'O primeiro site do mundo, criado por Tim Berners-Lee no CERN, um laboratório na Suíça.',
+   historia:'O site foi sendo mudado e a versão original se perdeu. Em 2013 o CERN fez um projeto para recuperar e colocar de volta no ar a cópia mais antiga que conseguiram achar. Hoje dá pra visitar: info.cern.ch.'}
+];
+
+let tema = 'todos';
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function filtros(){
+  const lista = [['todos','Todos'], ...Object.entries(TEMAS)];
+  $('filtros').innerHTML = lista.map(([k,n]) =>
+    `<button data-t="${k}" class="${k===tema?'on':''}" aria-pressed="${k===tema}">${n}</button>`).join('');
+}
+function mostrar(){
+  const q = $('busca').value.trim().toLowerCase();
+  const casos = CASOS.filter(c => (tema==='todos' || c.tema===tema) &&
+    (!q || (c.titulo+' '+c.resumo+' '+c.historia).toLowerCase().includes(q)));
+  $('contagem').textContent = casos.length === 1 ? '1 caso' : casos.length + ' casos';
+  $('grade').innerHTML = casos.length ? casos.map(c => `
+    <article class="caso">
+      <div class="linha"><span class="fig" aria-hidden="true">${c.fig}</span><span class="selo ${c.status}">${SELOS[c.status]}</span></div>
+      <h3>${esc(c.titulo)}</h3>
+      <div class="meta">${TEMAS[c.tema]} · ${esc(c.ano)}</div>
+      <p>${esc(c.resumo)}</p>
+      <details><summary>Ler a história</summary><p>${esc(c.historia)}</p></details>
+    </article>`).join('') : '<p class="vazio">Nenhum caso encontrado… será que esse também sumiu? 👀</p>';
+}
+$('filtros').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  tema = b.dataset.t; filtros(); mostrar();
+});
+$('busca').addEventListener('input', mostrar);
+filtros(); mostrar();
+</script>
+</body>
+</html>
