@@ -612,6 +612,41 @@
       "galeria": []
     },
     {
+      "slug": "site-do-nada",
+      "nome": "Site do Nada",
+      "descricao": "Um site com nada. Só branco.",
+      "comoFunciona": "Você abre e aparece uma tela branca. Pronto. É isso.",
+      "objetivo": "Não tem. É nada.",
+      "mecanicas": [
+        "Tela branca",
+        "Nada mais"
+      ],
+      "categoria": "Brinquedo",
+      "plataforma": "Navegador",
+      "ano": 2026,
+      "status": "Publicado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": null,
+      "pontuacao": null,
+      "popularidade": 80,
+      "imagem": "assets/images/site-do-nada.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../site-do-nada/index.html",
+      "galeria": [],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento! (do nada)"
+        }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "jojoos",
       "nome": "JojoOS",
       "descricao": "Um computador de mentira que funciona de verdade: área de trabalho, janelas que arrastam e esticam, barra de tarefas, menu Iniciar — e os 18 jogos do JoJo lá dentro, como programas. Com o Clipy morando num canto da mesa.",
