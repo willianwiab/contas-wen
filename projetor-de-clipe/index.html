@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Projetor de Clipe</title>
+<meta name="description" content="Projeta um clipe do YouTube em tela cheia, com luzes de show em volta. Começa com Oops!... I Did It Again." />
+<meta name="theme-color" content="#14061f" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📽️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Figtree:wght@400;600;800&display=swap" rel="stylesheet" />
+<style>
+/* Projetor de Clipe: um palco escuro com o vídeo no meio, holofotes girando e uma fileira de luzes
+   que pisca. O vídeo vem do YouTube (embed); o resto é só CSS. */
+:root {
+  --bg: #14061f;
+  --surface: #23102f;
+  --fg: #fbeefe;
+  --muted: #c3a6cf;
+  --line: #3d2150;
+  --pink: #ff3ea5;
+  --red: #ff2d4b;
+  --gold: #ffd23f;
+  --cyan: #3fe0ff;
+  --display: "Bungee", "Arial Black", Impact, sans-serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #fff0f8; --surface: #ffffff; --fg: #2a0c33; --muted: #7a5487; --line: #f1cde4;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  overflow-x: hidden;
+}
+.palco {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 16px 32px;
+  overflow: hidden;
+  isolation: isolate;
+}
+/* holofotes */
+.holofote {
+  position: absolute;
+  top: -20vh;
+  width: 40vw;
+  height: 140vh;
+  z-index: -1;
+  opacity: .28;
+  filter: blur(18px);
+  transform-origin: 50% 0;
+  pointer-events: none;
+  clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%);
+}
+.holofote.h1 { left: 0; background: linear-gradient(var(--pink), transparent 80%); animation: varre 6s ease-in-out infinite alternate; }
+.holofote.h2 { right: 0; background: linear-gradient(var(--cyan), transparent 80%); animation: varre 7s ease-in-out infinite alternate-reverse; }
+.holofote.h3 { left: 30vw; background: linear-gradient(var(--gold), transparent 80%); animation: varre 9s ease-in-out infinite alternate; opacity: .18; }
+@keyframes varre { from { transform: rotate(-25deg); } to { transform: rotate(25deg); } }
+:root[data-theme="light"] .holofote { opacity: .18; }
+.desligado .holofote, .desligado .luzes span { animation-play-state: paused; }
+
+header { text-align: center; }
+h1 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(28px, 7vw, 56px);
+  line-height: 1;
+  margin: 0;
+  color: var(--pink);
+  text-shadow: 3px 3px 0 var(--red), 0 0 24px color-mix(in srgb, var(--pink) 60%, transparent);
+  letter-spacing: .02em;
+}
+.musica { margin: 8px 0 0; color: var(--muted); font-weight: 600; }
+
+.luzes { display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap; width: 100%; max-width: 960px; overflow: hidden; }
+.luzes span {
+  width: 14px; height: 14px; border-radius: 50%; flex: none;
+  background: var(--gold);
+  box-shadow: 0 0 10px var(--gold);
+  animation: pisca 1s steps(2, jump-none) infinite;
+}
+.luzes span:nth-child(3n+2) { background: var(--pink); box-shadow: 0 0 10px var(--pink); animation-delay: .33s; }
+.luzes span:nth-child(3n) { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); animation-delay: .66s; }
+@keyframes pisca { 0% { opacity: 1; } 100% { opacity: .2; } }
+
+.tela {
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 6px solid var(--red);
+  border-radius: 14px;
+  box-shadow: 0 0 0 3px var(--gold), 0 0 50px color-mix(in srgb, var(--pink) 55%, transparent);
+  overflow: hidden;
+}
+.tela iframe { width: 100%; height: 100%; border: 0; display: block; }
+.tela:fullscreen { border: 0; border-radius: 0; box-shadow: none; max-width: none; }
+
+.controles { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; width: 100%; max-width: 960px; }
+button, .link input {
+  font: inherit;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+}
+button {
+  background: var(--surface);
+  color: var(--fg);
+  font-weight: 800;
+  padding: 10px 18px;
+  cursor: pointer;
+  min-height: 44px;
+}
+button:hover { border-color: var(--pink); }
+button:focus-visible, .link input:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+button.principal { background: var(--pink); border-color: var(--pink); color: #fff; }
+
+.link { display: flex; gap: 8px; width: 100%; max-width: 960px; }
+.link input {
+  flex: 1; min-width: 0;
+  background: var(--surface);
+  color: var(--fg);
+  padding: 10px 16px;
+  min-height: 44px;
+}
+.aviso { min-height: 1.4em; margin: 0; color: var(--gold); font-weight: 600; text-align: center; }
+:root[data-theme="light"] .aviso { color: #a3127a; }
+.dica { margin: 0; color: var(--muted); font-size: 14px; text-align: center; max-width: 60ch; }
+</style>
+</head>
+<body>
+<main class="palco" id="palco">
+  <div class="holofote h1" aria-hidden="true"></div>
+  <div class="holofote h2" aria-hidden="true"></div>
+  <div class="holofote h3" aria-hidden="true"></div>
+
+  <header>
+    <h1>Projetor de Clipe</h1>
+    <p class="musica" id="musica">Tocando: Oops!... I Did It Again 🎤</p>
+  </header>
+
+  <div class="luzes" id="luzes" aria-hidden="true"></div>
+
+  <div class="tela" id="tela">
+    <iframe id="video" title="Clipe do YouTube"
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+      allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+
+  <div class="controles">
+    <button class="principal" id="telaCheia">📽️ Projetar em tela cheia</button>
+    <button id="luzesBtn">💡 Desligar luzes</button>
+    <button id="temaBtn">🌗 Tema claro</button>
+    <button id="voltar">🔁 Voltar pro clipe da Britney</button>
+  </div>
+
+  <form class="link" id="form">
+    <label for="url" style="position:absolute;left:-9999px">Link do YouTube</label>
+    <input id="url" type="text" inputmode="url" placeholder="Cole outro link do YouTube aqui" autocomplete="off" />
+    <button type="submit">▶ Tocar</button>
+  </form>
+  <p class="aviso" id="aviso" role="status"></p>
+  <p class="dica">Para projetar na TV: ligue o computador ou celular no projetor (ou espelhe a tela) e aperte “Projetar em tela cheia”. Aperte Esc para sair.</p>
+</main>
+
+<script>
+(function () {
+  var PADRAO = { id: "bN2AziXBB7c", nome: "Oops!... I Did It Again 🎤", radio: true };
+  var CHAVE = "projetor-de-clipe";
+  var video = document.getElementById("video");
+  var musica = document.getElementById("musica");
+  var aviso = document.getElementById("aviso");
+  var palco = document.getElementById("palco");
+
+  function salvo() {
+    try { return JSON.parse(localStorage.getItem(CHAVE)) || {}; } catch (e) { return {}; }
+  }
+  function salvar(dados) {
+    try { localStorage.setItem(CHAVE, JSON.stringify(Object.assign(salvo(), dados))); } catch (e) {}
+  }
+
+  // aceita youtube.com/watch?v=, youtu.be/, /shorts/, /embed/ ou só o código de 11 letras
+  function pegaId(texto) {
+    texto = (texto || "").trim();
+    if (/^[\w-]{11}$/.test(texto)) return texto;
+    try {
+      var u = new URL(texto);
+      if (/youtu\.be$/.test(u.hostname)) return u.pathname.slice(1, 12);
+      if (/youtube\.com$/.test(u.hostname)) {
+        if (u.searchParams.get("v")) return u.searchParams.get("v");
+        var m = u.pathname.match(/\/(?:shorts|embed|live)\/([\w-]{11})/);
+        if (m) return m[1];
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function tocar(id, nome, radio) {
+    var p = "autoplay=1&rel=0&playsinline=1";
+    // "radio" = a lista Mix que o YouTube monta a partir do clipe
+    if (radio) p += "&list=RD" + id;
+    video.src = "https://www.youtube-nocookie.com/embed/" + id + "?" + p;
+    musica.textContent = "Tocando: " + nome;
+  }
+
+  // luzes: quantas couberem na largura
+  var luzes = document.getElementById("luzes");
+  function montaLuzes() {
+    var n = Math.max(8, Math.min(40, Math.floor(luzes.clientWidth / 24)));
+    luzes.innerHTML = new Array(n + 1).join("<span></span>");
+  }
+  montaLuzes();
+  addEventListener("resize", montaLuzes);
+
+  document.getElementById("telaCheia").onclick = function () {
+    var t = document.getElementById("tela");
+    var pedir = t.requestFullscreen || t.webkitRequestFullscreen;
+    if (pedir) pedir.call(t);
+    else aviso.textContent = "Esse aparelho não deixa tela cheia aqui. Use o botão ⛶ dentro do vídeo.";
+  };
+
+  var luzesBtn = document.getElementById("luzesBtn");
+  function luzesLigadas(sim) {
+    palco.classList.toggle("desligado", !sim);
+    luzesBtn.textContent = sim ? "💡 Desligar luzes" : "💡 Ligar luzes";
+  }
+  luzesBtn.onclick = function () {
+    var sim = palco.classList.contains("desligado");
+    luzesLigadas(sim);
+    salvar({ luzes: sim });
+  };
+
+  var temaBtn = document.getElementById("temaBtn");
+  function tema(t) {
+    if (t === "light") document.documentElement.dataset.theme = "light";
+    else delete document.documentElement.dataset.theme;
+    temaBtn.textContent = t === "light" ? "🌗 Tema escuro" : "🌗 Tema claro";
+  }
+  temaBtn.onclick = function () {
+    var t = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    tema(t);
+    salvar({ tema: t });
+  };
+
+  document.getElementById("voltar").onclick = function () {
+    tocar(PADRAO.id, PADRAO.nome, PADRAO.radio);
+    salvar({ id: null });
+    aviso.textContent = "";
+  };
+
+  document.getElementById("form").onsubmit = function (ev) {
+    ev.preventDefault();
+    var campo = document.getElementById("url");
+    var id = pegaId(campo.value);
+    if (!id) { aviso.textContent = "Não entendi esse link. Copie o endereço de um vídeo do YouTube."; return; }
+    aviso.textContent = "";
+    tocar(id, "vídeo escolhido ▶", true);
+    salvar({ id: id });
+    campo.value = "";
+  };
+
+  var s = salvo();
+  tema(s.tema);
+  luzesLigadas(s.luzes !== false);
+  if (s.id) tocar(s.id, "vídeo escolhido ▶", true);
+  else tocar(PADRAO.id, PADRAO.nome, PADRAO.radio);
+})();
+</script>
+</body>
+</html>
