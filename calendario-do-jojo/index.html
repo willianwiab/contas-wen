@@ -25,7 +25,7 @@ main{max-width:1180px;margin:0 auto;padding:10px 16px 60px}
 .nav button:hover,.btn:hover{border-color:var(--acento)}
 .btn.primario{background:var(--acento);color:#1a1300;border-color:var(--acento)}
 .nav h2{margin:0 6px;font:600 clamp(20px,4.5vw,28px) Fredoka,sans-serif;min-width:150px;text-align:center;text-transform:capitalize}
-.nav select{font:600 15px Fredoka,sans-serif;background:var(--cartao2);color:var(--texto);border:1px solid var(--borda);border-radius:10px;padding:7px 8px}
+.nav input{font:600 15px Fredoka,sans-serif;background:var(--cartao2);color:var(--texto);border:1px solid var(--borda);border-radius:10px;padding:7px 8px;width:86px}
 .busca{font:16px Nunito,sans-serif;background:var(--cartao);color:var(--texto);border:1px solid var(--borda);border-radius:999px;padding:9px 14px;min-width:0;width:100%;flex:1;max-width:360px}
 .filtros{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
 .filtros button{font:600 13px Nunito,sans-serif;background:transparent;color:var(--texto);border:1px solid var(--borda);border-radius:999px;padding:5px 11px;cursor:pointer;display:flex;align-items:center;gap:6px;opacity:.55}
@@ -112,7 +112,7 @@ canvas.confete{position:fixed;inset:0;pointer-events:none;z-index:30}
       <button id="ant" title="Mês anterior">◀</button>
       <h2 id="titulo"></h2>
       <button id="prox" title="Próximo mês">▶</button>
-      <select id="selAno"></select>
+      <input id="selAno" type="number" min="0" max="9999" title="Ano (de 0 a 9999)" />
       <button id="hoje">Hoje</button>
       <button id="modo">Ver ano</button>
     </div>
@@ -439,9 +439,9 @@ function escola(){ try{ return Object.assign({}, ESCOLA_PADRAO, JSON.parse(local
 // ---------- utilidades de data ----------
 const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 const DIAS = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
-const data = (a,m,d) => new Date(a, m-1, d);
-const mais = (dt,n) => new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()+n);
-const chave = dt => dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+const data = (a,m,d) => { const t = new Date(2000, 0, 1); t.setFullYear(a, m-1, d); t.setHours(0,0,0,0); return t; };
+const mais = (dt,n) => data(dt.getFullYear(), dt.getMonth()+1, dt.getDate()+n);
+const chave = dt => String(dt.getFullYear()).padStart(4,'0')+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
 const deChave = s => { const [a,m,d] = s.split('-').map(Number); return data(a,m,d); };
 const hojeD = () => { const h = new Date(); return data(h.getFullYear(), h.getMonth()+1, h.getDate()); };
 const bissexto = a => (a%4===0 && a%100!==0) || a%400===0;
@@ -456,8 +456,9 @@ function primeiraSegunda(a,m){ const p = data(a,m,1); return data(a,m, 1 + ((8 -
 function luasNovas(a){ return fasesLua(a, 0); }
 function luasCheias(a){ return fasesLua(a, 0.5); }
 function fasesLua(a, fracao){ // aproximação: lua nova de referência 06/01/2000 18:14 UTC + ciclo de 29,53 dias
+  const utc = (y) => { const t = new Date(Date.UTC(2000,0,1)); t.setUTCFullYear(y,0,1); return t.getTime(); };
   const ref = Date.UTC(2000,0,6,18,14), ciclo = 29.530588853*86400000, saida = [];
-  const ini = Date.UTC(a,0,1), fim = Date.UTC(a+1,0,1);
+  const ini = utc(a), fim = utc(a+1);
   let k = Math.floor((ini-ref)/ciclo) - 1;
   for(; ; k++){
     const t = ref + k*ciclo + ciclo*fracao; // 0 = lua nova, 0.5 = lua cheia
@@ -469,27 +470,38 @@ function fasesLua(a, fracao){ // aproximação: lua nova de referência 06/01/20
   return saida;
 }
 
+// a partir de que ano cada coisa existe (antes disso não aparece)
+const DESDE = {'Dia do Fico':1822,'Semana de Arte Moderna':1922,'Primeiro humano no espaço':1961,'Dia do Hino Nacional':1922,'Naufrágio do Titanic':1912,'Fundação de Brasília':1960,'Dia do Senna':1994,'Dia D':1944,
+  'Brasil bicampeão (1962)':1962,'Brasil tricampeão (1970)':1970,'Brasil campeão (1958)':1958,'Brasil pentacampeão (2002)':2002,'Dia do 7 a 1':2014,'Brasil tetracampeão (1994)':1994,'Dia do Soldado':1923,
+  'Lançamento do Sputnik':1957,'Dia da Constituição':1988,'Dia do Aviador e do 14-Bis':1906,'Queda do Muro de Berlim':1989,'Dia do Rei Pelé':1969,'Primeiro voo de avião':1903,'Chegada do homem à Lua':1969,
+  'Tiradentes':1792,'Descobrimento do Brasil':1500,'Independência do Brasil':1822,'Proclamação da República':1889,'Dia da Bandeira':1889,'Abolição da Escravatura':1888,'Consciência Negra':1695,'Aniversário de São Paulo':1554,
+  'Independência da Bahia':1823,'Revolução Constitucionalista':1932,'São Sebastião':1565,'Nossa Senhora Aparecida':1717,'Dia do Trabalho':1886,'Dia dos Namorados':1949,'Dia das Crianças':1924,'Dia do Professor':1827,'Dia do Estudante':1827,
+  'Dia do LEGO':1958,'Dia do Pokémon':1996,'Dia do Mario (MAR10)':1985,'Dia do Pac-Man':1980,'Dia do Emoji':2014,'Dia do Gamer':2008,'Aniversário do Roblox':2006,'Aniversário do Minecraft':2011,'Aniversário do YouTube':2005,'Dia do Zelda':1986,
+  'Aniversário do Claude':2023,'Dia do Game Boy':1989,'Dia do Kirby':1992,'Dia do Tetris':1984,'Aniversário do Among Us':2018,'Dia do Sonic':1991,'Dia do One Piece':1997,'Dia do Harry Potter':1997,'Dia do Homem-Aranha':1962,
+  'Aniversário do Super Mario Bros.':1985,'Aniversário da Nintendo':1889,'Aniversário do Fortnite':2017,'Aniversário do Google':1998,'Dia do Naruto':1999,'Aniversário do Xbox':2001,'Aniversário do PlayStation':1994,'Dia de Star Wars':1977,'Goku Day':1984,
+  'Dia do Rock':1985,'Dia da Internet':1969,'Dia da Televisão':1950,'Dia do Rádio':1923,'Dia do Cinema Brasileiro':1898,'Dia da Fotografia':1839,'Dia da ONU':1945,'Independência dos EUA':1776,'Queda da Bastilha':1789,'Dia do Canadá':1867,
+  'Dia da Informática':1984,'Dia das Redes Sociais':2010,'Dia Olímpico':1894,'Dia do Futebol':1900,'Halloween':1,'Natal':336,'Dia de los Muertos':1,'Dia da Marmota':1887,'Dia do Quadrinho Nacional':1869,'Dia do Carteiro':1663,'Dia do Bombeiro':1856};
 // ---------- monta todos os eventos de um ano ----------
 function eventosDoAno(a){
   const ev = [];
   const add = (nome,fig,tipo,inicio,fim,desc,extra) => ev.push(Object.assign({id:tipo+'|'+nome+'|'+chave(inicio), nome, fig, tipo, inicio, fim: fim||inicio, desc}, extra||{}));
-  FIXOS.forEach(([m,d,nome,fig,tipo,desc,origem]) => add(nome,fig,tipo,data(a,m,d),null,desc,{origem}));
+  FIXOS.forEach(([m,d,nome,fig,tipo,desc,origem]) => { if (DESDE[nome] && a < DESDE[nome]) return; add(nome,fig,tipo,data(a,m,d),null,desc,{origem}); });
   if (bissexto(a)) add('Dia bissexto','🐸','natureza',data(a,2,29),null,'29 de fevereiro só existe de 4 em 4 anos. Quem nasce hoje faz aniversário "de verdade" só a cada 4 anos!');
   // páscoa e companhia
   const p = pascoa(a);
-  add('Carnaval','🎭','facultativo',mais(p,-49),mais(p,-46),'Quatro dias de festa, bloco e fantasia. Segunda e terça são ponto facultativo (quase feriado) e quarta de cinzas só até as 14h.',{origem:'Vem de festas romanas de antes de Cristo. Chegou ao Brasil com o entrudo português no século XVII e os blocos nasceram no Rio nos anos 1850.'});
+  if (a >= 1600) add('Carnaval','🎭','facultativo',mais(p,-49),mais(p,-46),'Quatro dias de festa, bloco e fantasia. Segunda e terça são ponto facultativo (quase feriado) e quarta de cinzas só até as 14h.',{origem:'Vem de festas romanas de antes de Cristo. Chegou ao Brasil com o entrudo português no século XVII e os blocos nasceram no Rio nos anos 1850.'});
   add('Segunda de Carnaval','🥁','facultativo',mais(p,-48),null,'Ponto facultativo: a maioria das escolas e repartições não abre.',{origem:'Ponto facultativo por decreto federal: não é feriado oficial, mas quase tudo fecha.'});
   add('Terça de Carnaval','🎉','facultativo',mais(p,-47),null,'O auge do Carnaval. Ponto facultativo em todo o Brasil.',{origem:'O nome Carnaval vem do latim “carne vale”, adeus à carne, porque era a última festa antes da Quaresma.'});
   add('Quarta-feira de Cinzas','🌫️','facultativo',mais(p,-46),null,'Fim do Carnaval. Ponto facultativo até as 14h.',{origem:'Primeiro dia da Quaresma, os 40 dias antes da Páscoa. As cinzas lembram que a festa acabou.'});
   add('Sexta-feira Santa','✝️','feriado',mais(p,-2),null,'Feriado nacional (Paixão de Cristo). Muita gente come peixe nesse dia.',{origem:'Dia da morte de Jesus. É feriado por lei federal desde 1995.'});
   add('Páscoa','🐰','comemorativo',p,null,'Domingo de Páscoa: caça aos ovos de chocolate! A data muda todo ano porque depende da lua cheia.',{origem:'O Concílio de Niceia, em 325, definiu: Páscoa é no primeiro domingo depois da primeira lua cheia do outono (no hemisfério sul). Por isso muda todo ano.'});
   add('Corpus Christi','🌼','facultativo',mais(p,60),null,'Ponto facultativo. Em muitas cidades fazem tapetes coloridos nas ruas.',{origem:'Criado pelo papa Urbano IV em 1264. Os tapetes de serragem vieram de Portugal e Espanha.'});
-  add('Dia das Mães','💐','comemorativo',enesimoDomingo(a,5,2),null,'Segundo domingo de maio. Dia de dar abraço e presente pra mãe.',{origem:'Criado nos EUA em 1908 por Anna Jarvis, em homenagem à mãe dela. No Brasil virou oficial em 1932, com Getúlio Vargas.'});
-  add('Dia dos Pais','👔','comemorativo',enesimoDomingo(a,8,2),null,'Segundo domingo de agosto. Dia do pai (a maior inspiração do Jojo).',{origem:'Criado no Brasil em 1953 pelo publicitário Sylvio Bhering, pra vender mais em agosto. Era no dia de São Joaquim, pai de Maria.'});
+  if (a >= 1932) add('Dia das Mães','💐','comemorativo',enesimoDomingo(a,5,2),null,'Segundo domingo de maio. Dia de dar abraço e presente pra mãe.',{origem:'Criado nos EUA em 1908 por Anna Jarvis, em homenagem à mãe dela. No Brasil virou oficial em 1932, com Getúlio Vargas.'});
+  if (a >= 1953) add('Dia dos Pais','👔','comemorativo',enesimoDomingo(a,8,2),null,'Segundo domingo de agosto. Dia do pai (a maior inspiração do Jojo).',{origem:'Criado no Brasil em 1953 pelo publicitário Sylvio Bhering, pra vender mais em agosto. Era no dia de São Joaquim, pai de Maria.'});
   const quintaAG = data(a,11,1); const quartaQuinta = data(a,11, 1 + ((4 - quintaAG.getDay() + 7) % 7) + 21);
-  add('Black Friday','🛍️','mundo',mais(quartaQuinta,1),null,'Dia de promoções em todas as lojas. Quarta sexta de novembro.',{origem:'Nome dado nos anos 1960 pela polícia da Filadélfia por causa do trânsito depois do Thanksgiving. Chegou ao Brasil em 2010.'});
-  add('Thanksgiving (EUA)','🦃','mundo',quartaQuinta,null,'Dia de Ação de Graças nos Estados Unidos: jantar em família com peru.',{origem:'Lembra o jantar de 1621 entre colonos ingleses e indígenas. Virou feriado nacional em 1863, por Abraham Lincoln.'});
-  add('Dia do Programador','💻','nerd',data(a,1,256),null,'O 256º dia do ano, porque 256 = 2⁸, o número de valores de um byte. Dia de quem faz jogos e sites (tipo o Jojo).',{origem:'Criado em 2002 por Valentin Balt, da Rússia, e oficializado por lá em 2009.'});
+  if (a >= 1960) add('Black Friday','🛍️','mundo',mais(quartaQuinta,1),null,'Dia de promoções em todas as lojas. Quarta sexta de novembro.',{origem:'Nome dado nos anos 1960 pela polícia da Filadélfia por causa do trânsito depois do Thanksgiving. Chegou ao Brasil em 2010.'});
+  if (a >= 1863) add('Thanksgiving (EUA)','🦃','mundo',quartaQuinta,null,'Dia de Ação de Graças nos Estados Unidos: jantar em família com peru.',{origem:'Lembra o jantar de 1621 entre colonos ingleses e indígenas. Virou feriado nacional em 1863, por Abraham Lincoln.'});
+  if (a >= 2002) add('Dia do Programador','💻','nerd',data(a,1,256),null,'O 256º dia do ano, porque 256 = 2⁸, o número de valores de um byte. Dia de quem faz jogos e sites (tipo o Jojo).',{origem:'Criado em 2002 por Valentin Balt, da Rússia, e oficializado por lá em 2009.'});
   // sextas-feiras 13
   for(let m=1;m<=12;m++){ const s=data(a,m,13); if(s.getDay()===5) add('Sexta-feira 13','🐈‍⬛','mundo',s,null,'Dia considerado de azar por superstição. Bom pra filme de terror.',{origem:'Superstição antiga: 13 era o número de pessoas na Última Ceia e sexta foi o dia da crucificação. Virou meme com os filmes de terror dos anos 1980.'}); }
   // estações
@@ -503,20 +515,20 @@ function eventosDoAno(a){
   const e = escola();
   const volta = deChave(a+'-'+e.volta), jIni = deChave(a+'-'+e.julhoIni), jFim = deChave(a+'-'+e.julhoFim), ultimo = deChave(a+'-'+e.ultimo);
   const voltaProx = deChave((a+1)+'-'+e.volta);
-  add('Volta às aulas','🏫','ferias',volta,null,'Primeiro dia de aula do ano. Mochila nova, caderno novo, amigos de volta.',{origem:'A lei da educação (LDB, de 1996) manda ter 200 dias de aula por ano, por isso as aulas começam no começo de fevereiro.'});
-  add('Férias de julho','🏖️','ferias',jIni,jFim,'Férias no meio do ano. Data aproximada: confere com a sua escola (ajusta no ⚙️).',{origem:'Recesso no meio do ano letivo, que a maioria das escolas dá em julho desde o século XX.'});
-  add('Último dia de aula','🎊','ferias',ultimo,null,'Acabou o ano letivo! Começam as férias grandes.',{origem:'Depois dos 200 dias letivos obrigatórios, acabou!'});
-  add('Férias de verão','🌴','ferias',mais(ultimo,1),mais(voltaProx,-1),'As férias mais longas do ano: Natal, Ano Novo, calor e nada de lição.',{origem:'As férias grandes caem no verão desde o Brasil Império, quando o calor do Rio esvaziava as escolas.'});
-  add('Férias de verão','🌴','ferias',data(a,1,1),mais(volta,-1),'Ainda de férias! A volta às aulas é dia '+volta.getDate()+' de '+MESES[volta.getMonth()]+'.',{origem:'As férias grandes caem no verão desde o Brasil Império, quando o calor do Rio esvaziava as escolas.'});
+  if (a >= 1900) add('Volta às aulas','🏫','ferias',volta,null,'Primeiro dia de aula do ano. Mochila nova, caderno novo, amigos de volta.',{origem:'A lei da educação (LDB, de 1996) manda ter 200 dias de aula por ano, por isso as aulas começam no começo de fevereiro.'});
+  if (a >= 1900) add('Férias de julho','🏖️','ferias',jIni,jFim,'Férias no meio do ano. Data aproximada: confere com a sua escola (ajusta no ⚙️).',{origem:'Recesso no meio do ano letivo, que a maioria das escolas dá em julho desde o século XX.'});
+  if (a >= 1900) add('Último dia de aula','🎊','ferias',ultimo,null,'Acabou o ano letivo! Começam as férias grandes.',{origem:'Depois dos 200 dias letivos obrigatórios, acabou!'});
+  if (a >= 1900) add('Férias de verão','🌴','ferias',mais(ultimo,1),mais(voltaProx,-1),'As férias mais longas do ano: Natal, Ano Novo, calor e nada de lição.',{origem:'As férias grandes caem no verão desde o Brasil Império, quando o calor do Rio esvaziava as escolas.'});
+  if (a >= 1901) add('Férias de verão','🌴','ferias',data(a,1,1),mais(volta,-1),'Ainda de férias! A volta às aulas é dia '+volta.getDate()+' de '+MESES[volta.getMonth()]+'.',{origem:'As férias grandes caem no verão desde o Brasil Império, quando o calor do Rio esvaziava as escolas.'});
   luasNovas(a).forEach(dt => add('Lua nova','🌑','natureza',dt,null,'Noite sem lua no céu (data aproximada). A melhor noite pra ver estrelas!',{origem:'A Lua fica entre a Terra e o Sol, e a parte iluminada está virada pro outro lado. A gente não vê a Lua.'}));
   const nd = (m,dow,n) => { const p = data(a,m,1); return data(a,m, 1 + ((dow - p.getDay() + 7) % 7) + 7*(n-1)); };
-  add('Dia da Internet Segura','🔐','nerd',nd(2,2,2),null,'Safer Internet Day: dia de lembrar de não passar senha pra ninguém e cuidado com estranhos online.',{origem:'Criado pela União Europeia em 2004 e hoje celebrado em mais de 100 países.'});
-  add('Dia da Senha','🔑','nerd',nd(5,4,1),null,'Dia Mundial da Senha. Troca aquela "123456"!',{origem:'Criado em 2013 pela Intel, inspirado num livro de segurança de 2005.'});
-  add('Dia do Donut','🍩','mundo',nd(6,5,1),null,'National Doughnut Day nos EUA: dia de rosquinha de graça por lá.',{origem:'Criado em 1938 pelo Exército da Salvação pra lembrar as voluntárias que serviam rosquinhas aos soldados na Primeira Guerra.'});
-  add('Dia do Batman','🦇','nerd',nd(9,6,3),null,'Batman Day, no terceiro sábado de setembro.',{origem:'Criado em 2014 pela DC Comics nos 75 anos do Batman, que apareceu pela primeira vez em 1939.'});
-  add('Dia do Sorriso','😁','mundo',nd(10,5,1),null,'Dia Mundial do Sorriso: criado pelo inventor do smiley 🙂.',{origem:'Criado em 1999 por Harvey Ball, o artista que desenhou o smiley amarelo em 1963.'});
+  if (a >= 2004) add('Dia da Internet Segura','🔐','nerd',nd(2,2,2),null,'Safer Internet Day: dia de lembrar de não passar senha pra ninguém e cuidado com estranhos online.',{origem:'Criado pela União Europeia em 2004 e hoje celebrado em mais de 100 países.'});
+  if (a >= 2013) add('Dia da Senha','🔑','nerd',nd(5,4,1),null,'Dia Mundial da Senha. Troca aquela "123456"!',{origem:'Criado em 2013 pela Intel, inspirado num livro de segurança de 2005.'});
+  if (a >= 1938) add('Dia do Donut','🍩','mundo',nd(6,5,1),null,'National Doughnut Day nos EUA: dia de rosquinha de graça por lá.',{origem:'Criado em 1938 pelo Exército da Salvação pra lembrar as voluntárias que serviam rosquinhas aos soldados na Primeira Guerra.'});
+  if (a >= 2014) add('Dia do Batman','🦇','nerd',nd(9,6,3),null,'Batman Day, no terceiro sábado de setembro.',{origem:'Criado em 2014 pela DC Comics nos 75 anos do Batman, que apareceu pela primeira vez em 1939.'});
+  if (a >= 1999) add('Dia do Sorriso','😁','mundo',nd(10,5,1),null,'Dia Mundial do Sorriso: criado pelo inventor do smiley 🙂.',{origem:'Criado em 1999 por Harvey Ball, o artista que desenhou o smiley amarelo em 1963.'});
   const sc = data(a,10,12); const segSC = mais(sc, -((sc.getDay()+6)%7));
-  add('Semana do Saco Cheio','🎒','ferias',segSC,mais(segSC,4),'Semana do Dia das Crianças e do Dia do Professor: muita escola emenda e dá a semana toda de folga (confere na sua!).',{origem:'Apelido paulista pro recesso entre o 12 e o 15 de outubro. Muita escola emenda a semana desde os anos 1980.'});
+  if (a >= 1980) add('Semana do Saco Cheio','🎒','ferias',segSC,mais(segSC,4),'Semana do Dia das Crianças e do Dia do Professor: muita escola emenda e dá a semana toda de folga (confere na sua!).',{origem:'Apelido paulista pro recesso entre o 12 e o 15 de outubro. Muita escola emenda a semana desde os anos 1980.'});
   const ch = ANO_CHINES[a]; if (ch) add('Ano Novo Chinês: ano do '+ch[2],ch[3],'mundo',data(a,ch[0],ch[1]),null,'Começa o ano do '+ch[2]+' no calendário chinês, com dragões dançando e fogos.',{origem:'O calendário chinês segue a Lua e tem mais de 3 mil anos. Os 12 bichos vêm de uma lenda de uma corrida organizada pelo Imperador de Jade.'});
   if (a>=2020 && a<=2023) add('Pandemia de COVID-19','😷','historia',data(a,1,1),a===2023?data(a,5,5):data(a,12,31),'O vírus que parou o mundo: escolas fechadas, aula online, máscara e álcool em gel. No Brasil o primeiro caso foi em 26/02/2020 e a emergência acabou em 05/05/2023.',{origem:'O vírus apareceu na China no fim de 2019. A vacina foi feita em tempo recorde: menos de um ano.'});
   FILMES.filter(x=>x[0]===a).forEach(x => add(x[3],x[4],'filme',data(a,x[1],x[2]),null,x[5],{origem:'Data de lançamento anunciada pelo estúdio. Pode mudar, então confere antes de comprar o ingresso!'}));
@@ -559,7 +571,7 @@ const filtroOn = {}; Object.keys(TIPOS).forEach(t => filtroOn[t] = true);
 const $ = s => document.querySelector(s);
 
 // hash da URL: #2026-10
-if (/^#\d{4}-\d{1,2}$/.test(location.hash)) { const [a,m] = location.hash.slice(1).split('-').map(Number); if (m>=1&&m<=12) { ano=a; mes=m; sel=data(a,m,1); } }
+if (/^#\d{1,4}-\d{1,2}$/.test(location.hash)) { const [a,m] = location.hash.slice(1).split('-').map(Number); if (m>=1&&m<=12) { ano=a; mes=m; sel=data(a,m,1); } }
 
 // ---------- render ----------
 function filtros(){
@@ -567,10 +579,11 @@ function filtros(){
   $('#filtros').querySelectorAll('button').forEach(b => b.onclick = () => { filtroOn[b.dataset.t] = !filtroOn[b.dataset.t]; filtros(); render(); });
 }
 function render(){
-  try { history.replaceState(null, '', '#'+ano+'-'+String(mes).padStart(2,'0')); } catch(e) {}
+  try { history.replaceState(null, '', '#'+String(ano).padStart(4,'0')+'-'+String(mes).padStart(2,'0')); } catch(e) {}
   $('#titulo').textContent = modoAno ? ano : MESES[mes-1]+' '+ano;
   $('#modo').textContent = modoAno ? 'Ver mês' : 'Ver ano';
   $('#selAno').value = ano;
+  if (ano===0 && !render.avisou0) { render.avisou0 = true; toast('Ano 0 não existe de verdade (do 1 a.C. pula pro 1 d.C.), mas tá aqui pra você 😄'); }
   modoAno ? renderAno() : renderMes();
   painel();
 }
@@ -713,12 +726,11 @@ function confete(){
 let toastT; function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('on'), 2200); }
 
 // ---------- controles ----------
-$('#ant').onclick = () => { if (modoAno) ano--; else if (--mes<1){ mes=12; ano--; } render(); };
-$('#prox').onclick = () => { if (modoAno) ano++; else if (++mes>12){ mes=1; ano++; } render(); };
+$('#ant').onclick = () => { if (modoAno) ano--; else if (--mes<1){ mes=12; ano--; } if (ano<0){ ano=0; mes=1; } render(); };
+$('#prox').onclick = () => { if (modoAno) ano++; else if (++mes>12){ mes=1; ano++; } if (ano>9999){ ano=9999; mes=12; } render(); };
 $('#hoje').onclick = () => { hoje = hojeD(); ano = hoje.getFullYear(); mes = hoje.getMonth()+1; sel = hoje; modoAno = false; render(); };
 $('#modo').onclick = () => { modoAno = !modoAno; render(); };
-for (let y=2020; y<=2040; y++){ const o = document.createElement('option'); o.value=y; o.textContent=y; $('#selAno').appendChild(o); }
-$('#selAno').onchange = e => { ano = +e.target.value; render(); };
+$('#selAno').onchange = e => { ano = Math.min(9999, Math.max(0, Math.floor(+e.target.value) || 0)); render(); };
 $('#busca').oninput = () => painel();
 $('#busca').onkeydown = e => { if (e.key==='Enter') $('#busca').blur(); };
 addEventListener('resize', () => painel());
