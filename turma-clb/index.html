@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffc93c">
+<title>Turma do CLB</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap">
+<style>
+:root {
+  --bg: #e9f6fb; --surface: #ffffff; --ink: #12323f; --muted: #5b7885; --line: #c9e3ee;
+  --pool: #0b84b8; --pool-ink: #ffffff; --sun: #ffc93c; --sun-ink: #4a3500; --stop: #d92d20; --stop-ink: #ffffff;
+  --stage: #0b1f28; --stage-ink: #e8f6fb;
+  --n1: #c2410c; --n2: #0f766e; --n3: #7c3aed; --n4: #be185d;
+  --display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1f28; --surface: #14303c; --ink: #e8f6fb; --muted: #94b4c1; --line: #24485a;
+    --pool: #2aa7dc; --pool-ink: #04212e; --stage: #04141b;
+    --n1: #fdba74; --n2: #5eead4; --n3: #c4b5fd; --n4: #f9a8d4;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.4; }
+[hidden] { display: none !important; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outline-offset: 2px; }
+.app { height: 100%; max-width: 680px; margin: 0 auto; padding: calc(12px + env(safe-area-inset-top, 0px)) 16px calc(12px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 10px; }
+
+.top { background: var(--sun); color: var(--sun-ink); border-radius: 22px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.top h1 { font-family: var(--display); font-weight: 800; font-size: 1.5rem; line-height: 1.1; margin: 0; }
+.top p { margin: 2px 0 0; font-size: .85rem; font-weight: 600; }
+.count { font-family: var(--display); font-weight: 800; text-align: center; line-height: 1; background: var(--surface); color: var(--ink); border-radius: 16px; padding: 8px 14px; }
+.count b { display: block; font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+.count span { font-size: .72rem; font-family: var(--body); font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+
+.join { margin: auto 0; background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.join h2 { font-family: var(--display); font-size: 1.3rem; margin: 0; }
+.join label { font-weight: 800; font-size: .9rem; display: flex; flex-direction: column; gap: 4px; }
+.join small { color: var(--muted); font-weight: 600; }
+.field { color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 10px 16px; min-width: 0; }
+.big { border: 0; background: var(--pool); color: var(--pool-ink); font-family: var(--display); font-weight: 800; font-size: 1.1rem; border-radius: 999px; padding: 10px 22px; }
+
+.bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.btn { border: 2px solid var(--pool); background: var(--surface); color: var(--pool); font-weight: 800; border-radius: 999px; padding: 6px 14px; }
+.btn.call { border-color: var(--sun); background: var(--sun); color: var(--sun-ink); }
+.online { flex: 1 1 140px; min-width: 0; font-size: .85rem; font-weight: 800; color: var(--muted); }
+
+.ring { background: var(--pool); color: var(--pool-ink); border-radius: 22px; padding: 12px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ring p { margin: 0; flex: 1 1 100%; font-family: var(--display); font-weight: 800; font-size: 1.15rem; line-height: 1.2; overflow-wrap: anywhere; }
+.ring .bell { display: inline-block; animation: shake .5s infinite; }
+.ring button { border: 0; border-radius: 999px; padding: 8px 16px; font-weight: 800; background: var(--sun); color: var(--sun-ink); }
+.ring button.no { background: var(--surface); color: var(--ink); }
+@keyframes shake { 0%,100% { transform: rotate(-14deg); } 50% { transform: rotate(14deg); } }
+@media (prefers-reduced-motion: reduce) { .ring .bell { animation: none; } }
+
+.callbox { background: var(--stage); color: var(--stage-ink); border-radius: 22px; padding: 10px; display: flex; flex-direction: column; gap: 10px; flex: 0 1 auto; max-height: 55%; min-height: 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; overflow-y: auto; min-height: 0; }
+.tile { position: relative; background: #000; border-radius: 14px; overflow: hidden; aspect-ratio: 4 / 3; max-width: 100%; }
+.tile video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tile.me video { transform: scaleX(-1); }
+.tile .nm { position: absolute; left: 6px; bottom: 6px; background: rgba(0,0,0,.6); color: #fff; font-size: .75rem; font-weight: 800; border-radius: 999px; padding: 2px 8px; max-width: calc(100% - 12px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile .ini { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-family: var(--display); font-size: 2.6rem; font-weight: 800; color: #04212e; background: var(--sun); }
+.tile.novideo .ini { display: flex; }
+.ctrl { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.ctrl button { border: 0; border-radius: 999px; padding: 8px 16px; font-weight: 800; background: var(--surface); color: var(--ink); }
+.ctrl button[aria-pressed="true"] { background: var(--sun); color: var(--sun-ink); }
+.ctrl .hang { background: var(--stop); color: var(--stop-ink); }
+
+.msgs { flex: 1 1 120px; min-height: 0; overflow-y: auto; background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.empty { margin: auto; text-align: center; color: var(--muted); max-width: 30ch; }
+.empty b { display: block; font-family: var(--display); font-size: 1.2rem; color: var(--ink); }
+.m { max-width: 82%; min-width: 0; align-self: flex-start; background: var(--bg); border-radius: 18px 18px 18px 6px; padding: 7px 12px; overflow-wrap: anywhere; }
+.m.me { align-self: flex-end; background: var(--pool); color: var(--pool-ink); border-radius: 18px 18px 6px 18px; }
+.m .n { font-weight: 800; font-size: .8rem; display: block; }
+.m .h { font-size: .7rem; opacity: .75; margin-left: 8px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.c1 { color: var(--n1); } .c2 { color: var(--n2); } .c3 { color: var(--n3); } .c4 { color: var(--n4); }
+
+.emojis { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 2px; }
+.emojis button { flex: none; border: 2px solid var(--line); background: var(--surface); border-radius: 12px; font-size: 1.35rem; line-height: 1; padding: 5px 7px; }
+.m.so-emoji { font-size: 2.4rem; line-height: 1.15; background: transparent; padding: 0 4px; }
+.m.so-emoji .h { font-size: .7rem; color: var(--muted); }
+.send { display: flex; gap: 8px; }
+.send .field { flex: 1 1 auto; }
+.note { font-size: .85rem; color: var(--muted); font-weight: 600; text-align: center; margin: 0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <h1>🎈🎉 Turma do CLB 🎉🎈</h1>
+      <p>🏫 Colégio Luiz Blanco · 🧒 Dia das Crianças no Aramaçan 🏊 · 📅 12 de outubro 🥳</p>
+    </div>
+    <div class="count"><b id="countN">–</b><span id="countL">dias</span></div>
+  </header>
+
+  <form class="join" id="join" autocomplete="off">
+    <h2>👋😄 Entrar na turma 🎊</h2>
+    <label>🙋 Seu nome
+      <input class="field" id="nome" maxlength="20" placeholder="Ex.: Jojo">
+    </label>
+    <label>🔑 Código da turma
+      <input class="field" id="codigo" maxlength="20" placeholder="Ex.: clb5ano2026">
+      <small>Letras e números, 4 a 20. Todo mundo que digitar o mesmo código cai na mesma turma, então só passe para os amigos.</small>
+    </label>
+    <label>🔒 Senha da turma
+      <input class="field" id="senha" type="password" maxlength="40" placeholder="A senha secreta que a turma combinou">
+      <small>🤫 Só entra na turma quem souber o código E a senha. Com a senha errada você cai numa sala vazia.</small>
+    </label>
+    <button class="big" type="submit" id="entrarBtn">🚀 Entrar 🚀</button>
+    <p class="note" id="joinMsg" hidden></p>
+  </form>
+
+  <div class="bar" id="bar" hidden>
+    <button class="btn call" id="ligar" type="button">📞 Ligar</button>
+    <button class="btn call" id="video" type="button">🎥 Vídeo</button>
+    <span class="online" id="online">😴 Só você por aqui agora</span>
+    <button class="btn" id="convite" type="button">💌 Copiar convite</button>
+  </div>
+
+  <div class="ring" id="ring" role="alert" hidden>
+    <p><span class="bell">📞</span> <span id="ringTxt"></span></p>
+    <button type="button" id="atVideo">🎥😃 Atender com vídeo</button>
+    <button type="button" id="atVoz">📞🗣️ Atender só com voz</button>
+    <button type="button" class="no" id="recusar">🙅 Agora não</button>
+  </div>
+
+  <section class="callbox" id="callbox" hidden>
+    <div class="grid" id="grid"></div>
+    <div class="ctrl">
+      <button type="button" id="mudo" aria-pressed="false">🎤 Microfone ligado</button>
+      <button type="button" id="cam" aria-pressed="false">📷 Câmera ligada</button>
+      <button type="button" class="hang" id="desligar">📵 Desligar</button>
+    </div>
+  </section>
+
+  <div class="msgs" id="msgs" hidden></div>
+  <div class="emojis" id="emojis" hidden></div>
+  <form class="send" id="form" autocomplete="off" hidden>
+    <input class="field" id="texto" maxlength="300" placeholder="Escreva para a turma…" aria-label="Mensagem">
+    <button class="big" type="submit">Enviar 🚀</button>
+  </form>
+  <p class="note" id="aviso" hidden></p>
+</div>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var MAX = 12; // tamanho máximo da turma online ao mesmo tempo
+
+  // Contagem regressiva até 12/10/2026
+  (function () {
+    var hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    var d = Math.round((new Date(2026, 9, 12) - hoje) / 86400000);
+    if (d > 1) { $("countN").textContent = d; }
+    else if (d === 1) { $("countN").textContent = "1"; $("countL").textContent = "dia"; }
+    else if (d === 0) { $("countN").textContent = "É hoje!"; $("countL").textContent = "bora!"; }
+    else { $("countN").textContent = "Foi!"; $("countL").textContent = "até 2027"; }
+  })();
+
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  var cid = lsGet("clb.cid");
+  if (!cid) { cid = Math.random().toString(36).slice(2, 12); lsSet("clb.cid", cid); }
+
+  var nome = "", codigo = "", prefix = "", sala = "";
+  var peer = null, myId = null;
+  var conns = {};       // id -> [DataConnection]
+  var nomes = {};       // id -> nome
+  var naChamada = {};   // id -> {video, ts}
+  var msgs = [], vistos = {};
+  var inCall = false, callTs = 0, stream = null, medias = {};
+  var msgsEl = $("msgs"), aviso = $("aviso");
+
+  $("nome").value = lsGet("clb.nome") || "";
+  $("codigo").value = (location.hash || "").replace(/[^A-Za-z0-9]/g, "").slice(0, 20) || lsGet("clb.codigo") || "";
+
+  function avisar(t) { aviso.textContent = t; aviso.hidden = !t; }
+
+  // ---------- entrar ----------
+  async function hashSala(txt) {
+    try {
+      var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt));
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ("0" + b.toString(16)).slice(-2); }).join("").slice(0, 24);
+    } catch (e) { // navegador sem crypto.subtle
+      var h1 = 2166136261, h2 = 5381;
+      for (var i = 0; i < txt.length; i++) { h1 = Math.imul(h1 ^ txt.charCodeAt(i), 16777619) >>> 0; h2 = (Math.imul(h2, 33) + txt.charCodeAt(i)) >>> 0; }
+      return "f" + h1.toString(16) + h2.toString(16);
+    }
+  }
+  $("join").addEventListener("submit", async function (ev) {
+    ev.preventDefault();
+    nome = $("nome").value.trim().slice(0, 20);
+    codigo = $("codigo").value.toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (!nome) { joinMsg("Escreva o seu nome primeiro."); return; }
+    if (codigo.length < 4) { joinMsg("O código precisa de pelo menos 4 letras ou números, sem espaço. Exemplo: clb5ano2026"); return; }
+    $("codigo").value = codigo;
+    var senha = $("senha").value;
+    if (senha.length < 4) { joinMsg("🔒 A senha precisa de pelo menos 4 letras ou números."); return; }
+    sala = await hashSala(codigo + ":" + senha);
+    if (typeof Peer === "undefined") { joinMsg("Não consegui carregar a parte das chamadas. Confira a internet e abra de novo."); return; }
+    lsSet("clb.nome", nome); lsSet("clb.codigo", codigo);
+    prefix = "clbt-" + sala + "-";
+    $("entrarBtn").disabled = true; joinMsg("Entrando…");
+    try { msgs = JSON.parse(lsGet("clb.hist." + sala) || "[]").filter(msgOk); } catch (e) { msgs = []; }
+    msgs.forEach(function (m) { vistos[m.id] = 1; });
+    tentar(0);
+  });
+  function joinMsg(t) { $("joinMsg").textContent = t; $("joinMsg").hidden = !t; }
+
+  function opcoes() {
+    var dev = /[?&]dev=(\d+)/.exec(location.search);
+    return dev ? { host: location.hostname, port: +dev[1], path: "/", secure: false } : {};
+  }
+
+  function tentar(i) {
+    if (i >= MAX) { joinMsg("A turma está cheia agora (" + MAX + " pessoas). Tente daqui a pouco."); $("entrarBtn").disabled = false; return; }
+    var p = new Peer(prefix + i, opcoes()), aberto = false;
+    var demora = setTimeout(function () {
+      if (aberto) return;
+      try { p.destroy(); } catch (x) {}
+      joinMsg("Demorou demais para conectar. Pode ser a internet ou uma rede que bloqueia chamadas (como a da escola). Tente de novo ou use outra rede.");
+      $("entrarBtn").disabled = false;
+    }, 15000);
+    p.on("open", function () { aberto = true; clearTimeout(demora); peer = p; myId = p.id; pronto(); });
+    p.on("connection", ligarConn);
+    p.on("call", receberCall);
+    p.on("disconnected", function () {
+      if (aberto && !p.destroyed) setTimeout(function () { try { if (!p.destroyed) p.reconnect(); } catch (e) {} }, 2000);
+    });
+    p.on("error", function (e) {
+      if (aberto) return; // erros de "amigo não encontrado" são normais
+      clearTimeout(demora);
+      try { p.destroy(); } catch (x) {}
+      if (e.type === "unavailable-id") tentar(i + 1);
+      else { joinMsg("Não consegui conectar. Confira a internet e tente de novo."); $("entrarBtn").disabled = false; }
+    });
+  }
+
+  function pronto() {
+    $("join").hidden = true;
+    ["bar", "msgs", "emojis", "form"].forEach(function (id) { $(id).hidden = false; });
+    try { history.replaceState(null, "", "#" + codigo); } catch (e) {}
+    desenharMsgs(); procurar();
+    setInterval(procurar, 30000);
+    $("texto").focus();
+  }
+  function procurar() {
+    if (!peer || peer.destroyed || peer.disconnected) return;
+    for (var j = 0; j < MAX; j++) {
+      var id = prefix + j;
+      if (id !== myId && !aberta(id)) ligarConn(peer.connect(id, { reliable: true }));
+    }
+  }
+  window.addEventListener("pagehide", function () { try { if (peer) peer.destroy(); } catch (e) {} });
+
+  // ---------- conexões de dados ----------
+  function aberta(id) { return (conns[id] || []).filter(function (c) { return c.open; })[0] || null; }
+  function ligarConn(c) {
+    if (!c) return;
+    c.on("open", function () {
+      (conns[c.peer] = conns[c.peer] || []).push(c);
+      c.send({ t: "hello", name: nome, inCall: inCall, video: temVideo(), ts: callTs });
+      c.send({ t: "hist", msgs: msgs.slice(-100) });
+      atualizar();
+    });
+    c.on("data", function (d) { if (d && typeof d === "object") receber(c.peer, d); });
+    var fim = function () {
+      conns[c.peer] = (conns[c.peer] || []).filter(function (x) { return x !== c; });
+      if (!conns[c.peer].length) { delete conns[c.peer]; delete nomes[c.peer]; delete naChamada[c.peer]; fecharMedia(c.peer); }
+      atualizar();
+    };
+    c.on("close", fim); c.on("error", fim);
+  }
+  function enviar(id, obj) { var c = aberta(id); if (c) { try { c.send(obj); } catch (e) {} } }
+  function espalhar(obj) { Object.keys(conns).forEach(function (id) { enviar(id, obj); }); }
+  function nomeDe(id) { return nomes[id] || "Alguém"; }
+
+  function receber(de, d) {
+    if (d.t === "hello") {
+      nomes[de] = String(d.name || "").slice(0, 20) || "Alguém";
+      if (d.inCall) { naChamada[de] = { video: !!d.video, ts: +d.ts || 0 }; talvezChamar(de); }
+      atualizar();
+    } else if (d.t === "hist" && Array.isArray(d.msgs)) {
+      d.msgs.slice(-100).forEach(guardar); desenharMsgs();
+    } else if (d.t === "msg") {
+      guardar(d.m); desenharMsgs();
+    } else if (d.t === "ring") {
+      if (!inCall) tocar(nomeDe(de) + (d.video ? " está fazendo uma chamada de vídeo! 🎥🤩" : " está ligando para a turma! 📞🔔"));
+    } else if (d.t === "call-join") {
+      naChamada[de] = { video: !!d.video, ts: +d.ts || 0 }; talvezChamar(de); atualizar();
+    } else if (d.t === "call-leave") {
+      delete naChamada[de]; fecharMedia(de);
+      if (!Object.keys(naChamada).length) pararToque(true);
+      atualizar();
+    }
+  }
+
+  function atualizar() {
+    var n = Object.keys(conns).filter(aberta).length, c = Object.keys(naChamada).length;
+    var t = n ? "🟢 " + (n + 1) + " online 🙌" : "😴 Só você por aqui agora";
+    if (c && !inCall) t += " · 🔥 chamada rolando, aperte Ligar para entrar 📞";
+    $("online").textContent = t;
+    Object.keys(medias).forEach(function (id) { var el = document.querySelector('[data-peer="' + id + '"] .nm'); if (el) el.textContent = nomeDe(id); });
+  }
+
+  // ---------- bate-papo ----------
+  function msgOk(m) { return m && typeof m.id === "string" && typeof m.text === "string" && typeof m.t === "number"; }
+  function guardar(m) {
+    if (!msgOk(m) || vistos[m.id]) return;
+    vistos[m.id] = 1;
+    msgs.push({ id: m.id.slice(0, 40), cid: String(m.cid || "").slice(0, 20), name: String(m.name || "").slice(0, 20), text: m.text.slice(0, 300), t: m.t });
+    msgs.sort(function (a, b) { return a.t - b.t; });
+    if (msgs.length > 300) msgs = msgs.slice(-300);
+    lsSet("clb.hist." + sala, JSON.stringify(msgs));
+  }
+  function cor(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return "c" + (h % 4 + 1); }
+  function hora(t) { var d = new Date(t); return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+  function desenharMsgs() {
+    var noFim = msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight < 80;
+    msgsEl.textContent = "";
+    if (!msgs.length) {
+      var e = document.createElement("div"); e.className = "empty";
+      var b = document.createElement("b"); b.textContent = "🦗 Ninguém escreveu ainda 🦗";
+      e.appendChild(b); e.appendChild(document.createTextNode("✍️ Mande a primeira mensagem para combinar o Dia das Crianças! 🎈🍭🎮⚽"));
+      msgsEl.appendChild(e); return;
+    }
+    msgs.forEach(function (m) {
+      var eu = m.cid === cid, div = document.createElement("div");
+      div.className = "m" + (eu ? " me" : "") + (SO_EMOJI.test(m.text) ? " so-emoji" : "");
+      if (!eu) { var n = document.createElement("span"); n.className = "n " + cor(m.cid || "x"); n.textContent = m.name || "Alguém"; div.appendChild(n); }
+      div.appendChild(document.createTextNode(m.text));
+      var h = document.createElement("span"); h.className = "h"; h.textContent = hora(m.t); div.appendChild(h);
+      msgsEl.appendChild(div);
+    });
+    if (noFim) msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+  var SO_EMOJI = /^$/;
+  try { SO_EMOJI = new RegExp("^(?:\\p{Extended_Pictographic}|\\p{Emoji_Component}|\\s){1,24}$", "u"); } catch (e) {}
+  "😀 😂 🤣 😍 😎 🤩 🥳 😜 🤪 😱 😭 😡 👍 👎 👏 🙌 🙏 💪 ❤️ 🔥 ⭐ 🎉 🎈 🎁 🍭 🍕 🍦 🍫 ⚽ 🏀 🏊 🎮 🛹 🚲 🐶 🐱 🦄 🌈 ☀️ 💩 👻 🤖 🚀 💯".split(" ").forEach(function (e) {
+    var b = document.createElement("button"); b.type = "button"; b.textContent = e; b.setAttribute("aria-label", "Colocar " + e);
+    b.addEventListener("click", function () { var t = $("texto"); if (t.value.length < 290) t.value += e; t.focus(); });
+    $("emojis").appendChild(b);
+  });
+  $("form").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var t = $("texto").value.trim().slice(0, 300); if (!t) return;
+    $("texto").value = "";
+    var m = { id: cid + "-" + Date.now().toString(36), cid: cid, name: nome, text: t, t: Date.now() };
+    guardar(m); desenharMsgs(); msgsEl.scrollTop = msgsEl.scrollHeight;
+    espalhar({ t: "msg", m: m });
+  });
+  $("convite").addEventListener("click", function () {
+    var b = $("convite"), url = location.href.split("#")[0].split("?")[0] + "#" + codigo;
+    var ok = function () { b.textContent = "✅ Convite copiado! 🎉"; setTimeout(function () { b.textContent = "💌 Copiar convite"; }, 2000); };
+    try { navigator.clipboard.writeText(url).then(ok, function () { avisar("Convite: " + url); }); } catch (e) { avisar("Convite: " + url); }
+  });
+
+  // ---------- toque ----------
+  var actx = null, toqueTimer = 0, ringTimer = 0;
+  document.addEventListener("pointerdown", function () {
+    try { if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) {}
+  });
+  function bip() {
+    if (!actx || actx.state !== "running") return;
+    [0, .18].forEach(function (d, i) {
+      var o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + d;
+      o.frequency.value = i ? 880 : 660; g.gain.setValueAtTime(.15, t); g.gain.exponentialRampToValueAtTime(.001, t + .16);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + .17);
+    });
+  }
+  function tocar(txt) {
+    pararToque(false);
+    $("ringTxt").textContent = txt; $("ring").hidden = false;
+    bip(); toqueTimer = setInterval(bip, 900);
+    ringTimer = setTimeout(function () { pararToque(true); }, 30000);
+  }
+  function pararToque(esconder) { clearInterval(toqueTimer); clearTimeout(ringTimer); if (esconder) $("ring").hidden = true; }
+  $("recusar").addEventListener("click", function () { pararToque(true); });
+  $("atVideo").addEventListener("click", function () { entrarNaChamada(true); });
+  $("atVoz").addEventListener("click", function () { entrarNaChamada(false); });
+  $("ligar").addEventListener("click", function () { entrarNaChamada(false); });
+  $("video").addEventListener("click", function () { entrarNaChamada(true); });
+
+  // ---------- chamada de voz e vídeo ----------
+  function temVideo() { return !!(stream && stream.getVideoTracks().length); }
+  async function pegarMidia(video) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("sem-suporte");
+    if (video) {
+      try { return await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } }); }
+      catch (e) { avisar("Não consegui abrir a câmera, então você entrou só com voz."); }
+    }
+    return await navigator.mediaDevices.getUserMedia({ audio: true });
+  }
+  async function entrarNaChamada(video) {
+    if (inCall || !peer) return;
+    pararToque(true);
+    $("ligar").disabled = $("video").disabled = true;
+    try { stream = await pegarMidia(video); }
+    catch (e) {
+      $("ligar").disabled = $("video").disabled = false;
+      avisar(e.message === "sem-suporte"
+        ? "Este navegador só libera microfone e câmera em páginas com https."
+        : "Preciso da permissão do microfone para ligar. Libere no navegador e tente de novo.");
+      return;
+    }
+    inCall = true; callTs = Date.now();
+    $("callbox").hidden = false;
+    $("mudo").setAttribute("aria-pressed", "false"); $("mudo").textContent = "🎤 Microfone ligado";
+    $("cam").hidden = !temVideo(); $("cam").setAttribute("aria-pressed", "false"); $("cam").textContent = "📷 Câmera ligada";
+    quadro("eu", stream, nome + " (você)", true);
+    var sozinho = !Object.keys(naChamada).length;
+    espalhar({ t: "call-join", video: temVideo(), ts: callTs });
+    if (sozinho) espalhar({ t: "ring", video: temVideo() });
+    if (sozinho && !Object.keys(conns).length) avisar("Ninguém mais está online agora. Quem entrar na turma vê que a chamada está rolando.");
+    atualizar();
+  }
+  // Quem entrou primeiro na chamada liga para quem entrou depois (evita ligação dobrada).
+  function talvezChamar(id) {
+    if (!inCall || medias[id] || !naChamada[id]) return;
+    var ts = naChamada[id].ts;
+    if (callTs < ts || (callTs === ts && myId < id)) ligarMedia(peer.call(id, stream));
+  }
+  function receberCall(mc) {
+    if (!inCall) { try { mc.close(); } catch (e) {} return; }
+    mc.answer(stream); ligarMedia(mc);
+  }
+  function ligarMedia(mc) {
+    if (!mc) return;
+    var id = mc.peer;
+    if (medias[id] && medias[id] !== mc) { try { medias[id].close(); } catch (e) {} }
+    medias[id] = mc;
+    mc.on("stream", function (s) { if (medias[id] === mc) quadro(id, s, nomeDe(id), false); });
+    var fim = function () { if (medias[id] === mc) fecharMedia(id); };
+    mc.on("close", fim); mc.on("error", fim);
+  }
+  function fecharMedia(id) {
+    var mc = medias[id]; delete medias[id];
+    if (mc) { try { mc.close(); } catch (e) {} }
+    var el = document.querySelector('[data-peer="' + id + '"]'); if (el) el.remove();
+  }
+  function quadro(id, s, rotulo, eu) {
+    var el = document.querySelector('[data-peer="' + id + '"]');
+    if (!el) {
+      el = document.createElement("div"); el.className = "tile" + (eu ? " me" : ""); el.setAttribute("data-peer", id);
+      var v = document.createElement("video"); v.autoplay = true; v.playsInline = true; v.muted = !!eu;
+      var ini = document.createElement("div"); ini.className = "ini";
+      var nm = document.createElement("span"); nm.className = "nm";
+      el.appendChild(v); el.appendChild(ini); el.appendChild(nm); $("grid").appendChild(el);
+    }
+    var vid = el.querySelector("video");
+    if (vid.srcObject !== s) vid.srcObject = s;
+    var p = vid.play(); if (p && p.catch) p.catch(function () {});
+    el.classList.toggle("novideo", !s.getVideoTracks().length);
+    el.querySelector(".ini").textContent = (rotulo || "?").charAt(0).toUpperCase();
+    el.querySelector(".nm").textContent = rotulo;
+  }
+  function sair() {
+    if (!inCall) return;
+    espalhar({ t: "call-leave" });
+    Object.keys(medias).forEach(fecharMedia);
+    if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
+    stream = null; inCall = false; callTs = 0;
+    $("grid").textContent = ""; $("callbox").hidden = true;
+    $("ligar").disabled = $("video").disabled = false;
+    atualizar();
+  }
+  $("desligar").addEventListener("click", sair);
+  $("mudo").addEventListener("click", function () {
+    var off = this.getAttribute("aria-pressed") !== "true";
+    stream.getAudioTracks().forEach(function (t) { t.enabled = !off; });
+    this.setAttribute("aria-pressed", off ? "true" : "false"); this.textContent = off ? "🔇 Microfone desligado" : "🎤 Microfone ligado";
+  });
+  $("cam").addEventListener("click", function () {
+    var off = this.getAttribute("aria-pressed") !== "true";
+    stream.getVideoTracks().forEach(function (t) { t.enabled = !off; });
+    this.setAttribute("aria-pressed", off ? "true" : "false"); this.textContent = off ? "🙈 Câmera desligada" : "📷 Câmera ligada";
+  });
+
+  window.__clb = { estado: function () { return { id: myId, online: Object.keys(conns).filter(aberta).length, msgs: msgs.length, inCall: inCall, medias: Object.keys(medias).length, quadros: $("grid").children.length }; } };
+})();
+</script>
+</body>
+</html>
