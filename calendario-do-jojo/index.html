@@ -411,6 +411,9 @@ const FILMES = [
   [2031,12,18,'Avatar 5','🌌','Estreia prevista.']
 ];
 
+// CCXP (Comic Con Experience), em São Paulo: [mês, dia de começo, mês, dia de fim]
+const CCXP = {2014:[12,4,12,7],2015:[12,3,12,6],2016:[12,1,12,4],2017:[12,7,12,10],2018:[12,6,12,9],2019:[12,5,12,8],2020:[12,4,12,6],2021:[12,4,12,5],2022:[12,1,12,4],2023:[11,30,12,3],2024:[12,5,12,8],2025:[12,4,12,7],2026:[12,3,12,6]};
+
 // Ano Novo Chinês
 const ANO_CHINES = {2020:[1,25,'Rato','🐭'],2021:[2,12,'Boi','🐂'],2022:[2,1,'Tigre','🐯'],2023:[1,22,'Coelho','🐰'],2024:[2,10,'Dragão','🐲'],2025:[1,29,'Cobra','🐍'],2026:[2,17,'Cavalo','🐴'],2027:[2,6,'Cabra','🐐'],2028:[1,26,'Macaco','🐵'],2029:[2,13,'Galo','🐔'],2030:[2,3,'Cão','🐶'],2031:[1,23,'Porco','🐷'],2032:[2,11,'Rato','🐭'],2033:[1,31,'Boi','🐂'],2034:[2,19,'Tigre','🐯']};
 
@@ -529,6 +532,15 @@ function eventosDoAno(a){
   if (a >= 1999) add('Dia do Sorriso','😁','mundo',nd(10,5,1),null,'Dia Mundial do Sorriso: criado pelo inventor do smiley 🙂.',{origem:'Criado em 1999 por Harvey Ball, o artista que desenhou o smiley amarelo em 1963.'});
   const sc = data(a,10,12); const segSC = mais(sc, -((sc.getDay()+6)%7));
   if (a >= 1980) add('Semana do Saco Cheio','🎒','ferias',segSC,mais(segSC,4),'Semana do Dia das Crianças e do Dia do Professor: muita escola emenda e dá a semana toda de folga (confere na sua!).',{origem:'Apelido paulista pro recesso entre o 12 e o 15 de outubro. Muita escola emenda a semana desde os anos 1980.'});
+  if (a >= 2014) {
+    const c = CCXP[a]; const primQui = nd(12,4,1); const ini = c ? data(a,c[0],c[1]) : primQui, fim = c ? data(a,c[2],c[3]) : mais(primQui,3);
+    const online = a===2020 || a===2021;
+    add('CCXP '+String(a).slice(2), '🦸', 'nerd', ini, fim,
+      online ? 'CCXP Worlds: nesse ano, por causa da pandemia, a CCXP foi toda online, com painéis pela internet.' :
+      'A Comic Con Experience, a maior feira de cultura pop do mundo, no São Paulo Expo. Painéis de filmes e séries, artistas de quadrinhos, cosplay, games e muita fila.' + (c ? '' : ' Data prevista (a CCXP costuma ser na primeira quinta de dezembro): confere no site oficial.'),
+      {origem:'A primeira CCXP foi em dezembro de 2014, em São Paulo, criada pelo site Omelete e pelas lojas Chiaroscuro e Piziitoys, inspirada na Comic-Con de San Diego. Em 2019 bateu 280 mil visitantes e virou a maior do mundo.'});
+    if (c && a >= 2022) add('Spoiler Night da CCXP', '🤫', 'nerd', mais(ini,-1), null, 'Noite de abertura da CCXP, só pra quem tem ingresso especial (Epic Pass, Unlock ou Coringa), das 18h às 21h.', {origem:'A Spoiler Night começou como uma abertura antecipada pra quem tem os passes mais caros, com os estandes abertos e menos fila.'});
+  }
   const ch = ANO_CHINES[a]; if (ch) add('Ano Novo Chinês: ano do '+ch[2],ch[3],'mundo',data(a,ch[0],ch[1]),null,'Começa o ano do '+ch[2]+' no calendário chinês, com dragões dançando e fogos.',{origem:'O calendário chinês segue a Lua e tem mais de 3 mil anos. Os 12 bichos vêm de uma lenda de uma corrida organizada pelo Imperador de Jade.'});
   if (a>=2020 && a<=2023) add('Pandemia de COVID-19','😷','historia',data(a,1,1),a===2023?data(a,5,5):data(a,12,31),'O vírus que parou o mundo: escolas fechadas, aula online, máscara e álcool em gel. No Brasil o primeiro caso foi em 26/02/2020 e a emergência acabou em 05/05/2023.',{origem:'O vírus apareceu na China no fim de 2019. A vacina foi feita em tempo recorde: menos de um ano.'});
   FILMES.filter(x=>x[0]===a).forEach(x => add(x[3],x[4],'filme',data(a,x[1],x[2]),null,x[5],{origem:'Data de lançamento anunciada pelo estúdio. Pode mudar, então confere antes de comprar o ingresso!'}));
