@@ -170,7 +170,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     <button class="big" type="submit">Enviar 🚀</button>
   </form>
   <p class="note" id="aviso" hidden></p>
-  <p class="note" id="versao">🏷️ Versão 7</p>
+  <p class="note" id="versao">🏷️ Versão 8</p>
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -195,7 +195,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   var cid = lsGet("clb.cid");
   if (!cid) { cid = Math.random().toString(36).slice(2, 12); lsSet("clb.cid", cid); }
 
-  var nome = "", codigo = "", prefix = "", sala = "", auto = false;
+  var nome = "", codigo = "", prefix = "", sala = "", chave = "", auto = false;
   var peer = null, myId = null;
   var conns = {};       // id -> [DataConnection]
   var nomes = {};       // id -> nome
@@ -212,10 +212,10 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   function avisar(t) { aviso.textContent = t; aviso.hidden = !t; }
 
   // ---------- entrar ----------
-  async function hashSala(txt) {
+  async function hashSala(txt, tam) {
     try {
       var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt));
-      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ("0" + b.toString(16)).slice(-2); }).join("").slice(0, 24);
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ("0" + b.toString(16)).slice(-2); }).join("").slice(0, tam || 24);
     } catch (e) { // navegador sem crypto.subtle
       var h1 = 2166136261, h2 = 5381;
       for (var i = 0; i < txt.length; i++) { h1 = Math.imul(h1 ^ txt.charCodeAt(i), 16777619) >>> 0; h2 = (Math.imul(h2, 33) + txt.charCodeAt(i)) >>> 0; }
@@ -232,25 +232,43 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     var senha = $("senha").value;
     if (senha.length < 4) { joinMsg("🔒 A senha precisa de pelo menos 4 letras ou números."); return; }
     sala = await hashSala(codigo + ":" + senha);
-    if (typeof Peer === "undefined") { joinMsg("Não consegui carregar a parte das chamadas. Confira a internet e abra de novo."); return; }
+    chave = await hashSala("k:" + codigo + ":" + senha, 64);
     lsSet("clb.nome", nome); lsSet("clb.codigo", codigo);
-    iniciar(false);
+    // A nuvem guarda uma marquinha de cada senha já usada com este código, para avisar quando a senha não bate.
+    $("entrarBtn").disabled = true; joinMsg("Conferindo a senha…");
+    var marca = (await hashSala("m:" + codigo + ":" + senha)).slice(0, 16), canto = BANCO + "/salas/" + (await hashSala("c:" + codigo)) + "/recados/senhas";
+    var situacao = "semnuvem";
+    try {
+      var r = await buscar(canto + ".json?shallow=true");
+      if (r.ok) { var j = await r.json(); situacao = j && j[marca] ? "ok" : j && Object.keys(j).length ? "outra" : "nova"; }
+    } catch (e) {}
+    $("entrarBtn").disabled = false;
+    if (situacao === "outra" && confirmada !== sala) {
+      confirmada = sala;
+      joinMsg("⚠️ Já existe uma turma com este código, mas com OUTRA senha. Confira a senha com a turma (maiúscula e minúscula contam!). Se você quer mesmo criar uma turma nova com esta senha, aperte Entrar de novo.");
+      return;
+    }
+    if (situacao === "nova" || situacao === "outra") buscar(canto + "/" + marca + ".json", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ iv: "0", c: "1" }) }).catch(function () {});
+    iniciar();
   });
+  var confirmada = "";
   // Entra na turma. No modo automático (voltando ao site) já mostra as conversas guardadas enquanto conecta.
-  function iniciar(automatico) {
-    auto = automatico;
+  function iniciar() {
+    auto = true;
     prefix = "clbt-" + sala + "-";
     $("entrarBtn").disabled = true; joinMsg("Entrando…");
+    lsSet("clb.sessao", JSON.stringify({ nome: nome, codigo: codigo, sala: sala, chave: chave })); // para continuar na turma ao voltar
     try { apagadas = JSON.parse(lsGet("clb.del." + sala) || "{}") || {}; } catch (e) { apagadas = {}; }
     try { msgs = JSON.parse(lsGet("clb.hist." + sala) || "[]").filter(msgOk).filter(function (m) { return !apagadas[m.id]; }); } catch (e) { msgs = []; }
     msgs.forEach(function (m) { m.re = limparRe(m.re); });
     msgs.forEach(function (m) { vistos[m.id] = 1; });
-    if (auto) { mostrarApp(); $("online").textContent = "📡 Conectando…"; }
+    mostrarApp(); atualizar();
+    nuvemComecar();
+    if (typeof Peer === "undefined") { avisar("📵 Não consegui carregar a parte das chamadas. As mensagens funcionam; para ligar, confira a internet e abra de novo."); return; }
     tentar(0);
   }
   function falhou(msg) {
-    if (auto) { $("online").textContent = "📡 Sem conexão. Tentando de novo…"; setTimeout(function () { tentar(0); }, 8000); }
-    else { joinMsg(msg); $("entrarBtn").disabled = false; }
+    chamadasOk = false; atualizar(); setTimeout(function () { tentar(0); }, 8000);
   }
   function joinMsg(t) { $("joinMsg").textContent = t; $("joinMsg").hidden = !t; }
 
@@ -291,7 +309,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     desenharMsgs(); msgsEl.scrollTop = msgsEl.scrollHeight;
   }
   function pronto() {
-    lsSet("clb.sessao", JSON.stringify({ nome: nome, codigo: codigo, sala: sala })); // para continuar na turma ao voltar
+    chamadasOk = true;
     mostrarApp(); atualizar(); procurar();
     clearInterval(varredura);
     varredura = setInterval(procurar, 30000);
@@ -358,7 +376,9 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   function atualizar() {
     var n = Object.keys(conns).filter(aberta).length, c = Object.keys(naChamada).length;
     var gente = Object.keys(conns).filter(aberta).map(function (id) { return nomeDe(id) + (naChamada[id] ? " 📞" : ""); });
-    var t = n ? "🟢 " + (n + 1) + " online 🙌: " + nome + " (você)" + (inCall ? " 📞" : "") + ", " + gente.join(", ") : "😴 Só você por aqui agora";
+    var t = (nuvemOk ? "☁️ " : nuvemOk === false ? "⛈️ sem nuvem · " : "") + (chamadasOk ? "" : "📡 conectando chamadas… · ");
+    t += n ? "🟢 " + (n + 1) + " online 🙌: " + nome + " (você)" + (inCall ? " 📞" : "") + ", " + gente.join(", ") : "😴 Só você por aqui agora";
+    if (fila.length) t += " · ⏳ " + fila.length + " para enviar";
     if (c && !inCall) t += " · 🔥 chamada rolando, aperte Ligar para entrar 📞";
     $("online").textContent = t;
     Object.keys(medias).forEach(function (id) { var el = document.querySelector('[data-peer="' + id + '"] .nm'); if (el) el.textContent = nomeDe(id); });
@@ -421,7 +441,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   function minhaReacao(id, e) {
     var m = achar(id); if (!m) return;
     var nova = m.re[cid] === e ? "" : e;
-    reagir(id, cid, nova); espalhar({ t: "react", id: id, cid: cid, e: nova });
+    reagir(id, cid, nova); espalhar({ t: "react", id: id, cid: cid, e: nova }); nuvemMandar({ k: "r", id: id, cid: cid, e: nova });
     aberto = null; desenharMsgs();
   }
   function cor(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return "c" + (h % 4 + 1); }
@@ -461,7 +481,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
       var menu = document.createElement("div"); menu.className = "menu";
       REACOES.forEach(function (e) { menu.appendChild(botao(e, "Reagir com " + e, function () { minhaReacao(m.id, e); })); });
       menu.appendChild(botao(eu ? "🗑️ Apagar para todos" : "🙈 Apagar só para mim", "", function () {
-        remover(m.id, eu); if (eu) espalhar({ t: "del", id: m.id, cid: cid });
+        remover(m.id, eu); if (eu) { espalhar({ t: "del", id: m.id, cid: cid }); nuvemMandar({ k: "d", id: m.id, cid: cid }); }
         desenharMsgs();
       }, "del"));
       w.appendChild(menu);
@@ -506,7 +526,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     $("texto").value = "";
     var m = { id: cid + "-" + Date.now().toString(36), cid: cid, name: nome, text: t, t: Date.now(), re: {} };
     guardar(m); desenharMsgs(); msgsEl.scrollTop = msgsEl.scrollHeight;
-    espalhar({ t: "msg", m: m });
+    espalhar({ t: "msg", m: m }); nuvemMandar({ k: "m", m: m });
   });
   var rec = null, recPartes = [], recT0 = 0, recTimer = 0, recStream = null, recCancela = false;
   function recFim() {
@@ -524,7 +544,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
       if (!audioOk(url)) { avisar("🎤 O áudio ficou grande demais. Tente um mais curto."); return; }
       var m = { id: cid + "-" + Date.now().toString(36), cid: cid, name: nome, text: "", au: 1, audio: url, dur: dur, t: Date.now(), re: {} };
       guardar(m); desenharMsgs(); msgsEl.scrollTop = msgsEl.scrollHeight;
-      espalhar({ t: "msg", m: m }); avisar("");
+      espalhar({ t: "msg", m: m }); nuvemMandar({ k: "m", m: m }); avisar("");
     };
     fr.readAsDataURL(blob);
   }
@@ -555,6 +575,107 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     var ok = function () { b.textContent = "✅ Convite copiado! 🎉"; setTimeout(function () { b.textContent = "💌 Copiar convite"; }, 2000); };
     try { navigator.clipboard.writeText(url).then(ok, function () { avisar("Convite: " + url); }); } catch (e) { avisar("Convite: " + url); }
   });
+
+  // ---------- nuvem: as mensagens ficam guardadas (embaralhadas) e chegam mesmo com o amigo offline ----------
+  var BANCO = "https://conversa-com-a-familia-default-rtdb.firebaseio.com";
+  (function () { var b = /[?&]banco=(\d+)/.exec(location.search); if (b && /[?&]dev=/.test(location.search)) BANCO = "http://" + location.hostname + ":" + b[1]; })();
+  var nuvemOk = null, chamadasOk = false, chaveAes = null, vistosEv = {}, ultimoT = 0, fila = [], puxando = false, enviando = false, naNuvem = {}, audioPedido = {}, reenviei = false, relogioNuvem = 0;
+  function buscar(url, op) {
+    op = op || {}; op.cache = "no-store";
+    if (window.AbortController) { var ac = new AbortController(); op.signal = ac.signal; setTimeout(function () { ac.abort(); }, 12000); }
+    return fetch(url, op);
+  }
+  function paraB64(buf) { var b = new Uint8Array(buf), t = ""; for (var i = 0; i < b.length; i += 8192) t += String.fromCharCode.apply(null, b.subarray(i, i + 8192)); return btoa(t); }
+  function deB64(t) { var s = atob(t), b = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b; }
+  async function pegarChave() {
+    if (chaveAes) return chaveAes;
+    var raw = new Uint8Array(32); for (var i = 0; i < 32; i++) raw[i] = parseInt(chave.substr(i * 2, 2), 16);
+    chaveAes = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt", "decrypt"]);
+    return chaveAes;
+  }
+  async function embaralhar(obj) {
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var c = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, await pegarChave(), new TextEncoder().encode(JSON.stringify(obj)));
+    return { iv: paraB64(iv), c: paraB64(c) };
+  }
+  async function desembaralhar(v) {
+    try { return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: deB64(v.iv) }, await pegarChave(), deB64(v.c)))); }
+    catch (e) { return null; }
+  }
+  function chaveDoTempo(t) { return ("000000000" + Math.max(0, t).toString(36)).slice(-9); }
+  function cantoSala() { return BANCO + "/salas/" + sala + "/recados"; }
+  function salvarFila() { lsSet("clb.fila." + sala, JSON.stringify(fila.slice(-200))); }
+  function nuvemMandar(ev) {
+    if (!chave || !window.crypto || !crypto.subtle) return;
+    if (ev.k === "m") { if (ev.m.audio) fila.push({ aud: ev.m.id }); ev = { k: "m", m: semAudio(ev.m) }; naNuvem[ev.m.id] = 1; }
+    fila.push({ k: chaveDoTempo(Date.now()) + "-" + Math.random().toString(36).slice(2, 8), ev: ev });
+    salvarFila(); atualizar(); esvaziar();
+  }
+  async function esvaziar() {
+    if (enviando) return; enviando = true;
+    while (fila.length) {
+      var it = fila[0], url, corpo;
+      try {
+        if (it.aud) {
+          var m = achar(it.aud);
+          if (!m || !m.audio) { fila.shift(); continue; }
+          url = cantoSala() + "/audio/" + it.aud + ".json"; corpo = await embaralhar({ a: m.audio });
+        } else { url = cantoSala() + "/clb/" + it.k + ".json"; corpo = await embaralhar(it.ev); }
+        var r = await buscar(url, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) });
+        if (!r.ok) throw new Error("recusado");
+        vistosEv[it.k] = 1; fila.shift(); salvarFila();
+      } catch (e) { break; } // sem internet agora: fica na fila e tenta de novo depois
+    }
+    enviando = false; atualizar();
+  }
+  function aplicar(ev) {
+    if (!ev || typeof ev !== "object") return;
+    if (ev.k === "m" && msgOk(ev.m)) {
+      naNuvem[ev.m.id] = 1; guardar(ev.m);
+      var tem = achar(ev.m.id); if (tem && tem.au && !tem.audio) pegarAudio(tem.id);
+    } else if (ev.k === "d" && typeof ev.id === "string") {
+      var alvo = achar(ev.id); if (!alvo || alvo.cid === ev.cid) remover(ev.id, true);
+    } else if (ev.k === "r" && typeof ev.id === "string") reagir(ev.id, String(ev.cid || "").slice(0, 20), ev.e);
+  }
+  async function pegarAudio(id) {
+    if (audioPedido[id] || !/^[A-Za-z0-9_-]{1,40}$/.test(id)) return; audioPedido[id] = 1;
+    try {
+      var r = await buscar(cantoSala() + "/audio/" + id + ".json"); if (!r.ok) throw 0;
+      var v = await r.json(), d = v && await desembaralhar(v), m = achar(id);
+      if (m && d && audioOk(d.a)) { m.audio = d.a; salvar(); desenharMsgs(); }
+    } catch (e) { delete audioPedido[id]; }
+  }
+  async function puxar() {
+    if (puxando || !sala || !chave) return; puxando = true;
+    try {
+      var q = ultimoT ? "orderBy=%22%24key%22&startAt=%22" + chaveDoTempo(ultimoT - 300000) + "%22" : "orderBy=%22%24key%22&limitToLast=300";
+      var r = await buscar(cantoSala() + "/clb.json?" + q); if (!r.ok) throw 0;
+      var j = (await r.json()) || {}, ks = Object.keys(j).sort(), mudou = false;
+      for (var i = 0; i < ks.length; i++) {
+        var k = ks[i]; if (vistosEv[k]) continue; vistosEv[k] = 1;
+        var t = parseInt(k.slice(0, 9), 36); if (t > ultimoT && t < Date.now() + 600000) ultimoT = t;
+        aplicar(await desembaralhar(j[k])); mudou = true;
+      }
+      if (!ultimoT) ultimoT = Date.now() - 600000;
+      nuvemOk = true;
+      if (mudou) desenharMsgs();
+      if (!reenviei) { // manda de novo o que eu escrevi nos últimos dias e nunca chegou na nuvem
+        reenviei = true;
+        var naFila = {}; fila.forEach(function (it) { if (it.ev && it.ev.m) naFila[it.ev.m.id] = 1; });
+        msgs.filter(function (m) { return m.cid === cid && !naNuvem[m.id] && !naFila[m.id] && m.t > Date.now() - 7 * 86400000; }).slice(-50).forEach(function (m) { nuvemMandar({ k: "m", m: m }); });
+      }
+    } catch (e) { nuvemOk = false; }
+    puxando = false; atualizar(); esvaziar();
+  }
+  function nuvemComecar() {
+    if (!chave || !window.crypto || !crypto.subtle) { nuvemOk = false; return; }
+    try { fila = JSON.parse(lsGet("clb.fila." + sala) || "[]").filter(function (it) { return it && (it.aud || (it.k && it.ev)); }); } catch (e) { fila = []; }
+    puxar();
+    clearInterval(relogioNuvem);
+    relogioNuvem = setInterval(function () { if (!document.hidden) puxar(); }, 5000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) puxar(); });
+    window.addEventListener("online", puxar);
+  }
 
   // ---------- toque ----------
   var actx = null, toqueTimer = 0, ringTimer = 0;
@@ -756,11 +877,11 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   // Voltando ao site: continua na turma sem digitar tudo de novo.
   (function () {
     var sv = null; try { sv = JSON.parse(lsGet("clb.sessao") || "null"); } catch (e) {}
-    if (!sv || typeof sv.sala !== "string" || !sv.sala || typeof Peer === "undefined") return;
+    if (!sv || typeof sv.sala !== "string" || !sv.sala || typeof sv.chave !== "string" || sv.chave.length !== 64) return;
     var noLink = (location.hash || "").replace(/[^A-Za-z0-9]/g, "").toLowerCase();
     if (noLink && noLink !== sv.codigo) return; // convite para outra turma: deixa a pessoa entrar nela
-    nome = String(sv.nome || "").slice(0, 20) || "Alguém"; codigo = String(sv.codigo || ""); sala = sv.sala;
-    iniciar(true);
+    nome = String(sv.nome || "").slice(0, 20) || "Alguém"; codigo = String(sv.codigo || ""); sala = sv.sala; chave = sv.chave;
+    iniciar();
   })();
 
   window.__clb = { estado: function () { return { id: myId, online: Object.keys(conns).filter(aberta).length, msgs: msgs.length, inCall: inCall, medias: Object.keys(medias).length, quadros: $("grid").children.length }; } };
