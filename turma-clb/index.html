@@ -66,6 +66,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
 .tile video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .tile.espelho video { transform: scaleX(-1); }
 .tile .nm { position: absolute; left: 6px; bottom: 6px; background: rgba(0,0,0,.6); color: #fff; font-size: .75rem; font-weight: 800; border-radius: 999px; padding: 2px 8px; max-width: calc(100% - 12px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile.semsom::after { content: "🔊 Toque aqui para ouvir"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 8px; background: rgba(0,0,0,.65); color: #fff; font-weight: 800; cursor: pointer; }
 .tile .ini { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-family: var(--display); font-size: 2.6rem; font-weight: 800; color: #04212e; background: var(--sun); }
 .tile.novideo .ini { display: flex; }
 .ctrl { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
@@ -336,7 +337,8 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
 
   function atualizar() {
     var n = Object.keys(conns).filter(aberta).length, c = Object.keys(naChamada).length;
-    var t = n ? "🟢 " + (n + 1) + " online 🙌" : "😴 Só você por aqui agora";
+    var gente = Object.keys(conns).filter(aberta).map(function (id) { return nomeDe(id) + (naChamada[id] ? " 📞" : ""); });
+    var t = n ? "🟢 " + (n + 1) + " online 🙌: " + nome + " (você)" + (inCall ? " 📞" : "") + ", " + gente.join(", ") : "😴 Só você por aqui agora";
     if (c && !inCall) t += " · 🔥 chamada rolando, aperte Ligar para entrar 📞";
     $("online").textContent = t;
     Object.keys(medias).forEach(function (id) { var el = document.querySelector('[data-peer="' + id + '"] .nm'); if (el) el.textContent = nomeDe(id); });
@@ -417,7 +419,9 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     div.className = "m" + (eu ? " me" : "") + (!m.au && SO_EMOJI.test(m.text) ? " so-emoji" : "");
     div.tabIndex = 0; div.setAttribute("role", "button"); div.setAttribute("aria-label", "Abrir reações e apagar");
     if (!eu) { var n = document.createElement("span"); n.className = "n " + cor(m.cid || "x"); n.textContent = m.name || "Alguém"; div.appendChild(n); }
-    if (m.au && m.audio) { var a = document.createElement("audio"); a.controls = true; a.preload = "metadata"; a.src = m.audio; div.appendChild(a); }
+    if (m.au && m.audio) { var a = document.createElement("audio"); a.controls = true; a.preload = "metadata"; a.src = m.audio;
+      a.addEventListener("error", function () { var s = document.createElement("span"); s.textContent = "🎤 Este aparelho não consegue tocar este áudio 😕"; a.replaceWith(s); });
+      div.appendChild(a); }
     else div.appendChild(document.createTextNode(m.au ? "🎤 Áudio antigo (não dá mais para ouvir)" : m.text));
     var h = document.createElement("span"); h.className = "h"; h.textContent = (m.au && m.dur ? "🎤 " + Math.round(m.dur) + "s · " : "") + hora(m.t); div.appendChild(h);
     var abrir = function (ev) {
@@ -509,7 +513,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     if (!window.MediaRecorder || !navigator.mediaDevices) { avisar("🎤 Este navegador não grava mensagem de voz."); return; }
     try { recStream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
     catch (e) { avisar("🎤 Preciso da permissão do microfone para gravar."); return; }
-    var tipo = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].filter(function (t) { return MediaRecorder.isTypeSupported(t); })[0];
+    var tipo = ["audio/mp4;codecs=mp4a.40.2", "audio/webm;codecs=opus", "audio/webm", "audio/mp4"].filter(function (t) { return MediaRecorder.isTypeSupported(t); })[0];
     try { rec = new MediaRecorder(recStream, tipo ? { mimeType: tipo, audioBitsPerSecond: 24000 } : { audioBitsPerSecond: 24000 }); }
     catch (e) { recStream.getTracks().forEach(function (t) { t.stop(); }); recStream = null; avisar("🎤 Este navegador não grava mensagem de voz."); return; }
     recPartes = []; recCancela = false; recT0 = Date.now();
@@ -541,7 +545,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     if (!actx || actx.state !== "running") return;
     [0, .18].forEach(function (d, i) {
       var o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + d;
-      o.frequency.value = i ? 880 : 660; g.gain.setValueAtTime(.15, t); g.gain.exponentialRampToValueAtTime(.001, t + .16);
+      o.frequency.value = i ? 880 : 660; g.gain.setValueAtTime(.4, t); g.gain.exponentialRampToValueAtTime(.001, t + .16);
       o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + .17);
     });
   }
@@ -626,11 +630,20 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     }
     var vid = el.querySelector("video");
     if (vid.srcObject !== s) vid.srcObject = s;
-    var p = vid.play(); if (p && p.catch) p.catch(function () {});
+    if (!eu) { vid.muted = false; vid.volume = 1; }
+    darPlay(el);
     el.classList.toggle("novideo", !s.getVideoTracks().length);
     el.querySelector(".ini").textContent = (rotulo || "?").charAt(0).toUpperCase();
     el.querySelector(".nm").textContent = rotulo;
   }
+  function darPlay(el) {
+    var vid = el.querySelector("video"), p;
+    try { p = vid.play(); } catch (e) {}
+    if (p && p.then) p.then(function () { el.classList.remove("semsom"); }, function () { if (!el.classList.contains("me")) el.classList.add("semsom"); });
+  }
+  document.addEventListener("pointerdown", function () {
+    Array.prototype.forEach.call(document.querySelectorAll(".tile"), function (el) { if (el.querySelector("video").paused) darPlay(el); });
+  });
   function sair() {
     if (!inCall) return;
     espalhar({ t: "call-leave" });
