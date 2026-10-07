@@ -11,7 +11,7 @@
 <style>
 /* Calendário do Jojo. Os eventos ficam nas listas lá embaixo (FIXOS, ESPECIAIS e eventosDoAno). */
 :root{--fundo:#0f1222;--cartao:#1a1e36;--cartao2:#222749;--borda:#2f3566;--texto:#f3f2ff;--fraco:#a7a9c9;--acento:#ffd166;
-  --feriado:#ff5c6c;--facultativo:#ffa23a;--ferias:#3ddc84;--comemorativo:#4ea1ff;--nerd:#b38cff;--esporte:#ff7a1a;--natureza:#2ad4e0;--mundo:#ff6ad5;--meu:#ffd166}
+  --feriado:#ff5c6c;--facultativo:#ffa23a;--ferias:#3ddc84;--comemorativo:#4ea1ff;--nerd:#b38cff;--esporte:#ff7a1a;--natureza:#2ad4e0;--mundo:#ff6ad5;--meu:#ffd166;--historia:#c08a4f;--filme:#d9dcf0}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--fundo);color:var(--texto);font:16px/1.5 Nunito,system-ui,sans-serif;overflow-x:hidden}
 button{font-family:inherit}
@@ -48,7 +48,7 @@ main{max-width:1180px;margin:0 auto;padding:10px 16px 60px}
 .dia.folga .num{box-shadow:0 0 0 2px var(--feriado) inset}
 .chip{font-size:12px;line-height:1.2;padding:2px 5px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;background:#555}
 .chip.ferias{color:#032}
-.chip.meu,.chip.facultativo{color:#1a1300}
+.chip.meu,.chip.facultativo,.chip.filme{color:#1a1300}
 .mais{font-size:11px;color:var(--fraco);padding-left:3px}
 .dia .so-fig{display:none}
 @media(max-width:640px){
@@ -104,7 +104,7 @@ canvas.confete{position:fixed;inset:0;pointer-events:none;z-index:30}
 <body>
 <header class="topo">
   <h1>📅 Calendário do Jojo</h1>
-  <p>Feriados, férias, datas comemorativas, dias nerds, Copa do Mundo, lua cheia, estações do ano… <b>tudo mesmo</b>. Clique num dia pra ver o que rola e clique no evento pra saber mais.</p>
+  <p>Feriados, férias, datas comemorativas, dias nerds, lançamentos de filmes e jogos, Copa do Mundo, história, lua cheia, estações do ano… <b>tudo mesmo</b>. Clique num dia pra ver o que rola e clique no evento pra saber mais.</p>
 </header>
 <main>
   <div class="barra">
@@ -123,7 +123,7 @@ canvas.confete{position:fixed;inset:0;pointer-events:none;z-index:30}
     <div id="calendario"></div>
     <aside class="painel" id="painel"></aside>
   </div>
-  <p class="aviso">Datas de férias da escola, lua cheia e estações do ano são aproximadas. Clique em ⚙️ no painel pra ajustar as datas da sua escola.</p>
+  <p class="aviso">Datas de férias da escola, lua e estações do ano são aproximadas, e lançamentos de filmes e jogos podem mudar. Clique em ⚙️ no painel pra ajustar as datas da sua escola.</p>
 </main>
 
 <div class="fundo" id="fundo"><div class="modal" id="modal"></div></div>
@@ -140,6 +140,8 @@ const TIPOS = {
   esporte:     {nome:'Esporte',           fig:'⚽'},
   natureza:    {nome:'Natureza e céu',    fig:'🌙'},
   mundo:       {nome:'Mundo',             fig:'🌍'},
+  historia:    {nome:'História',          fig:'📜'},
+  filme:       {nome:'Filmes, séries e jogos', fig:'🎬'},
   meu:         {nome:'Meus eventos',      fig:'⭐'}
 };
 
@@ -211,11 +213,213 @@ const FIXOS = [
   [11,20,'Consciência Negra','✊🏿','feriado','Feriado nacional desde 2024, em homenagem a Zumbi dos Palmares.'],
   [12,24,'Véspera de Natal','🎄','facultativo','Noite da ceia e do Papai Noel. Ponto facultativo depois das 14h.'],
   [12,25,'Natal','🎅','feriado','Feriado nacional. Presentes embaixo da árvore!'],
-  [12,31,'Véspera de Ano Novo','🥂','facultativo','Réveillon: fogos à meia-noite. Ponto facultativo depois das 14h.']
+  [12,31,'Véspera de Ano Novo','🥂','facultativo','Réveillon: fogos à meia-noite. Ponto facultativo depois das 14h.'],
+  // feriados de estados e cidades
+  [1,20,'São Sebastião','🏹','feriado','Feriado na cidade do Rio de Janeiro: dia do padroeiro da cidade.'],
+  [7,2,'Independência da Bahia','🎺','feriado','Feriado na Bahia: em 1823 os baianos expulsaram as tropas portuguesas.'],
+  [7,9,'Revolução Constitucionalista','⚔️','feriado','Feriado no estado de São Paulo: em 1932 os paulistas lutaram por uma nova Constituição.'],
+  [10,28,'Dia do Servidor Público','🏢','facultativo','Ponto facultativo pra quem trabalha no governo.'],
+  [12,8,'Nossa Senhora da Conceição','🙏','feriado','Feriado em várias cidades do Brasil (tipo Salvador e Belo Horizonte).'],
+  // história
+  [1,9,'Dia do Fico','🤴','historia','Em 1822 Dom Pedro I disse: "Se é para o bem de todos e felicidade geral da nação, diga ao povo que FICO". Foi o primeiro passo pra Independência.'],
+  [2,13,'Semana de Arte Moderna','🎨','historia','Em 1922, no Teatro Municipal de São Paulo, artistas como Tarsila e Mário de Andrade chocaram todo mundo com arte nova. Foi de 13 a 17 de fevereiro.'],
+  [4,12,'Primeiro humano no espaço','👨‍🚀','historia','Em 1961 Yuri Gagarin deu uma volta na Terra e disse: "A Terra é azul".'],
+  [4,13,'Dia do Hino Nacional','🎼','historia','Dia do nosso hino: "Ouviram do Ipiranga as margens plácidas…"'],
+  [4,15,'Naufrágio do Titanic','🚢','historia','Em 1912 o navio "que não afundava" bateu num iceberg e afundou.'],
+  [4,21,'Fundação de Brasília','🏛️','historia','Em 1960 a nova capital do Brasil foi inaugurada, no mesmo dia de Tiradentes.'],
+  [5,1,'Dia do Senna','🏎️','historia','Em 1994 o Brasil perdeu Ayrton Senna, tricampeão de Fórmula 1 e ídolo do país.'],
+  [6,6,'Dia D','🪖','historia','Em 1944 os Aliados desembarcaram na Normandia, o começo do fim da Segunda Guerra.'],
+  [6,17,'Brasil bicampeão (1962)','🏆','historia','Copa do Chile: Garrincha brilhou e o Brasil ganhou a segunda Copa.'],
+  [6,21,'Brasil tricampeão (1970)','🏆','historia','Copa do México: o time de Pelé ganhou de 4 a 1 da Itália. Muita gente diz que foi o melhor time de todos.'],
+  [6,29,'Brasil campeão (1958)','🏆','historia','Copa da Suécia: Pelé, com 17 anos, e Garrincha deram a primeira Copa pro Brasil.'],
+  [6,30,'Brasil pentacampeão (2002)','🏆','historia','Copa do Japão e Coreia: Ronaldo fez dois gols na final contra a Alemanha. 2 a 0 e pentaaaa!'],
+  [7,8,'Dia do 7 a 1','😭','historia','Em 2014, na Copa do Brasil, a Alemanha ganhou da seleção de 7 a 1. A gente não fala sobre isso.'],
+  [7,17,'Brasil tetracampeão (1994)','🏆','historia','Copa dos EUA: Romário, Bebeto e o pênalti perdido pelo Baggio deram o tetra ao Brasil.'],
+  [8,25,'Dia do Soldado','🎖️','historia','Aniversário de Duque de Caxias, patrono do Exército.'],
+  [10,4,'Lançamento do Sputnik','🛰️','historia','Em 1957 a União Soviética lançou o primeiro satélite artificial. Começou a corrida espacial.'],
+  [10,5,'Dia da Constituição','📜','historia','Em 1988 nasceu a Constituição Cidadã, a lei mais importante do Brasil.'],
+  [10,23,'Dia do Aviador e do 14-Bis','✈️','historia','Em 1906 Santos Dumont voou com o 14-Bis em Paris. Aniversário dele também é dia 20 de julho.'],
+  [11,9,'Queda do Muro de Berlim','🧱','historia','Em 1989 o muro que dividia a Alemanha caiu e as famílias se reencontraram.'],
+  [11,19,'Dia do Rei Pelé','👑','historia','Dia do milésimo gol do Pelé, em 1969 no Maracanã. Virou data oficial em 2024.'],
+  [12,17,'Primeiro voo de avião','🛩️','historia','Em 1903 os irmãos Wright voaram 12 segundos nos EUA (os brasileiros defendem o Santos Dumont!).'],
+  // comidas
+  [2,5,'Dia da Nutella','🍫','comemorativo','Dia Mundial da Nutella. Uma colherada tá liberada.'],
+  [4,14,'Dia do Café','☕','comemorativo','Dia Nacional do Café. Os adultos comemoram muito.'],
+  [4,24,'Dia do Churrasco','🥩','comemorativo','Dia Nacional do Churrasco. Picanha, linguiça e pão de alho.'],
+  [5,18,'Dia da Coxinha','🍗','comemorativo','Dia Nacional da Coxinha, o salgado mais brasileiro que existe.'],
+  [5,21,'Dia do Chá','🍵','mundo','Dia Internacional do Chá.'],
+  [6,18,'Dia do Sushi','🍣','mundo','Dia Internacional do Sushi.'],
+  [8,17,'Dia do Pão de Queijo','🧀','comemorativo','Dia Nacional do Pão de Queijo, orgulho de Minas.'],
+  [9,5,'Dia do Açaí','🫐','comemorativo','Dia Nacional do Açaí, a tigela mais famosa do Brasil.'],
+  [10,4,'Dia do Taco','🌮','mundo','Dia Nacional do Taco nos EUA. Olé!'],
+  [10,16,'Dia do Pão','🍞','mundo','Dia Mundial do Pão. Pão na chapa, por favor.'],
+  [10,25,'Dia do Macarrão','🍝','mundo','Dia Mundial do Macarrão.'],
+  // bichos e natureza
+  [3,16,'Dia do Panda','🐼','natureza','Dia Mundial do Panda.'],
+  [4,25,'Dia do Pinguim','🐧','natureza','Dia Mundial do Pinguim.'],
+  [5,20,'Dia da Abelha','🐝','natureza','Dia Mundial das Abelhas, que polinizam quase tudo que a gente come.'],
+  [5,23,'Dia da Tartaruga','🐢','natureza','Dia Mundial da Tartaruga.'],
+  [5,27,'Dia da Mata Atlântica','🌿','natureza','Dia da floresta que cobre a costa do Brasil.'],
+  [6,8,'Dia dos Oceanos','🌊','natureza','Dia Mundial dos Oceanos.'],
+  [6,30,'Dia do Asteroide','☄️','natureza','Em 1908 um asteroide explodiu sobre Tunguska, na Rússia, e derrubou 80 milhões de árvores.'],
+  [7,14,'Dia do Tubarão','🦈','natureza','Dia de Conscientização sobre os Tubarões.'],
+  [7,29,'Dia do Tigre','🐯','natureza','Dia Mundial do Tigre.'],
+  [8,10,'Dia do Leão','🦁','natureza','Dia Mundial do Leão.'],
+  [8,12,'Dia do Elefante','🐘','natureza','Dia Mundial do Elefante.'],
+  [8,26,'Dia do Cachorro','🐕','natureza','Dia Nacional do Cachorro (nos EUA, mas o mundo todo adotou).'],
+  [9,5,'Dia da Amazônia','🌳','natureza','Dia da maior floresta do mundo.'],
+  [9,11,'Dia do Cerrado','🌾','natureza','Dia do Cerrado, a savana brasileira.'],
+  [10,20,'Dia da Preguiça (o bicho)','🦥','natureza','Dia Internacional do Bicho-Preguiça. Devagar… bem… devagar…'],
+  [11,12,'Dia do Pantanal','🐊','natureza','Dia do Pantanal, a maior planície alagada do mundo.'],
+  [11,29,'Dia da Onça-pintada','🐆','natureza','Dia Nacional da Onça-pintada, o maior felino das Américas.'],
+  [5,17,'Dia da Reciclagem','♻️','natureza','Dia Mundial da Reciclagem. Separa o lixo!'],
+  // nerd, games e tecnologia
+  [2,14,'Aniversário do YouTube','▶️','nerd','O YouTube foi criado em 14/02/2005. O primeiro vídeo foi "Me at the zoo".'],
+  [2,21,'Dia do Zelda','🗡️','nerd','The Legend of Zelda saiu em 21/02/1986 no Japão.'],
+  [3,14,'Aniversário do Claude','🤖','nerd','O Claude, o robô de IA que ajuda o Jojo a programar, foi lançado em 14/03/2023.'],
+  [4,21,'Dia do Game Boy','🕹️','nerd','O Game Boy foi lançado em 21/04/1989.'],
+  [4,27,'Dia do Kirby','🩷','nerd','Kirby\'s Dream Land saiu em 27/04/1992.'],
+  [4,28,'Dia do Super-Herói','🦸','nerd','Dia Nacional do Super-Herói. Capa opcional.'],
+  [6,6,'Dia do Tetris','🧩','nerd','Tetris foi criado em 06/06/1984 na Rússia.'],
+  [6,15,'Aniversário do Among Us','🔪','nerd','Among Us saiu em 15/06/2018 (e só bombou em 2020, na pandemia).'],
+  [6,23,'Dia do Sonic','💙','nerd','Sonic the Hedgehog saiu em 23/06/1991. Gotta go fast!'],
+  [7,20,'Dia do Xadrez','♟️','nerd','Dia Mundial do Xadrez.'],
+  [7,22,'Dia do One Piece','🏴‍☠️','nerd','O mangá One Piece começou em 22/07/1997.'],
+  [7,31,'Dia do Harry Potter','⚡','nerd','Aniversário do Harry Potter (e da autora J.K. Rowling).'],
+  [8,1,'Dia do Homem-Aranha','🕷️','nerd','Dia do Homem-Aranha, o herói mais querido de Nova York.'],
+  [8,15,'Dia da Informática','🖥️','nerd','Dia Nacional da Informática.'],
+  [9,13,'Aniversário do Super Mario Bros.','🍄','nerd','Super Mario Bros. saiu em 13/09/1985 no Japão.'],
+  [9,22,'Dia do Hobbit','🧝','nerd','Aniversário de Bilbo e Frodo Bolseiro, do Senhor dos Anéis.'],
+  [9,23,'Aniversário da Nintendo','🎴','nerd','A Nintendo nasceu em 23/09/1889 fazendo cartas de baralho!'],
+  [9,26,'Aniversário do Fortnite','🪂','nerd','O Fortnite Battle Royale saiu em 26/09/2017.'],
+  [9,27,'Aniversário do Google','🔍','nerd','O Google foi fundado em 1998.'],
+  [10,10,'Dia do Naruto','🍥','nerd','Aniversário do Naruto Uzumaki. Dattebayo!'],
+  [10,28,'Dia da Animação','🎞️','nerd','Dia Internacional da Animação, dos desenhos animados.'],
+  [11,15,'Aniversário do Xbox','🟢','nerd','O primeiro Xbox saiu em 15/11/2001.'],
+  [12,3,'Aniversário do PlayStation','🎮','nerd','O primeiro PlayStation saiu em 03/12/1994 no Japão.'],
+  // esporte
+  [6,3,'Dia da Bicicleta','🚲','esporte','Dia Mundial da Bicicleta.'],
+  [6,20,'Dia do Surfe','🏄','esporte','Dia Internacional do Surfe.'],
+  [6,21,'Dia do Skate','🛹','esporte','Go Skateboarding Day: dia mundial de andar de skate.'],
+  [6,23,'Dia Olímpico','🥇','esporte','Dia em que o Comitê Olímpico foi criado, em 1894.'],
+  [7,19,'Dia do Futebol','⚽','esporte','Dia Nacional do Futebol: aniversário do Sport Club Rio Grande, o time mais antigo do Brasil (1900).'],
+  [8,3,'Dia da Capoeira','🤸','esporte','Dia Nacional da Capoeira, luta e dança brasileira.'],
+  // profissões e gente
+  [1,7,'Dia do Leitor','📖','comemorativo','Dia de quem gosta de ler.'],
+  [1,25,'Dia do Carteiro','📬','comemorativo','Dia de quem entrega as cartas e encomendas.'],
+  [1,30,'Dia do Quadrinho Nacional','💥','comemorativo','Dia dos gibis brasileiros, tipo Turma da Mônica.'],
+  [3,12,'Dia do Bibliotecário','📚','comemorativo','Dia de quem cuida das bibliotecas.'],
+  [3,15,'Dia da Escola','🏫','comemorativo','Dia Nacional da Escola.'],
+  [3,21,'Dia da Poesia','✍️','mundo','Dia Mundial da Poesia.'],
+  [3,27,'Dia do Teatro e do Circo','🎪','comemorativo','Dia Mundial do Teatro e Dia Nacional do Circo.'],
+  [4,7,'Dia do Jornalista e da Saúde','📰','comemorativo','Dia do Jornalista no Brasil e Dia Mundial da Saúde.'],
+  [4,15,'Dia Mundial da Arte','🖼️','mundo','Aniversário de Leonardo da Vinci.'],
+  [4,29,'Dia da Dança','💃','mundo','Dia Internacional da Dança.'],
+  [5,3,'Dia do Sertanejo','🤠','comemorativo','Dia Nacional do Sertanejo.'],
+  [5,5,'Dia da Língua Portuguesa','🗣️','mundo','Dia Mundial da Língua Portuguesa, falada por 260 milhões de pessoas.'],
+  [5,6,'Dia da Matemática','➗','comemorativo','Dia Nacional da Matemática: aniversário de Malba Tahan, autor de "O Homem que Calculava".'],
+  [5,12,'Dia da Enfermagem','💉','comemorativo','Dia Internacional da Enfermagem.'],
+  [5,16,'Dia do Gari','🧹','comemorativo','Dia de quem deixa a cidade limpa.'],
+  [5,28,'Dia do Brincar','🪁','comemorativo','Dia Mundial do Brincar. Brincar é obrigatório hoje.'],
+  [6,19,'Dia do Cinema Brasileiro','🎥','comemorativo','Dia Nacional do Cinema Brasileiro.'],
+  [6,30,'Dia das Redes Sociais','📱','mundo','Dia Mundial das Redes Sociais.'],
+  [7,2,'Dia do Bombeiro','🚒','comemorativo','Dia Nacional do Bombeiro.'],
+  [7,8,'Dia da Ciência e do Padeiro','🔬','comemorativo','Dia Nacional da Ciência e, por coincidência, Dia do Padeiro.'],
+  [7,25,'Dia do Escritor e do Motorista','🚗','comemorativo','Dia Nacional do Escritor e Dia do Motorista.'],
+  [8,19,'Dia da Fotografia','📸','mundo','Dia Mundial da Fotografia.'],
+  [9,5,'Dia dos Irmãos','👫','comemorativo','Dia dos Irmãos no Brasil.'],
+  [9,9,'Dia do Veterinário','🩺','comemorativo','Dia de quem cuida dos bichinhos.'],
+  [9,18,'Dia da Televisão','📺','comemorativo','Dia Nacional da TV: em 1950 começou a TV Tupi, a primeira do Brasil.'],
+  [9,21,'Dia da Paz','🕊️','mundo','Dia Internacional da Paz.'],
+  [9,25,'Dia do Rádio','📻','comemorativo','Dia Nacional do Rádio: aniversário de Roquette-Pinto.'],
+  [10,1,'Dia da Música','🎵','mundo','Dia Internacional da Música.'],
+  [10,17,'Dia da Vacinação','💉','comemorativo','Dia Nacional da Vacinação. Vacina salva vidas!'],
+  [10,18,'Dia do Médico','👨‍⚕️','comemorativo','Dia de São Lucas, padroeiro dos médicos.'],
+  [10,24,'Dia da ONU','🇺🇳','mundo','Em 1945 nasceu a Organização das Nações Unidas.'],
+  [10,25,'Dia do Dentista','🦷','comemorativo','Dia Nacional do Dentista. Escovou os dentes?'],
+  [10,31,'Dia da Poesia Brasileira','📝','comemorativo','Aniversário de Carlos Drummond de Andrade.'],
+  [11,13,'Dia da Gentileza','💛','mundo','Dia Mundial da Gentileza. Faz uma coisa boa pra alguém.'],
+  [11,14,'Dia da Alfabetização','🔤','comemorativo','Dia Nacional da Alfabetização.'],
+  [11,20,'Dia Mundial da Criança','👧','mundo','Dia Universal da Criança, da ONU (o do Brasil é 12 de outubro).'],
+  [11,22,'Dia do Músico','🎶','comemorativo','Dia de Santa Cecília, padroeira dos músicos.'],
+  [12,2,'Dia do Samba','🥁','comemorativo','Dia Nacional do Samba.'],
+  [12,8,'Dia da Família','👨‍👩‍👧‍👦','comemorativo','Dia da Família no Brasil.'],
+  [12,10,'Dia do Palhaço','🤡','comemorativo','Dia Nacional do Palhaço.'],
+  [12,13,'Dia do Forró e do Marinheiro','🪗','comemorativo','Aniversário de Luiz Gonzaga, rei do baião, e Dia do Marinheiro.'],
+  // mundo
+  [7,1,'Dia do Canadá','🍁','mundo','Feriado nacional do Canadá.'],
+  [7,4,'Independência dos EUA','🎆','mundo','4 de Julho: feriado mais famoso dos Estados Unidos.'],
+  [7,14,'Queda da Bastilha','🇫🇷','mundo','Feriado nacional da França, começo da Revolução Francesa (1789).'],
+  [11,1,'Dia de los Muertos','💀','mundo','Festa mexicana de caveiras coloridas, igual ao filme Viva: A Vida é uma Festa. Vai até dia 2.']
 ];
+
+// ---------- lançamentos de filmes, séries e jogos (datas previstas, podem mudar) ----------
+const FILMES = [
+  [2025,5,22,'Lilo & Stitch (live-action)','🩵','Estreia nos cinemas do Brasil.'],
+  [2025,6,5,'Mario Kart World e Nintendo Switch 2','🏎️','Lançamento do Switch 2 junto com o Mario Kart World.'],
+  [2025,6,12,'Como Treinar o Seu Dragão (live-action)','🐲','Estreia nos cinemas do Brasil.'],
+  [2025,6,19,'Elio (Pixar)','👽','Estreia nos cinemas do Brasil.'],
+  [2025,7,10,'Superman','🦸','Estreia nos cinemas do Brasil.'],
+  [2025,7,17,'Donkey Kong Bananza','🍌','Jogo do Donkey Kong pro Switch 2.'],
+  [2025,7,24,'Quarteto Fantástico: Primeiros Passos','4️⃣','Estreia nos cinemas do Brasil.'],
+  [2025,9,4,'Hollow Knight: Silksong','🪡','Depois de 6 anos de espera, o jogo saiu!'],
+  [2025,9,11,'Demon Slayer: Castelo Infinito','⚔️','Estreia nos cinemas do Brasil.'],
+  [2025,10,16,'Pokémon Legends: Z-A','⚡','Novo jogo de Pokémon em Lumiose City.'],
+  [2025,11,20,'Kirby Air Riders','🩷','Jogo de corrida do Kirby pro Switch 2.'],
+  [2025,11,20,'Wicked: Por Bem','💚','Estreia nos cinemas do Brasil.'],
+  [2025,11,26,'Stranger Things 5 (parte 1)','🔦','Os quatro primeiros episódios na Netflix.'],
+  [2025,11,27,'Zootopia 2','🦊','Estreia nos cinemas do Brasil.'],
+  [2025,12,4,'Metroid Prime 4: Beyond','🔫','Jogo da Samus pro Switch.'],
+  [2025,12,10,'Percy Jackson (2ª temporada)','🔱','Estreia no Disney+.'],
+  [2025,12,18,'Avatar: Fogo e Cinzas','🔥','Estreia nos cinemas do Brasil.'],
+  [2025,12,25,'Stranger Things 5 (parte 2)','🔦','Mais três episódios na Netflix, no Natal.'],
+  [2025,12,31,'Stranger Things 5 (final)','🔦','O último episódio da série, no Réveillon.'],
+  [2026,2,12,'Mario Tennis Fever','🎾','Jogo de tênis do Mario pro Switch 2.'],
+  [2026,3,5,'Hoppers (Pixar)','🦫','Estreia nos cinemas do Brasil.'],
+  [2026,3,5,'Pokémon Pokopia','🏝️','Jogo de Pokémon pra construir sua ilha, tipo Animal Crossing.'],
+  [2026,3,10,'One Piece (2ª temporada)','🏴‍☠️','Estreia na Netflix.'],
+  [2026,3,19,'Projeto Hail Mary','🚀','Estreia nos cinemas do Brasil.'],
+  [2026,4,2,'Super Mario Galaxy: O Filme','🌟','Estreia nos cinemas do Brasil.'],
+  [2026,4,23,'Michael (filme do Michael Jackson)','🕺','Estreia nos cinemas do Brasil.'],
+  [2026,5,21,'O Mandaloriano e Grogu','🛸','Estreia nos cinemas do Brasil.'],
+  [2026,6,4,'Mestres do Universo','🗡️','Estreia nos cinemas do Brasil.'],
+  [2026,6,18,'Toy Story 5','🤠','Estreia nos cinemas do Brasil.'],
+  [2026,6,25,'Supergirl','🦸‍♀️','Estreia nos cinemas do Brasil.'],
+  [2026,7,2,'Minions 3','🍌','Estreia nos cinemas do Brasil.'],
+  [2026,7,9,'Moana (live-action)','🌊','Estreia nos cinemas do Brasil.'],
+  [2026,7,16,'A Odisseia (Christopher Nolan)','🏺','Estreia nos cinemas do Brasil.'],
+  [2026,7,30,'Homem-Aranha: Um Novo Dia','🕷️','Estreia nos cinemas do Brasil.'],
+  [2026,11,19,'Jogos Vorazes: A Ascensão da Ceifa','🏹','Estreia nos cinemas do Brasil.'],
+  [2026,11,19,'GTA VI','🚔','Jogo pra adulto (18+), só pra você saber a data.'],
+  [2026,11,26,'As Crônicas de Nárnia (Greta Gerwig)','🦁','Primeiro nos cinemas IMAX, depois na Netflix no Natal.'],
+  [2026,12,10,'Jumanji 3','🎲','Estreia nos cinemas do Brasil.'],
+  [2026,12,17,'Vingadores: Doomsday','🟢','Estreia nos cinemas do Brasil.'],
+  [2026,12,17,'Duna: Parte 3','🏜️','Estreia nos cinemas do Brasil.'],
+  [2027,2,4,'A Era do Gelo 6','🐿️','Estreia nos cinemas do Brasil.'],
+  [2027,3,18,'Sonic 4: O Filme','💙','Estreia nos cinemas do Brasil.'],
+  [2027,5,6,'The Legend of Zelda (live-action)','🗡️','Estreia nos cinemas do Brasil.'],
+  [2027,5,27,'Star Wars: Starfighter','✨','Estreia nos cinemas do Brasil.'],
+  [2027,6,3,'Homem-Aranha: Além do Aranhaverso','🕸️','Estreia nos cinemas do Brasil.'],
+  [2027,6,10,'Como Treinar o Seu Dragão 2 (live-action)','🐲','Estreia nos cinemas do Brasil.'],
+  [2027,7,1,'Shrek 5','🟩','Estreia nos cinemas do Brasil.'],
+  [2027,7,22,'Minecraft 2: O Filme','⛏️','Estreia nos cinemas do Brasil, no mesmo dia que Os Simpsons 2!'],
+  [2027,7,22,'Os Simpsons 2: O Filme','🍩','Estreia nos cinemas do Brasil, no mesmo dia que Minecraft 2!'],
+  [2027,9,30,'Batman: Parte II','🦇','Estreia nos cinemas do Brasil.'],
+  [2027,11,25,'Frozen 3','❄️','Estreia nos cinemas do Brasil.'],
+  [2027,12,16,'Vingadores: Guerras Secretas','🛡️','Estreia nos cinemas do Brasil.'],
+  [2029,12,20,'Avatar 4','🌌','Estreia prevista.'],
+  [2031,12,18,'Avatar 5','🌌','Estreia prevista.']
+];
+
+// Ano Novo Chinês
+const ANO_CHINES = {2020:[1,25,'Rato','🐭'],2021:[2,12,'Boi','🐂'],2022:[2,1,'Tigre','🐯'],2023:[1,22,'Coelho','🐰'],2024:[2,10,'Dragão','🐲'],2025:[1,29,'Cobra','🐍'],2026:[2,17,'Cavalo','🐴'],2027:[2,6,'Cabra','🐐'],2028:[1,26,'Macaco','🐵'],2029:[2,13,'Galo','🐔'],2030:[2,3,'Cão','🐶'],2031:[1,23,'Porco','🐷'],2032:[2,11,'Rato','🐭'],2033:[1,31,'Boi','🐂'],2034:[2,19,'Tigre','🐯']};
 
 // ---------- eventos com data única (só em alguns anos) ----------
 const ESPECIAIS = [
+  {ano:2020,m:2,d:26,nome:'Primeiro caso de COVID-19 no Brasil',fig:'🦠',tipo:'historia',desc:'Um homem de São Paulo que voltou da Itália foi o primeiro caso confirmado no Brasil.'},
+  {ano:2020,m:3,d:11,nome:'OMS declara pandemia',fig:'🌍',tipo:'historia',desc:'A Organização Mundial da Saúde declarou que a COVID-19 virou pandemia: o mundo inteiro ficou em casa.'},
+  {ano:2021,m:1,d:17,nome:'Primeira vacina contra COVID no Brasil',fig:'💉',tipo:'historia',desc:'A enfermeira Mônica Calazans, de São Paulo, foi a primeira vacinada do Brasil.'},
+  {ano:2023,m:5,d:5,nome:'Fim da emergência da COVID-19',fig:'🎉',tipo:'historia',desc:'A OMS declarou o fim da emergência mundial. Ufa!'},
   {ano:2026,m:2,d:6,fm:2,fd:22,nome:'Olimpíadas de Inverno 2026','fig':'⛷️',tipo:'esporte',desc:'Jogos de Inverno em Milão e Cortina, na Itália.'},
   {ano:2026,m:6,d:11,fm:7,fd:19,nome:'Copa do Mundo 2026','fig':'🏆',tipo:'esporte',desc:'Copa nos EUA, México e Canadá, com 48 seleções pela primeira vez. Bora, Brasil! 🇧🇷'},
   {ano:2026,m:10,d:4,nome:'Eleições 2026 (1º turno)',fig:'🗳️',tipo:'mundo',desc:'Brasil escolhe presidente, governadores, senadores e deputados.'},
@@ -249,12 +453,14 @@ function pascoa(a){ // algoritmo de Meeus
 }
 function enesimoDomingo(a,m,n){ const p = data(a,m,1); const prim = 1 + ((7 - p.getDay()) % 7); return data(a,m,prim+7*(n-1)); }
 function primeiraSegunda(a,m){ const p = data(a,m,1); return data(a,m, 1 + ((8 - p.getDay()) % 7)); }
-function luasCheias(a){ // aproximação: lua nova de referência 06/01/2000 18:14 UTC + ciclo de 29,53 dias
+function luasNovas(a){ return fasesLua(a, 0); }
+function luasCheias(a){ return fasesLua(a, 0.5); }
+function fasesLua(a, fracao){ // aproximação: lua nova de referência 06/01/2000 18:14 UTC + ciclo de 29,53 dias
   const ref = Date.UTC(2000,0,6,18,14), ciclo = 29.530588853*86400000, saida = [];
   const ini = Date.UTC(a,0,1), fim = Date.UTC(a+1,0,1);
   let k = Math.floor((ini-ref)/ciclo) - 1;
   for(; ; k++){
-    const t = ref + k*ciclo + ciclo/2; // lua cheia = meio do ciclo
+    const t = ref + k*ciclo + ciclo*fracao; // 0 = lua nova, 0.5 = lua cheia
     if (t >= fim) break;
     if (t < ini) continue;
     const dt = new Date(t - 3*3600000); // horário de Brasília
@@ -302,6 +508,18 @@ function eventosDoAno(a){
   add('Último dia de aula','🎊','ferias',ultimo,null,'Acabou o ano letivo! Começam as férias grandes.');
   add('Férias de verão','🌴','ferias',mais(ultimo,1),mais(voltaProx,-1),'As férias mais longas do ano: Natal, Ano Novo, calor e nada de lição.');
   add('Férias de verão','🌴','ferias',data(a,1,1),mais(volta,-1),'Ainda de férias! A volta às aulas é dia '+volta.getDate()+' de '+MESES[volta.getMonth()]+'.');
+  luasNovas(a).forEach(dt => add('Lua nova','🌑','natureza',dt,null,'Noite sem lua no céu (data aproximada). A melhor noite pra ver estrelas!'));
+  const nd = (m,dow,n) => { const p = data(a,m,1); return data(a,m, 1 + ((dow - p.getDay() + 7) % 7) + 7*(n-1)); };
+  add('Dia da Internet Segura','🔐','nerd',nd(2,2,2),null,'Safer Internet Day: dia de lembrar de não passar senha pra ninguém e cuidado com estranhos online.');
+  add('Dia da Senha','🔑','nerd',nd(5,4,1),null,'Dia Mundial da Senha. Troca aquela "123456"!');
+  add('Dia do Donut','🍩','mundo',nd(6,5,1),null,'National Doughnut Day nos EUA: dia de rosquinha de graça por lá.');
+  add('Dia do Batman','🦇','nerd',nd(9,6,3),null,'Batman Day, no terceiro sábado de setembro.');
+  add('Dia do Sorriso','😁','mundo',nd(10,5,1),null,'Dia Mundial do Sorriso: criado pelo inventor do smiley 🙂.');
+  const sc = data(a,10,12); const segSC = mais(sc, -((sc.getDay()+6)%7));
+  add('Semana do Saco Cheio','🎒','ferias',segSC,mais(segSC,4),'Semana do Dia das Crianças e do Dia do Professor: muita escola emenda e dá a semana toda de folga (confere na sua!).');
+  const ch = ANO_CHINES[a]; if (ch) add('Ano Novo Chinês: ano do '+ch[2],ch[3],'mundo',data(a,ch[0],ch[1]),null,'Começa o ano do '+ch[2]+' no calendário chinês, com dragões dançando e fogos.');
+  if (a>=2020 && a<=2023) add('Pandemia de COVID-19','😷','historia',data(a,1,1),a===2023?data(a,5,5):data(a,12,31),'O vírus que parou o mundo: escolas fechadas, aula online, máscara e álcool em gel. No Brasil o primeiro caso foi em 26/02/2020 e a emergência acabou em 05/05/2023.');
+  FILMES.filter(x=>x[0]===a).forEach(x => add(x[3],x[4],'filme',data(a,x[1],x[2]),null,x[5]+' Data prevista: pode mudar.'));
   // especiais
   ESPECIAIS.filter(x=>x.ano===a).forEach(x => add(x.nome,x.fig,x.tipo,data(a,x.m,x.d),x.fm?data(a,x.fm,x.fd):null,x.desc));
   // meus eventos
@@ -326,7 +544,7 @@ function indice(a){
   Object.values(mapa).forEach(l => l.sort((x,y) => ordem(x) - ordem(y)));
   return cache[a] = mapa;
 }
-const ORDEM = ['feriado','facultativo','meu','ferias','esporte','comemorativo','nerd','mundo','natureza'];
+const ORDEM = ['feriado','facultativo','meu','ferias','filme','esporte','comemorativo','nerd','historia','mundo','natureza'];
 const ordem = ev => ORDEM.indexOf(ev.tipo) + (ev.fim > ev.inicio ? 0.5 : 0);
 const eventosDoDia = dt => (indice(dt.getFullYear())[chave(dt)] || []).filter(ev => filtroOn[ev.tipo]);
 
@@ -400,7 +618,7 @@ function painel(){
   let html = '';
   if (termo){
     if (termo === '67') toast('6️⃣7️⃣ 🙌 SEIS SETE!');
-    const achados = []; [ano-1,ano,ano+1].forEach(y => eventosDoAno(y).forEach(ev => { if (ev.nome.toLowerCase().includes(termo) && filtroOn[ev.tipo] && (termo!=='lua' || ev.inicio.getFullYear()===ano)) achados.push(ev); }));
+    const achados = []; [ano-1,ano,ano+1].forEach(y => eventosDoAno(y).forEach(ev => { if (ev.nome.toLowerCase().includes(termo) && filtroOn[ev.tipo] && (!/^lua/.test(termo) || ev.inicio.getFullYear()===ano)) achados.push(ev); }));
     achados.sort((a,b)=>a.inicio-b.inicio);
     html += `<h3>🔍 "${$('#busca').value.trim()}"</h3><p class="sub">${achados.length} resultado(s)</p><div class="lista">${achados.slice(0,40).map(e=>cartaoEv(e,true)).join('') || '<p class="vazio">Nada encontrado.</p>'}</div>`;
   } else {

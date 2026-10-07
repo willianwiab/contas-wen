@@ -1,6 +1,6 @@
 # 📅 Calendário do Jojo
 
-Um calendário com **tudo mesmo**: feriados nacionais, pontos facultativos, férias da escola, datas comemorativas, dias nerds e gamer (Pokémon, Mario, Star Wars, Minecraft, Roblox…), Copa do Mundo, Olimpíadas, eleições, lua cheia, estações do ano, sexta-feira 13 e seus próprios eventos.
+Um calendário com **tudo mesmo**: feriados nacionais e de estados, pontos facultativos, férias da escola, datas comemorativas, dias nerds e gamer (Pokémon, Mario, Star Wars, Minecraft, Roblox…), lançamentos de filmes, séries e jogos, Copa do Mundo, Olimpíadas, eleições, história (Dia do Fico, Copas do Brasil, 7 a 1, pandemia de COVID-19 em todos os dias de 2020 até 2023), dias de comida, bichos e profissões, lua cheia e nova, Ano Novo Chinês, estações do ano, sexta-feira 13 e seus próprios eventos. São uns 250 eventos por ano.
 
 ## Como usar
 
@@ -14,4 +14,4 @@ Um calendário com **tudo mesmo**: feriados nacionais, pontos facultativos, fér
 
 ## Como funciona
 
-É um `index.html` só, sem dependências. Páscoa, Carnaval, Corpus Christi, Dia das Mães, Dia dos Pais, Black Friday e Dia do Programador são calculados pra qualquer ano. Lua cheia e estações do ano são aproximadas. As datas fixas ficam na lista `FIXOS` e os eventos de um ano só (Copa, Olimpíadas, eleições) na lista `ESPECIAIS`, no começo do script.
+É um `index.html` só, sem dependências. Páscoa, Carnaval, Corpus Christi, Dia das Mães, Dia dos Pais, Black Friday e Dia do Programador são calculados pra qualquer ano. Lua cheia e estações do ano são aproximadas. As datas fixas ficam na lista `FIXOS`, os eventos de um ano só (Copa, Olimpíadas, eleições, marcos da COVID) na lista `ESPECIAIS` e os lançamentos de filmes, séries e jogos na lista `FILMES`, no começo do script.
