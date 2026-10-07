@@ -116,7 +116,7 @@ canvas.confete{position:fixed;inset:0;pointer-events:none;z-index:30}
       <button id="hoje">Hoje</button>
       <button id="modo">Ver ano</button>
     </div>
-    <input id="busca" class="busca" type="search" placeholder="🔍 Procurar evento (ex: Natal, Pokémon, lua)" />
+    <input id="busca" class="busca" type="search" placeholder="🔍 Procurar evento (ex: Natal, Pokémon, lua)" enterkeyhint="search" />
   </div>
   <div id="filtros" class="filtros"></div>
   <div class="layout">
@@ -636,6 +636,8 @@ function painel(){
       <button class="btn" id="cfg">⚙️ Datas da minha escola</button>`;
   }
   p.innerHTML = html;
+  // no celular, a busca esconde o calendário pra lista aparecer logo embaixo da caixa
+  const estreito = innerWidth <= 900; $('#calendario').style.display = (termo && estreito) ? 'none' : ''; $('#filtros').style.display = (termo && estreito) ? 'none' : '';
   p.querySelectorAll('.ev').forEach(b => b.onclick = () => abrir(b.dataset.id));
   const f = $('#novo'); if (f) f.onsubmit = e => { e.preventDefault(); const l = meus(); l.push({id:'m'+Date.now(), nome:$('#nNome').value.trim(), fig:$('#nFig').value.trim()||'⭐', data:$('#nData').value, anual:$('#nAnual').checked}); salvarMeus(l); sel = deChave($('#nData').value); mes = sel.getMonth()+1; ano = sel.getFullYear(); render(); toast('Evento salvo! ⭐'); confete(); };
   const c = $('#cfg'); if (c) c.onclick = configEscola;
@@ -714,6 +716,8 @@ $('#modo').onclick = () => { modoAno = !modoAno; render(); };
 for (let y=2020; y<=2040; y++){ const o = document.createElement('option'); o.value=y; o.textContent=y; $('#selAno').appendChild(o); }
 $('#selAno').onchange = e => { ano = +e.target.value; render(); };
 $('#busca').oninput = () => painel();
+$('#busca').onkeydown = e => { if (e.key==='Enter') $('#busca').blur(); };
+addEventListener('resize', () => painel());
 filtros(); render();
 </script>
 </body>
