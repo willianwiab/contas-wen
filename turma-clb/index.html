@@ -64,7 +64,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; overflow-y: auto; min-height: 0; }
 .tile { position: relative; background: #000; border-radius: 14px; overflow: hidden; aspect-ratio: 4 / 3; max-width: 100%; }
 .tile video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.tile.me video { transform: scaleX(-1); }
+.tile.espelho video { transform: scaleX(-1); }
 .tile .nm { position: absolute; left: 6px; bottom: 6px; background: rgba(0,0,0,.6); color: #fff; font-size: .75rem; font-weight: 800; border-radius: 999px; padding: 2px 8px; max-width: calc(100% - 12px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tile .ini { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-family: var(--display); font-size: 2.6rem; font-weight: 800; color: #04212e; background: var(--sun); }
 .tile.novideo .ini { display: flex; }
@@ -76,7 +76,16 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
 .msgs { flex: 1 1 120px; min-height: 0; overflow-y: auto; background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
 .empty { margin: auto; text-align: center; color: var(--muted); max-width: 30ch; }
 .empty b { display: block; font-family: var(--display); font-size: 1.2rem; color: var(--ink); }
-.m { max-width: 82%; min-width: 0; align-self: flex-start; background: var(--bg); border-radius: 18px 18px 18px 6px; padding: 7px 12px; overflow-wrap: anywhere; }
+.w { max-width: 82%; min-width: 0; align-self: flex-start; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.w.me { align-self: flex-end; align-items: flex-end; }
+.re, .menu { display: flex; gap: 4px; flex-wrap: wrap; }
+.re button, .menu button { border: 2px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 1px 8px; font-size: .9rem; font-weight: 800; }
+.re button.minha { border-color: var(--pool); background: var(--bg); }
+.menu { background: var(--bg); border-radius: 16px; padding: 5px; }
+.menu button { font-size: 1.15rem; padding: 3px 7px; }
+.menu .del { font-size: .8rem; padding: 5px 10px; color: var(--stop); border-color: var(--stop); }
+.m audio { display: block; width: 230px; max-width: 100%; height: 36px; }
+.m { cursor: pointer; max-width: 100%; min-width: 0; align-self: flex-start; background: var(--bg); border-radius: 18px 18px 18px 6px; padding: 7px 12px; overflow-wrap: anywhere; }
 .m.me { align-self: flex-end; background: var(--pool); color: var(--pool-ink); border-radius: 18px 18px 6px 18px; }
 .m .n { font-weight: 800; font-size: .8rem; display: block; }
 .m .h { font-size: .7rem; opacity: .75; margin-left: 8px; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -86,8 +95,14 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
 .emojis button { flex: none; border: 2px solid var(--line); background: var(--surface); border-radius: 12px; font-size: 1.35rem; line-height: 1; padding: 5px 7px; }
 .m.so-emoji { font-size: 2.4rem; line-height: 1.15; background: transparent; padding: 0 4px; }
 .m.so-emoji .h { font-size: .7rem; color: var(--muted); }
-.send { display: flex; gap: 8px; }
-.send .field { flex: 1 1 auto; }
+.send { display: flex; gap: 8px; flex-wrap: wrap; }
+.send .field { flex: 1 1 90px; }
+.send .big { padding: 8px 14px; font-size: 1rem; }
+.ctrl button { font-size: .85rem; padding: 7px 11px; }
+.emchamada .top p, .emchamada .count, .emchamada #convite { display: none; }
+.emchamada .top { padding: 6px 14px; }
+.emchamada .top h1 { font-size: 1.1rem; }
+.send .btn.gravando { background: var(--stop); border-color: var(--stop); color: var(--stop-ink); font-variant-numeric: tabular-nums; }
 .note { font-size: .85rem; color: var(--muted); font-weight: 600; text-align: center; margin: 0; }
 </style>
 </head>
@@ -137,6 +152,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     <div class="ctrl">
       <button type="button" id="mudo" aria-pressed="false">🎤 Microfone ligado</button>
       <button type="button" id="cam" aria-pressed="false">📷 Câmera ligada</button>
+      <button type="button" id="virar">🔄 Virar câmera</button>
       <button type="button" class="hang" id="desligar">📵 Desligar</button>
     </div>
   </section>
@@ -145,6 +161,8 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   <div class="emojis" id="emojis" hidden></div>
   <form class="send" id="form" autocomplete="off" hidden>
     <input class="field" id="texto" maxlength="300" placeholder="Escreva para a turma…" aria-label="Mensagem">
+    <button class="btn" type="button" id="mic" aria-label="Gravar mensagem de voz">🎤</button>
+    <button class="btn" type="button" id="micX" aria-label="Cancelar gravação" hidden>✖️</button>
     <button class="big" type="submit">Enviar 🚀</button>
   </form>
   <p class="note" id="aviso" hidden></p>
@@ -178,6 +196,8 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   var nomes = {};       // id -> nome
   var naChamada = {};   // id -> {video, ts}
   var msgs = [], vistos = {};
+  var apagadas = {};    // id -> 1 (só para mim) ou 2 (apagada pelo autor, para todos)
+  var aberto = null, els = {};
   var inCall = false, callTs = 0, stream = null, medias = {};
   var msgsEl = $("msgs"), aviso = $("aviso");
 
@@ -211,7 +231,9 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     lsSet("clb.nome", nome); lsSet("clb.codigo", codigo);
     prefix = "clbt-" + sala + "-";
     $("entrarBtn").disabled = true; joinMsg("Entrando…");
-    try { msgs = JSON.parse(lsGet("clb.hist." + sala) || "[]").filter(msgOk); } catch (e) { msgs = []; }
+    try { apagadas = JSON.parse(lsGet("clb.del." + sala) || "{}") || {}; } catch (e) { apagadas = {}; }
+    try { msgs = JSON.parse(lsGet("clb.hist." + sala) || "[]").filter(msgOk).filter(function (m) { return !apagadas[m.id]; }); } catch (e) { msgs = []; }
+    msgs.forEach(function (m) { m.re = limparRe(m.re); });
     msgs.forEach(function (m) { vistos[m.id] = 1; });
     tentar(0);
   });
@@ -270,7 +292,8 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     c.on("open", function () {
       (conns[c.peer] = conns[c.peer] || []).push(c);
       c.send({ t: "hello", name: nome, inCall: inCall, video: temVideo(), ts: callTs });
-      c.send({ t: "hist", msgs: msgs.slice(-100) });
+      c.send({ t: "hist", msgs: msgs.slice(-100).map(semAudio), dels: Object.keys(apagadas).filter(function (k) { return apagadas[k] === 2; }).slice(-300) });
+      msgs.filter(function (m) { return m.audio; }).slice(-8).forEach(function (m) { c.send({ t: "msg", m: m }); });
       atualizar();
     });
     c.on("data", function (d) { if (d && typeof d === "object") receber(c.peer, d); });
@@ -291,9 +314,15 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
       if (d.inCall) { naChamada[de] = { video: !!d.video, ts: +d.ts || 0 }; talvezChamar(de); }
       atualizar();
     } else if (d.t === "hist" && Array.isArray(d.msgs)) {
+      if (Array.isArray(d.dels)) d.dels.slice(-300).forEach(function (id) { if (typeof id === "string") remover(id, true); });
       d.msgs.slice(-100).forEach(guardar); desenharMsgs();
     } else if (d.t === "msg") {
       guardar(d.m); desenharMsgs();
+    } else if (d.t === "del" && typeof d.id === "string") {
+      var alvo = achar(d.id);
+      if (!alvo || alvo.cid === d.cid) { remover(d.id, true); desenharMsgs(); }
+    } else if (d.t === "react" && typeof d.id === "string") {
+      reagir(d.id, String(d.cid || "").slice(0, 20), d.e); desenharMsgs();
     } else if (d.t === "ring") {
       if (!inCall) tocar(nomeDe(de) + (d.video ? " está fazendo uma chamada de vídeo! 🎥🤩" : " está ligando para a turma! 📞🔔"));
     } else if (d.t === "call-join") {
@@ -315,33 +344,129 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
 
   // ---------- bate-papo ----------
   function msgOk(m) { return m && typeof m.id === "string" && typeof m.text === "string" && typeof m.t === "number"; }
+  function achar(id) { for (var i = msgs.length - 1; i >= 0; i--) if (msgs[i].id === id) return msgs[i]; return null; }
+  function audioOk(a) { return typeof a === "string" && a.indexOf("data:audio/") === 0 && a.length <= 260000; }
+  function limparRe(re) {
+    var o = {};
+    if (re && typeof re === "object") Object.keys(re).slice(0, 40).forEach(function (k) { if (typeof re[k] === "string" && re[k].length <= 8 && k.length <= 20) o[k] = re[k]; });
+    return o;
+  }
+  function semAudio(m) { var c = Object.assign({}, m); delete c.audio; return c; }
+  function salvar() {
+    var guardados = 0, copia = msgs.slice().reverse().map(function (m) { return m.audio && ++guardados > 8 ? semAudio(m) : m; }).reverse();
+    for (var i = 0; i < 12; i++) {
+      try { localStorage.setItem("clb.hist." + sala, JSON.stringify(copia)); return; }
+      catch (e) { // aparelho cheio: guarda sem o áudio mais antigo
+        var k = -1; copia.some(function (m, j) { if (m.audio) { k = j; return true; } });
+        if (k < 0) return;
+        copia[k] = semAudio(copia[k]);
+      }
+    }
+  }
   function guardar(m) {
-    if (!msgOk(m) || vistos[m.id]) return;
+    if (!msgOk(m) || apagadas[m.id]) return;
+    if (vistos[m.id]) { // já tenho: só completa áudio e reações que faltam
+      var tem = achar(m.id); if (!tem) return;
+      var mudou = false, re = limparRe(m.re);
+      if (!tem.audio && audioOk(m.audio)) { tem.audio = m.audio; mudou = true; }
+      Object.keys(re).forEach(function (k) { if (!tem.re[k]) { tem.re[k] = re[k]; mudou = true; } });
+      if (mudou) salvar();
+      return;
+    }
     vistos[m.id] = 1;
-    msgs.push({ id: m.id.slice(0, 40), cid: String(m.cid || "").slice(0, 20), name: String(m.name || "").slice(0, 20), text: m.text.slice(0, 300), t: m.t });
+    var novo = { id: m.id.slice(0, 40), cid: String(m.cid || "").slice(0, 20), name: String(m.name || "").slice(0, 20), text: m.text.slice(0, 300), t: m.t, re: limparRe(m.re) };
+    if (m.au) { novo.au = 1; novo.dur = Math.min(60, Math.max(0, +m.dur || 0)); if (audioOk(m.audio)) novo.audio = m.audio; }
+    msgs.push(novo);
     msgs.sort(function (a, b) { return a.t - b.t; });
     if (msgs.length > 300) msgs = msgs.slice(-300);
-    lsSet("clb.hist." + sala, JSON.stringify(msgs));
+    salvar();
+  }
+  function remover(id, paraTodos) {
+    id = id.slice(0, 40);
+    if (apagadas[id] === 2 || (apagadas[id] && !paraTodos)) return;
+    apagadas[id] = paraTodos ? 2 : 1;
+    var chaves = Object.keys(apagadas); if (chaves.length > 500) chaves.slice(0, chaves.length - 500).forEach(function (k) { delete apagadas[k]; });
+    lsSet("clb.del." + sala, JSON.stringify(apagadas));
+    var antes = msgs.length; msgs = msgs.filter(function (m) { return m.id !== id; });
+    if (msgs.length !== antes) salvar();
+    if (aberto === id) aberto = null;
+  }
+  function reagir(id, quem, e) {
+    var m = achar(id); if (!m || !quem) return;
+    if (typeof e === "string" && e && e.length <= 8) m.re[quem] = e; else delete m.re[quem];
+    salvar();
+  }
+  function minhaReacao(id, e) {
+    var m = achar(id); if (!m) return;
+    var nova = m.re[cid] === e ? "" : e;
+    reagir(id, cid, nova); espalhar({ t: "react", id: id, cid: cid, e: nova });
+    aberto = null; desenharMsgs();
   }
   function cor(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return "c" + (h % 4 + 1); }
   function hora(t) { var d = new Date(t); return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+  var REACOES = ["❤️", "😂", "😮", "😢", "👍", "🔥"];
+  function botao(txt, rotulo, fn, cls) {
+    var b = document.createElement("button"); b.type = "button"; b.textContent = txt; if (cls) b.className = cls;
+    if (rotulo) b.setAttribute("aria-label", rotulo);
+    b.addEventListener("click", function (ev) { ev.stopPropagation(); fn(); });
+    return b;
+  }
+  function montar(m) {
+    var eu = m.cid === cid, w = document.createElement("div"), div = document.createElement("div");
+    w.className = "w" + (eu ? " me" : "");
+    div.className = "m" + (eu ? " me" : "") + (!m.au && SO_EMOJI.test(m.text) ? " so-emoji" : "");
+    div.tabIndex = 0; div.setAttribute("role", "button"); div.setAttribute("aria-label", "Abrir reações e apagar");
+    if (!eu) { var n = document.createElement("span"); n.className = "n " + cor(m.cid || "x"); n.textContent = m.name || "Alguém"; div.appendChild(n); }
+    if (m.au && m.audio) { var a = document.createElement("audio"); a.controls = true; a.preload = "metadata"; a.src = m.audio; div.appendChild(a); }
+    else div.appendChild(document.createTextNode(m.au ? "🎤 Áudio antigo (não dá mais para ouvir)" : m.text));
+    var h = document.createElement("span"); h.className = "h"; h.textContent = (m.au && m.dur ? "🎤 " + Math.round(m.dur) + "s · " : "") + hora(m.t); div.appendChild(h);
+    var abrir = function (ev) {
+      if (ev.target.closest && ev.target.closest("audio")) return;
+      if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") return;
+      aberto = aberto === m.id ? null : m.id; desenharMsgs();
+    };
+    div.addEventListener("click", abrir); div.addEventListener("keydown", abrir);
+    w.appendChild(div);
+    var conta = {}; Object.keys(m.re).forEach(function (k) { conta[m.re[k]] = (conta[m.re[k]] || 0) + 1; });
+    if (Object.keys(conta).length) {
+      var re = document.createElement("div"); re.className = "re";
+      Object.keys(conta).forEach(function (e) { re.appendChild(botao(e + " " + conta[e], "Reagir com " + e, function () { minhaReacao(m.id, e); }, m.re[cid] === e ? "minha" : "")); });
+      w.appendChild(re);
+    }
+    if (aberto === m.id) {
+      var menu = document.createElement("div"); menu.className = "menu";
+      REACOES.forEach(function (e) { menu.appendChild(botao(e, "Reagir com " + e, function () { minhaReacao(m.id, e); })); });
+      menu.appendChild(botao(eu ? "🗑️ Apagar para todos" : "🙈 Apagar só para mim", "", function () {
+        remover(m.id, eu); if (eu) espalhar({ t: "del", id: m.id, cid: cid });
+        desenharMsgs();
+      }, "del"));
+      w.appendChild(menu);
+    }
+    return w;
+  }
   function desenharMsgs() {
     var noFim = msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight < 80;
-    msgsEl.textContent = "";
+    var vazio = msgsEl.querySelector(".empty");
     if (!msgs.length) {
+      els = {}; msgsEl.textContent = "";
       var e = document.createElement("div"); e.className = "empty";
       var b = document.createElement("b"); b.textContent = "🦗 Ninguém escreveu ainda 🦗";
       e.appendChild(b); e.appendChild(document.createTextNode("✍️ Mande a primeira mensagem para combinar o Dia das Crianças! 🎈🍭🎮⚽"));
       msgsEl.appendChild(e); return;
     }
-    msgs.forEach(function (m) {
-      var eu = m.cid === cid, div = document.createElement("div");
-      div.className = "m" + (eu ? " me" : "") + (SO_EMOJI.test(m.text) ? " so-emoji" : "");
-      if (!eu) { var n = document.createElement("span"); n.className = "n " + cor(m.cid || "x"); n.textContent = m.name || "Alguém"; div.appendChild(n); }
-      div.appendChild(document.createTextNode(m.text));
-      var h = document.createElement("span"); h.className = "h"; h.textContent = hora(m.t); div.appendChild(h);
-      msgsEl.appendChild(div);
+    if (vazio) vazio.remove();
+    var vivos = {};
+    msgs.forEach(function (m, i) { // só refaz o balão que mudou, para não cortar um áudio tocando
+      var sig = JSON.stringify([m.text, !!m.audio, m.re, aberto === m.id]);
+      if (!els[m.id] || els[m.id].sig !== sig) {
+        var novo = montar(m);
+        if (els[m.id]) els[m.id].el.replaceWith(novo);
+        els[m.id] = { sig: sig, el: novo };
+      }
+      vivos[m.id] = 1;
+      if (msgsEl.children[i] !== els[m.id].el) msgsEl.insertBefore(els[m.id].el, msgsEl.children[i] || null);
     });
+    Object.keys(els).forEach(function (id) { if (!vivos[id]) { els[id].el.remove(); delete els[id]; } });
     if (noFim) msgsEl.scrollTop = msgsEl.scrollHeight;
   }
   var SO_EMOJI = /^$/;
@@ -355,10 +480,52 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     ev.preventDefault();
     var t = $("texto").value.trim().slice(0, 300); if (!t) return;
     $("texto").value = "";
-    var m = { id: cid + "-" + Date.now().toString(36), cid: cid, name: nome, text: t, t: Date.now() };
+    var m = { id: cid + "-" + Date.now().toString(36), cid: cid, name: nome, text: t, t: Date.now(), re: {} };
     guardar(m); desenharMsgs(); msgsEl.scrollTop = msgsEl.scrollHeight;
     espalhar({ t: "msg", m: m });
   });
+  var rec = null, recPartes = [], recT0 = 0, recTimer = 0, recStream = null, recCancela = false;
+  function recFim() {
+    clearInterval(recTimer);
+    if (recStream) recStream.getTracks().forEach(function (t) { t.stop(); });
+    var tipo = rec ? rec.mimeType : "", dur = (Date.now() - recT0) / 1000, partes = recPartes;
+    rec = null; recStream = null; recPartes = [];
+    $("mic").classList.remove("gravando"); $("mic").textContent = "🎤"; $("micX").hidden = true;
+    if (recCancela) return;
+    var blob = new Blob(partes, { type: tipo || "audio/webm" });
+    if (dur < 0.7 || blob.size < 500) { avisar("🎤 Ficou curto demais. Aperte, fale e aperte de novo para enviar."); return; }
+    var fr = new FileReader();
+    fr.onload = function () {
+      var url = String(fr.result).replace(/^data:(video|audio)\//, "data:audio/");
+      if (!audioOk(url)) { avisar("🎤 O áudio ficou grande demais. Tente um mais curto."); return; }
+      var m = { id: cid + "-" + Date.now().toString(36), cid: cid, name: nome, text: "", au: 1, audio: url, dur: dur, t: Date.now(), re: {} };
+      guardar(m); desenharMsgs(); msgsEl.scrollTop = msgsEl.scrollHeight;
+      espalhar({ t: "msg", m: m }); avisar("");
+    };
+    fr.readAsDataURL(blob);
+  }
+  $("mic").addEventListener("click", async function () {
+    if (rec) { recCancela = false; rec.stop(); return; }
+    if (!window.MediaRecorder || !navigator.mediaDevices) { avisar("🎤 Este navegador não grava mensagem de voz."); return; }
+    try { recStream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch (e) { avisar("🎤 Preciso da permissão do microfone para gravar."); return; }
+    var tipo = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].filter(function (t) { return MediaRecorder.isTypeSupported(t); })[0];
+    try { rec = new MediaRecorder(recStream, tipo ? { mimeType: tipo, audioBitsPerSecond: 24000 } : { audioBitsPerSecond: 24000 }); }
+    catch (e) { recStream.getTracks().forEach(function (t) { t.stop(); }); recStream = null; avisar("🎤 Este navegador não grava mensagem de voz."); return; }
+    recPartes = []; recCancela = false; recT0 = Date.now();
+    rec.ondataavailable = function (e) { if (e.data && e.data.size) recPartes.push(e.data); };
+    rec.onstop = recFim;
+    rec.start();
+    $("mic").classList.add("gravando"); $("micX").hidden = false; avisar("🔴 Gravando… aperte ⏹️ para enviar ou ✖️ para cancelar (até 30 segundos).");
+    var tique = function () {
+      var seg = Math.floor((Date.now() - recT0) / 1000);
+      $("mic").textContent = "⏹️ 0:" + ("0" + seg).slice(-2);
+      if (seg >= 30 && rec) rec.stop();
+    };
+    tique(); recTimer = setInterval(tique, 250);
+  });
+  $("micX").addEventListener("click", function () { if (rec) { recCancela = true; rec.stop(); avisar(""); } });
+
   $("convite").addEventListener("click", function () {
     var b = $("convite"), url = location.href.split("#")[0].split("?")[0] + "#" + codigo;
     var ok = function () { b.textContent = "✅ Convite copiado! 🎉"; setTimeout(function () { b.textContent = "💌 Copiar convite"; }, 2000); };
@@ -414,9 +581,9 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
       return;
     }
     inCall = true; callTs = Date.now();
-    $("callbox").hidden = false;
+    $("callbox").hidden = false; document.body.classList.add("emchamada");
     $("mudo").setAttribute("aria-pressed", "false"); $("mudo").textContent = "🎤 Microfone ligado";
-    $("cam").hidden = !temVideo(); $("cam").setAttribute("aria-pressed", "false"); $("cam").textContent = "📷 Câmera ligada";
+    $("cam").hidden = !temVideo(); $("virar").hidden = !temVideo(); frente = true; $("cam").setAttribute("aria-pressed", "false"); $("cam").textContent = "📷 Câmera ligada";
     quadro("eu", stream, nome + " (você)", true);
     var sozinho = !Object.keys(naChamada).length;
     espalhar({ t: "call-join", video: temVideo(), ts: callTs });
@@ -451,7 +618,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   function quadro(id, s, rotulo, eu) {
     var el = document.querySelector('[data-peer="' + id + '"]');
     if (!el) {
-      el = document.createElement("div"); el.className = "tile" + (eu ? " me" : ""); el.setAttribute("data-peer", id);
+      el = document.createElement("div"); el.className = "tile" + (eu ? " me espelho" : ""); el.setAttribute("data-peer", id);
       var v = document.createElement("video"); v.autoplay = true; v.playsInline = true; v.muted = !!eu;
       var ini = document.createElement("div"); ini.className = "ini";
       var nm = document.createElement("span"); nm.className = "nm";
@@ -470,10 +637,37 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     Object.keys(medias).forEach(fecharMedia);
     if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
     stream = null; inCall = false; callTs = 0;
-    $("grid").textContent = ""; $("callbox").hidden = true;
+    $("grid").textContent = ""; $("callbox").hidden = true; document.body.classList.remove("emchamada");
     $("ligar").disabled = $("video").disabled = false;
     atualizar();
   }
+  var frente = true;
+  $("virar").addEventListener("click", async function () {
+    var velha = stream && stream.getVideoTracks()[0], btn = this;
+    if (!velha) return;
+    btn.disabled = true;
+    var ligada = velha.enabled, quer = !frente, nova = null, tam = { width: { ideal: 640 }, height: { ideal: 480 } };
+    velha.stop(); // alguns celulares não abrem as duas câmeras ao mesmo tempo
+    try { nova = (await navigator.mediaDevices.getUserMedia({ video: Object.assign({ facingMode: { exact: quer ? "user" : "environment" } }, tam) })).getVideoTracks()[0]; }
+    catch (e) {
+      quer = frente;
+      try { nova = (await navigator.mediaDevices.getUserMedia({ video: Object.assign({ facingMode: frente ? "user" : "environment" }, tam) })).getVideoTracks()[0]; avisar("📷 Este aparelho só tem uma câmera para usar aqui."); } catch (e2) {}
+    }
+    if (!inCall || !stream) { if (nova) nova.stop(); btn.disabled = false; return; }
+    stream.removeTrack(velha);
+    if (nova) {
+      nova.enabled = ligada; stream.addTrack(nova); frente = quer;
+      Object.keys(medias).forEach(function (id) {
+        var pc = medias[id].peerConnection;
+        var s = pc && pc.getSenders().filter(function (x) { return x.track && x.track.kind === "video"; })[0];
+        if (s) s.replaceTrack(nova).catch(function () {});
+      });
+    } else { avisar("📷 Não consegui abrir a câmera de novo. Você continua na chamada só com voz."); $("cam").hidden = true; btn.hidden = true; }
+    var el = document.querySelector('[data-peer="eu"]');
+    if (el) { el.querySelector("video").srcObject = null; el.classList.toggle("espelho", frente); }
+    quadro("eu", stream, nome + " (você)", true);
+    btn.disabled = false;
+  });
   $("desligar").addEventListener("click", sair);
   $("mudo").addEventListener("click", function () {
     var off = this.getAttribute("aria-pressed") !== "true";
