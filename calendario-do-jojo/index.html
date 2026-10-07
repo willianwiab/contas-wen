@@ -522,6 +522,10 @@ function eventosDoAno(a){
   FILMES.filter(x=>x[0]===a).forEach(x => add(x[3],x[4],'filme',data(a,x[1],x[2]),null,x[5],{origem:'Data de lançamento anunciada pelo estúdio. Pode mudar, então confere antes de comprar o ingresso!'}));
   // especiais
   ESPECIAIS.filter(x=>x.ano===a).forEach(x => add(x.nome,x.fig,x.tipo,data(a,x.m,x.d),x.fm?data(a,x.fm,x.fd):null,x.desc,{origem:x.origem}));
+  // aniversário do dono do calendário
+  if (a >= 2016) { const idade = a - 2016;
+    add('Aniversário do Jojo','🎂','meu',data(a,8,2),null, idade===0 ? 'Dia em que o Jojo nasceu! 👶 Bem-vindo ao mundo.' : 'O Jojo faz '+idade+' anos! Bolo, presentes e muito jogo. 🎉',
+      {origem:'Jonathan, o Jojo, nasceu em 2 de agosto de 2016. É o criador do Click Master, dos Jogos do Jojo e deste calendário.'}); }
   // meus eventos
   meus().forEach(x => {
     const [ya,ym,yd] = x.data.split('-').map(Number);
@@ -672,7 +676,7 @@ function abrir(id){
       <button class="btn" id="fav">${fav?'💛 Favorito':'🤍 Favoritar'}</button>
       <a class="btn" href="${gcal}" target="_blank" rel="noopener" style="text-decoration:none">📆 Google Agenda</a>
       <button class="btn" id="compartilhar">🔗 Compartilhar</button>
-      ${ev.tipo==='meu' ? '<button class="btn" id="apagar">🗑️ Apagar</button>' : ''}
+      ${ev.meuId ? '<button class="btn" id="apagar">🗑️ Apagar</button>' : ''}
     </div>`;
   $('#fundo').classList.add('on');
   $('#fechar').onclick = fechar;
