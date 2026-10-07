@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Calendário do Jojo</title>
 <meta name="description" content="Calendário com TUDO: feriados, pontos facultativos, férias da escola, datas comemorativas, dias nerds e gamer, Copa do Mundo, luas cheias, estações do ano e seus próprios eventos. Clique em qualquer dia pra ver o que acontece." />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>" />
+<link rel="icon" href="icone.svg" type="image/svg+xml" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#0f1222" />
+<link rel="apple-touch-icon" href="icone-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Calendário" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet" />
 <style>
@@ -93,6 +98,10 @@ main{max-width:1180px;margin:0 auto;padding:10px 16px 60px}
 .modal .conta{text-align:center;font:600 20px Fredoka,sans-serif;margin:10px 0;color:var(--acento)}
 .modal p{margin:8px 0}
 .tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;border-radius:999px;padding:3px 10px;background:var(--cartao2);border:1px solid var(--borda)}
+.modal .opcao{display:flex;align-items:center;gap:10px;background:var(--cartao2);border:1px solid var(--borda);border-radius:10px;padding:10px 12px;margin:8px 0}
+.modal .opcao select{font:15px Nunito,sans-serif;background:var(--fundo);color:var(--texto);border:1px solid var(--borda);border-radius:8px;padding:6px 8px}
+.modal .opcao input[type=checkbox]{width:22px;height:22px}
+.modal ol{padding-left:22px}
 .modal .botoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;justify-content:center}
 .aviso{text-align:center;color:var(--fraco);font-size:13px;margin-top:20px}
 .aviso a{color:var(--acento)}
@@ -115,6 +124,8 @@ canvas.confete{position:fixed;inset:0;pointer-events:none;z-index:30}
       <input id="selAno" type="number" min="0" max="9999" title="Ano (de 0 a 9999)" />
       <button id="hoje">Hoje</button>
       <button id="modo">Ver ano</button>
+      <button id="avisos" title="Avisos quando o dia chegar">🔔 Avisos</button>
+      <button id="instalar" hidden>📲 Instalar</button>
     </div>
     <input id="busca" class="busca" type="search" placeholder="🔍 Procurar evento (ex: Natal, Pokémon, lua)" enterkeyhint="search" />
   </div>
@@ -598,6 +609,7 @@ function render(){
   if (ano===0 && !render.avisou0) { render.avisou0 = true; toast('Ano 0 não existe de verdade (do 1 a.C. pula pro 1 d.C.), mas tá aqui pra você 😄'); }
   modoAno ? renderAno() : renderMes();
   painel();
+  if (typeof mandarAgenda === 'function') try { mandarAgenda(); } catch(e) {}
 }
 function renderMes(){
   const cal = $('#calendario'); cal.className = 'cal';
@@ -743,6 +755,93 @@ $('#prox').onclick = () => { if (modoAno) ano++; else if (++mes>12){ mes=1; ano+
 $('#hoje').onclick = () => { hoje = hojeD(); ano = hoje.getFullYear(); mes = hoje.getMonth()+1; sel = hoje; modoAno = false; render(); };
 $('#modo').onclick = () => { modoAno = !modoAno; render(); };
 $('#selAno').onchange = e => { ano = Math.min(9999, Math.max(0, Math.floor(+e.target.value) || 0)); render(); };
+// ---------- app instalável ----------
+let promptInstalar = null;
+const ehIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const instalado = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptInstalar = e; $('#instalar').hidden = false; });
+if (ehIOS && !instalado()) $('#instalar').hidden = false;
+addEventListener('appinstalled', () => { $('#instalar').hidden = true; toast('App instalado! 📲'); });
+$('#instalar').onclick = async () => {
+  if (promptInstalar) { promptInstalar.prompt(); const r = await promptInstalar.userChoice; promptInstalar = null; if (r.outcome === 'accepted') $('#instalar').hidden = true; return; }
+  $('#modal').style.borderTopColor = 'var(--acento)';
+  $('#modal').innerHTML = `<button class="fechar" id="fechar">×</button><div class="figg">📲</div><h2>Instalar o app</h2>
+    ${ehIOS ? '<p>No iPhone ou iPad, no Safari:</p><ol><li>Toca no botão <b>Compartilhar</b> (o quadrado com a seta pra cima).</li><li>Escolhe <b>Adicionar à Tela de Início</b>.</li><li>Toca em <b>Adicionar</b>. Pronto, vira um app!</li></ol>'
+      : '<p>No Chrome (celular ou computador): abre o menu <b>⋮</b> e escolhe <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</p>'}`;
+  $('#fundo').classList.add('on'); $('#fechar').onclick = fechar;
+};
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(r => { setTimeout(() => r.update().catch(() => {}), 3000); mandarAgenda(); }).catch(() => {});
+}
+
+// ---------- avisos (notificações) ----------
+const IMPORTANTES = ['feriado','facultativo','ferias','meu','filme','esporte'];
+function cfgAvisos(){ try{ return Object.assign({ligado:false, quais:'importantes'}, JSON.parse(localStorage.getItem('cal.avisos')||'{}')); }catch(e){ return {ligado:false, quais:'importantes'}; } }
+function eventosPraAvisar(d){
+  const c = cfgAvisos(), fav = favoritos();
+  return (indice(d.getFullYear())[chave(d)] || []).filter(ev => chave(ev.inicio) === chave(d) && (c.quais === 'tudo' || IMPORTANTES.includes(ev.tipo) || fav.includes(ev.id)));
+}
+function agendaFutura(dias){
+  const lista = [];
+  for (let i = 0; i < dias; i++) {
+    const d = mais(hoje, i), evs = eventosPraAvisar(d); if (!evs.length) continue;
+    const amanha = eventosPraAvisar(mais(d, 1));
+    lista.push({ k: chave(d), titulo: evs.length === 1 ? evs[0].fig + ' Hoje é ' + evs[0].nome + '!' : '📅 Hoje tem ' + evs.length + ' eventos!',
+      corpo: evs.map(e => e.fig + ' ' + e.nome).join(', ') + (amanha.length ? '\nAmanhã: ' + amanha.map(e => e.fig + ' ' + e.nome).join(', ') : '') });
+  }
+  return lista;
+}
+function mandarAgenda(){
+  if (!('serviceWorker' in navigator)) return;
+  const c = cfgAvisos();
+  navigator.serviceWorker.ready.then(r => r.active && r.active.postMessage({ tipo: 'agenda', ligado: c.ligado, avisado: localStorage.getItem('cal.avisado') || '', agenda: agendaFutura(120) })).catch(() => {});
+}
+async function avisarHoje(forcar){
+  const c = cfgAvisos(); if (!c.ligado || !('Notification' in window) || Notification.permission !== 'granted') return;
+  const k = chave(hoje); if (!forcar && localStorage.getItem('cal.avisado') === k) return;
+  const item = agendaFutura(1)[0]; if (!item || item.k !== k) return;
+  try { localStorage.setItem('cal.avisado', k); } catch(e) {}
+  try { const r = await navigator.serviceWorker.ready; await r.showNotification(item.titulo, { body: item.corpo, icon: 'icone-192.png', badge: 'icone-192.png', tag: 'cal-' + k, data: { k } }); }
+  catch(e) { try { new Notification(item.titulo, { body: item.corpo, icon: 'icone-192.png' }); } catch(e2) {} }
+  mandarAgenda();
+}
+async function ligarAvisos(quer){
+  const c = cfgAvisos();
+  if (quer) {
+    if (!('Notification' in window)) { toast('Esse navegador não tem avisos 😕'); return false; }
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { toast('Você precisa permitir os avisos no navegador'); return false; }
+    c.ligado = true;
+    try { const r = await navigator.serviceWorker.ready; if ('periodicSync' in r) await r.periodicSync.register('avisos-do-dia', { minInterval: 12 * 60 * 60 * 1000 }); } catch(e) {}
+  } else c.ligado = false;
+  guardar('cal.avisos', c); mandarAgenda(); if (quer) avisarHoje(false);
+  return c.ligado;
+}
+function abrirAvisos(){
+  const c = cfgAvisos(), perm = ('Notification' in window) ? Notification.permission : 'nenhum';
+  const proximos = agendaFutura(120).slice(0, 4);
+  $('#modal').style.borderTopColor = 'var(--acento)';
+  $('#modal').innerHTML = `<button class="fechar" id="fechar">×</button><div class="figg">🔔</div><h2>Avisos</h2>
+    <p class="data">O app te avisa quando chega o dia de um evento${perm === 'denied' ? '. <b style="color:var(--feriado)">Os avisos estão bloqueados no navegador: libera nas configurações do site.</b>' : '.'}</p>
+    <label class="opcao"><input type="checkbox" id="avLigado" ${c.ligado && perm === 'granted' ? 'checked' : ''} /> <b>Avisar quando o dia chegar</b></label>
+    <label class="opcao">Avisar sobre: <select id="avQuais"><option value="importantes" ${c.quais === 'importantes' ? 'selected' : ''}>feriados, férias, filmes, esporte, meus eventos e favoritos</option><option value="tudo" ${c.quais === 'tudo' ? 'selected' : ''}>TUDO (todo dia tem algo!)</option></select></label>
+    <p><b>Próximos avisos:</b> ${proximos.length ? proximos.map(x => x.k.slice(8, 10) + '/' + x.k.slice(5, 7) + ' ' + x.titulo).join(' · ') : 'nenhum nos próximos 120 dias'}</p>
+    <p class="data">Dica: ${instalado() ? 'app instalado, ótimo!' : 'instala o app (📲) pros avisos funcionarem melhor.'} No Android (Chrome) o app checa sozinho de vez em quando, mesmo fechado. No iPhone e no computador o aviso aparece quando você abre o app.</p>
+    <div class="botoes"><button class="btn primario" id="avTestar">🔔 Testar aviso</button></div>`;
+  $('#fundo').classList.add('on'); $('#fechar').onclick = fechar;
+  $('#avLigado').onchange = async e => { const ok = await ligarAvisos(e.target.checked); e.target.checked = ok; if (ok) toast('Avisos ligados! 🔔'); };
+  $('#avQuais').onchange = e => { const c2 = cfgAvisos(); c2.quais = e.target.value; guardar('cal.avisos', c2); mandarAgenda(); abrirAvisos(); };
+  $('#avTestar').onclick = async () => {
+    if (!cfgAvisos().ligado || perm !== 'granted') { const ok = await ligarAvisos(true); if (!ok) return; }
+    try { const r = await navigator.serviceWorker.ready; await r.showNotification('🔔 Funcionou!', { body: 'Os avisos do Calendário do Jojo estão ligados.', icon: 'icone-192.png' }); }
+    catch(e) { try { new Notification('🔔 Funcionou!', { body: 'Os avisos do Calendário do Jojo estão ligados.' }); } catch(e2) { toast('Não deu pra mostrar o aviso 😕'); } }
+  };
+}
+$('#avisos').onclick = abrirAvisos;
+avisarHoje(false);
+// se o app ficar aberto e virar o dia, avisa também
+setInterval(() => { const h = hojeD(); if (chave(h) !== chave(hoje)) { hoje = h; render(); avisarHoje(false); } }, 60000);
+
 $('#busca').oninput = () => painel();
 $('#busca').onkeydown = e => { if (e.key==='Enter') $('#busca').blur(); };
 addEventListener('resize', () => painel());
