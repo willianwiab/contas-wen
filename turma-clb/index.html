@@ -67,6 +67,8 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
 .tile.espelho video { transform: scaleX(-1); }
 .tile .nm { position: absolute; left: 6px; bottom: 6px; background: rgba(0,0,0,.6); color: #fff; font-size: .75rem; font-weight: 800; border-radius: 999px; padding: 2px 8px; max-width: calc(100% - 12px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tile.semsom::after { content: "🔊 Toque aqui para ouvir"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 8px; background: rgba(0,0,0,.65); color: #fff; font-weight: 800; cursor: pointer; }
+.tile.falando { outline: 4px solid #3ddc84; outline-offset: -4px; }
+.tile .voz { position: absolute; right: 6px; top: 6px; background: rgba(0,0,0,.6); color: #fff; font-size: .75rem; font-weight: 800; border-radius: 999px; padding: 2px 8px; }
 .tile .ini { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-family: var(--display); font-size: 2.6rem; font-weight: 800; color: #04212e; background: var(--sun); }
 .tile.novideo .ini { display: flex; }
 .ctrl { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
@@ -168,7 +170,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     <button class="big" type="submit">Enviar 🚀</button>
   </form>
   <p class="note" id="aviso" hidden></p>
-  <p class="note" id="versao">🏷️ Versão 6</p>
+  <p class="note" id="versao">🏷️ Versão 7</p>
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -312,7 +314,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
       (conns[c.peer] = conns[c.peer] || []).push(c);
       c.send({ t: "hello", name: nome, inCall: inCall, video: temVideo(), ts: callTs });
       c.send({ t: "hist", msgs: msgs.slice(-100).map(semAudio), dels: Object.keys(apagadas).filter(function (k) { return apagadas[k] === 2; }).slice(-300) });
-      msgs.filter(function (m) { return m.audio; }).slice(-8).forEach(function (m) { c.send({ t: "msg", m: m }); });
+      msgs.filter(function (m) { return m.audio; }).slice(-5).forEach(function (m) { c.send({ t: "msg", m: m }); });
       atualizar();
     });
     c.on("data", function (d) { if (d && typeof d === "object") receber(c.peer, d); });
@@ -365,7 +367,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   // ---------- bate-papo ----------
   function msgOk(m) { return m && typeof m.id === "string" && typeof m.text === "string" && typeof m.t === "number"; }
   function achar(id) { for (var i = msgs.length - 1; i >= 0; i--) if (msgs[i].id === id) return msgs[i]; return null; }
-  function audioOk(a) { return typeof a === "string" && a.indexOf("data:audio/") === 0 && a.length <= 260000; }
+  function audioOk(a) { return typeof a === "string" && a.indexOf("data:audio/") === 0 && a.length <= 900000; }
   function limparRe(re) {
     var o = {};
     if (re && typeof re === "object") Object.keys(re).slice(0, 40).forEach(function (k) { if (typeof re[k] === "string" && re[k].length <= 8 && k.length <= 20) o[k] = re[k]; });
@@ -373,7 +375,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   }
   function semAudio(m) { var c = Object.assign({}, m); delete c.audio; return c; }
   function salvar() {
-    var guardados = 0, copia = msgs.slice().reverse().map(function (m) { return m.audio && ++guardados > 8 ? semAudio(m) : m; }).reverse();
+    var guardados = 0, copia = msgs.slice().reverse().map(function (m) { return m.audio && ++guardados > 5 ? semAudio(m) : m; }).reverse();
     for (var i = 0; i < 12; i++) {
       try { localStorage.setItem("clb.hist." + sala, JSON.stringify(copia)); return; }
       catch (e) { // aparelho cheio: guarda sem o áudio mais antigo
@@ -532,7 +534,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     try { recStream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
     catch (e) { avisar("🎤 Preciso da permissão do microfone para gravar."); return; }
     var tipo = ["audio/mp4;codecs=mp4a.40.2", "audio/webm;codecs=opus", "audio/webm", "audio/mp4"].filter(function (t) { return MediaRecorder.isTypeSupported(t); })[0];
-    try { rec = new MediaRecorder(recStream, tipo ? { mimeType: tipo, audioBitsPerSecond: 24000 } : { audioBitsPerSecond: 24000 }); }
+    try { rec = new MediaRecorder(recStream, tipo ? { mimeType: tipo, audioBitsPerSecond: 32000 } : { audioBitsPerSecond: 32000 }); }
     catch (e) { recStream.getTracks().forEach(function (t) { t.stop(); }); recStream = null; avisar("🎤 Este navegador não grava mensagem de voz."); return; }
     recPartes = []; recCancela = false; recT0 = Date.now();
     rec.ondataavailable = function (e) { if (e.data && e.data.size) recPartes.push(e.data); };
@@ -592,6 +594,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   }
   async function entrarNaChamada(video) {
     if (inCall || !peer) return;
+    try { if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) {}
     pararToque(true);
     $("ligar").disabled = $("video").disabled = true;
     try { stream = await pegarMidia(video); }
@@ -635,7 +638,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   function fecharMedia(id) {
     var mc = medias[id]; delete medias[id];
     if (mc) { try { mc.close(); } catch (e) {} }
-    var el = document.querySelector('[data-peer="' + id + '"]'); if (el) el.remove();
+    var el = document.querySelector('[data-peer="' + id + '"]'); if (el) { pararMedidor(el); el.remove(); }
   }
   function quadro(id, s, rotulo, eu) {
     var el = document.querySelector('[data-peer="' + id + '"]');
@@ -644,15 +647,44 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
       var v = document.createElement("video"); v.autoplay = true; v.playsInline = true; v.muted = !!eu;
       var ini = document.createElement("div"); ini.className = "ini";
       var nm = document.createElement("span"); nm.className = "nm";
-      el.appendChild(v); el.appendChild(ini); el.appendChild(nm); $("grid").appendChild(el);
+      var voz = document.createElement("span"); voz.className = "voz";
+      el.appendChild(v); el.appendChild(ini); el.appendChild(nm); el.appendChild(voz); $("grid").appendChild(el);
     }
     var vid = el.querySelector("video");
     if (vid.srcObject !== s) vid.srcObject = s;
     if (!eu) { vid.muted = false; vid.volume = 1; }
+    medir(el, s);
     darPlay(el);
     el.classList.toggle("novideo", !s.getVideoTracks().length);
     el.querySelector(".ini").textContent = (rotulo || "?").charAt(0).toUpperCase();
     el.querySelector(".nm").textContent = rotulo;
+  }
+  function medir(el, s) {
+    var faixa = s.getAudioTracks()[0], voz = el.querySelector(".voz");
+    if (el._med && el._med.faixa === faixa) return;
+    pararMedidor(el);
+    if (!faixa) { voz.textContent = "🔇 sem microfone"; return; }
+    voz.textContent = "🎤";
+    if (!actx) return;
+    try {
+      var src = actx.createMediaStreamSource(new MediaStream([faixa])), an = actx.createAnalyser(), buf;
+      an.fftSize = 512; buf = new Uint8Array(an.fftSize); src.connect(an);
+      var quieto = 0, timer = setInterval(function () {
+        an.getByteTimeDomainData(buf);
+        var soma = 0; for (var i = 0; i < buf.length; i++) { var x = (buf[i] - 128) / 128; soma += x * x; }
+        var nivel = Math.sqrt(soma / buf.length);
+        var fala = nivel > 0.02 && faixa.enabled;
+        quieto = fala ? 0 : quieto + 1;
+        el.classList.toggle("falando", quieto < 3);
+        voz.textContent = !faixa.enabled ? "🔇 mudo" : quieto < 3 ? "🗣️ falando" : "🎤";
+      }, 200);
+      el._med = { faixa: faixa, src: src, timer: timer };
+    } catch (e) {}
+  }
+  function pararMedidor(el) {
+    if (!el._med) return;
+    clearInterval(el._med.timer); try { el._med.src.disconnect(); } catch (e) {}
+    el._med = null; el.classList.remove("falando");
   }
   function darPlay(el) {
     var vid = el.querySelector("video"), p;
@@ -668,6 +700,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     Object.keys(medias).forEach(fecharMedia);
     if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
     stream = null; inCall = false; callTs = 0;
+    Array.prototype.forEach.call($("grid").children, pararMedidor);
     $("grid").textContent = ""; $("callbox").hidden = true; document.body.classList.remove("emchamada");
     $("ligar").disabled = $("video").disabled = false;
     atualizar();
