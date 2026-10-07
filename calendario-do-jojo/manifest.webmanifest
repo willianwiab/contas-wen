@@ -1,0 +1,16 @@
+{
+  "name": "Calendário do Jojo",
+  "short_name": "Calendário",
+  "description": "Feriados, férias, datas comemorativas, dias nerds, filmes, CCXP, lua cheia e tudo mais, com avisos quando o dia chega.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1222",
+  "theme_color": "#0f1222",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

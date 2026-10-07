@@ -11,7 +11,9 @@ Um calendário com **tudo mesmo**: feriados nacionais e de estados, pontos facul
 - **Busca** procura qualquer evento pelo nome.
 - **➕ Criar meu evento**: aniversários e o que quiser, com emoji, repetindo todo ano ou não. Fica salvo no navegador.
 - **⚙️ Datas da minha escola**: ajusta volta às aulas, férias de julho e último dia de aula.
+- **📲 Instalar**: vira um app na tela inicial (Android, iPhone e computador) e funciona sem internet.
+- **🔔 Avisos**: pede permissão e avisa quando chega o dia de um evento (feriados, férias, filmes, esporte, seus eventos e favoritos, ou tudo). No Chrome do Android o app checa sozinho de vez em quando, mesmo fechado; no iPhone e no computador o aviso aparece quando você abre o app.
 
 ## Como funciona
 
-É um `index.html` só, sem dependências. Páscoa, Carnaval, Corpus Christi, Dia das Mães, Dia dos Pais, Black Friday e Dia do Programador são calculados pra qualquer ano. Lua cheia e estações do ano são aproximadas. As datas fixas ficam na lista `FIXOS`, os eventos de um ano só (Copa, Olimpíadas, eleições, marcos da COVID) na lista `ESPECIAIS` e os lançamentos de filmes, séries e jogos na lista `FILMES`, no começo do script.
+É um `index.html` com `sw.js` (service worker pra funcionar offline e mandar os avisos), `manifest.webmanifest` e os ícones, sem dependências. A página manda pro service worker uma agenda com os próximos 120 dias que têm evento; ele guarda no cache e, quando o dia chega, mostra a notificação. Páscoa, Carnaval, Corpus Christi, Dia das Mães, Dia dos Pais, Black Friday e Dia do Programador são calculados pra qualquer ano. Lua cheia e estações do ano são aproximadas. As datas fixas ficam na lista `FIXOS`, os eventos de um ano só (Copa, Olimpíadas, eleições, marcos da COVID) na lista `ESPECIAIS` e os lançamentos de filmes, séries e jogos na lista `FILMES`, no começo do script.
