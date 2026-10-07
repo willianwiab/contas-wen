@@ -100,7 +100,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
 .send .field { flex: 1 1 90px; }
 .send .big { padding: 8px 14px; font-size: 1rem; }
 .ctrl button { font-size: .85rem; padding: 7px 11px; }
-.emchamada .top p, .emchamada .count, .emchamada #convite { display: none; }
+.emchamada .top p, .emchamada .count, .emchamada #convite, .emchamada #sairTurma { display: none; }
 .emchamada .top { padding: 6px 14px; }
 .emchamada .top h1 { font-size: 1.1rem; }
 .send .btn.gravando { background: var(--stop); border-color: var(--stop); color: var(--stop-ink); font-variant-numeric: tabular-nums; }
@@ -139,6 +139,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     <button class="btn call" id="video" type="button">🎥 Vídeo</button>
     <span class="online" id="online">😴 Só você por aqui agora</span>
     <button class="btn" id="convite" type="button">💌 Copiar convite</button>
+    <button class="btn" id="sairTurma" type="button">🚪 Sair da turma</button>
   </div>
 
   <div class="ring" id="ring" role="alert" hidden>
@@ -191,7 +192,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   var cid = lsGet("clb.cid");
   if (!cid) { cid = Math.random().toString(36).slice(2, 12); lsSet("clb.cid", cid); }
 
-  var nome = "", codigo = "", prefix = "", sala = "";
+  var nome = "", codigo = "", prefix = "", sala = "", auto = false;
   var peer = null, myId = null;
   var conns = {};       // id -> [DataConnection]
   var nomes = {};       // id -> nome
@@ -230,14 +231,24 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     sala = await hashSala(codigo + ":" + senha);
     if (typeof Peer === "undefined") { joinMsg("Não consegui carregar a parte das chamadas. Confira a internet e abra de novo."); return; }
     lsSet("clb.nome", nome); lsSet("clb.codigo", codigo);
+    iniciar(false);
+  });
+  // Entra na turma. No modo automático (voltando ao site) já mostra as conversas guardadas enquanto conecta.
+  function iniciar(automatico) {
+    auto = automatico;
     prefix = "clbt-" + sala + "-";
     $("entrarBtn").disabled = true; joinMsg("Entrando…");
     try { apagadas = JSON.parse(lsGet("clb.del." + sala) || "{}") || {}; } catch (e) { apagadas = {}; }
     try { msgs = JSON.parse(lsGet("clb.hist." + sala) || "[]").filter(msgOk).filter(function (m) { return !apagadas[m.id]; }); } catch (e) { msgs = []; }
     msgs.forEach(function (m) { m.re = limparRe(m.re); });
     msgs.forEach(function (m) { vistos[m.id] = 1; });
+    if (auto) { mostrarApp(); $("online").textContent = "📡 Conectando…"; }
     tentar(0);
-  });
+  }
+  function falhou(msg) {
+    if (auto) { $("online").textContent = "📡 Sem conexão. Tentando de novo…"; setTimeout(function () { tentar(0); }, 8000); }
+    else { joinMsg(msg); $("entrarBtn").disabled = false; }
+  }
   function joinMsg(t) { $("joinMsg").textContent = t; $("joinMsg").hidden = !t; }
 
   function opcoes() {
@@ -246,13 +257,12 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
   }
 
   function tentar(i) {
-    if (i >= MAX) { joinMsg("A turma está cheia agora (" + MAX + " pessoas). Tente daqui a pouco."); $("entrarBtn").disabled = false; return; }
+    if (i >= MAX) { falhou("A turma está cheia agora (" + MAX + " pessoas). Tente daqui a pouco."); return; }
     var p = new Peer(prefix + i, opcoes()), aberto = false;
     var demora = setTimeout(function () {
       if (aberto) return;
       try { p.destroy(); } catch (x) {}
-      joinMsg("Demorou demais para conectar. Pode ser a internet ou uma rede que bloqueia chamadas (como a da escola). Tente de novo ou use outra rede.");
-      $("entrarBtn").disabled = false;
+      falhou("Demorou demais para conectar. Pode ser a internet ou uma rede que bloqueia chamadas (como a da escola). Tente de novo ou use outra rede.");
     }, 15000);
     p.on("open", function () { aberto = true; clearTimeout(demora); peer = p; myId = p.id; pronto(); });
     p.on("connection", ligarConn);
@@ -265,16 +275,23 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
       clearTimeout(demora);
       try { p.destroy(); } catch (x) {}
       if (e.type === "unavailable-id") tentar(i + 1);
-      else { joinMsg("Não consegui conectar. Confira a internet e tente de novo."); $("entrarBtn").disabled = false; }
+      else falhou("Não consegui conectar. Confira a internet e tente de novo.");
     });
   }
 
-  function pronto() {
+  var appVisivel = false, varredura = 0;
+  function mostrarApp() {
+    if (appVisivel) return; appVisivel = true;
     $("join").hidden = true;
     ["bar", "msgs", "emojis", "form"].forEach(function (id) { $(id).hidden = false; });
     try { history.replaceState(null, "", "#" + codigo); } catch (e) {}
-    desenharMsgs(); procurar();
-    setInterval(procurar, 30000);
+    desenharMsgs(); msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+  function pronto() {
+    lsSet("clb.sessao", JSON.stringify({ nome: nome, codigo: codigo, sala: sala })); // para continuar na turma ao voltar
+    mostrarApp(); atualizar(); procurar();
+    clearInterval(varredura);
+    varredura = setInterval(procurar, 30000);
     $("texto").focus();
   }
   function procurar() {
@@ -692,6 +709,25 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pool); outl
     stream.getVideoTracks().forEach(function (t) { t.enabled = !off; });
     this.setAttribute("aria-pressed", off ? "true" : "false"); this.textContent = off ? "🙈 Câmera desligada" : "📷 Câmera ligada";
   });
+
+  // Sair da turma neste aparelho: esquece o acesso (as conversas continuam guardadas para quando voltar com a senha).
+  var sairT = 0;
+  $("sairTurma").addEventListener("click", function () {
+    var b = this;
+    if (!sairT) { b.textContent = "🚪 Toque de novo para sair"; sairT = setTimeout(function () { sairT = 0; b.textContent = "🚪 Sair da turma"; }, 3000); return; }
+    try { localStorage.removeItem("clb.sessao"); } catch (e) {}
+    try { if (peer) peer.destroy(); } catch (e) {}
+    location.reload();
+  });
+  // Voltando ao site: continua na turma sem digitar tudo de novo.
+  (function () {
+    var sv = null; try { sv = JSON.parse(lsGet("clb.sessao") || "null"); } catch (e) {}
+    if (!sv || typeof sv.sala !== "string" || !sv.sala || typeof Peer === "undefined") return;
+    var noLink = (location.hash || "").replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+    if (noLink && noLink !== sv.codigo) return; // convite para outra turma: deixa a pessoa entrar nela
+    nome = String(sv.nome || "").slice(0, 20) || "Alguém"; codigo = String(sv.codigo || ""); sala = sv.sala;
+    iniciar(true);
+  })();
 
   window.__clb = { estado: function () { return { id: myId, online: Object.keys(conns).filter(aberta).length, msgs: msgs.length, inCall: inCall, medias: Object.keys(medias).length, quadros: $("grid").children.length }; } };
 })();
