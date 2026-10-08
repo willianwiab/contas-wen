@@ -1,0 +1,10 @@
+{
+  "name": "Lista de Compras da Casa",
+  "short_name": "Compras",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6fdf7",
+  "theme_color": "#16a34a",
+  "description": "Uma lista de compras só, no celular de todo mundo da casa. Quem lembra, põe. Quem vai ao mercado, risca.",
+  "icons": [{ "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#16a34a">
+<title>🛒 Lista de Compras da Casa</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icone.svg">
+<link rel="icon" href="icone.svg">
+<style>
+:root{
+  --verde:#16a34a; --verde2:#22c55e; --verdeclaro:#dcfce7;
+  --laranja:#f97316; --laranja2:#fb923c; --vermelho:#e11d48; --azul:#2563eb;
+  --fundo:#f6fdf7; --cartao:#ffffff; --texto:#14301c; --texto2:#6b8a74; --borda:#bbf0c9;
+  --sombra:0 2px 10px rgba(22,163,74,.10); --sombra2:0 10px 34px rgba(22,163,74,.22);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --verdeclaro:#0f3d20;
+    --fundo:#0b1f12; --cartao:#14301c; --texto:#e7f8ec; --texto2:#9bc2a7; --borda:#1f5c33;
+    --sombra:0 2px 10px rgba(0,0,0,.35); --sombra2:0 10px 34px rgba(0,0,0,.5);
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--fundo);color:var(--texto);
+  min-height:100dvh;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom);
+  background-image:radial-gradient(circle at 10% 12%,rgba(34,197,94,.12),transparent 42%),
+                   radial-gradient(circle at 90% 78%,rgba(249,115,22,.10),transparent 42%);
+}
+.envolve{max-width:600px;margin:0 auto;padding:0 16px 120px}
+.tela{display:none}
+.tela.on{display:block;animation:entra .22s ease}
+@keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- topo ---------- */
+.topo{text-align:center;padding:26px 16px 10px}
+.topo h1{font-size:1.7rem;letter-spacing:-.5px}
+.topo p{font-size:.85rem;color:var(--texto2);margin-top:2px}
+.cabeca{display:flex;align-items:center;gap:8px;padding:14px 0 8px;position:sticky;top:0;background:var(--fundo);z-index:5}
+.cabeca h2{flex:1;min-width:0;font-size:1.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cabeca h2 small{display:flex;flex-wrap:wrap;align-items:center;gap:3px 6px;font-size:.72rem;font-weight:400;color:var(--texto2);white-space:normal}
+.redondo{width:40px;height:40px;border-radius:50%;background:var(--cartao);border:2px solid var(--borda);font-size:1.1rem;display:grid;place-items:center;flex-shrink:0;box-shadow:var(--sombra)}
+.redondo:active{transform:scale(.94)}
+.nuvem{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;color:var(--texto2);padding:3px 9px;border-radius:99px;background:var(--cartao);border:1.5px solid var(--borda)}
+.nuvem i{width:8px;height:8px;border-radius:50%;background:#9ca3af;display:inline-block}
+.nuvem.ok i{background:var(--verde2)}
+.nuvem.erro i{background:var(--laranja)}
+.nuvem.fila i{background:var(--laranja);animation:pisca 1s infinite}
+@keyframes pisca{50%{opacity:.3}}
+
+/* ---------- botões ---------- */
+.btn{
+  display:block;width:100%;padding:14px;border-radius:14px;font-weight:700;font-size:1rem;
+  background:var(--verde);color:#fff;box-shadow:var(--sombra);transition:transform .12s
+}
+.btn:active{transform:scale(.97)}
+.btn.fantasma{background:var(--cartao);color:var(--verde);border:2px solid var(--borda)}
+.btn.laranja{background:var(--laranja)}
+.btn.apagar{background:none;color:var(--vermelho);box-shadow:none;font-size:.85rem;padding:10px}
+.btn:disabled{opacity:.5}
+.dupla{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.pequeno{font-size:.85rem;padding:10px}
+
+/* ---------- cartões ---------- */
+.cartao{background:var(--cartao);border:2px solid var(--borda);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:var(--sombra)}
+.cartao h3{font-size:.95rem;margin-bottom:8px}
+.lista-cartao{display:flex;align-items:center;gap:14px;width:100%;text-align:left;transition:transform .12s}
+.lista-cartao:active{transform:scale(.98)}
+.lista-emoji{font-size:2rem;line-height:1;flex-shrink:0}
+.lista-meio{flex:1;min-width:0}
+.lista-nome{display:block;font-weight:800;font-size:1.02rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lista-linha{display:block;font-size:.78rem;color:var(--texto2);margin-top:1px}
+.lista-seta{color:var(--texto2);flex-shrink:0}
+
+/* ---------- chips ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 13px;border-radius:99px;background:var(--cartao);border:2px solid var(--borda);font-size:.9rem;font-weight:600;transition:transform .1s}
+.chip:active{transform:scale(.95)}
+.chip.on{background:var(--verde);border-color:var(--verde);color:#fff}
+.chip.suave{font-weight:500;font-size:.85rem;padding:6px 11px}
+
+/* ---------- campos ---------- */
+label.campo{display:block;font-size:.8rem;font-weight:700;color:var(--texto2);margin:12px 0 5px}
+input.caixa,select.caixa{
+  width:100%;padding:12px 14px;border-radius:12px;border:2px solid var(--borda);background:var(--cartao);font-size:1rem;outline:none
+}
+input.caixa:focus,select.caixa:focus{border-color:var(--verde2)}
+.linha2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.aviso{font-size:.8rem;color:var(--texto2);margin-top:8px;line-height:1.4}
+.erro{color:var(--vermelho);font-size:.85rem;margin-top:8px;min-height:1.2em}
+
+/* ---------- adicionar ---------- */
+.add{display:flex;gap:8px;margin:6px 0 10px}
+.add input{flex:1;min-width:0}
+.add button{width:52px;border-radius:12px;background:var(--verde);color:#fff;font-size:1.5rem;font-weight:800;flex-shrink:0;box-shadow:var(--sombra)}
+.add button:active{transform:scale(.95)}
+.detalhes{display:none;margin:-4px 0 12px}
+.detalhes.on{display:block}
+.detalhes .linha2{margin-top:4px}
+.sugest{margin:4px 0 14px}
+.sugest p{font-size:.75rem;color:var(--texto2);margin-bottom:6px}
+
+/* ---------- itens ---------- */
+.grupo{margin-bottom:14px}
+.grupo h3{font-size:.85rem;color:var(--texto2);margin:0 4px 6px;display:flex;justify-content:space-between}
+.grupo h3 span{font-weight:500}
+.item{display:flex;align-items:center;gap:10px;background:var(--cartao);border:2px solid var(--borda);border-radius:14px;padding:9px 10px;margin-bottom:7px;box-shadow:var(--sombra);animation:entra .2s ease}
+.item.ok{opacity:.62}
+.item.ok .nome{text-decoration:line-through}
+.check{width:30px;height:30px;border-radius:9px;border:2.5px solid var(--verde2);display:grid;place-items:center;flex-shrink:0;font-size:1rem;color:#fff;transition:background .15s}
+.check.on{background:var(--verde);border-color:var(--verde)}
+.meio{flex:1;min-width:0;text-align:left;padding:2px 0}
+.nome{display:block;font-weight:700;font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nome b{font-weight:600;color:var(--texto2);font-size:.85rem}
+.sub{display:block;font-size:.74rem;color:var(--texto2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preco{font-weight:700;font-size:.85rem;color:var(--laranja);flex-shrink:0}
+.vazio{text-align:center;padding:38px 20px;color:var(--texto2)}
+.vazio .ico{font-size:3.4rem;display:block;margin-bottom:10px}
+.vazio b{color:var(--texto);display:block;margin-bottom:6px;font-size:1.05rem}
+
+/* ---------- rodapé com totais ---------- */
+.rodape{position:fixed;left:0;right:0;bottom:0;z-index:6;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--cartao);border-top:2px solid var(--borda);box-shadow:0 -6px 24px rgba(0,0,0,.08)}
+.rodape .dentro{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.tot{flex:1;min-width:0}
+.tot b{display:block;font-size:1.1rem}
+.tot small{display:block;font-size:.72rem;color:var(--texto2)}
+.rodape button.limpar{padding:10px 14px;border-radius:12px;background:var(--verdeclaro);color:var(--verde);font-weight:700;font-size:.85rem;white-space:nowrap}
+.rodape button.limpar:disabled{opacity:.4}
+
+/* ---------- folha (modal) ---------- */
+.fundo{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.fundo.on{display:flex}
+.folha{background:var(--cartao);width:100%;max-width:600px;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));max-height:92dvh;overflow:auto;animation:sobe .22s ease}
+@keyframes sobe{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.folha h3{font-size:1.15rem;margin-bottom:4px}
+.folha .x{position:absolute;right:14px;top:10px;font-size:1.3rem;color:var(--texto2)}
+.folha-cab{position:relative;padding-right:30px}
+
+/* ---------- toast ---------- */
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--texto);color:var(--fundo);padding:10px 16px;border-radius:99px;font-size:.88rem;font-weight:600;opacity:0;transition:.25s;z-index:30;max-width:92vw;text-align:center;pointer-events:none}
+#toast.on{opacity:1;transform:translateX(-50%)}
+#instalar{display:none}
+</style>
+</head>
+<body>
+<div class="envolve">
+
+  <!-- ========== TELA INÍCIO ========== -->
+  <section id="tInicio" class="tela on">
+    <div class="topo">
+      <h1>🛒 Lista de Compras da Casa</h1>
+      <p>Uma lista só, no celular de todo mundo. Quem lembra, põe. Quem vai ao mercado, risca.</p>
+    </div>
+
+    <div class="cartao">
+      <h3>👋 Quem é você?</h3>
+      <div class="chips" id="eusChips"></div>
+      <input class="caixa" id="euOutro" placeholder="Outro nome…" maxlength="20" style="margin-top:10px">
+      <p class="aviso">Aparece como "pediu: <span id="euPrev">…</span>" nos itens que você colocar.</p>
+    </div>
+
+    <div id="minhasListas"></div>
+
+    <div class="dupla">
+      <button class="btn" id="bCriar">➕ Criar lista</button>
+      <button class="btn fantasma" id="bEntrar">🔗 Entrar com código</button>
+    </div>
+    <button class="btn fantasma pequeno" id="instalar">📲 Instalar como app</button>
+    <p class="aviso" style="text-align:center">Crie a lista, mande o convite pro grupo da família, e pronto: todo mundo vê a mesma lista na hora.</p>
+  </section>
+
+  <!-- ========== TELA LISTA ========== -->
+  <section id="tLista" class="tela">
+    <div class="cabeca">
+      <button class="redondo" id="bVoltar" title="Voltar">←</button>
+      <h2><span id="lNome">Lista</span><small><span class="nuvem" id="nuvem"><i></i><span>conectando…</span></span><span>código <b id="lCodigo"></b></span></small></h2>
+      <button class="redondo" id="bConvite" title="Convidar">💌</button>
+      <button class="redondo" id="bConfig" title="Opções">⚙️</button>
+    </div>
+
+    <form class="add" id="fAdd" autocomplete="off">
+      <input class="caixa" id="aNome" placeholder="O que falta? (ex: banana, papel higiênico)" maxlength="60" list="dlItens" enterkeyhint="done">
+      <datalist id="dlItens"></datalist>
+      <button type="submit" title="Adicionar">+</button>
+    </form>
+    <button class="chip suave" id="bDetalhes" type="button" style="margin:-4px 0 10px">＋ quantidade, preço e categoria</button>
+    <div class="detalhes" id="detalhes">
+      <div class="linha2">
+        <div><label class="campo">Quantidade</label><input class="caixa" id="aQtd" placeholder="ex: 2, 1 kg, 6 un" maxlength="20"></div>
+        <div><label class="campo">Preço (mais ou menos)</label><input class="caixa" id="aPreco" placeholder="R$ 0,00" inputmode="decimal" maxlength="12"></div>
+      </div>
+      <label class="campo">Categoria</label>
+      <select class="caixa" id="aCat"><option value="">🔮 Deixa que eu adivinho</option></select>
+    </div>
+    <div class="sugest" id="sugest"></div>
+
+    <div id="itens"></div>
+  </section>
+</div>
+
+<!-- rodapé de totais -->
+<div class="rodape" id="rodape" hidden>
+  <div class="dentro">
+    <div class="tot"><b id="totTxt">0 itens</b><small id="totSub"></small></div>
+    <button class="limpar" id="bLimpar">🧹 Tirar comprados</button>
+  </div>
+</div>
+
+<!-- folhas -->
+<div class="fundo" id="fCriar">
+  <div class="folha">
+    <div class="folha-cab"><h3>➕ Nova lista</h3><button class="x" data-fecha>✕</button></div>
+    <label class="campo">Nome da lista</label>
+    <input class="caixa" id="cNome" placeholder="ex: Casa, Mercado do mês, Festa do Jojo" maxlength="30" value="Casa">
+    <p class="aviso">Depois é só mandar o convite. Quem abrir o link entra na mesma lista.</p>
+    <button class="btn" id="cOk" style="margin-top:14px">Criar e abrir</button>
+  </div>
+</div>
+
+<div class="fundo" id="fEntrar">
+  <div class="folha">
+    <div class="folha-cab"><h3>🔗 Entrar numa lista</h3><button class="x" data-fecha>✕</button></div>
+    <label class="campo">Código ou link do convite</label>
+    <input class="caixa" id="eCodigo" placeholder="ex: 7kq2mx" maxlength="200" autocapitalize="none">
+    <div class="erro" id="eErro"></div>
+    <button class="btn" id="eOk" style="margin-top:6px">Entrar</button>
+  </div>
+</div>
+
+<div class="fundo" id="fItem">
+  <div class="folha">
+    <div class="folha-cab"><h3>✏️ Editar item</h3><button class="x" data-fecha>✕</button></div>
+    <label class="campo">Nome</label>
+    <input class="caixa" id="iNome" maxlength="60">
+    <div class="linha2">
+      <div><label class="campo">Quantidade</label><input class="caixa" id="iQtd" maxlength="20" placeholder="ex: 2"></div>
+      <div><label class="campo">Preço (mais ou menos)</label><input class="caixa" id="iPreco" inputmode="decimal" maxlength="12" placeholder="R$ 0,00"></div>
+    </div>
+    <label class="campo">Categoria</label>
+    <select class="caixa" id="iCat"></select>
+    <label class="campo">Quem pediu</label>
+    <input class="caixa" id="iQuem" maxlength="20">
+    <p class="aviso" id="iInfo"></p>
+    <button class="btn" id="iOk" style="margin-top:14px">Salvar</button>
+    <button class="btn apagar" id="iDel">🗑️ Tirar da lista</button>
+  </div>
+</div>
+
+<div class="fundo" id="fConfig">
+  <div class="folha">
+    <div class="folha-cab"><h3>⚙️ Opções da lista</h3><button class="x" data-fecha>✕</button></div>
+    <label class="campo">Nome da lista</label>
+    <input class="caixa" id="oNome" maxlength="30">
+    <label class="campo">Seu nome</label>
+    <input class="caixa" id="oEu" maxlength="20">
+    <button class="btn" id="oOk" style="margin-top:14px">Salvar</button>
+    <button class="btn fantasma pequeno" id="oConvite" style="margin-top:10px">💌 Copiar convite</button>
+    <button class="btn fantasma pequeno" id="oCompartilhar" style="margin-top:10px">📤 Mandar lista em texto</button>
+    <button class="btn apagar" id="oSair">🚪 Sair desta lista neste aparelho</button>
+    <p class="aviso">Sair não apaga a lista pra ninguém. É só tirar daqui; com o código dá pra voltar.</p>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function toast(t) { var el = $("toast"); el.textContent = t; el.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(function () { el.classList.remove("on"); }, 2200); }
+  function novoId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function novoCodigo() { var a = "abcdefghjkmnpqrstuvwxyz23456789", s = ""; for (var i = 0; i < 6; i++) s += a[Math.floor(Math.random() * a.length)]; return s; }
+  function dinheiro(v) { return "R$ " + (Math.round(v * 100) / 100).toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+  function lerPreco(s) { s = String(s || "").replace(/[^\d,.]/g, ""); if (!s) return null; if (s.indexOf(",") >= 0) s = s.replace(/\./g, "").replace(",", "."); var v = parseFloat(s); return isNaN(v) || v < 0 ? null : Math.round(v * 100) / 100; }
+  function quando(t) {
+    if (!t) return ""; var d = Date.now() - t;
+    if (d < 60000) return "agora"; if (d < 3600000) return Math.floor(d / 60000) + " min"; if (d < 86400000) return Math.floor(d / 3600000) + " h";
+    var dd = Math.floor(d / 86400000); return dd === 1 ? "ontem" : dd + " dias";
+  }
+
+  // ---------- categorias (na ordem em que a gente passa no mercado) ----------
+  var CATS = [
+    ["hortifruti", "🍌 Frutas, verduras e legumes"], ["padaria", "🥖 Padaria"], ["acougue", "🥩 Carnes e frios"],
+    ["laticinios", "🧀 Leite, queijo e ovos"], ["mercearia", "🍝 Mercearia"], ["doces", "🍪 Doces e lanches"],
+    ["congelados", "🧊 Congelados"], ["bebidas", "🥤 Bebidas"], ["limpeza", "🧽 Limpeza"], ["higiene", "🧴 Higiene e beleza"],
+    ["pet", "🐾 Pet"], ["casa", "🏠 Casa e outros"]
+  ];
+  var catNome = {}; CATS.forEach(function (c) { catNome[c[0]] = c[1]; });
+  var PALAVRAS = {
+    hortifruti: "banana maçã maca laranja limão limao uva morango mamão mamao melancia melão melao abacaxi manga pera kiwi abacate goiaba tangerina mexerica bergamota caqui ameixa pêssego pessego cereja coco tomate cebola alho batata cenoura abobrinha abóbora abobora chuchu pepino alface rúcula rucula couve repolho brócolis brocolis couve-flor espinafre beterraba pimentão pimentao berinjela mandioca aipim macaxeira inhame milho vagem ervilha salsinha cebolinha cheiro-verde coentro hortelã hortela gengibre batata-doce rabanete salsa fruta frutas verdura verduras legume legumes",
+    padaria: "pão pao pãozinho paozinho francês frances bisnaga broa bolo torta croissant sonho rosca pão-de-queijo pao-de-queijo pão de forma pao de forma integral baguete",
+    acougue: "carne frango peito coxa asa bife alcatra picanha patinho acém acem músculo musculo costela linguiça linguica salsicha bacon presunto mortadela salame peito-de-peru peru calabresa hambúrguer hamburguer peixe tilápia tilapia salmão salmao sardinha atum camarão camarao carne-moída moída moida frios",
+    laticinios: "leite queijo mussarela muçarela prato minas parmesão parmesao requeijão requeijao iogurte danone manteiga margarina creme-de-leite creme de leite leite-condensado leite condensado ovos ovo nata ricota cottage coalhada",
+    mercearia: "arroz feijão feijao macarrão macarrao espaguete lasanha molho extrato massa farinha trigo açúcar acucar sal óleo oleo azeite vinagre café cafe filtro aveia granola cereal sucrilhos milho ervilha lata enlatado atum sardinha maionese ketchup mostarda tempero caldo fermento amido maizena fubá fuba polenta grão-de-bico lentilha quinoa miojo lámen lamen biscoito bolacha torrada farofa pipoca mel achocolatado nescau toddy chá cha",
+    doces: "chocolate bombom bala chiclete pirulito sorvete picolé picole doce goiabada paçoca pacoca brigadeiro cookie wafer salgadinho batata-frita chips amendoim pipoca-doce bis kinder kitkat trident gelatina pudim jujuba marshmallow",
+    congelados: "pizza nuggets lasanha-congelada hambúrguer-congelado sorvete açaí acai polpa pão-de-queijo-congelado batata-congelada empanado congelado",
+    bebidas: "água agua refrigerante coca coca-cola guaraná guarana fanta sprite pepsi suco néctar nectar cerveja vinho energético energetico gatorade água-de-coco agua de coco leite-vegetal chá-gelado cha gelado kombucha tônica tonica vodka whisky",
+    limpeza: "detergente sabão sabao sabão-em-pó sabao em po amaciante água-sanitária agua sanitaria cloro desinfetante multiuso veja esponja bucha pano rodo vassoura saco-de-lixo saco de lixo lixo álcool alcool limpa-vidros lustra-móveis inseticida raid papel-toalha papel toalha guardanapo lava-louças lava loucas",
+    higiene: "papel-higiênico papel higiênico papel higienico shampoo xampu condicionador sabonete creme-dental pasta-de-dente pasta de dente escova-de-dente escova de dente fio-dental desodorante absorvente fralda lenço lenco cotonete protetor-solar hidratante perfume lâmina lamina barbear algodão algodao remédio remedio dipirona",
+    pet: "ração racao petisco areia-de-gato areia gato cachorro sachê sache osso antipulgas tapete-higiênico",
+    casa: "pilha lâmpada lampada fósforo fosforo isqueiro vela papel-alumínio papel aluminio filme-plástico filme plastico pote caderno caneta lápis lapis carvão carvao gás gas"
+  };
+  function adivinharCat(nome) {
+    var n = nome.toLowerCase().trim();
+    var melhor = "casa", melhorTam = 0;
+    for (var cat in PALAVRAS) {
+      var ws = PALAVRAS[cat].split(" ");
+      for (var i = 0; i < ws.length; i++) {
+        var w = ws[i].replace(/-/g, " "); if (!w) continue;
+        if ((n === w || n.indexOf(w) === 0 || n.indexOf(" " + w) >= 0 || (w.length >= 4 && n.indexOf(w) >= 0)) && w.length > melhorTam) { melhor = cat; melhorTam = w.length; }
+      }
+    }
+    return melhor;
+  }
+  var SUGESTOES = ["Arroz", "Feijão", "Leite", "Pão", "Ovos", "Banana", "Papel higiênico", "Café", "Açúcar", "Óleo", "Detergente", "Frango", "Queijo", "Sabão em pó", "Macarrão", "Refrigerante", "Maçã", "Tomate", "Cebola", "Manteiga"];
+
+  // ---------- estado ----------
+  var EUS = ["Jojo", "Sofia", "Wilian", "Grabiela"];
+  var eu = lsGet("compras.eu") || "";
+  var listas = []; try { listas = JSON.parse(lsGet("compras.listas") || "[]"); } catch (e) {}
+  var codigo = null, nomeLista = "", itens = {}, fila = [], editando = null;
+  var BANCO = "https://conversa-com-a-familia-default-rtdb.firebaseio.com";
+  var nuvemOk = null, puxando = false, enviando = false, relogio = 0, ultimoJson = "";
+  var codigoOk = function (c) { return /^[a-z0-9]{4,12}$/.test(c); };
+
+  function salvarListas() { lsSet("compras.listas", JSON.stringify(listas)); }
+  function salvarItens() { if (codigo) lsSet("compras.itens." + codigo, JSON.stringify(itens)); }
+  function salvarFila() { if (codigo) lsSet("compras.fila." + codigo, JSON.stringify(fila)); }
+  function hist() { try { return JSON.parse(lsGet("compras.hist") || "{}"); } catch (e) { return {}; } }
+  function lembrar(it) { var h = hist(); var k = it.n.trim(); if (!k) return; h[k] = { c: it.c, q: it.q || "", p: it.p || null, t: Date.now(), v: ((h[k] && h[k].v) || 0) + 1 }; var ks = Object.keys(h); if (ks.length > 300) { ks.sort(function (a, b) { return h[a].t - h[b].t; }); ks.slice(0, ks.length - 300).forEach(function (k) { delete h[k]; }); } lsSet("compras.hist", JSON.stringify(h)); }
+
+  // ---------- nuvem ----------
+  function buscar(url, op) {
+    op = op || {}; op.cache = "no-store";
+    if (window.AbortController) { var ac = new AbortController(); op.signal = ac.signal; setTimeout(function () { ac.abort(); }, 12000); }
+    return fetch(url, op);
+  }
+  function canto() { return BANCO + "/salas/compras-" + codigo + "/lista"; }
+  function nuvem(op) { // op = {m: "PUT"|"PATCH"|"DELETE", p: caminho, b: corpo}
+    fila.push(op); salvarFila(); mostrarNuvem(); esvaziar();
+  }
+  async function esvaziar() {
+    if (enviando || !codigo) return; enviando = true;
+    while (fila.length) {
+      var it = fila[0];
+      try {
+        var r = await buscar(canto() + it.p + ".json", { method: it.m, headers: { "Content-Type": "application/json" }, body: it.m === "DELETE" ? undefined : JSON.stringify(it.b) });
+        if (!r.ok) throw new Error("recusado");
+        fila.shift(); salvarFila(); nuvemOk = true;
+      } catch (e) { nuvemOk = false; break; } // sem internet: fica na fila e tenta de novo depois
+    }
+    enviando = false; mostrarNuvem();
+  }
+  function aplicarFila(obj) { // o que ainda não subiu pra nuvem vale por cima do que desceu
+    fila.forEach(function (op) {
+      var m = /^\/itens\/([^/]+)$/.exec(op.p);
+      if (m) {
+        if (op.m === "DELETE") delete obj[m[1]];
+        else if (op.m === "PUT") obj[m[1]] = op.b;
+        else if (op.m === "PATCH") { obj[m[1]] = obj[m[1]] || {}; for (var k in op.b) obj[m[1]][k] = op.b[k]; }
+      } else if (op.p === "/nome" && op.m === "PUT") nomeLista = op.b;
+    });
+  }
+  async function puxar() {
+    if (puxando || !codigo) return; puxando = true;
+    try {
+      var r = await buscar(canto() + ".json"); if (!r.ok) throw 0;
+      var j = (await r.json()) || {};
+      var novos = (j.itens && typeof j.itens === "object") ? j.itens : {};
+      var limpos = {};
+      for (var id in novos) { var v = novos[id]; if (v && typeof v === "object" && typeof v.n === "string" && /^[a-z0-9]{5,20}$/.test(id)) limpos[id] = v; }
+      aplicarFila(limpos);
+      if (typeof j.nome === "string" && j.nome.trim() && !fila.some(function (o) { return o.p === "/nome"; })) nomeLista = j.nome.slice(0, 30);
+      var txt = JSON.stringify([limpos, nomeLista]);
+      nuvemOk = true;
+      if (txt !== ultimoJson) {
+        ultimoJson = txt; itens = limpos; salvarItens();
+        var l = achaLista(codigo); if (l && l.nome !== nomeLista) { l.nome = nomeLista; salvarListas(); }
+        desenhar();
+      }
+    } catch (e) { nuvemOk = false; }
+    puxando = false; mostrarNuvem(); esvaziar();
+  }
+  function mostrarNuvem() {
+    var el = $("nuvem"); if (!el) return;
+    el.className = "nuvem " + (fila.length ? "fila" : nuvemOk === true ? "ok" : nuvemOk === false ? "erro" : "");
+    el.lastElementChild.textContent = fila.length ? "guardando " + fila.length + "…" : nuvemOk === true ? "na nuvem" : nuvemOk === false ? "sem internet" : "conectando…";
+  }
+  function nuvemComecar() {
+    try { fila = JSON.parse(lsGet("compras.fila." + codigo) || "[]"); } catch (e) { fila = []; }
+    if (!Array.isArray(fila)) fila = [];
+    ultimoJson = ""; nuvemOk = null; mostrarNuvem();
+    puxar();
+    clearInterval(relogio);
+    relogio = setInterval(function () { if (!document.hidden && codigo) puxar(); }, 4000);
+  }
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) puxar(); });
+  window.addEventListener("online", function () { puxar(); });
+
+  // ---------- telas ----------
+  function tela(id) { document.querySelectorAll(".tela").forEach(function (t) { t.classList.toggle("on", t.id === id); }); $("rodape").hidden = id !== "tLista"; window.scrollTo(0, 0); }
+  function abrirFolha(id) { $(id).classList.add("on"); var i = $(id).querySelector("input"); if (i) setTimeout(function () { i.focus(); }, 80); }
+  function fecharFolhas() { document.querySelectorAll(".fundo").forEach(function (f) { f.classList.remove("on"); }); editando = null; }
+  document.querySelectorAll("[data-fecha]").forEach(function (b) { b.addEventListener("click", fecharFolhas); });
+  document.querySelectorAll(".fundo").forEach(function (f) { f.addEventListener("click", function (e) { if (e.target === f) fecharFolhas(); }); });
+  function achaLista(c) { for (var i = 0; i < listas.length; i++) if (listas[i].codigo === c) return listas[i]; return null; }
+
+  // ---------- início ----------
+  function desenharInicio() {
+    $("eusChips").innerHTML = EUS.map(function (n) { return '<button type="button" class="chip' + (eu === n ? " on" : "") + '" data-eu="' + esc(n) + '">' + esc(n) + "</button>"; }).join("");
+    $("euOutro").value = EUS.indexOf(eu) >= 0 ? "" : eu;
+    $("euPrev").textContent = eu || "…";
+    var h = $("minhasListas");
+    if (!listas.length) h.innerHTML = '<div class="vazio"><span class="ico">🛒</span><b>Nenhuma lista ainda</b>Crie uma ou entre com o código que alguém te mandou.</div>';
+    else h.innerHTML = listas.map(function (l) {
+      var its = {}; try { its = JSON.parse(lsGet("compras.itens." + l.codigo) || "{}"); } catch (e) {}
+      var n = 0, ok = 0; for (var k in its) { n++; if (its[k].ok) ok++; }
+      return '<button class="cartao lista-cartao" data-abrir="' + esc(l.codigo) + '"><span class="lista-emoji">🛒</span><span class="lista-meio"><span class="lista-nome">' + esc(l.nome || "Lista") + '</span><span class="lista-linha">' + (n ? (n - ok) + " pra comprar · " + ok + " no carrinho" : "vazia") + " · código " + esc(l.codigo) + '</span></span><span class="lista-seta">›</span></button>';
+    }).join("");
+  }
+  $("eusChips").addEventListener("click", function (e) { var b = e.target.closest("[data-eu]"); if (!b) return; eu = b.getAttribute("data-eu"); lsSet("compras.eu", eu); desenharInicio(); });
+  $("euOutro").addEventListener("input", function () { var v = this.value.trim(); if (v) { eu = v.slice(0, 20); lsSet("compras.eu", eu); } $("euPrev").textContent = eu || "…"; document.querySelectorAll("[data-eu]").forEach(function (c) { c.classList.toggle("on", c.getAttribute("data-eu") === eu); }); });
+  $("minhasListas").addEventListener("click", function (e) { var b = e.target.closest("[data-abrir]"); if (b) abrirLista(b.getAttribute("data-abrir")); });
+  $("bCriar").addEventListener("click", function () { if (!garantirEu()) return; abrirFolha("fCriar"); });
+  $("bEntrar").addEventListener("click", function () { if (!garantirEu()) return; $("eErro").textContent = ""; abrirFolha("fEntrar"); });
+  function garantirEu() { if (eu) return true; toast("Primeiro diz quem é você 👆"); $("euOutro").focus(); return false; }
+  $("cOk").addEventListener("click", function () {
+    var nome = $("cNome").value.trim() || "Casa", c = novoCodigo();
+    listas.unshift({ codigo: c, nome: nome }); salvarListas(); fecharFolhas();
+    abrirLista(c);
+    nuvem({ m: "PUT", p: "/nome", b: nome }); nomeLista = nome; desenhar();
+    toast("Lista criada! Manda o convite 💌");
+  });
+  function lerCodigo(s) { s = String(s || "").trim().toLowerCase(); var m = /#([a-z0-9]{4,12})\b/.exec(s); if (m) return m[1]; return codigoOk(s) ? s : null; }
+  $("eOk").addEventListener("click", function () {
+    var c = lerCodigo($("eCodigo").value);
+    if (!c) { $("eErro").textContent = "Esse código não parece certo. Cola o link do convite ou o código de 6 letras."; return; }
+    if (!achaLista(c)) { listas.unshift({ codigo: c, nome: "Lista" }); salvarListas(); }
+    fecharFolhas(); $("eCodigo").value = ""; abrirLista(c);
+  });
+
+  // ---------- lista ----------
+  function abrirLista(c) {
+    codigo = c; var l = achaLista(c); nomeLista = (l && l.nome) || "Lista";
+    try { itens = JSON.parse(lsGet("compras.itens." + c) || "{}"); } catch (e) { itens = {}; }
+    if (!itens || typeof itens !== "object") itens = {};
+    $("lCodigo").textContent = c;
+    try { history.replaceState(null, "", location.pathname + "#" + c); } catch (e) {}
+    tela("tLista"); desenhar(); nuvemComecar();
+    setTimeout(function () { if (!("ontouchstart" in window)) $("aNome").focus(); }, 100);
+  }
+  $("bVoltar").addEventListener("click", function () { codigo = null; clearInterval(relogio); try { history.replaceState(null, "", location.pathname); } catch (e) {} desenharInicio(); tela("tInicio"); });
+
+  function linkConvite() { return location.href.split("#")[0].split("?")[0] + "#" + codigo; }
+  function convidar() {
+    var url = linkConvite(), txt = "🛒 Entra na lista de compras \"" + nomeLista + "\": " + url;
+    if (navigator.share) { navigator.share({ title: "Lista de Compras: " + nomeLista, text: txt }).catch(function () {}); return; }
+    try { navigator.clipboard.writeText(url).then(function () { toast("✅ Convite copiado! Cola no grupo da família."); }, function () { prompt("Convite:", url); }); } catch (e) { prompt("Convite:", url); }
+  }
+  $("bConvite").addEventListener("click", convidar);
+  $("oConvite").addEventListener("click", convidar);
+  $("oCompartilhar").addEventListener("click", function () {
+    var grupos = agrupar(), linhas = ["🛒 " + nomeLista];
+    grupos.forEach(function (g) { if (g.cat === "ok") return; linhas.push(""); linhas.push(catNome[g.cat]); g.itens.forEach(function (it) { linhas.push("• " + it.n + (it.q ? " (" + it.q + ")" : "")); }); });
+    var txt = linhas.join("\n");
+    if (navigator.share) { navigator.share({ text: txt }).catch(function () {}); return; }
+    try { navigator.clipboard.writeText(txt).then(function () { toast("✅ Lista copiada em texto!"); }); } catch (e) { prompt("Lista:", txt); }
+  });
+
+  // adicionar
+  $("bDetalhes").addEventListener("click", function () { var d = $("detalhes"); d.classList.toggle("on"); this.textContent = d.classList.contains("on") ? "－ esconder detalhes" : "＋ quantidade, preço e categoria"; });
+  CATS.forEach(function (c) { var o = document.createElement("option"); o.value = c[0]; o.textContent = c[1]; $("aCat").appendChild(o); var o2 = o.cloneNode(true); $("iCat").appendChild(o2); });
+  $("fAdd").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var n = $("aNome").value.trim(); if (!n) return;
+    adicionar(n, $("aQtd").value.trim(), lerPreco($("aPreco").value), $("aCat").value || null);
+    $("aNome").value = ""; $("aQtd").value = ""; $("aPreco").value = ""; $("aCat").value = "";
+    $("aNome").focus();
+  });
+  function adicionar(n, q, p, c) {
+    n = n.slice(0, 60); n = n.charAt(0).toUpperCase() + n.slice(1);
+    var h = hist()[n] || hist()[n.toLowerCase()];
+    // se já tá na lista e não foi comprado, só avisa
+    for (var id0 in itens) { if (!itens[id0].ok && itens[id0].n.toLowerCase() === n.toLowerCase()) { toast("\"" + n + "\" já tá na lista 😉"); return; } }
+    var it = { n: n, c: c || (h && h.c) || adivinharCat(n), q: q || "", p: p != null ? p : (h && h.p) || null, quem: eu, ok: false, t: Date.now() };
+    if (!it.p) delete it.p;
+    var id = novoId(); itens[id] = it; salvarItens(); lembrar(it);
+    nuvem({ m: "PUT", p: "/itens/" + id, b: it }); desenhar();
+  }
+  $("sugest").addEventListener("click", function (e) { var b = e.target.closest("[data-sug]"); if (b) adicionar(b.getAttribute("data-sug"), "", null, null); });
+
+  // itens
+  $("itens").addEventListener("click", function (e) {
+    var c = e.target.closest("[data-check]"); if (c) { marcar(c.getAttribute("data-check")); return; }
+    var m = e.target.closest("[data-edit]"); if (m) editar(m.getAttribute("data-edit"));
+  });
+  function marcar(id) {
+    var it = itens[id]; if (!it) return;
+    var patch = it.ok ? { ok: false, okq: null, okt: null } : { ok: true, okq: eu, okt: Date.now() };
+    for (var k in patch) { if (patch[k] === null) delete it[k]; else it[k] = patch[k]; }
+    salvarItens(); nuvem({ m: "PATCH", p: "/itens/" + id, b: patch }); desenhar();
+    if (it.ok && navigator.vibrate) navigator.vibrate(12);
+  }
+  function editar(id) {
+    var it = itens[id]; if (!it) return; editando = id;
+    $("iNome").value = it.n; $("iQtd").value = it.q || ""; $("iPreco").value = it.p != null ? String(it.p).replace(".", ",") : ""; $("iCat").value = it.c; $("iQuem").value = it.quem || "";
+    $("iInfo").textContent = (it.quem ? "Pediu: " + it.quem + " · " : "") + (it.ok ? "comprado por " + (it.okq || "alguém") + " há " + quando(it.okt) : "colocado há " + quando(it.t));
+    abrirFolha("fItem"); setTimeout(function () { $("iNome").blur(); }, 90);
+  }
+  $("iOk").addEventListener("click", function () {
+    var id = editando, it = itens[id]; if (!it) { fecharFolhas(); return; }
+    var n = $("iNome").value.trim(); if (!n) { toast("O item precisa de um nome"); return; }
+    var p = lerPreco($("iPreco").value);
+    var patch = { n: n.slice(0, 60), q: $("iQtd").value.trim().slice(0, 20), c: $("iCat").value || it.c, quem: $("iQuem").value.trim().slice(0, 20), p: p };
+    for (var k in patch) { if (patch[k] === null) delete it[k]; else it[k] = patch[k]; }
+    salvarItens(); lembrar(it); nuvem({ m: "PATCH", p: "/itens/" + id, b: patch }); fecharFolhas(); desenhar();
+  });
+  $("iDel").addEventListener("click", function () { var id = editando; if (!itens[id]) return; delete itens[id]; salvarItens(); nuvem({ m: "DELETE", p: "/itens/" + id }); fecharFolhas(); desenhar(); toast("Tirado da lista"); });
+  $("bLimpar").addEventListener("click", function () {
+    var n = 0; for (var id in itens) if (itens[id].ok) { delete itens[id]; nuvem({ m: "DELETE", p: "/itens/" + id }); n++; }
+    if (!n) return; salvarItens(); desenhar(); toast("🧹 " + n + (n === 1 ? " item comprado saiu da lista" : " itens comprados saíram da lista"));
+  });
+
+  // opções
+  $("bConfig").addEventListener("click", function () { $("oNome").value = nomeLista; $("oEu").value = eu; abrirFolha("fConfig"); setTimeout(function () { $("oNome").blur(); }, 90); });
+  $("oOk").addEventListener("click", function () {
+    var n = $("oNome").value.trim().slice(0, 30), e2 = $("oEu").value.trim().slice(0, 20);
+    if (e2) { eu = e2; lsSet("compras.eu", eu); }
+    if (n && n !== nomeLista) { nomeLista = n; var l = achaLista(codigo); if (l) { l.nome = n; salvarListas(); } nuvem({ m: "PUT", p: "/nome", b: n }); }
+    fecharFolhas(); desenhar();
+  });
+  $("oSair").addEventListener("click", function () {
+    if (!confirm("Tirar a lista \"" + nomeLista + "\" deste aparelho? Ela continua existindo pros outros, e dá pra voltar com o código " + codigo + ".")) return;
+    listas = listas.filter(function (l) { return l.codigo !== codigo; }); salvarListas();
+    lsDel("compras.itens." + codigo); lsDel("compras.fila." + codigo);
+    fecharFolhas(); $("bVoltar").click();
+  });
+
+  // ---------- desenhar ----------
+  function agrupar() {
+    var por = {}, ok = [];
+    for (var id in itens) { var it = itens[id]; it._id = id; if (it.ok) ok.push(it); else { var c = catNome[it.c] ? it.c : "casa"; (por[c] = por[c] || []).push(it); } }
+    var gs = [];
+    CATS.forEach(function (c) { if (por[c[0]]) { por[c[0]].sort(function (a, b) { return (a.t || 0) - (b.t || 0); }); gs.push({ cat: c[0], itens: por[c[0]] }); } });
+    if (ok.length) { ok.sort(function (a, b) { return (b.okt || 0) - (a.okt || 0); }); gs.push({ cat: "ok", itens: ok }); }
+    return gs;
+  }
+  function htmlItem(it) {
+    var sub = [];
+    if (it.quem) sub.push("pediu: " + esc(it.quem));
+    if (it.ok) sub.push("🛒 " + esc(it.okq || "alguém") + " · " + quando(it.okt)); else if (it.t) sub.push(quando(it.t));
+    return '<div class="item' + (it.ok ? " ok" : "") + '"><button class="check' + (it.ok ? " on" : "") + '" data-check="' + it._id + '" aria-label="marcar">' + (it.ok ? "✓" : "") + '</button>' +
+      '<button class="meio" data-edit="' + it._id + '"><span class="nome">' + esc(it.n) + (it.q ? ' <b>· ' + esc(it.q) + "</b>" : "") + '</span><span class="sub">' + sub.join(" · ") + "</span></button>" +
+      (it.p != null ? '<span class="preco">' + dinheiro(it.p) + "</span>" : "") + "</div>";
+  }
+  function desenhar() {
+    if (!codigo) return;
+    $("lNome").textContent = nomeLista;
+    var gs = agrupar(), h = "", total = 0, carrinho = 0, n = 0, nOk = 0, semPreco = 0;
+    gs.forEach(function (g) {
+      var soma = 0; g.itens.forEach(function (it) { if (it.p != null) soma += it.p; else semPreco++; n++; if (it.ok) { nOk++; carrinho += it.p || 0; } total += it.p || 0; });
+      h += '<div class="grupo"><h3>' + (g.cat === "ok" ? "✅ No carrinho" : esc(catNome[g.cat])) + "<span>" + g.itens.length + (soma ? " · " + dinheiro(soma) : "") + "</span></h3>" + g.itens.map(htmlItem).join("") + "</div>";
+    });
+    if (!n) h = '<div class="vazio"><span class="ico">🧺</span><b>Lista vazia</b>Escreve ali em cima o que tá faltando em casa.</div>';
+    $("itens").innerHTML = h;
+    var falta = n - nOk;
+    $("totTxt").textContent = falta ? falta + (falta === 1 ? " item pra comprar" : " itens pra comprar") : n ? "Tudo no carrinho! 🎉" : "0 itens";
+    $("totSub").textContent = total ? "mais ou menos " + dinheiro(total) + (carrinho ? " · no carrinho " + dinheiro(carrinho) : "") + (semPreco ? " (" + semPreco + " sem preço)" : "") : (nOk ? nOk + " no carrinho" : "põe o preço nos itens pra ver quanto vai dar");
+    $("bLimpar").disabled = !nOk;
+    desenharSugestoes();
+  }
+  function desenharSugestoes() {
+    var naLista = {}; for (var id in itens) naLista[itens[id].n.toLowerCase()] = 1;
+    var h = hist(), ks = Object.keys(h).sort(function (a, b) { return (h[b].v - h[a].v) || (h[b].t - h[a].t); });
+    var sugs = ks.filter(function (k) { return !naLista[k.toLowerCase()]; }).slice(0, 8);
+    var titulo = sugs.length ? "De novo?" : "Pra começar";
+    if (sugs.length < 8) SUGESTOES.forEach(function (s) { if (sugs.length < 8 && !naLista[s.toLowerCase()] && sugs.indexOf(s) < 0) sugs.push(s); });
+    $("sugest").innerHTML = sugs.length ? "<p>" + titulo + "</p><div class=\"chips\">" + sugs.map(function (s) { return '<button type="button" class="chip suave" data-sug="' + esc(s) + '">+ ' + esc(s) + "</button>"; }).join("") + "</div>" : "";
+    $("dlItens").innerHTML = ks.slice(0, 100).map(function (k) { return '<option value="' + esc(k) + '">'; }).join("");
+  }
+
+  // ---------- instalar ----------
+  var promptInstalar = null;
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); promptInstalar = e; $("instalar").style.display = "block"; });
+  $("instalar").addEventListener("click", function () { if (!promptInstalar) return; promptInstalar.prompt(); promptInstalar = null; $("instalar").style.display = "none"; });
+  if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(function () {});
+
+  // ---------- começo ----------
+  desenharInicio();
+  var doLink = lerCodigo(location.hash);
+  if (doLink) {
+    if (!achaLista(doLink)) { listas.unshift({ codigo: doLink, nome: "Lista" }); salvarListas(); }
+    if (!eu) { toast("Diz quem é você e a lista abre 👇"); window.__abrirDepois = doLink; }
+    else abrirLista(doLink);
+  }
+  if (window.__abrirDepois) {
+    var ver = function () { if (eu && window.__abrirDepois) { var c = window.__abrirDepois; window.__abrirDepois = null; abrirLista(c); } };
+    $("eusChips").addEventListener("click", function () { setTimeout(ver, 50); });
+    $("euOutro").addEventListener("change", ver);
+  }
+})();
+</script>
+</body>
+</html>
