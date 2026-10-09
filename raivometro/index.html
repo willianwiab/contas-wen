@@ -459,6 +459,36 @@ input.sr:focus-visible + *, label.btn:focus-within { outline: 3px solid var(--be
 
 @media (max-width: 640px) { .nav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 10px; } .nav::-webkit-scrollbar { display: none; } .nav a, .nav .ico { flex: none; } }
 body:not(.rede-on) .mandar-btn { display: none; }
+/* Top 10 */
+.top10 { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: top; }
+.top10 li { counter-increment: top; }
+.top10 button, .desonra button.ver {
+  width: 100%; display: grid; grid-template-columns: 44px 72px minmax(0, 1fr); gap: 12px; align-items: center; text-align: left;
+  font: inherit; color: var(--fg); background: var(--surface); border: 3px solid var(--fg); border-radius: 16px; padding: 8px 12px 8px 8px; cursor: pointer;
+  box-shadow: 4px 4px 0 var(--fg); transition: transform .12s, box-shadow .12s;
+}
+.top10 button:hover, .desonra button.ver:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--fg); }
+.top10 button:focus-visible, .desonra button.ver:focus-visible { outline: 3px solid var(--beak); outline-offset: 3px; }
+.top10 .pos { font-family: var(--display); font-size: 1.6rem; line-height: 1; text-align: center; color: var(--red); }
+.top10 li:nth-child(1) .pos { font-size: 2.2rem; }
+.top10 li:nth-child(1) button { background: var(--beak); color: var(--beak-ink); box-shadow: 6px 6px 0 var(--red); }
+.top10 li:nth-child(1) .pos { color: var(--beak-ink); }
+.top10 img, .desonra img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; border: 2px solid var(--fg); background: var(--bg); }
+.top10 .txt, .desonra .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.top10 .txt b, .desonra .txt b { font-family: var(--display); font-weight: 400; font-size: 1.02rem; line-height: 1.15; overflow-wrap: anywhere; }
+.top10 .txt span, .desonra .txt span { font-size: .85rem; line-height: 1.4; color: var(--muted); }
+.top10 li:nth-child(1) .txt span { color: var(--beak-ink); }
+.top10 .txt small { font-size: .72rem; font-weight: 800; color: var(--muted); }
+.desonra { display: flex; flex-direction: column; gap: 10px; background: var(--fg); color: var(--bg); border-radius: 18px; padding: 14px; transform: rotate(-.6deg); }
+.desonra .desonra-txt { display: flex; flex-direction: column; gap: 6px; }
+.desonra .desonra-txt b { font-family: var(--display); font-weight: 400; font-size: 1.2rem; }
+.desonra .desonra-txt span:last-child { font-size: .92rem; line-height: 1.5; }
+.desonra .desonra-txt .pill { align-self: flex-start; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+.desonra button.ver { grid-template-columns: 72px minmax(0, 1fr); }
+.desonra button.ver img { filter: grayscale(1) blur(2px); transition: filter .3s; }
+.desonra button.ver:hover img, .desonra button.ver:focus-visible img { filter: none; }
+@media (max-width: 380px) { .top10 button { grid-template-columns: 34px 60px minmax(0, 1fr); gap: 8px; } .top10 img { width: 60px; height: 60px; } }
+
 /* Confete de penas e modo fúria */
 .pena { position: fixed; top: -30px; z-index: 110; pointer-events: none; font-size: 24px; animation: cai var(--d, 2.5s) linear forwards; }
 @keyframes cai { to { transform: translate(var(--x, 0), 110vh) rotate(var(--r, 360deg)); } }
@@ -500,6 +530,7 @@ body.furia { background-color: #ffb3b0; }
     <a href="#crie">Crie a sua</a>
     <a href="#pintinho">Pintinho</a>
     <a href="#video">Vídeo</a>
+    <a href="#top10">Top 10</a>
     <a href="#mural">Mural</a>
     <button type="button" class="ico" id="som" aria-pressed="false" aria-label="Ligar som" title="Som">🔇</button>
     <button type="button" class="ico" id="tema" aria-label="Trocar tema claro ou escuro" title="Tema">🌙</button>
@@ -819,6 +850,31 @@ body.furia { background-color: #ffb3b0; }
       <span class="play" aria-hidden="true"></span>
       <span class="vid-txt"><strong>Assistir ao vídeo</strong><span>youtube.com/shorts/uqO3a1_yyVA</span></span>
     </a>
+  </section>
+
+  <section class="mural-sec top-sec">
+    <h2 id="top10">Top 10 da redação</h2>
+    <p>Os memes favoritos da redação, do primeiro ao décimo. Toque em um deles para ver no mural, reagir e comentar.</p>
+    <ol class="top10" id="lista-top">
+      <li data-n="90"><b>Vendendo ar por duas esmeraldas</b><span>A tela do jogo é a pergunta, e o empresário no pufe é a resposta.</span></li>
+      <li data-n="76"><b>Garydos</b><span>É só uma cabeça colada numa serpente, e o nome faz o resto do trabalho.</span></li>
+      <li data-n="31"><b>É só adicionar água</b><span>Para fazer água em pó, você precisa de água. Perfeito.</span></li>
+      <li data-n="80"><b>Todo mundo ama o Cris</b><span>Inverteram as cores e, de quebra, inverteram o título.</span></li>
+      <li data-n="14"><b>O lançamento mais caro do ano</b><span>A mancha nas costas do cachorro virou logotipo.</span></li>
+      <li data-n="27"><b>A pegadinha das vogais</b><span>Você só percebe a armadilha depois de falar em voz alta.</span></li>
+      <li data-n="78"><b>Corra atrás do seu sonho</b><span>A frase motivacional levada ao pé da letra, com pernas e açúcar.</span></li>
+      <li data-n="17"><b>Falta só uma letra</b><span>Do Nemo para o emo, uma letra muda o peixe inteiro.</span></li>
+      <li data-n="55"><b>Você tinha um único trabalho</b><span>O rabo de raio foi parar no alto da cabeça.</span></li>
+      <li data-n="3"><b>A resposta é a B e todo mundo sabe</b><span>A alternativa mais dramática da história das provas do terceiro ano.</span></li>
+    </ol>
+    <p class="hint">Quase entraram: #39 (capturado no banheiro) e #85 (Ratachu).</p>
+    <div class="desonra" id="desonra" data-n="22">
+      <div class="desonra-txt">
+        <span class="pill">Menção desonrosa</span>
+        <b>A porquinha que só existe de lado</b>
+        <span>O meme que a redação menos gostou de olhar. Não é ruim: é assustador. Os dois olhos do mesmo lado e as narinas na testa ficaram na cabeça da equipe a noite inteira. Ele merece o seu lugar no mural, mas a gente prefere passar rápido por ele.</span>
+      </div>
+    </div>
   </section>
 
   <section class="mural-sec">
@@ -1976,6 +2032,43 @@ $("aleatorio").addEventListener("click", () => {
   beep(660, 0.06, "sine"); beep(990, 0.08, "sine", 0.05, 0.07);
 });
 pintaMural();
+
+/* ---------- Top 10 da redação ---------- */
+function irParaMeme(n) {
+  const card = document.getElementById("meme-" + n);
+  if (!card) return;
+  if (card.hidden) { busca.value = ""; favs.setAttribute("aria-pressed", "false"); filtra(); }
+  card.scrollIntoView({ behavior: reduz ? "auto" : "smooth", block: "center" });
+  card.classList.remove("brilho"); void card.offsetWidth; card.classList.add("brilho");
+  beep(660, 0.06, "sine");
+}
+function botaoMeme(n, pos, titulo, motivo) {
+  const card = document.getElementById("meme-" + n);
+  const b = document.createElement("button"); b.type = "button";
+  if (pos != null) { const p = document.createElement("span"); p.className = "pos"; p.textContent = pos; p.setAttribute("aria-hidden", "true"); b.appendChild(p); }
+  const im = document.createElement("img"); im.alt = ""; im.loading = "lazy";
+  const src = card?.querySelector(":scope > img")?.src; if (src) im.src = src;
+  const t = document.createElement("span"); t.className = "txt";
+  const tb = document.createElement("b"); tb.textContent = titulo;
+  const ts = document.createElement("span"); ts.textContent = motivo;
+  const tn = document.createElement("small"); tn.textContent = "Meme #" + n + " · ver no mural";
+  t.append(tb, ts, tn);
+  b.append(im, t);
+  b.setAttribute("aria-label", (pos != null ? pos + "º lugar: " : "") + titulo + ". Ver no mural, meme número " + n);
+  b.addEventListener("click", () => irParaMeme(n));
+  return b;
+}
+document.querySelectorAll("#lista-top li").forEach((li, i) => {
+  const titulo = li.querySelector("b").textContent, motivo = li.querySelector("span").textContent;
+  li.textContent = "";
+  li.appendChild(botaoMeme(li.dataset.n, i + 1, titulo, motivo));
+});
+(() => {
+  const d = $("desonra");
+  const b = botaoMeme(d.dataset.n, null, "Ver mesmo assim", "A imagem fica borrada até você chegar perto. Coragem.");
+  b.className = "ver";
+  d.appendChild(b);
+})();
 
 /* ============ Rede do Raivômetro ============ */
 const LINK = "https://claude.ai/artifact/41xCEn2a2XcsN62xhMoryE";
