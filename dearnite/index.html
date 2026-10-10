@@ -206,6 +206,11 @@ dialog::backdrop{background:rgba(10,5,30,.65);backdrop-filter:blur(3px)}
 :root[data-tema="escuro"] .aviso{background:#3a2d0c;border-color:#7a5e05;color:#ffe9a8}
 @media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .aviso{background:#3a2d0c;border-color:#7a5e05;color:#ffe9a8}}
 details summary{cursor:pointer;color:var(--roxo);font-weight:600}
+.video{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;cursor:pointer}
+.video img,.video iframe{width:100%;height:100%;object-fit:cover;display:block;border:0}
+.video .tocar{position:absolute;inset:0;margin:auto;width:72px;height:72px;border-radius:50%;background:var(--vb);color:#2a1d00;font-size:2rem;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 0 var(--vb-sombra)}
+.conjunto{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:8px}
+.conjunto .carta .nome{font-size:.82rem}
 .datas{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .datas span{font-size:.8rem;background:var(--cartao3);border-radius:8px;padding:3px 8px}
 .acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
@@ -424,7 +429,7 @@ const API = 'https://fortnite-api.com/v2';
    responseFlags é uma soma (2 = gameplayTags, 4 = shopHistory). Sem isso
    todo item parecia "nunca vendido". */
 const FLAGS = '&responseFlags=6';
-const VERSAO_CATALOGO = 'catalogo-v2';   // muda quando o formato guardado muda, pra jogar o cache velho fora
+const VERSAO_CATALOGO = 'catalogo-v3';   // muda quando o formato guardado muda, pra jogar o cache velho fora
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -555,9 +560,36 @@ const AVISO_DINHEIRO = '⚠️ <b>Esse valor em reais é só curiosidade:</b> é
   'E nunca dê sua senha pra quem prometer V-Bucks de graça. V-Bucks de graça não existe.';
 
 /* ---------- raridade de ver um player com ela ----------
-   Ninguém tem o número de quantos jogadores têm cada skin. Mas dá pra
-   chutar bem: quanto menos vezes foi vendida, há quanto tempo sumiu e se
-   só saiu em passe/evento antigo, menos gente tem. Vai de 1 a 5 estrelas. */
+   Ninguém tem o número de quantos jogadores têm cada skin. Então cada item
+   ganha uma NOTA (quanto maior, menos gente tem): poucas vezes na loja e
+   muito tempo sumida sobem a nota; nunca vendida e de capítulo antigo sobe
+   mais ainda. Depois a régua é COMPARADA com o catálogo inteiro: as 10%
+   notas mais altas são 5 estrelas, as 20% seguintes 4, as 30% do meio 3,
+   as 25% seguintes 2 e as 15% mais baixas 1. Assim as estrelas se espalham,
+   em vez de todo mundo cair no meio. */
+let CORTES = null;   // notas de corte [c2, c3, c4, c5], calculadas quando o catálogo carrega
+function notaDeVer(it){
+  const vezes = it.hist.length;
+  if(vezes){
+    const anos = (diasDesde(it.hist[it.hist.length - 1]) || 0) / 365;
+    return 5 - Math.log2(1 + vezes) + 0.8 * anos;
+  }
+  const idade = diasDesde(it.add);
+  if(idade != null && idade < 120) return 1.5;          // acabou de sair, ainda dá pra conseguir
+  const cap = parseFloat(it.cap) || 0;
+  const fonte = it.fonte.join(' ').toLowerCase();
+  let n = 6 + Math.min(idade == null ? 2 : idade / 365, 6) * 0.5;
+  if(cap && cap <= 1) n += 4; else if(cap && cap <= 3) n += 2;
+  if(/playstation|xbox|nintendo|celular|promo/.test(fonte)) n += 3;
+  return n;
+}
+function calcularCortes(){
+  const notas = ITENS.map(notaDeVer).sort((a, b) => a - b);
+  if(!notas.length){ CORTES = null; return; }
+  const q = f => notas[Math.min(notas.length - 1, Math.floor(f * notas.length))];
+  CORTES = [q(0.15), q(0.40), q(0.70), q(0.90)];
+  ITENS.forEach(it => { delete it._rv; });
+}
 function raridadeDeVer(it){
   if(it._rv) return it._rv;   // guardado no item: o catálogo tem milhares e a ordenação chama isso muitas vezes
   return (it._rv = calcularRaridadeDeVer(it));
@@ -569,19 +601,18 @@ function calcularRaridadeDeVer(it){
   const cap = parseFloat(it.cap) || 0;
   const fonte = it.fonte.join(' ').toLowerCase();
   let n, por;
+  const nota = notaDeVer(it);
+  if(!CORTES) n = 3; else n = nota >= CORTES[3] ? 5 : nota >= CORTES[2] ? 4 : nota >= CORTES[1] ? 3 : nota >= CORTES[0] ? 2 : 1;
   if(LOJA.has(it.id)){ n = 1; por = 'Está na loja agora: qualquer um pode comprar hoje.'; }
   else if(!vezes){
-    if(idade != null && idade < 120){ n = 2; por = 'Saiu faz pouco tempo e ainda dá pra conseguir (passe, missão ou evento que está rolando).'; }
-    else if(/playstation|xbox|nintendo|celular|promo/.test(fonte)){ n = 5; por = 'Foi de graça só pra quem tinha ' + (/playstation/.test(fonte) ? 'PlayStation Plus' : 'uma coisa específica') + ' na época, e nunca mais apareceu. Quase ninguém tem.'; }
-    else if(cap && cap <= 1){ n = 5; por = 'É do Capítulo 1 e nunca foi vendida. Só quem jogava no começo do Fortnite tem — ver uma dessas na partida é evento.'; }
-    else if(cap && cap <= 3){ n = 4; por = 'Veio de passe ou evento do Capítulo ' + it.cap + ' e nunca foi vendida. Quem não jogou naquela época não tem.'; }
-    else { n = 3; por = 'Nunca foi vendida: veio de passe, missão ou evento. Quem jogou na época tem, quem não jogou não consegue mais.'; }
+    if(idade != null && idade < 120) por = 'Saiu faz pouco tempo e ainda dá pra conseguir (passe, missão ou evento que está rolando).';
+    else if(/playstation|xbox|nintendo|celular|promo/.test(fonte)) por = 'Foi de graça só pra quem tinha ' + (/playstation/.test(fonte) ? 'PlayStation Plus' : 'uma coisa específica') + ' na época, e nunca mais apareceu. Quase ninguém tem.';
+    else if(cap && cap <= 1) por = 'É do Capítulo 1 e nunca foi vendida. Só quem jogava no começo do Fortnite tem — ver uma dessas na partida é evento.';
+    else if(cap && cap <= 3) por = 'Veio de passe ou evento do Capítulo ' + it.cap + ' e nunca foi vendida. Quem não jogou naquela época não tem.';
+    else por = 'Nunca foi vendida: veio de passe, missão ou evento. Quem jogou na época tem, quem não jogou não consegue mais.';
   }
-  else if(vezes <= 2 && ultima > 730){ n = 5; por = 'Só apareceu ' + vezes + ' vez' + (vezes > 1 ? 'es' : '') + ' na loja e sumiu ' + tempoBonito(ultima) + '. Pouquíssima gente tem.'; }
-  else if(vezes <= 6 && ultima > 365){ n = 4; por = 'Apareceu só ' + vezes + ' vezes e a última foi ' + tempoBonito(ultima) + '. É rara de ver numa partida.'; }
-  else if(vezes <= 15 || ultima > 365){ n = 3; por = 'Apareceu ' + vezes + ' vezes na loja, a última ' + tempoBonito(ultima) + '. Dá pra ver de vez em quando.'; }
-  else if(vezes <= 40){ n = 2; por = 'Já voltou pra loja ' + vezes + ' vezes. Bastante gente tem.'; }
-  else { n = 1; por = 'Já voltou pra loja ' + vezes + ' vezes! Todo mundo tem, aparece em toda partida.'; }
+  else por = 'Apareceu ' + vezes + ' vez' + (vezes > 1 ? 'es' : '') + ' na loja, a última ' + tempoBonito(ultima) + '. ' +
+    (n >= 4 ? 'Comparando com todas as skins do jogo, essa está entre as mais raras de ver.' : n === 3 ? 'Fica no meio da tabela: dá pra ver de vez em quando.' : 'Bastante gente tem.');
   const NOMES = { 1:'Todo mundo tem', 2:'Comum de ver', 3:'Rara de ver', 4:'Muito rara', 5:'Raríssima — quase ninguém tem' };
   return { n, nome:NOMES[n], por, estrelas:'★'.repeat(n) + '☆'.repeat(5 - n) };
 }
@@ -654,6 +685,8 @@ function enxugarBR(x){
     img: img.smallIcon || img.icon || '', grande: img.featured || img.icon || img.smallIcon || '',
     add:x.added || '', hist:Array.isArray(x.shopHistory) ? x.shopHistory : [],
     fonte:fonteDe(x.gameplayTags), cat:'br',
+    tags:Array.isArray(x.searchTags) ? x.searchTags.join(' ') : '',
+    video:x.showcaseVideo || '',
   };
 }
 function enxugarOutro(x, cat){
@@ -667,7 +700,7 @@ function enxugarOutro(x, cat){
     cap:'', temp:'', intro:'',
     img: img.small || x.albumArt || img.large || '', grande: img.large || img.wide || x.albumArt || img.small || '',
     add:x.added || '', hist:Array.isArray(x.shopHistory) ? x.shopHistory : [],
-    fonte:fonteDe(x.gameplayTags), cat,
+    fonte:fonteDe(x.gameplayTags), cat, video:x.showcaseVideo || '',
   };
 }
 
@@ -743,15 +776,35 @@ async function carregarLoja(){
       if(!atual || (atual.pacote && !novo.pacote)) LOJA.set(x.id, novo);
     });
   });
-  ITENS.forEach(it => { delete it._rv; });   // "está na loja agora" muda a raridade de ver
+  calcularCortes();   // "está na loja agora" muda a raridade de ver
   renderLoja(dados.loja);
   render();
 }
 
 /* ---------- preparo: índices, filtros ---------- */
 const normal = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+/* Cada item ganha três textos pra busca: nome (n), conjunto (c) e o resto
+   (x = tags de busca + descrição), pra "copa" achar a bola da Copa mesmo
+   que o nome dela seja só "Bola de Futebol". */
+function indexar(it){ it.tags = it.tags || ''; it.n = normal(it.nome); it.c = normal(it.conjunto); it.x = normal(it.tags + ' ' + (it.desc || '')); }
+/* Palavras que criança usa e o jogo não: cada palavra da busca vale também
+   pelas parceiras dela. A busca casa palavra por palavra: todas as palavras
+   têm que aparecer em algum lugar do item (nome, conjunto, tags ou descrição). */
+const APELIDOS = { fifa:['copa','futebol','soccer','world cup'], copa:['futebol','soccer','world cup','fifa'], bola:['futebol','soccer','ball'], futebol:['soccer','fifa','copa'], neymar:['futebol'], skin:['traje'], dance:['gesto'], danca:['gesto'], emote:['gesto'], mochila:['costas'], carro:['carroceria'] };
+function alternativas(q){
+  return q.split(' ').filter(Boolean).map(w => Array.from(new Set([w].concat(APELIDOS[w] || []))));
+}
+function bate(it, palavras){ // 3 = tudo no nome, 2 = nome+conjunto, 1 = em qualquer lugar, 0 = não
+  if(!palavras.length) return 3;
+  const todas = alts => palavras.every(p => p.some(a => alts.includes(a)));
+  if(todas(it.n)) return 3;
+  if(todas(it.n + ' ' + it.c)) return 2;
+  if(todas(it.n + ' ' + it.c + ' ' + it.x + ' ' + it.id.toLowerCase())) return 1;
+  return 0;
+}
 function prepararCatalogo(){
-  POR_ID = new Map(); ITENS.forEach(it => { it.n = normal(it.nome); it.c = normal(it.conjunto); POR_ID.set(it.id, it); });
+  POR_ID = new Map(); ITENS.forEach(it => { indexar(it); POR_ID.set(it.id, it); });
+  calcularCortes();
   // chips de tipo, agrupados
   const porGrupo = {}; const conta = {};
   ITENS.forEach(it => { conta[it.tipo] = (conta[it.tipo] || 0) + 1; });
@@ -791,7 +844,7 @@ function precoDe(it){
 
 /* ---------- filtros e ordem ---------- */
 function aplicarFiltros(){
-  const q = normal($('#campo').value);
+  const q = normal($('#campo').value); const alts = alternativas(q);
   const rar = $('#selRaridade').value, cap = $('#selCapitulo').value, ordem = $('#selOrdem').value;
   const soLoja = $('#chkLoja').checked, soNunca = $('#chkNunca').checked, ver = parseInt($('#selVer').value, 10) || 0;
   filtrados = ITENS.filter(it => {
@@ -801,7 +854,7 @@ function aplicarFiltros(){
     if(ver && raridadeDeVer(it).n !== ver) return false;
     if(soLoja && !LOJA.has(it.id)) return false;
     if(soNunca && it.hist.length) return false;
-    if(q && !(it.n.includes(q) || it.c.includes(q) || it.id.toLowerCase().includes(q))) return false;
+    if(q && !bate(it, alts)) return false;
     return true;
   });
   const col = new Intl.Collator('pt-BR');
@@ -817,8 +870,8 @@ function aplicarFiltros(){
     caras:(a, b) => precoDe(b).vb - precoDe(a).vb || col.compare(a.nome, b.nome),
     baratas:(a, b) => precoDe(a).vb - precoDe(b).vb || col.compare(a.nome, b.nome),
   };
-  if(q){ // quem começa com o que foi digitado vem primeiro
-    filtrados.sort((a, b) => (b.n.startsWith(q) - a.n.startsWith(q)) || ordens[ordem](a, b));
+  if(q){ // quem bate no nome vem antes de quem bate só na descrição; quem começa com o texto, antes ainda
+    filtrados.sort((a, b) => (bate(b, alts) - bate(a, alts)) || (b.n.startsWith(q) - a.n.startsWith(q)) || ordens[ordem](a, b));
   } else filtrados.sort(ordens[ordem] || ordens.nome);
 }
 
@@ -862,7 +915,7 @@ async function buscarEmIngles(texto){
     const j = await r.json();
     const lista = Array.isArray(j.data) ? j.data : [];
     let novos = 0;
-    lista.forEach(x => { try{ const it = enxugarBR(x); if(!POR_ID.has(it.id)){ it.n = normal(it.nome); it.c = normal(it.conjunto); ITENS.push(it); POR_ID.set(it.id, it); novos++; } }catch(e){} });
+    lista.forEach(x => { try{ const it = enxugarBR(x); if(!POR_ID.has(it.id)){ indexar(it); ITENS.push(it); POR_ID.set(it.id, it); novos++; } }catch(e){} });
     filtrados = lista.map(x => POR_ID.get(x.id)).filter(Boolean);
     mostrados = 0; $('#grade').innerHTML = ''; maisPagina();
     $('#contador').textContent = filtrados.length ? 'Achei ' + filtrados.length + ' pelo nome em inglês "' + q + '":' : 'Nada com esse nome, nem em inglês. Confere a escrita?';
@@ -940,6 +993,29 @@ function detalheHTML(it){
     '<button class="btn pequeno ' + (armario.has(it.id) ? 'verde' : 'leve') + '" data-acao="tenho">' + (armario.has(it.id) ? '🎒 Tenho! (tirar do armário)' : '🎒 Eu tenho essa') + '</button>' +
     '<button class="btn pequeno ' + (favs.has(it.id) ? 'vermelho' : 'leve') + '" data-acao="fav">' + (favs.has(it.id) ? '❤️ Favorita (tirar)' : '🤍 Quero essa') + '</button></div>';
 
+  // 🎬 gesto / música / item tocando: vídeo oficial, quando a API tem. Só carrega quando a pessoa toca.
+  const yt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent('Fortnite ' + (it.nome || '') + ' ' + T.nome);
+  if(it.video){
+    html += '<div class="bloco"><h3>🎬 Vendo ' + esc(T.nome.toLowerCase()) + ' em ação</h3>' +
+      '<div class="video" data-video="' + esc(it.video) + '"><img src="https://i.ytimg.com/vi/' + esc(it.video) + '/hqdefault.jpg" alt="" /><span class="tocar">▶</span></div>' +
+      '<p class="fraco" style="margin-top:6px">O vídeo é do YouTube. Se a música tiver direitos autorais, o YouTube mesmo tira o som ou troca por outro — por isso às vezes o áudio sai diferente do jogo.</p>' +
+      '<p style="margin-top:4px"><a href="' + yt + '" target="_blank" rel="noopener">Procurar mais vídeos no YouTube ↗</a></p></div>';
+  } else if(['emote','music','track','toy','spray','emoji','shout'].includes(it.tipo) || it.cat === 'tracks'){
+    html += '<div class="bloco"><h3>🎬 Vendo em ação</h3><p>A API não tem o vídeo oficial desse item, mas o YouTube tem gente mostrando.</p>' +
+      '<p style="margin-top:6px"><a class="btn pequeno roxo" style="display:inline-block;text-decoration:none" href="' + yt + '" target="_blank" rel="noopener">▶ Procurar no YouTube</a></p></div>';
+  }
+
+  // 🧩 conjunto: tudo que vem junto com ela
+  if(it.conjunto){
+    const irmaos = ITENS.filter(x => x.c === it.c && x.id !== it.id);
+    if(irmaos.length){
+      const colS = new Intl.Collator('pt-BR');
+      irmaos.sort((a, b) => (a.tipo === 'outfit' ? 0 : 1) - (b.tipo === 'outfit' ? 0 : 1) || colS.compare(a.nome, b.nome));
+      html += '<div class="bloco"><h3>🧩 Conjunto ' + esc(it.conjunto) + '</h3><p class="fraco">' + irmaos.length + ' outro' + (irmaos.length > 1 ? 's' : '') + ' item' + (irmaos.length > 1 ? 's' : '') + ' do mesmo conjunto. Toca pra abrir.</p>' +
+        '<div class="conjunto">' + irmaos.map(x => '<button class="carta" data-id="' + esc(x.id) + '" style="--cor-rar:' + raridadeDe(x).cor + '"><div class="foto">' + (x.img ? '<img loading="lazy" src="' + esc(x.img) + '" alt="" />' : '<span class="sem">' + tipoDe(x.tipo).emoji + '</span>') + '</div><div class="info"><div class="nome">' + esc(x.nome) + '</div><div class="tipo">' + esc(tipoDe(x.tipo).nome) + '</div></div></button>').join('') + '</div></div>';
+    }
+  }
+
   html += '<div class="bloco"><h3>📅 Quando saiu</h3><ul>' +
     (it.intro ? '<li>' + esc(it.intro) + '</li>' : (it.cap ? '<li>Capítulo ' + esc(it.cap) + (it.temp ? ', Temporada ' + esc(it.temp) : '') + '</li>' : '')) +
     (it.add ? '<li>Entrou nos arquivos do jogo em <b>' + dataBR(it.add) + '</b> (' + tempoBonito(diasDesde(it.add)) + ')</li>' : '') +
@@ -957,7 +1033,7 @@ function detalheHTML(it){
 
   const rv = raridadeDeVer(it);
   html += '<div class="bloco"><h3>👀 Raridade de ver um player com ela</h3><p class="destaque" style="color:' + R.cor + '">' + rv.estrelas + ' ' + esc(rv.nome) + '</p><p>' + esc(rv.por) + '</p>' +
-    '<p class="fraco" style="margin-top:6px">Isso é um chute bem feito: ninguém tem o número exato de quantos jogadores têm cada skin. A conta usa quantas vezes ela foi pra loja, há quanto tempo sumiu e de onde ela veio.</p></div>';
+    '<p class="fraco" style="margin-top:6px">Isso é um chute bem feito: ninguém tem o número exato de quantos jogadores têm cada skin. A nota usa quantas vezes ela foi pra loja, há quanto tempo sumiu e de onde ela veio, e as estrelas comparam essa nota com todos os cosméticos do jogo (5 estrelas = as 10% mais raras).</p></div>';
   html += blocoPreco(it);
   html += '<p class="fraco">Código: ' + esc(it.id) + '</p></div>';
   return html;
@@ -970,6 +1046,8 @@ function abrirDetalhe(id){
 $('#detalhe').addEventListener('click', ev => {
   const d = $('#detalhe'); const id = d.dataset.id;
   if(ev.target.id === 'btnFechar'){ d.close(); return; }
+  const v = ev.target.closest('.video[data-video]');
+  if(v){ v.outerHTML = '<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(v.dataset.video) + '?autoplay=1&rel=0" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'; return; }
   const b = ev.target.closest('[data-acao]');
   if(b){
     if(b.dataset.acao === 'tenho') alternar(armario, id, 'dearnite-armario');
@@ -1207,7 +1285,8 @@ let manualIngles = null;
 $('#campoManual').addEventListener('input', () => {
   const q = normal($('#campoManual').value); const g = $('#gradeManual');
   if(q.length < 2){ g.innerHTML = ''; return; }
-  const achou = ITENS.filter(it => it.n.includes(q)).sort((a, b) => (b.n.startsWith(q) - a.n.startsWith(q)) || (b.tipo === 'outfit') - (a.tipo === 'outfit')).slice(0, 24);
+  const alts = alternativas(q);
+  const achou = ITENS.filter(it => bate(it, alts)).sort((a, b) => (bate(b, alts) - bate(a, alts)) || (b.n.startsWith(q) - a.n.startsWith(q)) || (b.tipo === 'outfit') - (a.tipo === 'outfit')).slice(0, 24);
   g.innerHTML = achou.map(it => cartaHTML(it)).join('') || '<p class="fraco">Nada com esse nome em português. Procurando em inglês…</p>';
   if(!achou.length && q.length >= 3){
     clearTimeout(manualIngles);
@@ -1215,7 +1294,7 @@ $('#campoManual').addEventListener('input', () => {
       try{
         const r = await fetch(API + '/cosmetics/br/search/all?name=' + encodeURIComponent($('#campoManual').value.trim()) + '&matchMethod=contains&searchLanguage=en&language=pt-BR' + FLAGS, { headers:{ Accept:'application/json' } });
         const lista = r.ok ? ((await r.json()).data || []) : [];
-        const its = lista.map(x => { const it = enxugarBR(x); if(!POR_ID.has(it.id)){ it.n = normal(it.nome); it.c = normal(it.conjunto); ITENS.push(it); POR_ID.set(it.id, it); } return POR_ID.get(it.id); }).slice(0, 24);
+        const its = lista.map(x => { const it = enxugarBR(x); if(!POR_ID.has(it.id)){ indexar(it); ITENS.push(it); POR_ID.set(it.id, it); } return POR_ID.get(it.id); }).slice(0, 24);
         if(normal($('#campoManual').value) === q) g.innerHTML = its.map(it => cartaHTML(it)).join('') || '<p class="fraco">Nada com esse nome, nem em inglês.</p>';
       }catch(e){ if(normal($('#campoManual').value) === q) g.innerHTML = '<p class="fraco">Nada em português, e não consegui procurar em inglês agora.</p>'; }
     }, 400);
