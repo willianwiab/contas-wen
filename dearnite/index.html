@@ -253,6 +253,10 @@ details summary{cursor:pointer;color:var(--roxo);font-weight:600}
 
 .mapa-caixa{margin-top:10px;border-radius:16px;border:1px solid var(--borda);background:#0b1a2e;overflow:auto;max-height:70vh;cursor:grab}
 .mapa-caixa img{display:block;width:100%;max-width:none;transition:width .15s}
+.carta.bon .foto{aspect-ratio:1/1}
+.carta.bon .x{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;font-size:.9rem}
+.sobe{color:var(--ok)} .desce{color:var(--erro)}
+.carta.escolhida{outline:3px solid var(--vb)}
 .jog-topo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .jog-topo h2{margin:0}
 .jog-topo .nivel{background:var(--vb);color:#2a1d00;font-weight:700;border-radius:999px;padding:6px 12px}
@@ -288,6 +292,7 @@ footer a{color:var(--roxo)}
   <button aria-pressed="false" data-aba="armario">🎒 Meu armário</button>
   <button aria-pressed="false" data-aba="jogador">🎮 Jogador</button>
   <button aria-pressed="false" data-aba="mapa">🗺️ Mapa</button>
+  <button aria-pressed="false" data-aba="bonecos">🧸 Meus bonecos</button>
   <button aria-pressed="false" data-aba="vbucks">💎 V-Bucks em reais</button>
 </nav>
 
@@ -388,7 +393,7 @@ footer a{color:var(--roxo)}
     <p class="fraco">Tudo que você marcou como "tenho". Marca pelo catálogo (botão dentro da skin) ou pela foto na aba "Quanto vale a minha conta?".</p>
     <div class="resumo" id="resumoArmario"></div>
     <div class="acoes" style="margin-top:12px">
-      <button class="btn pequeno leve" id="btnCodigo">📋 Gerar código pra levar pra outro aparelho</button>
+      <button class="btn pequeno leve" id="btnCodigo">📋 Gerar código pra levar pra outro aparelho (armário, favoritas e bonecos)</button>
       <button class="btn pequeno leve" id="btnColar">📥 Colar um código</button>
       <button class="btn pequeno leve" id="btnLimpar">🗑️ Esvaziar armário</button>
     </div>
@@ -456,6 +461,43 @@ footer a{color:var(--roxo)}
     <div class="mapa-caixa" id="mapaCaixa"><img id="mapaImg" alt="" referrerpolicy="no-referrer" decoding="async" /></div>
     <div class="chips" id="mapaLista"></div>
     <p class="fraco" style="margin-top:8px">Os nomes já vêm desenhados no mapa. Usa ➕ e ➖ pra dar zoom e arrasta pra andar. Missões não existem nessa API, só o mapa.</p>
+  </div>
+</section>
+
+<!-- ============ BONECOS ============ -->
+<section class="painel" id="painel-bonecos">
+  <div class="caixa">
+    <h2>🧸 Meus bonecos de verdade</h2>
+    <p>Boneco, pelúcia, Funko, chaveiro… do Fortnite que você tem na vida real. Não existe catálogo de preço desses pra eu puxar, então quem sabe é você: cadastra o que tem, quanto custou e quanto você acha que vale hoje. A foto vem da skin do catálogo.</p>
+    <div class="resumo" id="resumoBonecos" style="margin-top:12px"></div>
+    <h3>Cadastrar um</h3>
+    <div class="filtros" style="margin-top:4px">
+      <input id="bonNome" type="text" placeholder="Nome (ex: Peely de pelúcia)" style="flex:1 1 180px;min-width:0;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" />
+      <select id="bonTipo">
+        <option value="boneco">🧍 Boneco / action figure</option>
+        <option value="pelucia">🧸 Pelúcia</option>
+        <option value="funko">📦 Funko</option>
+        <option value="chaveiro">🔑 Chaveiro</option>
+        <option value="lego">🧱 LEGO</option>
+        <option value="outro">❔ Outro</option>
+      </select>
+    </div>
+    <div class="filtros">
+      <input id="bonSkin" type="search" placeholder="De qual skin é? (procura e toca)" autocomplete="off" style="flex:1 1 180px;min-width:0;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" />
+      <span class="fraco" id="bonSkinEscolhida">nenhuma skin escolhida</span>
+    </div>
+    <div class="grade" id="bonSkinLista" style="margin-top:6px;grid-template-columns:repeat(auto-fill,minmax(90px,1fr))"></div>
+    <div class="filtros">
+      <label class="fraco">Custou R$ <input id="bonPago" type="number" min="0" step="0.01" style="width:110px;padding:8px;border-radius:10px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" /></label>
+      <label class="fraco">Vale hoje R$ <input id="bonVale" type="number" min="0" step="0.01" style="width:110px;padding:8px;border-radius:10px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" /></label>
+      <label class="fraco"><input type="checkbox" id="bonRaro" /> acho que é raro / difícil de achar</label>
+      <button class="btn pequeno roxo" id="btnBonAdd">➕ Guardar</button>
+    </div>
+    <p class="fraco" style="margin-top:6px">Dica: pra saber quanto vale hoje, procura o nome dele num site de compras e olha o preço que está sendo vendido. Fica tudo só neste aparelho (vai junto no código do armário).</p>
+  </div>
+  <div class="caixa">
+    <h3 style="margin-top:0">Minha coleção</h3>
+    <div class="lista-armario" id="listaBonecos"></div>
   </div>
 </section>
 
@@ -1214,7 +1256,7 @@ function renderArmario(){
 $('#btnLimpar').addEventListener('click', () => { if(confirm('Esvaziar o armário? As favoritas ficam.')){ armario.clear(); gravarSet('dearnite-armario', armario); renderArmario(); render(); } });
 $('#btnCodigo').addEventListener('click', () => {
   const area = $('#codigoArea'); area.classList.remove('oculto'); $('#codigoAcoes').classList.add('oculto');
-  area.value = 'DN1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ a:Array.from(armario), f:Array.from(favs) }))));
+  area.value = 'DN1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ a:Array.from(armario), f:Array.from(favs), b:bonecos }))));
   area.select(); try{ document.execCommand('copy'); }catch(e){}
   $('#contaStatus').textContent = '';
 });
@@ -1222,11 +1264,65 @@ $('#btnColar').addEventListener('click', () => { const area = $('#codigoArea'); 
 $('#btnCodigoOk').addEventListener('click', () => {
   const v = $('#codigoArea').value.trim();
   if(!v.startsWith('DN1.')){ alert('Esse código não é do DearNite. Ele começa com DN1.'); return; }
-  try{ const o = JSON.parse(decodeURIComponent(escape(atob(v.slice(4))))); (o.a || []).forEach(id => armario.add(id)); (o.f || []).forEach(id => favs.add(id)); }
+  try{ const o = JSON.parse(decodeURIComponent(escape(atob(v.slice(4))))); (o.a || []).forEach(id => armario.add(id)); (o.f || []).forEach(id => favs.add(id)); (o.b || []).forEach(x => { if(x && x.id && !bonecos.some(y => y.id === x.id)) bonecos.push(x); }); gravarBonecos(bonecos); }
   catch(e){ alert('Código cortado ou quebrado. Copia ele inteiro de novo.'); return; }
-  gravarSet('dearnite-armario', armario); gravarSet('dearnite-favs', favs); renderArmario(); render();
+  gravarSet('dearnite-armario', armario); gravarSet('dearnite-favs', favs); renderArmario(); renderBonecos(); render();
   $('#codigoArea').classList.add('oculto'); $('#codigoAcoes').classList.add('oculto');
 });
+
+/* =====================================================================
+   🧸 MEUS BONECOS — brinquedo de verdade, cadastrado pela própria pessoa.
+   Não existe catálogo de preço de boneco que dê pra puxar, e inventar
+   preço seria mentir: então o site guarda o que a pessoa sabe.
+   ===================================================================== */
+function lerBonecos(){ try{ return JSON.parse(localStorage.getItem('dearnite-bonecos') || '[]'); }catch(e){ return []; } }
+function gravarBonecos(l){ try{ localStorage.setItem('dearnite-bonecos', JSON.stringify(l)); }catch(e){} }
+let bonecos = lerBonecos();
+let bonSkinId = '';
+const TIPOS_BON = { boneco:'🧍 Boneco', pelucia:'🧸 Pelúcia', funko:'📦 Funko', chaveiro:'🔑 Chaveiro', lego:'🧱 LEGO', outro:'❔ Outro' };
+$('#bonSkin').addEventListener('input', () => {
+  const q = normal($('#bonSkin').value); const g = $('#bonSkinLista');
+  if(q.length < 2){ g.innerHTML = ''; return; }
+  const alts = alternativas(q);
+  const achou = ITENS.filter(it => it.tipo === 'outfit' && bate(it, alts)).sort((a, b) => (b.n.startsWith(q) - a.n.startsWith(q))).slice(0, 12);
+  g.innerHTML = achou.map(it => '<button class="carta bon-skin' + (it.id === bonSkinId ? ' escolhida' : '') + '" data-skin="' + esc(it.id) + '" style="--cor-rar:' + raridadeDe(it).cor + '"><div class="foto">' + (it.img ? '<img loading="lazy" src="' + esc(it.img) + '" alt="" />' : '<span class="sem">🧍</span>') + '</div><div class="info"><div class="nome">' + esc(it.nome) + '</div></div></button>').join('') || '<p class="fraco">Nenhuma skin com esse nome.</p>';
+});
+$('#bonSkinLista').addEventListener('click', ev => {
+  const c = ev.target.closest('.bon-skin'); if(!c) return;
+  ev.stopPropagation();
+  bonSkinId = c.dataset.skin; const it = POR_ID.get(bonSkinId);
+  $('#bonSkinEscolhida').textContent = it ? '✅ ' + it.nome : 'nenhuma skin escolhida';
+  $$('#bonSkinLista .carta').forEach(x => x.classList.toggle('escolhida', x === c));
+  if(!$('#bonNome').value.trim() && it) $('#bonNome').value = it.nome + ' de ' + $('#bonTipo').selectedOptions[0].textContent.replace(/^\S+\s/, '').toLowerCase();
+}, true);
+$('#btnBonAdd').addEventListener('click', () => {
+  const nome = $('#bonNome').value.trim();
+  if(!nome){ alert('Dá um nome pro boneco.'); return; }
+  bonecos.push({ id:'b' + Date.now(), nome, tipo:$('#bonTipo').value, skin:bonSkinId, pago:parseFloat($('#bonPago').value) || 0, vale:parseFloat($('#bonVale').value) || 0, raro:$('#bonRaro').checked, quando:new Date().toISOString() });
+  gravarBonecos(bonecos);
+  $('#bonNome').value = ''; $('#bonPago').value = ''; $('#bonVale').value = ''; $('#bonRaro').checked = false; $('#bonSkin').value = ''; $('#bonSkinLista').innerHTML = ''; bonSkinId = ''; $('#bonSkinEscolhida').textContent = 'nenhuma skin escolhida';
+  renderBonecos();
+});
+function renderBonecos(){
+  const pago = bonecos.reduce((s, b) => s + (b.pago || 0), 0), vale = bonecos.reduce((s, b) => s + (b.vale || 0), 0);
+  const dif = vale - pago;
+  $('#resumoBonecos').innerHTML = bonecos.length ?
+    '<div><b>' + bonecos.length + '</b><small>bonecos</small></div><div><b>' + reais(pago) + '</b><small>custaram</small></div><div><b>' + reais(vale) + '</b><small>valem hoje (você que disse)</small></div>' +
+    '<div><b class="' + (dif > 0 ? 'sobe' : dif < 0 ? 'desce' : '') + '">' + (dif > 0 ? '▲ ' : dif < 0 ? '▼ ' : '') + reais(Math.abs(dif)) + '</b><small>' + (dif > 0 ? 'valorizou' : dif < 0 ? 'perdeu valor' : 'empatou') + '</small></div>' +
+    '<div><b>' + bonecos.filter(b => b.raro).length + '</b><small>que você acha raros</small></div>' :
+    '<div><b>0</b><small>nenhum boneco cadastrado ainda</small></div>';
+  $('#listaBonecos').innerHTML = bonecos.slice().reverse().map(b => {
+    const it = b.skin ? POR_ID.get(b.skin) : null; const d = (b.vale || 0) - (b.pago || 0);
+    return '<div class="carta bon" style="--cor-rar:' + (it ? raridadeDe(it).cor : 'var(--roxo)') + '"><button class="x" data-tirar="' + esc(b.id) + '" title="Tirar">✕</button>' +
+      '<div class="foto">' + (it && it.img ? '<img loading="lazy" src="' + esc(it.img) + '" alt="" />' : '<span class="sem">' + (TIPOS_BON[b.tipo] || '❔').slice(0, 2) + '</span>') + '</div>' +
+      '<div class="info"><div class="nome">' + esc(b.nome) + (b.raro ? ' ⭐' : '') + '</div><div class="tipo">' + esc(TIPOS_BON[b.tipo] || b.tipo) + (it ? ' · ' + esc(it.nome) : '') + '<br/>pagou ' + reais(b.pago || 0) + ' · vale ' + reais(b.vale || 0) + (d ? ' <span class="' + (d > 0 ? 'sobe' : 'desce') + '">' + (d > 0 ? '▲' : '▼') + '</span>' : '') + '</div></div></div>';
+  }).join('') || '<p class="fraco">Cadastra o primeiro ali em cima.</p>';
+}
+$('#listaBonecos').addEventListener('click', ev => {
+  const x = ev.target.closest('[data-tirar]'); if(!x) return;
+  ev.stopPropagation();
+  if(confirm('Tirar esse boneco da lista?')){ bonecos = bonecos.filter(b => b.id !== x.dataset.tirar); gravarBonecos(bonecos); renderBonecos(); }
+}, true);
 
 /* ---------- V-Bucks em reais ---------- */
 function renderCalc(){
@@ -1559,6 +1655,7 @@ $('#abas').addEventListener('click', ev => {
   $$('.painel').forEach(p => p.classList.toggle('ativo', p.id === 'painel-' + b.dataset.aba));
   if(b.dataset.aba === 'armario' || b.dataset.aba === 'conta') renderArmario();
   if(b.dataset.aba === 'mapa') carregarMapa();
+  if(b.dataset.aba === 'bonecos') renderBonecos();
   window.scrollTo({ top:0, behavior:'smooth' });
 });
 
