@@ -53,6 +53,9 @@ faixas (Jam Tracks) e kits LEGO.
   **não** está escrita no código de propósito: chave no código vira pública. Só funciona
   pra quem deixou as estatísticas públicas no jogo. Ver o armário de outro jogador não dá
   — a Epic não mostra pra ninguém.
+- **🔫 Armas**: raridade, tipo, dano, cadência, pente, recarga e se está no jogo ou no
+  cofre. Vêm de outra API (fortniteapi.io), com chave própria de graça, guardada só no
+  aparelho. Lista guardada por um dia.
 - **🗺️ Mapa**: o mapa de agora com os nomes dos lugares desenhados, zoom, arrastar e
   busca de local. Missões não existem nessa API.
 

@@ -253,6 +253,8 @@ details summary{cursor:pointer;color:var(--roxo);font-weight:600}
 
 .mapa-caixa{margin-top:10px;border-radius:16px;border:1px solid var(--borda);background:#0b1a2e;overflow:auto;max-height:70vh;cursor:grab}
 .mapa-caixa img{display:block;width:100%;max-width:none;transition:width .15s}
+.arma .stats{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.arma .stats span{font-size:.72rem;background:var(--cartao3);border-radius:6px;padding:2px 6px}
 .jog-topo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .jog-topo h2{margin:0}
 .jog-topo .nivel{background:var(--vb);color:#2a1d00;font-weight:700;border-radius:999px;padding:6px 12px}
@@ -288,6 +290,7 @@ footer a{color:var(--roxo)}
   <button aria-pressed="false" data-aba="armario">🎒 Meu armário</button>
   <button aria-pressed="false" data-aba="jogador">🎮 Jogador</button>
   <button aria-pressed="false" data-aba="mapa">🗺️ Mapa</button>
+  <button aria-pressed="false" data-aba="armas">🔫 Armas</button>
   <button aria-pressed="false" data-aba="vbucks">💎 V-Bucks em reais</button>
 </nav>
 
@@ -457,6 +460,28 @@ footer a{color:var(--roxo)}
     <div class="chips" id="mapaLista"></div>
     <p class="fraco" style="margin-top:8px">Os nomes já vêm desenhados no mapa. Usa ➕ e ➖ pra dar zoom e arrasta pra andar. Missões não existem nessa API, só o mapa.</p>
   </div>
+</section>
+
+<!-- ============ ARMAS ============ -->
+<section class="painel" id="painel-armas">
+  <div class="caixa">
+    <h2>🔫 Armas</h2>
+    <p>As armas do Battle Royale: raridade, tipo, dano, cadência, pente e recarga, e se a arma está <b>no jogo agora</b> ou guardada no cofre.</p>
+    <p class="fraco" style="margin-top:6px">As armas não vêm da mesma API das skins: vêm da <b>fortniteapi.io</b>, que pede uma chave própria (de graça). Um adulto entra em <a href="https://fortniteapi.io" target="_blank" rel="noopener">fortniteapi.io</a>, cria uma conta, copia a chave e cola aqui. Fica guardada só neste aparelho.</p>
+    <div class="linha-busca" style="margin-top:8px">
+      <input id="campoChaveArmas" type="password" placeholder="Cola a chave da fortniteapi.io aqui" autocomplete="off" style="flex:1 1 200px;min-width:0;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" />
+      <button class="btn pequeno roxo" id="btnChaveArmas">Guardar</button>
+      <button class="btn pequeno leve" id="btnChaveArmasTirar">Tirar</button>
+    </div>
+    <p class="fraco" id="chaveArmasEstado" style="margin-top:6px"></p>
+    <div class="linha-busca" style="margin-top:12px">
+      <input id="campoArmas" type="search" placeholder="Procura uma arma (ex: escopeta)" autocomplete="off" style="flex:1 1 200px;min-width:0;padding:12px 14px;border-radius:14px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" />
+      <label class="fraco"><input type="checkbox" id="chkArmasAtivas" checked /> só as que estão no jogo agora</label>
+    </div>
+    <div id="armasStatus" class="fraco" style="margin-top:10px"></div>
+  </div>
+  <p class="contador" id="armasContador"></p>
+  <div class="grade" id="gradeArmas"></div>
 </section>
 
 <!-- ============ V-BUCKS ============ -->
@@ -1232,6 +1257,73 @@ $('#btnCodigoOk').addEventListener('click', () => {
   $('#codigoArea').classList.add('oculto'); $('#codigoAcoes').classList.add('oculto');
 });
 
+/* =====================================================================
+   🔫 ARMAS — vêm da fortniteapi.io (outra API, outra chave). Guardadas
+   por um dia no IndexedDB. Sem chave, a aba explica como pegar.
+   ===================================================================== */
+const API_IO = 'https://fortniteapi.io/v1';
+let ARMAS = null;
+function chaveArmas(){ try{ return localStorage.getItem('dearnite-chave-io') || ''; }catch(e){ return ''; } }
+function mostrarChaveArmas(){
+  const c = chaveArmas();
+  $('#chaveArmasEstado').textContent = c ? '✅ Chave guardada neste aparelho (' + c.slice(0, 4) + '…' + c.slice(-2) + ').' : '❌ Sem chave ainda. Sem ela as armas não carregam.';
+}
+$('#btnChaveArmas').addEventListener('click', () => {
+  const v = $('#campoChaveArmas').value.trim(); if(!v){ alert('Cola a chave primeiro.'); return; }
+  try{ localStorage.setItem('dearnite-chave-io', v); }catch(e){}
+  $('#campoChaveArmas').value = ''; mostrarChaveArmas(); ARMAS = null; carregarArmas(true);
+});
+$('#btnChaveArmasTirar').addEventListener('click', () => { try{ localStorage.removeItem('dearnite-chave-io'); }catch(e){} mostrarChaveArmas(); });
+mostrarChaveArmas();
+
+const RAR_ARMA = { common:'Comum', uncommon:'Incomum', rare:'Rara', epic:'Épica', legendary:'Lendária', mythic:'Mítica', exotic:'Exótica', transcendent:'Transcendente' };
+function corArma(r){ r = String(r || '').toLowerCase(); return (RARIDADES[r] || {}).cor || (r === 'exotic' ? '#f2d388' : r === 'transcendent' ? '#f06292' : '#8a8a9a'); }
+async function carregarArmas(forcar){
+  const st = $('#armasStatus');
+  if(ARMAS && !forcar){ renderArmas(); return; }
+  const chave = chaveArmas();
+  if(!chave){ st.innerHTML = '🔑 Cola a chave da fortniteapi.io ali em cima pra carregar as armas.'; return; }
+  const DIA = 24 * 60 * 60 * 1000;
+  let dados = forcar ? null : await bdLer('armas');
+  if(!dados || Date.now() - dados.quando > DIA){
+    st.innerHTML = '<span class="girando">🔫</span> Baixando as armas…';
+    try{
+      const r = await fetch(API_IO + '/loot/list?lang=pt_BR', { headers:{ Accept:'application/json', Authorization: chave } });
+      if(r.status === 401 || r.status === 403){ st.textContent = '🔑 A chave não foi aceita pela fortniteapi.io. Confere se copiou ela inteira.'; return; }
+      if(r.status === 429){ st.textContent = '⏳ Muitos pedidos. Espera um minutinho e tenta de novo.'; return; }
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      const lista = j.weapons || j.loot || j.items || j.data || [];
+      if(!Array.isArray(lista) || !lista.length) throw new Error('a resposta veio sem armas');
+      dados = { quando:Date.now(), armas:lista.map(w => ({
+        id:w.id || '', nome:w.name || '', desc:w.description || '', rar:String(w.rarity || '').toLowerCase(), tipo:w.type || '',
+        ativa:w.enabled !== false, img:(w.images && (w.images.icon || w.images.background)) || '',
+        s:w.mainStats || w.stats || {},
+      })) };
+      await bdGravar('armas', dados);
+    }catch(e){ console.warn(e); st.textContent = 'Não consegui baixar as armas (' + e.message + '). Pode ser a internet, ou o navegador bloqueando o pedido pra fortniteapi.io.'; return; }
+  }
+  ARMAS = dados.armas; st.textContent = '';
+  renderArmas();
+}
+function renderArmas(){
+  if(!ARMAS) return;
+  const q = normal($('#campoArmas').value); const soAtivas = $('#chkArmasAtivas').checked;
+  const col = new Intl.Collator('pt-BR');
+  const ordemRar = ['common','uncommon','rare','epic','legendary','mythic','exotic','transcendent'];
+  const lista = ARMAS.filter(a => (!soAtivas || a.ativa) && (!q || normal(a.nome + ' ' + a.tipo + ' ' + a.desc).includes(q)))
+    .sort((a, b) => col.compare(a.nome, b.nome) || ordemRar.indexOf(a.rar) - ordemRar.indexOf(b.rar));
+  $('#armasContador').textContent = lista.length ? lista.length + ' arma' + (lista.length > 1 ? 's' : '') + (soAtivas ? ' no jogo agora' : ' (todas, incluindo as do cofre)') : 'Nenhuma arma com esse nome' + (soAtivas ? ' no jogo agora. Desmarca "só as que estão no jogo agora" pra ver as do cofre.' : '.');
+  const st = (s, k, nome, fmt) => (s && s[k] != null && s[k] !== '' && s[k] !== 0) ? '<span>' + nome + ' ' + (fmt ? fmt(s[k]) : s[k]) + '</span>' : '';
+  $('#gradeArmas').innerHTML = lista.map(a => '<div class="carta arma" style="--cor-rar:' + corArma(a.rar) + '">' +
+    '<div class="selos">' + (a.ativa ? '<span class="selo loja">no jogo</span>' : '<span class="selo">no cofre</span>') + '</div>' +
+    '<div class="foto">' + (a.img ? '<img loading="lazy" src="' + esc(a.img) + '" alt="" referrerpolicy="no-referrer" />' : '<span class="sem">🔫</span>') + '</div>' +
+    '<div class="info"><div class="nome">' + esc(a.nome) + '</div><div class="tipo">' + esc(RAR_ARMA[a.rar] || a.rar || '') + (a.tipo ? ' · ' + esc(a.tipo) : '') + '</div>' +
+    '<div class="stats">' + st(a.s, 'DmgPB', '💥 dano', v => Math.round(v)) + st(a.s, 'FiringRate', '🔁 tiros/s', v => Math.round(v * 100) / 100) + st(a.s, 'ClipSize', '🧱 pente') + st(a.s, 'ReloadTime', '⏱️ recarga', v => Math.round(v * 10) / 10 + 's') + st(a.s, 'DamageZone_Critical', '🎯 crítico', v => 'x' + Math.round(v * 10) / 10) + '</div></div></div>').join('');
+}
+$('#campoArmas').addEventListener('input', renderArmas);
+$('#chkArmasAtivas').addEventListener('change', renderArmas);
+
 /* ---------- V-Bucks em reais ---------- */
 function renderCalc(){
   const vb = parseInt($('#calcVb').value, 10) || 0; const r = reaisDe(vb);
@@ -1563,6 +1655,7 @@ $('#abas').addEventListener('click', ev => {
   $$('.painel').forEach(p => p.classList.toggle('ativo', p.id === 'painel-' + b.dataset.aba));
   if(b.dataset.aba === 'armario' || b.dataset.aba === 'conta') renderArmario();
   if(b.dataset.aba === 'mapa') carregarMapa();
+  if(b.dataset.aba === 'armas') carregarArmas();
   window.scrollTo({ top:0, behavior:'smooth' });
 });
 
