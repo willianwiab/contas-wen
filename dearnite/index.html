@@ -420,6 +420,11 @@ footer a{color:var(--roxo)}
    ===================================================================== */
 'use strict';
 const API = 'https://fortnite-api.com/v2';
+/* A API só manda o histórico da loja e as tags de origem se a gente pedir:
+   responseFlags é uma soma (2 = gameplayTags, 4 = shopHistory). Sem isso
+   todo item parecia "nunca vendido". */
+const FLAGS = '&responseFlags=6';
+const VERSAO_CATALOGO = 'catalogo-v2';   // muda quando o formato guardado muda, pra jogar o cache velho fora
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -685,18 +690,18 @@ const status = (txt, pct, erro) => {
 
 async function carregarCatalogo(){
   const DIA = 24 * 60 * 60 * 1000;
-  const guardado = await bdLer('catalogo');
+  const guardado = await bdLer(VERSAO_CATALOGO);
   if(guardado && guardado.itens && guardado.itens.length && Date.now() - guardado.quando < DIA){
     ITENS = guardado.itens; status('Catálogo do aparelho (de ' + new Date(guardado.quando).toLocaleString('pt-BR') + ').', 100);
     return;
   }
   if(guardado && guardado.itens && guardado.itens.length){ ITENS = guardado.itens; prepararCatalogo(); render(); }
   const fontes = [
-    { url:API + '/cosmetics/br?language=pt-BR', nome:'skins e cosméticos', fn:enxugarBR, peso:80 },
-    { url:API + '/cosmetics/cars?language=pt-BR', nome:'carros', fn:x => enxugarOutro(x, 'cars'), peso:5 },
-    { url:API + '/cosmetics/instruments?language=pt-BR', nome:'instrumentos', fn:x => enxugarOutro(x, 'instruments'), peso:5 },
-    { url:API + '/cosmetics/tracks?language=pt-BR', nome:'faixas do Festival', fn:x => enxugarOutro(x, 'tracks'), peso:5 },
-    { url:API + '/cosmetics/lego/kits?language=pt-BR', nome:'kits LEGO', fn:x => enxugarOutro(x, 'legokits'), peso:5 },
+    { url:API + '/cosmetics/br?language=pt-BR' + FLAGS, nome:'skins e cosméticos', fn:enxugarBR, peso:80 },
+    { url:API + '/cosmetics/cars?language=pt-BR' + FLAGS, nome:'carros', fn:x => enxugarOutro(x, 'cars'), peso:5 },
+    { url:API + '/cosmetics/instruments?language=pt-BR' + FLAGS, nome:'instrumentos', fn:x => enxugarOutro(x, 'instruments'), peso:5 },
+    { url:API + '/cosmetics/tracks?language=pt-BR' + FLAGS, nome:'faixas do Festival', fn:x => enxugarOutro(x, 'tracks'), peso:5 },
+    { url:API + '/cosmetics/lego/kits?language=pt-BR' + FLAGS, nome:'kits LEGO', fn:x => enxugarOutro(x, 'legokits'), peso:5 },
   ];
   const novos = []; let feito = 0; let falhas = [];
   for(const f of fontes){
@@ -714,7 +719,7 @@ async function carregarCatalogo(){
     return;
   }
   ITENS = novos;
-  await bdGravar('catalogo', { quando:Date.now(), itens:ITENS });
+  await bdGravar(VERSAO_CATALOGO, { quando:Date.now(), itens:ITENS });
   status(falhas.length ? 'Pronto! (não consegui baixar: ' + falhas.join(', ') + ')' : 'Catálogo atualizado!', 100, falhas.length > 0 && falhas.length === fontes.length);
 }
 
