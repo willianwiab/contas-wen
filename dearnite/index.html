@@ -864,6 +864,11 @@ async function carregarLoja(){
       if(!atual || (atual.pacote && !novo.pacote)) LOJA.set(x.id, novo);
     });
   });
+  /* Quem está na loja hoje (sozinho ou dentro de um pacotão) ganha a data de
+     hoje no histórico, se ela ainda não estiver lá. Senão o item dizia
+     "está na loja" e "nunca apareceu na loja" ao mesmo tempo. */
+  const hojeISO = new Date().toISOString(); const hoje = hojeISO.slice(0, 10);
+  LOJA.forEach((_, id) => { const it = POR_ID.get(id); if(!it) return; const u = it.hist.length ? String(it.hist[it.hist.length - 1]).slice(0, 10) : ''; if(u !== hoje) it.hist = it.hist.concat([hojeISO]); });
   calcularCortes();   // "está na loja agora" muda a raridade de ver
   renderLoja(dados.loja);
   render();
