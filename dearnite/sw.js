@@ -1,7 +1,7 @@
 /* Guarda só a casca do site (página, ícone, manifesto) pra abrir rápido.
    O catálogo e as imagens vêm da fortnite-api.com e passam direto —
    o catálogo tem o próprio cache (IndexedDB) dentro da página. */
-const CACHE = 'dearnite-v7';
+const CACHE = 'dearnite-v8';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {
