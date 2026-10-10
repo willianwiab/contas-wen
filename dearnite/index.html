@@ -1399,7 +1399,7 @@ let tempEl = 'c7t3';
 function renderElementais(){
   const q = normal($('#campoElementais').value);
   const lista = ELEMENTAIS.filter(e => (!tempEl || e.t === tempEl) && (!q || normal(e.nome + ' ' + e.faz + ' ' + (e.como || '')).includes(q)));
-  $('#contadorElementais').textContent = lista.length + ' elemental' + (lista.length === 1 ? '' : 'is') + (tempEl ? ' em ' + TEMPORADAS_EL[tempEl] : ' em todas as temporadas');
+  $('#contadorElementais').textContent = lista.length + (lista.length === 1 ? ' elemental' : ' elementais') + (tempEl ? ' em ' + TEMPORADAS_EL[tempEl] : ' em todas as temporadas');
   $('#gradeElementais').innerHTML = lista.map(e => { const cor = COR_RAR_EL[e.r || '']; return '<div class="elemental" style="--cor-el:' + cor + '"><div class="ico">' + e.ico + '</div><h3>' + esc(e.nome) + '</h3>' +
     (e.r ? '<div class="rar">' + NOME_RAR_EL[e.r] + '</div>' : '') + '<p>' + esc(e.faz) + '</p>' + (e.como ? '<div class="como">' + esc(e.como) + '</div>' : '') +
     (!tempEl ? '<div class="como">' + esc(TEMPORADAS_EL[e.t]) + '</div>' : '') + '</div>'; }).join('') || '<p class="fraco">Nenhum com esse nome.</p>';
