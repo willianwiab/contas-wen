@@ -452,7 +452,8 @@ footer a{color:var(--roxo)}
       <button class="btn pequeno leve" id="btnMapaMenos">➖</button>
       <button class="btn pequeno leve" id="btnMapaMais">➕</button>
     </div>
-    <div class="mapa-caixa" id="mapaCaixa"><img id="mapaImg" alt="Mapa do Fortnite" /></div>
+    <p class="fraco" id="mapaImgEstado" style="margin-top:8px"></p>
+    <div class="mapa-caixa" id="mapaCaixa"><img id="mapaImg" alt="" referrerpolicy="no-referrer" decoding="async" /></div>
     <div class="chips" id="mapaLista"></div>
     <p class="fraco" style="margin-top:8px">Os nomes já vêm desenhados no mapa. Usa ➕ e ➖ pra dar zoom e arrasta pra andar. Missões não existem nessa API, só o mapa.</p>
   </div>
@@ -650,12 +651,32 @@ function notaDeVer(it){
   if(/playstation|xbox|nintendo|celular|promo/.test(fonte)) n += 3;
   return n;
 }
+let NOTAS = [];      // todas as notas em ordem, pra saber a posição de cada item
 function calcularCortes(){
   const notas = ITENS.map(notaDeVer).sort((a, b) => a - b);
+  NOTAS = notas;
   if(!notas.length){ CORTES = null; return; }
   const q = f => notas[Math.min(notas.length - 1, Math.floor(f * notas.length))];
   CORTES = [q(0.15), q(0.40), q(0.70), q(0.90)];
   ITENS.forEach(it => { delete it._rv; });
+}
+/* Chute de quantos jogadores têm: a posição do item entre todas as notas
+   (0 = o mais comum, 1 = o mais raro) vira uma fração de jogadores, de uns
+   10% pro mais comum até 1 em 30 mil pro mais raro. É chute, e o site diz. */
+function quantosTem(it){
+  if(!NOTAS.length) return null;
+  const nota = notaDeVer(it);
+  let lo = 0, hi = NOTAS.length;
+  while(lo < hi){ const m = (lo + hi) >> 1; if(NOTAS[m] < nota) lo = m + 1; else hi = m; }
+  const p = lo / NOTAS.length;                       // posição: 0 comum … 1 raro
+  const f = LOJA.has(it.id) ? 0.1 : Math.pow(10, -(1 + 3.5 * p));   // fração de jogadores
+  const em100 = f * 100;
+  let texto;
+  if(em100 >= 1) texto = 'uns <b>' + Math.round(em100) + ' de cada 100 jogadores</b> devem ter';
+  else texto = 'mais ou menos <b>1 em cada ' + num(Math.round(1 / f / 10) * 10) + ' jogadores</b> tem';
+  const partida = em100 >= 1 ? 'Numa partida de 100, dá pra esperar ' + (em100 >= 2 ? 'uns ' + Math.round(em100) : '1') + ' com ela.' :
+    'Precisaria de umas ' + num(Math.max(1, Math.round(1 / f / 100))) + ' partidas de 100 pra cruzar com uma.';
+  return { f, texto, partida };
 }
 function raridadeDeVer(it){
   if(it._rv) return it._rv;   // guardado no item: o catálogo tem milhares e a ordenação chama isso muitas vezes
@@ -1099,8 +1120,10 @@ function detalheHTML(it){
   html += '</div>';
 
   const rv = raridadeDeVer(it);
+  const qt = quantosTem(it);
   html += '<div class="bloco"><h3>👀 Raridade de ver um player com ela</h3><p class="destaque" style="color:' + R.cor + '">' + rv.estrelas + ' ' + esc(rv.nome) + '</p><p>' + esc(rv.por) + '</p>' +
-    '<p class="fraco" style="margin-top:6px">Isso é um chute bem feito: ninguém tem o número exato de quantos jogadores têm cada skin. A nota usa quantas vezes ela foi pra loja, há quanto tempo sumiu e de onde ela veio, e as estrelas comparam essa nota com todos os cosméticos do jogo (5 estrelas = as 10% mais raras).</p></div>';
+    (qt ? '<p style="margin-top:8px">🤔 <b>Chute de quantos têm:</b> ' + qt.texto + '. ' + esc(qt.partida) + '</p>' : '') +
+    '<p class="fraco" style="margin-top:6px">Tudo isso é chute bem feito: ninguém tem o número exato de quantos jogadores têm cada skin, nem a Epic mostra. A nota usa quantas vezes ela foi pra loja, há quanto tempo sumiu e de onde ela veio, e as estrelas comparam essa nota com todos os cosméticos do jogo (5 estrelas = as 10% mais raras).</p></div>';
   html += blocoPreco(it);
   html += '<p class="fraco">Código: ' + esc(it.id) + '</p></div>';
   return html;
@@ -1459,11 +1482,31 @@ async function carregarMapa(){
   }
   if(!dados || !dados.mapa){ $('#mapaInfo').textContent = 'Não consegui carregar o mapa agora.'; return; }
   MAPA = dados.mapa;
-  const img = (MAPA.images && (MAPA.images.pois || MAPA.images.blank)) || '';
-  $('#mapaImg').src = img;
+  mostrarImagemMapa();
   const pois = (MAPA.pois || []).filter(p => p.name).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   $('#mapaInfo').textContent = pois.length + ' lugares no mapa de hoje. Toca num nome pra procurar no mapa.';
   renderMapaLista(pois);
+}
+/* A imagem com nomes vem primeiro; se o navegador não conseguir carregar,
+   tenta a sem nomes; se nem essa vier, mostra o endereço e um botão pra
+   abrir direto, pra dar pra ver o que está acontecendo. */
+function mostrarImagemMapa(){
+  const im = (MAPA && MAPA.images) || {};
+  const tentativas = [im.pois, im.blank].filter(Boolean);
+  const el = $('#mapaImg'); const est = $('#mapaImgEstado');
+  if(!tentativas.length){ est.innerHTML = '😕 A API não mandou a imagem do mapa hoje.'; return; }
+  let i = 0;
+  const tentar = () => {
+    est.innerHTML = '<span class="girando">🗺️</span> Carregando a imagem do mapa' + (i ? ' (sem nomes)' : '') + '…';
+    el.onload = () => { est.textContent = i ? 'Essa é a versão sem nomes: a com nomes não carregou.' : ''; };
+    el.onerror = () => {
+      i++;
+      if(i < tentativas.length){ tentar(); return; }
+      est.innerHTML = '😕 O navegador não conseguiu carregar a imagem. <a href="' + esc(tentativas[0]) + '" target="_blank" rel="noopener">Abrir a imagem do mapa direto ↗</a><br/><small>Endereço: ' + esc(tentativas[0]) + '</small>';
+    };
+    el.src = tentativas[i];
+  };
+  tentar();
 }
 function renderMapaLista(pois){
   const q = normal($('#campoMapa').value);
