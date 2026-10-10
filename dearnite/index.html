@@ -502,10 +502,11 @@ footer a{color:var(--roxo)}
     </div>
     <p class="contador" id="contadorElementais"></p>
     <div class="grade" id="gradeElementais" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))"></div>
-    <h3>Variantes (Capítulo 7 T3)</h3>
+    <h3>Eventos / variantes (Capítulo 7 T3)</h3>
+    <p class="fraco">Qualquer Elemental pode aparecer numa versão de evento, que dá um bônus a mais por cima do poder normal dele.</p>
     <div class="grade" id="gradeVariantes" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))"></div>
     <h3>Quanto custa chamar um (Pó de Elemental)</h3>
-    <table class="tabela"><tr><th>Raridade</th><th>Pó</th></tr><tr><td>Raro</td><td>100</td></tr><tr><td>Épico</td><td>3.000</td></tr><tr><td>Lendário</td><td>5.000</td></tr><tr><td>Mítico</td><td>7.500</td></tr><tr><td>Variantes (Dourado, Goma, Galáxia)</td><td>mais caro</td></tr></table>
+    <table class="tabela"><tr><th>Raridade</th><th>Pó</th></tr><tr><td>Raro</td><td>100</td></tr><tr><td>Épico</td><td>3.000</td></tr><tr><td>Lendário</td><td>5.000</td></tr><tr><td>Mítico</td><td>7.500</td></tr><tr><td>Versões de evento (Dourado, Goma, Galáxia…)</td><td>mais caro</td></tr></table>
     <div class="aviso" style="margin-top:12px">Nenhuma API tem essa lista: ela foi escrita à mão a partir das notícias da Epic e de guias, e os guias discordam em alguns detalhes (raridade do Chefe, nome de alguns). Os nomes em português podem ser um pouco diferentes dos do jogo. Pra lista sempre atualizada: <a href="https://fortnitespritetracker.org/pt-br/" target="_blank" rel="noopener">fortnitespritetracker.org</a> e <a href="https://fortnite.gg/sprites" target="_blank" rel="noopener">fortnite.gg/sprites</a>. Conhece um que falta ou está errado? Fala pro Claude que ele arruma.</div>
   </div>
 </section>
@@ -1391,11 +1392,20 @@ const ELEMENTAIS = [
   { t:'c7t3', r:'mythic', nome:'Elemental Ponto Zero', ico:'🔮', faz:'Toda vez que usa um item de cura, aparece uma Bolha de Escudo Jr. em volta de você.' },
   { t:'c7t3', r:'mythic', nome:'Elemental Amendoim Queimado', ico:'🥜', faz:'Chance de cair item raro (às vezes Mítico) de quem você elimina.' },
   { t:'c7t3', r:'mythic', nome:'Elemental Ceifador', ico:'💀', faz:'Marca automaticamente qualquer inimigo que te der dano.' },
+  // parcerias (os guias só citam o nome)
+  { t:'c7t3', r:'mythic', nome:'Elemental John Wick', ico:'🕴️', faz:'De parceria. Não achei o que ele faz: me conta!', como:'Parceria' },
+  { t:'c7t3', r:'mythic', nome:'Elemental Batman', ico:'🦇', faz:'De parceria. Não achei o que ele faz: me conta!', como:'Parceria' },
+  { t:'c7t3', r:'mythic', nome:'Elemental Vini Jr.', ico:'⚽', faz:'De parceria (Copa do Mundo 2026). Não achei o que ele faz: me conta!', como:'Parceria' },
+  { t:'c7t3', r:'mythic', nome:'Elemental Pollo', ico:'🐔', faz:'De parceria. Não achei o que ele faz: me conta!', como:'Parceria' },
+  { t:'c7t3', r:'mythic', nome:'Elemental Ironmouse', ico:'🐭', faz:'De parceria. Não achei o que ele faz: me conta!', como:'Parceria' },
 ];
 const VARIANTES_EL = [
-  { nome:'Dourado', ico:'🥇', cor:'#f5c518', faz:'XP a mais por eliminação.' },
-  { nome:'Goma (Gummy)', ico:'🍬', cor:'#ff5fa2', faz:'Mais Pó de Elemental quando você extrai (os guias dizem 10% ou 20%).' },
-  { nome:'Galáxia', ico:'🌌', cor:'#8f73f5', faz:'Munição extra quando você saqueia.' },
+  { nome:'Dourado (Ouro)', ico:'🥇', cor:'#f5c518', faz:'3× mais XP de Elemental por eliminação.', quando:'Desde o começo da temporada' },
+  { nome:'Goma (Gummy)', ico:'🍬', cor:'#ff5fa2', faz:'Mais Pó de Elemental quando você extrai (os guias dizem 10% ou 20%).', quando:'Desde o começo da temporada' },
+  { nome:'Galáxia', ico:'🌌', cor:'#8f73f5', faz:'30% mais munição quando você pega munição.', quando:'Desde o começo da temporada' },
+  { nome:'Holográfico (Holofoil)', ico:'🪩', cor:'#3cc3ff', faz:'+5% de chance de achar Elemental raro nos contêineres.', quando:'Evento de 9 de julho de 2026' },
+  { nome:'Gema (Diamante)', ico:'💎', cor:'#7fd3ff', faz:'Não achei o que ele faz. Se você souber, me conta!', quando:'Evento de 6 de agosto de 2026' },
+  { nome:'Cubo', ico:'🟪', cor:'#d13ad1', faz:'Aparece nas listas, mas sem dizer o que faz. Se você souber, me conta!', quando:'?' },
 ];
 let tempEl = 'c7t3';
 function renderElementais(){
@@ -1409,7 +1419,7 @@ function renderElementais(){
 $('#chipsElementais').innerHTML = Object.keys(TEMPORADAS_EL).map(k => '<button class="chip" aria-pressed="' + (tempEl === k) + '" data-temp="' + k + '">' + esc(TEMPORADAS_EL[k]) + '</button>').join('') + '<button class="chip" aria-pressed="false" data-temp="">Todas</button>';
 $('#chipsElementais').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; tempEl = c.dataset.temp; $$('#chipsElementais .chip').forEach(x => x.setAttribute('aria-pressed', x === c)); renderElementais(); });
 $('#campoElementais').addEventListener('input', renderElementais);
-$('#gradeVariantes').innerHTML = VARIANTES_EL.map(v => '<div class="elemental" style="--cor-el:' + v.cor + '"><div class="ico">' + v.ico + '</div><h3>' + esc(v.nome) + '</h3><p>' + esc(v.faz) + '</p></div>').join('');
+$('#gradeVariantes').innerHTML = VARIANTES_EL.map(v => '<div class="elemental" style="--cor-el:' + v.cor + '"><div class="ico">' + v.ico + '</div><h3>' + esc(v.nome) + '</h3><p>' + esc(v.faz) + '</p>' + (v.quando ? '<div class="como">' + esc(v.quando) + '</div>' : '') + '</div>').join('');
 renderElementais();
 
 /* ---------- V-Bucks em reais ---------- */
