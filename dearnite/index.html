@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DearNite — todas as skins do Fortnite</title>
+<meta name="description" content="Todas as skins e cosméticos do Fortnite: quando saíram, quantas vezes foram pra loja, quanto custam em V-Bucks e em reais, e quanto vale a sua conta." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#5b3fd6" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="DearNite" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* Cores do Fortnite: roxo da lhama, azul do céu da ilha e o amarelo dos V-Bucks.
+     Tudo que pinta alguma coisa mora aqui, pra o modo escuro ser só trocar a lista. */
+  --roxo:#5b3fd6; --roxo-escuro:#3b1e8f; --roxo-claro:#a58cf7;
+  --azul:#1fb6ff; --vb:#f5c518; --vb-sombra:#b88f0a;
+  --rosa:#ff5fa2;
+  --fundo:#f5f6ff; --fundo2:#e9e6ff; --fundo3:#dff3ff;
+  --tinta:#1d1740; --tinta-fraca:#6a638a;
+  --cartao:#ffffff; --cartao2:#fbfaff; --cartao3:#f2eeff;
+  --campo:#fcfbff; --vazio:#eeeaff;
+  --borda:#dcd6f5; --sombra-cor:#cfc7f0;
+  --ok:#2bb673; --erro:#e3453b;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --roxo:#8f73f5; --roxo-escuro:#6a4fe0; --roxo-claro:#b7a4ff;
+    --azul:#3cc3ff; --vb:#ffd23f; --vb-sombra:#7a5e05;
+    --fundo:#120e24; --fundo2:#1c1536; --fundo3:#12203a;
+    --tinta:#f1edff; --tinta-fraca:#a69dc9;
+    --cartao:#1f1838; --cartao2:#261e44; --cartao3:#2e2552;
+    --campo:#1a1430; --vazio:#2a2249;
+    --borda:#3a2f62; --sombra-cor:#0c0919;
+  }
+}
+:root[data-tema="escuro"]{
+  --roxo:#8f73f5; --roxo-escuro:#6a4fe0; --roxo-claro:#b7a4ff;
+  --azul:#3cc3ff; --vb:#ffd23f; --vb-sombra:#7a5e05;
+  --fundo:#120e24; --fundo2:#1c1536; --fundo3:#12203a;
+  --tinta:#f1edff; --tinta-fraca:#a69dc9;
+  --cartao:#1f1838; --cartao2:#261e44; --cartao3:#2e2552;
+  --campo:#1a1430; --vazio:#2a2249;
+  --borda:#3a2f62; --sombra-cor:#0c0919;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Rubik',system-ui,sans-serif; color:var(--tinta);
+  background-color:var(--fundo);
+  background-image:radial-gradient(circle at 10% 6%, var(--fundo2) 0 22%, transparent 22.5%),
+                   radial-gradient(circle at 90% 70%, var(--fundo3) 0 18%, transparent 18.5%);
+  background-attachment:fixed;
+  min-height:100vh; padding:0 16px 60px;
+}
+.envolve{max-width:1040px;margin:0 auto}
+button{font:inherit}
+img{max-width:100%}
+
+/* ---------- topo ---------- */
+header{text-align:center;padding:30px 0 18px;position:relative}
+.logo{
+  font-family:'Baloo 2',cursive; font-size:clamp(2.4rem,9vw,3.6rem); line-height:1;
+  color:var(--roxo-escuro); text-shadow:3px 3px 0 var(--roxo-claro);
+}
+.logo span{color:var(--vb);text-shadow:3px 3px 0 var(--roxo-escuro)}
+.logo .bicho{height:1.1em;vertical-align:-.2em;margin-left:.1em}
+.slogan{margin-top:8px;color:var(--tinta-fraca);font-size:1rem}
+.tema{
+  position:absolute;right:0;top:14px;width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--borda);background:var(--cartao);cursor:pointer;font-size:1.2rem;
+  box-shadow:0 3px 0 var(--sombra-cor);
+}
+.tema:hover{border-color:var(--roxo)}
+
+/* ---------- abas ---------- */
+.abas{
+  display:flex;gap:2px;background:var(--cartao2);border:1px solid var(--borda);
+  border-radius:999px;padding:4px;margin:0 auto 18px;flex-wrap:wrap;
+}
+.abas button{
+  flex:1 1 120px;padding:10px 10px;border:none;background:none;border-radius:999px;
+  font-weight:600;color:var(--tinta-fraca);cursor:pointer;transition:background .18s,color .18s;
+  white-space:nowrap;
+}
+.abas button:hover{color:var(--tinta)}
+.abas button[aria-pressed="true"]{background:var(--roxo);color:#fff;box-shadow:0 2px 8px rgba(60,30,140,.25)}
+.painel{display:none}
+.painel.ativo{display:block}
+
+/* ---------- caixas ---------- */
+.caixa{
+  background:var(--cartao);border:1px solid var(--borda);border-radius:24px;
+  padding:20px;box-shadow:0 10px 28px rgba(60,30,140,.10);margin-bottom:16px;
+}
+.caixa h2{font-family:'Baloo 2',cursive;font-size:1.5rem;color:var(--roxo-escuro);margin-bottom:8px}
+.caixa h3{font-size:1.05rem;margin:14px 0 6px;color:var(--roxo-escuro)}
+.caixa p{line-height:1.5}
+.fraco{color:var(--tinta-fraca);font-size:.9rem}
+
+/* ---------- busca ---------- */
+.linha-busca{display:flex;gap:10px;flex-wrap:wrap}
+#campo{
+  flex:1 1 220px;min-width:0;padding:16px 18px;font:inherit;font-size:1.15rem;
+  border:2px solid var(--borda);border-radius:18px;background:var(--campo);color:var(--tinta);
+  transition:border-color .15s,box-shadow .15s;
+}
+#campo:hover{border-color:var(--roxo)}
+#campo:focus{outline:none;border-color:var(--roxo-escuro);background:var(--cartao);box-shadow:0 0 0 4px rgba(91,63,214,.2)}
+.btn{
+  padding:14px 22px;border:none;border-radius:16px;font-weight:700;font-size:1rem;cursor:pointer;
+  background:var(--vb);color:#2a1d00;box-shadow:0 5px 0 var(--vb-sombra);transition:transform .08s,box-shadow .08s;
+}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--vb-sombra)}
+.btn.roxo{background:var(--roxo);color:#fff;box-shadow:0 5px 0 var(--roxo-escuro)}
+.btn.roxo:active{box-shadow:0 1px 0 var(--roxo-escuro)}
+.btn.leve{background:var(--cartao3);color:var(--tinta);box-shadow:0 5px 0 var(--sombra-cor)}
+.btn.leve:active{box-shadow:0 1px 0 var(--sombra-cor)}
+.btn.verde{background:var(--ok);color:#fff;box-shadow:0 5px 0 #1b7a4c}
+.btn.vermelho{background:var(--erro);color:#fff;box-shadow:0 5px 0 #96281f}
+.btn.pequeno{padding:9px 14px;font-size:.9rem;border-radius:12px;box-shadow:0 3px 0 var(--sombra-cor)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* filtros */
+.filtros{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.filtros select{
+  padding:10px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);
+  color:var(--tinta);font:inherit;font-size:.95rem;max-width:100%;
+}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{
+  padding:7px 12px;border-radius:999px;border:1px solid var(--borda);background:var(--cartao2);
+  color:var(--tinta-fraca);cursor:pointer;font-size:.88rem;font-weight:500;
+}
+.chip:hover{border-color:var(--roxo);color:var(--tinta)}
+.chip[aria-pressed="true"]{background:var(--roxo);color:#fff;border-color:var(--roxo)}
+.chips-grupo{font-size:.78rem;color:var(--tinta-fraca);text-transform:uppercase;letter-spacing:.06em;width:100%;margin-top:6px}
+
+/* ---------- estado do carregamento ---------- */
+.status{
+  display:flex;gap:12px;align-items:center;background:var(--cartao3);border-radius:16px;
+  padding:12px 16px;margin-bottom:14px;font-size:.95rem;
+}
+.status .barra{flex:1;height:10px;background:var(--vazio);border-radius:999px;overflow:hidden}
+.status .barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--roxo),var(--azul));transition:width .3s}
+.status.erro{background:#fde7e4;color:#7a1f16}
+:root[data-tema="escuro"] .status.erro{background:#3a1c19;color:#ffb3aa}
+.girando{display:inline-block;animation:gira 1s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+
+/* ---------- grade ---------- */
+.contador{margin:10px 0 6px;color:var(--tinta-fraca);font-size:.9rem}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.carta{
+  background:var(--cartao);border:1px solid var(--borda);border-radius:16px;overflow:hidden;
+  cursor:pointer;text-align:left;padding:0;color:var(--tinta);position:relative;
+  transition:transform .12s,box-shadow .12s;box-shadow:0 4px 0 var(--sombra-cor);
+  display:flex;flex-direction:column;
+}
+.carta:hover{transform:translateY(-3px);box-shadow:0 7px 0 var(--sombra-cor)}
+.carta .foto{aspect-ratio:1/1;background:linear-gradient(160deg,var(--cor-rar,#777) 0%,var(--cartao3) 90%);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.carta .foto img{width:100%;height:100%;object-fit:cover;display:block}
+.carta .foto .sem{font-size:3rem}
+.carta .info{padding:8px 10px 10px;border-top:4px solid var(--cor-rar,#777)}
+.carta .nome{font-weight:700;font-size:.92rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.carta .tipo{font-size:.76rem;color:var(--tinta-fraca);margin-top:3px}
+.carta .selos{position:absolute;top:6px;left:6px;display:flex;gap:4px;flex-wrap:wrap}
+.selo{font-size:.72rem;font-weight:700;padding:3px 7px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff}
+.selo.loja{background:var(--vb);color:#2a1d00}
+.selo.tenho{background:var(--ok)}
+.selo.fav{background:var(--rosa)}
+.mais{display:flex;justify-content:center;margin:18px 0}
+
+/* ---------- detalhe (modal) ---------- */
+dialog{
+  border:none;border-radius:24px;padding:0;max-width:720px;width:calc(100% - 24px);
+  background:var(--cartao);color:var(--tinta);box-shadow:0 30px 80px rgba(0,0,0,.4);
+  max-height:92vh;
+}
+dialog::backdrop{background:rgba(10,5,30,.65);backdrop-filter:blur(3px)}
+.det-topo{display:flex;gap:16px;padding:18px;background:linear-gradient(135deg,var(--cor-rar,#777),var(--cartao2) 80%);align-items:flex-start}
+.det-topo img{width:140px;height:140px;object-fit:cover;border-radius:16px;background:var(--cartao3);flex:none}
+.det-topo .sem{width:140px;height:140px;border-radius:16px;background:var(--cartao3);display:flex;align-items:center;justify-content:center;font-size:3.6rem;flex:none}
+.det-topo h2{font-family:'Baloo 2',cursive;font-size:1.7rem;line-height:1.1;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.det-topo .pilulas{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pil{font-size:.8rem;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.85);color:#1d1740}
+.det-topo .desc{margin-top:10px;color:#fff;font-size:.92rem;text-shadow:0 1px 0 rgba(0,0,0,.4)}
+.fechar{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:1.2rem;cursor:pointer}
+.det-corpo{padding:16px 18px 20px}
+.bloco{background:var(--cartao2);border:1px solid var(--borda);border-radius:16px;padding:12px 14px;margin-bottom:10px}
+.bloco h3{font-size:1rem;color:var(--roxo-escuro);margin-bottom:6px}
+.bloco p,.bloco li{line-height:1.5;font-size:.95rem}
+.bloco ul{padding-left:18px}
+.destaque{font-family:'Baloo 2',cursive;font-size:2rem;line-height:1.1}
+.vbucks{color:var(--vb-sombra)}
+:root[data-tema="escuro"] .vbucks{color:var(--vb)}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .vbucks{color:var(--vb)}}
+.aviso{background:#fff4d6;border:1px solid #f1d58a;color:#5a3d00;border-radius:12px;padding:10px 12px;font-size:.9rem;line-height:1.45;margin-top:8px}
+:root[data-tema="escuro"] .aviso{background:#3a2d0c;border-color:#7a5e05;color:#ffe9a8}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .aviso{background:#3a2d0c;border-color:#7a5e05;color:#ffe9a8}}
+details summary{cursor:pointer;color:var(--roxo);font-weight:600}
+.datas{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.datas span{font-size:.8rem;background:var(--cartao3);border-radius:8px;padding:3px 8px}
+.acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.vb-icone{display:inline-block;width:1em;height:1em;vertical-align:-.12em;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff3b0,var(--vb) 60%,var(--vb-sombra));margin-right:.15em}
+
+/* ---------- loja hoje ---------- */
+.loja-entrada{display:flex;gap:12px;align-items:center;background:var(--cartao2);border:1px solid var(--borda);border-radius:16px;padding:10px;margin-bottom:8px;cursor:pointer}
+.loja-entrada img{width:64px;height:64px;border-radius:12px;object-fit:cover;background:var(--cartao3);flex:none}
+.loja-entrada .n{font-weight:700}
+.loja-entrada .p{margin-left:auto;text-align:right;font-weight:700;white-space:nowrap}
+.loja-entrada .p small{display:block;font-weight:400;color:var(--tinta-fraca)}
+
+/* ---------- conta (foto) ---------- */
+.solta{
+  border:2px dashed var(--roxo-claro);border-radius:18px;padding:22px;text-align:center;
+  background:var(--cartao2);cursor:pointer;
+}
+.solta:hover{background:var(--cartao3)}
+.solta input{display:none}
+.previa{max-height:220px;border-radius:12px;margin:10px auto;display:block}
+.quiz{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.quiz img,.quiz .sem{width:150px;height:150px;border-radius:16px;object-fit:cover;background:var(--cartao3);display:flex;align-items:center;justify-content:center;font-size:3rem;flex:none}
+.quiz .texto{flex:1 1 220px}
+.quiz .pergunta{font-family:'Baloo 2',cursive;font-size:1.5rem;line-height:1.15}
+.quiz .lido{font-size:.85rem;color:var(--tinta-fraca);margin-top:4px}
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.resumo div{background:var(--cartao3);border-radius:14px;padding:12px;text-align:center}
+.resumo b{display:block;font-family:'Baloo 2',cursive;font-size:1.6rem;line-height:1.1}
+.resumo small{color:var(--tinta-fraca)}
+.lista-armario{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:10px}
+.lista-armario .carta .nome{font-size:.82rem}
+.codigo{width:100%;padding:10px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit;font-size:.85rem;margin-top:8px}
+
+/* ---------- calculadora ---------- */
+.calc{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.calc input{padding:12px 14px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit;font-size:1.1rem;width:160px}
+.tabela{width:100%;border-collapse:collapse;margin-top:8px;font-size:.92rem}
+.tabela td,.tabela th{padding:7px 8px;border-bottom:1px solid var(--borda);text-align:left}
+.tabela th{color:var(--tinta-fraca);font-weight:600}
+
+footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.85rem;line-height:1.6}
+footer a{color:var(--roxo)}
+.oculto{display:none !important}
+@media (max-width:520px){
+  .det-topo{flex-direction:column;align-items:center;text-align:center}
+  .det-topo .pilulas{justify-content:center}
+  .grade{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+}
+</style>
+</head>
+<body>
+<div class="envolve">
+<header>
+  <button class="tema" id="btnTema" title="Modo claro / escuro" aria-label="Trocar o tema">🌙</button>
+  <div class="logo">Dear<span>Nite</span><img class="bicho" src="icone.svg" alt="" /></div>
+  <p class="slogan">Todas as skins do Fortnite: quando saíram, quantas vezes foram pra loja e quanto custam.</p>
+</header>
+
+<div class="status" id="status"><span class="girando">🦙</span><span id="statusTexto">Preparando…</span><div class="barra"><i id="statusBarra"></i></div></div>
+
+<nav class="abas" id="abas">
+  <button aria-pressed="true" data-aba="catalogo">🗂️ Catálogo</button>
+  <button aria-pressed="false" data-aba="loja">🛒 Loja de hoje</button>
+  <button aria-pressed="false" data-aba="conta">📸 Quanto vale a minha conta?</button>
+  <button aria-pressed="false" data-aba="armario">🎒 Meu armário</button>
+  <button aria-pressed="false" data-aba="vbucks">💎 V-Bucks em reais</button>
+</nav>
+
+<!-- ============ CATÁLOGO ============ -->
+<section class="painel ativo" id="painel-catalogo">
+  <div class="caixa">
+    <div class="linha-busca">
+      <input id="campo" type="search" placeholder="Procura uma skin, picareta, gesto… (ex: Invasora Renegada)" autocomplete="off" />
+      <button class="btn" id="btnBuscar">Buscar</button>
+    </div>
+    <div class="filtros">
+      <select id="selRaridade"><option value="">Todas as raridades</option></select>
+      <select id="selCapitulo"><option value="">Todos os capítulos</option></select>
+      <select id="selVer">
+        <option value="">👀 Qualquer raridade de ver</option>
+        <option value="5">★★★★★ Raríssima — quase ninguém tem</option>
+        <option value="4">★★★★☆ Muito rara</option>
+        <option value="3">★★★☆☆ Rara de ver</option>
+        <option value="2">★★☆☆☆ Comum de ver</option>
+        <option value="1">★☆☆☆☆ Todo mundo tem</option>
+      </select>
+      <select id="selOrdem">
+        <option value="nome">Ordem: nome (A–Z)</option>
+        <option value="novas">Ordem: mais novas primeiro</option>
+        <option value="antigas">Ordem: mais antigas primeiro</option>
+        <option value="maisloja">Ordem: mais vezes na loja</option>
+        <option value="menosloja">Ordem: menos vezes na loja (raras!)</option>
+        <option value="sumidas">Ordem: há mais tempo sem voltar</option>
+        <option value="rarasver">Ordem: mais raras de ver em player (👀)</option>
+        <option value="caras">Ordem: mais caras</option>
+        <option value="baratas">Ordem: mais baratas</option>
+      </select>
+      <label class="fraco"><input type="checkbox" id="chkLoja" /> só quem está na loja hoje</label>
+      <label class="fraco"><input type="checkbox" id="chkNunca" /> só quem nunca foi vendido</label>
+    </div>
+    <div class="chips" id="chipsTipo"></div>
+  </div>
+  <p class="contador" id="contador"></p>
+  <div class="grade" id="grade"></div>
+  <div class="mais"><button class="btn roxo oculto" id="btnMais">Mostrar mais</button></div>
+</section>
+
+<!-- ============ LOJA ============ -->
+<section class="painel" id="painel-loja">
+  <div class="caixa">
+    <h2>🛒 Loja de itens de hoje</h2>
+    <p class="fraco" id="lojaData">Carregando a loja…</p>
+    <div id="lojaLista" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!-- ============ QUANTO VALE A MINHA CONTA ============ -->
+<section class="painel" id="painel-conta">
+  <div class="caixa">
+    <h2>📸 Quanto vale a minha conta?</h2>
+    <p>Tira uma foto (ou print) do seu armário no Fortnite <b>com o nome da skin aparecendo</b>. A IA lê a foto, mostra qual skin ela acha que é, e você responde <b>Sim</b>, <b>Não</b> ou <b>Não sei</b>. Cada "Sim" entra no seu armário e soma o valor da conta em V-Bucks e em reais.</p>
+    <p class="fraco" style="margin-top:6px">Dica: no Fortnite, toca na skin pra aparecer o nome dela, aí tira o print. Dá pra mandar várias fotos de uma vez.</p>
+    <label class="solta" id="solta" style="display:block;margin-top:14px">
+      <input type="file" id="arquivos" accept="image/*" multiple />
+      <div style="font-size:2.4rem">🖼️</div>
+      <div><b>Toca aqui pra escolher as fotos</b></div>
+      <div class="fraco">ou arrasta as fotos pra cá</div>
+    </label>
+    <div id="contaStatus" class="fraco" style="margin-top:10px"></div>
+  </div>
+
+  <div class="caixa oculto" id="contaQuiz">
+    <img class="previa oculto" id="contaPrevia" alt="Foto enviada" />
+    <div class="quiz" id="quizCorpo"></div>
+    <div class="acoes" style="margin-top:14px">
+      <button class="btn verde" id="qSim">✅ Sim, é essa</button>
+      <button class="btn vermelho" id="qNao">❌ Não</button>
+      <button class="btn leve" id="qNaoSei">🤔 Não sei</button>
+    </div>
+    <div id="quizDetalhe" class="oculto" style="margin-top:12px"></div>
+    <p class="fraco" id="quizFila" style="margin-top:10px"></p>
+  </div>
+
+  <div class="caixa" id="contaManual">
+    <h3>Procurar na mão (se a foto não deu certo)</h3>
+    <div class="linha-busca">
+      <input id="campoManual" type="search" placeholder="Nome da skin ou cosmético" autocomplete="off" style="flex:1 1 200px;padding:12px 14px;border-radius:14px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" />
+    </div>
+    <div class="grade" id="gradeManual" style="margin-top:10px"></div>
+  </div>
+
+  <div class="caixa" id="contaResumo">
+    <h2>💰 Valor da conta</h2>
+    <div class="resumo" id="resumoConta"></div>
+    <div class="aviso" id="avisoConta"></div>
+  </div>
+</section>
+
+<!-- ============ ARMÁRIO ============ -->
+<section class="painel" id="painel-armario">
+  <div class="caixa">
+    <h2>🎒 Meu armário</h2>
+    <p class="fraco">Tudo que você marcou como "tenho". Marca pelo catálogo (botão dentro da skin) ou pela foto na aba "Quanto vale a minha conta?".</p>
+    <div class="resumo" id="resumoArmario"></div>
+    <div class="acoes" style="margin-top:12px">
+      <button class="btn pequeno leve" id="btnCodigo">📋 Gerar código pra levar pra outro aparelho</button>
+      <button class="btn pequeno leve" id="btnColar">📥 Colar um código</button>
+      <button class="btn pequeno leve" id="btnLimpar">🗑️ Esvaziar armário</button>
+    </div>
+    <textarea class="codigo oculto" id="codigoArea" rows="3" placeholder="Cola o código aqui"></textarea>
+    <div class="acoes oculto" id="codigoAcoes"><button class="btn pequeno roxo" id="btnCodigoOk">Juntar com o meu armário</button></div>
+    <div class="lista-armario" id="listaArmario"></div>
+  </div>
+  <div class="caixa">
+    <h2>❤️ Favoritas</h2>
+    <p class="fraco">Skins que você quer. Marca pelo coração dentro da skin.</p>
+    <div class="lista-armario" id="listaFav"></div>
+  </div>
+</section>
+
+<!-- ============ V-BUCKS ============ -->
+<section class="painel" id="painel-vbucks">
+  <div class="caixa">
+    <h2>💎 Quanto custa em reais?</h2>
+    <div class="calc">
+      <input type="number" id="calcVb" value="1500" min="0" step="50" /> V-Bucks
+      <span style="font-size:1.4rem">=</span>
+      <span class="destaque" id="calcReais">—</span>
+    </div>
+    <p class="fraco" id="calcDetalhe" style="margin-top:8px"></p>
+    <h3>Pacotes de V-Bucks no Brasil (loja da Epic, desde 19/03/2026)</h3>
+    <table class="tabela" id="tabelaPacotes"><tr><th>Pacote</th><th>Preço</th><th>Cada 1.000</th></tr></table>
+    <p class="fraco" style="margin-top:8px">O site calcula o jeito mais barato de juntar os V-Bucks com esses pacotes. Preço de loja de console/celular pode ser um pouco diferente.</p>
+    <div class="aviso" id="avisoVb"></div>
+  </div>
+</section>
+
+<footer>
+  Dados dos cosméticos: <a href="https://fortnite-api.com" target="_blank" rel="noopener">fortnite-api.com</a>. DearNite não é da Epic Games.<br/>
+  Feito pelo Jojo com o Claude. Irmão do <a href="../butterpoke/">ButterPoke</a> 🦋
+</footer>
+</div>
+
+<dialog id="detalhe"></dialog>
+
+<script>
+/* =====================================================================
+   DearNite — catálogo de cosméticos do Fortnite.
+   Tudo roda no navegador: o catálogo vem da fortnite-api.com (de graça,
+   sem chave), fica guardado no IndexedDB do aparelho, e o resto
+   (armário, favoritas) fica no localStorage. Nenhum servidor nosso.
+   ===================================================================== */
+'use strict';
+const API = 'https://fortnite-api.com/v2';
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- tipos ----------
+   value da API → nome em português, grupo do filtro e emoji de reserva. */
+const TIPOS = {
+  outfit:       { nome:'Traje (skin)',           grupo:'Personagem', emoji:'🧍' },
+  backpack:     { nome:'Acessório para costas',  grupo:'Personagem', emoji:'🎒' },
+  pickaxe:      { nome:'Picareta',               grupo:'Personagem', emoji:'⛏️' },
+  glider:       { nome:'Asa-delta',              grupo:'Personagem', emoji:'🪂' },
+  contrail:     { nome:'Rastro de fumaça',       grupo:'Personagem', emoji:'💨' },
+  aura:         { nome:'Aura',                   grupo:'Personagem', emoji:'✨' },
+  shoe:         { nome:'Calçado',                grupo:'Personagem', emoji:'👟' },
+  emote:        { nome:'Gesto',                  grupo:'Personagem', emoji:'🕺' },
+  pet:          { nome:'Mascote',                grupo:'Personagem', emoji:'🐶' },
+  petcarrier:   { nome:'Mascote',                grupo:'Personagem', emoji:'🐶' },
+  sidekick:     { nome:'Parceiro',               grupo:'Personagem', emoji:'🐾' },
+  wrap:         { nome:'Envelopamento',          grupo:'Extras',     emoji:'🎁' },
+  banner:       { nome:'Estandarte',             grupo:'Extras',     emoji:'🚩' },
+  music:        { nome:'Música do lobby',        grupo:'Extras',     emoji:'🎵' },
+  loadingscreen:{ nome:'Tela de carregamento',   grupo:'Extras',     emoji:'🖼️' },
+  spray:        { nome:'Spray',                  grupo:'Extras',     emoji:'🖌️' },
+  emoji:        { nome:'Emoticon',               grupo:'Extras',     emoji:'😀' },
+  toy:          { nome:'Brinquedo',              grupo:'Extras',     emoji:'🏀' },
+  shout:        { nome:'Grito',                  grupo:'Extras',     emoji:'📣' },
+  bundle:       { nome:'Pacote',                 grupo:'Extras',     emoji:'📦' },
+  body:         { nome:'Carro',                  grupo:'Carros',     emoji:'🚗' },
+  skin:         { nome:'Adesivo (carro)',        grupo:'Carros',     emoji:'🏷️' },
+  wheel:        { nome:'Rodas',                  grupo:'Carros',     emoji:'🛞' },
+  drifttrail:   { nome:'Rastro (carro)',         grupo:'Carros',     emoji:'🌈' },
+  booster:      { nome:'Impulso',                grupo:'Carros',     emoji:'🔥' },
+  guitar:       { nome:'Guitarra',               grupo:'Festival',   emoji:'🎸' },
+  bass:         { nome:'Baixo',                  grupo:'Festival',   emoji:'🎸' },
+  drum:         { nome:'Bateria',                grupo:'Festival',   emoji:'🥁' },
+  mic:          { nome:'Microfone',              grupo:'Festival',   emoji:'🎤' },
+  keyboard:     { nome:'Teclado',                grupo:'Festival',   emoji:'🎹' },
+  track:        { nome:'Faixa (Jam Track)',      grupo:'Festival',   emoji:'💿' },
+  legoset:      { nome:'Kit LEGO',               grupo:'LEGO',       emoji:'🧱' },
+  legoprop:     { nome:'Decoração LEGO',         grupo:'LEGO',       emoji:'🧱' },
+};
+const ORDEM_GRUPOS = ['Personagem','Extras','Carros','Festival','LEGO','Outros'];
+function tipoDe(v){ return TIPOS[v] || { nome:v || 'Outro', grupo:'Outros', emoji:'❔' }; }
+
+/* ---------- raridades ---------- */
+const RARIDADES = {
+  common:{nome:'Comum',cor:'#9aa0a6'}, uncommon:{nome:'Incomum',cor:'#5fb236'}, rare:{nome:'Rara',cor:'#2f9df2'},
+  epic:{nome:'Épica',cor:'#a855f7'}, legendary:{nome:'Lendária',cor:'#f08a2e'}, mythic:{nome:'Mítica',cor:'#e6b422'},
+  icon:{nome:'Série Ícones',cor:'#20c8c8'}, marvel:{nome:'Série Marvel',cor:'#e02a2a'}, dc:{nome:'Série DC',cor:'#2d5fb8'},
+  starwars:{nome:'Série Star Wars',cor:'#3b3f8f'}, gaminglegends:{nome:'Lendas dos Games',cor:'#6a3fd6'},
+  lava:{nome:'Série Lava',cor:'#e24a1f'}, frozen:{nome:'Série Congelada',cor:'#7fd3ff'}, shadow:{nome:'Série Sombra',cor:'#333'},
+  slurp:{nome:'Série Slurp',cor:'#13c9a6'}, dark:{nome:'Série Sombria',cor:'#d13ad1'}, lamborghini:{nome:'Série Lamborghini',cor:'#e8c21a'},
+};
+function raridadeDe(it){
+  const r = RARIDADES[it.rar];
+  if(r) return { nome: it.rarNome || r.nome, cor: r.cor };
+  return { nome: it.rarNome || 'Sem raridade', cor:'#8a8a9a' };
+}
+const SERIES = new Set(['icon','marvel','dc','starwars','gaminglegends','lava','frozen','shadow','slurp','dark','lamborghini']);
+
+/* ---------- preço estimado ----------
+   A API não diz preço. Então, quando o item NÃO está na loja hoje, o site
+   usa a tabela que a Epic sempre usou: tipo + raridade → V-Bucks.
+   É estimativa e o site diz isso na cara. */
+const TABELA = {
+  outfit:{common:800,uncommon:800,rare:1200,epic:1500,legendary:2000,serie:1500},
+  backpack:{common:200,uncommon:200,rare:300,epic:400,legendary:500,serie:400},
+  pet:{rare:800,epic:1000,legendary:1500,serie:1200}, petcarrier:{rare:800,epic:1000,legendary:1500,serie:1200},
+  pickaxe:{common:500,uncommon:500,rare:800,epic:1200,legendary:1500,serie:800},
+  glider:{common:500,uncommon:500,rare:800,epic:1200,legendary:1500,serie:1200},
+  contrail:{uncommon:200,rare:300,epic:500,legendary:500,serie:500},
+  emote:{uncommon:200,rare:500,epic:800,legendary:800,serie:500},
+  emoji:{todas:100}, spray:{todas:100}, toy:{rare:500,epic:800,todas:500}, shout:{todas:200},
+  wrap:{uncommon:300,rare:500,epic:700,legendary:700,serie:500},
+  banner:{todas:200}, music:{uncommon:200,rare:300,epic:500,serie:300},
+  loadingscreen:{uncommon:100,rare:200,epic:200,todas:200},
+  aura:{uncommon:300,rare:500,epic:800,legendary:800,serie:800},
+  shoe:{uncommon:400,rare:600,epic:800,legendary:1000,serie:800},
+  sidekick:{rare:500,epic:800,legendary:1000,serie:800},
+  body:{rare:1000,epic:1200,legendary:2000,serie:2000}, wheel:{rare:300,epic:500,todas:300},
+  booster:{rare:200,epic:300,todas:200}, skin:{rare:300,epic:500,todas:300}, drifttrail:{rare:300,epic:500,todas:300},
+  guitar:{rare:500,epic:800,legendary:1200,serie:800}, bass:{rare:500,epic:800,legendary:1200,serie:800},
+  drum:{rare:500,epic:800,legendary:1200,serie:800}, mic:{rare:500,epic:800,legendary:1200,serie:800},
+  keyboard:{rare:500,epic:800,legendary:1200,serie:800},
+  track:{todas:500}, legoset:{todas:1000}, legoprop:{todas:500}, bundle:{todas:2000},
+};
+function precoEstimado(it){
+  const t = TABELA[it.tipo]; if(!t) return null;
+  if(it.serie && t.serie) return t.serie;
+  if(t[it.rar] != null) return t[it.rar];
+  if(t.todas != null) return t.todas;
+  return t.epic || t.rare || null;
+}
+
+/* ---------- V-Bucks em reais ----------
+   Pacotes da loja da Epic no Brasil desde 19/03/2026 (a Epic aumentou:
+   o pacote de R$ 31,99 passou de 1.000 pra 800 V-Bucks). */
+const PACOTES = [ [800,31.99], [2400,78.99], [4500,124.99], [12500,313.99] ];
+const EXATO = [50, 2.99];   // "quantidade exata": 50 V-Bucks por R$ 2,99
+const reais = n => n.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+const num = n => Number(n).toLocaleString('pt-BR');
+function reaisDe(vb){
+  vb = Math.max(0, Math.round(vb || 0));
+  if(vb === 0) return { melhor:0, pacotes:0, exato:0, como:'' };
+  // Jeito mais barato de juntar pelo menos vb usando os pacotes (programação dinâmica, passo de 50).
+  const passo = 50, maxV = vb + 12500;
+  const n = Math.ceil(maxV / passo) + 1;
+  const custo = new Float64Array(n).fill(Infinity); const de = new Int32Array(n).fill(-1);
+  custo[0] = 0;
+  for(let i = 0; i < n; i++){
+    if(custo[i] === Infinity) continue;
+    PACOTES.forEach(([q, p], k) => {
+      const j = Math.min(n - 1, i + q / passo);
+      if(custo[i] + p < custo[j]){ custo[j] = custo[i] + p; de[j] = k; }
+    });
+  }
+  let melhorI = -1;
+  for(let i = Math.ceil(vb / passo); i < n; i++){ if(custo[i] < Infinity && (melhorI < 0 || custo[i] < custo[melhorI])) melhorI = i; }
+  const pacotes = melhorI >= 0 ? custo[melhorI] : Infinity;
+  const usados = {}; for(let i = melhorI; i > 0 && de[i] >= 0; ){ const k = de[i]; usados[k] = (usados[k] || 0) + 1; i -= PACOTES[k][0] / passo; }
+  const como = Object.keys(usados).map(k => (usados[k] > 1 ? usados[k] + '× ' : '') + num(PACOTES[k][0]) + ' V-Bucks').join(' + ');
+  const exato = Math.ceil(vb / EXATO[0]) * EXATO[1];
+  return { melhor: Math.min(pacotes, exato), pacotes, exato, como };
+}
+
+const AVISO_DINHEIRO = '⚠️ <b>Esse valor em reais é só curiosidade:</b> é quanto custaria comprar os V-Bucks. Skin <b>não vira dinheiro de volta</b> — ninguém paga isso por ela. ' +
+  '<b>Nunca venda, compre nem troque conta.</b> É proibido pelas regras da Epic, a conta pode ser banida pra sempre, e quase sempre é golpe: a pessoa some com o dinheiro ou com a conta. ' +
+  'E nunca dê sua senha pra quem prometer V-Bucks de graça. V-Bucks de graça não existe.';
+
+/* ---------- raridade de ver um player com ela ----------
+   Ninguém tem o número de quantos jogadores têm cada skin. Mas dá pra
+   chutar bem: quanto menos vezes foi vendida, há quanto tempo sumiu e se
+   só saiu em passe/evento antigo, menos gente tem. Vai de 1 a 5 estrelas. */
+function raridadeDeVer(it){
+  if(it._rv) return it._rv;   // guardado no item: o catálogo tem milhares e a ordenação chama isso muitas vezes
+  return (it._rv = calcularRaridadeDeVer(it));
+}
+function calcularRaridadeDeVer(it){
+  const vezes = it.hist.length;
+  const ultima = vezes ? diasDesde(it.hist[it.hist.length - 1]) : null;
+  const idade = diasDesde(it.add);
+  const cap = parseFloat(it.cap) || 0;
+  const fonte = it.fonte.join(' ').toLowerCase();
+  let n, por;
+  if(LOJA.has(it.id)){ n = 1; por = 'Está na loja agora: qualquer um pode comprar hoje.'; }
+  else if(!vezes){
+    if(idade != null && idade < 120){ n = 2; por = 'Saiu faz pouco tempo e ainda dá pra conseguir (passe, missão ou evento que está rolando).'; }
+    else if(/playstation|xbox|nintendo|celular|promo/.test(fonte)){ n = 5; por = 'Foi de graça só pra quem tinha ' + (/playstation/.test(fonte) ? 'PlayStation Plus' : 'uma coisa específica') + ' na época, e nunca mais apareceu. Quase ninguém tem.'; }
+    else if(cap && cap <= 1){ n = 5; por = 'É do Capítulo 1 e nunca foi vendida. Só quem jogava no começo do Fortnite tem — ver uma dessas na partida é evento.'; }
+    else if(cap && cap <= 3){ n = 4; por = 'Veio de passe ou evento do Capítulo ' + it.cap + ' e nunca foi vendida. Quem não jogou naquela época não tem.'; }
+    else { n = 3; por = 'Nunca foi vendida: veio de passe, missão ou evento. Quem jogou na época tem, quem não jogou não consegue mais.'; }
+  }
+  else if(vezes <= 2 && ultima > 730){ n = 5; por = 'Só apareceu ' + vezes + ' vez' + (vezes > 1 ? 'es' : '') + ' na loja e sumiu ' + tempoBonito(ultima) + '. Pouquíssima gente tem.'; }
+  else if(vezes <= 6 && ultima > 365){ n = 4; por = 'Apareceu só ' + vezes + ' vezes e a última foi ' + tempoBonito(ultima) + '. É rara de ver numa partida.'; }
+  else if(vezes <= 15 || ultima > 365){ n = 3; por = 'Apareceu ' + vezes + ' vezes na loja, a última ' + tempoBonito(ultima) + '. Dá pra ver de vez em quando.'; }
+  else if(vezes <= 40){ n = 2; por = 'Já voltou pra loja ' + vezes + ' vezes. Bastante gente tem.'; }
+  else { n = 1; por = 'Já voltou pra loja ' + vezes + ' vezes! Todo mundo tem, aparece em toda partida.'; }
+  const NOMES = { 1:'Todo mundo tem', 2:'Comum de ver', 3:'Rara de ver', 4:'Muito rara', 5:'Raríssima — quase ninguém tem' };
+  return { n, nome:NOMES[n], por, estrelas:'★'.repeat(n) + '☆'.repeat(5 - n) };
+}
+
+/* ---------- de onde vem o item (tags da API) ---------- */
+function fonteDe(tags){
+  const f = new Set();
+  (tags || []).forEach(t => {
+    const s = String(t).toLowerCase();
+    if(!s.startsWith('cosmetics.source')) return;
+    if(s.includes('battlepass') || s.includes('season')) f.add('Passe de Batalha');
+    else if(s.includes('itemshop')) f.add('Loja de itens');
+    else if(s.includes('starterpack')) f.add('Pacote inicial (dinheiro)');
+    else if(s.includes('crew')) f.add('Clube Fortnite');
+    else if(s.includes('twitch') || s.includes('prime')) f.add('Prime Gaming');
+    else if(s.includes('playstation') || s.includes('psplus') || s.includes('ps4') || s.includes('ps5') || s.includes('sony')) f.add('PlayStation (de graça)');
+    else if(s.includes('xbox')) f.add('Xbox');
+    else if(s.includes('nintendo') || s.includes('switch')) f.add('Nintendo');
+    else if(s.includes('samsung') || s.includes('galaxy') || s.includes('mobile') || s.includes('ios') || s.includes('android')) f.add('Celular');
+    else if(s.includes('promo')) f.add('Promoção');
+    else if(s.includes('stw') || s.includes('savetheworld') || s.includes('founder')) f.add('Salve o Mundo');
+    else if(s.includes('quest') || s.includes('challenge')) f.add('Missão');
+    else if(s.includes('granted') || s.includes('free')) f.add('Recompensa (de graça)');
+    else if(s.includes('event')) f.add('Evento');
+    else f.add(s.replace('cosmetics.source.', ''));
+  });
+  return Array.from(f);
+}
+
+/* ---------- IndexedDB (cache do catálogo) ---------- */
+function bd(){
+  return new Promise((ok, erro) => {
+    const r = indexedDB.open('dearnite', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('dados');
+    r.onsuccess = () => ok(r.result); r.onerror = () => erro(r.error);
+  });
+}
+async function bdLer(chave){
+  try{ const d = await bd(); return await new Promise((ok, erro) => { const r = d.transaction('dados').objectStore('dados').get(chave); r.onsuccess = () => ok(r.result); r.onerror = () => erro(r.error); }); }
+  catch(e){ return null; }
+}
+async function bdGravar(chave, valor){
+  try{ const d = await bd(); await new Promise((ok, erro) => { const t = d.transaction('dados', 'readwrite'); t.objectStore('dados').put(valor, chave); t.oncomplete = ok; t.onerror = () => erro(t.error); }); }
+  catch(e){ /* sem espaço ou modo anônimo: segue sem cache */ }
+}
+
+/* ---------- baixar com barra de progresso ---------- */
+async function baixar(url, aoProgredir){
+  const r = await fetch(url, { headers:{ Accept:'application/json' } });
+  if(!r.ok) throw new Error('HTTP ' + r.status + ' em ' + url);
+  if(!r.body || !r.body.getReader) return r.json();
+  const leitor = r.body.getReader(); const pedacos = []; let total = 0;
+  for(;;){ const { done, value } = await leitor.read(); if(done) break; pedacos.push(value); total += value.length; aoProgredir && aoProgredir(total); }
+  const tudo = new Uint8Array(total); let p = 0; pedacos.forEach(x => { tudo.set(x, p); p += x.length; });
+  return JSON.parse(new TextDecoder().decode(tudo));
+}
+
+/* ---------- enxugar os itens ----------
+   A API manda muita coisa; guardamos só o que o site mostra, senão o
+   IndexedDB do celular não aguenta. */
+function enxugarBR(x){
+  const img = x.images || {};
+  return {
+    id:x.id, nome:x.name || '', desc:x.description || '',
+    tipo:(x.type && x.type.value) || 'outro', tipoNome:(x.type && x.type.displayValue) || '',
+    rar:(x.rarity && x.rarity.value) || '', rarNome:(x.rarity && x.rarity.displayValue) || '',
+    serie:(x.series && x.series.value) || '', conjunto:(x.set && x.set.value) || '',
+    cap:(x.introduction && x.introduction.chapter) || '', temp:(x.introduction && x.introduction.season) || '',
+    intro:(x.introduction && x.introduction.text) || '',
+    img: img.smallIcon || img.icon || '', grande: img.featured || img.icon || img.smallIcon || '',
+    add:x.added || '', hist:Array.isArray(x.shopHistory) ? x.shopHistory : [],
+    fonte:fonteDe(x.gameplayTags), cat:'br',
+  };
+}
+function enxugarOutro(x, cat){
+  const img = x.images || {};
+  const tipo = (x.type && x.type.value) || (cat === 'tracks' ? 'track' : 'outro');
+  return {
+    id:x.id, nome:x.name || x.title || '', desc:x.description || (cat === 'tracks' ? [x.artist, x.album, x.releaseYear].filter(Boolean).join(' · ') : ''),
+    tipo, tipoNome:(x.type && x.type.displayValue) || '',
+    rar:(x.rarity && x.rarity.value) || '', rarNome:(x.rarity && x.rarity.displayValue) || '',
+    serie:(x.series && x.series.value) || '', conjunto:'',
+    cap:'', temp:'', intro:'',
+    img: img.small || x.albumArt || img.large || '', grande: img.large || img.wide || x.albumArt || img.small || '',
+    add:x.added || '', hist:Array.isArray(x.shopHistory) ? x.shopHistory : [],
+    fonte:fonteDe(x.gameplayTags), cat,
+  };
+}
+
+/* ---------- estado ---------- */
+let ITENS = [];            // catálogo enxuto
+let POR_ID = new Map();
+let LOJA = new Map();      // id → { preco, normal, pacote }
+let LOJA_INFO = null;
+let filtrados = [];
+let mostrados = 0;
+const PAGINA = 60;
+let tipoAtivo = '';
+
+const status = (txt, pct, erro) => {
+  const s = $('#status'); s.classList.toggle('erro', !!erro);
+  $('#statusTexto').innerHTML = txt;
+  $('#statusBarra').style.width = (pct == null ? 0 : pct) + '%';
+  if(pct != null && pct >= 100 && !erro) setTimeout(() => s.classList.add('oculto'), 1800);
+};
+
+async function carregarCatalogo(){
+  const DIA = 24 * 60 * 60 * 1000;
+  const guardado = await bdLer('catalogo');
+  if(guardado && guardado.itens && guardado.itens.length && Date.now() - guardado.quando < DIA){
+    ITENS = guardado.itens; status('Catálogo do aparelho (de ' + new Date(guardado.quando).toLocaleString('pt-BR') + ').', 100);
+    return;
+  }
+  if(guardado && guardado.itens && guardado.itens.length){ ITENS = guardado.itens; prepararCatalogo(); render(); }
+  const fontes = [
+    { url:API + '/cosmetics/br?language=pt-BR', nome:'skins e cosméticos', fn:enxugarBR, peso:80 },
+    { url:API + '/cosmetics/cars?language=pt-BR', nome:'carros', fn:x => enxugarOutro(x, 'cars'), peso:5 },
+    { url:API + '/cosmetics/instruments?language=pt-BR', nome:'instrumentos', fn:x => enxugarOutro(x, 'instruments'), peso:5 },
+    { url:API + '/cosmetics/tracks?language=pt-BR', nome:'faixas do Festival', fn:x => enxugarOutro(x, 'tracks'), peso:5 },
+    { url:API + '/cosmetics/lego/kits?language=pt-BR', nome:'kits LEGO', fn:x => enxugarOutro(x, 'legokits'), peso:5 },
+  ];
+  const novos = []; let feito = 0; let falhas = [];
+  for(const f of fontes){
+    try{
+      status('Baixando ' + f.nome + '… (só na primeira vez, depois fica guardado)', feito);
+      const j = await baixar(f.url, bytes => status('Baixando ' + f.nome + '… ' + (bytes / 1048576).toFixed(1) + ' MB', feito));
+      const lista = Array.isArray(j.data) ? j.data : [];
+      lista.forEach(x => { try{ novos.push(f.fn(x)); }catch(e){} });
+    }catch(e){ falhas.push(f.nome); console.warn(e); }
+    feito += f.peso; status('Organizando…', feito);
+  }
+  if(!novos.length){
+    if(ITENS.length) status('Sem internet agora — mostrando o catálogo guardado.', 100, true);
+    else status('Não consegui baixar o catálogo. Confere a internet e recarrega a página.', 0, true);
+    return;
+  }
+  ITENS = novos;
+  await bdGravar('catalogo', { quando:Date.now(), itens:ITENS });
+  status(falhas.length ? 'Pronto! (não consegui baixar: ' + falhas.join(', ') + ')' : 'Catálogo atualizado!', 100, falhas.length > 0 && falhas.length === fontes.length);
+}
+
+async function carregarLoja(){
+  const HORA = 60 * 60 * 1000;
+  let dados = await bdLer('loja');
+  if(!dados || Date.now() - dados.quando > HORA){
+    try{ const j = await baixar(API + '/shop?language=pt-BR'); dados = { quando:Date.now(), loja:j.data }; await bdGravar('loja', dados); }
+    catch(e){ console.warn(e); }
+  }
+  if(!dados || !dados.loja){ $('#lojaData').textContent = 'Não consegui carregar a loja de hoje.'; return; }
+  LOJA_INFO = dados.loja; LOJA = new Map();
+  (dados.loja.entries || []).forEach(e => {
+    const grupos = ['brItems','cars','instruments','tracks','legoKits'];
+    const itens = []; grupos.forEach(g => (e[g] || []).forEach(x => itens.push(x)));
+    itens.forEach(x => {
+      const soz = itens.length === 1;
+      const atual = LOJA.get(x.id);
+      const novo = { preco:e.finalPrice, normal:e.regularPrice, pacote: soz ? '' : ((e.bundle && e.bundle.name) || e.devName || 'pacote'), quantos:itens.length, sai:e.outDate };
+      // Se o item aparece sozinho e também num pacote, o preço sozinho é o que vale.
+      if(!atual || (atual.pacote && !novo.pacote)) LOJA.set(x.id, novo);
+    });
+  });
+  ITENS.forEach(it => { delete it._rv; });   // "está na loja agora" muda a raridade de ver
+  renderLoja(dados.loja);
+  render();
+}
+
+/* ---------- preparo: índices, filtros ---------- */
+const normal = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+function prepararCatalogo(){
+  POR_ID = new Map(); ITENS.forEach(it => { it.n = normal(it.nome); it.c = normal(it.conjunto); POR_ID.set(it.id, it); });
+  // chips de tipo, agrupados
+  const porGrupo = {}; const conta = {};
+  ITENS.forEach(it => { conta[it.tipo] = (conta[it.tipo] || 0) + 1; });
+  Object.keys(conta).forEach(t => { const g = tipoDe(t).grupo; (porGrupo[g] = porGrupo[g] || []).push(t); });
+  let html = '<button class="chip" aria-pressed="' + (tipoAtivo === '') + '" data-tipo="">Tudo (' + num(ITENS.length) + ')</button>';
+  ORDEM_GRUPOS.forEach(g => {
+    if(!porGrupo[g]) return;
+    html += '<span class="chips-grupo">' + g + '</span>';
+    porGrupo[g].sort((a, b) => conta[b] - conta[a]).forEach(t => {
+      const T = tipoDe(t);
+      html += '<button class="chip" aria-pressed="' + (tipoAtivo === t) + '" data-tipo="' + esc(t) + '">' + T.emoji + ' ' + esc(T.nome) + ' (' + num(conta[t]) + ')</button>';
+    });
+  });
+  $('#chipsTipo').innerHTML = html;
+  // raridades e capítulos
+  const rars = new Map(); ITENS.forEach(it => { if(it.rar) rars.set(it.rar, it.rarNome || (RARIDADES[it.rar] || {}).nome || it.rar); });
+  const selR = $('#selRaridade'); const vr = selR.value; selR.innerHTML = '<option value="">Todas as raridades</option>' +
+    Array.from(rars).sort((a, b) => (SERIES.has(a[0]) - SERIES.has(b[0])) || a[1].localeCompare(b[1])).map(([v, n]) => '<option value="' + esc(v) + '">' + esc(n) + '</option>').join('');
+  selR.value = vr;
+  const caps = new Set(); ITENS.forEach(it => { if(it.cap) caps.add(String(it.cap)); });
+  const selC = $('#selCapitulo'); const vc = selC.value; selC.innerHTML = '<option value="">Todos os capítulos</option>' +
+    Array.from(caps).sort((a, b) => (parseFloat(a) || 99) - (parseFloat(b) || 99) || a.localeCompare(b)).map(c => '<option value="' + esc(c) + '">Capítulo ' + esc(c) + '</option>').join('');
+  selC.value = vc;
+}
+
+/* ---------- preço de um item ---------- */
+function precoDe(it){
+  const l = LOJA.get(it.id);
+  if(l && l.preco != null) return { vb:l.preco, de:'loja', normal:l.normal, pacote:l.pacote };
+  if(!it.hist.length){
+    const f = it.fonte.join(' ');
+    return { vb:0, de:'nunca', fonte:f };
+  }
+  const est = precoEstimado(it);
+  return { vb: est == null ? 0 : est, de: est == null ? 'desconhecido' : 'estimado' };
+}
+
+/* ---------- filtros e ordem ---------- */
+function aplicarFiltros(){
+  const q = normal($('#campo').value);
+  const rar = $('#selRaridade').value, cap = $('#selCapitulo').value, ordem = $('#selOrdem').value;
+  const soLoja = $('#chkLoja').checked, soNunca = $('#chkNunca').checked, ver = parseInt($('#selVer').value, 10) || 0;
+  filtrados = ITENS.filter(it => {
+    if(tipoAtivo && it.tipo !== tipoAtivo) return false;
+    if(rar && it.rar !== rar) return false;
+    if(cap && String(it.cap) !== cap) return false;
+    if(ver && raridadeDeVer(it).n !== ver) return false;
+    if(soLoja && !LOJA.has(it.id)) return false;
+    if(soNunca && it.hist.length) return false;
+    if(q && !(it.n.includes(q) || it.c.includes(q) || it.id.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  const col = new Intl.Collator('pt-BR');
+  const ult = it => it.hist.length ? it.hist[it.hist.length - 1] : '';
+  const ordens = {
+    nome:(a, b) => col.compare(a.nome, b.nome),
+    novas:(a, b) => (b.add || '').localeCompare(a.add || '') || col.compare(a.nome, b.nome),
+    antigas:(a, b) => (a.add || '').localeCompare(b.add || '') || col.compare(a.nome, b.nome),
+    maisloja:(a, b) => b.hist.length - a.hist.length || col.compare(a.nome, b.nome),
+    menosloja:(a, b) => (a.hist.length || 1e9) - (b.hist.length || 1e9) || col.compare(a.nome, b.nome),
+    sumidas:(a, b) => (ult(a) || '9') .localeCompare(ult(b) || '9') || col.compare(a.nome, b.nome),
+    rarasver:(a, b) => raridadeDeVer(b).n - raridadeDeVer(a).n || a.hist.length - b.hist.length || col.compare(a.nome, b.nome),
+    caras:(a, b) => precoDe(b).vb - precoDe(a).vb || col.compare(a.nome, b.nome),
+    baratas:(a, b) => precoDe(a).vb - precoDe(b).vb || col.compare(a.nome, b.nome),
+  };
+  if(q){ // quem começa com o que foi digitado vem primeiro
+    filtrados.sort((a, b) => (b.n.startsWith(q) - a.n.startsWith(q)) || ordens[ordem](a, b));
+  } else filtrados.sort(ordens[ordem] || ordens.nome);
+}
+
+/* ---------- render da grade ---------- */
+function cartaHTML(it, extra){
+  const R = raridadeDe(it); const T = tipoDe(it.tipo);
+  const selos = [];
+  if(LOJA.has(it.id)) selos.push('<span class="selo loja">🛒 hoje</span>');
+  if(it.hist.length) selos.push('<span class="selo">' + it.hist.length + '×</span>'); else selos.push('<span class="selo">nunca vendida</span>');
+  if(armario.has(it.id)) selos.push('<span class="selo tenho">tenho</span>');
+  if(favs.has(it.id)) selos.push('<span class="selo fav">❤</span>');
+  return '<button class="carta" data-id="' + esc(it.id) + '" style="--cor-rar:' + R.cor + '">' +
+    '<div class="selos">' + selos.join('') + '</div>' +
+    '<div class="foto">' + (it.img ? '<img loading="lazy" src="' + esc(it.img) + '" alt="" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'sem\',textContent:\'' + T.emoji + '\'}))" />' : '<span class="sem">' + T.emoji + '</span>') + '</div>' +
+    '<div class="info"><div class="nome">' + esc(it.nome || it.id) + '</div><div class="tipo">' + esc(T.nome) + ' · ' + esc(R.nome) + '<br/><span title="Raridade de ver um player com ela">👀 ' + raridadeDeVer(it).estrelas + '</span>' + (extra || '') + '</div></div></button>';
+}
+function render(){
+  if(!ITENS.length) return;
+  aplicarFiltros(); mostrados = 0; $('#grade').innerHTML = '';
+  $('#contador').textContent = filtrados.length ? num(filtrados.length) + ' cosmético' + (filtrados.length > 1 ? 's' : '') + ' encontrado' + (filtrados.length > 1 ? 's' : '') : 'Nada com esse nome. Tenta escrever menos letras, ou o nome em inglês.';
+  maisPagina();
+}
+function maisPagina(){
+  const fatia = filtrados.slice(mostrados, mostrados + PAGINA);
+  $('#grade').insertAdjacentHTML('beforeend', fatia.map(it => cartaHTML(it)).join(''));
+  mostrados += fatia.length;
+  $('#btnMais').classList.toggle('oculto', mostrados >= filtrados.length);
+  $('#btnMais').textContent = 'Mostrar mais (' + num(filtrados.length - mostrados) + ' faltando)';
+}
+const obs = new IntersectionObserver(es => { if(es[0].isIntersecting && mostrados < filtrados.length) maisPagina(); });
+obs.observe($('#btnMais'));
+
+/* ---------- datas ---------- */
+const dataBR = s => { if(!s) return '?'; const d = new Date(s); return isNaN(d) ? String(s).slice(0, 10) : d.toLocaleDateString('pt-BR'); };
+function diasDesde(s){ if(!s) return null; const d = new Date(s); if(isNaN(d)) return null; return Math.max(0, Math.floor((Date.now() - d) / 86400000)); }
+function tempoBonito(dias){
+  if(dias == null) return '';
+  if(dias === 0) return 'hoje';
+  if(dias < 30) return 'há ' + dias + ' dia' + (dias > 1 ? 's' : '');
+  if(dias < 365) return 'há ' + Math.round(dias / 30) + ' mês(es)';
+  const a = Math.floor(dias / 365), m = Math.round((dias % 365) / 30);
+  return 'há ' + a + ' ano' + (a > 1 ? 's' : '') + (m ? ' e ' + m + ' mês(es)' : '');
+}
+
+/* ---------- detalhe ---------- */
+function blocoPreco(it){
+  const p = precoDe(it);
+  let html = '<div class="bloco"><h3>💎 Quanto custa</h3>';
+  if(p.de === 'loja'){
+    html += '<p class="destaque vbucks"><i class="vb-icone"></i>' + num(p.vb) + ' V-Bucks</p>';
+    html += '<p>Está na <b>loja hoje</b>' + (p.pacote ? ' dentro do pacote <b>' + esc(p.pacote) + '</b> (esse é o preço do pacote inteiro)' : '') +
+      (p.normal && p.normal !== p.vb ? ' — com desconto! Preço normal: ' + num(p.normal) + ' V-Bucks' : '') + '.</p>';
+  } else if(p.de === 'nunca'){
+    html += '<p class="destaque">Não dá pra comprar</p>';
+    const ps = /playstation/i.test(p.fonte);
+    html += '<p>Esse item <b>nunca foi vendido na loja</b>. ' +
+      (ps ? 'Foi <b>de graça pra quem tinha PlayStation Plus</b>, e nunca mais apareceu. ' :
+       /passe/i.test(p.fonte) ? 'Veio do <b>Passe de Batalha</b>, e passe não volta. ' :
+       p.fonte ? 'Veio de: <b>' + esc(p.fonte) + '</b>. ' : 'Veio de evento, promoção, passe ou foi dado de graça. ') +
+      'Por isso é <b>exclusivo</b>: quem tem, tem, e quem não tem não consegue mais. Em V-Bucks vale 0 — mas em raridade vale muito!</p>';
+  } else if(p.de === 'estimado'){
+    const r = reaisDe(p.vb);
+    html += '<p class="destaque vbucks"><i class="vb-icone"></i>' + num(p.vb) + ' V-Bucks <small class="fraco" style="font-size:.9rem;font-family:Rubik">(estimado)</small></p>';
+    html += '<p>Não está na loja hoje, então esse é o preço que a Epic cobra por <b>' + esc(tipoDe(it.tipo).nome.toLowerCase()) + ' ' + esc(raridadeDe(it).nome.toLowerCase()) + '</b>. Quando ela voltar pra loja, o site mostra o preço de verdade.</p>';
+  } else {
+    html += '<p class="destaque">Preço desconhecido</p><p>Já foi vendido na loja, mas o site não sabe por quanto.</p>';
+  }
+  if(p.vb > 0){
+    const r = reaisDe(p.vb);
+    html += '<p style="margin-top:8px">Em dinheiro, comprar esses V-Bucks custa <b>' + reais(r.melhor) + '</b>' +
+      (r.pacotes < Infinity && r.como ? ' (' + r.como + (r.pacotes > r.melhor ? '' : '') + ')' : '') +
+      (r.exato < r.pacotes ? ' comprando a quantidade exata' : '') + '.</p>';
+    html += '<div class="aviso">' + AVISO_DINHEIRO + '</div>';
+  }
+  return html + '</div>';
+}
+function detalheHTML(it){
+  const R = raridadeDe(it); const T = tipoDe(it.tipo);
+  const hist = it.hist.slice().sort();
+  const primeira = hist[0], ultima = hist[hist.length - 1];
+  const porAno = {}; hist.forEach(d => { const a = String(d).slice(0, 4); (porAno[a] = porAno[a] || []).push(d); });
+  let html = '<button class="fechar" id="btnFechar" aria-label="Fechar">✕</button>' +
+    '<div class="det-topo" style="--cor-rar:' + R.cor + '">' +
+    (it.grande || it.img ? '<img src="' + esc(it.grande || it.img) + '" alt="" onerror="this.src=\'' + esc(it.img) + '\';this.onerror=null" />' : '<div class="sem">' + T.emoji + '</div>') +
+    '<div><h2>' + esc(it.nome || it.id) + '</h2><div class="pilulas"><span class="pil">' + T.emoji + ' ' + esc(T.nome) + '</span><span class="pil">' + esc(R.nome) + '</span>' +
+    (it.conjunto ? '<span class="pil">Conjunto: ' + esc(it.conjunto) + '</span>' : '') + '</div>' +
+    (it.desc ? '<p class="desc">' + esc(it.desc) + '</p>' : '') + '</div></div><div class="det-corpo">';
+
+  html += '<div class="acoes" style="margin-bottom:10px">' +
+    '<button class="btn pequeno ' + (armario.has(it.id) ? 'verde' : 'leve') + '" data-acao="tenho">' + (armario.has(it.id) ? '🎒 Tenho! (tirar do armário)' : '🎒 Eu tenho essa') + '</button>' +
+    '<button class="btn pequeno ' + (favs.has(it.id) ? 'vermelho' : 'leve') + '" data-acao="fav">' + (favs.has(it.id) ? '❤️ Favorita (tirar)' : '🤍 Quero essa') + '</button></div>';
+
+  html += '<div class="bloco"><h3>📅 Quando saiu</h3><ul>' +
+    (it.intro ? '<li>' + esc(it.intro) + '</li>' : (it.cap ? '<li>Capítulo ' + esc(it.cap) + (it.temp ? ', Temporada ' + esc(it.temp) : '') + '</li>' : '')) +
+    (it.add ? '<li>Entrou nos arquivos do jogo em <b>' + dataBR(it.add) + '</b> (' + tempoBonito(diasDesde(it.add)) + ')</li>' : '') +
+    (primeira ? '<li>Primeira vez na loja: <b>' + dataBR(primeira) + '</b></li>' : '<li>Nunca apareceu na loja de itens.</li>') +
+    (it.fonte.length ? '<li>De onde vem: <b>' + esc(it.fonte.join(', ')) + '</b></li>' : '') + '</ul></div>';
+
+  html += '<div class="bloco"><h3>🛒 Na loja</h3>';
+  if(hist.length){
+    const d = diasDesde(ultima);
+    html += '<p class="destaque">' + hist.length + ' vez' + (hist.length > 1 ? 'es' : '') + '</p>' +
+      '<p>Última vez: <b>' + dataBR(ultima) + '</b> (' + tempoBonito(d) + ')' + (LOJA.has(it.id) ? ' — <b>está na loja agora!</b>' : (d > 365 ? ' — sumida faz tempo, pode ser que nunca mais volte… ou que volte amanhã.' : '')) + '</p>' +
+      '<details><summary>Ver todas as datas</summary>' + Object.keys(porAno).sort().reverse().map(a => '<p style="margin-top:6px"><b>' + a + '</b> (' + porAno[a].length + ')</p><div class="datas">' + porAno[a].map(x => '<span>' + dataBR(x) + '</span>').join('') + '</div>').join('') + '</details>';
+  } else html += '<p class="destaque">0 vezes</p><p>Nunca foi vendida na loja de itens.</p>';
+  html += '</div>';
+
+  const rv = raridadeDeVer(it);
+  html += '<div class="bloco"><h3>👀 Raridade de ver um player com ela</h3><p class="destaque" style="color:' + R.cor + '">' + rv.estrelas + ' ' + esc(rv.nome) + '</p><p>' + esc(rv.por) + '</p>' +
+    '<p class="fraco" style="margin-top:6px">Isso é um chute bem feito: ninguém tem o número exato de quantos jogadores têm cada skin. A conta usa quantas vezes ela foi pra loja, há quanto tempo sumiu e de onde ela veio.</p></div>';
+  html += blocoPreco(it);
+  html += '<p class="fraco">Código: ' + esc(it.id) + '</p></div>';
+  return html;
+}
+function abrirDetalhe(id){
+  const it = POR_ID.get(id); if(!it) return;
+  const d = $('#detalhe'); d.innerHTML = detalheHTML(it); d.dataset.id = id;
+  if(!d.open) d.showModal(); d.scrollTop = 0;
+}
+$('#detalhe').addEventListener('click', ev => {
+  const d = $('#detalhe'); const id = d.dataset.id;
+  if(ev.target.id === 'btnFechar'){ d.close(); return; }
+  const b = ev.target.closest('[data-acao]');
+  if(b){
+    if(b.dataset.acao === 'tenho') alternar(armario, id, 'dearnite-armario');
+    if(b.dataset.acao === 'fav') alternar(favs, id, 'dearnite-favs');
+    abrirDetalhe(id); atualizarCarta(id); renderArmario(); return;
+  }
+  // clique fora da caixa fecha
+  const r = d.getBoundingClientRect();
+  if(ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) d.close();
+});
+function atualizarCarta(id){
+  const it = POR_ID.get(id); if(!it) return;
+  $$('.carta[data-id="' + CSS.escape(id) + '"]').forEach(el => { el.outerHTML = cartaHTML(it); });
+}
+document.addEventListener('click', ev => {
+  const c = ev.target.closest('.carta'); if(c && c.dataset.id) abrirDetalhe(c.dataset.id);
+});
+
+/* ---------- loja de hoje ---------- */
+function renderLoja(loja){
+  const quando = loja.date ? new Date(loja.date) : null;
+  $('#lojaData').textContent = 'Loja de ' + (quando && !isNaN(quando) ? quando.toLocaleDateString('pt-BR') : 'hoje') + ' · ' + (loja.entries || []).length + ' ofertas. Toca numa pra ver os detalhes.';
+  const entradas = (loja.entries || []).slice().sort((a, b) => (b.sortPriority || 0) - (a.sortPriority || 0));
+  $('#lojaLista').innerHTML = entradas.map(e => {
+    const itens = []; ['brItems','cars','instruments','tracks','legoKits'].forEach(g => (e[g] || []).forEach(x => itens.push(x)));
+    if(!itens.length) return '';
+    const principal = itens[0];
+    const nome = (e.bundle && e.bundle.name) || principal.name || principal.title || e.devName || '';
+    const img = (e.bundle && e.bundle.image) || (e.newDisplayAsset && e.newDisplayAsset.renderImages && e.newDisplayAsset.renderImages[0] && e.newDisplayAsset.renderImages[0].image) ||
+      (principal.images && (principal.images.smallIcon || principal.images.icon || principal.images.small)) || principal.albumArt || '';
+    const r = reaisDe(e.finalPrice || 0);
+    const it = POR_ID.get(principal.id);
+    return '<div class="loja-entrada" data-id="' + esc(principal.id) + '">' + (img ? '<img loading="lazy" src="' + esc(img) + '" alt="" />' : '<div style="width:64px;height:64px"></div>') +
+      '<div><div class="n">' + esc(nome) + '</div><div class="fraco">' + (itens.length > 1 ? itens.length + ' itens: ' + esc(itens.slice(0, 4).map(x => x.name || x.title).join(', ')) + (itens.length > 4 ? '…' : '') : esc(tipoDe(it ? it.tipo : (principal.type && principal.type.value)).nome)) + '</div></div>' +
+      '<div class="p"><i class="vb-icone"></i>' + num(e.finalPrice || 0) + (e.regularPrice && e.regularPrice !== e.finalPrice ? ' <s class="fraco">' + num(e.regularPrice) + '</s>' : '') + '<small>' + reais(r.melhor) + '</small></div></div>';
+  }).join('');
+}
+$('#lojaLista').addEventListener('click', ev => { const e = ev.target.closest('.loja-entrada'); if(e && POR_ID.has(e.dataset.id)) abrirDetalhe(e.dataset.id); });
+
+/* ---------- armário e favoritas (localStorage) ---------- */
+function lerSet(chave){ try{ return new Set(JSON.parse(localStorage.getItem(chave) || '[]')); }catch(e){ return new Set(); } }
+function gravarSet(chave, s){ try{ localStorage.setItem(chave, JSON.stringify(Array.from(s))); }catch(e){} }
+const armario = lerSet('dearnite-armario');
+const favs = lerSet('dearnite-favs');
+function alternar(s, id, chave){ if(s.has(id)) s.delete(id); else s.add(id); gravarSet(chave, s); }
+function totalDe(ids){
+  let vb = 0, n = 0, exclusivos = 0, naLoja = 0;
+  ids.forEach(id => { const it = POR_ID.get(id); if(!it) return; n++; const p = precoDe(it); vb += p.vb; if(p.de === 'nunca') exclusivos++; if(p.de === 'loja') naLoja++; });
+  return { vb, n, exclusivos, naLoja, reais: reaisDe(vb).melhor };
+}
+function resumoHTML(t, vazio){
+  if(!t.n) return '<div><b>0</b><small>' + vazio + '</small></div>';
+  return '<div><b>' + num(t.n) + '</b><small>cosméticos</small></div>' +
+    '<div><b><i class="vb-icone"></i>' + num(t.vb) + '</b><small>V-Bucks</small></div>' +
+    '<div><b>' + reais(t.reais) + '</b><small>em dinheiro (pra comprar os V-Bucks)</small></div>' +
+    '<div><b>' + num(t.exclusivos) + '</b><small>exclusivos (não dá mais pra ter)</small></div>';
+}
+function renderArmario(){
+  if(!ITENS.length) return;
+  const t = totalDe(armario);
+  $('#resumoArmario').innerHTML = resumoHTML(t, 'nada no armário ainda');
+  $('#resumoConta').innerHTML = resumoHTML(t, 'nenhuma skin reconhecida ainda');
+  $('#avisoConta').innerHTML = AVISO_DINHEIRO;
+  const col = new Intl.Collator('pt-BR');
+  const lista = ids => Array.from(ids).map(id => POR_ID.get(id)).filter(Boolean).sort((a, b) => precoDe(b).vb - precoDe(a).vb || col.compare(a.nome, b.nome));
+  $('#listaArmario').innerHTML = lista(armario).map(it => { const p = precoDe(it); return cartaHTML(it, '<br/><b>' + (p.de === 'nunca' ? 'exclusivo' : num(p.vb) + ' V-Bucks') + '</b>'); }).join('');
+  $('#listaFav').innerHTML = lista(favs).map(it => cartaHTML(it)).join('');
+}
+$('#btnLimpar').addEventListener('click', () => { if(confirm('Esvaziar o armário? As favoritas ficam.')){ armario.clear(); gravarSet('dearnite-armario', armario); renderArmario(); render(); } });
+$('#btnCodigo').addEventListener('click', () => {
+  const area = $('#codigoArea'); area.classList.remove('oculto'); $('#codigoAcoes').classList.add('oculto');
+  area.value = 'DN1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ a:Array.from(armario), f:Array.from(favs) }))));
+  area.select(); try{ document.execCommand('copy'); }catch(e){}
+  $('#contaStatus').textContent = '';
+});
+$('#btnColar').addEventListener('click', () => { const area = $('#codigoArea'); area.classList.remove('oculto'); area.value = ''; $('#codigoAcoes').classList.remove('oculto'); area.focus(); });
+$('#btnCodigoOk').addEventListener('click', () => {
+  const v = $('#codigoArea').value.trim();
+  if(!v.startsWith('DN1.')){ alert('Esse código não é do DearNite. Ele começa com DN1.'); return; }
+  try{ const o = JSON.parse(decodeURIComponent(escape(atob(v.slice(4))))); (o.a || []).forEach(id => armario.add(id)); (o.f || []).forEach(id => favs.add(id)); }
+  catch(e){ alert('Código cortado ou quebrado. Copia ele inteiro de novo.'); return; }
+  gravarSet('dearnite-armario', armario); gravarSet('dearnite-favs', favs); renderArmario(); render();
+  $('#codigoArea').classList.add('oculto'); $('#codigoAcoes').classList.add('oculto');
+});
+
+/* ---------- V-Bucks em reais ---------- */
+function renderCalc(){
+  const vb = parseInt($('#calcVb').value, 10) || 0; const r = reaisDe(vb);
+  $('#calcReais').textContent = reais(r.melhor);
+  $('#calcDetalhe').innerHTML = vb ? 'Com pacotes: <b>' + (r.pacotes < Infinity ? reais(r.pacotes) + '</b> (' + esc(r.como) + ')' : '—</b>') + ' · Comprando quantidade exata (R$ 2,99 a cada 50): <b>' + reais(r.exato) + '</b>' : '';
+}
+$('#calcVb').addEventListener('input', renderCalc);
+$('#tabelaPacotes').insertAdjacentHTML('beforeend', PACOTES.map(([q, p]) => '<tr><td>' + num(q) + ' V-Bucks</td><td>' + reais(p) + '</td><td>' + reais(p / q * 1000) + '</td></tr>').join('') +
+  '<tr><td>Quantidade exata (de 50 em 50)</td><td>' + reais(EXATO[1]) + ' cada 50</td><td>' + reais(EXATO[1] / EXATO[0] * 1000) + '</td></tr>');
+$('#avisoVb').innerHTML = AVISO_DINHEIRO;
+renderCalc();
+
+/* =====================================================================
+   📸 QUANTO VALE A MINHA CONTA — reconhecer skins pela foto
+   A "IA" é o Tesseract, um leitor de texto que roda dentro do navegador.
+   Ele lê o nome que aparece na foto e o site procura esse nome no
+   catálogo (com tolerância a erro de leitura). Não existe servidor nosso:
+   a foto não sai do aparelho.
+   ===================================================================== */
+let tess = null;
+async function pegarTesseract(){
+  if(tess) return tess;
+  $('#contaStatus').innerHTML = '<span class="girando">🧠</span> Carregando a IA de leitura (só na primeira vez)…';
+  if(!window.Tesseract){
+    await new Promise((ok, erro) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js'; s.onload = ok; s.onerror = () => erro(new Error('não carregou o Tesseract')); document.head.appendChild(s); });
+  }
+  tess = await Tesseract.createWorker('por', 1, {
+    logger: m => { if(m.status && m.progress != null) $('#contaStatus').innerHTML = '<span class="girando">🧠</span> ' + esc(traduzirTess(m.status)) + ' ' + Math.round(m.progress * 100) + '%'; }
+  });
+  return tess;
+}
+function traduzirTess(s){
+  return ({ 'loading tesseract core':'Carregando o motor…', 'initializing tesseract':'Iniciando…', 'loading language traineddata':'Baixando o português…', 'initializing api':'Preparando…', 'recognizing text':'Lendo a foto…' })[s] || s;
+}
+
+/* bigramas pra comparar nomes com erro de leitura */
+function bigramas(s){ const b = new Set(); for(let i = 0; i < s.length - 1; i++) b.add(s.slice(i, i + 2)); return b; }
+function parecido(a, b){ // coeficiente de Dice entre 0 e 1
+  if(!a.size || !b.size) return 0; let c = 0; a.forEach(x => { if(b.has(x)) c++; }); return 2 * c / (a.size + b.size);
+}
+let INDICE = null;
+function indice(){
+  if(INDICE) return INDICE;
+  // trajes primeiro: é o que mais aparece em foto de armário
+  INDICE = ITENS.filter(it => it.n.length >= 3).map(it => ({ it, b:bigramas(it.n) }));
+  return INDICE;
+}
+function candidatosDe(texto){
+  const linhas = texto.split('\n').map(normal).filter(l => l.length >= 3);
+  const achados = new Map(); // id → {it, pontos, lido}
+  const ind = indice();
+  const exatos = new Map(); ITENS.forEach(it => { if(it.n.length >= 4) (exatos.get(it.n) || exatos.set(it.n, []).get(it.n)).push(it); });
+  linhas.forEach(linha => {
+    // 1) nome inteiro dentro da linha, letra por letra
+    exatos.forEach((lista, n) => { if(linha.includes(n)) lista.forEach(it => { const a = achados.get(it.id); if(!a || a.pontos < 1) achados.set(it.id, { it, pontos:1, lido:linha }); }); });
+    // 2) parecido (erro de leitura): a linha inteira e janelas de 1 a 4 palavras
+    const palavras = linha.split(' ');
+    const trechos = new Set([linha]);
+    for(let i = 0; i < palavras.length; i++) for(let k = 1; k <= 4 && i + k <= palavras.length; k++) trechos.add(palavras.slice(i, i + k).join(' '));
+    trechos.forEach(tr => {
+      if(tr.length < 4) return; const bt = bigramas(tr);
+      ind.forEach(({ it, b }) => {
+        if(Math.abs(it.n.length - tr.length) > 3) return;
+        const p = parecido(bt, b);
+        if(p >= 0.72){ const a = achados.get(it.id); if(!a || a.pontos < p) achados.set(it.id, { it, pontos:p, lido:tr }); }
+      });
+    });
+  });
+  const peso = it => (it.tipo === 'outfit' ? 0.05 : 0) + (it.hist.length ? 0.02 : 0);
+  return Array.from(achados.values()).sort((a, b) => (b.pontos + peso(b.it)) - (a.pontos + peso(a.it))).slice(0, 25);
+}
+
+let fila = [];      // candidatos esperando resposta
+let fotos = [];     // arquivos esperando leitura
+let fotoAtual = null;
+async function receberArquivos(lista){
+  if(!ITENS.length){ $('#contaStatus').textContent = 'Espera o catálogo terminar de carregar.'; return; }
+  fotos = fotos.concat(Array.from(lista).filter(f => f.type.startsWith('image/')));
+  if(!fotos.length) return;
+  $('#contaManual').classList.remove('oculto');
+  if(!fotoAtual) proximaFoto();
+}
+async function proximaFoto(){
+  if(!fotos.length){ fotoAtual = null; if(!fila.length){ $('#contaStatus').textContent = 'Acabou. Manda mais fotos se quiser!'; $('#contaQuiz').classList.add('oculto'); } return; }
+  fotoAtual = fotos.shift();
+  const url = URL.createObjectURL(fotoAtual);
+  $('#contaPrevia').src = url; $('#contaPrevia').classList.remove('oculto');
+  try{
+    const w = await pegarTesseract();
+    $('#contaStatus').innerHTML = '<span class="girando">🧠</span> Lendo a foto…';
+    const { data } = await w.recognize(fotoAtual);
+    const cands = candidatosDe(data.text || '');
+    if(!cands.length){
+      $('#contaStatus').innerHTML = '😕 Não achei nenhum nome nessa foto. Toca na skin no Fortnite pra aparecer o nome dela e tira o print de novo — ou procura na mão aqui embaixo.' +
+        (data.text && data.text.trim() ? '<br/><small>O que eu li: "' + esc(data.text.trim().slice(0, 160)) + '"</small>' : '');
+    } else {
+      $('#contaStatus').innerHTML = 'Achei ' + cands.length + ' nome' + (cands.length > 1 ? 's' : '') + ' na foto. Me confirma um por um:';
+      cands.forEach(c => { if(!fila.some(f => f.it.id === c.it.id) && !armario.has(c.it.id)) fila.push(c); });
+    }
+  }catch(e){
+    console.warn(e);
+    $('#contaStatus').textContent = 'A IA de leitura não conseguiu carregar (' + e.message + '). Procura as skins na mão aqui embaixo.';
+  }
+  mostrarPergunta();
+  if(!fila.length) proximaFoto();
+}
+function mostrarPergunta(){
+  const q = $('#contaQuiz');
+  if(!fila.length){ q.classList.add('oculto'); return; }
+  q.classList.remove('oculto'); $('#quizDetalhe').classList.add('oculto'); $('#quizDetalhe').innerHTML = '';
+  const c = fila[0]; const it = c.it; const T = tipoDe(it.tipo); const R = raridadeDe(it);
+  $('#quizCorpo').innerHTML = (it.img ? '<img src="' + esc(it.img) + '" alt="" style="border:4px solid ' + R.cor + '" />' : '<div class="sem">' + T.emoji + '</div>') +
+    '<div class="texto"><div class="pergunta">É essa aqui: <b>' + esc(it.nome) + '</b>?</div>' +
+    '<div class="fraco">' + T.emoji + ' ' + esc(T.nome) + ' · ' + esc(R.nome) + '</div>' +
+    '<div class="lido">Li na foto: "' + esc(c.lido) + '" (' + Math.round(c.pontos * 100) + '% parecido)</div></div>';
+  $('#quizFila').textContent = fila.length > 1 ? 'Faltam ' + (fila.length - 1) + ' pra confirmar depois dessa.' : 'Essa é a última dessa foto.';
+  q.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+function responder(resposta){
+  if(!fila.length) return;
+  const c = fila.shift();
+  if(resposta === 'sim'){ armario.add(c.it.id); gravarSet('dearnite-armario', armario); renderArmario(); atualizarCarta(c.it.id); }
+  mostrarPergunta();
+  if(!fila.length) proximaFoto();
+}
+$('#qSim').addEventListener('click', () => responder('sim'));
+$('#qNao').addEventListener('click', () => responder('nao'));
+$('#qNaoSei').addEventListener('click', () => {
+  if(!fila.length) return;
+  const it = fila[0].it; const T = tipoDe(it.tipo); const R = raridadeDe(it); const p = precoDe(it);
+  const d = $('#quizDetalhe'); d.classList.remove('oculto');
+  d.innerHTML = '<div class="bloco" style="--cor-rar:' + R.cor + '"><h3>🔎 Olha com calma e compara com a sua foto</h3>' +
+    '<div class="quiz">' + (it.grande || it.img ? '<img src="' + esc(it.grande || it.img) + '" alt="" style="width:220px;height:220px" />' : '<div class="sem">' + T.emoji + '</div>') +
+    '<div class="texto"><p><b>Nome:</b> ' + esc(it.nome) + '</p><p><b>Tipo:</b> ' + esc(T.nome) + '</p><p><b>Raridade:</b> ' + esc(R.nome) + '</p>' +
+    (it.conjunto ? '<p><b>Conjunto:</b> ' + esc(it.conjunto) + '</p>' : '') + (it.desc ? '<p><b>Descrição:</b> ' + esc(it.desc) + '</p>' : '') +
+    (it.intro ? '<p><b>Saiu:</b> ' + esc(it.intro) + '</p>' : '') +
+    '<p><b>Na loja:</b> ' + (it.hist.length ? it.hist.length + ' vezes, última em ' + dataBR(it.hist[it.hist.length - 1]) : 'nunca (exclusiva)') + '</p>' +
+    '<p><b>Vale:</b> ' + (p.de === 'nunca' ? 'não dá pra comprar' : num(p.vb) + ' V-Bucks (' + reais(reaisDe(p.vb).melhor) + ')') + '</p>' +
+    '<p class="fraco">Agora responde Sim ou Não lá em cima. Se ainda não sabe, aperta Não — dá pra achar na mão depois.</p></div></div></div>';
+});
+$('#arquivos').addEventListener('change', ev => { receberArquivos(ev.target.files); ev.target.value = ''; });
+const solta = $('#solta');
+['dragenter','dragover'].forEach(e => solta.addEventListener(e, ev => { ev.preventDefault(); solta.style.background = 'var(--cartao3)'; }));
+['dragleave','drop'].forEach(e => solta.addEventListener(e, ev => { ev.preventDefault(); solta.style.background = ''; }));
+solta.addEventListener('drop', ev => { if(ev.dataTransfer && ev.dataTransfer.files) receberArquivos(ev.dataTransfer.files); });
+document.addEventListener('paste', ev => { if(!$('#painel-conta').classList.contains('ativo')) return; const fs = Array.from((ev.clipboardData || {}).files || []); if(fs.length) receberArquivos(fs); });
+
+/* busca manual dentro da aba da conta */
+$('#campoManual').addEventListener('input', () => {
+  const q = normal($('#campoManual').value); const g = $('#gradeManual');
+  if(q.length < 2){ g.innerHTML = ''; return; }
+  const achou = ITENS.filter(it => it.n.includes(q)).sort((a, b) => (b.n.startsWith(q) - a.n.startsWith(q)) || (b.tipo === 'outfit') - (a.tipo === 'outfit')).slice(0, 24);
+  g.innerHTML = achou.map(it => cartaHTML(it)).join('') || '<p class="fraco">Nada com esse nome.</p>';
+});
+
+/* ---------- abas ---------- */
+$('#abas').addEventListener('click', ev => {
+  const b = ev.target.closest('button[data-aba]'); if(!b) return;
+  $$('#abas button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  $$('.painel').forEach(p => p.classList.toggle('ativo', p.id === 'painel-' + b.dataset.aba));
+  if(b.dataset.aba === 'armario' || b.dataset.aba === 'conta') renderArmario();
+  window.scrollTo({ top:0, behavior:'smooth' });
+});
+
+/* ---------- filtros: eventos ---------- */
+let digitando = null;
+$('#campo').addEventListener('input', () => { clearTimeout(digitando); digitando = setTimeout(render, 180); });
+$('#btnBuscar').addEventListener('click', render);
+['#selRaridade','#selCapitulo','#selVer','#selOrdem','#chkLoja','#chkNunca'].forEach(s => $(s).addEventListener('change', render));
+$('#chipsTipo').addEventListener('click', ev => {
+  const c = ev.target.closest('.chip'); if(!c) return;
+  tipoAtivo = c.dataset.tipo || '';
+  $$('#chipsTipo .chip').forEach(x => x.setAttribute('aria-pressed', x === c));
+  render();
+});
+
+/* ---------- tema ---------- */
+function aplicarTema(){
+  const t = localStorage.getItem('dearnite-tema');
+  if(t) document.documentElement.dataset.tema = t; else delete document.documentElement.dataset.tema;
+  const escuro = t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches;
+  $('#btnTema').textContent = escuro ? '☀️' : '🌙';
+}
+$('#btnTema').addEventListener('click', () => {
+  const escuro = document.documentElement.dataset.tema ? document.documentElement.dataset.tema === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches;
+  try{ localStorage.setItem('dearnite-tema', escuro ? 'claro' : 'escuro'); }catch(e){}
+  aplicarTema();
+});
+aplicarTema();
+
+/* ---------- começa ---------- */
+(async () => {
+  try{
+    await carregarCatalogo();
+    prepararCatalogo(); render(); renderArmario();
+    carregarLoja();
+  }catch(e){
+    console.error(e);
+    status('Deu erro: ' + esc(e.message), 0, true);
+  }
+})();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).catch(() => {}); });
+}
+</script>
+</body>
+</html>

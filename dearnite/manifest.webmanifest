@@ -1,0 +1,12 @@
+{
+  "name": "DearNite",
+  "short_name": "DearNite",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f6ff",
+  "theme_color": "#5b3fd6",
+  "description": "Todas as skins e cosméticos do Fortnite: quando saíram, quantas vezes foram pra loja e quanto custam em V-Bucks e em reais.",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

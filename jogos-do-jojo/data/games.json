@@ -482,6 +482,63 @@
       "ranking": []
     },
     {
+      "slug": "dearnite",
+      "nome": "DearNite",
+      "descricao": "Todas as skins e cosméticos do Fortnite: quando saíram, quantas vezes foram pra loja, quanto custam em V-Bucks e em reais, e quanto vale a sua conta pela foto do armário.",
+      "comoFunciona": "O site baixa o catálogo inteiro do Fortnite (de graça, da fortnite-api.com) e guarda no aparelho. Você procura a skin e vê quando saiu, quantas vezes foi pra loja, a raridade dela, a raridade de ver um player com ela (estrelinhas) e o preço em V-Bucks e em reais. Na aba da foto, uma IA de leitura lê o nome da skin no seu print e pergunta se é aquela: Sim, Não ou Não sei.",
+      "objetivo": "Saber tudo sobre cada skin e quanto vale a sua conta.",
+      "mecanicas": [
+        "🗂️ Catálogo com trajes, picaretas, asas-delta, gestos, envelopamentos, carros, instrumentos, kits LEGO e mais",
+        "📅 Quando saiu e quantas vezes foi pra loja (com todas as datas)",
+        "👀 Raridade de ver um player com ela, de 1 a 5 estrelas",
+        "💎 Preço em V-Bucks e em reais, com aviso pra nunca vender conta",
+        "🛒 Loja de hoje com preço de verdade",
+        "📸 Quanto vale a minha conta: manda o print, a IA lê o nome e pergunta Sim / Não / Não sei",
+        "🎒 Meu armário e favoritas, com código pra levar pra outro aparelho",
+        "Modo claro e escuro"
+      ],
+      "categoria": "Fortnite",
+      "plataforma": "Site (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "",
+      "popularidade": 88,
+      "imagem": "assets/images/dearnite.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../dearnite/index.html",
+      "galeria": [],
+      "historia": "É o irmão do ButterPoke: lá é carta de Pokémon, aqui é skin de Fortnite. A mascote é a lhama.",
+      "comoJogar": "Procura a skin pelo nome ou manda um print do seu armário com o nome aparecendo.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Abrir a skin e ver tudo"
+        },
+        {
+          "tecla": "Sim / Não / Não sei",
+          "acao": "Confirmar a skin que a IA achou na foto"
+        }
+      ],
+      "curiosidades": [
+        "Skin de PlayStation Plus foi de graça e nunca mais apareceu na loja: o site marca como exclusiva, valendo 0 V-Bucks mas 5 estrelas de raridade.",
+        "O pacote de R$ 31,99 dava 1.000 V-Bucks e desde março de 2026 dá 800. A calculadora usa os preços novos."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "seu-album-pokemon",
       "nome": "Seu Álbum Pokémon",
       "descricao": "O álbum das suas cartas Pokémon: quantas você tem de cada, as repetidas pra trocar e as que você quer.",
