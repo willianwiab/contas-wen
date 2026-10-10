@@ -565,7 +565,8 @@ const TIPOS = {
   legoprop:     { nome:'Decoração LEGO',         grupo:'LEGO',       emoji:'🧱' },
 };
 const ORDEM_GRUPOS = ['Personagem','Extras','Carros','Festival','LEGO','Outros'];
-function tipoDe(v){ return TIPOS[v] || { nome:v || 'Outro', grupo:'Outros', emoji:'❔' }; }
+const NOME_DO_JOGO = {};   // value do tipo → nome que o jogo mostra em português (vem da API)
+function tipoDe(v){ const T = TIPOS[v] || { nome:v || 'Outro', grupo:'Outros', emoji:'❔' }; return NOME_DO_JOGO[v] ? Object.assign({}, T, { nome:NOME_DO_JOGO[v] }) : T; }
 
 /* ---------- raridades ---------- */
 const RARIDADES = {
@@ -905,11 +906,11 @@ const normal = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toL
 /* Cada item ganha três textos pra busca: nome (n), conjunto (c) e o resto
    (x = tags de busca + descrição), pra "copa" achar a bola da Copa mesmo
    que o nome dela seja só "Bola de Futebol". */
-function indexar(it){ it.tags = it.tags || ''; it.n = normal(it.nome); it.c = normal(it.conjunto); it.x = normal(it.tags + ' ' + (it.desc || '')); }
+function indexar(it){ it.tags = it.tags || ''; it.n = normal(it.nome); it.c = normal(it.conjunto); it.x = normal(it.tags + ' ' + (it.desc || '') + ' ' + (it.tipoNome || '') + ' ' + ((TIPOS[it.tipo] || {}).nome || '')); }
 /* Palavras que criança usa e o jogo não: cada palavra da busca vale também
    pelas parceiras dela. A busca casa palavra por palavra: todas as palavras
    têm que aparecer em algum lugar do item (nome, conjunto, tags ou descrição). */
-const APELIDOS = { fifa:['copa','futebol','soccer','world cup'], copa:['futebol','soccer','world cup','fifa'], bola:['futebol','soccer','ball'], futebol:['soccer','fifa','copa'], neymar:['futebol'], skin:['traje'], dance:['gesto'], danca:['gesto'], emote:['gesto'], mochila:['costas'], carro:['carroceria'] };
+const APELIDOS = { fifa:['copa','futebol','soccer','world cup'], copa:['futebol','soccer','world cup','fifa'], bola:['futebol','soccer','ball'], futebol:['soccer','fifa','copa'], neymar:['futebol'], skin:['traje'], dance:['gesto'], danca:['gesto'], emote:['gesto'], mochila:['costas'], carro:['carroceria'], mascote:['parceiro','pet','sidekick'], parceiro:['mascote','sidekick'], bichinho:['mascote','parceiro'] };
 function alternativas(q){
   return q.split(' ').filter(Boolean).map(w => Array.from(new Set([w].concat(APELIDOS[w] || []))));
 }
@@ -922,6 +923,10 @@ function bate(it, palavras){ // 3 = tudo no nome, 2 = nome+conjunto, 1 = em qual
   return 0;
 }
 function prepararCatalogo(){
+  // nome de cada tipo como o jogo mostra (o mais comum entre os itens daquele tipo)
+  const contaNome = {};
+  ITENS.forEach(it => { if(it.tipoNome){ const c = contaNome[it.tipo] = contaNome[it.tipo] || {}; c[it.tipoNome] = (c[it.tipoNome] || 0) + 1; } });
+  Object.keys(contaNome).forEach(t => { NOME_DO_JOGO[t] = Object.keys(contaNome[t]).sort((a, b) => contaNome[t][b] - contaNome[t][a])[0]; });
   POR_ID = new Map(); ITENS.forEach(it => { indexar(it); POR_ID.set(it.id, it); });
   calcularCortes();
   // chips de tipo, agrupados
