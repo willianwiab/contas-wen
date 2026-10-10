@@ -278,7 +278,7 @@ footer a{color:var(--roxo)}
 <section class="painel ativo" id="painel-catalogo">
   <div class="caixa">
     <div class="linha-busca">
-      <input id="campo" type="search" placeholder="Procura uma skin, picareta, gesto… (ex: Invasora Renegada)" autocomplete="off" />
+      <input id="campo" type="search" placeholder="Procura uma skin, picareta, gesto… em português ou inglês" autocomplete="off" />
       <button class="btn" id="btnBuscar">Buscar</button>
     </div>
     <div class="filtros">
@@ -840,6 +840,35 @@ function render(){
   aplicarFiltros(); mostrados = 0; $('#grade').innerHTML = '';
   $('#contador').textContent = filtrados.length ? num(filtrados.length) + ' cosmético' + (filtrados.length > 1 ? 's' : '') + ' encontrado' + (filtrados.length > 1 ? 's' : '') : 'Nada com esse nome. Tenta escrever menos letras, ou o nome em inglês.';
   maisPagina();
+  if(!filtrados.length) buscarEmIngles($('#campo').value);
+}
+
+/* ---------- busca em inglês na API ----------
+   O catálogo guardado tem só o nome em português. Quando a busca local não
+   acha nada, pergunta pra API pelo nome em inglês (ela devolve em português)
+   e junta o que vier ao catálogo. */
+let buscaInglesPendente = null;
+async function buscarEmIngles(texto){
+  const q = String(texto || '').trim();
+  if(q.length < 3) return;
+  const minha = buscaInglesPendente = q;
+  $('#contador').textContent = 'Nada em português. Procurando pelo nome em inglês… 🔎';
+  try{
+    const url = API + '/cosmetics/br/search/all?name=' + encodeURIComponent(q) + '&matchMethod=contains&searchLanguage=en&language=pt-BR' + FLAGS;
+    const r = await fetch(url, { headers:{ Accept:'application/json' } });
+    if(minha !== buscaInglesPendente) return;   // a pessoa já digitou outra coisa
+    if(r.status === 404){ $('#contador').textContent = 'Nada com esse nome, nem em inglês. Confere a escrita?'; return; }
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    const lista = Array.isArray(j.data) ? j.data : [];
+    let novos = 0;
+    lista.forEach(x => { try{ const it = enxugarBR(x); if(!POR_ID.has(it.id)){ it.n = normal(it.nome); it.c = normal(it.conjunto); ITENS.push(it); POR_ID.set(it.id, it); novos++; } }catch(e){} });
+    filtrados = lista.map(x => POR_ID.get(x.id)).filter(Boolean);
+    mostrados = 0; $('#grade').innerHTML = ''; maisPagina();
+    $('#contador').textContent = filtrados.length ? 'Achei ' + filtrados.length + ' pelo nome em inglês "' + q + '":' : 'Nada com esse nome, nem em inglês. Confere a escrita?';
+  }catch(e){
+    if(minha === buscaInglesPendente) $('#contador').textContent = 'Nada em português, e não consegui procurar em inglês agora (' + e.message + ').';
+  }
 }
 function maisPagina(){
   const fatia = filtrados.slice(mostrados, mostrados + PAGINA);
@@ -1174,11 +1203,23 @@ solta.addEventListener('drop', ev => { if(ev.dataTransfer && ev.dataTransfer.fil
 document.addEventListener('paste', ev => { if(!$('#painel-conta').classList.contains('ativo')) return; const fs = Array.from((ev.clipboardData || {}).files || []); if(fs.length) receberArquivos(fs); });
 
 /* busca manual dentro da aba da conta */
+let manualIngles = null;
 $('#campoManual').addEventListener('input', () => {
   const q = normal($('#campoManual').value); const g = $('#gradeManual');
   if(q.length < 2){ g.innerHTML = ''; return; }
   const achou = ITENS.filter(it => it.n.includes(q)).sort((a, b) => (b.n.startsWith(q) - a.n.startsWith(q)) || (b.tipo === 'outfit') - (a.tipo === 'outfit')).slice(0, 24);
-  g.innerHTML = achou.map(it => cartaHTML(it)).join('') || '<p class="fraco">Nada com esse nome.</p>';
+  g.innerHTML = achou.map(it => cartaHTML(it)).join('') || '<p class="fraco">Nada com esse nome em português. Procurando em inglês…</p>';
+  if(!achou.length && q.length >= 3){
+    clearTimeout(manualIngles);
+    manualIngles = setTimeout(async () => {
+      try{
+        const r = await fetch(API + '/cosmetics/br/search/all?name=' + encodeURIComponent($('#campoManual').value.trim()) + '&matchMethod=contains&searchLanguage=en&language=pt-BR' + FLAGS, { headers:{ Accept:'application/json' } });
+        const lista = r.ok ? ((await r.json()).data || []) : [];
+        const its = lista.map(x => { const it = enxugarBR(x); if(!POR_ID.has(it.id)){ it.n = normal(it.nome); it.c = normal(it.conjunto); ITENS.push(it); POR_ID.set(it.id, it); } return POR_ID.get(it.id); }).slice(0, 24);
+        if(normal($('#campoManual').value) === q) g.innerHTML = its.map(it => cartaHTML(it)).join('') || '<p class="fraco">Nada com esse nome, nem em inglês.</p>';
+      }catch(e){ if(normal($('#campoManual').value) === q) g.innerHTML = '<p class="fraco">Nada em português, e não consegui procurar em inglês agora.</p>'; }
+    }, 400);
+  }
 });
 
 /* ---------- abas ---------- */
