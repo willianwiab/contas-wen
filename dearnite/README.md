@@ -56,10 +56,6 @@ faixas (Jam Tracks) e kits LEGO.
 - **🔫 Armas**: raridade, tipo, dano, cadência, pente, recarga e se está no jogo ou no
   cofre. Vêm de outra API (fortniteapi.io), com chave própria de graça, guardada só no
   aparelho. Lista guardada por um dia.
-- **✨ Elementais**: os bichinhos de elemento (Sprites) do Capítulo 6 T1, Capítulo 6 T3 e
-  Capítulo 7 T3, com o que cada um faz, raridade, variantes e o custo em Pó. Nenhuma API
-  tem; a lista é escrita à mão no código (`ELEMENTAIS`), a partir da notícia da Epic e de
-  guias, e a aba diz onde os guias discordam.
 - **🗺️ Mapa**: o mapa de agora com os nomes dos lugares desenhados, zoom, arrastar e
   busca de local. Missões não existem nessa API.
 
