@@ -47,6 +47,14 @@ faixas (Jam Tracks) e kits LEGO.
 - **Meu armário**: tudo que você marcou como "tenho", com o total, e as favoritas. Tem
   um código pra levar pra outro aparelho (igual ao do ButterPoke).
 - **V-Bucks em reais**: calculadora com os pacotes da loja da Epic no Brasil.
+- **🎮 Jogador**: estatísticas pelo nick (vitórias, partidas, abates, K/D, nível do
+  passe, por modo). Esse pedaço da API pede uma chave: é de graça em
+  dash.fortnite-api.com (login com Discord), e ela fica guardada só no aparelho. A chave
+  **não** está escrita no código de propósito: chave no código vira pública. Só funciona
+  pra quem deixou as estatísticas públicas no jogo. Ver o armário de outro jogador não dá
+  — a Epic não mostra pra ninguém.
+- **🗺️ Mapa**: o mapa de agora com os nomes dos lugares desenhados, zoom, arrastar e
+  busca de local. Missões não existem nessa API.
 
 ## O aviso do dinheiro
 
