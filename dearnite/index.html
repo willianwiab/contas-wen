@@ -1477,19 +1477,37 @@ $('#campoJogador').addEventListener('keydown', ev => { if(ev.key === 'Enter') bu
    e a lista de lugares. Fica guardado por um dia.
    ===================================================================== */
 let MAPA = null; let mapaZoom = 1;
-async function carregarMapa(){
-  if(MAPA) return;
-  const DIA = 24 * 60 * 60 * 1000;
-  let dados = await bdLer('mapa');
-  if(!dados || Date.now() - dados.quando > DIA){
-    try{ const j = await baixar(API + '/map?language=pt-BR'); dados = { quando:Date.now(), mapa:j.data }; await bdGravar('mapa', dados); }
-    catch(e){ console.warn(e); }
+/* Endereços fixos da imagem, pra quando a API não responder: são os mesmos
+   que ela devolve em images.blank e images.pois. */
+const MAPA_RESERVA = { blank:'https://fortnite-api.com/images/map.png', pois:'https://fortnite-api.com/images/map_pois.png' };
+async function carregarMapa(forcar){
+  if(MAPA && !forcar) return;
+  MAPA = null;
+  const info = $('#mapaInfo'); const DIA = 24 * 60 * 60 * 1000;
+  const passo = t => { info.innerHTML = '<span class="girando">🗺️</span> ' + t; };
+  let dados = null, erro = '';
+  try{
+    passo('Olhando o que está guardado…');
+    dados = forcar ? null : await bdLer('mapa');
+    if(!dados || Date.now() - dados.quando > DIA){
+      passo('Pedindo o mapa pra API…');
+      const j = await baixar(API + '/map?language=pt-BR');
+      if(!j || !j.data) throw new Error('resposta sem dados');
+      dados = { quando:Date.now(), mapa:j.data }; await bdGravar('mapa', dados);
+    }
+  }catch(e){ erro = e.message || String(e); console.warn(e); }
+  if(!dados || !dados.mapa){
+    MAPA = { images:MAPA_RESERVA, pois:[] };
+    info.innerHTML = '😕 A API do mapa não respondeu (' + esc(erro || 'sem resposta') + '). Mostrando a imagem pelo endereço fixo, sem a lista de lugares. <button class="btn pequeno leve" id="btnMapaDeNovo">Tentar de novo</button>';
+    $('#mapaLista').innerHTML = '';
+    mostrarImagemMapa();
+    return;
   }
-  if(!dados || !dados.mapa){ $('#mapaInfo').textContent = 'Não consegui carregar o mapa agora.'; return; }
   MAPA = dados.mapa;
+  if(!MAPA.images || (!MAPA.images.pois && !MAPA.images.blank)) MAPA.images = MAPA_RESERVA;
   mostrarImagemMapa();
   const pois = (MAPA.pois || []).filter(p => p.name).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
-  $('#mapaInfo').textContent = pois.length + ' lugares no mapa de hoje. Toca num nome pra procurar no mapa.';
+  $('#mapaInfo').innerHTML = pois.length + ' lugares no mapa de hoje. Toca num nome pra procurar no mapa. <button class="btn pequeno leve" id="btnMapaDeNovo">Atualizar</button>';
   renderMapaLista(pois);
 }
 /* A imagem com nomes vem primeiro; se o navegador não conseguir carregar,
@@ -1503,7 +1521,9 @@ function mostrarImagemMapa(){
   let i = 0;
   const tentar = () => {
     est.innerHTML = '<span class="girando">🗺️</span> Carregando a imagem do mapa' + (i ? ' (sem nomes)' : '') + '…';
-    el.onload = () => { est.textContent = i ? 'Essa é a versão sem nomes: a com nomes não carregou.' : ''; };
+    clearTimeout(mostrarImagemMapa.timer);
+    mostrarImagemMapa.timer = setTimeout(() => { if(!el.complete || !el.naturalWidth) est.innerHTML = '⏳ A imagem está demorando (ela é grande). Se não vier, <a href="' + esc(tentativas[i]) + '" target="_blank" rel="noopener">abre ela direto ↗</a>'; }, 15000);
+    el.onload = () => { clearTimeout(mostrarImagemMapa.timer); est.textContent = i ? 'Essa é a versão sem nomes: a com nomes não carregou.' : ''; };
     el.onerror = () => {
       i++;
       if(i < tentativas.length){ tentar(); return; }
@@ -1521,6 +1541,7 @@ function renderMapaLista(pois){
 $('#campoMapa').addEventListener('input', () => { if(MAPA) renderMapaLista((MAPA.pois || []).filter(p => p.name).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))); });
 function zoomMapa(f){ mapaZoom = Math.min(4, Math.max(1, mapaZoom * f)); $('#mapaImg').style.width = (mapaZoom * 100) + '%'; }
 $('#btnMapaMais').addEventListener('click', () => zoomMapa(1.5));
+$('#painel-mapa').addEventListener('click', ev => { if(ev.target.id === 'btnMapaDeNovo') carregarMapa(true); });
 $('#btnMapaMenos').addEventListener('click', () => zoomMapa(1 / 1.5));
 $('#mapaLista').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(c){ $('#campoMapa').value = c.dataset.nome; $('#mapaCaixa').scrollIntoView({ behavior:'smooth', block:'start' }); } });
 // arrastar pra andar no mapa
