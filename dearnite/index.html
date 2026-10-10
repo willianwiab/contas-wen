@@ -497,7 +497,7 @@ const API = 'https://fortnite-api.com/v2';
    responseFlags é uma soma (2 = gameplayTags, 4 = shopHistory). Sem isso
    todo item parecia "nunca vendido". */
 const FLAGS = '&responseFlags=6';
-const VERSAO_CATALOGO = 'catalogo-v3';   // muda quando o formato guardado muda, pra jogar o cache velho fora
+const VERSAO_CATALOGO = 'catalogo-v4';   // muda quando o formato guardado muda, pra jogar o cache velho fora
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -770,7 +770,8 @@ function enxugarBR(x){
     serie:(x.series && x.series.value) || '', conjunto:(x.set && x.set.value) || '',
     cap:(x.introduction && x.introduction.chapter) || '', temp:(x.introduction && x.introduction.season) || '',
     intro:(x.introduction && x.introduction.text) || '',
-    img: img.smallIcon || img.icon || '', grande: img.featured || img.icon || img.smallIcon || '',
+    img: img.smallIcon || img.icon || img.featured || (img.other && (img.other.background || Object.values(img.other)[0])) || (img.lego && img.lego.small) || '',
+    grande: img.featured || img.icon || img.smallIcon || (img.other && Object.values(img.other)[0]) || (img.lego && img.lego.large) || '',
     add:x.added || '', hist:Array.isArray(x.shopHistory) ? x.shopHistory : [],
     fonte:fonteDe(x.gameplayTags), cat:'br',
     tags:Array.isArray(x.searchTags) ? x.searchTags.join(' ') : '',
@@ -906,9 +907,12 @@ function prepararCatalogo(){
   ORDEM_GRUPOS.forEach(g => {
     if(!porGrupo[g]) return;
     html += '<span class="chips-grupo">' + g + '</span>';
-    porGrupo[g].sort((a, b) => conta[b] - conta[a]).forEach(t => {
-      const T = tipoDe(t);
-      html += '<button class="chip" aria-pressed="' + (tipoAtivo === t) + '" data-tipo="' + esc(t) + '">' + T.emoji + ' ' + esc(T.nome) + ' (' + num(conta[t]) + ')</button>';
+    // tipos com o mesmo nome em português (pet e petcarrier = Mascote) viram um botão só
+    const porNome = new Map();
+    porGrupo[g].forEach(t => { const T = tipoDe(t); const k = T.nome; const e = porNome.get(k) || { T, tipos:[], n:0 }; e.tipos.push(t); e.n += conta[t]; porNome.set(k, e); });
+    Array.from(porNome.values()).sort((a, b) => b.n - a.n).forEach(e => {
+      const chave = e.tipos.join(',');
+      html += '<button class="chip" aria-pressed="' + (tipoAtivo === chave) + '" data-tipo="' + esc(chave) + '">' + e.T.emoji + ' ' + esc(e.T.nome) + ' (' + num(e.n) + ')</button>';
     });
   });
   $('#chipsTipo').innerHTML = html;
@@ -941,7 +945,7 @@ function aplicarFiltros(){
   const rar = $('#selRaridade').value, cap = $('#selCapitulo').value, ordem = $('#selOrdem').value;
   const soLoja = $('#chkLoja').checked, soNunca = $('#chkNunca').checked, ver = parseInt($('#selVer').value, 10) || 0;
   filtrados = ITENS.filter(it => {
-    if(tipoAtivo && it.tipo !== tipoAtivo) return false;
+    if(tipoAtivo && !tipoAtivo.split(',').includes(it.tipo)) return false;
     if(rar && it.rar !== rar) return false;
     if(cap && String(it.cap) !== cap) return false;
     if(ver && raridadeDeVer(it).n !== ver) return false;
