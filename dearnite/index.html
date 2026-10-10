@@ -251,6 +251,16 @@ details summary{cursor:pointer;color:var(--roxo);font-weight:600}
 .tabela td,.tabela th{padding:7px 8px;border-bottom:1px solid var(--borda);text-align:left}
 .tabela th{color:var(--tinta-fraca);font-weight:600}
 
+.mapa-caixa{margin-top:10px;border-radius:16px;border:1px solid var(--borda);background:#0b1a2e;overflow:auto;max-height:70vh;cursor:grab}
+.mapa-caixa img{display:block;width:100%;max-width:none;transition:width .15s}
+.jog-topo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.jog-topo h2{margin:0}
+.jog-topo .nivel{background:var(--vb);color:#2a1d00;font-weight:700;border-radius:999px;padding:6px 12px}
+.modos-tab{width:100%;border-collapse:collapse;margin-top:10px;font-size:.92rem}
+.modos-tab th,.modos-tab td{padding:8px 6px;border-bottom:1px solid var(--borda);text-align:right}
+.modos-tab th:first-child,.modos-tab td:first-child{text-align:left}
+.modos-tab th{color:var(--tinta-fraca);font-weight:600}
+.jog-img{width:100%;border-radius:14px;margin-top:12px}
 footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.85rem;line-height:1.6}
 footer a{color:var(--roxo)}
 .oculto{display:none !important}
@@ -276,6 +286,8 @@ footer a{color:var(--roxo)}
   <button aria-pressed="false" data-aba="loja">🛒 Loja de hoje</button>
   <button aria-pressed="false" data-aba="conta">📸 Quanto vale a minha conta?</button>
   <button aria-pressed="false" data-aba="armario">🎒 Meu armário</button>
+  <button aria-pressed="false" data-aba="jogador">🎮 Jogador</button>
+  <button aria-pressed="false" data-aba="mapa">🗺️ Mapa</button>
   <button aria-pressed="false" data-aba="vbucks">💎 V-Bucks em reais</button>
 </nav>
 
@@ -388,6 +400,61 @@ footer a{color:var(--roxo)}
     <h2>❤️ Favoritas</h2>
     <p class="fraco">Skins que você quer. Marca pelo coração dentro da skin.</p>
     <div class="lista-armario" id="listaFav"></div>
+  </div>
+</section>
+
+<!-- ============ JOGADOR ============ -->
+<section class="painel" id="painel-jogador">
+  <div class="caixa">
+    <h2>🎮 Estatísticas de jogador</h2>
+    <p>Escreve o nick de alguém do Fortnite e vê as vitórias, abates, partidas e o nível do passe. Só funciona pra quem deixou as estatísticas <b>públicas</b> no jogo (Configurações → Conta e privacidade → Mostrar na página de carreira).</p>
+    <div class="linha-busca" style="margin-top:12px">
+      <input id="campoJogador" type="search" placeholder="Nick do jogador (ex: Ninja)" autocomplete="off" style="flex:1 1 200px;min-width:0;padding:14px 16px;border-radius:16px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit;font-size:1.1rem" />
+      <button class="btn" id="btnJogador">Buscar</button>
+    </div>
+    <div class="filtros">
+      <select id="selPlataforma">
+        <option value="epic">Conta Epic (PC, celular, Switch)</option>
+        <option value="psn">PlayStation (nick da PSN)</option>
+        <option value="xbl">Xbox (gamertag)</option>
+      </select>
+      <select id="selJanela">
+        <option value="lifetime">Desde sempre</option>
+        <option value="season">Só esta temporada</option>
+      </select>
+    </div>
+    <details id="chaveCaixa" style="margin-top:12px">
+      <summary>🔑 Chave da API (precisa de uma pra isso funcionar)</summary>
+      <p class="fraco" style="margin-top:8px">As estatísticas vêm da fortnite-api.com, e esse pedaço dela pede uma chave. É de graça: um adulto entra em <a href="https://dash.fortnite-api.com" target="_blank" rel="noopener">dash.fortnite-api.com</a>, faz login com o Discord, copia a chave que aparece e cola aqui. A chave fica guardada só neste aparelho.</p>
+      <div class="linha-busca" style="margin-top:8px">
+        <input id="campoChave" type="password" placeholder="Cola a chave aqui" autocomplete="off" style="flex:1 1 200px;min-width:0;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" />
+        <button class="btn pequeno roxo" id="btnChave">Guardar</button>
+        <button class="btn pequeno leve" id="btnChaveTirar">Tirar</button>
+      </div>
+      <p class="fraco" id="chaveEstado" style="margin-top:6px"></p>
+    </details>
+    <div id="jogadorStatus" class="fraco" style="margin-top:10px"></div>
+  </div>
+  <div class="caixa oculto" id="jogadorCartao"></div>
+  <div class="caixa">
+    <h3 style="margin-top:0">O que não dá pra ver</h3>
+    <p class="fraco">As skins que outro jogador tem. A Epic não mostra o armário de ninguém pra ninguém, então nenhum site consegue. Pra saber quanto vale a SUA conta, usa a aba 📸.</p>
+  </div>
+</section>
+
+<!-- ============ MAPA ============ -->
+<section class="painel" id="painel-mapa">
+  <div class="caixa">
+    <h2>🗺️ Mapa de agora</h2>
+    <p class="fraco" id="mapaInfo">Carregando o mapa…</p>
+    <div class="linha-busca" style="margin-top:10px">
+      <input id="campoMapa" type="search" placeholder="Procura um lugar do mapa" autocomplete="off" style="flex:1 1 200px;min-width:0;padding:12px 14px;border-radius:14px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" />
+      <button class="btn pequeno leve" id="btnMapaMenos">➖</button>
+      <button class="btn pequeno leve" id="btnMapaMais">➕</button>
+    </div>
+    <div class="mapa-caixa" id="mapaCaixa"><img id="mapaImg" alt="Mapa do Fortnite" /></div>
+    <div class="chips" id="mapaLista"></div>
+    <p class="fraco" style="margin-top:8px">Os nomes já vêm desenhados no mapa. Usa ➕ e ➖ pra dar zoom e arrasta pra andar. Missões não existem nessa API, só o mapa.</p>
   </div>
 </section>
 
@@ -1301,12 +1368,128 @@ $('#campoManual').addEventListener('input', () => {
   }
 });
 
+/* =====================================================================
+   🎮 JOGADOR — estatísticas pelo nick
+   Esse pedaço da API pede chave. Ela fica no localStorage deste aparelho.
+   CHAVE_PADRAO fica vazia de propósito: chave escrita no código vira pública
+   pra qualquer um que abrir o site, e aí qualquer um gasta o limite dela.
+   ===================================================================== */
+const CHAVE_PADRAO = '';
+function chaveApi(){ try{ return localStorage.getItem('dearnite-chave') || CHAVE_PADRAO; }catch(e){ return CHAVE_PADRAO; } }
+function mostrarChave(){
+  const c = chaveApi();
+  $('#chaveEstado').textContent = c ? '✅ Chave guardada neste aparelho (' + c.slice(0, 4) + '…' + c.slice(-2) + ').' : '❌ Sem chave ainda. Sem ela a busca de jogador não funciona.';
+  if(!c) $('#chaveCaixa').open = true;
+}
+$('#btnChave').addEventListener('click', () => {
+  const v = $('#campoChave').value.trim();
+  if(!v){ alert('Cola a chave primeiro.'); return; }
+  try{ localStorage.setItem('dearnite-chave', v); }catch(e){}
+  $('#campoChave').value = ''; mostrarChave(); $('#chaveCaixa').open = false;
+});
+$('#btnChaveTirar').addEventListener('click', () => { try{ localStorage.removeItem('dearnite-chave'); }catch(e){} mostrarChave(); });
+mostrarChave();
+
+const MODOS = [['solo','Solo'],['duo','Dupla'],['trio','Trio'],['squad','Esquadrão'],['ltm','Modos especiais']];
+function horasBonito(min){
+  min = Math.round(min || 0);
+  if(min < 60) return min + ' min';
+  const h = Math.floor(min / 60);
+  if(h < 48) return h + ' h ' + (min % 60) + ' min';
+  return Math.floor(h / 24) + ' dias e ' + (h % 24) + ' h';
+}
+async function buscarJogador(){
+  const nome = $('#campoJogador').value.trim();
+  if(!nome) return;
+  const chave = chaveApi();
+  const st = $('#jogadorStatus'); const cartao = $('#jogadorCartao');
+  if(!chave){ st.innerHTML = '🔑 Precisa colar a chave da API primeiro (abre "Chave da API" aqui em cima).'; $('#chaveCaixa').open = true; return; }
+  st.innerHTML = '<span class="girando">🎮</span> Procurando ' + esc(nome) + '…'; cartao.classList.add('oculto');
+  try{
+    const url = API + '/stats/br/v2?name=' + encodeURIComponent(nome) + '&accountType=' + encodeURIComponent($('#selPlataforma').value) + '&timeWindow=' + encodeURIComponent($('#selJanela').value) + '&image=all';
+    const r = await fetch(url, { headers:{ Accept:'application/json', Authorization: chave } });
+    if(r.status === 401){ st.textContent = '🔑 A chave não foi aceita. Confere se copiou ela inteira.'; return; }
+    if(r.status === 403){ st.textContent = '🔒 Esse jogador deixou as estatísticas privadas (ou a chave não tem permissão). Não dá pra ver.'; return; }
+    if(r.status === 404){ st.textContent = '😕 Não achei ninguém com o nick "' + nome + '" nessa plataforma. Confere a escrita ou troca a plataforma.'; return; }
+    if(r.status === 429){ st.textContent = '⏳ Muitas buscas seguidas. Espera um minutinho e tenta de novo.'; return; }
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json(); const d = j.data || {};
+    const tudo = (d.stats && d.stats.all) || {}; const o = tudo.overall || {};
+    const n = v => num(Math.round(v || 0));
+    const pct = v => (Math.round((v || 0) * 1000) / 10).toLocaleString('pt-BR') + '%';
+    let html = '<div class="jog-topo"><h2>🎮 ' + esc((d.account && d.account.name) || nome) + '</h2>' +
+      (d.battlePass ? '<span class="nivel">Passe nível ' + n(d.battlePass.level) + (d.battlePass.progress != null ? ' · ' + n(d.battlePass.progress) + '%' : '') + '</span>' : '') +
+      '<span class="fraco">' + ($('#selJanela').value === 'season' ? 'Esta temporada' : 'Desde sempre') + '</span></div>';
+    html += '<div class="resumo" style="margin-top:12px">' +
+      '<div><b>🏆 ' + n(o.wins) + '</b><small>vitórias</small></div>' +
+      '<div><b>' + n(o.matches) + '</b><small>partidas</small></div>' +
+      '<div><b>' + pct(o.winRate) + '</b><small>taxa de vitória</small></div>' +
+      '<div><b>💥 ' + n(o.kills) + '</b><small>abates</small></div>' +
+      '<div><b>' + (Math.round((o.kd || 0) * 100) / 100).toLocaleString('pt-BR') + '</b><small>K/D (abates por morte)</small></div>' +
+      '<div><b>' + horasBonito(o.minutesPlayed) + '</b><small>jogando</small></div>' +
+      '<div><b>' + n(o.top10) + '</b><small>vezes no top 10</small></div>' +
+      '<div><b>' + n(o.playersOutlived) + '</b><small>jogadores que sobreviveu</small></div></div>';
+    const linhas = MODOS.filter(([k]) => tudo[k] && tudo[k].matches);
+    if(linhas.length){
+      html += '<table class="modos-tab"><tr><th>Modo</th><th>Vitórias</th><th>Partidas</th><th>Abates</th><th>K/D</th><th>Top</th></tr>' +
+        linhas.map(([k, nomeModo]) => { const m = tudo[k]; const top = m.top1 != null ? '' : (k === 'solo' ? 'Top 10: ' + n(m.top10) : k === 'duo' ? 'Top 5: ' + n(m.top5) : 'Top 3: ' + n(m.top3)); return '<tr><td>' + nomeModo + '</td><td>' + n(m.wins) + '</td><td>' + n(m.matches) + '</td><td>' + n(m.kills) + '</td><td>' + (Math.round((m.kd || 0) * 100) / 100).toLocaleString('pt-BR') + '</td><td>' + top + '</td></tr>'; }).join('') + '</table>';
+    }
+    if(d.image) html += '<img class="jog-img" src="' + esc(d.image) + '" alt="Cartão de estatísticas" loading="lazy" />';
+    html += '<p class="fraco" style="margin-top:10px">Atualizado pela última vez: ' + (o.lastModified ? new Date(o.lastModified).toLocaleString('pt-BR') : '?') + '. Só partidas de Battle Royale contam.</p>';
+    cartao.innerHTML = html; cartao.classList.remove('oculto'); st.textContent = '';
+  }catch(e){
+    console.warn(e); st.textContent = 'Não consegui buscar agora (' + e.message + '). Confere a internet e tenta de novo.';
+  }
+}
+$('#btnJogador').addEventListener('click', buscarJogador);
+$('#campoJogador').addEventListener('keydown', ev => { if(ev.key === 'Enter') buscarJogador(); });
+
+/* =====================================================================
+   🗺️ MAPA — a API dá a imagem do mapa atual (com os nomes já desenhados)
+   e a lista de lugares. Fica guardado por um dia.
+   ===================================================================== */
+let MAPA = null; let mapaZoom = 1;
+async function carregarMapa(){
+  if(MAPA) return;
+  const DIA = 24 * 60 * 60 * 1000;
+  let dados = await bdLer('mapa');
+  if(!dados || Date.now() - dados.quando > DIA){
+    try{ const j = await baixar(API + '/map?language=pt-BR'); dados = { quando:Date.now(), mapa:j.data }; await bdGravar('mapa', dados); }
+    catch(e){ console.warn(e); }
+  }
+  if(!dados || !dados.mapa){ $('#mapaInfo').textContent = 'Não consegui carregar o mapa agora.'; return; }
+  MAPA = dados.mapa;
+  const img = (MAPA.images && (MAPA.images.pois || MAPA.images.blank)) || '';
+  $('#mapaImg').src = img;
+  const pois = (MAPA.pois || []).filter(p => p.name).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+  $('#mapaInfo').textContent = pois.length + ' lugares no mapa de hoje. Toca num nome pra procurar no mapa.';
+  renderMapaLista(pois);
+}
+function renderMapaLista(pois){
+  const q = normal($('#campoMapa').value);
+  const lista = pois.filter(p => !q || normal(p.name).includes(q));
+  $('#mapaLista').innerHTML = lista.map(p => '<button class="chip" data-nome="' + esc(p.name) + '">📍 ' + esc(p.name) + '</button>').join('') || '<p class="fraco">Nenhum lugar com esse nome.</p>';
+}
+$('#campoMapa').addEventListener('input', () => { if(MAPA) renderMapaLista((MAPA.pois || []).filter(p => p.name).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))); });
+function zoomMapa(f){ mapaZoom = Math.min(4, Math.max(1, mapaZoom * f)); $('#mapaImg').style.width = (mapaZoom * 100) + '%'; }
+$('#btnMapaMais').addEventListener('click', () => zoomMapa(1.5));
+$('#btnMapaMenos').addEventListener('click', () => zoomMapa(1 / 1.5));
+$('#mapaLista').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(c){ $('#campoMapa').value = c.dataset.nome; $('#mapaCaixa').scrollIntoView({ behavior:'smooth', block:'start' }); } });
+// arrastar pra andar no mapa
+(() => {
+  const cx = $('#mapaCaixa'); let arr = null;
+  cx.addEventListener('pointerdown', ev => { arr = { x:ev.clientX, y:ev.clientY, sl:cx.scrollLeft, st:cx.scrollTop }; cx.setPointerCapture(ev.pointerId); cx.style.cursor = 'grabbing'; });
+  cx.addEventListener('pointermove', ev => { if(!arr) return; cx.scrollLeft = arr.sl - (ev.clientX - arr.x); cx.scrollTop = arr.st - (ev.clientY - arr.y); });
+  ['pointerup','pointercancel'].forEach(e => cx.addEventListener(e, () => { arr = null; cx.style.cursor = 'grab'; }));
+})();
+
 /* ---------- abas ---------- */
 $('#abas').addEventListener('click', ev => {
   const b = ev.target.closest('button[data-aba]'); if(!b) return;
   $$('#abas button').forEach(x => x.setAttribute('aria-pressed', x === b));
   $$('.painel').forEach(p => p.classList.toggle('ativo', p.id === 'painel-' + b.dataset.aba));
   if(b.dataset.aba === 'armario' || b.dataset.aba === 'conta') renderArmario();
+  if(b.dataset.aba === 'mapa') carregarMapa();
   window.scrollTo({ top:0, behavior:'smooth' });
 });
 
