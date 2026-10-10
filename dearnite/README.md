@@ -53,10 +53,9 @@ faixas (Jam Tracks) e kits LEGO.
   **não** está escrita no código de propósito: chave no código vira pública. Só funciona
   pra quem deixou as estatísticas públicas no jogo. Ver o armário de outro jogador não dá
   — a Epic não mostra pra ninguém.
-- **🧸 Meus bonecos**: brinquedo de verdade (boneco, pelúcia, Funko, chaveiro, LEGO).
-  Não existe catálogo de preço desses pra puxar, então quem sabe é a pessoa: ela
-  cadastra o que tem, de qual skin é (a foto vem do catálogo), quanto custou, quanto
-  acha que vale e se acha raro. O site soma e marca ▲ ▼. Vai junto no código do armário.
+- **🔫 Armas**: raridade, tipo, dano, cadência, pente, recarga e se está no jogo ou no
+  cofre. Vêm de outra API (fortniteapi.io), com chave própria de graça, guardada só no
+  aparelho. Lista guardada por um dia.
 - **🗺️ Mapa**: o mapa de agora com os nomes dos lugares desenhados, zoom, arrastar e
   busca de local. Missões não existem nessa API.
 
