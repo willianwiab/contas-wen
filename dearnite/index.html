@@ -255,6 +255,12 @@ details summary{cursor:pointer;color:var(--roxo);font-weight:600}
 .mapa-caixa img{display:block;width:100%;max-width:none;transition:width .15s}
 .arma .stats{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
 .arma .stats span{font-size:.72rem;background:var(--cartao3);border-radius:6px;padding:2px 6px}
+.elemental{background:var(--cartao);border:1px solid var(--borda);border-radius:16px;padding:14px;border-top:6px solid var(--cor-el);position:relative}
+.elemental .ico{font-size:2.4rem;line-height:1}
+.elemental h3{margin:6px 0 2px;font-size:1.1rem}
+.elemental .rar{font-size:.78rem;font-weight:700;color:var(--cor-el)}
+.elemental p{font-size:.92rem;line-height:1.45;margin-top:4px}
+.elemental .como{font-size:.8rem;color:var(--tinta-fraca);margin-top:6px}
 .jog-topo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .jog-topo h2{margin:0}
 .jog-topo .nivel{background:var(--vb);color:#2a1d00;font-weight:700;border-radius:999px;padding:6px 12px}
@@ -291,6 +297,7 @@ footer a{color:var(--roxo)}
   <button aria-pressed="false" data-aba="jogador">🎮 Jogador</button>
   <button aria-pressed="false" data-aba="mapa">🗺️ Mapa</button>
   <button aria-pressed="false" data-aba="armas">🔫 Armas</button>
+  <button aria-pressed="false" data-aba="elementais">✨ Elementais</button>
   <button aria-pressed="false" data-aba="vbucks">💎 V-Bucks em reais</button>
 </nav>
 
@@ -482,6 +489,25 @@ footer a{color:var(--roxo)}
   </div>
   <p class="contador" id="armasContador"></p>
   <div class="grade" id="gradeArmas"></div>
+</section>
+
+<!-- ============ ELEMENTAIS ============ -->
+<section class="painel" id="painel-elementais">
+  <div class="caixa">
+    <h2>✨ Elementais (Sprites)</h2>
+    <p>Os Elementais são os bichinhos de elemento que aparecem pela ilha. No Capítulo 6 você levava um até um <b>Altar</b> pra ganhar uma <b>Dádiva</b> (um poder que fica até o fim da partida, mesmo se você for eliminado e voltar). No Capítulo 7 Temporada 3 eles viraram companheiros: cada um dá um poder passivo, sobem de nível, e você <b>extrai</b> o Elemental pra ganhar <b>Pó de Elemental</b> e poder chamar ele de novo na próxima partida.</p>
+    <div class="chips" id="chipsElementais" style="margin-top:10px"></div>
+    <div class="linha-busca" style="margin-top:8px">
+      <input id="campoElementais" type="search" placeholder="Procura um Elemental (ex: pato, fogo)" autocomplete="off" style="flex:1 1 200px;min-width:0;padding:12px 14px;border-radius:14px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" />
+    </div>
+    <p class="contador" id="contadorElementais"></p>
+    <div class="grade" id="gradeElementais" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))"></div>
+    <h3>Variantes (Capítulo 7 T3)</h3>
+    <div class="grade" id="gradeVariantes" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))"></div>
+    <h3>Quanto custa chamar um (Pó de Elemental)</h3>
+    <table class="tabela"><tr><th>Raridade</th><th>Pó</th></tr><tr><td>Raro</td><td>100</td></tr><tr><td>Épico</td><td>3.000</td></tr><tr><td>Lendário</td><td>5.000</td></tr><tr><td>Mítico</td><td>7.500</td></tr><tr><td>Variantes (Dourado, Goma, Galáxia)</td><td>mais caro</td></tr></table>
+    <div class="aviso" style="margin-top:12px">Nenhuma API tem essa lista: ela foi escrita à mão a partir das notícias da Epic e de guias, e os guias discordam em alguns detalhes (raridade do Chefe, nome de alguns). Os nomes em português podem ser um pouco diferentes dos do jogo. Pra lista sempre atualizada: <a href="https://fortnitespritetracker.org/pt-br/" target="_blank" rel="noopener">fortnitespritetracker.org</a> e <a href="https://fortnite.gg/sprites" target="_blank" rel="noopener">fortnite.gg/sprites</a>. Conhece um que falta ou está errado? Fala pro Claude que ele arruma.</div>
+  </div>
 </section>
 
 <!-- ============ V-BUCKS ============ -->
@@ -976,7 +1002,7 @@ function aplicarFiltros(){
     if(ver && raridadeDeVer(it).n !== ver) return false;
     if(soLoja && !LOJA.has(it.id)) return false;
     if(soNunca && it.hist.length) return false;
-    if(q && !bate(it, alts)) return false;
+    if(q && !bate(it, alts) && !(INGLES.get(q) || new Set()).has(it.id)) return false;
     return true;
   });
   const col = new Intl.Collator('pt-BR');
@@ -1013,36 +1039,38 @@ function cartaHTML(it, extra){
 function render(){
   if(!ITENS.length) return;
   aplicarFiltros(); mostrados = 0; $('#grade').innerHTML = '';
-  $('#contador').textContent = filtrados.length ? num(filtrados.length) + ' cosmético' + (filtrados.length > 1 ? 's' : '') + ' encontrado' + (filtrados.length > 1 ? 's' : '') : 'Nada com esse nome. Tenta escrever menos letras, ou o nome em inglês.';
+  const q0 = normal($('#campo').value); const emIngles = INGLES.get(q0);
+  const doIngles = emIngles ? filtrados.filter(it => emIngles.has(it.id) && !bate(it, alternativas(q0))).length : 0;
+  $('#contador').textContent = filtrados.length ? num(filtrados.length) + ' cosmético' + (filtrados.length > 1 ? 's' : '') + ' encontrado' + (filtrados.length > 1 ? 's' : '') + (doIngles ? ' (' + doIngles + ' pelo nome em inglês)' : '') + (q0.length >= 3 && !emIngles ? ' · procurando também em inglês…' : '') :
+    (q0.length >= 3 && !emIngles ? 'Nada em português. Procurando pelo nome em inglês… 🔎' : 'Nada com esse nome' + (emIngles ? ', nem em inglês. Confere a escrita?' : '. Tenta escrever menos letras.'));
   maisPagina();
-  if(!filtrados.length) buscarEmIngles($('#campo').value);
+  buscarEmIngles($('#campo').value);
 }
 
 /* ---------- busca em inglês na API ----------
-   O catálogo guardado tem só o nome em português. Quando a busca local não
-   acha nada, pergunta pra API pelo nome em inglês (ela devolve em português)
-   e junta o que vier ao catálogo. */
+   O catálogo guardado tem só o nome em português. Então toda busca com 3+
+   letras também pergunta pra API pelo nome em inglês (ela devolve em
+   português) e JUNTA o que vier: "peely" acha o Peely Ossudo mesmo que o
+   nome em português não tenha "peely". Cada busca só vai pra API uma vez. */
+const INGLES = new Map();          // texto normalizado → Set de ids achados em inglês
 let buscaInglesPendente = null;
 async function buscarEmIngles(texto){
-  const q = String(texto || '').trim();
-  if(q.length < 3) return;
+  const q = normal(texto);
+  if(q.length < 3 || INGLES.has(q)) return;
   const minha = buscaInglesPendente = q;
-  $('#contador').textContent = 'Nada em português. Procurando pelo nome em inglês… 🔎';
   try{
-    const url = API + '/cosmetics/br/search/all?name=' + encodeURIComponent(q) + '&matchMethod=contains&searchLanguage=en&language=pt-BR' + FLAGS;
+    const url = API + '/cosmetics/br/search/all?name=' + encodeURIComponent(String(texto).trim()) + '&matchMethod=contains&searchLanguage=en&language=pt-BR' + FLAGS;
     const r = await fetch(url, { headers:{ Accept:'application/json' } });
-    if(minha !== buscaInglesPendente) return;   // a pessoa já digitou outra coisa
-    if(r.status === 404){ $('#contador').textContent = 'Nada com esse nome, nem em inglês. Confere a escrita?'; return; }
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    const lista = Array.isArray(j.data) ? j.data : [];
-    let novos = 0;
-    lista.forEach(x => { try{ const it = enxugarBR(x); if(!POR_ID.has(it.id)){ indexar(it); ITENS.push(it); POR_ID.set(it.id, it); novos++; } }catch(e){} });
-    filtrados = lista.map(x => POR_ID.get(x.id)).filter(Boolean);
-    mostrados = 0; $('#grade').innerHTML = ''; maisPagina();
-    $('#contador').textContent = filtrados.length ? 'Achei ' + filtrados.length + ' pelo nome em inglês "' + q + '":' : 'Nada com esse nome, nem em inglês. Confere a escrita?';
+    const ids = new Set();
+    if(r.ok){
+      const j = await r.json();
+      (Array.isArray(j.data) ? j.data : []).forEach(x => { try{ const it = enxugarBR(x); if(!POR_ID.has(it.id)){ indexar(it); ITENS.push(it); POR_ID.set(it.id, it); } ids.add(it.id); }catch(e){} });
+    } else if(r.status !== 404) throw new Error('HTTP ' + r.status);
+    INGLES.set(q, ids);
+    if(minha === buscaInglesPendente && normal($('#campo').value) === q) render();   // a pessoa ainda está nessa busca: redesenha com os novos
   }catch(e){
-    if(minha === buscaInglesPendente) $('#contador').textContent = 'Nada em português, e não consegui procurar em inglês agora (' + e.message + ').';
+    console.warn(e);
+    if(minha === buscaInglesPendente && normal($('#campo').value) === q && !filtrados.length) $('#contador').textContent = 'Nada em português, e não consegui procurar em inglês agora (' + e.message + ').';
   }
 }
 function maisPagina(){
@@ -1323,6 +1351,66 @@ function renderArmas(){
 }
 $('#campoArmas').addEventListener('input', renderArmas);
 $('#chkArmasAtivas').addEventListener('change', renderArmas);
+
+/* =====================================================================
+   ✨ ELEMENTAIS — lista escrita à mão (nenhuma API tem). Fontes: notícia
+   da Epic do Capítulo 6 T1 (01/12/2024) e guias do Capítulo 6 T3 e do
+   Capítulo 7 T3. Pra acrescentar ou corrigir um, é só mexer aqui.
+   ===================================================================== */
+const TEMPORADAS_EL = { c6t1:'Capítulo 6, Temporada 1 (Caçada)', c6t3:'Capítulo 6, Temporada 3 (Super)', c7t3:'Capítulo 7, Temporada 3 (Corredores)' };
+const COR_RAR_EL = { rare:'#2f9df2', epic:'#a855f7', legendary:'#f08a2e', mythic:'#e6b422', '':'#8a8a9a' };
+const NOME_RAR_EL = { rare:'Raro', epic:'Épico', legendary:'Lendário', mythic:'Mítico', '':'' };
+const ELEMENTAIS = [
+  // ---- Capítulo 6, Temporada 1 ----
+  { t:'c6t1', nome:'Elemental de Fogo', ico:'🔥', faz:'Leva pro Altar e ganha a Dádiva do Fogo: suas armas recarregam mais rápido.' },
+  { t:'c6t1', nome:'Elemental do Vazio', ico:'🌑', faz:'Leva pro Altar e ganha a Dádiva do Vazio: quando você elimina alguém, os inimigos perto dele ficam revelados.' },
+  { t:'c6t1', nome:'Elemental do Vento (Ar)', ico:'🌪️', faz:'Jogado no chão, cria um campo de ar por 10 segundos que lança todo mundo pra cima e libera o planador (e estraga construções inimigas). No Altar vira a Dádiva do Vento: você anda mais rápido com a picareta na mão.' },
+  { t:'c6t1', nome:'Elemental da Água', ico:'💧', faz:'Jogado no chão, vira uma fonte que cura vida e escudo de quem está perto. No Altar vira a Dádiva da Água: nadar dá Vida e Escudo pra você e pros companheiros que estiverem nadando perto.' },
+  { t:'c6t1', nome:'Elemental da Terra', ico:'🪨', faz:'Come os itens que você dá pra ele e devolve recompensas. Não dá pra pegar, então não vai pro Altar.' },
+  // ---- Capítulo 6, Temporada 3 ----
+  { t:'c6t3', nome:'Elemental do Superman', ico:'🦸', faz:'Atira raios laser. No Altar vira a Dádiva Sentidos Aguçados.', como:'Entrou no lugar do Elemental do Ar.' },
+  { t:'c6t3', nome:'Elemental do Dash', ico:'💨', faz:'Dá 3 cargas de dash pra quem está dentro da área dele. No Altar vira a Dádiva Acrobata de Combate.', como:'Entrou no lugar do Elemental da Água.' },
+  // ---- Capítulo 7, Temporada 3 ----
+  { t:'c7t3', r:'rare', nome:'Elemental da Terra', ico:'🪨', faz:'Chance de achar itens raros a mais quando abre baús.', como:'Um dos três que você já começa tendo.' },
+  { t:'c7t3', r:'rare', nome:'Elemental de Fogo', ico:'🔥', faz:'Depois de causar bastante dano num inimigo, solta uma explosão de fogo.', como:'Um dos três que você já começa tendo. Combina com o Fuzil Recarregador do Caos.' },
+  { t:'c7t3', r:'rare', nome:'Elemental da Água', ico:'💧', faz:'Recupera escudo enquanto você está na água, pra você e pro esquadrão perto.', como:'Um dos três que você já começa tendo.' },
+  { t:'c7t3', r:'rare', nome:'Elemental Peixinho', ico:'🐟', faz:'Nada muito mais rápido, e tomar dano dá um pulo de velocidade por um instante.' },
+  { t:'c7t3', r:'rare', nome:'Elemental do Ar', ico:'🌬️', faz:'Só um guia cita ele nesta temporada, e nenhum diz o que ele faz. Se você souber, me conta!' },
+  { t:'c7t3', r:'epic', nome:'Elemental Pato', ico:'🦆', faz:'Dançar (gesto) ou tocar uma Faixa recarrega o escudo.' },
+  { t:'c7t3', r:'epic', nome:'Elemental Fantasma', ico:'👻', faz:'Toda vez que recarrega a arma, você fica invisível por um instante.' },
+  { t:'c7t3', r:'epic', nome:'Elemental Demônio', ico:'😈', faz:'Eliminar um inimigo recupera um pouco de vida e escudo.' },
+  { t:'c7t3', r:'epic', nome:'Elemental Rei', ico:'👑', faz:'A picareta dá mais dano.' },
+  { t:'c7t3', r:'epic', nome:'Elemental Aura', ico:'✨', faz:'Depois de causar uma certa quantidade de dano, ganha uma carga de Pedra de Choque.' },
+  { t:'c7t3', r:'epic', nome:'Elemental Atacante', ico:'⚽', faz:'Escalar, pular obstáculo ou subir parede liga o Overdrive.', como:'Ganha fazendo gol no campo de futebol do mapa.' },
+  { t:'c7t3', r:'legendary', nome:'Elemental Sonho', ico:'💭', faz:'Dá um item aleatório a cada nível, e no nível 5 explode em loot lendário.' },
+  { t:'c7t3', r:'legendary', nome:'Elemental Punk', ico:'🎸', faz:'No nível máximo, chance de munição infinita (os guias discordam se é sempre ou às vezes).' },
+  { t:'c7t3', r:'legendary', nome:'Elemental Chefe', ico:'👹', faz:'Aumenta a vida e o escudo máximos.', como:'Cai de qualquer chefe. Um guia diz que é Épico, outro Lendário.' },
+  { t:'c7t3', r:'legendary', nome:'Elemental Sete', ico:'7️⃣', faz:'Revela os passos dos inimigos perto, pra você e pro esquadrão inteiro.' },
+  { t:'c7t3', r:'legendary', nome:'Elemental Lhama', ico:'🦙', faz:'Chance de melhorar a arma quando abre uma caixa de munição.', como:'Só um guia cita.' },
+  { t:'c7t3', r:'legendary', nome:'Elemental Peely', ico:'🍌', faz:'Avisa quando tem jogador com Elemental raro por perto, mas te marca no mapa pra todo mundo.', como:'Só um guia cita.' },
+  { t:'c7t3', r:'mythic', nome:'Elemental Ponto Zero', ico:'🔮', faz:'Toda vez que usa um item de cura, aparece uma Bolha de Escudo Jr. em volta de você.' },
+  { t:'c7t3', r:'mythic', nome:'Elemental Amendoim Queimado', ico:'🥜', faz:'Chance de cair item raro (às vezes Mítico) de quem você elimina.' },
+  { t:'c7t3', r:'mythic', nome:'Elemental Ceifador', ico:'💀', faz:'Marca automaticamente qualquer inimigo que te der dano.' },
+];
+const VARIANTES_EL = [
+  { nome:'Dourado', ico:'🥇', cor:'#f5c518', faz:'XP a mais por eliminação.' },
+  { nome:'Goma (Gummy)', ico:'🍬', cor:'#ff5fa2', faz:'Mais Pó de Elemental quando você extrai (os guias dizem 10% ou 20%).' },
+  { nome:'Galáxia', ico:'🌌', cor:'#8f73f5', faz:'Munição extra quando você saqueia.' },
+];
+let tempEl = 'c7t3';
+function renderElementais(){
+  const q = normal($('#campoElementais').value);
+  const lista = ELEMENTAIS.filter(e => (!tempEl || e.t === tempEl) && (!q || normal(e.nome + ' ' + e.faz + ' ' + (e.como || '')).includes(q)));
+  $('#contadorElementais').textContent = lista.length + (lista.length === 1 ? ' elemental' : ' elementais') + (tempEl ? ' em ' + TEMPORADAS_EL[tempEl] : ' em todas as temporadas');
+  $('#gradeElementais').innerHTML = lista.map(e => { const cor = COR_RAR_EL[e.r || '']; return '<div class="elemental" style="--cor-el:' + cor + '"><div class="ico">' + e.ico + '</div><h3>' + esc(e.nome) + '</h3>' +
+    (e.r ? '<div class="rar">' + NOME_RAR_EL[e.r] + '</div>' : '') + '<p>' + esc(e.faz) + '</p>' + (e.como ? '<div class="como">' + esc(e.como) + '</div>' : '') +
+    (!tempEl ? '<div class="como">' + esc(TEMPORADAS_EL[e.t]) + '</div>' : '') + '</div>'; }).join('') || '<p class="fraco">Nenhum com esse nome.</p>';
+}
+$('#chipsElementais').innerHTML = Object.keys(TEMPORADAS_EL).map(k => '<button class="chip" aria-pressed="' + (tempEl === k) + '" data-temp="' + k + '">' + esc(TEMPORADAS_EL[k]) + '</button>').join('') + '<button class="chip" aria-pressed="false" data-temp="">Todas</button>';
+$('#chipsElementais').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; tempEl = c.dataset.temp; $$('#chipsElementais .chip').forEach(x => x.setAttribute('aria-pressed', x === c)); renderElementais(); });
+$('#campoElementais').addEventListener('input', renderElementais);
+$('#gradeVariantes').innerHTML = VARIANTES_EL.map(v => '<div class="elemental" style="--cor-el:' + v.cor + '"><div class="ico">' + v.ico + '</div><h3>' + esc(v.nome) + '</h3><p>' + esc(v.faz) + '</p></div>').join('');
+renderElementais();
 
 /* ---------- V-Bucks em reais ---------- */
 function renderCalc(){
