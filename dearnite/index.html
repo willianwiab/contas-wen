@@ -1002,7 +1002,7 @@ function aplicarFiltros(){
     if(ver && raridadeDeVer(it).n !== ver) return false;
     if(soLoja && !LOJA.has(it.id)) return false;
     if(soNunca && it.hist.length) return false;
-    if(q && !bate(it, alts)) return false;
+    if(q && !bate(it, alts) && !(INGLES.get(q) || new Set()).has(it.id)) return false;
     return true;
   });
   const col = new Intl.Collator('pt-BR');
@@ -1039,36 +1039,38 @@ function cartaHTML(it, extra){
 function render(){
   if(!ITENS.length) return;
   aplicarFiltros(); mostrados = 0; $('#grade').innerHTML = '';
-  $('#contador').textContent = filtrados.length ? num(filtrados.length) + ' cosmético' + (filtrados.length > 1 ? 's' : '') + ' encontrado' + (filtrados.length > 1 ? 's' : '') : 'Nada com esse nome. Tenta escrever menos letras, ou o nome em inglês.';
+  const q0 = normal($('#campo').value); const emIngles = INGLES.get(q0);
+  const doIngles = emIngles ? filtrados.filter(it => emIngles.has(it.id) && !bate(it, alternativas(q0))).length : 0;
+  $('#contador').textContent = filtrados.length ? num(filtrados.length) + ' cosmético' + (filtrados.length > 1 ? 's' : '') + ' encontrado' + (filtrados.length > 1 ? 's' : '') + (doIngles ? ' (' + doIngles + ' pelo nome em inglês)' : '') + (q0.length >= 3 && !emIngles ? ' · procurando também em inglês…' : '') :
+    (q0.length >= 3 && !emIngles ? 'Nada em português. Procurando pelo nome em inglês… 🔎' : 'Nada com esse nome' + (emIngles ? ', nem em inglês. Confere a escrita?' : '. Tenta escrever menos letras.'));
   maisPagina();
-  if(!filtrados.length) buscarEmIngles($('#campo').value);
+  buscarEmIngles($('#campo').value);
 }
 
 /* ---------- busca em inglês na API ----------
-   O catálogo guardado tem só o nome em português. Quando a busca local não
-   acha nada, pergunta pra API pelo nome em inglês (ela devolve em português)
-   e junta o que vier ao catálogo. */
+   O catálogo guardado tem só o nome em português. Então toda busca com 3+
+   letras também pergunta pra API pelo nome em inglês (ela devolve em
+   português) e JUNTA o que vier: "peely" acha o Peely Ossudo mesmo que o
+   nome em português não tenha "peely". Cada busca só vai pra API uma vez. */
+const INGLES = new Map();          // texto normalizado → Set de ids achados em inglês
 let buscaInglesPendente = null;
 async function buscarEmIngles(texto){
-  const q = String(texto || '').trim();
-  if(q.length < 3) return;
+  const q = normal(texto);
+  if(q.length < 3 || INGLES.has(q)) return;
   const minha = buscaInglesPendente = q;
-  $('#contador').textContent = 'Nada em português. Procurando pelo nome em inglês… 🔎';
   try{
-    const url = API + '/cosmetics/br/search/all?name=' + encodeURIComponent(q) + '&matchMethod=contains&searchLanguage=en&language=pt-BR' + FLAGS;
+    const url = API + '/cosmetics/br/search/all?name=' + encodeURIComponent(String(texto).trim()) + '&matchMethod=contains&searchLanguage=en&language=pt-BR' + FLAGS;
     const r = await fetch(url, { headers:{ Accept:'application/json' } });
-    if(minha !== buscaInglesPendente) return;   // a pessoa já digitou outra coisa
-    if(r.status === 404){ $('#contador').textContent = 'Nada com esse nome, nem em inglês. Confere a escrita?'; return; }
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    const lista = Array.isArray(j.data) ? j.data : [];
-    let novos = 0;
-    lista.forEach(x => { try{ const it = enxugarBR(x); if(!POR_ID.has(it.id)){ indexar(it); ITENS.push(it); POR_ID.set(it.id, it); novos++; } }catch(e){} });
-    filtrados = lista.map(x => POR_ID.get(x.id)).filter(Boolean);
-    mostrados = 0; $('#grade').innerHTML = ''; maisPagina();
-    $('#contador').textContent = filtrados.length ? 'Achei ' + filtrados.length + ' pelo nome em inglês "' + q + '":' : 'Nada com esse nome, nem em inglês. Confere a escrita?';
+    const ids = new Set();
+    if(r.ok){
+      const j = await r.json();
+      (Array.isArray(j.data) ? j.data : []).forEach(x => { try{ const it = enxugarBR(x); if(!POR_ID.has(it.id)){ indexar(it); ITENS.push(it); POR_ID.set(it.id, it); } ids.add(it.id); }catch(e){} });
+    } else if(r.status !== 404) throw new Error('HTTP ' + r.status);
+    INGLES.set(q, ids);
+    if(minha === buscaInglesPendente && normal($('#campo').value) === q) render();   // a pessoa ainda está nessa busca: redesenha com os novos
   }catch(e){
-    if(minha === buscaInglesPendente) $('#contador').textContent = 'Nada em português, e não consegui procurar em inglês agora (' + e.message + ').';
+    console.warn(e);
+    if(minha === buscaInglesPendente && normal($('#campo').value) === q && !filtrados.length) $('#contador').textContent = 'Nada em português, e não consegui procurar em inglês agora (' + e.message + ').';
   }
 }
 function maisPagina(){
