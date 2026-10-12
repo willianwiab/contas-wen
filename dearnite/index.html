@@ -263,6 +263,7 @@ details summary{cursor:pointer;color:var(--roxo);font-weight:600}
 .modos-tab th:first-child,.modos-tab td:first-child{text-align:left}
 .modos-tab th{color:var(--tinta-fraca);font-weight:600}
 .jog-img{width:100%;border-radius:14px;margin-top:12px}
+.selo-vale{display:inline-block;font-size:.72rem;font-weight:700;color:#fff;border-radius:999px;padding:2px 8px;vertical-align:2px}
 footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.85rem;line-height:1.6}
 footer a{color:var(--roxo)}
 .oculto{display:none !important}
@@ -1074,6 +1075,49 @@ function tempoBonito(dias){
   return 'há ' + a + ' ano' + (a > 1 ? 's' : '') + (m ? ' e ' + m + ' mês(es)' : '');
 }
 
+/* ---------- vale a pena comprar? ----------
+   Uma ajuda, não uma ordem: soma pontos pelo que costuma fazer uma compra
+   valer (desconto, raridade, pouca volta pra loja, a pessoa querer) e tira
+   pelo que costuma fazer valer esperar (volta toda hora, muito caro, vem só
+   num pacotão). Sempre lembra que dinheiro de verdade é com os pais. */
+function valeAPena(it){
+  const p = precoDe(it); const rv = raridadeDeVer(it); const vezes = it.hist.length;
+  const ultima = vezes ? diasDesde(it.hist[it.hist.length - 1]) : null;
+  if(armario.has(it.id)) return { nivel:'tenho', titulo:'Você já tem! 🎉', cor:'var(--ok)', motivos:['Está no seu armário.'] };
+  if(!LOJA.has(it.id)){
+    if(p.de === 'nunca') return { nivel:'nao-da', titulo:'Não dá pra comprar', cor:'var(--tinta-fraca)', motivos:['Nunca foi vendido na loja: veio de passe, evento ou promoção.'] };
+    const m = ['Não está na loja hoje, então agora não dá.'];
+    if(vezes >= 10) m.push('Já voltou ' + vezes + ' vezes: quando voltar de novo, dá pra pensar com calma.');
+    else if(ultima != null && ultima > 365) m.push('Faz ' + tempoBonito(ultima).replace('há ', '') + ' que não volta. Se voltar e você gostar, aproveita.');
+    if(favs.has(it.id)) m.push('Está nas suas favoritas: fica de olho na aba Loja de hoje.');
+    return { nivel:'espera', titulo:'Espera voltar pra loja', cor:'var(--azul)', motivos:m };
+  }
+  let pontos = 0; const m = [];
+  if(p.normal && p.normal > p.vb){ pontos += 2; m.push('👍 Está com desconto: de ' + num(p.normal) + ' por ' + num(p.vb) + ' V-Bucks.'); }
+  if(rv.n >= 4){ pontos += 2; m.push('👍 É rara de ver (' + rv.estrelas + '): pouca gente tem.'); }
+  else if(rv.n === 3){ pontos += 1; m.push('👍 Não é das mais comuns (' + rv.estrelas + ').'); }
+  if(vezes <= 3){ pontos += 1; m.push('👍 Quase nunca vai pra loja (' + vezes + ' vez' + (vezes > 1 ? 'es' : '') + '): pode demorar pra voltar.'); }
+  else if(vezes >= 20){ pontos -= 1; m.push('👎 Já voltou ' + vezes + ' vezes: vai voltar de novo, não precisa ter pressa.'); }
+  if(favs.has(it.id)){ pontos += 1; m.push('👍 Está nas suas favoritas: você quer mesmo.'); }
+  if(p.vb >= 2000){ pontos -= 1; m.push('👎 É cara: ' + num(p.vb) + ' V-Bucks (' + reais(reaisDe(p.vb).melhor) + ').'); }
+  if(p.pacote){ pontos -= 1; m.push('👎 Hoje só vem dentro do pacote "' + p.pacote + '": você paga pelo pacote inteiro.'); }
+  if(!m.length) m.push('Preço normal e nada de especial: compra só se você gostou muito.');
+  if(pontos >= 3) return { nivel:'sim', titulo:'Vale muito a pena ✅', cor:'var(--ok)', motivos:m, pontos };
+  if(pontos >= 1) return { nivel:'talvez', titulo:'Vale, se você gostou 👌', cor:'var(--vb-sombra)', motivos:m, pontos };
+  return { nivel:'espera', titulo:'Pode esperar ⏳', cor:'var(--erro)', motivos:m, pontos };
+}
+function blocoVale(it){
+  const v = valeAPena(it);
+  return '<div class="bloco"><h3>🤔 Vale a pena comprar?</h3><p class="destaque" style="color:' + v.cor + ';font-size:1.6rem">' + esc(v.titulo) + '</p>' +
+    '<ul style="margin-top:6px">' + v.motivos.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' +
+    (v.nivel === 'sim' || v.nivel === 'talvez' || v.nivel === 'espera' ? '<p class="fraco" style="margin-top:8px">Isso é só uma ajuda, quem decide é você. Compra só se gostar de verdade, e V-Bucks com dinheiro de verdade só com os pais deixando.</p>' : '') + '</div>';
+}
+function seloVale(it){
+  const v = valeAPena(it);
+  const t = { sim:'✅ vale muito', talvez:'👌 vale se gostou', espera:'⏳ pode esperar', tenho:'🎒 já tem' }[v.nivel];
+  return t ? '<span class="selo-vale" style="background:' + v.cor + '">' + t + '</span>' : '';
+}
+
 /* ---------- detalhe ---------- */
 function blocoPreco(it){
   const p = precoDe(it);
@@ -1165,6 +1209,7 @@ function detalheHTML(it){
   html += '<div class="bloco"><h3>👀 Raridade de ver um player com ela</h3><p class="destaque" style="color:' + R.cor + '">' + rv.estrelas + ' ' + esc(rv.nome) + '</p><p>' + esc(rv.por) + '</p>' +
     (qt ? '<p style="margin-top:8px">🤔 <b>Chute de quantos têm:</b> ' + qt.texto + '. ' + esc(qt.partida) + '</p>' : '') +
     '<p class="fraco" style="margin-top:6px">Tudo isso é chute bem feito: ninguém tem o número exato de quantos jogadores têm cada skin, nem a Epic mostra. A nota usa quantas vezes ela foi pra loja, há quanto tempo sumiu e de onde ela veio, e as estrelas comparam essa nota com todos os cosméticos do jogo (5 estrelas = as 10% mais raras).</p></div>';
+  html += blocoVale(it);
   html += blocoPreco(it);
   html += '<p class="fraco">Código: ' + esc(it.id) + '</p></div>';
   return html;
@@ -1212,7 +1257,7 @@ function renderLoja(loja){
     const r = reaisDe(e.finalPrice || 0);
     const it = POR_ID.get(principal.id);
     return '<div class="loja-entrada" data-id="' + esc(principal.id) + '">' + (img ? '<img loading="lazy" src="' + esc(img) + '" alt="" />' : '<div style="width:64px;height:64px"></div>') +
-      '<div><div class="n">' + esc(nome) + '</div><div class="fraco">' + (itens.length > 1 ? itens.length + ' itens: ' + esc(itens.slice(0, 4).map(x => x.name || x.title).join(', ')) + (itens.length > 4 ? '…' : '') : esc(tipoDe(it ? it.tipo : (principal.type && principal.type.value)).nome)) + '</div></div>' +
+      '<div><div class="n">' + esc(nome) + (it ? ' ' + seloVale(it) : '') + '</div><div class="fraco">' + (itens.length > 1 ? itens.length + ' itens: ' + esc(itens.slice(0, 4).map(x => x.name || x.title).join(', ')) + (itens.length > 4 ? '…' : '') : esc(tipoDe(it ? it.tipo : (principal.type && principal.type.value)).nome)) + '</div></div>' +
       '<div class="p"><i class="vb-icone"></i>' + num(e.finalPrice || 0) + (e.regularPrice && e.regularPrice !== e.finalPrice ? ' <s class="fraco">' + num(e.regularPrice) + '</s>' : '') + '<small>' + reais(r.melhor) + '</small></div></div>';
   }).join('');
 }
