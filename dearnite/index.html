@@ -174,6 +174,7 @@ header{text-align:center;padding:30px 0 18px;position:relative}
 .carta .selos{position:absolute;top:6px;left:6px;display:flex;gap:4px;flex-wrap:wrap}
 .selo{font-size:.72rem;font-weight:700;padding:3px 7px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff}
 .selo.loja{background:var(--vb);color:#2a1d00}
+.selo.pac{background:var(--roxo)}
 .selo.tenho{background:var(--ok)}
 .selo.fav{background:var(--rosa)}
 .mais{display:flex;justify-content:center;margin:18px 0}
@@ -825,6 +826,8 @@ let ITENS = [];            // catálogo enxuto
 let POR_ID = new Map();
 let LOJA = new Map();      // id → { preco, normal, pacote }
 let LOJA_INFO = null;
+let PACOTOES = [];        // pacotes (com mais de um item) da loja de hoje
+let PACOTE_DE = new Map(); // id do item → lista de pacotes em que ele vem
 let filtrados = [];
 let mostrados = 0;
 const PAGINA = 60;
@@ -891,6 +894,17 @@ async function carregarLoja(){
       // Se o item aparece sozinho e também num pacote, o preço sozinho é o que vale.
       if(!atual || (atual.pacote && !novo.pacote)) LOJA.set(x.id, novo);
     });
+  });
+  /* Pacotões de hoje: toda oferta com mais de um item. Guarda nome, preço,
+     imagem e os ids, pra mostrar dentro de cada item que vem nele. */
+  PACOTOES = []; PACOTE_DE = new Map();
+  (dados.loja.entries || []).forEach(e => {
+    const ids = []; ['brItems','cars','instruments','tracks','legoKits'].forEach(g => (e[g] || []).forEach(x => ids.push(x.id)));
+    if(ids.length < 2) return;
+    const pac = { nome:(e.bundle && e.bundle.name) || e.devName || 'Pacote', preco:e.finalPrice || 0, normal:e.regularPrice || 0,
+      img:(e.bundle && e.bundle.image) || '', ids, sai:e.outDate || '' };
+    PACOTOES.push(pac);
+    ids.forEach(id => { const l = PACOTE_DE.get(id) || []; l.push(pac); PACOTE_DE.set(id, l); });
   });
   /* Quem está na loja hoje (sozinho ou dentro de um pacotão) ganha a data de
      hoje no histórico, se ela ainda não estiver lá. Senão o item dizia
@@ -1008,6 +1022,7 @@ function cartaHTML(it, extra){
   const R = raridadeDe(it); const T = tipoDe(it.tipo);
   const selos = [];
   if(LOJA.has(it.id)) selos.push('<span class="selo loja">🛒 hoje</span>');
+  if(PACOTE_DE.has(it.id)) selos.push('<span class="selo pac">📦 pacotão</span>');
   if(it.hist.length) selos.push('<span class="selo">' + it.hist.length + '×</span>'); else selos.push('<span class="selo">nunca vendida</span>');
   if(armario.has(it.id)) selos.push('<span class="selo tenho">tenho</span>');
   if(favs.has(it.id)) selos.push('<span class="selo fav">❤</span>');
@@ -1118,6 +1133,30 @@ function seloVale(it){
   return t ? '<span class="selo-vale" style="background:' + v.cor + '">' + t + '</span>' : '';
 }
 
+/* ---------- pacotão ----------
+   Quanto custaria cada item do pacote comprado sozinho: o preço da loja de
+   hoje quando ele também está à venda sozinho, senão a estimativa da tabela. */
+function precoSozinho(x){
+  const l = LOJA.get(x.id);
+  if(l && !l.pacote && l.preco != null) return { vb:l.preco, est:false };
+  const e = precoEstimado(x); return { vb:e || 0, est:true };
+}
+function blocoPacotao(it){
+  const pacs = PACOTE_DE.get(it.id); if(!pacs || !pacs.length) return '';
+  return pacs.map(pac => {
+    const itens = pac.ids.map(id => POR_ID.get(id)).filter(Boolean);
+    let soma = 0, algumEst = false;
+    itens.forEach(x => { const s = precoSozinho(x); soma += s.vb; if(s.est) algumEst = true; });
+    const eco = soma - pac.preco;
+    return '<div class="bloco"><h3>📦 Vem no pacotão "' + esc(pac.nome) + '"</h3>' +
+      '<p class="destaque vbucks"><i class="vb-icone"></i>' + num(pac.preco) + ' V-Bucks' + (pac.normal && pac.normal > pac.preco ? ' <s class="fraco" style="font-size:1rem">' + num(pac.normal) + '</s>' : '') + '</p>' +
+      '<p>' + itens.length + ' itens no pacote. Em dinheiro, comprar esses V-Bucks custa ' + reais(reaisDe(pac.preco).melhor) + '.</p>' +
+      (soma > 0 ? '<p style="margin-top:6px">Comprando cada um separado ia dar uns <b>' + num(soma) + ' V-Bucks</b>' + (algumEst ? ' (estimado)' : '') + '. ' +
+        (eco > 0 ? '<b style="color:var(--ok)">O pacotão economiza ' + num(eco) + ' V-Bucks!</b>' : eco < 0 ? '<b style="color:var(--erro)">Separado sai mais barato.</b>' : 'Dá na mesma.') + '</p>' : '') +
+      '<div class="conjunto">' + itens.map(x => '<button class="carta" data-id="' + esc(x.id) + '" style="--cor-rar:' + raridadeDe(x).cor + '"><div class="foto">' + (x.img ? '<img loading="lazy" src="' + esc(x.img) + '" alt="" />' : '<span class="sem">' + tipoDe(x.tipo).emoji + '</span>') + '</div><div class="info"><div class="nome">' + esc(x.nome) + '</div><div class="tipo">' + esc(tipoDe(x.tipo).nome) + '</div></div></button>').join('') + '</div></div>';
+  }).join('');
+}
+
 /* ---------- detalhe ---------- */
 function blocoPreco(it){
   const p = precoDe(it);
@@ -1209,6 +1248,7 @@ function detalheHTML(it){
   html += '<div class="bloco"><h3>👀 Raridade de ver um player com ela</h3><p class="destaque" style="color:' + R.cor + '">' + rv.estrelas + ' ' + esc(rv.nome) + '</p><p>' + esc(rv.por) + '</p>' +
     (qt ? '<p style="margin-top:8px">🤔 <b>Chute de quantos têm:</b> ' + qt.texto + '. ' + esc(qt.partida) + '</p>' : '') +
     '<p class="fraco" style="margin-top:6px">Tudo isso é chute bem feito: ninguém tem o número exato de quantos jogadores têm cada skin, nem a Epic mostra. A nota usa quantas vezes ela foi pra loja, há quanto tempo sumiu e de onde ela veio, e as estrelas comparam essa nota com todos os cosméticos do jogo (5 estrelas = as 10% mais raras).</p></div>';
+  html += blocoPacotao(it);
   html += blocoVale(it);
   html += blocoPreco(it);
   html += '<p class="fraco">Código: ' + esc(it.id) + '</p></div>';
