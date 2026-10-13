@@ -56,6 +56,10 @@ faixas (Jam Tracks) e kits LEGO.
 - **🔫 Armas**: raridade, tipo, dano, cadência, pente, recarga e se está no jogo ou no
   cofre. Vêm de outra API (fortniteapi.io), com chave própria de graça, guardada só no
   aparelho. Lista guardada por um dia.
+- **🧑 NPCs**: os personagens do mapa do Capítulo 2 Temporada 5 (quando os NPCs
+  começaram) até o Capítulo 7 Temporada 4, com chefões, lugar e o que dão. Lista escrita
+  à mão no código (`NPCS`) a partir de guias; a foto é a da skin do personagem, achada
+  no catálogo pelo nome (e, se precisar, pela busca em inglês da API, uma vez por nome).
 - **🗺️ Mapa**: o mapa de agora com os nomes dos lugares desenhados, zoom, arrastar e
   busca de local. Missões não existem nessa API.
 
