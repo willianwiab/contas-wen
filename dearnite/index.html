@@ -505,7 +505,9 @@ footer a{color:var(--roxo)}
 
 <footer>
   Dados dos cosméticos: <a href="https://fortnite-api.com" target="_blank" rel="noopener">fortnite-api.com</a>. DearNite não é da Epic Games.<br/>
-  Feito pelo Jojo com o Claude. Irmão do <a href="../butterpoke/">ButterPoke</a> 🦋
+  Feito pelo Jojo com o Claude. Irmão do <a href="../butterpoke/">ButterPoke</a> 🦋<br/>
+  Versão <b id="versao">21</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
+  <div class="fraco" id="atualizarMsg" style="margin-top:6px"></div>
 </footer>
 </div>
 
@@ -1810,6 +1812,26 @@ aplicarTema();
     status('Deu erro: ' + esc(e.message), 0, true);
   }
 })();
+
+/* ---------- 🔄 atualizar o site ----------
+   Quando o celular insiste em mostrar a versão velha: desliga o service
+   worker, apaga os caches da casca e recarrega pedindo tudo de novo. O
+   armário e as favoritas (localStorage) não são tocados; o catálogo
+   guardado também fica, porque ele tem a própria validade. */
+const VERSAO = 21;
+$('#btnAtualizar').addEventListener('click', async () => {
+  $('#atualizarMsg').textContent = 'Atualizando…';
+  try{
+    if(navigator.serviceWorker){ const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r => r.unregister())); }
+    if(window.caches){ const ks = await caches.keys(); await Promise.all(ks.filter(k => k.startsWith('dearnite-')).map(k => caches.delete(k))); }
+  }catch(e){ console.warn(e); }
+  location.replace(location.pathname + '?v=' + Date.now());
+});
+// Avisa quando existe versão mais nova publicada do que a que está aberta.
+fetch('./sw.js?checar=' + Date.now(), { cache:'no-store' }).then(r => r.ok ? r.text() : '').then(t => {
+  const m = /dearnite-v(\d+)/.exec(t || ''); const nova = m ? parseInt(m[1], 10) : 0;
+  if(nova > VERSAO) $('#atualizarMsg').innerHTML = '🆕 Tem versão nova (' + nova + ')! Toca em <b>Atualizar o site</b>.';
+}).catch(() => {});
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).catch(() => {}); });
