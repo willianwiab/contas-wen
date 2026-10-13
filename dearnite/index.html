@@ -267,6 +267,24 @@ details summary{cursor:pointer;color:var(--roxo);font-weight:600}
 .modos-tab th{color:var(--tinta-fraca);font-weight:600}
 .jog-img{width:100%;border-radius:14px;margin-top:12px}
 .selo-vale{display:inline-block;font-size:.72rem;font-weight:700;color:#fff;border-radius:999px;padding:2px 8px;vertical-align:2px}
+/* ---------- 🥚 segredos ---------- */
+.ovo{position:fixed;inset:0;z-index:999;pointer-events:none;overflow:hidden}
+.ovo .pinhata{position:absolute;left:50%;top:-260px;width:220px;height:220px;margin-left:-110px;pointer-events:auto;cursor:pointer;
+  transition:top .9s cubic-bezier(.3,1.4,.5,1);filter:drop-shadow(0 12px 18px rgba(0,0,0,.35));user-select:none;-webkit-user-select:none}
+.ovo .pinhata.chegou{top:calc(50% - 110px)}
+.ovo .pinhata.treme{animation:treme .25s}
+@keyframes treme{25%{transform:rotate(-12deg) scale(1.05)}75%{transform:rotate(12deg) scale(1.05)}}
+.ovo .dica{position:absolute;left:0;right:0;top:calc(50% + 125px);text-align:center;font-family:'Baloo 2',cursive;font-size:1.4rem;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.ovo .loot{position:absolute;left:50%;top:50%;font-size:2.2rem;will-change:transform}
+.ovo .vitoria{position:absolute;left:50%;top:22%;transform:translateX(-50%) scale(.2);opacity:0;text-align:center;white-space:nowrap;
+  font-family:'Baloo 2',cursive;font-size:clamp(2.2rem,10vw,4.6rem);line-height:1;color:#ffd23f;
+  text-shadow:0 4px 0 #b88f0a,0 8px 20px rgba(0,0,0,.5);transition:transform .5s cubic-bezier(.3,1.6,.5,1),opacity .3s}
+.ovo .vitoria small{display:block;font-size:.35em;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.6)}
+.ovo .vitoria.mostra{transform:translateX(-50%) scale(1);opacity:1}
+.ovo .onibus{position:absolute;top:70px;left:-200px;font-size:4.5rem;line-height:1;text-align:center}
+.ovo .onibus .balao{display:block;font-size:2.4rem;margin-bottom:-14px}
+.ovo .paraquedas{position:absolute;font-size:2.6rem}
+.ovo .fala{position:absolute;top:30px;left:0;right:0;text-align:center;font-family:'Baloo 2',cursive;font-size:1.5rem;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.7)}
 footer{text-align:center;margin-top:30px;color:var(--tinta-fraca);font-size:.85rem;line-height:1.6}
 footer a{color:var(--roxo)}
 .oculto{display:none !important}
@@ -526,7 +544,7 @@ footer a{color:var(--roxo)}
 <footer>
   Dados dos cosméticos: <a href="https://fortnite-api.com" target="_blank" rel="noopener">fortnite-api.com</a>. DearNite não é da Epic Games.<br/>
   Feito pelo Jojo com o Claude. Irmão do <a href="../butterpoke/">ButterPoke</a> 🦋<br/>
-  Versão <b id="versao">23</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
+  Versão <b id="versao">24</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
   <div class="fraco" id="atualizarMsg" style="margin-top:6px"></div>
 </footer>
 </div>
@@ -1969,6 +1987,92 @@ $('#btnTema').addEventListener('click', () => {
 });
 aplicarTema();
 
+/* =====================================================================
+   🥚 SEGREDOS (easter eggs) — não aparecem em lugar nenhum da tela.
+   1) Tocar 10 vezes seguidas na lhama do logo: cai uma lhama pinhata;
+      3 pancadas e ela explode em loot, com "#1 VITÓRIA ROYALE".
+   2) Escrever "ônibus" (ou "battle bus") na busca: o ônibus de batalha
+      passa voando com buzina e alguém salta de paraquedas.
+   Sons feitos na hora com Web Audio, sem arquivo nenhum.
+   ===================================================================== */
+let somCtx = null;
+function nota(freq, ini, dur, tipo, vol){
+  try{
+    somCtx = somCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = somCtx.createOscillator(), g = somCtx.createGain(), t = somCtx.currentTime + ini;
+    o.type = tipo || 'square'; o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.12, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(somCtx.destination); o.start(t); o.stop(t + dur + 0.05);
+  }catch(e){}
+}
+const calmo = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function camada(){ const d = document.createElement('div'); d.className = 'ovo'; document.body.appendChild(d); return d; }
+
+// 1) lhama pinhata
+let toquesLogo = 0, ultimoToque = 0, pinhataNaTela = false;
+$('.logo').addEventListener('click', () => {
+  const agora = Date.now(); toquesLogo = (agora - ultimoToque < 700) ? toquesLogo + 1 : 1; ultimoToque = agora;
+  nota(300 + toquesLogo * 60, 0, .06, 'triangle', .05);
+  if(toquesLogo >= 10 && !pinhataNaTela){ toquesLogo = 0; soltarPinhata(); }
+});
+function soltarPinhata(){
+  pinhataNaTela = true;
+  const c = camada();
+  c.innerHTML = '<img class="pinhata" src="icone.svg" alt="Lhama pinhata" /><div class="dica">Bate na lhama! 🔨</div>';
+  const lh = c.querySelector('.pinhata'); let pancadas = 0;
+  requestAnimationFrame(() => requestAnimationFrame(() => lh.classList.add('chegou')));
+  [523, 659, 784].forEach((f, i) => nota(f, i * .09, .12, 'square', .08));
+  lh.addEventListener('click', ev => {
+    ev.stopPropagation(); pancadas++;
+    lh.classList.remove('treme'); void lh.offsetWidth; lh.classList.add('treme');
+    nota(140, 0, .12, 'sawtooth', .15);
+    c.querySelector('.dica').textContent = pancadas < 3 ? 'Mais ' + (3 - pancadas) + '! 🔨' : '';
+    if(pancadas >= 3) explodirPinhata(c, lh);
+  });
+  setTimeout(() => { if(c.isConnected && !c.dataset.explodiu){ c.remove(); pinhataNaTela = false; } }, 20000);
+}
+function explodirPinhata(c, lh){
+  c.dataset.explodiu = '1'; lh.remove();
+  const LOOT = ['💎','💎','💎','🔫','🩹','🛡️','🍌','⭐','🪙','🎁','🧱','🍗','💜','💙','💛'];
+  const n = calmo ? 12 : 40;
+  for(let i = 0; i < n; i++){
+    const e = document.createElement('span'); e.className = 'loot'; e.textContent = LOOT[i % LOOT.length]; c.appendChild(e);
+    const ang = Math.random() * Math.PI * 2, dist = 140 + Math.random() * 260, vx = Math.cos(ang) * dist, vy = Math.sin(ang) * dist - 160;
+    e.animate([{ transform:'translate(-50%,-50%) scale(.3) rotate(0deg)', opacity:1 },
+               { transform:'translate(calc(-50% + ' + vx + 'px), calc(-50% + ' + vy + 'px)) scale(1.1) rotate(' + (Math.random() * 720 - 360) + 'deg)', opacity:1, offset:.55 },
+               { transform:'translate(calc(-50% + ' + vx * 1.2 + 'px), calc(-50% + ' + (vy + 520) + 'px)) scale(1) rotate(' + (Math.random() * 720) + 'deg)', opacity:0 }],
+              { duration:calmo ? 900 : 2200 + Math.random() * 800, easing:'cubic-bezier(.2,.7,.4,1)', fill:'forwards' });
+  }
+  const v = document.createElement('div'); v.className = 'vitoria'; v.innerHTML = '#1 VITÓRIA ROYALE<small>Você quebrou a lhama! 🦙💥</small>'; c.appendChild(v);
+  requestAnimationFrame(() => v.classList.add('mostra'));
+  nota(90, 0, .35, 'sawtooth', .2);
+  [[523,.15],[659,.3],[784,.45],[1047,.6],[784,.85],[1047,1]].forEach(([f, t]) => nota(f, t, .22, 'square', .09));
+  setTimeout(() => { c.remove(); pinhataNaTela = false; }, 4200);
+}
+
+// 2) ônibus de batalha
+let onibusPassando = false;
+function soltarOnibus(){
+  if(onibusPassando) return; onibusPassando = true;
+  const c = camada();
+  c.innerHTML = '<div class="fala">🚌 Agradeça ao motorista do ônibus!</div><div class="onibus"><span class="balao">🎈</span><span style="display:inline-block;transform:scaleX(-1)">🚌</span></div>';
+  const bus = c.querySelector('.onibus'); const larg = window.innerWidth + 400;
+  nota(220, 0, .35, 'sawtooth', .12); nota(277, 0, .35, 'sawtooth', .1); nota(220, .45, .5, 'sawtooth', .12); nota(277, .45, .5, 'sawtooth', .1);
+  bus.animate([{ transform:'translateX(0)' }, { transform:'translateX(' + larg + 'px)' }], { duration:calmo ? 1200 : 4200, easing:'linear', fill:'forwards' });
+  setTimeout(() => {
+    const pq = document.createElement('div'); pq.className = 'paraquedas'; pq.textContent = '🪂';
+    pq.style.left = (window.innerWidth / 2 - 20) + 'px'; pq.style.top = '120px'; c.appendChild(pq);
+    pq.animate([{ transform:'translate(0,0) rotate(-10deg)' }, { transform:'translate(40px,' + (window.innerHeight / 2) + 'px) rotate(10deg)' }, { transform:'translate(-20px,' + (window.innerHeight - 160) + 'px) rotate(0deg)', opacity:.0 }],
+               { duration:calmo ? 800 : 3200, easing:'ease-in-out', fill:'forwards' });
+    nota(880, 0, .1, 'triangle', .08); nota(660, .12, .15, 'triangle', .08);
+  }, calmo ? 400 : 2000);
+  setTimeout(() => { c.remove(); onibusPassando = false; }, calmo ? 1800 : 5600);
+}
+$('#campo').addEventListener('input', () => {
+  const q = normal($('#campo').value);
+  if(q === 'onibus' || q === 'battle bus' || q === 'onibus de batalha') soltarOnibus();
+});
+
 /* ---------- começa ---------- */
 (async () => {
   try{
@@ -1986,7 +2090,7 @@ aplicarTema();
    worker, apaga os caches da casca e recarrega pedindo tudo de novo. O
    armário e as favoritas (localStorage) não são tocados; o catálogo
    guardado também fica, porque ele tem a própria validade. */
-const VERSAO = 23;
+const VERSAO = 24;
 $('#btnAtualizar').addEventListener('click', async () => {
   $('#atualizarMsg').textContent = 'Atualizando…';
   try{
