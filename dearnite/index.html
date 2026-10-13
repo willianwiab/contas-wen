@@ -175,6 +175,8 @@ header{text-align:center;padding:30px 0 18px;position:relative}
 .selo{font-size:.72rem;font-weight:700;padding:3px 7px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff}
 .selo.loja{background:var(--vb);color:#2a1d00}
 .selo.pac{background:var(--roxo)}
+.selo.boss{background:var(--erro)}
+.carta.npc .faz{font-size:.74rem;color:var(--tinta-fraca);margin-top:4px;line-height:1.3}
 .selo.tenho{background:var(--ok)}
 .selo.fav{background:var(--rosa)}
 .mais{display:flex;justify-content:center;margin:18px 0}
@@ -293,6 +295,7 @@ footer a{color:var(--roxo)}
   <button aria-pressed="false" data-aba="jogador">🎮 Jogador</button>
   <button aria-pressed="false" data-aba="mapa">🗺️ Mapa</button>
   <button aria-pressed="false" data-aba="armas">🔫 Armas</button>
+  <button aria-pressed="false" data-aba="npcs">🧑 NPCs</button>
   <button aria-pressed="false" data-aba="vbucks">💎 V-Bucks em reais</button>
 </nav>
 
@@ -486,6 +489,23 @@ footer a{color:var(--roxo)}
   <div class="grade" id="gradeArmas"></div>
 </section>
 
+<!-- ============ NPCs ============ -->
+<section class="painel" id="painel-npcs">
+  <div class="caixa">
+    <h2>🧑 NPCs de cada temporada</h2>
+    <p>Os personagens que ficam no mapa: uns vendem coisas, dão missões ou entram no seu time, e os <b>👹 chefões</b> atacam e deixam cair arma rara. Os NPCs começaram no <b>Capítulo 2, Temporada 5</b>: antes disso não tinha.</p>
+    <p class="fraco" style="margin-top:6px">A foto é a da skin do personagem, achada no catálogo. Toca no NPC pra abrir a skin dele.</p>
+    <div class="chips" id="chipsNpc" style="margin-top:10px"></div>
+    <div class="filtros">
+      <input id="campoNpc" type="search" placeholder="Procura um NPC (ex: Peely, Zeus)" autocomplete="off" style="flex:1 1 200px;min-width:0;padding:10px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit" />
+      <label class="fraco"><input type="checkbox" id="chkChefao" /> só os chefões</label>
+    </div>
+    <p class="contador" id="contadorNpc"></p>
+    <div class="grade" id="gradeNpc" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"></div>
+    <div class="aviso" style="margin-top:12px">Essa lista foi montada à mão a partir de guias de cada temporada: estão os NPCs principais, não todos, e os nomes dos lugares estão em inglês, como nos guias. Os NPCs mudam de lugar no meio da temporada. Conhece um que falta? Fala pro Claude que ele coloca.</div>
+  </div>
+</section>
+
 <!-- ============ V-BUCKS ============ -->
 <section class="painel" id="painel-vbucks">
   <div class="caixa">
@@ -506,7 +526,7 @@ footer a{color:var(--roxo)}
 <footer>
   Dados dos cosméticos: <a href="https://fortnite-api.com" target="_blank" rel="noopener">fortnite-api.com</a>. DearNite não é da Epic Games.<br/>
   Feito pelo Jojo com o Claude. Irmão do <a href="../butterpoke/">ButterPoke</a> 🦋<br/>
-  Versão <b id="versao">21</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
+  Versão <b id="versao">22</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
   <div class="fraco" id="atualizarMsg" style="margin-top:6px"></div>
 </footer>
 </div>
@@ -1440,6 +1460,111 @@ function renderArmas(){
 $('#campoArmas').addEventListener('input', renderArmas);
 $('#chkArmasAtivas').addEventListener('change', renderArmas);
 
+/* =====================================================================
+   🧑 NPCs — lista escrita à mão (nenhuma API tem), a partir de guias de
+   cada temporada. Formato de cada linha: [nome, 1 se chefão, onde, o que faz].
+   A foto vem da skin do personagem no catálogo: primeiro procura pelo nome
+   no catálogo guardado; se não achar, pergunta pra API pelo nome em inglês
+   (uma vez por nome, guardado no aparelho).
+   ===================================================================== */
+const TEMP_NPC = [
+  ['c2t5', 'Cap. 2 · T5 (Ponto Zero)'], ['c2t6', 'Cap. 2 · T6 (Primitivo)'], ['c2t7', 'Cap. 2 · T7 (Invasão)'], ['c2t8', 'Cap. 2 · T8 (Cúbicos)'],
+  ['c3t1', 'Cap. 3 · T1 (Virada)'], ['c3t2', 'Cap. 3 · T2 (Resistência)'], ['c3t3', 'Cap. 3 · T3 (Vibe)'], ['c3t4', 'Cap. 3 · T4 (Paradise)'],
+  ['c4t1', 'Cap. 4 · T1'], ['c4t2', 'Cap. 4 · T2 (MEGA)'], ['c4t3', 'Cap. 4 · T3 (Selvagem)'], ['c4t4', 'Cap. 4 · T4 (Último Golpe)'],
+  ['c5t1', 'Cap. 5 · T1 (Submundo)'], ['c5t2', 'Cap. 5 · T2 (Mitos e Mortais)'], ['c5t3', 'Cap. 5 · T3 (Destruídos)'], ['c5t4', 'Cap. 5 · T4 (Destino Absoluto)'],
+  ['c6t1', 'Cap. 6 · T1 (Caçada)'], ['c6t2', 'Cap. 6 · T2 (Sem Lei)'], ['c6t3', 'Cap. 6 · T3 (Super)'], ['c6t4', 'Cap. 6 · T4'],
+  ['c7t1', 'Cap. 7 · T1'], ['c7t2', 'Cap. 7 · T2'], ['c7t3', 'Cap. 7 · T3 (Corredores)'], ['c7t4', 'Cap. 7 · T4 (Assuma o Controle)'],
+];
+const NPCS = {
+  c2t5: [['The Mandalorian',1,'Colossal Coliseum, perto da nave caída','Chefão: deixa cair o Fuzil de Precisão Amban e a mochila a jato'],['Ruckus',1,'Prédio à direita de Slurpy Swamp','Chefão: deixa cair o Fuzil de Assalto Pesado lendário'],['Mancake',0,'Butter Barn, ao sul do Ponto Zero','Vende a pistola exótica Night Hawk'],['Lexa',0,'Hunter\'s Haven',''],['Reese',0,'Dirty Docks',''],['Menace',0,'Colossal Coliseum',''],['Kondor',0,'',''],['Ragnarok',0,'',''],['Mave',0,'',''],['Beef Boss',0,'',''],['Kit',0,'',''],['Jonesy the First',0,'','O primeiro Jonesy, preso no Ponto Zero']],
+  c2t6: [['Spire Assassin',1,'Em volta da Torre no meio do mapa','Chefão: deixa cair a Escopeta Primal Mítica'],['Spire Guardian',1,'Uma em cada torre','Chefão: deixa cair o Artefato da Torre'],['Glyph Master Raz',1,'Colossal Crops','Chefão no meio da temporada; depois vira amigo e abre fenda por barras de ouro'],['Raptor',1,'Crash Site','Chefão; depois de vencer, vira amigo e vende'],['Zenith',1,'Weather Station','Chefão; depois vira amigo'],['Jekyll',1,'Steamy Stacks','Chefão; depois vira amigo'],['Blackheart',1,'Viking Vessel','Chefão; depois vira amigo'],['Raven',0,'Noroeste de Sweaty Sands','Missão de alinhar os cristais'],['Bandolette',0,'',''],['Gutbomb',0,'',''],['Big Chuggus',0,'',''],['Cluck',0,'',''],['Tarana',0,'',''],['Slurp Jonesy',0,'',''],['Grill Sergeant',0,'','']],
+  c2t7: [['Rick Sanchez',0,'Defiant Dish','Do desenho Rick and Morty'],['Doctor Slone',0,'Base embaixo de Corny Complex',''],['Sunny',0,'Píer de Believer Beach','A NPC dos alienígenas'],['Abstrakt',0,'',''],['Human Bill',0,'',''],['Guggimon',0,'',''],['Bunker Jonesy',0,'',''],['Bushranger',0,'',''],['Dreamflower',0,'',''],['Joey',0,'',''],['Hayseed',0,'',''],['Marigold',0,'',''],['Maven',0,'',''],['Riot',0,'',''],['Rook',0,'',''],['Special Forces',0,'',''],['Swamp Stalker',0,'',''],['Beach Brutus',0,'','']],
+  c2t8: [['Baba Yaga',0,'Casinha a sudoeste de Sludgy Swamp',''],['Fabio Sparklemane',0,'Apres Ski',''],['Dark Jonesy',0,'Oeste de Steamy Stacks',''],['Kor',0,'Misty Meadows, perto da fonte',''],['Dusk',0,'Perto de Primal Pond',''],['Torin',0,'Caminhão perto do centro do mapa',''],['Kitbash',0,'Dirty Docks',''],['Madcap',0,'Corny Crops',''],['Penny',0,'Oeste de Retail Row',''],['Pitstop',0,'Posto em Boney Burbs',''],['Charlotte',0,'Sudeste de Pleasant Park',''],['Scuba Jonesy',0,'Coral Castle',''],['J.B. Chimpanski',0,'Torre nas montanhas de neve',''],['Toona Fish',0,'Navio viking a oeste de Holly Hedges',''],['The Brat',0,'Norte de Lazy Lake, perto do food truck',''],['Wrath',0,'Ruínas de Stealthy Stronghold',''],['Kakashi Hatake',0,'','Do Naruto'],['Sledgehammer',0,'',''],['Shadow Ops',0,'',''],['Rust Lord',0,'',''],['Containment Specialist',0,'','']],
+  c3t1: [['The Visitor',0,'Sanctuary',''],['The Scientist',0,'Sanctuary',''],['The Foundation',0,'Sanctuary',''],['Agent Jones',0,'Um de 4 lugares, sorteado','']],
+  c3t2: [['The Origin',0,'',''],['The Imagined',0,'',''],['The Visitor',0,'',''],['Agent Jones',0,'',''],['Lil Whip',0,'Coney Crossroads',''],['Tomatohead',0,'Tilted Towers',''],['Peely',0,'Daily Bugle',''],['Gunnar',0,'Command Cavern',''],['Huntmaster Saber',0,'Command Cavern','']],
+  c3t3: [['Darth Vader',1,'Anda pelo mapa','Chefão: deixa cair o Sabre de Luz mítico'],['The Paradigm',0,'Seven Outpost II',''],['The Scientist',0,'Synapse Station',''],['Rustler',0,'Shifty Shafts','Vende por barras de ouro']],
+  c3t4: [['Underwriter',0,'Tilted Towers',''],['Blackheart',0,'Navio pirata voador em Lustrous Lagoon',''],['Bunker Jonesy',0,'Fort Jonesy','Nem sempre aparece']],
+  c4t1: [['The Ageless',1,'','Chefão que ataca'],['Aura',0,'',''],['Evie',0,'',''],['Omega Knight',0,'',''],['Neymar Jr',0,'Campo de futebol no nordeste de Slappy Shores','O jogador de futebol!']],
+  c4t2: [['Highcard',1,'3 lugares diferentes','Chefão: deixa cair o Fuzil de Assalto com Silenciador mítico e uma chave'],['Triarch Nox',1,'Lonely Labs','Fica calmo até você mexer no computador perto dele'],['CRZ-8',0,'',''],['Evie',0,'',''],['P33LY',0,'',''],['Polar Patroller',0,'',''],['Remedy',0,'',''],['Stray',0,'',''],['Longshot',0,'',''],['Mizuki',0,'',''],['Garrison',0,'',''],['NEURALYNX',0,'',''],['Sunflower',0,'',''],['Thunder',0,'','']],
+  c4t3: [['Wildguard Relik',1,'','O chefão da temporada: ataca sempre'],['Highcard',1,'Muda de lugar, com 2 guarda-costas','Ficou da temporada passada'],['Fennix',0,'',''],['Volpez',0,'',''],['Innovator Slone',0,'',''],['Aura',0,'',''],['Nia',0,'',''],['Guardian Amara',0,'',''],['Trace',0,'',''],['Peely',0,'',''],['Triage Trooper',0,'',''],['Kitbash',0,'',''],['Beastmode',0,'',''],['Longshot',0,'',''],['Insight',0,'',''],['Garrison',0,'','Especialista de suprimentos']],
+  c4t4: [['Kado Thorne',1,'','O chefão da temporada'],['Hearts Dealer',1,'Relentless Retreat','Chefão Carteador de Copas'],['Diamonds Dealer',1,'Sanguine Suites','Chefão Carteador de Ouros'],['Clubs Dealer',1,'Mega City, Rumble Ruins e Slappy Shores','Chefão Carteador de Paus'],['Nolan Chance',0,'',''],['Piper Pace',0,'',''],['Fish Thicc',0,'',''],['Antonia',0,'',''],['Khaby Lame',0,'','O do TikTok'],['Meowscles',0,'',''],['Love Ranger',0,'',''],['Renegade Shadow',0,'',''],['Agent Peely',0,'',''],['Arctic Assassin',0,'',''],['Diamond Diva',0,'',''],['Countess Daraku',0,'',''],['Bull Shark',0,'',''],['Royale Bomber',0,'',''],['Beastmode',0,'',''],['Sun Strider',0,'','']],
+  c5t1: [['Peter Griffin',1,'Snooty Steps','Chefão: deixa cair o medalhão e arma mítica'],['Oscar',1,'Lavish Lair','Chefão'],['Montague',1,'Grand Glacier','Chefão'],['Nisha',1,'Fencing Fields','Chefão'],['Valeria',1,'Reckless Railways','Chefão'],['Sun Tan Specialist',0,'','Dá pra contratar como médica'],['Metal Mouth',0,'','Dá pra contratar como especialista pesado'],['Vengeance Jones',0,'',''],['Mecha Team Shadow',0,'',''],['Hope',0,'','']],
+  c5t2: [['Zeus',1,'Mount Olympus','Chefão: medalhão da Velocidade, DMR Caçadora mítica e o Raio de Zeus'],['Ares',1,'Brawler\'s Battleground','Chefão: medalhão do Combate e o Fuzil Forjado na Guerra mítico'],['Hades',1,'The Underworld','Chefão: medalhão do Sifão e a Submetralhadora Arauto mítica'],['Cerberus',1,'Grim Gate','Chefão: primeiro vêm lobos; medalhão da Agilidade e a escopeta Guardião do Portão']],
+  c5t3: [['Ringmaster Scarr',1,'Nitrodrome','Chefona: medalhão de munição infinita e a Besta Explosiva'],['The Machinist',1,'Redline Rig','Chefona: medalhão que recarrega escudo e o Fuzil de Combate mítico'],['Megalo Don',1,'Brutal Beachhead','Chefão: medalhão de Nitro infinito e os Punhos de Nitro']],
+  c5t4: [['Doctor Doom',1,'Doom\'s Domain','O grande chefão da temporada da Marvel'],['Mysterio',1,'',''],['Emma Frost',1,'',''],['Doombot',1,'',''],['Artemis',0,'','Dá pra pôr no seu time'],['Centurion',0,'','Dá pra pôr no seu time'],['Ruckus',0,'','Dá pra pôr no seu time'],['Triage Trooper',0,'','Dá pra pôr no seu time'],['Brite Raider',0,'',''],['Captain Jones',0,'',''],['Andy Fangerson',0,'Grim Gate','']],
+  c6t1: [['The Night Rose',1,'Demon\'s Dojo','Chefona'],['Shogun X',1,'Lugar sorteado','Chefão'],['Demon Warrior',1,'Lugar sorteado','Chefões menores']],
+  c6t2: [['Fletcher Kane',1,'Banco de Crime City','Aparece depois do roubo ao cofre'],['Shogun X',1,'Loot Island','Aparece no 4º círculo da tempestade']],
+  c6t3: [['Vader Samurai',1,'','Chefão'],['Captain Phasma',1,'','Chefona, de Star Wars']],
+  c6t4: [['Cuddle Team Leader',0,'','Dá pra contratar'],['Peely',0,'','Dá pra contratar'],['Meowscles',0,'','Dá pra contratar'],['Triggerfish',0,'',''],['Daigo',0,'',''],['The Night Rose',0,'','']],
+  c7t1: [['Beach Brutus',1,'Classified Canyon, Ripped Tides, Painted Palms…','Chefão: deixa cair as Escopetas Martelo Duplo'],['Hush',1,'Wonkeeland, Paws Inn, Sunset Falls…','Chefona: deixa cair o Fuzil Olho de Lince'],['Human Bill',1,'Ripped Tides, Innoloop Labs…','Chefão: deixa cair a Arma de Raio em Arco'],['Carina',0,'Battlewood Boulevard','Especialista de suprimentos (600 de ouro)'],['Carter Wu',0,'Latte Landing',''],['Cat Holloway',0,'Humble Hills',''],['Dummy',0,'Ripped Tides',''],['Heroic Hope',0,'Classified Canyon',''],['Kingston',0,'Bumpy Bay',''],['Miles Cross',0,'Painted Palms',''],['The Bride',0,'Sandy Strip',''],['Unpeely',0,'Wonkeeland',''],['Vengeance Jones',0,'Innoloop Labs','']],
+  c7t2: [['Dark Voyager Echo',1,'Dark Dominion ou Battlewood Boulevard','Chefão'],['The Ice King',1,'Frigid Fortress, Dark Dominion ou Fore Fields','Chefão, com a Lady Windfrost junto'],['Dread Punisher Squibbly',1,'Squibbly Shores','Chefão (sempre no mesmo lugar)'],['Elite Zadie',1,'Sus Studios e arredores','Chefona'],['The Foundation',0,'New Sanctuary','Dá pra lutar com ele, mas não deixa nada'],['The Order',0,'New Sanctuary',''],['Rival Hope',0,'New Sanctuary',''],['Vengeance Jones',0,'Sandy Strip',''],['Fishstick',0,'Squibbly Shores',''],['Chef Squibbly',0,'Squibbly Shores',''],['Lady Windfrost',0,'Com o Ice King','']],
+  c7t3: [['The Singularity',0,'Leste de Heatwave Harbor',''],['The Visitor',0,'Shaken Sanctuary',''],['Rival Hope',0,'Shaken Sanctuary',''],['John Wick',0,'Calamari Canyon','']],
+  c7t4: [['Dr. Eggman',1,'Green Hill Zone','Chefão do Sonic'],['Hush',1,'Battlewoods ou Reality\'s Reign','Chefona'],['Freddy Fazbear',1,'Freddy Fazbear\'s Pizza','Chefão do Fortnitemares (Five Nights at Freddy\'s)'],['Foxy',1,'Freddy Fazbear\'s Pizza','Chefão do Fortnitemares'],['Chica',1,'Lugar sorteado','Chefona do Fortnitemares'],['Bonnie',1,'Lugar sorteado','Chefão do Fortnitemares'],['Freddy Krueger',1,'Nightmare Neighbourhood','Chefão do Fortnitemares'],['Bastian',0,'Stone Sanctum',''],['Mali',0,'Nordeste de Stone Sanctum',''],['The Order',0,'Sudeste de Chopped Shop','Especialista batedor'],['The Guardian',0,'Noroeste de Stone Sanctum','Especialista médico']],
+};
+let tempNpc = 'c7t4';
+// foto: id da skin achada (ou '' se não achou), guardado no aparelho
+let NPC_SKIN = (() => { try{ return JSON.parse(localStorage.getItem('dearnite-npc-skin') || '{}') || {}; }catch(e){ return {}; } })();
+function gravarNpcSkin(){ try{ localStorage.setItem('dearnite-npc-skin', JSON.stringify(NPC_SKIN)); }catch(e){} }
+function skinLocal(nome){
+  const n = normal(nome), sem = n.replace(/^(the|dr|doctor) /, '');
+  const trajes = ITENS.filter(it => it.tipo === 'outfit');
+  return trajes.find(it => it.n === n) || trajes.find(it => it.n === sem) || null;
+}
+const filaNpc = []; let filaRodando = false;
+async function rodarFilaNpc(){
+  if(filaRodando) return; filaRodando = true;
+  while(filaNpc.length){
+    const nome = filaNpc.shift(); if(nome in NPC_SKIN) continue;
+    try{
+      const r = await fetch(API + '/cosmetics/br/search/all?name=' + encodeURIComponent(nome) + '&matchMethod=full&searchLanguage=en&language=pt-BR' + FLAGS, { headers:{ Accept:'application/json' } });
+      let id = '';
+      if(r.ok){
+        const lista = (await r.json()).data || [];
+        const x = lista.find(y => y.type && y.type.value === 'outfit') || lista[0];
+        if(x){ const it = enxugarBR(x); if(!POR_ID.has(it.id)){ indexar(it); ITENS.push(it); POR_ID.set(it.id, it); } id = it.id; }
+      } else if(r.status !== 404) throw new Error('HTTP ' + r.status);
+      NPC_SKIN[nome] = id; gravarNpcSkin(); pintarNpc(nome);
+    }catch(e){ console.warn(e); }
+    await new Promise(ok => setTimeout(ok, 150));
+  }
+  filaRodando = false;
+}
+function skinDoNpc(nome){
+  if(NPC_SKIN[nome]) return POR_ID.get(NPC_SKIN[nome]) || null;
+  const loc = skinLocal(nome); if(loc) return loc;
+  if(!(nome in NPC_SKIN) && !filaNpc.includes(nome)){ filaNpc.push(nome); rodarFilaNpc(); }
+  return null;
+}
+function cartaNpc(t, [nome, boss, onde, faz]){
+  const it = skinDoNpc(nome);
+  return '<button class="carta npc" data-npc="' + esc(nome) + '"' + (it ? ' data-id="' + esc(it.id) + '"' : '') + ' style="--cor-rar:' + (boss ? 'var(--erro)' : (it ? raridadeDe(it).cor : 'var(--roxo)')) + '">' +
+    '<div class="selos">' + (boss ? '<span class="selo boss">👹 chefão</span>' : '') + '</div>' +
+    '<div class="foto">' + (it && it.img ? '<img loading="lazy" src="' + esc(it.img) + '" alt="" />' : '<span class="sem">' + (boss ? '👹' : '🧑') + '</span>') + '</div>' +
+    '<div class="info"><div class="nome">' + esc(nome) + '</div>' + (it && normal(it.nome) !== normal(nome) ? '<div class="tipo">Skin: ' + esc(it.nome) + '</div>' : '') +
+    (onde ? '<div class="tipo">📍 ' + esc(onde) + '</div>' : '') + (faz ? '<div class="faz">' + esc(faz) + '</div>' : '') +
+    (!tempNpc ? '<div class="tipo">' + esc((TEMP_NPC.find(x => x[0] === t) || ['', ''])[1]) + '</div>' : '') + '</div></button>';
+}
+function pintarNpc(nome){
+  $$('#gradeNpc .carta.npc').forEach(el => { if(el.dataset.npc === nome){ const t = el.dataset.t; const linha = (NPCS[t] || []).find(x => x[0] === nome); if(linha){ const tmp = document.createElement('div'); tmp.innerHTML = cartaNpc(t, linha); const novo = tmp.firstChild; novo.dataset.t = t; el.replaceWith(novo); } } });
+}
+function renderNpcs(){
+  if(!ITENS.length){ $('#contadorNpc').textContent = 'Espera o catálogo carregar…'; return; }
+  const q = normal($('#campoNpc').value); const soBoss = $('#chkChefao').checked;
+  const lista = [];
+  TEMP_NPC.forEach(([t]) => { if(tempNpc && t !== tempNpc) return; (NPCS[t] || []).forEach(l => { if(soBoss && !l[1]) return; if(q && !normal(l.join(' ')).includes(q)) return; lista.push([t, l]); }); });
+  $('#contadorNpc').textContent = lista.length + ' NPC' + (lista.length === 1 ? '' : 's') + (tempNpc ? ' em ' + (TEMP_NPC.find(x => x[0] === tempNpc) || ['', ''])[1] : ' em todas as temporadas') + ' · ' + lista.filter(x => x[1][1]).length + ' chefões';
+  $('#gradeNpc').innerHTML = lista.map(([t, l]) => cartaNpc(t, l).replace('<button class="carta npc"', '<button class="carta npc" data-t="' + t + '"')).join('') || '<p class="fraco">Nenhum NPC com esse nome.</p>';
+}
+$('#chipsNpc').innerHTML = TEMP_NPC.map(([k, n]) => '<button class="chip" aria-pressed="' + (tempNpc === k) + '" data-temp="' + k + '">' + esc(n) + '</button>').join('') + '<button class="chip" aria-pressed="false" data-temp="">Todas</button>';
+$('#chipsNpc').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; tempNpc = c.dataset.temp; $$('#chipsNpc .chip').forEach(x => x.setAttribute('aria-pressed', x === c)); renderNpcs(); });
+$('#campoNpc').addEventListener('input', renderNpcs);
+$('#chkChefao').addEventListener('change', renderNpcs);
+// NPC sem skin achada: tocar procura no catálogo pelo nome
+$('#gradeNpc').addEventListener('click', ev => {
+  const c = ev.target.closest('.carta.npc'); if(!c || c.dataset.id) return;
+  $('#campo').value = c.dataset.npc; $('#abas button[data-aba="catalogo"]').click(); render();
+});
+
 /* ---------- V-Bucks em reais ---------- */
 function renderCalc(){
   const vb = parseInt($('#calcVb').value, 10) || 0; const r = reaisDe(vb);
@@ -1772,6 +1897,7 @@ $('#abas').addEventListener('click', ev => {
   if(b.dataset.aba === 'armario' || b.dataset.aba === 'conta') renderArmario();
   if(b.dataset.aba === 'mapa') carregarMapa();
   if(b.dataset.aba === 'armas') carregarArmas();
+  if(b.dataset.aba === 'npcs') renderNpcs();
   window.scrollTo({ top:0, behavior:'smooth' });
 });
 
@@ -1818,7 +1944,7 @@ aplicarTema();
    worker, apaga os caches da casca e recarrega pedindo tudo de novo. O
    armário e as favoritas (localStorage) não são tocados; o catálogo
    guardado também fica, porque ele tem a própria validade. */
-const VERSAO = 21;
+const VERSAO = 22;
 $('#btnAtualizar').addEventListener('click', async () => {
   $('#atualizarMsg').textContent = 'Atualizando…';
   try{
