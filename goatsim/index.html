@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GoatSim! — tudo de Goat Simulator</title>
+<meta name="description" content="Tudo de Goat Simulator: os jogos, os mapas, os lugares (até os prédios), as cabras e as músicas." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#3f9a22" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="GoatSim!" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* Verde de pasto, marrom de chifre e o rosa da língua da cabra. */
+  --verde:#3f9a22; --verde-escuro:#2a6e14; --verde-claro:#8fd16a;
+  --chifre:#6b4a2b; --lingua:#ff6b8a; --ceu:#7cc8f2;
+  --fundo:#f2f9ee; --fundo2:#e0f3d6; --fundo3:#e2f2fb;
+  --tinta:#1c2a16; --tinta-fraca:#5d6f55;
+  --cartao:#ffffff; --cartao2:#fafdf8; --cartao3:#eef6ea;
+  --campo:#fcfefb; --borda:#d7e8cf; --sombra-cor:#c9dcc0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --verde:#6cc845; --verde-escuro:#3f8a24; --verde-claro:#a6e584;
+    --chifre:#c79a6c; --lingua:#ff8aa3; --ceu:#4aa6d6;
+    --fundo:#10170d; --fundo2:#172a10; --fundo3:#10222c;
+    --tinta:#ecf5e6; --tinta-fraca:#a1b597;
+    --cartao:#1a2416; --cartao2:#1f2c1a; --cartao3:#26361f;
+    --campo:#161f13; --borda:#33482a; --sombra-cor:#080d06;
+  }
+}
+:root[data-tema="escuro"]{
+  --verde:#6cc845; --verde-escuro:#3f8a24; --verde-claro:#a6e584;
+  --chifre:#c79a6c; --lingua:#ff8aa3; --ceu:#4aa6d6;
+  --fundo:#10170d; --fundo2:#172a10; --fundo3:#10222c;
+  --tinta:#ecf5e6; --tinta-fraca:#a1b597;
+  --cartao:#1a2416; --cartao2:#1f2c1a; --cartao3:#26361f;
+  --campo:#161f13; --borda:#33482a; --sombra-cor:#080d06;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background-color:var(--fundo);
+  background-image:radial-gradient(circle at 8% 5%, var(--fundo2) 0 20%, transparent 20.5%),radial-gradient(circle at 92% 72%, var(--fundo3) 0 17%, transparent 17.5%);
+  background-attachment:fixed;min-height:100vh;padding:0 16px 60px}
+.envolve{max-width:1060px;margin:0 auto}
+button{font:inherit}
+header{text-align:center;padding:30px 0 16px;position:relative}
+.logo{font-family:'Baloo 2',cursive;font-size:clamp(2.6rem,10vw,4rem);line-height:1;color:var(--verde-escuro);text-shadow:3px 3px 0 var(--verde-claro);user-select:none;display:inline-block;cursor:default}
+.logo span{color:var(--chifre);text-shadow:3px 3px 0 var(--verde-claro)}
+.logo img{height:1em;vertical-align:-.15em;margin-left:.08em}
+.logo.cabecada{animation:cabecada .45s}
+@keyframes cabecada{30%{transform:translateX(-14px) rotate(-6deg)}60%{transform:translateX(18px) rotate(4deg)}}
+.slogan{margin-top:8px;color:var(--tinta-fraca)}
+.tema{position:absolute;right:0;top:14px;width:42px;height:42px;border-radius:50%;border:1px solid var(--borda);background:var(--cartao);cursor:pointer;font-size:1.2rem;box-shadow:0 3px 0 var(--sombra-cor)}
+.abas{display:flex;gap:2px;background:var(--cartao2);border:1px solid var(--borda);border-radius:999px;padding:4px;margin:0 auto 16px;flex-wrap:wrap}
+.abas button{flex:1 1 120px;padding:10px;border:none;background:none;border-radius:999px;font-weight:600;color:var(--tinta-fraca);cursor:pointer;white-space:nowrap}
+.abas button[aria-pressed="true"]{background:var(--verde);color:#fff}
+.painel{display:none}.painel.ativo{display:block}
+.caixa{background:var(--cartao);border:1px solid var(--borda);border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(30,60,20,.08);margin-bottom:14px}
+.caixa h2{font-family:'Baloo 2',cursive;font-size:1.45rem;margin-bottom:6px}
+.fraco{color:var(--tinta-fraca);font-size:.9rem}
+input,select{padding:11px 13px;border-radius:13px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit;min-width:0}
+input:focus,select:focus{outline:none;border-color:var(--verde)}
+.linha{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 15px;border:none;border-radius:13px;font-weight:700;cursor:pointer;background:var(--verde);color:#fff;box-shadow:0 4px 0 var(--verde-escuro);text-decoration:none;display:inline-block}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--verde-escuro)}
+.btn.leve{background:var(--cartao3);color:var(--tinta);box-shadow:0 4px 0 var(--sombra-cor)}
+.btn.pequeno{padding:7px 11px;font-size:.86rem;border-radius:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{padding:7px 12px;border-radius:999px;border:1px solid var(--borda);background:var(--cartao2);color:var(--tinta-fraca);cursor:pointer;font-size:.88rem;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--verde);border-color:var(--verde);color:#fff}
+.contador{margin:8px 0;color:var(--tinta-fraca);font-size:.9rem}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.card{background:var(--cartao);border:1px solid var(--borda);border-radius:18px;overflow:hidden;cursor:pointer;text-align:left;padding:0;color:var(--tinta);box-shadow:0 4px 0 var(--sombra-cor);position:relative;display:flex;flex-direction:column;transition:transform .12s}
+.card:hover{transform:translateY(-3px)}
+.card .foto{aspect-ratio:16/10;background:var(--cartao3);overflow:hidden}
+.card.cabra .foto{aspect-ratio:1/1}
+.card .foto img{width:100%;height:100%;object-fit:cover;display:block}
+.card .info{padding:9px 11px 12px}
+.card .nome{font-weight:700;font-size:.95rem;line-height:1.2}
+.card .sub{font-size:.78rem;color:var(--tinta-fraca);margin-top:3px}
+.card .desc{font-size:.8rem;margin-top:5px;line-height:1.35;color:var(--tinta-fraca)}
+.selo{position:absolute;top:8px;left:8px;font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff}
+.selo.ok{left:auto;right:8px;background:var(--verde)}
+.jogo-card{display:grid;grid-template-columns:240px 1fr;gap:14px;align-items:start;background:var(--cartao);border:1px solid var(--borda);border-radius:18px;padding:12px;margin-bottom:10px;box-shadow:0 4px 0 var(--sombra-cor)}
+.jogo-card img{width:100%;border-radius:12px;display:block;aspect-ratio:460/215;object-fit:cover;background:var(--cartao3)}
+.jogo-card h3{font-family:'Baloo 2',cursive;font-size:1.3rem;line-height:1.1}
+.jogo-card p{font-size:.92rem;line-height:1.45;margin-top:4px}
+.barra{height:10px;background:var(--cartao3);border-radius:999px;overflow:hidden;margin-top:8px}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,var(--verde),var(--verde-claro))}
+.musicas{display:grid;gap:6px}
+.musica{display:flex;gap:10px;align-items:center;background:var(--cartao);border:1px solid var(--borda);border-radius:12px;padding:8px 12px}
+.musica .num{font-family:'Baloo 2',cursive;color:var(--tinta-fraca);width:26px;text-align:right}
+.musica .t{font-weight:600;flex:1}
+.musica .t small{display:block;font-weight:400;color:var(--tinta-fraca);font-size:.78rem}
+.video{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;cursor:pointer;margin-top:10px}
+.video img,.video iframe{width:100%;height:100%;object-fit:cover;display:block;border:0}
+.video .tocar{position:absolute;inset:0;margin:auto;width:76px;height:76px;border-radius:50%;background:var(--verde);color:#fff;font-size:2rem;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 0 var(--verde-escuro)}
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+.resumo div{background:var(--cartao3);border-radius:14px;padding:12px;text-align:center}
+.resumo b{display:block;font-family:'Baloo 2',cursive;font-size:1.5rem}
+.resumo small{color:var(--tinta-fraca)}
+dialog{border:none;border-radius:22px;padding:0;max-width:620px;width:calc(100% - 24px);background:var(--cartao);color:var(--tinta);box-shadow:0 30px 80px rgba(0,0,0,.45);max-height:92vh}
+dialog::backdrop{background:rgba(6,12,4,.6);backdrop-filter:blur(3px)}
+dialog .grande{width:100%;max-height:300px;object-fit:cover;display:block;background:var(--cartao3)}
+.det-corpo{padding:16px 18px 20px;line-height:1.5}
+.det-corpo h2{font-family:'Baloo 2',cursive;font-size:1.6rem;line-height:1.1}
+.fechar{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:1.2rem;cursor:pointer;z-index:2}
+.aviso{background:#fff4d6;border:1px solid #f1d58a;color:#5a3d00;border-radius:12px;padding:10px 12px;font-size:.88rem;line-height:1.45;margin-top:10px}
+:root[data-tema="escuro"] .aviso{background:#3a2d0c;border-color:#7a5e05;color:#ffe9a8}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .aviso{background:#3a2d0c;border-color:#7a5e05;color:#ffe9a8}}
+footer{text-align:center;margin-top:28px;color:var(--tinta-fraca);font-size:.85rem;line-height:1.6}
+footer a{color:var(--verde)}
+.oculto{display:none !important}
+.ovo{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden}
+.ovo .cabra-voa{position:absolute;bottom:-140px;font-size:6rem}
+.ovo .baa{position:absolute;left:0;right:0;top:35%;text-align:center;font-family:'Baloo 2',cursive;font-size:clamp(3rem,14vw,6rem);color:var(--lingua);text-shadow:0 4px 0 #000}
+@media (max-width:620px){.jogo-card{grid-template-columns:1fr}.grade{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+</style>
+</head>
+<body>
+<div class="envolve">
+<header>
+  <button class="tema" id="btnTema" title="Modo claro / escuro" aria-label="Trocar o tema">🌙</button>
+  <div class="logo" id="logo">Goat<span>Sim!</span><img src="icone.svg" alt="" /></div>
+  <p class="slogan">Tudo de Goat Simulator: os jogos, os mapas, os lugares (até os prédios), as cabras e as músicas.</p>
+</header>
+
+<nav class="abas" id="abas">
+  <button aria-pressed="true" data-aba="jogos">🎮 Jogos</button>
+  <button aria-pressed="false" data-aba="lugares">🗺️ Mapas e lugares</button>
+  <button aria-pressed="false" data-aba="cabras">🐐 Cabras</button>
+  <button aria-pressed="false" data-aba="musicas">🎵 Músicas</button>
+  <button aria-pressed="false" data-aba="progresso">✅ Meu progresso</button>
+</nav>
+
+<section class="painel ativo" id="painel-jogos">
+  <div class="caixa"><h2>🎮 Os jogos</h2><p class="fraco">Toca num jogo pra ver os mapas e as cabras dele.</p></div>
+  <div id="listaJogos"></div>
+</section>
+
+<section class="painel" id="painel-lugares">
+  <div class="caixa">
+    <h2>🗺️ Mapas e lugares</h2>
+    <p class="fraco">Cada mapa e os lugares dentro dele: prédios, segredos e pontos famosos. Marca ✅ os que você já visitou!</p>
+    <div class="linha" style="margin-top:10px"><input id="campoLugar" type="search" placeholder="Procura um lugar (ex: guindaste, cassino, zoológico)" style="flex:1 1 220px" /></div>
+    <div class="chips" id="chipsMapa"></div>
+  </div>
+  <p class="contador" id="contadorLugar"></p>
+  <div class="grade" id="gradeLugar"></div>
+</section>
+
+<section class="painel" id="painel-cabras">
+  <div class="caixa">
+    <h2>🐐 Cabras</h2>
+    <p class="fraco">As cabras e bichos que dá pra jogar. No 1 elas se chamam "mutadores"; no 3, ficam no guarda-roupa. Marca ✅ as que você já desbloqueou!</p>
+    <div class="linha" style="margin-top:10px"><input id="campoCabra" type="search" placeholder="Procura uma cabra (ex: anjo, girafa, tubarão)" style="flex:1 1 220px" /></div>
+    <div class="chips" id="chipsCabra"></div>
+  </div>
+  <p class="contador" id="contadorCabra"></p>
+  <div class="grade" id="gradeCabra"></div>
+</section>
+
+<section class="painel" id="painel-musicas">
+  <div class="caixa">
+    <h2>🎵 Músicas</h2>
+    <p>A trilha oficial do Goat Simulator: 25 músicas em 5 discos, uma pra cada jogo, todas feitas por <b>Gustaf Tivander</b> (que assina como "GSTF the Goat Musician Genius"). A primeira é a <b>Dead Goatland</b>!</p>
+    <div class="video" data-video="0H-mlloPIJY"><img src="https://i.ytimg.com/vi/0H-mlloPIJY/hqdefault.jpg" alt="" referrerpolicy="no-referrer" /><span class="tocar">▶</span></div>
+    <p class="fraco" style="margin-top:6px">Toca no ▶ pra ouvir a trilha aqui mesmo (vídeo do YouTube). Pra uma música só, toca no botão dela embaixo.</p>
+  </div>
+  <div id="listaMusicas"></div>
+</section>
+
+<section class="painel" id="painel-progresso">
+  <div class="caixa">
+    <h2>✅ Meu progresso</h2>
+    <p class="fraco">Quanto você já explorou de cada mapa e quantas cabras já desbloqueou.</p>
+    <div class="resumo" id="resumoProg"></div>
+    <div id="barrasProg"></div>
+    <div class="linha" style="margin-top:12px"><button class="btn pequeno leve" id="btnZerar">🗑️ Zerar meu progresso</button></div>
+  </div>
+</section>
+
+<div class="aviso">Fotos das capas: loja da Steam. Fotos das cabras e lugares: <a href="https://goatsimulator.wiki.gg" target="_blank" rel="noopener">wiki oficial do Goat Simulator</a>; quando alguma não carrega, o site desenha uma no lugar. Os nomes dos lugares estão em inglês, como no jogo. O GoatSim! é de fã: não é da Coffee Stain.</div>
+
+<footer>Feito pelo Jojo com o Claude. Irmão do <a href="../dearnite/">DearNite</a> 🦙</footer>
+</div>
+
+<dialog id="detalhe"></dialog>
+
+<script>
+/* =====================================================================
+   GoatSim! — catálogo de fã de Goat Simulator. Nenhuma API tem esses
+   dados, então tudo foi escrito à mão a partir da wiki oficial e de guias.
+   Fotos: capa da Steam (jogos) e wiki.gg (cabras e lugares, por nome de
+   arquivo); se não carregar, o próprio site desenha.
+   ===================================================================== */
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const normal = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('goatsim:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('goatsim:' + k, JSON.stringify(v)); }catch(e){} }
+
+/* ---------- jogos ---------- */
+const JOGOS = [
+  { id:'gs1', nome:'Goat Simulator', ano:'2014', steam:265930, emoji:'🐐', desc:'O original! Você é uma cabra que destrói tudo em GoatVille, com física maluca e bugs deixados de propósito. Cabeçada, lambida grudenta e muito caos.' },
+  { id:'mmo', nome:'Goat MMO Simulator', ano:'2014', emoji:'🧙', desc:'O primeiro DLC, e o único de graça. Paródia de jogo de RPG online: classes (Guerreiro, Ladino, Mago, Caçador e… Micro-ondas!), cabras contra ovelhas, elfos e anões, e nível máximo 101.' },
+  { id:'goatz', nome:'Goat Simulator: GoatZ', ano:'2015', emoji:'🧟', desc:'Paródia de jogo de zumbi: dá pra brincar normal ou no modo sobrevivência, com fome, crafting e zumbis.' },
+  { id:'payday', nome:'Goat Simulator: PAYDAY', ano:'2015', emoji:'💰', desc:'Inspirado no jogo de tiro Payday 2: assaltos feitos por uma turma de bichos.' },
+  { id:'space', nome:'Goat Simulator: Waste of Space', ano:'2016', emoji:'🚀', desc:'O quarto e último DLC: cabras no espaço!' },
+  { id:'mobile', nome:'Mapas do celular', ano:'2015–2017', emoji:'📱', desc:'Mapas que saíram só na versão de celular: Buck to School (a escola GoatVille High), Trick or Bleat (Halloween), Winter or Whatever (inverno) e Mass Affection.' },
+  { id:'remaster', nome:'Goat Simulator: Remastered', ano:'2024', steam:2796500, emoji:'✨', desc:'Lançado em 7 de novembro de 2024: o original com gráficos novos, luz nova e todos os DLCs juntos, mais o mapa de celular Buck to School. A troca de cabra virou um menu dentro do jogo.' },
+  { id:'gs3', nome:'Goat Simulator 3', ano:'2022', steam:850190, emoji:'3️⃣', desc:'Pulou o 2 de propósito, de piada! A ilha de San Angora, gigante, com até 4 cabras juntas e um guarda-roupa de roupas e cabras.' },
+  { id:'mon', nome:'Goat Simulator 3: Multiverse of Nonsense', ano:'2024', steam:2809180, emoji:'🌀', desc:'DLC do 3, lançado em 19 de junho de 2024: três regiões novas (Goatroit, Monte Olimpo e Goofville), as Mega Fendas e 8 cabras novas.' },
+];
+const POR_JOGO = new Map(JOGOS.map(j => [j.id, j]));
+const capaSteam = id => ['https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/' + id + '/header.jpg', 'https://cdn.cloudflare.steamstatic.com/steam/apps/' + id + '/header.jpg'];
+
+/* ---------- mapas ---------- */
+const MAPAS = [
+  ['goatville','GoatVille','gs1','🏡'], ['gcb','Goat City Bay','gs1','🏙️'], ['high','GoatVille High (Buck to School)','mobile','🏫'],
+  ['mmo','Mundo do MMO','mmo','🧙'], ['goatz','Mapa do GoatZ','goatz','🧟'], ['payday','Mapa do PAYDAY','payday','💰'], ['space','Waste of Space','space','🚀'],
+  ['sanangora','San Angora','gs3','🏝️'], ['multiverso','Multiverso','mon','🌀'],
+];
+const POR_MAPA = new Map(MAPAS.map(m => [m[0], { id:m[0], nome:m[1], jogo:m[2], emoji:m[3] }]));
+
+/* ---------- lugares: [mapa, nome, emoji, descrição, área (só San Angora/Multiverso)] ---------- */
+const LUGARES = [
+  ['goatville','Starter House','🏠','A casa onde a cabra começa.'],
+  ['goatville','Gas Station','⛽','O posto de gasolina. Explode bonito.'],
+  ['goatville','Coffee Stain Studios','☕','O prédio da empresa que fez o jogo! E a casa do lado tem o interior todo pra entrar com a Cabra Babushka.'],
+  ['goatville','Low Gravity Testing Facility','🧪','Laboratório de teste sem gravidade: tudo flutua.'],
+  ['goatville','Construction Site','🏗️','A obra, cheia de coisas pra derrubar.'],
+  ['goatville','Crane','🏗️','O guindaste: tem uma estátua dourada lá no topo, e um robô num contêiner pendurado.'],
+  ['goatville','Goat Tower','🗼','A torre das cabras.'],
+  ['goatville','Goathenge','🪨','Paródia do Stonehenge no campo aberto. Derrubar as pedras dá troféu.'],
+  ['goatville','Crop Circles','🛸','Círculos nas plantações, de disco voador.'],
+  ['goatville','Harvester','🚜','A colheitadeira gigante.'],
+  ['goatville','Fighting Ring','🥊','O ringue de luta.'],
+  ['goatville','Batting Cages','⚾','Gaiolas de treino de beisebol.'],
+  ['goatville','Pool','🏊','A piscina.'],
+  ['goatville','Water Slides','🛝','Os tobogãs da piscina.'],
+  ['goatville','Treehouse','🌳','A casa na árvore: chega pulando no trampolim do lado. Tem uma estátua dentro.'],
+  ['goatville','Schoolhouse','🏫','A escolinha.'],
+  ['goatville','Outhouse','🚽','A casinha de banheiro do lado de fora.'],
+  ['goatville','Size-Changing Pit','🕳️','O buraco que muda o seu tamanho.'],
+  ['goatville','Pentagram','⛧','No canto do mapa: levar 5 sacrifícios aqui desbloqueia a Cabra Diabo.'],
+  ['goatville','Infernal Throne','🔥','O trono do inferno.'],
+  ['goatville','Him Len (túnel)','🚇','Túnel que diz "Him Len 5km" (Céu, em sueco). Leva pra Goat City Bay.'],
+  ['goatville','Helvete (túnel)','🚇','Túnel que diz "Helvete 3km" (Inferno, em sueco). Também leva pra Goat City Bay.'],
+  ['goatville','Power Lines','⚡','Os fios de luz: dá choque!'],
+  ['goatville','Protesters','🪧','Os manifestantes com plaquinhas.'],
+  ['goatville','The Party','🎉','A festa.'],
+  ['goatville','Space','🌌','Um mapa escondido no espaço.'],
+  ['goatville','Goat Castle','🏰','O castelo escondido das cabras: lá você vira a Rainha Cabra.'],
+  ['goatville','Golden Goat Trophies','🏆','30 estátuas douradas escondidas. Pegar todas dá a conquista Try Hard.'],
+  ['gcb','Skyscraper','🏢','O arranha-céu, o prédio mais alto do mapa.'],
+  ['gcb','Put-In Hotel','🏨','O hotel no térreo do arranha-céu, na frente.'],
+  ['gcb','Casino','🎰','O cassino no térreo do arranha-céu, nos fundos.'],
+  ['gcb','Skyscraper Balcony','🌇','A varanda lá no alto do arranha-céu.'],
+  ['gcb','Concert','🎸','O show no terraço do arranha-céu.'],
+  ['gcb','Cabrito Park','🎡','O parque de diversões na beira da água: lanchonetes, trampolim, a máquina de soco Boxer e os buracos de foto Happy Space.'],
+  ['gcb','Sewer','🕳️','O esgoto embaixo da cidade.'],
+  ['gcb','Toy Store','🧸','A loja de brinquedos.'],
+  ['gcb',"Uncle Fred's Workshop",'🔧','A oficina do Tio Fred.'],
+  ['gcb','Residential Area','🏘️','O bairro de casas.'],
+  ['gcb','Primitive Shrine','🗿','Um santuário primitivo.'],
+  ['gcb','Uncharted Island','🏝️','Uma ilha desconhecida.'],
+  ['gcb','Cemetery','🪦','O cemitério assustador.'],
+  ['gcb','Dance Party','🪩','A festa dançante.'],
+  ['high','GoatVille High','🏫','A escola do mapa Buck to School: dá pra chegar entrando num ônibus escolar no celular.'],
+  ['mmo','Twistram','🏰','A cidade do mago Dumblebore the Grey.'],
+  ['mmo','Goatshire','🌾','Região que também dá nome a uma música.'],
+  ['mmo','Goatwind City','🏙️','Cidade do MMO.'],
+  ['mmo','Old Goat Mountain','⛰️','A montanha.'],
+  ['mmo','Garblarge Beach','🏖️','A praia.'],
+  ['goatz','Mapa dos zumbis','🧟','O mapa do GoatZ, com modo sobrevivência e crafting.'],
+  ['payday','Mapa dos assaltos','🏦','O mapa do PAYDAY, com cofres e polícia.'],
+  ['space','Colônia espacial','🛰️','O mapa do Waste of Space.'],
+  ['sanangora','Libertarian Island','🗽','Um dos 6 condados de San Angora.','Libertarian Island'],
+  ['sanangora','Statue of Libertarian','🗽','A estátua gigante, paródia da Estátua da Liberdade.','Libertarian Island'],
+  ['sanangora','Goatenberg','🏔️','Condado nas montanhas; o pico mais alto de San Angora fica aqui.','Goatenberg'],
+  ['sanangora','Capracabana','🏖️','Lugar em Goatenberg.','Goatenberg'],
+  ['sanangora','Distopia','🏭','Lugar em Goatenberg.','Goatenberg'],
+  ['sanangora','Downtown','🏙️','O centro da cidade, cheio de prédios.','Downtown'],
+  ['sanangora','CosCon','🦸','A convenção de cosplay.','Downtown'],
+  ['sanangora','Port of San Angora','⚓','O porto. Tem o Club Mohair num contêiner preto lá em cima.','Downtown'],
+  ['sanangora','Mornwood Falls','🌲','Condado de floresta e cachoeira.','Mornwood Falls'],
+  ['sanangora','Hoofer Dam','🌊','A represa (paródia da Hoover Dam).','Mornwood Falls'],
+  ['sanangora','Quiet Hill','👻','O lugar assustador.','Mornwood Falls'],
+  ['sanangora','San Angora Zoo','🦏','O zoológico: jaula do rinoceronte, show de golfinho e uma garagem de quarentena.','Mornwood Falls'],
+  ['sanangora','Mount Inferno','🌋','O vulcão.','Mornwood Falls'],
+  ['sanangora','Suburbsville','🏘️','O bairro de casas.','Suburbsville'],
+  ['sanangora','Construction Site','🏗️','A obra.','Suburbsville'],
+  ['sanangora','Pool Party','🏊','A festa na piscina.','Suburbsville'],
+  ['sanangora','Sverige','🇸🇪','Um pedacinho da Suécia, o país da Coffee Stain.','Suburbsville'],
+  ['sanangora','Fairmeadows Ranch','🐄','O condado de fazenda.','Fairmeadows Ranch'],
+  ['sanangora','Redneck Haven','🛻','Lugar na fazenda.','Fairmeadows Ranch'],
+  ['sanangora','Easter Island','🗿','Paródia da Ilha de Páscoa.','Fairmeadows Ranch'],
+  ['sanangora','Pointy Foods Factory','🏭','A fábrica de comida.','Fairmeadows Ranch'],
+  ['sanangora','Goat Castle','🏰','O castelo das cabras.','Outros'],
+  ['sanangora',"Michael's Bay",'💥','Paródia do diretor de filmes de explosão.','Outros'],
+  ['sanangora','5G Towers','📡','3 torres 5G, uma em cada usina; a última fica no pico de Goatenberg.','Outros'],
+  ['sanangora','Ramps','🛹','29 rampas espalhadas pelo mapa.','Outros'],
+  ['multiverso','Goatroit','🏙️','Cidade das cabras, onde elas andam em pé e os humanos são os bichinhos de estimação. Tem 20 enfeites pra achar.','Goatroit'],
+  ['multiverso','Mount Olympus','🏛️','O Monte Olimpo, da Grécia antiga.','Mount Olympus'],
+  ['multiverso','Goofville','🎨','Cidade de desenho animado antigo. Eventos como Good Ol Goat Towers, Pollution Solution e Noisy Neighbor.','Goofville'],
+  ['multiverso','Mega Rifts','🌀','Áreas menores com tema próprio e minijogos.','Mega Rifts'],
+].map(([mapa, nome, emoji, desc, area], i) => ({ id:'l' + i + '-' + normal(nome).replace(/ /g, '-'), mapa, nome, emoji, desc, area:area || '', n:normal(nome + ' ' + desc + ' ' + (area || '')) }));
+
+/* ---------- cabras: [jogo, nome, emoji, como desbloquear, descrição] ---------- */
+const CABRAS = [
+  ['gs1','Classic Goat','🐐','Já vem','A cabra de sempre.'],
+  ['gs1','Tall Goat','🦒','','Cabra de pescoço comprido.'],
+  ['gs1','Feather Goat','🪶','Achar 10 estátuas douradas','Cabra levinha que flutua.'],
+  ['gs1','Giant Goat','🦣','Achar 20 estátuas douradas','Cabra gigante.'],
+  ['gs1','Angel Goat','😇','Ganhar a conquista da Cabra Anjo','Cabra com asas e auréola.'],
+  ['gs1','Devil Goat','😈','Levar 5 sacrifícios ao pentagrama','Cabra do inferno.'],
+  ['gs1','Goat Queen','👑','Chegar ao castelo das cabras','Chama cabras súditas pra ajudar.'],
+  ['gs1','Space Goat','🚀','','Cabra astronauta.'],
+  ['gs1','Robot Goat','🤖','','Cabra robô.'],
+  ['gs1','Ripped Goat','💪','','Cabra musculosa.'],
+  ['gs1','Jet Pack','🎒','','Mochila a jato.'],
+  ['gs1','Double Jump','⏫','','Pulo duplo.'],
+  ['gs1','Blue Streak','💙','','Cabra velocista.'],
+  ['gs1','Egg Goat','🥚','','Cabra do ovo.'],
+  ['gs1','Easter Goat','🐣','','Cabra de Páscoa.'],
+  ['gs1','Goatborn','🐉','','Paródia de jogo de dragões.'],
+  ['gs1','I Am Bread','🍞','','Você vira um pão (de outro jogo da mesma época).'],
+  ['gs1','I Am Toaster','🍞','','Você vira uma torradeira.'],
+  ['gs1','Italian Dinosaur Goat','🦖','','Cabra dinossauro italiana.'],
+  ['gs1','Power Pitcher Goat','⚾','','Cabra arremessadora.'],
+  ['gs1','Sweet Autumn Goat','🍂','','Cabra de outono.'],
+  ['gs1','VR Mutator','🥽','','Modo de realidade virtual.'],
+  ['gs1','Babushka Goat','🪆','','Entra na casa escondida do lado da Coffee Stain.'],
+  ['mmo','Warrior','⚔️','Escolher a classe','Classe guerreiro.'],
+  ['mmo','Rogue','🗡️','Escolher a classe','Classe ladino.'],
+  ['mmo','Magician','🪄','Escolher a classe','Classe mago.'],
+  ['mmo','Hunter','🏹','Escolher a classe','Classe caçador.'],
+  ['mmo','Microwave','📟','Escolher a classe','Classe… micro-ondas! A mais famosa.'],
+  ['gs3','Pilgor','🐐','Já vem','A cabra principal, cinza.'],
+  ['gs3','Steve','🐟','Fazer a missão dele','Um peixe!'],
+  ['gs3','Scarecrow','🎃','','O espantalho.'],
+  ['gs3','Angry Goat','🦏','','O rinoceronte bravo.'],
+  ['gs3','Capra Erectus','🧍','','A cabra que anda em pé.'],
+  ['gs3','Abominana','🍌','','A banana abominável.'],
+  ['gs3','The Farmer','👨‍🌾','','O fazendeiro.'],
+  ['gs3','Tasty Goat','🐷','','O porco.'],
+  ['gs3','Tall Goat','🦒','','A girafa.'],
+  ['gs3','Tony Shark','🦈','','O tubarão.'],
+  ['gs3','Billy','🐋','','A orca.'],
+  ['mon','Kid','🍼','No mundo do DLC','O filhote de cabra.'],
+  ['mon','Human Pet','🧑','No mundo do DLC','O humano de estimação (de Goatroit).'],
+  ['mon','HotDogain','🌭','No mundo do DLC','O cachorro-quente.'],
+  ['mon','Missing Link','🦍','No mundo do DLC',''],
+  ['mon','Reinfaus','🦌','No mundo do DLC','A rena.'],
+  ['mon','Toon Goat','🎨','No mundo do DLC','A cabra de desenho (de Goofville).'],
+].map(([jogo, nome, emoji, como, desc], i) => ({ id:'c' + i + '-' + jogo, jogo, nome, emoji, como, desc, n:normal(nome + ' ' + desc + ' ' + como) }));
+
+/* ---------- músicas: [disco/jogo, nome] ---------- */
+const MUSICAS = [
+  ['gs1',['Dead Goatland','Goat Chill','Klad Get','Everyday Goat','Cabrito Park','Goat Trap','Goat Storm (Nyan Goat Mix)']],
+  ['mmo',['Goatshire','Goatwind City','Alvesta','Old Goat Mountain','Garblarge Beach','Twistram']],
+  ['goatz',['Intro','Z','Outbreak']],
+  ['payday',['Prank Net','Desert Chill','Panectropipes (feat. DJ Piero)','BollyBolly']],
+  ['space',['A Long Time A Goat','Goat Effect','Goat in Space','Eating Blue Space Grass','Engage Hyper Goat']],
+];
+
+/* ---------- desenhos (quando a foto não vem) ---------- */
+function cor(txt){ let h = 0; for(const c of txt) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; }
+function desenhoCabra(nome, emoji){
+  const h = cor(nome), c1 = 'hsl(' + (h % 360) + ',55%,62%)', c2 = 'hsl(' + ((h >> 7) % 360) + ',60%,38%)';
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></linearGradient></defs>' +
+    '<rect width="200" height="200" fill="url(#g)"/><ellipse cx="100" cy="190" rx="90" ry="22" fill="rgba(0,0,0,.18)"/>' +
+    '<path d="M70 52 Q58 22 40 30 Q56 36 62 62Z M118 50 Q122 20 104 16 Q112 30 108 58Z" fill="#6b4a2b"/>' +
+    '<ellipse cx="94" cy="98" rx="44" ry="40" fill="#f4f0e8"/><ellipse cx="136" cy="116" rx="26" ry="22" fill="#f4f0e8"/>' +
+    '<ellipse cx="52" cy="84" rx="18" ry="9" fill="#ddd6c8" transform="rotate(-25 52 84)"/><circle cx="108" cy="88" r="8" fill="#222"/><circle cx="110" cy="85" r="2.6" fill="#fff"/>' +
+    '<path d="M154 124 Q170 132 162 148 Q156 138 150 132Z" fill="#ff6b8a"/><path d="M104 132 Q100 162 86 168 Q94 150 90 134Z" fill="#e5dfd2"/>' +
+    '<text x="164" y="56" text-anchor="middle" font-size="44">' + emoji + '</text></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+function desenhoLugar(nome, emoji){
+  const h = cor(nome), c1 = 'hsl(' + (190 + h % 40) + ',70%,72%)', chao = 'hsl(' + (90 + (h >> 5) % 40) + ',45%,48%)';
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><rect width="320" height="200" fill="' + c1 + '"/><circle cx="270" cy="40" r="20" fill="#ffe27a"/>' +
+    '<path d="M0 150 Q80 120 160 140 T320 130 V200 H0Z" fill="' + chao + '"/><text x="160" y="130" text-anchor="middle" font-size="84">' + emoji + '</text></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+const wiki = nome => ['https://goatsimulator.wiki.gg/wiki/Special:FilePath/' + encodeURIComponent(nome.replace(/ /g, '_')) + '.png', 'https://goatsimulator.wiki.gg/wiki/Special:FilePath/' + encodeURIComponent(nome.replace(/ /g, '_')) + '.jpg'];
+/* <img> que tenta uma lista de endereços e termina no desenho. */
+function img(fontes, desenho, classe){
+  const lista = fontes.concat([desenho]);
+  return '<img' + (classe ? ' class="' + classe + '"' : '') + ' loading="lazy" referrerpolicy="no-referrer" alt="" src="' + esc(lista[0]) + '" data-f="' + esc(JSON.stringify(lista.slice(1))) + '" onerror="proxima(this)" />';
+}
+window.proxima = el => { let l = []; try{ l = JSON.parse(el.dataset.f || '[]'); }catch(e){} if(!l.length){ el.onerror = null; return; } el.dataset.f = JSON.stringify(l.slice(1)); el.src = l[0]; };
+
+/* ---------- progresso ---------- */
+let feitos = new Set(ler('feitos', []));
+function alternar(id){ if(feitos.has(id)) feitos.delete(id); else{ feitos.add(id); balido(.5); } gravar('feitos', Array.from(feitos)); }
+
+/* ---------- aba Jogos ---------- */
+function renderJogos(){
+  $('#listaJogos').innerHTML = JOGOS.map(j => {
+    const lug = LUGARES.filter(l => POR_MAPA.get(l.mapa).jogo === j.id), cab = CABRAS.filter(c => c.jogo === j.id);
+    const tot = lug.length + cab.length, fe = lug.filter(l => feitos.has(l.id)).length + cab.filter(c => feitos.has(c.id)).length;
+    return '<div class="jogo-card">' + (j.steam ? img(capaSteam(j.steam), desenhoLugar(j.nome, j.emoji)) : '<img alt="" src="' + desenhoLugar(j.nome, j.emoji) + '" />') +
+      '<div><h3>' + j.emoji + ' ' + esc(j.nome) + '</h3><div class="fraco">' + esc(j.ano) + '</div><p>' + esc(j.desc) + '</p>' +
+      (tot ? '<div class="linha" style="margin-top:8px">' + (lug.length ? '<button class="btn pequeno" data-ir="lugares" data-jogo="' + j.id + '">🗺️ ' + lug.length + ' lugares</button>' : '') + (cab.length ? '<button class="btn pequeno leve" data-ir="cabras" data-jogo="' + j.id + '">🐐 ' + cab.length + ' cabras</button>' : '') + '</div>' +
+        '<div class="barra"><i style="width:' + Math.round(fe / tot * 100) + '%"></i></div><div class="fraco">' + fe + ' de ' + tot + ' marcados</div>' : '') +
+      (j.steam ? '<p style="margin-top:6px"><a href="https://store.steampowered.com/app/' + j.steam + '/" target="_blank" rel="noopener">Ver na Steam ↗</a></p>' : '') + '</div></div>';
+  }).join('');
+}
+$('#listaJogos').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-ir]'); if(!b) return;
+  if(b.dataset.ir === 'lugares'){ mapaAtivo = (MAPAS.find(m => m[2] === b.dataset.jogo) || [''])[0]; }
+  else { jogoCabra = b.dataset.jogo; }
+  irPara(b.dataset.ir);
+});
+
+/* ---------- aba Lugares ---------- */
+let mapaAtivo = 'goatville';
+function renderLugares(){
+  $('#chipsMapa').innerHTML = MAPAS.map(([id, nome, , em]) => '<button class="chip" aria-pressed="' + (mapaAtivo === id) + '" data-mapa="' + id + '">' + em + ' ' + esc(nome) + '</button>').join('') + '<button class="chip" aria-pressed="' + (mapaAtivo === '') + '" data-mapa="">Todos</button>';
+  const q = normal($('#campoLugar').value);
+  const lista = LUGARES.filter(l => (!mapaAtivo || l.mapa === mapaAtivo) && (!q || l.n.includes(q)));
+  $('#contadorLugar').textContent = lista.length + ' lugares · ' + lista.filter(l => feitos.has(l.id)).length + ' visitados';
+  $('#gradeLugar').innerHTML = lista.map(l => '<div class="card" data-lugar="' + l.id + '" role="button" tabindex="0">' + (l.area ? '<span class="selo">' + esc(l.area) + '</span>' : '') + (feitos.has(l.id) ? '<span class="selo ok">✅</span>' : '') +
+    '<div class="foto">' + img(wiki(l.nome), desenhoLugar(l.nome, l.emoji)) + '</div><div class="info"><div class="nome">' + l.emoji + ' ' + esc(l.nome) + '</div><div class="sub">' + esc(POR_MAPA.get(l.mapa).nome) + '</div><div class="desc">' + esc(l.desc) + '</div></div></div>').join('') || '<p class="fraco">Nenhum lugar com esse nome.</p>';
+}
+$('#chipsMapa').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; mapaAtivo = c.dataset.mapa; renderLugares(); });
+$('#campoLugar').addEventListener('input', () => { renderLugares(); if(normal($('#campoLugar').value) === 'baa') balido(1); });
+$('#gradeLugar').addEventListener('click', ev => { const c = ev.target.closest('[data-lugar]'); if(c) abrirLugar(c.dataset.lugar); });
+
+/* ---------- aba Cabras ---------- */
+let jogoCabra = '';
+function renderCabras(){
+  const jogos = Array.from(new Set(CABRAS.map(c => c.jogo)));
+  $('#chipsCabra').innerHTML = '<button class="chip" aria-pressed="' + (jogoCabra === '') + '" data-jogo="">Todas</button>' + jogos.map(j => '<button class="chip" aria-pressed="' + (jogoCabra === j) + '" data-jogo="' + j + '">' + POR_JOGO.get(j).emoji + ' ' + esc(POR_JOGO.get(j).nome) + '</button>').join('');
+  const q = normal($('#campoCabra').value);
+  const lista = CABRAS.filter(c => (!jogoCabra || c.jogo === jogoCabra) && (!q || c.n.includes(q)));
+  $('#contadorCabra').textContent = lista.length + ' cabras · ' + lista.filter(c => feitos.has(c.id)).length + ' desbloqueadas';
+  $('#gradeCabra').innerHTML = lista.map(c => '<div class="card cabra" data-cabra="' + c.id + '" role="button" tabindex="0">' + (feitos.has(c.id) ? '<span class="selo ok">✅</span>' : '') +
+    '<div class="foto">' + img(wiki(c.nome), desenhoCabra(c.nome, c.emoji)) + '</div><div class="info"><div class="nome">' + c.emoji + ' ' + esc(c.nome) + '</div><div class="sub">' + esc(POR_JOGO.get(c.jogo).nome) + '</div>' +
+    (c.como ? '<div class="desc">🔓 ' + esc(c.como) + '</div>' : '') + '</div></div>').join('') || '<p class="fraco">Nenhuma cabra com esse nome.</p>';
+}
+$('#chipsCabra').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; jogoCabra = c.dataset.jogo; renderCabras(); });
+$('#campoCabra').addEventListener('input', () => { renderCabras(); if(normal($('#campoCabra').value) === 'baa') balido(1); });
+$('#gradeCabra').addEventListener('click', ev => { const c = ev.target.closest('[data-cabra]'); if(c) abrirCabra(c.dataset.cabra); });
+
+/* ---------- detalhe ---------- */
+function abrir(html){ const d = $('#detalhe'); d.innerHTML = '<button class="fechar" data-x="fechar" aria-label="Fechar">✕</button>' + html; if(!d.open) d.showModal(); }
+function abrirLugar(id){
+  const l = LUGARES.find(x => x.id === id); if(!l) return; const m = POR_MAPA.get(l.mapa);
+  abrir(img(wiki(l.nome), desenhoLugar(l.nome, l.emoji), 'grande') + '<div class="det-corpo"><h2>' + l.emoji + ' ' + esc(l.nome) + '</h2><div class="fraco">' + esc(m.nome) + (l.area ? ' · ' + esc(l.area) : '') + ' · ' + esc(POR_JOGO.get(m.jogo).nome) + '</div><p style="margin-top:8px">' + esc(l.desc) + '</p>' +
+    '<div class="linha" style="margin-top:12px"><button class="btn" data-x="marcar" data-id="' + l.id + '">' + (feitos.has(l.id) ? '✅ Já visitei (desmarcar)' : '📍 Já visitei') + '</button>' +
+    '<a class="btn leve" href="https://goatsimulator.wiki.gg/index.php?search=' + encodeURIComponent(l.nome) + '" target="_blank" rel="noopener">Ver na wiki ↗</a></div></div>');
+  $('#detalhe').dataset.volta = 'lugar:' + id;
+}
+function abrirCabra(id){
+  const c = CABRAS.find(x => x.id === id); if(!c) return;
+  abrir(img(wiki(c.nome), desenhoCabra(c.nome, c.emoji), 'grande') + '<div class="det-corpo"><h2>' + c.emoji + ' ' + esc(c.nome) + '</h2><div class="fraco">' + esc(POR_JOGO.get(c.jogo).nome) + '</div>' +
+    (c.desc ? '<p style="margin-top:8px">' + esc(c.desc) + '</p>' : '') + '<p style="margin-top:6px"><b>Como desbloquear:</b> ' + esc(c.como || 'os guias não dizem; procura na wiki!') + '</p>' +
+    '<div class="linha" style="margin-top:12px"><button class="btn" data-x="marcar" data-id="' + c.id + '">' + (feitos.has(c.id) ? '✅ Já desbloqueei (desmarcar)' : '🔓 Já desbloqueei') + '</button>' +
+    '<a class="btn leve" href="https://goatsimulator.wiki.gg/index.php?search=' + encodeURIComponent(c.nome) + '" target="_blank" rel="noopener">Ver na wiki ↗</a></div></div>');
+  $('#detalhe').dataset.volta = 'cabra:' + id;
+}
+$('#detalhe').addEventListener('click', ev => {
+  const d = $('#detalhe'); const b = ev.target.closest('[data-x]');
+  if(b && b.dataset.x === 'fechar'){ d.close(); return; }
+  if(b && b.dataset.x === 'marcar'){ alternar(b.dataset.id); const [t, id] = d.dataset.volta.split(':'); if(t === 'lugar') abrirLugar(id); else abrirCabra(id); renderLugares(); renderCabras(); renderJogos(); return; }
+  const r = d.getBoundingClientRect(); if(ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) d.close();
+});
+
+/* ---------- aba Músicas ---------- */
+function renderMusicas(){
+  let n = 0;
+  $('#listaMusicas').innerHTML = MUSICAS.map(([j, lista], d) => '<div class="caixa"><h2>💿 Disco ' + (d + 1) + ': ' + esc(POR_JOGO.get(j).nome) + '</h2><div class="musicas">' +
+    lista.map(m => { n++; return '<div class="musica"><span class="num">' + n + '</span><span class="t">' + esc(m) + (n === 1 ? '<small>é a "dead" que você falou: a primeira da trilha!</small>' : '') + '</span>' +
+      '<a class="btn pequeno" href="https://www.youtube.com/results?search_query=' + encodeURIComponent('Goat Simulator ' + m + ' Gustaf Tivander') + '" target="_blank" rel="noopener">▶ Ouvir</a></div>'; }).join('') + '</div></div>').join('') +
+    '<div class="caixa"><h2>💿 Goat Simulator 3</h2><p class="fraco">Não achei a lista de músicas do 3. <a href="https://www.youtube.com/results?search_query=' + encodeURIComponent('Goat Simulator 3 soundtrack') + '" target="_blank" rel="noopener">Procurar a trilha do 3 no YouTube ↗</a></p></div>';
+}
+document.addEventListener('click', ev => {
+  const v = ev.target.closest('.video[data-video]');
+  if(v) v.outerHTML = '<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(v.dataset.video) + '?autoplay=1&rel=0" title="Trilha do Goat Simulator" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';
+});
+
+/* ---------- aba Progresso ---------- */
+function renderProgresso(){
+  const lug = LUGARES.filter(l => feitos.has(l.id)).length, cab = CABRAS.filter(c => feitos.has(c.id)).length;
+  $('#resumoProg').innerHTML = '<div><b>' + lug + '/' + LUGARES.length + '</b><small>lugares visitados</small></div><div><b>' + cab + '/' + CABRAS.length + '</b><small>cabras desbloqueadas</small></div>' +
+    '<div><b>' + Math.round((lug + cab) / (LUGARES.length + CABRAS.length) * 100) + '%</b><small>de tudo do GoatSim!</small></div>';
+  $('#barrasProg').innerHTML = MAPAS.map(([id, nome, , em]) => { const t = LUGARES.filter(l => l.mapa === id); if(!t.length) return ''; const f = t.filter(l => feitos.has(l.id)).length;
+    return '<div style="margin-top:10px"><b>' + em + ' ' + esc(nome) + '</b> <span class="fraco">' + f + ' de ' + t.length + '</span><div class="barra"><i style="width:' + Math.round(f / t.length * 100) + '%"></i></div></div>'; }).join('');
+}
+$('#btnZerar').addEventListener('click', () => { if(confirm('Zerar tudo que você marcou?')){ feitos = new Set(); gravar('feitos', []); renderProgresso(); renderJogos(); renderLugares(); renderCabras(); } });
+
+/* ---------- abas, tema ---------- */
+function irPara(aba){
+  $$('#abas button').forEach(x => x.setAttribute('aria-pressed', x.dataset.aba === aba));
+  $$('.painel').forEach(p => p.classList.toggle('ativo', p.id === 'painel-' + aba));
+  if(aba === 'lugares') renderLugares(); if(aba === 'cabras') renderCabras(); if(aba === 'progresso') renderProgresso(); if(aba === 'jogos') renderJogos();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+$('#abas').addEventListener('click', ev => { const b = ev.target.closest('button[data-aba]'); if(b) irPara(b.dataset.aba); });
+function aplicarTema(){ const t = ler('tema', ''); if(t) document.documentElement.dataset.tema = t; else delete document.documentElement.dataset.tema; $('#btnTema').textContent = (t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches) ? '☀️' : '🌙'; }
+$('#btnTema').addEventListener('click', () => { const e = document.documentElement.dataset.tema ? document.documentElement.dataset.tema === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; gravar('tema', e ? 'claro' : 'escuro'); aplicarTema(); });
+aplicarTema();
+
+/* ---------- segredo: o berro da cabra ----------
+   Tocar 5 vezes seguidas no logo (ou escrever "baa" numa busca): BAAAAH,
+   o logo dá uma cabeçada e uma cabra voa pela tela. Som feito na hora. */
+function balido(forca){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)(), t = ctx.currentTime, dur = .35 + .55 * forca;
+    const o = ctx.createOscillator(), lfo = ctx.createOscillator(), lg = ctx.createGain(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(520, t); o.frequency.linearRampToValueAtTime(380, t + dur);
+    lfo.frequency.value = 22; lg.gain.value = 60; lfo.connect(lg); lg.connect(o.frequency);
+    f.type = 'bandpass'; f.frequency.value = 1100; f.Q.value = 1.2;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.18 * forca + .04, t + .05); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(f); f.connect(g); g.connect(ctx.destination); o.start(t); lfo.start(t); o.stop(t + dur + .05); lfo.stop(t + dur + .05);
+  }catch(e){}
+  if(forca < 1) return;
+  const logo = $('#logo'); logo.classList.remove('cabecada'); void logo.offsetWidth; logo.classList.add('cabecada');
+  const c = document.createElement('div'); c.className = 'ovo'; c.innerHTML = '<div class="cabra-voa">🐐</div><div class="baa">BAAAAH!</div>'; document.body.appendChild(c);
+  const cab = c.querySelector('.cabra-voa');
+  cab.animate([{ transform:'translate(0,0) rotate(0)' }, { transform:'translate(' + innerWidth * .5 + 'px,-' + innerHeight * .9 + 'px) rotate(540deg)' }, { transform:'translate(' + innerWidth + 'px,' + 80 + 'px) rotate(900deg)' }], { duration:1600, easing:'ease-out', fill:'forwards' });
+  c.querySelector('.baa').animate([{ opacity:0, transform:'scale(.3)' }, { opacity:1, transform:'scale(1.2)', offset:.5 }, { opacity:0, transform:'scale(1)' }], { duration:1500, fill:'forwards' });
+  setTimeout(() => c.remove(), 1800);
+}
+let toques = 0, ultimo = 0;
+$('#logo').addEventListener('click', () => { const a = Date.now(); toques = a - ultimo < 700 ? toques + 1 : 1; ultimo = a; if(toques >= 5){ toques = 0; balido(1); } });
+
+renderJogos(); renderMusicas();
+if('serviceWorker' in navigator){ window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).catch(() => {}); }); }
+</script>
+</body>
+</html>

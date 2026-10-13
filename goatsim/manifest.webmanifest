@@ -1,0 +1,10 @@
+{
+  "name": "GoatSim!",
+  "short_name": "GoatSim!",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f2f9ee",
+  "theme_color": "#3f9a22",
+  "description": "Tudo de Goat Simulator: os jogos, os mapas, os lugares e as cabras.",
+  "icons": [ { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" } ]
+}

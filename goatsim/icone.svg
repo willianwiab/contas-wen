@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Cabeça de cabra de lado com a língua de fora, no verde de grama. -->
+  <rect width="64" height="64" rx="14" fill="#5fbf3a"/>
+  <path d="M22 14 Q16 6 10 10 Q16 12 20 20 Z" fill="#6b4a2b"/>
+  <path d="M30 13 Q28 4 21 5 Q26 9 27 18 Z" fill="#6b4a2b"/>
+  <ellipse cx="30" cy="32" rx="16" ry="14" fill="#f2efe8"/>
+  <ellipse cx="46" cy="38" rx="10" ry="8" fill="#f2efe8"/>
+  <ellipse cx="16" cy="27" rx="7" ry="3.5" fill="#d9d3c6" transform="rotate(-25 16 27)"/>
+  <circle cx="35" cy="28" r="3.2" fill="#222"/><circle cx="36" cy="27" r="1" fill="#fff"/>
+  <path d="M52 42 Q58 46 55 52 Q52 48 50 45 Z" fill="#ff6b8a"/>
+  <path d="M34 44 Q32 56 26 58 Q30 50 28 45 Z" fill="#e5dfd2"/>
+</svg>
