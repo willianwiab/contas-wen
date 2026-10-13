@@ -1148,12 +1148,21 @@ function blocoPacotao(it){
     let soma = 0, algumEst = false;
     itens.forEach(x => { const s = precoSozinho(x); soma += s.vb; if(s.est) algumEst = true; });
     const eco = soma - pac.preco;
+    const tenho = itens.filter(x => armario.has(x.id)); const faltam = itens.filter(x => !armario.has(x.id));
+    let somaFalta = 0; faltam.forEach(x => { somaFalta += precoSozinho(x).vb; });
+    let meu;
+    if(!tenho.length) meu = '<p style="margin-top:6px">🎒 Você ainda não tem nenhum item desse pacote.</p>';
+    else if(!faltam.length) meu = '<p style="margin-top:6px;color:var(--ok)"><b>🎉 Você tem todos os ' + itens.length + ' itens desse pacote!</b></p>';
+    else meu = '<p style="margin-top:6px">🎒 Você já tem <b>' + tenho.length + ' de ' + itens.length + '</b>. Falta: ' + faltam.map(x => '<b>' + esc(x.nome) + '</b>').join(', ') + '.</p>' +
+      (somaFalta > 0 ? '<p>Comprar só os que faltam ia dar uns <b>' + num(somaFalta) + ' V-Bucks</b>. ' + (somaFalta < pac.preco ? '<b style="color:var(--ok)">Compensa comprar só os que faltam, separado.</b>' : '<b>O pacotão ainda sai mais barato.</b>') + '</p>' : '');
     return '<div class="bloco"><h3>📦 Vem no pacotão "' + esc(pac.nome) + '"</h3>' +
       '<p class="destaque vbucks"><i class="vb-icone"></i>' + num(pac.preco) + ' V-Bucks' + (pac.normal && pac.normal > pac.preco ? ' <s class="fraco" style="font-size:1rem">' + num(pac.normal) + '</s>' : '') + '</p>' +
       '<p>' + itens.length + ' itens no pacote. Em dinheiro, comprar esses V-Bucks custa ' + reais(reaisDe(pac.preco).melhor) + '.</p>' +
       (soma > 0 ? '<p style="margin-top:6px">Comprando cada um separado ia dar uns <b>' + num(soma) + ' V-Bucks</b>' + (algumEst ? ' (estimado)' : '') + '. ' +
         (eco > 0 ? '<b style="color:var(--ok)">O pacotão economiza ' + num(eco) + ' V-Bucks!</b>' : eco < 0 ? '<b style="color:var(--erro)">Separado sai mais barato.</b>' : 'Dá na mesma.') + '</p>' : '') +
-      '<div class="conjunto">' + itens.map(x => '<button class="carta" data-id="' + esc(x.id) + '" style="--cor-rar:' + raridadeDe(x).cor + '"><div class="foto">' + (x.img ? '<img loading="lazy" src="' + esc(x.img) + '" alt="" />' : '<span class="sem">' + tipoDe(x.tipo).emoji + '</span>') + '</div><div class="info"><div class="nome">' + esc(x.nome) + '</div><div class="tipo">' + esc(tipoDe(x.tipo).nome) + '</div></div></button>').join('') + '</div></div>';
+      meu +
+      (faltam.length ? '<div class="acoes" style="margin-top:8px"><button class="btn pequeno roxo" data-acao="pacote" data-pac="' + PACOTOES.indexOf(pac) + '">📦 Comprei o pacotão (marcar tudo)</button></div>' : '') +
+      '<div class="conjunto">' + itens.map(x => '<button class="carta" data-id="' + esc(x.id) + '" style="--cor-rar:' + raridadeDe(x).cor + '"><div class="selos">' + (armario.has(x.id) ? '<span class="selo tenho">✅ tenho</span>' : '<span class="selo">falta</span>') + '</div><div class="foto">' + (x.img ? '<img loading="lazy" src="' + esc(x.img) + '" alt="" />' : '<span class="sem">' + tipoDe(x.tipo).emoji + '</span>') + '</div><div class="info"><div class="nome">' + esc(x.nome) + '</div><div class="tipo">' + esc(tipoDe(x.tipo).nome) + '</div></div></button>').join('') + '</div></div>';
   }).join('');
 }
 
@@ -1203,7 +1212,8 @@ function detalheHTML(it){
 
   html += '<div class="acoes" style="margin-bottom:10px">' +
     '<button class="btn pequeno ' + (armario.has(it.id) ? 'verde' : 'leve') + '" data-acao="tenho">' + (armario.has(it.id) ? '🎒 Tenho! (tirar do armário)' : '🎒 Eu tenho essa') + '</button>' +
-    '<button class="btn pequeno ' + (favs.has(it.id) ? 'vermelho' : 'leve') + '" data-acao="fav">' + (favs.has(it.id) ? '❤️ Favorita (tirar)' : '🤍 Quero essa') + '</button></div>';
+    '<button class="btn pequeno ' + (favs.has(it.id) ? 'vermelho' : 'leve') + '" data-acao="fav">' + (favs.has(it.id) ? '❤️ Favorita (tirar)' : '🤍 Quero essa') + '</button></div>' +
+    (armario.has(it.id) && origem[it.id] ? '<p class="fraco" style="margin:-4px 0 10px">' + textoOrigem(it.id) + '</p>' : '');
 
   // 🎬 gesto / música / item tocando: vídeo oficial, quando a API tem. Só carrega quando a pessoa toca.
   const yt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent('Fortnite ' + (it.nome || '') + ' ' + T.nome);
@@ -1266,7 +1276,15 @@ $('#detalhe').addEventListener('click', ev => {
   if(v){ v.outerHTML = '<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(v.dataset.video) + '?autoplay=1&rel=0" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'; return; }
   const b = ev.target.closest('[data-acao]');
   if(b){
-    if(b.dataset.acao === 'tenho') alternar(armario, id, 'dearnite-armario');
+    if(b.dataset.acao === 'tenho'){
+      alternar(armario, id, 'dearnite-armario');
+      if(armario.has(id)){ if(!origem[id]) origem[id] = 'separado'; } else delete origem[id];
+      gravarOrigem();
+    }
+    if(b.dataset.acao === 'pacote'){
+      const pac = PACOTOES[parseInt(b.dataset.pac, 10)];
+      if(pac){ pac.ids.forEach(x => { if(!armario.has(x)){ armario.add(x); origem[x] = 'pacote:' + pac.nome; } }); gravarSet('dearnite-armario', armario); gravarOrigem(); pac.ids.forEach(atualizarCarta); }
+    }
     if(b.dataset.acao === 'fav') alternar(favs, id, 'dearnite-favs');
     abrirDetalhe(id); atualizarCarta(id); renderArmario(); return;
   }
@@ -1308,6 +1326,10 @@ function lerSet(chave){ try{ return new Set(JSON.parse(localStorage.getItem(chav
 function gravarSet(chave, s){ try{ localStorage.setItem(chave, JSON.stringify(Array.from(s))); }catch(e){} }
 const armario = lerSet('dearnite-armario');
 const favs = lerSet('dearnite-favs');
+/* Como cada item do armário foi conseguido: 'pacote:<nome>' ou 'separado'. */
+let origem = (() => { try{ return JSON.parse(localStorage.getItem('dearnite-origem') || '{}') || {}; }catch(e){ return {}; } })();
+function gravarOrigem(){ try{ localStorage.setItem('dearnite-origem', JSON.stringify(origem)); }catch(e){} }
+function textoOrigem(id){ const o = origem[id]; if(!o) return ''; return o === 'separado' ? 'Você comprou <b>separado</b>.' : 'Você comprou no pacotão <b>' + esc(o.replace(/^pacote:/, '')) + '</b>.'; }
 function alternar(s, id, chave){ if(s.has(id)) s.delete(id); else s.add(id); gravarSet(chave, s); }
 function totalDe(ids){
   let vb = 0, n = 0, exclusivos = 0, naLoja = 0;
@@ -1332,10 +1354,10 @@ function renderArmario(){
   $('#listaArmario').innerHTML = lista(armario).map(it => { const p = precoDe(it); return cartaHTML(it, '<br/><b>' + (p.de === 'nunca' ? 'exclusivo' : num(p.vb) + ' V-Bucks') + '</b>'); }).join('');
   $('#listaFav').innerHTML = lista(favs).map(it => cartaHTML(it)).join('');
 }
-$('#btnLimpar').addEventListener('click', () => { if(confirm('Esvaziar o armário? As favoritas ficam.')){ armario.clear(); gravarSet('dearnite-armario', armario); renderArmario(); render(); } });
+$('#btnLimpar').addEventListener('click', () => { if(confirm('Esvaziar o armário? As favoritas ficam.')){ armario.clear(); gravarSet('dearnite-armario', armario); origem = {}; gravarOrigem(); renderArmario(); render(); } });
 $('#btnCodigo').addEventListener('click', () => {
   const area = $('#codigoArea'); area.classList.remove('oculto'); $('#codigoAcoes').classList.add('oculto');
-  area.value = 'DN1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ a:Array.from(armario), f:Array.from(favs) }))));
+  area.value = 'DN1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ a:Array.from(armario), f:Array.from(favs), o:origem }))));
   area.select(); try{ document.execCommand('copy'); }catch(e){}
   $('#contaStatus').textContent = '';
 });
@@ -1343,7 +1365,7 @@ $('#btnColar').addEventListener('click', () => { const area = $('#codigoArea'); 
 $('#btnCodigoOk').addEventListener('click', () => {
   const v = $('#codigoArea').value.trim();
   if(!v.startsWith('DN1.')){ alert('Esse código não é do DearNite. Ele começa com DN1.'); return; }
-  try{ const o = JSON.parse(decodeURIComponent(escape(atob(v.slice(4))))); (o.a || []).forEach(id => armario.add(id)); (o.f || []).forEach(id => favs.add(id)); }
+  try{ const o = JSON.parse(decodeURIComponent(escape(atob(v.slice(4))))); (o.a || []).forEach(id => armario.add(id)); (o.f || []).forEach(id => favs.add(id)); Object.keys(o.o || {}).forEach(k => { if(!origem[k]) origem[k] = o.o[k]; }); gravarOrigem(); }
   catch(e){ alert('Código cortado ou quebrado. Copia ele inteiro de novo.'); return; }
   gravarSet('dearnite-armario', armario); gravarSet('dearnite-favs', favs); renderArmario(); render();
   $('#codigoArea').classList.add('oculto'); $('#codigoAcoes').classList.add('oculto');
