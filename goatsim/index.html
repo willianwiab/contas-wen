@@ -392,11 +392,66 @@ function desenhoLugar(nome, emoji){
     '<path d="M0 150 Q80 120 160 140 T320 130 V200 H0Z" fill="' + chao + '"/><text x="160" y="130" text-anchor="middle" font-size="84">' + emoji + '</text></svg>';
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
-const wiki = nome => ['https://goatsimulator.wiki.gg/wiki/Special:FilePath/' + encodeURIComponent(nome.replace(/ /g, '_')) + '.png', 'https://goatsimulator.wiki.gg/wiki/Special:FilePath/' + encodeURIComponent(nome.replace(/ /g, '_')) + '.jpg'];
+/* ---------- fotos de verdade, perguntando pra wiki ----------
+   Chutar o nome do arquivo da foto quase nunca acertava. Agora o site
+   pergunta pra API da wiki (MediaWiki, que aceita sites de fora com
+   origin=*) qual é a foto da PÁGINA de cada cabra e lugar: primeiro na
+   wiki.gg, depois na do Fandom, e no fim procurando pelo nome. A resposta
+   fica guardada no aparelho (nome → endereço da foto, ou '' se não tem). */
+const WIKIS = ['https://goatsimulator.wiki.gg/api.php', 'https://goatsimulator.fandom.com/api.php'];
+let FOTO = ler('fotos-v1', {});
+const gravarFotos = () => gravar('fotos-v1', FOTO);
+const wiki = nome => FOTO[nome] ? [FOTO[nome]] : [];
+async function apiWiki(base, params){
+  const q = new URLSearchParams(Object.assign({ action:'query', format:'json', formatversion:'2', origin:'*', prop:'pageimages', piprop:'thumbnail', pithumbsize:'480' }, params));
+  const r = await fetch(base + '?' + q.toString());
+  if(!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+/* Várias páginas de uma vez, seguindo redirecionamentos. */
+async function fotosEmLote(base, nomes){
+  const j = await apiWiki(base, { titles:nomes.join('|'), redirects:'1' });
+  const q = j.query || {}; const ate = {};
+  (q.normalized || []).forEach(x => { ate[x.from] = x.to; });
+  (q.redirects || []).forEach(x => { ate[x.from] = x.to; });
+  const final = t => { let x = t, i = 0; while(ate[x] && i++ < 5) x = ate[x]; return x; };
+  const porTitulo = {}; (q.pages || []).forEach(pg => { if(pg.thumbnail && pg.thumbnail.source) porTitulo[pg.title] = pg.thumbnail.source; });
+  nomes.forEach(n => { const s = porTitulo[final(n)]; if(s) FOTO[n] = s; });
+}
+/* Um nome por vez, pela busca da wiki (pra quando a página tem outro nome). */
+async function fotoPorBusca(base, nome, dica){
+  const j = await apiWiki(base, { generator:'search', gsrsearch:nome + (dica ? ' ' + dica : ''), gsrlimit:'3', gsrnamespace:'0' });
+  const pgs = ((j.query || {}).pages || []).filter(pg => pg.thumbnail && pg.thumbnail.source).sort((a, b) => (a.index || 0) - (b.index || 0));
+  if(pgs.length) FOTO[nome] = pgs[0].thumbnail.source;
+}
+let buscandoFotos = false;
+async function buscarFotos(){
+  if(buscandoFotos) return; buscandoFotos = true;
+  const itens = LUGARES.map(l => [l.nome, POR_MAPA.get(l.mapa).nome]).concat(CABRAS.map(c => [c.nome, c.jogo === 'gs3' || c.jogo === 'mon' ? 'Goat Simulator 3' : 'Goat Simulator']));
+  const faltam = () => Array.from(new Set(itens.map(x => x[0]).filter(n => !(n in FOTO))));
+  try{
+    for(const base of WIKIS){
+      const lista = faltam();
+      for(let i = 0; i < lista.length; i += 40){ try{ await fotosEmLote(base, lista.slice(i, i + 40)); }catch(e){ console.warn(e); break; } pintarFotos(); }
+    }
+    for(const [nome, dica] of itens){
+      if(nome in FOTO) continue;
+      for(const base of WIKIS){ try{ await fotoPorBusca(base, nome, dica); }catch(e){} if(FOTO[nome]) break; }
+      if(!FOTO[nome]) FOTO[nome] = '';
+      pintarFotos([nome]);
+      await new Promise(ok => setTimeout(ok, 120));
+    }
+  } finally { gravarFotos(); buscandoFotos = false; }
+}
+/* Troca na hora as imagens que já estão na tela quando a foto chega. */
+function pintarFotos(nomes){
+  gravarFotos();
+  $$('img[data-nome]').forEach(el => { const n = el.dataset.nome; if((!nomes || nomes.includes(n)) && FOTO[n] && el.src !== FOTO[n] && !el.dataset.trocou){ el.dataset.trocou = '1'; el.dataset.f = JSON.stringify([el.dataset.desenho || '']); el.src = FOTO[n]; } });
+}
 /* <img> que tenta uma lista de endereços e termina no desenho. */
-function img(fontes, desenho, classe){
+function img(fontes, desenho, classe, nome){
   const lista = fontes.concat([desenho]);
-  return '<img' + (classe ? ' class="' + classe + '"' : '') + ' loading="lazy" referrerpolicy="no-referrer" alt="" src="' + esc(lista[0]) + '" data-f="' + esc(JSON.stringify(lista.slice(1))) + '" onerror="proxima(this)" />';
+  return '<img' + (classe ? ' class="' + classe + '"' : '') + (nome ? ' data-nome="' + esc(nome) + '" data-desenho="' + esc(desenho) + '"' : '') + ' loading="lazy" referrerpolicy="no-referrer" alt="" src="' + esc(lista[0]) + '" data-f="' + esc(JSON.stringify(lista.slice(1))) + '" onerror="proxima(this)" />';
 }
 window.proxima = el => { let l = []; try{ l = JSON.parse(el.dataset.f || '[]'); }catch(e){} if(!l.length){ el.onerror = null; return; } el.dataset.f = JSON.stringify(l.slice(1)); el.src = l[0]; };
 
@@ -431,7 +486,7 @@ function renderLugares(){
   const lista = LUGARES.filter(l => (!mapaAtivo || l.mapa === mapaAtivo) && (!q || l.n.includes(q)));
   $('#contadorLugar').textContent = lista.length + ' lugares · ' + lista.filter(l => feitos.has(l.id)).length + ' visitados';
   $('#gradeLugar').innerHTML = lista.map(l => '<div class="card" data-lugar="' + l.id + '" role="button" tabindex="0">' + (l.area ? '<span class="selo">' + esc(l.area) + '</span>' : '') + (feitos.has(l.id) ? '<span class="selo ok">✅</span>' : '') +
-    '<div class="foto">' + img(wiki(l.nome), desenhoLugar(l.nome, l.emoji)) + '</div><div class="info"><div class="nome">' + l.emoji + ' ' + esc(l.nome) + '</div><div class="sub">' + esc(POR_MAPA.get(l.mapa).nome) + '</div><div class="desc">' + esc(l.desc) + '</div></div></div>').join('') || '<p class="fraco">Nenhum lugar com esse nome.</p>';
+    '<div class="foto">' + img(wiki(l.nome), desenhoLugar(l.nome, l.emoji), '', l.nome) + '</div><div class="info"><div class="nome">' + l.emoji + ' ' + esc(l.nome) + '</div><div class="sub">' + esc(POR_MAPA.get(l.mapa).nome) + '</div><div class="desc">' + esc(l.desc) + '</div></div></div>').join('') || '<p class="fraco">Nenhum lugar com esse nome.</p>';
 }
 $('#chipsMapa').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; mapaAtivo = c.dataset.mapa; renderLugares(); });
 $('#campoLugar').addEventListener('input', () => { renderLugares(); if(normal($('#campoLugar').value) === 'baa') balido(1); });
@@ -446,7 +501,7 @@ function renderCabras(){
   const lista = CABRAS.filter(c => (!jogoCabra || c.jogo === jogoCabra) && (!q || c.n.includes(q)));
   $('#contadorCabra').textContent = lista.length + ' cabras · ' + lista.filter(c => feitos.has(c.id)).length + ' desbloqueadas';
   $('#gradeCabra').innerHTML = lista.map(c => '<div class="card cabra" data-cabra="' + c.id + '" role="button" tabindex="0">' + (feitos.has(c.id) ? '<span class="selo ok">✅</span>' : '') +
-    '<div class="foto">' + img(wiki(c.nome), desenhoCabra(c.nome, c.emoji)) + '</div><div class="info"><div class="nome">' + c.emoji + ' ' + esc(c.nome) + '</div><div class="sub">' + esc(POR_JOGO.get(c.jogo).nome) + '</div>' +
+    '<div class="foto">' + img(wiki(c.nome), desenhoCabra(c.nome, c.emoji), '', c.nome) + '</div><div class="info"><div class="nome">' + c.emoji + ' ' + esc(c.nome) + '</div><div class="sub">' + esc(POR_JOGO.get(c.jogo).nome) + '</div>' +
     (c.como ? '<div class="desc">🔓 ' + esc(c.como) + '</div>' : '') + '</div></div>').join('') || '<p class="fraco">Nenhuma cabra com esse nome.</p>';
 }
 $('#chipsCabra').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; jogoCabra = c.dataset.jogo; renderCabras(); });
@@ -457,14 +512,14 @@ $('#gradeCabra').addEventListener('click', ev => { const c = ev.target.closest('
 function abrir(html){ const d = $('#detalhe'); d.innerHTML = '<button class="fechar" data-x="fechar" aria-label="Fechar">✕</button>' + html; if(!d.open) d.showModal(); }
 function abrirLugar(id){
   const l = LUGARES.find(x => x.id === id); if(!l) return; const m = POR_MAPA.get(l.mapa);
-  abrir(img(wiki(l.nome), desenhoLugar(l.nome, l.emoji), 'grande') + '<div class="det-corpo"><h2>' + l.emoji + ' ' + esc(l.nome) + '</h2><div class="fraco">' + esc(m.nome) + (l.area ? ' · ' + esc(l.area) : '') + ' · ' + esc(POR_JOGO.get(m.jogo).nome) + '</div><p style="margin-top:8px">' + esc(l.desc) + '</p>' +
+  abrir(img(wiki(l.nome), desenhoLugar(l.nome, l.emoji), 'grande', l.nome) + '<div class="det-corpo"><h2>' + l.emoji + ' ' + esc(l.nome) + '</h2><div class="fraco">' + esc(m.nome) + (l.area ? ' · ' + esc(l.area) : '') + ' · ' + esc(POR_JOGO.get(m.jogo).nome) + '</div><p style="margin-top:8px">' + esc(l.desc) + '</p>' +
     '<div class="linha" style="margin-top:12px"><button class="btn" data-x="marcar" data-id="' + l.id + '">' + (feitos.has(l.id) ? '✅ Já visitei (desmarcar)' : '📍 Já visitei') + '</button>' +
     '<a class="btn leve" href="https://goatsimulator.wiki.gg/index.php?search=' + encodeURIComponent(l.nome) + '" target="_blank" rel="noopener">Ver na wiki ↗</a></div></div>');
   $('#detalhe').dataset.volta = 'lugar:' + id;
 }
 function abrirCabra(id){
   const c = CABRAS.find(x => x.id === id); if(!c) return;
-  abrir(img(wiki(c.nome), desenhoCabra(c.nome, c.emoji), 'grande') + '<div class="det-corpo"><h2>' + c.emoji + ' ' + esc(c.nome) + '</h2><div class="fraco">' + esc(POR_JOGO.get(c.jogo).nome) + '</div>' +
+  abrir(img(wiki(c.nome), desenhoCabra(c.nome, c.emoji), 'grande', c.nome) + '<div class="det-corpo"><h2>' + c.emoji + ' ' + esc(c.nome) + '</h2><div class="fraco">' + esc(POR_JOGO.get(c.jogo).nome) + '</div>' +
     (c.desc ? '<p style="margin-top:8px">' + esc(c.desc) + '</p>' : '') + '<p style="margin-top:6px"><b>Como desbloquear:</b> ' + esc(c.como || 'os guias não dizem; procura na wiki!') + '</p>' +
     '<div class="linha" style="margin-top:12px"><button class="btn" data-x="marcar" data-id="' + c.id + '">' + (feitos.has(c.id) ? '✅ Já desbloqueei (desmarcar)' : '🔓 Já desbloqueei') + '</button>' +
     '<a class="btn leve" href="https://goatsimulator.wiki.gg/index.php?search=' + encodeURIComponent(c.nome) + '" target="_blank" rel="noopener">Ver na wiki ↗</a></div></div>');
@@ -536,7 +591,7 @@ function balido(forca){
 let toques = 0, ultimo = 0;
 $('#logo').addEventListener('click', () => { const a = Date.now(); toques = a - ultimo < 700 ? toques + 1 : 1; ultimo = a; if(toques >= 5){ toques = 0; balido(1); } });
 
-renderJogos(); renderMusicas();
+renderJogos(); renderMusicas(); buscarFotos();
 if('serviceWorker' in navigator){ window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).catch(() => {}); }); }
 </script>
 </body>
