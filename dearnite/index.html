@@ -526,7 +526,7 @@ footer a{color:var(--roxo)}
 <footer>
   Dados dos cosméticos: <a href="https://fortnite-api.com" target="_blank" rel="noopener">fortnite-api.com</a>. DearNite não é da Epic Games.<br/>
   Feito pelo Jojo com o Claude. Irmão do <a href="../butterpoke/">ButterPoke</a> 🦋<br/>
-  Versão <b id="versao">22</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
+  Versão <b id="versao">23</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
   <div class="fraco" id="atualizarMsg" style="margin-top:6px"></div>
 </footer>
 </div>
@@ -1503,49 +1503,91 @@ const NPCS = {
 };
 let tempNpc = 'c7t4';
 // foto: id da skin achada (ou '' se não achou), guardado no aparelho
-let NPC_SKIN = (() => { try{ return JSON.parse(localStorage.getItem('dearnite-npc-skin') || '{}') || {}; }catch(e){ return {}; } })();
-function gravarNpcSkin(){ try{ localStorage.setItem('dearnite-npc-skin', JSON.stringify(NPC_SKIN)); }catch(e){} }
-function skinLocal(nome){
+let NPC_SKIN = (() => { try{ return JSON.parse(localStorage.getItem('dearnite-npc-skin-v3') || '{}') || {}; }catch(e){ return {}; } })();
+function gravarNpcSkin(){ try{ localStorage.setItem('dearnite-npc-skin-v3', JSON.stringify(NPC_SKIN)); }catch(e){} }
+function skinLocal(nome, t){
   const n = normal(nome), sem = n.replace(/^(the|dr|doctor) /, '');
   const trajes = ITENS.filter(it => it.tipo === 'outfit');
-  return trajes.find(it => it.n === n) || trajes.find(it => it.n === sem) || null;
+  const ap = APELIDO_NPC[nome] ? normal(APELIDO_NPC[nome]) : '';
+  const iguais = trajes.filter(it => it.n === n); const iguais2 = iguais.length ? iguais : trajes.filter(it => it.n === sem);
+  const iguais3 = iguais2.length ? iguais2 : (ap ? trajes.filter(it => it.n === ap) : []);
+  return escolherSkin(iguais3, t, x => x.cap, x => x.temp);
+}
+/* Nome do NPC → nome da skin no jogo, quando não é igual. */
+const APELIDO_NPC = { 'Agent Jones':'Agent Jonesy', 'Dr. Eggman':'Eggman', 'Spire Guardian':'Spire Immortal', 'Jonesy the First':'Jonesy The First',
+  'Hearts Dealer':'Dealer', 'Diamonds Dealer':'Dealer', 'Clubs Dealer':'Dealer', 'Demon Warrior':'Demon', 'Doombot':'Doctor Doom',
+  'Lady Windfrost':'Windfrost', 'Dread Punisher Squibbly':'Squibbly', 'Elite Zadie':'Zadie', 'Dark Voyager Echo':'Dark Voyager',
+  'Rival Hope':'Hope', 'Heroic Hope':'Hope', 'Unpeely':'Peely', 'Chef Squibbly':'Squibbly', 'Lil Whip':'Lil Whip', 'Huntmaster Saber':'Saber' };
+/* Quando tem mais de uma skin com o nome (a Chica, por exemplo), fica com a
+   que saiu na mesma temporada do NPC; senão no mesmo capítulo; senão a mais
+   nova. 'c7t4' → capítulo 7, temporada 4. */
+function capTempDe(t){ const m = /^c(\d+)t(\d+)$/.exec(t || ''); return m ? [m[1], m[2]] : ['', '']; }
+function escolherSkin(lista, t, cap, temp){
+  if(!lista.length) return null;
+  const [c, s] = capTempDe(t);
+  return lista.find(x => String(cap(x)) === c && String(temp(x)) === s) ||
+         lista.find(x => String(cap(x)) === c) ||
+         lista.slice().sort((a, b) => String(b.added || b.add || '').localeCompare(String(a.added || a.add || '')))[0];
+}
+async function buscarSkin(nome, metodo, t){
+  const r = await fetch(API + '/cosmetics/br/search/all?name=' + encodeURIComponent(nome) + '&matchMethod=' + metodo + '&searchLanguage=en&language=pt-BR' + FLAGS, { headers:{ Accept:'application/json' } });
+  if(r.status === 404) return null;
+  if(!r.ok) throw new Error('HTTP ' + r.status);
+  const lista = ((await r.json()).data || []).filter(y => y.type && y.type.value === 'outfit');
+  return escolherSkin(lista, t, x => x.introduction && x.introduction.chapter, x => x.introduction && x.introduction.season);
 }
 const filaNpc = []; let filaRodando = false;
 async function rodarFilaNpc(){
   if(filaRodando) return; filaRodando = true;
   while(filaNpc.length){
-    const nome = filaNpc.shift(); if(nome in NPC_SKIN) continue;
+    const chave = filaNpc.shift(); if(chave in NPC_SKIN) continue;
+    const [t, nome] = chave.split('|');
     try{
-      const r = await fetch(API + '/cosmetics/br/search/all?name=' + encodeURIComponent(nome) + '&matchMethod=full&searchLanguage=en&language=pt-BR' + FLAGS, { headers:{ Accept:'application/json' } });
+      // 1) nome exato, 2) apelido, 3) nome contido em outra skin
+      const apelido = APELIDO_NPC[nome];
+      const x = (await buscarSkin(nome, 'full', t)) || (apelido && await buscarSkin(apelido, 'full', t)) ||
+                (await buscarSkin(apelido || nome, 'contains', t));
       let id = '';
-      if(r.ok){
-        const lista = (await r.json()).data || [];
-        const x = lista.find(y => y.type && y.type.value === 'outfit') || lista[0];
-        if(x){ const it = enxugarBR(x); if(!POR_ID.has(it.id)){ indexar(it); ITENS.push(it); POR_ID.set(it.id, it); } id = it.id; }
-      } else if(r.status !== 404) throw new Error('HTTP ' + r.status);
-      NPC_SKIN[nome] = id; gravarNpcSkin(); pintarNpc(nome);
+      if(x){ const it = enxugarBR(x); if(!POR_ID.has(it.id)){ indexar(it); ITENS.push(it); POR_ID.set(it.id, it); } id = it.id; }
+      NPC_SKIN[chave] = id; gravarNpcSkin(); pintarNpc(t, nome);
     }catch(e){ console.warn(e); }
     await new Promise(ok => setTimeout(ok, 150));
   }
   filaRodando = false;
 }
-function skinDoNpc(nome){
-  if(NPC_SKIN[nome]) return POR_ID.get(NPC_SKIN[nome]) || null;
-  const loc = skinLocal(nome); if(loc) return loc;
-  if(!(nome in NPC_SKIN) && !filaNpc.includes(nome)){ filaNpc.push(nome); rodarFilaNpc(); }
-  return null;
+function skinDoNpc(t, nome){
+  const chave = t + '|' + nome;
+  if(NPC_SKIN[chave]) return POR_ID.get(NPC_SKIN[chave]) || null;
+  // nome repetido no catálogo: deixa a API decidir pela temporada
+  const n = normal(nome); const repetido = ITENS.filter(it => it.tipo === 'outfit' && it.n === n).length > 1;
+  const loc = repetido ? null : skinLocal(nome, t); if(loc) return loc;
+  if(!(chave in NPC_SKIN) && !filaNpc.includes(chave)){ filaNpc.push(chave); rodarFilaNpc(); }
+  return repetido ? skinLocal(nome, t) : null;
+}
+/* Quem não tem skin no jogo ganha um retrato desenhado: iniciais na cor
+   do nome, chifres se for chefão. Sempre tem imagem. */
+function retratoNpc(nome, boss){
+  let hsh = 0; for(const c of nome) hsh = (hsh * 31 + c.charCodeAt(0)) >>> 0;
+  const cor = 'hsl(' + (hsh % 360) + ',65%,52%)', cor2 = 'hsl(' + ((hsh >> 8) % 360) + ',70%,30%)';
+  const ini = nome.replace(/^(The|Dr\.?|Doctor) /i, '').split(/[\s-]+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+  const chifres = boss ? '<path d="M28 34 L20 8 L42 28 Z M100 34 L108 8 L86 28 Z" fill="#e3453b"/>' : '';
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + cor + '"/><stop offset="1" stop-color="' + cor2 + '"/></linearGradient></defs>' +
+    '<rect width="128" height="128" fill="url(#g)"/>' + chifres + '<circle cx="64" cy="58" r="30" fill="rgba(255,255,255,.22)"/><path d="M24 128 Q64 80 104 128 Z" fill="rgba(255,255,255,.22)"/>' +
+    '<text x="64" y="70" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="30" fill="#fff">' + ini + '</text></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 function cartaNpc(t, [nome, boss, onde, faz]){
-  const it = skinDoNpc(nome);
+  const it = skinDoNpc(t, nome);
   return '<button class="carta npc" data-npc="' + esc(nome) + '"' + (it ? ' data-id="' + esc(it.id) + '"' : '') + ' style="--cor-rar:' + (boss ? 'var(--erro)' : (it ? raridadeDe(it).cor : 'var(--roxo)')) + '">' +
     '<div class="selos">' + (boss ? '<span class="selo boss">👹 chefão</span>' : '') + '</div>' +
-    '<div class="foto">' + (it && it.img ? '<img loading="lazy" src="' + esc(it.img) + '" alt="" />' : '<span class="sem">' + (boss ? '👹' : '🧑') + '</span>') + '</div>' +
+    '<div class="foto"><img loading="lazy" src="' + esc(it && it.img ? it.img : retratoNpc(nome, boss)) + '" alt="" onerror="this.onerror=null;this.src=\'' + retratoNpc(nome, boss) + '\'" /></div>' +
     '<div class="info"><div class="nome">' + esc(nome) + '</div>' + (it && normal(it.nome) !== normal(nome) ? '<div class="tipo">Skin: ' + esc(it.nome) + '</div>' : '') +
+    (!it && ((t + '|' + nome) in NPC_SKIN) ? '<div class="tipo">✏️ desenho: não tem skin no jogo</div>' : '') +
     (onde ? '<div class="tipo">📍 ' + esc(onde) + '</div>' : '') + (faz ? '<div class="faz">' + esc(faz) + '</div>' : '') +
     (!tempNpc ? '<div class="tipo">' + esc((TEMP_NPC.find(x => x[0] === t) || ['', ''])[1]) + '</div>' : '') + '</div></button>';
 }
-function pintarNpc(nome){
-  $$('#gradeNpc .carta.npc').forEach(el => { if(el.dataset.npc === nome){ const t = el.dataset.t; const linha = (NPCS[t] || []).find(x => x[0] === nome); if(linha){ const tmp = document.createElement('div'); tmp.innerHTML = cartaNpc(t, linha); const novo = tmp.firstChild; novo.dataset.t = t; el.replaceWith(novo); } } });
+function pintarNpc(tAlvo, nome){
+  $$('#gradeNpc .carta.npc').forEach(el => { if(el.dataset.npc === nome && el.dataset.t === tAlvo){ const t = el.dataset.t; const linha = (NPCS[t] || []).find(x => x[0] === nome); if(linha){ const tmp = document.createElement('div'); tmp.innerHTML = cartaNpc(t, linha); const novo = tmp.firstChild; novo.dataset.t = t; el.replaceWith(novo); } } });
 }
 function renderNpcs(){
   if(!ITENS.length){ $('#contadorNpc').textContent = 'Espera o catálogo carregar…'; return; }
@@ -1944,7 +1986,7 @@ aplicarTema();
    worker, apaga os caches da casca e recarrega pedindo tudo de novo. O
    armário e as favoritas (localStorage) não são tocados; o catálogo
    guardado também fica, porque ele tem a própria validade. */
-const VERSAO = 22;
+const VERSAO = 23;
 $('#btnAtualizar').addEventListener('click', async () => {
   $('#atualizarMsg').textContent = 'Atualizando…';
   try{
