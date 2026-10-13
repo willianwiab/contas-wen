@@ -1,0 +1,10 @@
+{
+  "name": "CofreNite",
+  "short_name": "CofreNite",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f8f5",
+  "theme_color": "#1a8f5a",
+  "description": "Moedas e notas do Brasil e do mundo: quanto vale em reais, as raras e o seu cofrinho.",
+  "icons": [ { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" } ]
+}
