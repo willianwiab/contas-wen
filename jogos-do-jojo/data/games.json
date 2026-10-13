@@ -590,6 +590,58 @@
       "ranking": []
     },
     {
+      "slug": "goatsim",
+      "nome": "GoatSim!",
+      "descricao": "Tudo de Goat Simulator: os jogos e DLCs, 80 lugares em 9 mapas (até os prédios), 45 cabras, as 25 músicas da trilha e o seu progresso.",
+      "comoFunciona": "Cada jogo do Goat Simulator tem a capa, os mapas, os lugares e as cabras. Você procura, abre e marca os lugares que já visitou e as cabras que já desbloqueou. Na aba de músicas dá pra ouvir a trilha oficial.",
+      "objetivo": "Explorar tudo do Goat Simulator e completar 100% do progresso.",
+      "mecanicas": [
+        "🎮 Todos os jogos e DLCs com a capa da Steam",
+        "🗺️ 80 lugares em 9 mapas, com busca",
+        "🐐 45 cabras com como desbloquear",
+        "🎵 As 25 músicas da trilha oficial, pra ouvir",
+        "✅ Meu progresso por mapa",
+        "🖼️ Foto da wiki ou desenho feito pelo site",
+        "Funciona sem internet depois da 1ª vez"
+      ],
+      "categoria": "Coleção",
+      "plataforma": "Site (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "",
+      "popularidade": 84,
+      "imagem": "assets/images/goatsim.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../goatsim/index.html",
+      "galeria": [],
+      "historia": "Site de fã do Goat Simulator, no mesmo jeito do DearNite.",
+      "comoJogar": "Escolhe um jogo, abre os lugares e as cabras, e marca o que você já fez.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Abrir e marcar"
+        }
+      ],
+      "curiosidades": [
+        "Os túneis de GoatVille dizem 'Him Len' e 'Helvete': Céu e Inferno, em sueco.",
+        "O Goat Simulator 3 pulou o 2 de propósito, de piada."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "seu-album-pokemon",
       "nome": "Seu Álbum Pokémon",
       "descricao": "O álbum das suas cartas Pokémon: quantas você tem de cada, as repetidas pra trocar e as que você quer.",
