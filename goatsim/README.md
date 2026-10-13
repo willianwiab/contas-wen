@@ -20,9 +20,11 @@ as cabras e as músicas. Site de fã, feito pelo Jojo com o Claude.
 
 ## Fotos
 
-Capas da loja da Steam. Cabras e lugares: o site tenta a foto pelo nome na wiki oficial
-(goatsimulator.wiki.gg); se não vier, desenha uma no lugar (cabra com a cor do nome e o
-emoji dela, paisagem com o emoji do lugar). Nunca fica card vazio.
+Capas da loja da Steam. Cabras e lugares: o site pergunta pra API da wiki (MediaWiki,
+com `origin=*`) qual é a foto da página de cada um: primeiro na wiki.gg, depois na do
+Fandom, em lotes de 40 e seguindo redirecionamentos; o que sobrar, procura pelo nome. A
+resposta fica guardada no aparelho. Se não tiver foto, o site desenha uma no lugar (cabra
+com a cor do nome e o emoji dela, paisagem com o emoji do lugar). Nunca fica card vazio.
 
 ## De onde vêm os dados
 
