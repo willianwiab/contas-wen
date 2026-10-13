@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Quadrado vermelho inclinado (bloquinho) com um bonequinho de pessoas: "quantos estão jogando". -->
+  <rect width="64" height="64" rx="14" fill="#1b1f2a"/>
+  <rect x="12" y="12" width="40" height="40" rx="6" fill="#e2231a" transform="rotate(12 32 32)"/>
+  <rect x="26" y="26" width="12" height="12" rx="2" fill="#1b1f2a" transform="rotate(12 32 32)"/>
+  <circle cx="50" cy="50" r="10" fill="#2bd46f" stroke="#1b1f2a" stroke-width="3"/>
+  <circle cx="50" cy="47" r="3" fill="#fff"/><path d="M44.5 55 Q50 49 55.5 55 Z" fill="#fff"/>
+</svg>

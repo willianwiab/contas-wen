@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RobloxNite — quem está jogando agora</title>
+<meta name="description" content="Catálogo de jogos do Roblox com quantas pessoas estão jogando agora, visitas, curtidas e gráfico ao vivo." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#e2231a" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="RobloxNite" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* Vermelho de bloquinho, cinza de grafite e o verde de "online". */
+  --verm:#e2231a; --verm-escuro:#a8150e; --verm-claro:#ff6b63;
+  --verde:#1fae5b; --verde-claro:#2bd46f; --amarelo:#f5c518;
+  --fundo:#f4f5f8; --fundo2:#ffe5e3; --fundo3:#e3f7ec;
+  --tinta:#191c24; --tinta-fraca:#646a7a;
+  --cartao:#ffffff; --cartao2:#fafbfc; --cartao3:#eef0f4;
+  --campo:#fbfcfd; --borda:#dde0e7; --sombra-cor:#d3d7e0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --verm:#ff4038; --verm-escuro:#c0241c; --verm-claro:#ff8a83;
+    --verde:#2bd46f; --verde-claro:#5be592; --amarelo:#ffd23f;
+    --fundo:#11141c; --fundo2:#2a1517; --fundo3:#122a1d;
+    --tinta:#eef0f5; --tinta-fraca:#9aa1b2;
+    --cartao:#1b1f2a; --cartao2:#212634; --cartao3:#2a3040;
+    --campo:#171b25; --borda:#323a4c; --sombra-cor:#0a0c11;
+  }
+}
+:root[data-tema="escuro"]{
+  --verm:#ff4038; --verm-escuro:#c0241c; --verm-claro:#ff8a83;
+  --verde:#2bd46f; --verde-claro:#5be592; --amarelo:#ffd23f;
+  --fundo:#11141c; --fundo2:#2a1517; --fundo3:#122a1d;
+  --tinta:#eef0f5; --tinta-fraca:#9aa1b2;
+  --cartao:#1b1f2a; --cartao2:#212634; --cartao3:#2a3040;
+  --campo:#171b25; --borda:#323a4c; --sombra-cor:#0a0c11;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background-color:var(--fundo);
+  background-image:radial-gradient(circle at 8% 4%, var(--fundo2) 0 20%, transparent 20.5%),
+                   radial-gradient(circle at 92% 75%, var(--fundo3) 0 18%, transparent 18.5%);
+  background-attachment:fixed;min-height:100vh;padding:0 16px 60px;
+}
+.envolve{max-width:1040px;margin:0 auto}
+button{font:inherit}
+header{text-align:center;padding:30px 0 16px;position:relative}
+.logo{font-family:'Baloo 2',cursive;font-size:clamp(2.4rem,9vw,3.6rem);line-height:1;color:var(--tinta);cursor:default;user-select:none}
+.logo span{color:var(--verm);display:inline-block;transform:rotate(-4deg)}
+.logo img{height:1em;vertical-align:-.15em;margin-left:.1em}
+.slogan{margin-top:8px;color:var(--tinta-fraca)}
+.tema{position:absolute;right:0;top:14px;width:42px;height:42px;border-radius:50%;border:1px solid var(--borda);background:var(--cartao);cursor:pointer;font-size:1.2rem;box-shadow:0 3px 0 var(--sombra-cor)}
+
+.ao-vivo{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:4px 0 16px}
+.ao-vivo div{background:var(--cartao);border:1px solid var(--borda);border-radius:16px;padding:10px 16px;text-align:center;min-width:150px;box-shadow:0 4px 0 var(--sombra-cor)}
+.ao-vivo b{display:block;font-family:'Baloo 2',cursive;font-size:1.7rem;line-height:1.1}
+.ao-vivo small{color:var(--tinta-fraca)}
+.ponto{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--verde-claro);margin-right:6px;vertical-align:1px;animation:pisca 1.4s infinite}
+@keyframes pisca{50%{opacity:.25}}
+
+.caixa{background:var(--cartao);border:1px solid var(--borda);border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(20,20,40,.08);margin-bottom:14px}
+.caixa h2{font-family:'Baloo 2',cursive;font-size:1.45rem;margin-bottom:6px}
+.fraco{color:var(--tinta-fraca);font-size:.9rem}
+.linha{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input[type=search],input[type=text],select{padding:12px 14px;border-radius:14px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit;min-width:0}
+#campo{flex:1 1 220px;font-size:1.1rem}
+input:focus,select:focus{outline:none;border-color:var(--verm)}
+.btn{padding:12px 18px;border:none;border-radius:14px;font-weight:700;cursor:pointer;background:var(--verm);color:#fff;box-shadow:0 4px 0 var(--verm-escuro);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--verm-escuro)}
+.btn.leve{background:var(--cartao3);color:var(--tinta);box-shadow:0 4px 0 var(--sombra-cor)}
+.btn.verde{background:var(--verde);box-shadow:0 4px 0 #157a40}
+.btn.pequeno{padding:8px 12px;font-size:.9rem;border-radius:11px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{padding:7px 12px;border-radius:999px;border:1px solid var(--borda);background:var(--cartao2);color:var(--tinta-fraca);cursor:pointer;font-size:.88rem;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--verm);border-color:var(--verm);color:#fff}
+
+.status{display:flex;gap:10px;align-items:center;background:var(--cartao3);border-radius:14px;padding:10px 14px;margin-bottom:12px;font-size:.92rem}
+.status.erro{background:#fde7e4;color:#7a1f16}
+:root[data-tema="escuro"] .status.erro{background:#3a1c19;color:#ffb3aa}
+.girando{display:inline-block;animation:gira 1s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+
+.contador{margin:8px 0;color:var(--tinta-fraca);font-size:.9rem}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.jogo{background:var(--cartao);border:1px solid var(--borda);border-radius:18px;overflow:hidden;cursor:pointer;text-align:left;padding:0;color:var(--tinta);
+  box-shadow:0 4px 0 var(--sombra-cor);transition:transform .12s,box-shadow .12s;position:relative;display:flex;flex-direction:column}
+.jogo:hover{transform:translateY(-3px);box-shadow:0 7px 0 var(--sombra-cor)}
+.jogo .icone{aspect-ratio:1/1;background:var(--cartao3);display:flex;align-items:center;justify-content:center;font-size:3rem}
+.jogo .icone img{width:100%;height:100%;object-fit:cover;display:block}
+.jogo .info{padding:9px 11px 12px}
+.jogo .nome{font-weight:700;font-size:.95rem;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.jogo .agora{margin-top:6px;font-family:'Baloo 2',cursive;font-size:1.25rem;line-height:1;color:var(--verde)}
+.jogo .agora small{font-family:'Rubik',sans-serif;font-size:.72rem;color:var(--tinta-fraca);font-weight:500}
+.jogo .mini{font-size:.76rem;color:var(--tinta-fraca);margin-top:4px}
+.jogo .pos{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.65);color:#fff;font-weight:700;font-size:.78rem;border-radius:999px;padding:3px 8px}
+.jogo .fav{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;border:none;background:rgba(0,0,0,.55);color:#fff;cursor:pointer;font-size:1rem}
+.sobe{color:var(--verde)} .desce{color:var(--verm)}
+
+dialog{border:none;border-radius:22px;padding:0;max-width:640px;width:calc(100% - 24px);background:var(--cartao);color:var(--tinta);box-shadow:0 30px 80px rgba(0,0,0,.45);max-height:92vh}
+dialog::backdrop{background:rgba(5,6,12,.65);backdrop-filter:blur(3px)}
+.det-topo{display:flex;gap:14px;padding:18px;background:linear-gradient(135deg,var(--verm),var(--verm-escuro));color:#fff;align-items:center}
+.det-topo img{width:110px;height:110px;border-radius:18px;object-fit:cover;background:rgba(255,255,255,.2);flex:none}
+.det-topo h2{font-family:'Baloo 2',cursive;font-size:1.6rem;line-height:1.1}
+.det-corpo{padding:16px 18px 20px}
+.fechar{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(0,0,0,.4);color:#fff;font-size:1.2rem;cursor:pointer}
+.numeros{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.numeros div{background:var(--cartao3);border-radius:14px;padding:10px;text-align:center}
+.numeros b{display:block;font-family:'Baloo 2',cursive;font-size:1.35rem;line-height:1.1}
+.numeros small{color:var(--tinta-fraca);font-size:.8rem}
+.bloco{background:var(--cartao2);border:1px solid var(--borda);border-radius:14px;padding:12px;margin-bottom:10px}
+.bloco h3{font-size:1rem;margin-bottom:6px}
+.desc{white-space:pre-wrap;line-height:1.45;font-size:.92rem;max-height:180px;overflow:auto}
+.grafico{width:100%;height:120px;display:block}
+.aviso{background:#fff4d6;border:1px solid #f1d58a;color:#5a3d00;border-radius:12px;padding:10px 12px;font-size:.88rem;line-height:1.45}
+:root[data-tema="escuro"] .aviso{background:#3a2d0c;border-color:#7a5e05;color:#ffe9a8}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .aviso{background:#3a2d0c;border-color:#7a5e05;color:#ffe9a8}}
+footer{text-align:center;margin-top:28px;color:var(--tinta-fraca);font-size:.85rem;line-height:1.6}
+footer a{color:var(--verm)}
+.oculto{display:none !important}
+.ovo{position:fixed;inset:0;z-index:999;pointer-events:none;overflow:hidden}
+.ovo .boneco{position:absolute;left:50%;top:-120px;font-size:5rem;margin-left:-40px}
+.ovo .oof{position:absolute;left:0;right:0;top:40%;text-align:center;font-family:'Baloo 2',cursive;font-size:clamp(3rem,14vw,6rem);color:var(--verm);text-shadow:0 4px 0 #000}
+@media (max-width:520px){.grade{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.det-topo{flex-direction:column;text-align:center}}
+</style>
+</head>
+<body>
+<div class="envolve">
+<header>
+  <button class="tema" id="btnTema" title="Modo claro / escuro" aria-label="Trocar o tema">🌙</button>
+  <div class="logo">Roblox<span>Nite</span><img src="icone.svg" alt="" /></div>
+  <p class="slogan">Os jogos do Roblox e quantas pessoas estão jogando <b>agora</b>.</p>
+</header>
+
+<div class="ao-vivo">
+  <div><b id="totalAgora">—</b><small><span class="ponto"></span>jogando agora nesses jogos</small></div>
+  <div><b id="totalJogos">—</b><small>jogos na lista</small></div>
+  <div><b id="atualizado">—</b><small>última atualização</small></div>
+</div>
+
+<div class="status" id="status"><span class="girando">🟥</span><span id="statusTexto">Preparando…</span></div>
+
+<div class="caixa">
+  <div class="linha">
+    <input id="campo" type="search" placeholder="Procura um jogo (ex: Brookhaven, Blox Fruits)" autocomplete="off" />
+    <select id="selOrdem">
+      <option value="agora">Mais jogados agora</option>
+      <option value="visitas">Mais visitas de todos os tempos</option>
+      <option value="curtidas">Mais curtidos (%)</option>
+      <option value="favoritos">Mais favoritados</option>
+      <option value="novos">Atualizados mais recente</option>
+      <option value="sobe">Subindo mais agora 📈</option>
+    </select>
+  </div>
+  <div class="chips" id="chips">
+    <button class="chip" aria-pressed="true" data-f="">Todos</button>
+    <button class="chip" aria-pressed="false" data-f="fav">⭐ Meus favoritos</button>
+    <button class="chip" aria-pressed="false" data-f="meus">➕ Que eu adicionei</button>
+  </div>
+  <details style="margin-top:12px">
+    <summary style="cursor:pointer;color:var(--verm);font-weight:600">➕ Adicionar um jogo que não está aqui</summary>
+    <p class="fraco" style="margin-top:6px">Abre o jogo no site ou app do Roblox, copia o link (tipo <i>roblox.com/games/920587237/Adopt-Me</i>) e cola aqui. Também vale só o número.</p>
+    <div class="linha" style="margin-top:8px">
+      <input id="campoAdd" type="text" placeholder="Cola o link do jogo" style="flex:1 1 220px" />
+      <button class="btn pequeno verde" id="btnAdd">Adicionar</button>
+    </div>
+    <p class="fraco" id="addMsg" style="margin-top:6px"></p>
+  </details>
+</div>
+
+<p class="contador" id="contador"></p>
+<div class="grade" id="grade"></div>
+
+<div class="caixa" style="margin-top:16px">
+  <h2>🛡️ Pra jogar seguro</h2>
+  <div class="aviso"><b>Robux de graça não existe.</b> Site, vídeo ou pessoa que promete Robux grátis quer a sua senha ou a sua conta. Nunca digite sua senha do Roblox fora do Roblox, nunca passe o código que chega no e-mail ou celular, e não compre nem venda conta. Se alguém pedir, conta pra um adulto.</div>
+</div>
+
+<footer>
+  Números ao vivo da API pública da Roblox. RobloxNite não é da Roblox.<br/>
+  Atualiza sozinho a cada minuto. Feito pelo Jojo com o Claude. Irmão do <a href="../dearnite/">DearNite</a> 🦙
+</footer>
+</div>
+
+<dialog id="detalhe"></dialog>
+
+<script>
+/* =====================================================================
+   RobloxNite — catálogo de jogos do Roblox com os jogadores de agora.
+   O navegador não deixa um site falar direto com a API da Roblox (CORS),
+   então cada pedido tenta umas "pontes" públicas, em ordem, e lembra qual
+   funcionou. Tudo no navegador: nenhum servidor nosso.
+   ===================================================================== */
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const normal = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+const num = n => Number(n || 0).toLocaleString('pt-BR');
+function curto(n){
+  n = Number(n || 0);
+  if(n >= 1e9) return (n / 1e9).toLocaleString('pt-BR', { maximumFractionDigits:1 }) + ' bi';
+  if(n >= 1e6) return (n / 1e6).toLocaleString('pt-BR', { maximumFractionDigits:1 }) + ' mi';
+  if(n >= 1e4) return (n / 1e3).toLocaleString('pt-BR', { maximumFractionDigits:0 }) + ' mil';
+  return num(n);
+}
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('robloxnite:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('robloxnite:' + k, JSON.stringify(v)); }catch(e){} }
+
+/* ---------- pontes ----------
+   1) o espelho roproxy (mesmos caminhos, domínio roproxy.com)
+   2) e 3) dois repassadores públicos que põem o cabeçalho de CORS. */
+const PONTES = [
+  u => u.replace('.roblox.com', '.roproxy.com'),
+  u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+  u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
+];
+let ponteBoa = ler('ponte', 0);
+async function pedir(url){
+  let ultimoErro = null;
+  for(let k = 0; k < PONTES.length; k++){
+    const i = (ponteBoa + k) % PONTES.length;
+    try{
+      const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 12000);
+      const r = await fetch(PONTES[i](url), { headers:{ Accept:'application/json' }, signal:ctrl.signal });
+      clearTimeout(t);
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      if(i !== ponteBoa){ ponteBoa = i; gravar('ponte', i); }
+      return j;
+    }catch(e){ ultimoErro = e; }
+  }
+  throw ultimoErro || new Error('nenhuma ponte respondeu');
+}
+
+/* ---------- jogos de partida ----------
+   Números dos lugares (placeId) de jogos famosos. O nome e tudo o mais vem
+   da Roblox; se algum número estiver velho, o jogo só não aparece. */
+const FAMOSOS = [
+  920587237, 4924922222, 2753915549, 142823291, 1962086868, 606849621, 286090429, 189707, 6516141723, 8737899170,
+  126884695634066, 15101393044, 79546208627805, 109983668079237, 735030788, 370731277, 4623386862, 1537690962,
+  192800, 6447798030, 13772394625, 16732694052, 116495829188952, 17625359962, 2788229376, 6284583030, 3956818381,
+  4282985734, 5602055394, 893973440, 2414851778, 6872265039, 7449423635, 10449761463, 2809202155,
+];
+let meus = ler('meus', []);           // placeIds que a pessoa adicionou
+let favs = new Set(ler('favs', []));   // universeIds favoritados
+let universoDe = ler('universos', {}); // placeId → universeId (não muda, guarda pra sempre)
+let historico = ler('historico', {});  // universeId → [[hora, jogando], …] das últimas 24 h
+
+let JOGOS = new Map();   // universeId → dados
+let anterior = new Map(); // universeId → jogando na atualização anterior
+let ultimaAtualizacao = 0;
+let filtro = '';
+
+const status = (txt, erro) => {
+  const s = $('#status'); s.classList.toggle('erro', !!erro); s.classList.remove('oculto');
+  $('#statusTexto').innerHTML = txt;
+};
+const esconderStatus = () => $('#status').classList.add('oculto');
+
+async function universos(placeIds){
+  const faltam = placeIds.filter(p => !universoDe[p]);
+  // a Roblox responde um por um aqui; vai de 4 em 4 pra não demorar
+  for(let i = 0; i < faltam.length; i += 4){
+    await Promise.all(faltam.slice(i, i + 4).map(async p => {
+      try{ const j = await pedir('https://apis.roblox.com/universes/v1/places/' + p + '/universe'); if(j && j.universeId) universoDe[p] = j.universeId; }catch(e){}
+    }));
+    status('<span class="girando">🟥</span> Achando os jogos… ' + Math.min(i + 4, faltam.length) + ' de ' + faltam.length);
+  }
+  gravar('universos', universoDe);
+  return placeIds.map(p => universoDe[p]).filter(Boolean);
+}
+
+/* Os mais jogados agora, direto da página "Descobrir" da Roblox. Se essa
+   parte falhar, a lista de famosos segura o site sozinha. */
+async function maisJogados(){
+  try{
+    const sessao = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()));
+    const j = await pedir('https://apis.roblox.com/explore-api/v1/get-sorts?sessionId=' + sessao);
+    const ids = [];
+    const varrer = o => { if(!o || typeof o !== 'object') return; if(Array.isArray(o)){ o.forEach(varrer); return; } if(o.universeId && o.name) ids.push(o.universeId); Object.values(o).forEach(varrer); };
+    varrer(j);
+    return Array.from(new Set(ids)).slice(0, 60);
+  }catch(e){ return []; }
+}
+
+async function atualizar(primeira){
+  try{
+    if(primeira) status('<span class="girando">🟥</span> Procurando os jogos do Roblox…');
+    const [daLista, doTopo] = await Promise.all([universos(FAMOSOS.concat(meus)), primeira || !JOGOS.size ? maisJogados() : Promise.resolve(Array.from(JOGOS.keys()))]);
+    const ids = Array.from(new Set(daLista.concat(doTopo).concat(Array.from(JOGOS.keys()))));
+    if(!ids.length) throw new Error('não achei nenhum jogo');
+    // números de todos, de 50 em 50
+    const novos = new Map();
+    for(let i = 0; i < ids.length; i += 50){
+      const fatia = ids.slice(i, i + 50).join(',');
+      const [g, v, ic] = await Promise.all([
+        pedir('https://games.roblox.com/v1/games?universeIds=' + fatia),
+        pedir('https://games.roblox.com/v1/games/votes?universeIds=' + fatia).catch(() => ({ data:[] })),
+        JOGOS.size && !primeira ? Promise.resolve({ data:[] }) : pedir('https://thumbnails.roblox.com/v1/games/icons?universeIds=' + fatia + '&returnPolicy=PlaceHolder&size=256x256&format=Png&isCircular=false').catch(() => ({ data:[] })),
+      ]);
+      const votos = new Map((v.data || []).map(x => [x.id, x]));
+      const icones = new Map((ic.data || []).map(x => [x.targetId, x.imageUrl]));
+      (g.data || []).forEach(x => {
+        const velho = JOGOS.get(x.id) || {};
+        const vt = votos.get(x.id) || {};
+        novos.set(x.id, {
+          id:x.id, place:x.rootPlaceId, nome:x.name || '', desc:x.description || '', criador:(x.creator && x.creator.name) || '',
+          jogando:x.playing || 0, visitas:x.visits || 0, max:x.maxPlayers || 0, favoritos:x.favoritedCount || 0,
+          criado:x.created || '', atualizado:x.updated || '', genero:x.genre || '', preco:x.price || 0,
+          sim:vt.upVotes != null ? vt.upVotes : velho.sim || 0, nao:vt.downVotes != null ? vt.downVotes : velho.nao || 0,
+          icone:icones.get(x.id) || velho.icone || '', n:normal(x.name),
+        });
+      });
+    }
+    if(!novos.size) throw new Error('a Roblox não mandou os números');
+    anterior = new Map(Array.from(JOGOS.values()).map(x => [x.id, x.jogando]));
+    JOGOS = novos;
+    // histórico das últimas 24 h, 1 ponto por atualização
+    const agora = Date.now(), dia = 24 * 3600 * 1000;
+    JOGOS.forEach(x => { const h = (historico[x.id] || []).filter(p => agora - p[0] < dia); h.push([agora, x.jogando]); historico[x.id] = h.slice(-300); });
+    Object.keys(historico).forEach(k => { if(!JOGOS.has(Number(k))) historico[k] = historico[k].filter(p => agora - p[0] < dia); if(!historico[k].length) delete historico[k]; });
+    gravar('historico', historico);
+    ultimaAtualizacao = agora;
+    esconderStatus(); render(); resumo();
+  }catch(e){
+    console.warn(e);
+    if(!JOGOS.size) status('😕 Não consegui falar com a Roblox (' + esc(e.message) + '). As pontes podem estar fora do ar ou bloqueadas nessa internet. Tenta de novo daqui a pouco. <button class="btn pequeno leve" id="btnTentar">Tentar de novo</button>', true);
+    else status('⚠️ A última atualização falhou; mostrando os números de antes.', true);
+  }
+}
+$('#status').addEventListener('click', ev => { if(ev.target.id === 'btnTentar') atualizar(true); });
+
+function resumo(){
+  let total = 0; JOGOS.forEach(x => { total += x.jogando; });
+  $('#totalAgora').textContent = curto(total);
+  $('#totalJogos').textContent = num(JOGOS.size);
+  tick();
+}
+function tick(){
+  if(!ultimaAtualizacao){ $('#atualizado').textContent = '—'; return; }
+  const s = Math.round((Date.now() - ultimaAtualizacao) / 1000);
+  $('#atualizado').textContent = s < 5 ? 'agora' : s < 60 ? 'há ' + s + ' s' : 'há ' + Math.round(s / 60) + ' min';
+}
+setInterval(tick, 5000);
+setInterval(() => { if(document.visibilityState === 'visible') atualizar(false); }, 60000);
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && Date.now() - ultimaAtualizacao > 60000) atualizar(false); });
+
+/* ---------- lista ---------- */
+const pct = x => (x.sim + x.nao) ? Math.round(x.sim / (x.sim + x.nao) * 100) : null;
+function mudanca(x){ const a = anterior.get(x.id); return a == null ? 0 : x.jogando - a; }
+function render(){
+  const q = normal($('#campo').value), ordem = $('#selOrdem').value;
+  const meusU = new Set(meus.map(p => universoDe[p]).filter(Boolean));
+  let lista = Array.from(JOGOS.values()).filter(x => (!q || x.n.includes(q) || normal(x.criador).includes(q)) &&
+    (filtro !== 'fav' || favs.has(x.id)) && (filtro !== 'meus' || meusU.has(x.id)));
+  const ord = {
+    agora:(a, b) => b.jogando - a.jogando, visitas:(a, b) => b.visitas - a.visitas,
+    curtidas:(a, b) => (pct(b) || 0) - (pct(a) || 0) || b.jogando - a.jogando, favoritos:(a, b) => b.favoritos - a.favoritos,
+    novos:(a, b) => String(b.atualizado).localeCompare(String(a.atualizado)), sobe:(a, b) => mudanca(b) - mudanca(a),
+  };
+  lista.sort(ord[ordem] || ord.agora);
+  $('#contador').textContent = lista.length ? lista.length + ' jogo' + (lista.length > 1 ? 's' : '') : (filtro === 'fav' ? 'Nenhum favorito ainda: toca na ☆ de um jogo.' : 'Nenhum jogo com esse nome aqui. Dá pra adicionar pelo link ali em cima.');
+  const ranking = Array.from(JOGOS.values()).sort((a, b) => b.jogando - a.jogando).map(x => x.id);
+  $('#grade').innerHTML = lista.map(x => {
+    const d = mudanca(x), p = pct(x), pos = ranking.indexOf(x.id) + 1;
+    return '<div class="jogo" data-id="' + x.id + '" role="button" tabindex="0">' +
+      '<span class="pos">#' + pos + '</span><button class="fav" data-fav="' + x.id + '" aria-label="Favoritar">' + (favs.has(x.id) ? '⭐' : '☆') + '</button>' +
+      '<div class="icone">' + (x.icone ? '<img loading="lazy" src="' + esc(x.icone) + '" alt="" />' : '🟥') + '</div>' +
+      '<div class="info"><div class="nome">' + esc(x.nome) + '</div>' +
+      '<div class="agora"><span class="ponto"></span>' + curto(x.jogando) + ' <small>jogando</small>' + (d ? ' <small class="' + (d > 0 ? 'sobe' : 'desce') + '">' + (d > 0 ? '▲' : '▼') + curto(Math.abs(d)) + '</small>' : '') + '</div>' +
+      '<div class="mini">👁️ ' + curto(x.visitas) + ' visitas' + (p != null ? ' · 👍 ' + p + '%' : '') + '</div></div></div>';
+  }).join('');
+}
+$('#campo').addEventListener('input', () => { render(); if(normal($('#campo').value) === 'oof') oof(); });
+$('#selOrdem').addEventListener('change', render);
+$('#chips').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; filtro = c.dataset.f; $$('#chips .chip').forEach(x => x.setAttribute('aria-pressed', x === c)); render(); });
+$('#grade').addEventListener('click', ev => {
+  const f = ev.target.closest('[data-fav]');
+  if(f){ ev.stopPropagation(); const id = Number(f.dataset.fav); if(favs.has(id)) favs.delete(id); else favs.add(id); gravar('favs', Array.from(favs)); render(); return; }
+  const j = ev.target.closest('.jogo'); if(j) abrir(Number(j.dataset.id));
+});
+$('#grade').addEventListener('keydown', ev => { if(ev.key === 'Enter'){ const j = ev.target.closest('.jogo'); if(j) abrir(Number(j.dataset.id)); } });
+
+/* ---------- detalhe ---------- */
+const dataBR = s => { const d = new Date(s); return isNaN(d) ? '?' : d.toLocaleDateString('pt-BR'); };
+function grafico(id){
+  const h = historico[id] || [];
+  if(h.length < 2) return '<p class="fraco">O gráfico aparece quando o site tiver pelo menos 2 medições desse jogo (uma por minuto, enquanto o site está aberto).</p>';
+  const w = 600, alt = 120, xs = h.map(p => p[0]), ys = h.map(p => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys) * 0.95, y1 = Math.max(...ys) * 1.05 || 1;
+  const X = t => (x1 === x0 ? w : (t - x0) / (x1 - x0) * w), Y = v => alt - (y1 === y0 ? alt / 2 : (v - y0) / (y1 - y0) * (alt - 10)) - 5;
+  const linha = h.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1)).join(' ');
+  const area = linha + ' L' + X(x1).toFixed(1) + ' ' + alt + ' L0 ' + alt + ' Z';
+  const hora = t => new Date(t).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+  return '<svg class="grafico" viewBox="0 0 ' + w + ' ' + alt + '" preserveAspectRatio="none"><path d="' + area + '" fill="var(--verde)" opacity=".18"/><path d="' + linha + '" fill="none" stroke="var(--verde)" stroke-width="3" vector-effect="non-scaling-stroke"/></svg>' +
+    '<p class="fraco">De ' + hora(x0) + ' até ' + hora(x1) + ': menor ' + curto(Math.min(...ys)) + ', maior ' + curto(Math.max(...ys)) + ' jogando.</p>';
+}
+function abrir(id){
+  const x = JOGOS.get(id); if(!x) return;
+  const p = pct(x), d = mudanca(x);
+  const dlg = $('#detalhe');
+  dlg.innerHTML = '<button class="fechar" id="btnFechar" aria-label="Fechar">✕</button>' +
+    '<div class="det-topo">' + (x.icone ? '<img src="' + esc(x.icone) + '" alt="" />' : '') + '<div><h2>' + esc(x.nome) + '</h2><div>por ' + esc(x.criador || '?') + (x.genero ? ' · ' + esc(x.genero) : '') + '</div></div></div>' +
+    '<div class="det-corpo"><div class="numeros">' +
+    '<div><b class="sobe"><span class="ponto"></span>' + num(x.jogando) + '</b><small>jogando agora' + (d ? ' (' + (d > 0 ? '▲' : '▼') + num(Math.abs(d)) + ' no último minuto)' : '') + '</small></div>' +
+    '<div><b>' + curto(x.visitas) + '</b><small>visitas de todos os tempos</small></div>' +
+    '<div><b>' + (p != null ? p + '%' : '?') + '</b><small>curtiram (👍 ' + curto(x.sim) + ' · 👎 ' + curto(x.nao) + ')</small></div>' +
+    '<div><b>' + curto(x.favoritos) + '</b><small>favoritaram</small></div>' +
+    '<div><b>' + (x.max || '?') + '</b><small>jogadores por servidor</small></div>' +
+    '<div><b>' + dataBR(x.criado) + '</b><small>criado em</small></div>' +
+    '<div><b>' + dataBR(x.atualizado) + '</b><small>última atualização</small></div>' +
+    (x.preco ? '<div><b>💰 ' + num(x.preco) + '</b><small>Robux pra entrar</small></div>' : '') + '</div>' +
+    '<div class="bloco"><h3>📈 Jogadores nas últimas horas</h3>' + grafico(x.id) + '</div>' +
+    (x.desc ? '<div class="bloco"><h3>📝 Descrição</h3><div class="desc">' + esc(x.desc) + '</div></div>' : '') +
+    '<div class="linha"><a class="btn verde" style="text-decoration:none" href="https://www.roblox.com/games/' + x.place + '" target="_blank" rel="noopener">▶ Jogar no Roblox</a>' +
+    '<button class="btn leve" data-fav="' + x.id + '">' + (favs.has(x.id) ? '⭐ Favorito' : '☆ Favoritar') + '</button></div></div>';
+  if(!dlg.open) dlg.showModal();
+}
+$('#detalhe').addEventListener('click', ev => {
+  const dlg = $('#detalhe');
+  if(ev.target.id === 'btnFechar'){ dlg.close(); return; }
+  const f = ev.target.closest('[data-fav]');
+  if(f){ const id = Number(f.dataset.fav); if(favs.has(id)) favs.delete(id); else favs.add(id); gravar('favs', Array.from(favs)); abrir(id); render(); return; }
+  const r = dlg.getBoundingClientRect();
+  if(ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) dlg.close();
+});
+
+/* ---------- adicionar jogo pelo link ---------- */
+$('#btnAdd').addEventListener('click', async () => {
+  const v = $('#campoAdd').value.trim(); const m = /games\/(\d+)/.exec(v) || /^(\d{3,})$/.exec(v);
+  if(!m){ $('#addMsg').textContent = 'Não achei o número do jogo nesse link. Ele parece com roblox.com/games/920587237/…'; return; }
+  const place = Number(m[1]);
+  if(meus.includes(place) || FAMOSOS.includes(place)){ $('#addMsg').textContent = 'Esse jogo já está na lista!'; return; }
+  $('#addMsg').innerHTML = '<span class="girando">🟥</span> Procurando o jogo…';
+  const u = await universos([place]);
+  if(!u.length){ $('#addMsg').textContent = 'Não achei esse jogo na Roblox. Confere o link.'; return; }
+  meus.push(place); gravar('meus', meus); $('#campoAdd').value = '';
+  await atualizar(false);
+  const x = JOGOS.get(u[0]); $('#addMsg').textContent = x ? '✅ ' + x.nome + ' entrou na lista!' : '✅ Adicionado.';
+});
+
+/* ---------- segredo: "oof" na busca ---------- */
+let oofTocando = false;
+function oof(){
+  if(oofTocando) return; oofTocando = true;
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)(); const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
+    o.type = 'square'; o.frequency.setValueAtTime(420, t); o.frequency.exponentialRampToValueAtTime(140, t + .35);
+    g.gain.setValueAtTime(.18, t); g.gain.exponentialRampToValueAtTime(.001, t + .4); o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + .45);
+  }catch(e){}
+  const c = document.createElement('div'); c.className = 'ovo'; c.innerHTML = '<div class="boneco">🧍</div><div class="oof">OOF!</div>'; document.body.appendChild(c);
+  const b = c.querySelector('.boneco');
+  b.animate([{ transform:'translateY(0) rotate(0)' }, { transform:'translateY(' + (innerHeight * .55) + 'px) rotate(90deg)' }, { transform:'translateY(' + (innerHeight * .55) + 'px) rotate(90deg) scale(1.1,.8)' }], { duration:900, easing:'cubic-bezier(.5,0,.8,.4)', fill:'forwards' });
+  c.querySelector('.oof').animate([{ opacity:0, transform:'scale(.3)' }, { opacity:1, transform:'scale(1.15)', offset:.6 }, { opacity:1, transform:'scale(1)' }], { duration:600, delay:700, fill:'backwards' });
+  setTimeout(() => { c.remove(); oofTocando = false; }, 2600);
+}
+
+/* ---------- tema ---------- */
+function aplicarTema(){
+  const t = ler('tema', ''); if(t) document.documentElement.dataset.tema = t; else delete document.documentElement.dataset.tema;
+  const escuro = t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches;
+  $('#btnTema').textContent = escuro ? '☀️' : '🌙';
+}
+$('#btnTema').addEventListener('click', () => {
+  const escuro = document.documentElement.dataset.tema ? document.documentElement.dataset.tema === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches;
+  gravar('tema', escuro ? 'claro' : 'escuro'); aplicarTema();
+});
+aplicarTema();
+
+atualizar(true);
+if('serviceWorker' in navigator){ window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).catch(() => {}); }); }
+</script>
+</body>
+</html>
