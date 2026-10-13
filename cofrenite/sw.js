@@ -1,7 +1,7 @@
 /* Guarda só a casca do site (página, ícone, manifesto) pra abrir rápido.
-   Os números e os ícones vêm da Roblox (pelas pontes) e passam direto —
-   jogador agora é sempre da hora, nunca do cache. */
-const CACHE = 'robloxnite-v1';
+   Câmbio e catálogo do mundo vêm de fora e passam direto —
+   o câmbio tem o próprio cache dentro da página. */
+const CACHE = 'cofrenite-v1';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg'];
 
 self.addEventListener('install', ev => {

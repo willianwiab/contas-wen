@@ -539,6 +539,57 @@
       "ranking": []
     },
     {
+      "slug": "cofrenite",
+      "nome": "CofreNite",
+      "descricao": "Moedas e notas do Brasil e do mundo: as moedas raras de 1 real, quanto vale o dinheiro de cada país em reais, o catálogo de todas as moedas do mundo e o seu cofrinho.",
+      "comoFunciona": "Na aba do Real estão todas as moedas e notas desde 1994, desenhadas pelo site, com raridade e o valor pra colecionador quando existe. Na aba do mundo, o dinheiro de cada país com bandeira e quanto vale em reais hoje, com calculadora. Com uma chave de graça do Numista, dá pra procurar qualquer moeda ou nota do mundo com foto e preço. E você marca o que tem no cofrinho.",
+      "objetivo": "Achar as moedas raras do seu cofrinho e saber quanto vale a sua coleção.",
+      "mecanicas": [
+        "🇧🇷 Todas as moedas e notas do Real, com as comemorativas raras",
+        "⭐ Raridade de 1 a 5 estrelas e valor pra colecionador com a fonte",
+        "🌍 Dinheiro de cada país em reais, com bandeira e calculadora",
+        "🔎 Catálogo de todas as moedas e notas do mundo (Numista)",
+        "🐷 Meu cofrinho com quantidade e valor da coleção",
+        "Modo claro e escuro"
+      ],
+      "categoria": "Coleção",
+      "plataforma": "Site (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "",
+      "popularidade": 82,
+      "imagem": "assets/images/cofrenite.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../cofrenite/index.html",
+      "galeria": [],
+      "historia": "Irmão do DearNite: em vez de skins, moedas e notas. Nasceu da ideia de procurar moeda rara no cofrinho.",
+      "comoJogar": "Procura as moedas do seu cofrinho na aba do Real e marca as que você tem.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Abrir a moeda ou nota e marcar que tem"
+        }
+      ],
+      "curiosidades": [
+        "A moeda de 1 real dos 50 anos dos Direitos Humanos (1998) é uma das mais procuradas: sites de colecionismo falam em R$ 600 a R$ 1.100.",
+        "Moeda com o desenho de trás de ponta-cabeça (reverso invertido) é erro de fábrica e vale bem mais."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "seu-album-pokemon",
       "nome": "Seu Álbum Pokémon",
       "descricao": "O álbum das suas cartas Pokémon: quantas você tem de cada, as repetidas pra trocar e as que você quer.",

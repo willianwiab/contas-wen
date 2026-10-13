@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CofreNite — moedas e notas do mundo</title>
+<meta name="description" content="Moedas e notas do Brasil e do mundo: quanto vale em reais, as moedas raras de 1 real e o seu cofrinho." />
+<link rel="icon" type="image/svg+xml" href="icone.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#1a8f5a" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="CofreNite" />
+<link rel="apple-touch-icon" href="icone.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  /* Verde de nota de dinheiro, dourado de moeda e o rosa do cofrinho. */
+  --verde:#1a8f5a; --verde-escuro:#106640; --verde-claro:#5cc995;
+  --ouro:#f5c518; --ouro-escuro:#b88f0a; --rosa:#ff8fb3;
+  --fundo:#f3f8f5; --fundo2:#e1f3e9; --fundo3:#fff2d6;
+  --tinta:#152a20; --tinta-fraca:#5f7268;
+  --cartao:#ffffff; --cartao2:#f9fcfa; --cartao3:#ecf4ef;
+  --campo:#fbfdfc; --borda:#d6e5dc; --sombra-cor:#cadbd1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --verde:#3cc787; --verde-escuro:#1f8a58; --verde-claro:#7fe0b3;
+    --ouro:#ffd23f; --ouro-escuro:#7a5e05; --rosa:#ff9fc0;
+    --fundo:#0e1813; --fundo2:#13281d; --fundo3:#2a2410;
+    --tinta:#e9f4ee; --tinta-fraca:#9bb3a6;
+    --cartao:#17241d; --cartao2:#1c2c23; --cartao3:#22362b;
+    --campo:#14201a; --borda:#2d4637; --sombra-cor:#08100b;
+  }
+}
+:root[data-tema="escuro"]{
+  --verde:#3cc787; --verde-escuro:#1f8a58; --verde-claro:#7fe0b3;
+  --ouro:#ffd23f; --ouro-escuro:#7a5e05; --rosa:#ff9fc0;
+  --fundo:#0e1813; --fundo2:#13281d; --fundo3:#2a2410;
+  --tinta:#e9f4ee; --tinta-fraca:#9bb3a6;
+  --cartao:#17241d; --cartao2:#1c2c23; --cartao3:#22362b;
+  --campo:#14201a; --borda:#2d4637; --sombra-cor:#08100b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rubik',system-ui,sans-serif;color:var(--tinta);background-color:var(--fundo);
+  background-image:radial-gradient(circle at 10% 5%, var(--fundo2) 0 20%, transparent 20.5%),radial-gradient(circle at 90% 75%, var(--fundo3) 0 17%, transparent 17.5%);
+  background-attachment:fixed;min-height:100vh;padding:0 16px 60px}
+.envolve{max-width:1040px;margin:0 auto}
+button{font:inherit}
+header{text-align:center;padding:30px 0 16px;position:relative}
+.logo{font-family:'Baloo 2',cursive;font-size:clamp(2.4rem,9vw,3.6rem);line-height:1;color:var(--verde-escuro);text-shadow:3px 3px 0 var(--verde-claro);user-select:none}
+.logo span{color:var(--ouro);text-shadow:3px 3px 0 var(--verde-escuro)}
+.logo img{height:1.05em;vertical-align:-.18em;margin-left:.1em}
+.slogan{margin-top:8px;color:var(--tinta-fraca)}
+.tema{position:absolute;right:0;top:14px;width:42px;height:42px;border-radius:50%;border:1px solid var(--borda);background:var(--cartao);cursor:pointer;font-size:1.2rem;box-shadow:0 3px 0 var(--sombra-cor)}
+.abas{display:flex;gap:2px;background:var(--cartao2);border:1px solid var(--borda);border-radius:999px;padding:4px;margin:0 auto 16px;flex-wrap:wrap}
+.abas button{flex:1 1 130px;padding:10px;border:none;background:none;border-radius:999px;font-weight:600;color:var(--tinta-fraca);cursor:pointer;white-space:nowrap}
+.abas button[aria-pressed="true"]{background:var(--verde);color:#fff}
+.painel{display:none}.painel.ativo{display:block}
+.caixa{background:var(--cartao);border:1px solid var(--borda);border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(20,60,40,.08);margin-bottom:14px}
+.caixa h2{font-family:'Baloo 2',cursive;font-size:1.45rem;color:var(--verde-escuro);margin-bottom:6px}
+:root[data-tema="escuro"] .caixa h2{color:var(--verde-claro)}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .caixa h2{color:var(--verde-claro)}}
+.caixa h3{font-size:1.05rem;margin:14px 0 6px}
+.fraco{color:var(--tinta-fraca);font-size:.9rem}
+.linha{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input,select{padding:11px 13px;border-radius:13px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit;min-width:0}
+input:focus,select:focus{outline:none;border-color:var(--verde)}
+.btn{padding:11px 16px;border:none;border-radius:13px;font-weight:700;cursor:pointer;background:var(--verde);color:#fff;box-shadow:0 4px 0 var(--verde-escuro)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--verde-escuro)}
+.btn.leve{background:var(--cartao3);color:var(--tinta);box-shadow:0 4px 0 var(--sombra-cor)}
+.btn.pequeno{padding:7px 11px;font-size:.88rem;border-radius:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{padding:7px 12px;border-radius:999px;border:1px solid var(--borda);background:var(--cartao2);color:var(--tinta-fraca);cursor:pointer;font-size:.88rem;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--verde);border-color:var(--verde);color:#fff}
+.contador{margin:8px 0;color:var(--tinta-fraca);font-size:.9rem}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.peca{background:var(--cartao);border:1px solid var(--borda);border-radius:18px;padding:10px;text-align:center;cursor:pointer;color:var(--tinta);box-shadow:0 4px 0 var(--sombra-cor);position:relative;display:flex;flex-direction:column;gap:6px}
+.peca:hover{transform:translateY(-2px)}
+.peca .arte{height:110px;display:flex;align-items:center;justify-content:center}
+.peca .arte img,.peca .arte svg{max-width:100%;max-height:110px}
+.peca .nome{font-weight:700;font-size:.92rem;line-height:1.2}
+.peca .sub{font-size:.78rem;color:var(--tinta-fraca)}
+.peca .val{font-family:'Baloo 2',cursive;font-size:1.15rem;color:var(--verde)}
+.selo{position:absolute;top:8px;left:8px;font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--ouro);color:#3a2a00}
+.selo.tenho{left:auto;right:8px;background:var(--verde);color:#fff}
+.estrelas{color:var(--ouro-escuro);font-size:.85rem;letter-spacing:1px}
+:root[data-tema="escuro"] .estrelas{color:var(--ouro)}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .estrelas{color:var(--ouro)}}
+.moeda-pais{display:flex;gap:12px;align-items:center;background:var(--cartao);border:1px solid var(--borda);border-radius:14px;padding:10px 12px;cursor:pointer}
+.moeda-pais .band{font-size:2rem;line-height:1;width:44px;text-align:center}
+.moeda-pais .n{font-weight:700}
+.moeda-pais .v{margin-left:auto;text-align:right;font-family:'Baloo 2',cursive;font-size:1.15rem;color:var(--verde);white-space:nowrap}
+.moeda-pais .v small{display:block;font-family:'Rubik';font-size:.75rem;color:var(--tinta-fraca);font-weight:400}
+.lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.conversor{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:1.1rem}
+.conversor input{width:140px;font-size:1.1rem}
+.grande{font-family:'Baloo 2',cursive;font-size:1.9rem;color:var(--verde)}
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+.resumo div{background:var(--cartao3);border-radius:14px;padding:12px;text-align:center}
+.resumo b{display:block;font-family:'Baloo 2',cursive;font-size:1.5rem}
+.resumo small{color:var(--tinta-fraca)}
+.aviso{background:#fff4d6;border:1px solid #f1d58a;color:#5a3d00;border-radius:12px;padding:10px 12px;font-size:.88rem;line-height:1.45;margin-top:10px}
+:root[data-tema="escuro"] .aviso{background:#3a2d0c;border-color:#7a5e05;color:#ffe9a8}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .aviso{background:#3a2d0c;border-color:#7a5e05;color:#ffe9a8}}
+dialog{border:none;border-radius:22px;padding:0;max-width:600px;width:calc(100% - 24px);background:var(--cartao);color:var(--tinta);box-shadow:0 30px 80px rgba(0,0,0,.45);max-height:92vh}
+dialog::backdrop{background:rgba(5,12,8,.6);backdrop-filter:blur(3px)}
+.det-topo{display:flex;gap:16px;padding:18px;background:linear-gradient(135deg,var(--verde),var(--verde-escuro));color:#fff;align-items:center;flex-wrap:wrap}
+.det-topo .arte{width:150px;display:flex;align-items:center;justify-content:center}
+.det-topo .arte img,.det-topo .arte svg{max-width:150px;max-height:150px;background:rgba(255,255,255,.12);border-radius:12px}
+.det-topo h2{font-family:'Baloo 2',cursive;font-size:1.6rem;line-height:1.1}
+.det-corpo{padding:16px 18px 20px;line-height:1.5}
+.det-corpo ul{padding-left:18px}
+.fechar{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(0,0,0,.4);color:#fff;font-size:1.2rem;cursor:pointer}
+.qtd{display:flex;gap:8px;align-items:center;margin-top:12px}
+.qtd b{min-width:30px;text-align:center;font-size:1.2rem}
+footer{text-align:center;margin-top:28px;color:var(--tinta-fraca);font-size:.85rem;line-height:1.6}
+footer a{color:var(--verde)}
+.oculto{display:none !important}
+.chuva{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden}
+.chuva span{position:absolute;top:-60px;font-size:2rem}
+</style>
+</head>
+<body>
+<div class="envolve">
+<header>
+  <button class="tema" id="btnTema" title="Modo claro / escuro" aria-label="Trocar o tema">🌙</button>
+  <div class="logo" id="logo">Cofre<span>Nite</span><img src="icone.svg" alt="" /></div>
+  <p class="slogan">Moedas e notas do Brasil e do mundo: quanto valem, as raras e o seu cofrinho.</p>
+</header>
+
+<nav class="abas" id="abas">
+  <button aria-pressed="true" data-aba="brasil">🇧🇷 Moedas e notas do Real</button>
+  <button aria-pressed="false" data-aba="mundo">🌍 Dinheiro do mundo</button>
+  <button aria-pressed="false" data-aba="catalogo">🔎 Todas do mundo</button>
+  <button aria-pressed="false" data-aba="cofrinho">🐷 Meu cofrinho</button>
+</nav>
+
+<!-- ============ BRASIL ============ -->
+<section class="painel ativo" id="painel-brasil">
+  <div class="caixa">
+    <h2>🇧🇷 Moedas e notas do Real</h2>
+    <p>Todas as moedas e notas do Real, desde 1994. Procura no seu cofrinho! As com ⭐ valem mais que o número escrito nelas pra quem coleciona.</p>
+    <div class="linha" style="margin-top:10px">
+      <input id="campoBr" type="search" placeholder="Procura (ex: olimpíadas, beija-flor, 50 centavos)" style="flex:1 1 220px" />
+    </div>
+    <div class="chips" id="chipsBr">
+      <button class="chip" aria-pressed="true" data-f="">Tudo</button>
+      <button class="chip" aria-pressed="false" data-f="moeda">🪙 Moedas</button>
+      <button class="chip" aria-pressed="false" data-f="nota">💵 Notas</button>
+      <button class="chip" aria-pressed="false" data-f="rara">⭐ Raras e comemorativas</button>
+      <button class="chip" aria-pressed="false" data-f="tenho">🐷 As que eu tenho</button>
+    </div>
+  </div>
+  <p class="contador" id="contadorBr"></p>
+  <div class="grade" id="gradeBr"></div>
+  <div class="aviso"><b>Sobre o "vale pra colecionador":</b> é o valor que aparece em sites e reportagens sobre colecionismo, e muda muito. Moeda gasta vale bem menos que moeda nova, e quem diz o preço de verdade é quem compra. Não limpa a moeda pra "deixar bonita": isso faz ela perder valor. E não paga nada pra ninguém "avaliar" a sua moeda.</div>
+</section>
+
+<!-- ============ MUNDO ============ -->
+<section class="painel" id="painel-mundo">
+  <div class="caixa">
+    <h2>🌍 Dinheiro do mundo</h2>
+    <p>O dinheiro de cada país e quanto ele vale em reais hoje.</p>
+    <p class="fraco" id="cambioInfo" style="margin-top:4px">Carregando o câmbio…</p>
+    <h3>🧮 Calculadora</h3>
+    <div class="conversor">
+      <input id="convValor" type="number" value="1" min="0" step="any" />
+      <select id="convMoeda"></select>
+      <span>=</span><span class="grande" id="convRes">—</span>
+    </div>
+    <div class="linha" style="margin-top:14px">
+      <input id="campoMundo" type="search" placeholder="Procura um país ou dinheiro (ex: Japão, dólar, euro)" style="flex:1 1 220px" />
+      <select id="ordemMundo">
+        <option value="nome">Ordem: nome</option>
+        <option value="caro">Mais valioso que o real primeiro</option>
+        <option value="barato">Menos valioso primeiro</option>
+      </select>
+    </div>
+  </div>
+  <p class="contador" id="contadorMundo"></p>
+  <div class="lista" id="listaMundo"></div>
+</section>
+
+<!-- ============ CATÁLOGO DO MUNDO (Numista) ============ -->
+<section class="painel" id="painel-catalogo">
+  <div class="caixa">
+    <h2>🔎 Todas as moedas e notas do mundo</h2>
+    <p>Busca no <b>Numista</b>, o maior catálogo de moedas e notas do mundo: foto da frente e de trás, país, anos, e quanto vale pra colecionador.</p>
+    <details id="chaveCaixa" style="margin-top:10px">
+      <summary style="cursor:pointer;color:var(--verde);font-weight:600">🔑 Chave do Numista (precisa de uma pra isso funcionar)</summary>
+      <p class="fraco" style="margin-top:6px">É de graça: um adulto cria uma conta em <a href="https://pt.numista.com/api/" target="_blank" rel="noopener">numista.com/api</a>, pede uma chave da API e cola aqui. Fica guardada só neste aparelho.</p>
+      <div class="linha" style="margin-top:8px">
+        <input id="campoChave" type="password" placeholder="Cola a chave aqui" style="flex:1 1 200px" />
+        <button class="btn pequeno" id="btnChave">Guardar</button>
+        <button class="btn pequeno leve" id="btnChaveTirar">Tirar</button>
+      </div>
+      <p class="fraco" id="chaveEstado" style="margin-top:6px"></p>
+    </details>
+    <div class="linha" style="margin-top:12px">
+      <input id="campoCat" type="search" placeholder="Procura (ex: dólar 1 cent, euro Alemanha, yen)" style="flex:1 1 220px" />
+      <select id="tipoCat"><option value="">Moedas e notas</option><option value="coin">Só moedas</option><option value="banknote">Só notas</option></select>
+      <button class="btn" id="btnCat">Buscar</button>
+    </div>
+    <p class="fraco" id="catStatus" style="margin-top:8px"></p>
+  </div>
+  <div class="grade" id="gradeCat"></div>
+</section>
+
+<!-- ============ COFRINHO ============ -->
+<section class="painel" id="painel-cofrinho">
+  <div class="caixa">
+    <h2>🐷 Meu cofrinho</h2>
+    <p class="fraco">Tudo que você marcou que tem, das moedas e notas do Real e do catálogo do mundo.</p>
+    <div class="resumo" id="resumoCofre"></div>
+    <div class="linha"><button class="btn pequeno leve" id="btnEsvaziar">🗑️ Esvaziar o cofrinho</button></div>
+  </div>
+  <div class="grade" id="gradeCofre"></div>
+</section>
+
+<footer>
+  Câmbio: <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">ExchangeRate-API</a> · Catálogo do mundo: <a href="https://numista.com" target="_blank" rel="noopener">Numista</a>.<br/>
+  Feito pelo Jojo com o Claude. Irmão do <a href="../dearnite/">DearNite</a> 🦙
+</footer>
+</div>
+
+<dialog id="detalhe"></dialog>
+
+<script>
+/* =====================================================================
+   CofreNite — moedas e notas do Brasil e do mundo.
+   • Real: lista escrita à mão aqui, com desenho feito pelo próprio site.
+   • Dinheiro do mundo: câmbio de graça (open.er-api.com), nomes em
+     português pelo próprio navegador (Intl.DisplayNames).
+   • Todas do mundo: catálogo Numista, com chave de graça do adulto.
+   • Cofrinho: localStorage. Nenhum servidor nosso.
+   ===================================================================== */
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const normal = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+const reais = n => Number(n || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+function ler(k, v){ try{ const x = JSON.parse(localStorage.getItem('cofrenite:' + k) || 'null'); return x == null ? v : x; }catch(e){ return v; } }
+function gravar(k, v){ try{ localStorage.setItem('cofrenite:' + k, JSON.stringify(v)); }catch(e){} }
+
+/* ---------- desenhos ----------
+   Ninguém empresta foto das moedas do Real pra usar à vontade, então o
+   site desenha: moeda redonda com a cor do metal, nota com a cor e o bicho. */
+const METAIS = { inox:['#e9edf1','#9aa4ad'], cobre:['#e7a36b','#9a5a2a'], bronze:['#e8c25a','#9a7514'], bimetal:['#e8c25a','#c9d0d6'] };
+function moedaSVG(texto, metal, sub){
+  const [a, b] = METAIS[metal] || METAIS.inox;
+  const meio = metal === 'bimetal' ? '<circle cx="60" cy="60" r="36" fill="#d9dee3" stroke="#9aa4ad" stroke-width="2"/>' : '';
+  const fora = metal === 'bimetal' ? '#e3b73f' : a;
+  return '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="110" height="110"><defs><radialGradient id="g' + metal + '" cx=".35" cy=".3"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>' +
+    '<circle cx="60" cy="60" r="56" fill="' + fora + '" stroke="' + b + '" stroke-width="4"/><circle cx="60" cy="60" r="48" fill="none" stroke="' + b + '" stroke-width="1.5" stroke-dasharray="2 3"/>' + meio +
+    '<circle cx="60" cy="60" r="56" fill="url(#g' + metal + ')"/>' +
+    '<text x="60" y="' + (sub ? 62 : 70) + '" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="' + (texto.length > 3 ? 22 : 30) + '" fill="#2b2b2b">' + esc(texto) + '</text>' +
+    (sub ? '<text x="60" y="82" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="11" fill="#2b2b2b">' + esc(sub) + '</text>' : '') + '</svg>';
+}
+function notaSVG(valor, cor, bicho){
+  return '<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" width="190" height="95"><rect x="2" y="2" width="196" height="96" rx="8" fill="' + cor + '" stroke="rgba(0,0,0,.25)" stroke-width="2"/>' +
+    '<rect x="10" y="10" width="180" height="80" rx="5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.5" stroke-dasharray="4 3"/>' +
+    '<circle cx="62" cy="50" r="30" fill="rgba(255,255,255,.35)"/><text x="62" y="62" text-anchor="middle" font-size="34">' + bicho + '</text>' +
+    '<text x="150" y="58" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="30" fill="#fff" stroke="rgba(0,0,0,.35)" stroke-width="1">' + esc(valor) + '</text>' +
+    '<text x="150" y="80" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="10" fill="#fff">REAIS</text></svg>';
+}
+
+/* ---------- o Real ----------
+   [id, tipo, nome, valor de face, anos, desenho, raridade 1–5, descrição, [mín, máx] pra colecionador ou null, de onde vem esse valor] */
+const BR = [
+  // 1ª família de moedas (aço inox, 1994–1997)
+  ['m1-1c','moeda','1 centavo (1ª família)',0.01,'1994–1997',['1¢','inox'],2,'Moeda de aço inox, toda prateada, com a Efígie da República. Saiu de circulação faz tempo.',null,''],
+  ['m1-5c','moeda','5 centavos (1ª família)',0.05,'1994–1997',['5¢','inox'],2,'Aço inox, prateada, Efígie da República.',null,''],
+  ['m1-10c','moeda','10 centavos (1ª família)',0.10,'1994–1997',['10¢','inox'],2,'Aço inox, prateada, Efígie da República.',null,''],
+  ['m1-25c','moeda','25 centavos (1ª família)',0.25,'1994–1997',['25¢','inox'],2,'Aço inox, prateada, Efígie da República.',null,''],
+  ['m1-50c','moeda','50 centavos (1ª família)',0.50,'1994–1997',['50¢','inox'],2,'Aço inox, prateada, Efígie da República.',null,''],
+  ['m1-1r','moeda','1 real (1ª família)',1,'1994–1997',['R$1','inox'],3,'A primeira moeda de 1 real, toda prateada (não tem o meio diferente da de hoje).',null,''],
+  // 2ª família de moedas (desde 1998)
+  ['m2-1c','moeda','1 centavo (Pedro Álvares Cabral)',0.01,'1998–2004',['1¢','cobre'],2,'Cor de cobre, com Pedro Álvares Cabral. A Casa da Moeda parou de fazer em 2004.',null,''],
+  ['m2-5c','moeda','5 centavos (Tiradentes)',0.05,'desde 1998',['5¢','cobre'],1,'Cor de cobre, com Tiradentes.',null,''],
+  ['m2-10c','moeda','10 centavos (Dom Pedro I)',0.10,'desde 1998',['10¢','bronze'],1,'Dourada, com Dom Pedro I.',null,''],
+  ['m2-25c','moeda','25 centavos (Deodoro da Fonseca)',0.25,'desde 1998',['25¢','bronze'],1,'Dourada, com Marechal Deodoro da Fonseca.',null,''],
+  ['m2-50c','moeda','50 centavos (Barão do Rio Branco)',0.50,'desde 1998',['50¢','inox'],1,'Prateada, com o Barão do Rio Branco.',null,''],
+  ['m2-1r','moeda','1 real (Efígie da República)',1,'desde 1998',['R$1','bimetal'],1,'A de hoje: dourada por fora e prateada no meio.',null,''],
+  // comemorativas de 1 real
+  ['c-dh','moeda','1 real — 50 anos dos Direitos Humanos',1,'1998',['R$1','bimetal','DH'],5,'Comemora os 50 anos da Declaração Universal dos Direitos Humanos. Tiragem pequena: uma das mais procuradas.',[600,1100],'blogs de colecionismo citados pelo Exame e outros'],
+  ['c-jk','moeda','1 real — Centenário de JK',1,'2002',['R$1','bimetal','JK'],3,'Juscelino Kubitschek. Saíram uns 50 milhões, então não é tão rara.',[10,20],'blogs de colecionismo'],
+  ['c-bc','moeda','1 real — 40 anos do Banco Central',1,'2005',['R$1','bimetal','BC 40'],4,'Comemora os 40 anos do Banco Central do Brasil.',[550,700],'blogs de colecionismo'],
+  ['c-bandeira','moeda','1 real — Entrega da Bandeira Olímpica',1,'2012',['R$1','bimetal','RIO'],4,'Quando a bandeira olímpica passou de Londres pro Rio. Os sites dão valores bem diferentes: de uns R$ 100 até muito mais.',[100,240],'blogs de colecionismo (alguns falam em até R$ 4.000)'],
+  ['c-olimpicas','moeda','1 real — Série Olímpica Rio 2016',1,'2014–2016',['R$1','bimetal','2016'],3,'São 16 moedas de esportes e mascotes das Olimpíadas e Paralimpíadas do Rio. Junta todas!',null,''],
+  ['c-beijaflor','moeda','1 real — Beija-flor (25 anos do Real)',1,'2019',['R$1','bimetal','25 anos'],4,'Comemora os 25 anos do Real, com um beija-flor. Um blog fala em até R$ 7.000, mas não achei outras fontes que confirmem.',null,''],
+  ['c-erro','moeda','Qualquer moeda com reverso invertido',1,'qualquer ano',['R$1','bimetal','ERRO'],5,'Erro de fábrica: vira a moeda de cabeça pra baixo pelo lado e o desenho de trás fica de ponta-cabeça. Esse erro faz a moeda valer bem mais.',[null,2600],'reportagem do Estado de Minas (maio de 2026): até R$ 2.600'],
+  // 1ª família de notas (1994–2010)
+  ['n1-1','nota','1 real (beija-flor)',1,'1994–2005',['1','#3a9e8f','🐦'],3,'A nota de 1 real! Verde-azulada com um beija-flor. Parou de ser feita em 2005: hoje é difícil de achar.',null,''],
+  ['n1-2','nota','2 reais (tartaruga) — 1ª família',2,'2001–2010',['2','#3d6fb5','🐢'],2,'Azul, com a tartaruga-marinha.',null,''],
+  ['n1-5','nota','5 reais (garça) — 1ª família',5,'1994–2010',['5','#8a5aa8','🦩'],2,'Roxa, com a garça.',null,''],
+  ['n1-10','nota','10 reais (arara) — 1ª família',10,'1994–2010',['10','#c2453f','🦜'],2,'Vermelha, com a arara.',null,''],
+  ['n1-10p','nota','10 reais de plástico (500 anos do Descobrimento)',10,'2000',['10','#3f8fc2','⛵'],4,'Nota comemorativa de plástico (polímero), com Pedro Álvares Cabral. Transparente num pedacinho!',null,''],
+  ['n1-20','nota','20 reais (mico-leão) — 1ª família',20,'2002–2010',['20','#d8a52b','🐒'],2,'Amarela, com o mico-leão-dourado.',null,''],
+  ['n1-50','nota','50 reais (onça) — 1ª família',50,'1994–2010',['50','#a8673a','🐆'],2,'Marrom, com a onça-pintada.',null,''],
+  ['n1-100','nota','100 reais (garoupa) — 1ª família',100,'1994–2010',['100','#2f8fc9','🐟'],2,'Azul, com a garoupa.',null,''],
+  // 2ª família de notas (desde 2010)
+  ['n2-2','nota','2 reais (tartaruga)',2,'desde 2013',['2','#3b74c4','🐢'],1,'Azul, com a tartaruga-marinha.',null,''],
+  ['n2-5','nota','5 reais (garça)',5,'desde 2013',['5','#8b5cb0','🦩'],1,'Roxa, com a garça.',null,''],
+  ['n2-10','nota','10 reais (arara)',10,'desde 2012',['10','#d4524b','🦜'],1,'Vermelha, com a arara.',null,''],
+  ['n2-20','nota','20 reais (mico-leão-dourado)',20,'desde 2012',['20','#e0a52a','🐒'],1,'Amarela, com o mico-leão-dourado.',null,''],
+  ['n2-50','nota','50 reais (onça-pintada)',50,'desde 2010',['50','#c97a32','🐆'],1,'Laranja-marrom, com a onça-pintada.',null,''],
+  ['n2-100','nota','100 reais (garoupa)',100,'desde 2010',['100','#2e8fd0','🐟'],1,'Azul, com a garoupa.',null,''],
+  ['n2-200','nota','200 reais (lobo-guará)',200,'desde 2020',['200','#8a8478','🐺'],2,'A nota mais nova e a de maior valor, com o lobo-guará. Saiu em 2020.',null,''],
+].map(([id, tipo, nome, face, anos, des, rar, desc, col, fonte]) => ({ id, tipo, nome, face, anos, des, rar, desc, col, fonte, n:normal(nome + ' ' + desc + ' ' + anos) }));
+const POR_ID_BR = new Map(BR.map(x => [x.id, x]));
+const desenhoBR = x => x.tipo === 'moeda' ? moedaSVG(x.des[0], x.des[1], x.des[2]) : notaSVG(x.des[0], x.des[1], x.des[2]);
+const estrelas = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+const NOME_RAR = { 1:'Comum, todo mundo tem', 2:'Já saiu de circulação ou é mais difícil', 3:'Vale procurar', 4:'Rara', 5:'Muito rara' };
+
+/* ---------- cofrinho ---------- */
+let cofre = ler('cofre', {}); // id → { q:quantidade, info?:{…} } (info pra itens do catálogo do mundo)
+function qtd(id){ return (cofre[id] && cofre[id].q) || 0; }
+function mudarQtd(id, d, info){
+  const q = Math.max(0, qtd(id) + d);
+  if(q) cofre[id] = Object.assign({}, cofre[id] || {}, { q }, info ? { info } : {}); else delete cofre[id];
+  gravar('cofre', cofre);
+  if(d > 0) plim();
+}
+function plim(){ try{ const c = new (window.AudioContext || window.webkitAudioContext)(); [1318, 1760].forEach((f, i) => { const o = c.createOscillator(), g = c.createGain(), t = c.currentTime + i * .07; o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.001, t + .25); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + .3); }); }catch(e){} }
+
+/* ---------- aba Brasil ---------- */
+let filtroBr = '';
+function renderBr(){
+  const q = normal($('#campoBr').value);
+  const lista = BR.filter(x => (!q || x.n.includes(q)) && (!filtroBr || (filtroBr === 'rara' ? x.rar >= 3 : filtroBr === 'tenho' ? qtd(x.id) : x.tipo === filtroBr)));
+  $('#contadorBr').textContent = lista.length + (lista.length === 1 ? ' peça' : ' peças');
+  $('#gradeBr').innerHTML = lista.map(x => '<div class="peca" data-br="' + x.id + '" role="button" tabindex="0">' +
+    (x.rar >= 3 ? '<span class="selo">⭐ ' + (x.rar >= 4 ? 'rara' : 'procura') + '</span>' : '') + (qtd(x.id) ? '<span class="selo tenho">🐷 ' + qtd(x.id) + '</span>' : '') +
+    '<div class="arte">' + desenhoBR(x) + '</div><div class="nome">' + esc(x.nome) + '</div><div class="sub">' + esc(x.anos) + '</div>' +
+    '<div class="estrelas" title="' + esc(NOME_RAR[x.rar]) + '">' + estrelas(x.rar) + '</div>' +
+    (x.col ? '<div class="val">' + (x.col[0] ? reais(x.col[0]) + ' a ' : 'até ') + reais(x.col[1]) + '</div><div class="sub">pra colecionador</div>' : '<div class="val">' + reais(x.face) + '</div>') + '</div>').join('');
+}
+$('#campoBr').addEventListener('input', renderBr);
+$('#chipsBr').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; filtroBr = c.dataset.f; $$('#chipsBr .chip').forEach(x => x.setAttribute('aria-pressed', x === c)); renderBr(); });
+$('#gradeBr').addEventListener('click', ev => { const p = ev.target.closest('[data-br]'); if(p) abrirBr(p.dataset.br); });
+
+function abrirBr(id){
+  const x = POR_ID_BR.get(id); if(!x) return;
+  const d = $('#detalhe');
+  d.innerHTML = '<button class="fechar" data-x="fechar">✕</button><div class="det-topo"><div class="arte">' + desenhoBR(x) + '</div><div><h2>' + esc(x.nome) + '</h2><div>' + esc(x.anos) + ' · ' + (x.tipo === 'moeda' ? 'moeda' : 'nota') + ' de ' + reais(x.face) + '</div></div></div>' +
+    '<div class="det-corpo"><p>' + esc(x.desc) + '</p>' +
+    '<p style="margin-top:8px"><b>Raridade:</b> <span class="estrelas">' + estrelas(x.rar) + '</span> ' + esc(NOME_RAR[x.rar]) + '</p>' +
+    (x.col ? '<p style="margin-top:6px"><b>Pra colecionador:</b> ' + (x.col[0] ? reais(x.col[0]) + ' a ' : 'até ') + reais(x.col[1]) + ' <span class="fraco">(' + esc(x.fonte) + ')</span></p>' : '<p style="margin-top:6px"><b>Vale:</b> ' + reais(x.face) + ' (o que está escrito nela)</p>') +
+    '<div class="qtd"><b>🐷</b><button class="btn pequeno leve" data-x="menos">➖</button><b id="q">' + qtd(id) + '</b><button class="btn pequeno" data-x="mais">➕ Tenho</button></div>' +
+    '<p class="fraco" style="margin-top:6px">Quantas você tem no cofrinho.</p></div>';
+  d.dataset.id = id; d.dataset.tipo = 'br';
+  if(!d.open) d.showModal();
+}
+
+/* ---------- aba Dinheiro do mundo ---------- */
+let TAXAS = null, CAMBIO_DATA = '';
+const nomeMoeda = (() => { try{ const dn = new Intl.DisplayNames(['pt-BR'], { type:'currency' }); return c => { try{ return dn.of(c) || c; }catch(e){ return c; } }; }catch(e){ return c => c; } })();
+const nomePais = (() => { try{ const dn = new Intl.DisplayNames(['pt-BR'], { type:'region' }); return c => { try{ return dn.of(c) || ''; }catch(e){ return ''; } }; }catch(e){ return () => ''; } })();
+const ESPECIAIS = { EUR:['🇪🇺','União Europeia (20 países)'], XAF:['🌍','África Central (6 países)'], XOF:['🌍','África Ocidental (8 países)'], XCD:['🏝️','Caribe Oriental (8 países)'], XPF:['🏝️','Polinésia Francesa e vizinhos'], XDR:['🏦','Direito especial do FMI (não é dinheiro de bolso)'], ANG:['🇨🇼','Curaçao e São Martinho'] };
+function bandeira(code){
+  if(ESPECIAIS[code]) return ESPECIAIS[code][0];
+  const p = code.slice(0, 2);
+  if(!/^[A-Z]{2}$/.test(p)) return '💱';
+  return String.fromCodePoint(...[...p].map(c => 0x1F1E6 + c.charCodeAt(0) - 65));
+}
+function paisDe(code){ if(ESPECIAIS[code]) return ESPECIAIS[code][1]; const n = nomePais(code.slice(0, 2)); return n && n !== code.slice(0, 2) ? n : ''; }
+async function carregarCambio(){
+  const guardado = ler('cambio', null);
+  if(guardado && Date.now() - guardado.quando < 6 * 3600 * 1000){ TAXAS = guardado.taxas; CAMBIO_DATA = guardado.data; montarMundo(); return; }
+  const fontes = [
+    async () => { const r = await fetch('https://open.er-api.com/v6/latest/BRL'); const j = await r.json(); if(j.result !== 'success') throw new Error('sem câmbio'); return { taxas:j.rates, data:j.time_last_update_utc }; },
+    async () => { const r = await fetch('https://api.frankfurter.app/latest?from=BRL'); const j = await r.json(); if(!j.rates) throw new Error('sem câmbio'); j.rates.BRL = 1; return { taxas:j.rates, data:j.date }; },
+  ];
+  for(const f of fontes){
+    try{ const c = await f(); TAXAS = c.taxas; CAMBIO_DATA = c.data; gravar('cambio', { quando:Date.now(), taxas:TAXAS, data:CAMBIO_DATA }); montarMundo(); return; }catch(e){ console.warn(e); }
+  }
+  if(guardado){ TAXAS = guardado.taxas; CAMBIO_DATA = guardado.data; montarMundo(); $('#cambioInfo').textContent += ' (sem internet agora: câmbio guardado)'; return; }
+  $('#cambioInfo').textContent = 'Não consegui carregar o câmbio agora. Confere a internet e volta aqui.';
+}
+function valeEmReais(code){ return TAXAS && TAXAS[code] ? 1 / TAXAS[code] : null; }
+function fmtMoeda(v, code){ try{ return Number(v).toLocaleString('pt-BR', { style:'currency', currency:code, maximumFractionDigits:v < 1 ? 4 : 2 }); }catch(e){ return Number(v).toLocaleString('pt-BR') + ' ' + code; } }
+function montarMundo(){
+  const d = new Date(CAMBIO_DATA);
+  $('#cambioInfo').textContent = Object.keys(TAXAS).length + ' dinheiros diferentes. Câmbio de ' + (isNaN(d) ? CAMBIO_DATA : d.toLocaleDateString('pt-BR')) + ' (atualiza uma vez por dia).';
+  const codes = Object.keys(TAXAS).filter(c => c !== 'BRL').sort((a, b) => nomeMoeda(a).localeCompare(nomeMoeda(b), 'pt-BR'));
+  const prefer = ['USD', 'EUR', 'ARS', 'JPY', 'GBP'];
+  $('#convMoeda').innerHTML = prefer.concat(codes.filter(c => !prefer.includes(c))).filter(c => TAXAS[c]).map(c => '<option value="' + c + '">' + bandeira(c) + ' ' + esc(nomeMoeda(c)) + ' (' + c + ')</option>').join('');
+  converter(); renderMundo();
+}
+function converter(){
+  const v = parseFloat($('#convValor').value) || 0, c = $('#convMoeda').value, r = valeEmReais(c);
+  $('#convRes').textContent = r == null ? '—' : reais(v * r);
+}
+$('#convValor').addEventListener('input', converter); $('#convMoeda').addEventListener('change', converter);
+function renderMundo(){
+  if(!TAXAS) return;
+  const q = normal($('#campoMundo').value), ordem = $('#ordemMundo').value;
+  let lista = Object.keys(TAXAS).filter(c => c !== 'BRL').map(c => ({ c, nome:nomeMoeda(c), pais:paisDe(c), r:valeEmReais(c) }))
+    .filter(x => !q || normal(x.c + ' ' + x.nome + ' ' + x.pais).includes(q));
+  lista.sort(ordem === 'caro' ? (a, b) => b.r - a.r : ordem === 'barato' ? (a, b) => a.r - b.r : (a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  $('#contadorMundo').textContent = lista.length + ' dinheiros';
+  $('#listaMundo').innerHTML = lista.map(x => '<div class="moeda-pais" data-mundo="' + x.c + '" role="button" tabindex="0"><div class="band">' + bandeira(x.c) + '</div><div><div class="n">' + esc(x.nome) + '</div><div class="fraco">' + esc(x.pais || x.c) + ' · ' + x.c + '</div></div>' +
+    '<div class="v">' + (x.r >= 0.01 ? reais(x.r) : 'R$ ' + x.r.toLocaleString('pt-BR', { maximumSignificantDigits:3 })) + '<small>' + (x.r >= 1 ? '1 vale ' + x.r.toLocaleString('pt-BR', { maximumFractionDigits:1 }) + ' reais' : 'com R$ 1 dá ' + (1 / x.r).toLocaleString('pt-BR', { maximumFractionDigits:x.r > .1 ? 2 : 0 })) + '</small></div></div>').join('');
+}
+$('#campoMundo').addEventListener('input', renderMundo); $('#ordemMundo').addEventListener('change', renderMundo);
+$('#listaMundo').addEventListener('click', ev => { const m = ev.target.closest('[data-mundo]'); if(!m) return; $('#convMoeda').value = m.dataset.mundo; converter(); window.scrollTo({ top:$('#painel-mundo').offsetTop, behavior:'smooth' }); });
+
+/* ---------- aba Todas do mundo (Numista) ---------- */
+const NUMISTA = 'https://api.numista.com/v3';
+function chave(){ return ler('chave', ''); }
+function mostrarChave(){ const c = chave(); $('#chaveEstado').textContent = c ? '✅ Chave guardada neste aparelho (' + c.slice(0, 4) + '…).' : '❌ Sem chave ainda.'; if(!c) $('#chaveCaixa').open = true; }
+$('#btnChave').addEventListener('click', () => { const v = $('#campoChave').value.trim(); if(!v) return; gravar('chave', v); $('#campoChave').value = ''; mostrarChave(); $('#chaveCaixa').open = false; });
+$('#btnChaveTirar').addEventListener('click', () => { gravar('chave', ''); mostrarChave(); });
+async function numista(caminho){
+  const r = await fetch(NUMISTA + caminho, { headers:{ 'Numista-API-Key':chave(), Accept:'application/json' } });
+  if(r.status === 401 || r.status === 403) throw new Error('a chave não foi aceita');
+  if(r.status === 429) throw new Error('muitas buscas seguidas; espera um pouco');
+  if(!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+let RES_CAT = new Map();
+async function buscarCat(){
+  const q = $('#campoCat').value.trim(); const st = $('#catStatus');
+  if(!chave()){ st.textContent = '🔑 Cola a chave do Numista ali em cima primeiro.'; $('#chaveCaixa').open = true; return; }
+  if(q.length < 2){ st.textContent = 'Escreve o que quer procurar.'; return; }
+  st.innerHTML = '🔎 Procurando…'; $('#gradeCat').innerHTML = '';
+  try{
+    const tipo = $('#tipoCat').value;
+    const j = await numista('/types?q=' + encodeURIComponent(q) + (tipo ? '&category=' + tipo : '') + '&lang=en&count=50');
+    const tipos = j.types || [];
+    RES_CAT = new Map(tipos.map(t => [String(t.id), t]));
+    st.textContent = (j.count || tipos.length) + ' resultado(s)' + (j.count > tipos.length ? ', mostrando ' + tipos.length : '') + '. Toca num pra ver detalhes e preço.';
+    $('#gradeCat').innerHTML = tipos.map(t => cartaCat(t)).join('') || '<p class="fraco">Nada achado. Tenta em inglês (ex: "cent", "dollar", "yen").</p>';
+  }catch(e){ st.textContent = 'Não deu pra buscar (' + e.message + '). Se for bloqueio do navegador, o Numista pode não deixar sites chamarem direto.'; }
+}
+function cartaCat(t){
+  const id = 'nu-' + t.id;
+  return '<div class="peca" data-cat="' + esc(t.id) + '" role="button" tabindex="0">' + (qtd(id) ? '<span class="selo tenho">🐷 ' + qtd(id) + '</span>' : '') +
+    '<div class="arte">' + (t.obverse_thumbnail ? '<img loading="lazy" src="' + esc(t.obverse_thumbnail) + '" alt="" />' : (t.category === 'banknote' ? '💵' : '🪙')) + '</div>' +
+    '<div class="nome">' + esc(t.title) + '</div><div class="sub">' + esc((t.issuer && t.issuer.name) || '') + (t.min_year ? ' · ' + t.min_year + (t.max_year && t.max_year !== t.min_year ? '–' + t.max_year : '') : '') + '</div></div>';
+}
+$('#btnCat').addEventListener('click', buscarCat);
+$('#campoCat').addEventListener('keydown', ev => { if(ev.key === 'Enter') buscarCat(); });
+$('#gradeCat').addEventListener('click', ev => { const p = ev.target.closest('[data-cat]'); if(p) abrirCat(p.dataset.cat); });
+async function abrirCat(tid){
+  const t = RES_CAT.get(String(tid)) || (cofre['nu-' + tid] && cofre['nu-' + tid].info); if(!t) return;
+  const id = 'nu-' + tid, d = $('#detalhe');
+  const info = { id:t.id, title:t.title, category:t.category, issuer:t.issuer, min_year:t.min_year, max_year:t.max_year, obverse_thumbnail:t.obverse_thumbnail, reverse_thumbnail:t.reverse_thumbnail };
+  d.innerHTML = '<button class="fechar" data-x="fechar">✕</button><div class="det-topo"><div class="arte">' + (t.obverse_thumbnail ? '<img src="' + esc(t.obverse_thumbnail) + '" alt="frente" />' : '') + '</div>' +
+    (t.reverse_thumbnail ? '<div class="arte"><img src="' + esc(t.reverse_thumbnail) + '" alt="verso" /></div>' : '') +
+    '<div><h2>' + esc(t.title) + '</h2><div>' + esc((t.issuer && t.issuer.name) || '') + (t.min_year ? ' · ' + t.min_year + (t.max_year && t.max_year !== t.min_year ? '–' + t.max_year : '') : '') + ' · ' + (t.category === 'banknote' ? 'nota' : 'moeda') + '</div></div></div>' +
+    '<div class="det-corpo"><p id="catPreco" class="fraco">Procurando o preço pra colecionador…</p>' +
+    '<p style="margin-top:6px"><a href="https://pt.numista.com/catalogue/pieces' + esc(t.id) + '.html" target="_blank" rel="noopener">Ver tudo no Numista ↗</a></p>' +
+    '<div class="qtd"><b>🐷</b><button class="btn pequeno leve" data-x="menos">➖</button><b id="q">' + qtd(id) + '</b><button class="btn pequeno" data-x="mais">➕ Tenho</button></div></div>';
+  d.dataset.id = id; d.dataset.tipo = 'cat'; d._info = info;
+  if(!d.open) d.showModal();
+  try{
+    const iss = await numista('/types/' + tid + '/issues?lang=en');
+    const lista = Array.isArray(iss) ? iss : (iss.issues || []);
+    if(!lista.length) throw new Error('sem anos');
+    const ult = lista[lista.length - 1];
+    const pr = await numista('/types/' + tid + '/issues/' + ult.id + '/prices?currency=BRL&lang=en');
+    const ps = (pr.prices || []).filter(p => p.price != null);
+    const NOTA = { g:'gasta', vg:'bem usada', f:'usada', vf:'pouco usada', xf:'quase nova', au:'quase perfeita', unc:'nova, sem uso' };
+    $('#catPreco').innerHTML = ps.length ? '<b>Pra colecionador (' + esc(ult.year || ult.gregorian_year || 'último ano') + '):</b><br/>' + ps.map(p => esc(NOTA[p.grade] || p.grade) + ': <b>' + reais(p.price) + '</b>').join(' · ') : 'O Numista não tem preço pra essa peça.';
+  }catch(e){ const el = $('#catPreco'); if(el) el.textContent = 'Não consegui o preço (' + e.message + ').'; }
+}
+
+/* ---------- detalhe: botões ---------- */
+$('#detalhe').addEventListener('click', ev => {
+  const d = $('#detalhe'); const b = ev.target.closest('[data-x]');
+  if(b){
+    if(b.dataset.x === 'fechar'){ d.close(); return; }
+    const id = d.dataset.id;
+    mudarQtd(id, b.dataset.x === 'mais' ? 1 : -1, d.dataset.tipo === 'cat' ? d._info : null);
+    $('#q').textContent = qtd(id); renderBr(); renderCofre();
+    $$('#gradeCat [data-cat]').forEach(p => { if('nu-' + p.dataset.cat === id){ const t = RES_CAT.get(p.dataset.cat); if(t) p.outerHTML = cartaCat(t); } });
+    return;
+  }
+  const r = d.getBoundingClientRect();
+  if(ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) d.close();
+});
+
+/* ---------- aba Cofrinho ---------- */
+function renderCofre(){
+  const ids = Object.keys(cofre);
+  let face = 0, col = 0, pecas = 0, raras = 0;
+  ids.forEach(id => { const q = qtd(id); pecas += q; const x = POR_ID_BR.get(id); if(x){ face += x.face * q; col += (x.col && x.col[0] != null ? x.col[0] : x.face) * q; if(x.rar >= 4) raras += q; } });
+  $('#resumoCofre').innerHTML = '<div><b>' + pecas + '</b><small>peças no cofrinho</small></div><div><b>' + reais(face) + '</b><small>valor escrito (moedas e notas do Real)</small></div>' +
+    '<div><b>' + reais(col) + '</b><small>pra colecionador, no mínimo (as do Real)</small></div><div><b>' + raras + '</b><small>raras ⭐</small></div>';
+  $('#gradeCofre').innerHTML = ids.map(id => {
+    const x = POR_ID_BR.get(id);
+    if(x) return '<div class="peca" data-br="' + id + '" role="button" tabindex="0"><span class="selo tenho">🐷 ' + qtd(id) + '</span><div class="arte">' + desenhoBR(x) + '</div><div class="nome">' + esc(x.nome) + '</div></div>';
+    const t = cofre[id].info; return t ? cartaCat(t) : '';
+  }).join('') || '<p class="fraco">O cofrinho está vazio. Marca ➕ Tenho nas moedas e notas!</p>';
+}
+$('#gradeCofre').addEventListener('click', ev => { const a = ev.target.closest('[data-br]'); if(a) return abrirBr(a.dataset.br); const c = ev.target.closest('[data-cat]'); if(c){ const t = cofre['nu-' + c.dataset.cat] && cofre['nu-' + c.dataset.cat].info; if(t){ RES_CAT.set(String(t.id), t); abrirCat(t.id); } } });
+$('#btnEsvaziar').addEventListener('click', () => { if(confirm('Esvaziar o cofrinho todo?')){ cofre = {}; gravar('cofre', cofre); renderCofre(); renderBr(); } });
+
+/* ---------- abas e tema ---------- */
+$('#abas').addEventListener('click', ev => {
+  const b = ev.target.closest('button[data-aba]'); if(!b) return;
+  $$('#abas button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  $$('.painel').forEach(p => p.classList.toggle('ativo', p.id === 'painel-' + b.dataset.aba));
+  if(b.dataset.aba === 'mundo' && !TAXAS) carregarCambio();
+  if(b.dataset.aba === 'cofrinho') renderCofre();
+  if(b.dataset.aba === 'catalogo') mostrarChave();
+});
+function aplicarTema(){ const t = ler('tema', ''); if(t) document.documentElement.dataset.tema = t; else delete document.documentElement.dataset.tema; $('#btnTema').textContent = (t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches) ? '☀️' : '🌙'; }
+$('#btnTema').addEventListener('click', () => { const e = document.documentElement.dataset.tema ? document.documentElement.dataset.tema === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; gravar('tema', e ? 'claro' : 'escuro'); aplicarTema(); });
+aplicarTema();
+
+/* ---------- segredo: tocar 7 vezes no porquinho do logo faz chover moeda ---------- */
+let toques = 0, ultimo = 0;
+$('#logo').addEventListener('click', () => {
+  const agora = Date.now(); toques = agora - ultimo < 700 ? toques + 1 : 1; ultimo = agora;
+  if(toques < 7) return; toques = 0;
+  const c = document.createElement('div'); c.className = 'chuva'; document.body.appendChild(c);
+  for(let i = 0; i < 45; i++){
+    const s = document.createElement('span'); s.textContent = ['🪙','💵','💰','🪙','💶','💴','💷'][i % 7]; s.style.left = Math.random() * 100 + 'vw'; c.appendChild(s);
+    s.animate([{ transform:'translateY(0) rotate(0)' }, { transform:'translateY(' + (innerHeight + 120) + 'px) rotate(' + (Math.random() * 720 - 360) + 'deg)' }], { duration:1800 + Math.random() * 1500, delay:Math.random() * 800, easing:'ease-in', fill:'forwards' });
+  }
+  [0, .08, .16, .24, .32].forEach(t => setTimeout(plim, t * 1000));
+  setTimeout(() => c.remove(), 4000);
+});
+
+renderBr(); renderCofre(); mostrarChave();
+if('serviceWorker' in navigator){ window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).catch(() => {}); }); }
+</script>
+</body>
+</html>
