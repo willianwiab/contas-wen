@@ -7,7 +7,7 @@ Site pra gravar a sua voz e ouvir **de trás pra frente**.
 ## Como usar
 O site tem **abas** embaixo: 🎙️ Gravar · 🎭 Vozes · ✂️ Editar · 🎹 Teclado · 🦜 Brincar (papagaio, desafio, eco ao vivo) · ⭐ Salvos. Fora da aba Gravar, um mini player mostra o que está tocando.
 
-1. Aperte o botão vermelho e deixe o site usar o microfone — ou toque em 📂 **Pegar um áudio do celular** (mp3, m4a, wav, ogg ou vídeo; até 10 minutos), ou cole um 🔗 link direto de um arquivo de áudio. Gravando, dá até 5 minutos.
+1. Aperte o botão vermelho e deixe o site usar o microfone — ou toque em 📂 **Pegar um áudio do celular** (mp3, m4a, wav, ogg ou vídeo; até 10 minutos), ou cole um 🔗 link direto de um arquivo de áudio. Gravando, dá até **1 hora** (depois de 5 minutos o som fica um pouquinho mais simples, pra caber na memória).
 2. Fale alguma coisa (até 12 segundos) e aperte de novo pra parar.
 3. A voz toca ao contrário na hora. Use 🔁 **Ao contrário** / ▶️ **Pra frente** pra escolher a direção.
    - Barrinha que mostra quanto já tocou (dá pra arrastar), com ⏸️/▶️, e o desenho da voz vai ficando colorido
