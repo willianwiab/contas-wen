@@ -491,7 +491,7 @@ details.ajuda[open] summary::after{transform:rotate(180deg)}
 
   <footer>
     Fala ao Contrário · feito pra brincar 🙃
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 11 — 18/10 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 12 — 18/10 · 🔄</button>
   </footer>
 </div>
   <nav class="abas" id="abas" role="tablist" aria-label="Partes do site">
@@ -734,9 +734,9 @@ function parar(){
   desligar();
   if(n < taxa * 0.3){ tempo.textContent = ''; avisar('Ficou curtinho demais! Segure um pouquinho mais antes de parar.', true); return; }
   if(pico < 0.002){ tempo.textContent = ''; avisar('O microfone não mandou som nenhum. Veja se ele não está no mudo e fale pertinho.', true); document.getElementById('ajuda').open = true; return; }
-  voz = aparar(tudo, taxa, pico);
+  voz = aumentarSeBaixo(aparar(tudo, taxa, pico), pico);
   tempo.textContent = `✅ Gravou ${fmt(voz.length / taxa)}!`;
-  prontaPraTocar();
+  prontaPraTocar(pico < BAIXINHO ? '🔉 O microfone gravou baixinho, então eu aumentei o volume. Se ficar chiando, fale mais perto ou escolha outro microfone em ⚙️ Configurações de gravar.' : '');
 }
 function prontaPraTocar(aviso, doCorte){
   btTocar.disabled = btBaixar.disabled = btCompartilhar.disabled = btSalvar.disabled = false;
@@ -778,6 +778,7 @@ async function abrirAudio(dados, palavra, daGravacao){
   let pico = 0; for(let i = 0; i < n; i++){ const a = Math.abs(tudo[i]); if(a > pico) pico = a; }
   if(pico < 0.002){ if(daGravacao) throw new Error('silêncio'); tempo.textContent = ''; avisar('Esse áudio está em silêncio. Tente outro!', true); return; }
   voz = aparar(tudo, taxa, pico);
+  if(daGravacao) voz = aumentarSeBaixo(voz, pico);
   tempo.textContent = `${palavra} ${fmt(voz.length / taxa)}!`;
   prontaPraTocar(buf.duration > MAX_ARQUIVO_S ? `O áudio era grandão, então peguei só os primeiros ${MAX_ARQUIVO_S / 60} minutos.` : '');
 }
@@ -812,11 +813,20 @@ campoLink.addEventListener('keydown', ev => { if(ev.key === 'Enter') document.ge
 
 /* ---------- a mágica: mexer nos números ---------- */
 function aparar(x, sr, pico){   // tira o silêncio do começo e do fim
-  const lim = Math.max(0.01, pico * 0.06);
+  const lim = Math.max(0.0005, pico * 0.06);   // relativo ao pico: microfone baixinho de notebook não vira "tudo silêncio"
   let a = 0, b = x.length - 1;
   while(a < b && Math.abs(x[a]) < lim) a++;
   while(b > a && Math.abs(x[b]) < lim) b--;
   return x.slice(Math.max(0, a - Math.floor(sr * .08)), Math.min(x.length, b + Math.floor(sr * .15)));
+}
+/* Microfone de computador às vezes grava bem baixinho: aí aumenta até ficar
+   com um volume bom (no máximo 40 vezes, pra não virar só chiado). */
+const BAIXINHO = 0.05;
+function aumentarSeBaixo(x, pico){
+  if(pico >= 0.5) return x;
+  const g = Math.min(40, 0.9 / pico);
+  for(let i = 0; i < x.length; i++) x[i] *= g;
+  return x;
 }
 function inverter(x){ const n = x.length, y = new Float32Array(n); for(let i = 0; i < n; i++) y[i] = x[n - 1 - i]; return y; }
 function velocidade(x, r){   // mais rápido = mais fino; mais devagar = mais grosso
