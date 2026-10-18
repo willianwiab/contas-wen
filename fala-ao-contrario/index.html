@@ -491,7 +491,7 @@ details.ajuda[open] summary::after{transform:rotate(180deg)}
 
   <footer>
     Fala ao Contrário · feito pra brincar 🙃
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 10 — 27/09 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 11 — 18/10 · 🔄</button>
   </footer>
 </div>
   <nav class="abas" id="abas" role="tablist" aria-label="Partes do site">
@@ -514,7 +514,11 @@ details.ajuda[open] summary::after{transform:rotate(180deg)}
    O microfone manda os números direto (ScriptProcessor), a gente inverte
    a fila e passa pelos efeitos das 280 vozes. Nada sai do aparelho.
    ========================================================================= */
-const LIMITE_S = 5 * 60;   // grava no máximo 5 minutos
+const LIMITE_S = 60 * 60;  // grava no máximo 1 hora
+/* Uma hora de som cheio não cabe na memória do navegador. Depois de 5 minutos,
+   o que já foi gravado e o resto viram um som mais leve (uns 12 mil números por
+   segundo, em vez de 48 mil) guardado em Int16. Voz continua dando pra entender. */
+const LEVE_DEPOIS_S = 5 * 60, TAXA_LEVE = 12000;
 function fmt(s){ return s < 60 ? `${s.toFixed(1)}s` : `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`; }
 const btGravar = document.getElementById('gravar'), txtGravar = document.getElementById('gravar-txt');
 const tempo = document.getElementById('tempo'), recado = document.getElementById('recado');
@@ -526,7 +530,7 @@ const btTocar = document.getElementById('tocar'), btBaixar = document.getElement
 const player = new Audio();
 let urlSom = null;
 
-let ctx = null, stream = null, pedacos = [], cap = null, reserva = null;
+let ctx = null, stream = null, pedacos = [], cap = null, reserva = null, fatorLeve = 1, amostrasGravadas = 0;
 let gravando = false, pedindo = false, relogio = 0, inicio = 0;
 let voz = null, taxa = 44100, ultimo = null;
 
@@ -657,8 +661,8 @@ async function comecar(){
     tempo.textContent = '🎤 Fala!';
     if(comBip){ bip(990, .25); await esperar(300); }
   }
-  pedacos = []; cap = null; reserva = null;
-  try{ cap = ligarCaptura(stream, 4096, d => { if(gravando) pedacos.push(new Float32Array(d)); }); }catch(e){ cap = null; }
+  pedacos = []; cap = null; reserva = null; fatorLeve = 1; amostrasGravadas = 0;
+  try{ cap = ligarCaptura(stream, 4096, d => { if(gravando) guardarPedaco(d); }); }catch(e){ cap = null; }
   taxa = cap ? cap.sr : c.sampleRate;
   /* plano B: grava junto com o MediaRecorder; se o jeito de cima não pegar nada, usa esse */
   if(window.MediaRecorder){
@@ -674,9 +678,26 @@ async function comecar(){
   tempo.textContent = '🔴 Gravando… 0.0s';
   relogio = setInterval(() => {
     const s = (Date.now() - inicio) / 1000;
-    tempo.textContent = `🔴 Gravando… ${fmt(s)}`;
+    tempo.textContent = `🔴 Gravando… ${fmt(s)}` + (s >= LIMITE_S - 60 ? ` (para em ${Math.ceil(LIMITE_S - s)}s)` : '');
     if(s >= LIMITE_S) parar();
   }, 100);
+}
+/* deixa um pedaço mais leve: tira a média de cada f números e guarda em Int16 */
+function pedacoLeve(d, f){
+  const n = Math.floor(d.length / f), y = new Int16Array(n);
+  for(let i = 0, k = 0; i < n; i++){
+    let s = 0; for(let j = 0; j < f; j++) s += d[k++];
+    const v = Math.max(-1, Math.min(1, s / f)); y[i] = v < 0 ? v * 0x8000 : v * 0x7fff;
+  }
+  return y;
+}
+function guardarPedaco(d){
+  amostrasGravadas += d.length;
+  if(fatorLeve === 1 && amostrasGravadas > taxa * LEVE_DEPOIS_S){
+    fatorLeve = Math.max(1, Math.round(taxa / TAXA_LEVE));
+    if(fatorLeve > 1) pedacos = pedacos.map(p => pedacoLeve(p, fatorLeve));
+  }
+  pedacos.push(fatorLeve > 1 ? pedacoLeve(d, fatorLeve) : new Float32Array(d));
 }
 function parar(){
   gravando = false; clearInterval(relogio);
@@ -686,7 +707,12 @@ function parar(){
   const st = stream, r = reserva; stream = null; reserva = null;
   let n = 0; pedacos.forEach(p => n += p.length);
   const tudo = new Float32Array(n); let o = 0;
-  pedacos.forEach(p => { tudo.set(p, o); o += p.length; }); pedacos = [];
+  pedacos.forEach(p => {
+    if(p instanceof Int16Array){ for(let i = 0; i < p.length; i++) tudo[o + i] = p[i] / 0x8000; }
+    else tudo.set(p, o);
+    o += p.length;
+  }); pedacos = [];
+  if(fatorLeve > 1){ taxa = taxa / fatorLeve; fatorLeve = 1; }
   let pico = 0; for(let i = 0; i < n; i++){ const a = Math.abs(tudo[i]); if(a > pico) pico = a; }
   const desligar = () => { if(st) st.getTracks().forEach(t => t.stop()); };   // desliga o microfone
   if(r && (n < taxa * 0.3 || pico < 0.002) && r.r.state !== 'inactive'){
