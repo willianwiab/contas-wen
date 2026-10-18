@@ -593,6 +593,7 @@ let hoje = hojeD(), ano = hoje.getFullYear(), mes = hoje.getMonth()+1, sel = hoj
 const filtroOn = {}; Object.keys(TIPOS).forEach(t => filtroOn[t] = true);
 const $ = s => document.querySelector(s);
 
+const hashDoEvento = location.hash;   // guarda antes do render trocar o hash pelo mês
 // hash da URL: #2026-10
 if (/^#\d{1,4}-\d{1,2}$/.test(location.hash)) { const [a,m] = location.hash.slice(1).split('-').map(Number); if (m>=1&&m<=12) { ano=a; mes=m; sel=data(a,m,1); } }
 
@@ -846,6 +847,22 @@ $('#busca').oninput = () => painel();
 $('#busca').onkeydown = e => { if (e.key==='Enter') $('#busca').blur(); };
 addEventListener('resize', () => painel());
 filtros(); render();
+
+// ---------- link que cria um evento: #evento=<base64url de {"n":nome,"f":emoji,"d":"AAAA-MM-DD","a":anual}> ----------
+function eventoDoLink(h){
+  const m = (typeof h === 'string' ? h : location.hash).match(/^#evento=([A-Za-z0-9_-]+)$/); if (!m) return;
+  let e; try { const b = m[1].replace(/-/g,'+').replace(/_/g,'/'); e = JSON.parse(decodeURIComponent(escape(atob(b + '==='.slice((b.length+3)%4))))); } catch(x) { toast('Esse link de evento não funcionou 😕'); return; }
+  const nome = String(e && e.n || '').trim().slice(0, 80), fig = String(e && e.f || '⭐').trim().slice(0, 8) || '⭐', d = String(e && e.d || '');
+  if (!nome || !/^\d{4}-\d{2}-\d{2}$/.test(d)) { toast('Esse link de evento não funcionou 😕'); return; }
+  const l = meus();
+  if (!l.some(x => x.nome === nome && x.data === d)) {
+    if (!confirm(`Colocar "${fig} ${nome}" no seu calendário, no dia ${d.split('-').reverse().join('/')}?`)) return;
+    l.push({ id:'m'+Date.now(), nome, fig, data:d, anual:!!e.a }); salvarMeus(l); toast('Evento salvo! ⭐'); confete();
+  }
+  sel = deChave(d); mes = sel.getMonth()+1; ano = sel.getFullYear(); render();
+}
+eventoDoLink(hashDoEvento);
+addEventListener('hashchange', () => eventoDoLink());
 </script>
 </body>
 </html>
