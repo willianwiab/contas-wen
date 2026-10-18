@@ -491,7 +491,7 @@ details.ajuda[open] summary::after{transform:rotate(180deg)}
 
   <footer>
     Fala ao Contrário · feito pra brincar 🙃
-    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 12 — 18/10 · 🔄</button>
+    <br><button class="versao" type="button" id="recarregar" title="Buscar a versão mais nova do site">versão 13 — 18/10 · 🔄</button>
   </footer>
 </div>
   <nav class="abas" id="abas" role="tablist" aria-label="Partes do site">
@@ -572,6 +572,7 @@ function restricoes(){
   if(micEscolhido) a.deviceId = { exact:micEscolhido };
   return { audio:a };
 }
+const DICA_PERMITIR = '👆 Olhe lá em cima, perto do endereço do site: apareceu uma caixinha perguntando do microfone. Clique em “Permitir”. Se não aparecer, clique no cadeado 🔒 (ou ⚙️) do lado do endereço e ligue o Microfone.';
 async function abrirMic(){
   if(!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw { name:'SemSuporte' };
   try{ return await navigator.mediaDevices.getUserMedia(restricoes()); }
@@ -628,7 +629,7 @@ listarMics();
 
 function botaoGravarNormal(){ btGravar.classList.remove('gravando', 'contando'); txtGravar.textContent = voz ? 'Gravar de novo' : 'Gravar'; btGravar.querySelector('span').textContent = '🎙️'; }
 async function comecar(){
-  if(pedindo) return;
+  if(pedindo){ avisar(DICA_PERMITIR, true); return; }
   papagaioDesliga(); pararVivo();
   avisar('');
   if(!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !(window.AudioContext || window.webkitAudioContext)){
@@ -637,14 +638,18 @@ async function comecar(){
   const c = audio();
   destravar();
   pedindo = true;
+  /* No computador, o Chrome pergunta do microfone numa caixinha pequena perto do
+     endereço; se ninguém responde, o site fica esperando calado. Aí avisa. */
+  tempo.textContent = '🎙️ Esperando deixar usar o microfone…';
+  const dica = setTimeout(() => { if(pedindo) avisar(DICA_PERMITIR, true); }, 2000);
   try{ stream = await abrirMic(); }
   catch(e){
-    pedindo = false;
+    pedindo = false; clearTimeout(dica); tempo.textContent = '';
     avisar(explicarErroMic(e), true);
     document.getElementById('ajuda').open = true;
     return;
   }
-  pedindo = false;
+  pedindo = false; clearTimeout(dica); tempo.textContent = ''; avisar('');
   if(c.state === 'suspended'){ try{ await c.resume(); }catch(e){} }
   pararSom();
   /* contagem antes de gravar (configurações de gravar) */
