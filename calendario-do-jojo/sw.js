@@ -2,7 +2,7 @@
    Também guarda a "agenda" (os próximos dias com evento) que a página manda, pra conseguir
    avisar que o dia chegou mesmo com o app fechado (no Chrome do Android, via periodicsync). */
 /* O número sobe sempre que eu quero que todo mundo largue o que estava guardado. */
-const CACHE = 'calendario-jojo-v1';
+const CACHE = 'calendario-jojo-v2';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone.svg', './icone-192.png', './icone-512.png'];
 const AGENDA = './_agenda.json';
 

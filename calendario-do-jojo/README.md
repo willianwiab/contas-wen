@@ -10,6 +10,7 @@ Um calendário com **tudo mesmo**: feriados nacionais e de estados, pontos facul
 - **Filtros coloridos** ligam e desligam cada tipo de evento.
 - **Busca** procura qualquer evento pelo nome.
 - **➕ Criar meu evento**: aniversários e o que quiser, com emoji, repetindo todo ano ou não. Fica salvo no navegador.
+- **🔗 Link de evento**: um link `.../calendario-do-jojo/#evento=<código>` pergunta se pode colocar o evento no seu calendário e salva (não repete se já tiver).
 - **⚙️ Datas da minha escola**: ajusta volta às aulas, férias de julho e último dia de aula.
 - **📲 Instalar**: vira um app na tela inicial (Android, iPhone e computador) e funciona sem internet.
 - **🔔 Avisos**: pede permissão e avisa quando chega o dia de um evento (feriados, férias, filmes, esporte, seus eventos e favoritos, ou tudo). No Chrome do Android o app checa sozinho de vez em quando, mesmo fechado; no iPhone e no computador o aviso aparece quando você abre o app.
