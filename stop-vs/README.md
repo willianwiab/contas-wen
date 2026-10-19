@@ -11,6 +11,12 @@ Stop em times, cada um no seu aparelho. Fale uma coisa do tema: quem **repetir**
 4. Quem criou a sala escolhe o **modo** (1 vs 1, Dupla, Trio, Quarteto ou Quinteto), o **tema** (ou **Livre**) e o **tempo**, e aperta **Começar!**
 5. Os times se revezam. Na sua vez, escreva e aperte **Stop!**
 
+## 🤖 Robôs
+Quem criou a sala pode colocar robôs pra completar os times, ou jogar sozinho contra eles (botões **🤖 + Robô**, ✖ tira).
+- Eles sabem palavras de todos os temas da lista (e do Livre). Num tema inventado, ficam sem saber o que falar.
+- Nível 😊 Fácil, 😐 Médio ou 😈 Difícil: quanto mais fácil, mais eles repetem ou ficam sem ideia.
+- Também votam: dão 👎 só quando a palavra é claramente de outro tema da lista.
+
 ## Juízes
 - 🤖 **Juiz robô** (sempre ligado): pega quem repetiu, mesmo com plural, acento, "o/a" na frente ou um errinho de digitação ("Gátos" = "gato").
 - 👥 **Votação**: o outro time vota 👍/👎 se a palavra é do tema (8 segundos; empate vale).

@@ -76,6 +76,8 @@ input[type=text],select{width:100%;background:var(--noite);border:2px solid var(
 .log{margin:0;padding-left:18px;color:var(--fraco);font-size:.9rem;display:grid;gap:2px}
 .campeao{text-align:center;font:400 clamp(2rem,9vw,3.2rem)/1.05 var(--f-titulo)}
 .campeao.A{color:var(--verm)}.campeao.B{color:var(--azul)}
+.robos{display:grid;gap:8px;margin-top:14px;padding:12px;border:2px dashed var(--linha);border-radius:14px}
+.pessoa .tirar{margin-left:6px;border:0;background:none;cursor:pointer;color:var(--verm);font-weight:900;padding:0}
 .seguro{font-size:.85rem;color:var(--fraco);text-align:center}
 @media (prefers-reduced-motion:no-preference){ .pulsa{animation:pulsa 1s ease-in-out infinite} @keyframes pulsa{50%{transform:scale(1.06)}} }
 </style>
@@ -142,6 +144,18 @@ input[type=text],select{width:100%;background:var(--noite);border:2px solid var(
         <input type="text" id="tema" maxlength="30" placeholder="Escreva um tema ou escolha embaixo" autocomplete="off">
       </label>
       <div class="temas" id="temas"></div>
+      <div class="robos">
+        <h3 style="margin:0">🤖 Robôs</h3>
+        <p class="dica" style="margin:0">Falta gente? Coloque robôs pra completar os times (ou jogue sozinho contra eles).</p>
+        <div class="linha">
+          <button class="bt verm" id="bot-A" type="button">🤖 + Robô no Vermelho</button>
+          <button class="bt azul" id="bot-B" type="button">🤖 + Robô no Azul</button>
+          <label class="campo" for="nivel" style="flex:1;min-width:140px">Nível
+            <select id="nivel"><option value="facil">😊 Fácil</option><option value="medio">😐 Médio</option><option value="dificil">😈 Difícil</option></select>
+          </label>
+        </div>
+        <p class="dica" id="bot-aviso" hidden style="margin:0">⚠️ O robô não conhece esse tema: ele vai ficar sem saber o que falar. Escolha um tema da lista ou Livre.</p>
+      </div>
       <label class="campo" for="juiz" style="margin-top:12px">Quem decide se é do tema
         <select id="juiz"><option value="votos">👥 O outro time vota</option><option value="ia">🧠 Juiz IA (roda neste computador)</option></select>
       </label>
@@ -213,6 +227,32 @@ const $ = id => document.getElementById(id);
 const NOMES_TIME = { A:'🔴 Vermelho', B:'🔵 Azul' };
 const TEMAS = ['Livre', 'Animais', 'Comidas', 'Frutas', 'Pokémon', 'Skins de Fortnite', 'Países', 'Cores', 'Profissões', 'Jogos', 'Mapas de Roblox', 'Coisas da escola'];
 const ehLivre = t => semAcento(t).trim() === 'livre';
+/* O que o robô sabe falar em cada tema da lista. */
+const PALAVRAS = {
+  'animais':'cachorro gato leão tigre elefante girafa zebra macaco cobra jacaré tubarão baleia golfinho coelho cavalo vaca porco galinha pato urso lobo raposa coruja águia papagaio tartaruga sapo formiga abelha borboleta canguru pinguim panda camelo hipopótamo rinoceronte esquilo ovelha',
+  'comidas':'pizza hambúrguer arroz feijão macarrão lasanha batata frita pão queijo bolo sorvete chocolate brigadeiro coxinha pastel pipoca cachorro-quente sopa salada ovo frango carne peixe panqueca torrada biscoito pudim tapioca cuscuz açaí misto-quente nhoque estrogonofe farofa',
+  'frutas':'maçã banana laranja uva morango abacaxi melancia manga pera mamão kiwi limão melão goiaba maracujá cereja pêssego caju acerola jabuticaba coco framboesa amora tangerina ameixa figo pitanga graviola carambola abacate',
+  'pokemon':'pikachu charizard bulbasaur squirtle charmander eevee snorlax mewtwo mew gengar jigglypuff psyduck magikarp gyarados lucario greninja sylveon umbreon espeon vaporeon jolteon flareon dragonite gardevoir rayquaza lugia ditto togepi meowth onix machamp blastoise venusaur garchomp mimikyu piplup',
+  'skins de fortnite':'jonesy peely raven drift fishstick midas meowscles skull trooper ghoul trooper renegade raider black knight aura crystal lynx brite bomber cuddle team leader tomatohead calamity omega carbide ragnarok spider-man naruto goku kratos master chief lara croft batman superman marshmello dark voyager the visitor the foundation',
+  'paises':'brasil argentina portugal espanha frança itália alemanha japão china estados unidos canadá méxico chile peru colômbia uruguai paraguai bolívia venezuela inglaterra rússia índia egito austrália coreia do sul áfrica do sul nigéria marrocos grécia suíça holanda bélgica suécia noruega turquia',
+  'cores':'vermelho azul verde amarelo preto branco roxo rosa laranja marrom cinza bege dourado prateado turquesa vinho lilás violeta anil ciano magenta creme salmão bordô',
+  'profissoes':'médico professor bombeiro policial dentista engenheiro advogado cozinheiro padeiro motorista piloto astronauta veterinário enfermeiro jornalista cantor ator pintor youtuber programador cientista mecânico eletricista carteiro jogador de futebol fotógrafo arquiteto pedreiro garçom farmacêutico',
+  'jogos':'minecraft roblox fortnite free fire among us pokémon go mario kart super mario zelda sonic tetris pac-man fifa gta brawl stars clash royale subway surfers stumble guys fall guys valorant league of legends uno xadrez dama banco imobiliário stop jogo da velha',
+  'mapas de roblox':'adopt me brookhaven blox fruits murder mystery 2 tower of hell arsenal jailbreak bee swarm simulator pet simulator 99 doors piggy natural disaster survival work at a pizza place royale high bloxburg da hood flee the facility rainbow friends grow a garden dress to impress',
+  'coisas da escola':'lápis caneta borracha caderno livro mochila régua tesoura cola estojo apontador quadro giz professor carteira lousa recreio merenda uniforme apostila calculadora compasso transferidor agenda lancheira',
+};
+const LISTAS = Object.fromEntries(Object.entries(PALAVRAS).map(([k, v]) => [k, v.split(' ').length && dividir(v)]));
+function dividir(v){   // nomes com espaço (ex.: "coreia do sul") ficam juntos onde a lista usa duas palavras ou mais
+  const juntos = ['batata frita','coreia do sul','áfrica do sul','estados unidos','jogador de futebol','skull trooper','ghoul trooper','renegade raider','black knight','crystal lynx','brite bomber','cuddle team leader','master chief','lara croft','dark voyager','the visitor','the foundation','free fire','among us','pokémon go','mario kart','super mario','pac-man','gta','brawl stars','clash royale','subway surfers','stumble guys','fall guys','league of legends','banco imobiliário','jogo da velha','adopt me','blox fruits','murder mystery 2','tower of hell','bee swarm simulator','pet simulator 99','natural disaster survival','work at a pizza place','royale high','da hood','flee the facility','rainbow friends','grow a garden','dress to impress'];
+  let t = ' ' + v + ' '; const achados = [];
+  for(const j of juntos) if(t.includes(' ' + j + ' ')){ achados.push(j); t = t.replace(' ' + j + ' ', ' '); }
+  return achados.concat(t.trim().split(/\s+/).filter(Boolean));
+}
+const chaveTema = t => semAcento(t).replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim();
+function listaDoTema(t){
+  if(ehLivre(t)) return [].concat(...Object.values(LISTAS));
+  return LISTAS[chaveTema(t)] || null;
+}
 
 /* ---------- texto ---------- */
 function semAcento(t){ return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
@@ -259,7 +299,7 @@ let estado = null, meuId = null, souHost = false, peer = null, connHost = null, 
 const conexoes = new Map();   // só no anfitrião: id -> conexão
 let prazoLocal = 0, prazoVotoLocal = 0, votei = null;
 function salaNova(){
-  return { fase:'sala', modo:1, tema:'Animais', tempo:15, juiz:'votos', jogadores:[], ditas:[], vezTime:'A', idx:{ A:0, B:0 },
+  return { fase:'sala', modo:1, tema:'Animais', tempo:15, juiz:'votos', nivel:'medio', jogadores:[], ditas:[], vezTime:'A', idx:{ A:0, B:0 },
     daVez:null, fimDaVez:0, julgando:null, evento:'', log:[], vencedor:null };
 }
 
@@ -402,6 +442,45 @@ function configurar(campo, valor){
   }
   mudou();
 }
+const NOMES_ROBO = ['Faísca','Parafuso','Bip','Turbo','Chip','Neon','Pixel','Byte','Lata','Zap'];
+function addRobo(time){
+  if(!souHost || estado.fase !== 'sala' || doTime(time).length >= estado.modo || estado.jogadores.length >= 10) return;
+  const usados = new Set(estado.jogadores.map(j => j.nome));
+  const nome = '🤖 ' + (NOMES_ROBO.find(n => !usados.has('🤖 ' + n)) || ('Robô ' + estado.jogadores.length));
+  estado.jogadores.push({ id:'bot-' + Date.now() + Math.floor(Math.random() * 1000), nome, time, vivo:true, bot:true });
+  mudou();
+}
+function tirarRobo(id){
+  if(!souHost || estado.fase !== 'sala') return;
+  estado.jogadores = estado.jogadores.filter(j => !(j.id === id && j.bot)); mudou();
+}
+/* Quanto o robô erra (repete ou fica sem saber) em cada nível. */
+const ERRO_ROBO = { facil:.28, medio:.12, dificil:.04 };
+let turno = 0;
+function vezDoRobo(j){
+  const meu = ++turno;
+  const espera = 1500 + Math.random() * Math.max(500, Math.min(4500, estado.tempo * 1000 - 3500));
+  setTimeout(() => {
+    if(!estado || estado.fase !== 'jogo' || estado.julgando || estado.daVez !== j.id || turno !== meu) return;
+    const lista = listaDoTema(estado.tema);
+    if(!lista){ estado.evento = `🤖 ${j.nome.replace('🤖 ', '')} não conhece o tema "${estado.tema}"…`; mudou(); return; }   // vai deixar o tempo acabar
+    if(Math.random() < (ERRO_ROBO[estado.nivel] || .12)){
+      if(estado.ditas.length && Math.random() < .65){ const d = estado.ditas[Math.floor(Math.random() * estado.ditas.length)]; return julgar(j, d.texto.toLowerCase()); }
+      return;   // ficou sem ideia: o tempo vai acabar
+    }
+    const livres = lista.filter(w => !estado.ditas.some(d => mesmaCoisa(d.texto, w)));
+    if(!livres.length) return;   // acabaram as palavras que ele sabe
+    julgar(j, livres[Math.floor(Math.random() * livres.length)]);
+  }, espera);
+}
+/* O robô vota 👎 só quando a palavra é claramente de outro tema da lista. */
+function votoDoRobo(tema, texto){
+  const lista = listaDoTema(tema);
+  if(!lista || ehLivre(tema)) return true;
+  if(lista.some(w => mesmaCoisa(w, texto))) return true;
+  const deOutro = Object.entries(LISTAS).some(([k, l]) => k !== chaveTema(tema) && l.some(w => mesmaCoisa(w, texto)));
+  return !deOutro;
+}
 function podeComecar(){
   const a = doTime('A').length, b = doTime('B').length, m = estado.modo;
   if(!limpo(estado.tema, 30)) return 'Escolha um tema.';
@@ -422,6 +501,7 @@ function passarVez(time){
   if(!v.length){ return terminar(time === 'A' ? 'B' : 'A'); }
   const j = v[estado.idx[time] % v.length]; estado.idx[time]++;
   estado.vezTime = time; estado.daVez = j.id; estado.fimDaVez = Date.now() + estado.tempo * 1000;
+  if(j.bot) vezDoRobo(j); else turno++;
 }
 function proxima(){ passarVez(estado.vezTime === 'A' ? 'B' : 'A'); }
 function terminar(vencedor){
@@ -465,6 +545,10 @@ function julgar(j, texto){
 function abrirVotacao(j, texto){
   estado.julgando = { n:++nJulgamento, texto, por:j.id, nome:j.nome, time:j.time, votos:{}, fim:Date.now() + 8000 };
   if(!eleitores().length) return aceitar(j, texto);
+  const n = estado.julgando.n;
+  eleitores().filter(x => x.bot).forEach(b => setTimeout(() => {
+    if(estado.julgando && estado.julgando.n === n) receberNoHost(b.id, { t:'voto', ok: votoDoRobo(estado.tema, texto) });
+  }, 900 + Math.random() * 1600));
   mudou();
 }
 function decidir(){
@@ -529,6 +613,10 @@ function chip(j, extra){
   const s = document.createElement('span');
   s.className = 'pessoa' + (j.id === meuId ? ' eu' : '') + (extra || '');
   s.textContent = j.nome + (j.id === 'host' ? ' 👑' : '') + (j.id === meuId ? ' (você)' : '');
+  if(j.bot && souHost && estado.fase === 'sala'){
+    const x = document.createElement('button'); x.type = 'button'; x.className = 'tirar'; x.textContent = '✖';
+    x.setAttribute('aria-label', 'Tirar ' + j.nome); x.onclick = () => tirarRobo(j.id); s.append(x);
+  }
   return s;
 }
 function encher(box, lista, extra){ box.textContent = ''; lista.forEach(j => box.append(chip(j, extra ? extra(j) : ''))); }
@@ -549,13 +637,17 @@ function desenhar(){
     $('ir-B').disabled = !eu || eu.time === 'B' || doTime('B').length >= estado.modo;
     $('s-config').hidden = !souHost; $('s-regras-ver').hidden = souHost;
     if(souHost){
-      $('modo').value = estado.modo; $('tempo').value = estado.tempo; $('juiz').value = estado.juiz;
+      $('modo').value = estado.modo; $('tempo').value = estado.tempo; $('juiz').value = estado.juiz; $('nivel').value = estado.nivel;
+      $('bot-A').disabled = doTime('A').length >= estado.modo || estado.jogadores.length >= 10;
+      $('bot-B').disabled = doTime('B').length >= estado.modo || estado.jogadores.length >= 10;
+      $('bot-aviso').hidden = !estado.jogadores.some(j => j.bot) || !!listaDoTema(estado.tema);
       if(document.activeElement !== $('tema')) $('tema').value = estado.tema;
       [...$('temas').children].forEach(b => b.classList.toggle('on', semAcento(b.textContent) === semAcento(estado.tema)));
       const falta = podeComecar(); $('comecar').disabled = !!falta; $('falta').textContent = falta;
     }else{
       const modos = ['','1 vs 1','Dupla vs Dupla','Trio vs Trio','Quarteto vs Quarteto','Quinteto vs Quinteto'];
-      $('s-regras-txt').textContent = `${modos[estado.modo]} · Tema: ${estado.tema} · ${estado.tempo} segundos pra responder · ${estado.juiz === 'ia' ? '🧠 Juiz IA' : '👥 O outro time vota'}`;
+      const niveis = { facil:'😊 fácil', medio:'😐 médio', dificil:'😈 difícil' };
+      $('s-regras-txt').textContent = `${modos[estado.modo]} · Tema: ${estado.tema} · ${estado.tempo} segundos pra responder · ${estado.juiz === 'ia' ? '🧠 Juiz IA' : '👥 O outro time vota'}` + (estado.jogadores.some(j => j.bot) ? ` · Robôs no nível ${niveis[estado.nivel]}` : '');
     }
     return;
   }
@@ -618,6 +710,9 @@ $('tempo').onchange = e => configurar('tempo', +e.target.value);
 $('tema').addEventListener('input', e => configurar('tema', limpo(e.target.value, 30)));
 $('juiz').onchange = e => { configurar('juiz', e.target.value); if(e.target.value === 'ia') ligarIA(); };
 $('comecar').onclick = comecar;
+$('bot-A').onclick = () => addRobo('A');
+$('bot-B').onclick = () => addRobo('B');
+$('nivel').onchange = e => configurar('nivel', e.target.value);
 $('de-novo').onclick = deNovo;
 $('j-form').addEventListener('submit', e => { e.preventDefault(); const t = $('resposta').value.trim(); if(!t) return; mandar({ t:'resposta', texto:t }); $('resposta').value = ''; });
 $('v-sim').onclick = () => { votei = true; mandar({ t:'voto', ok:true }); desenhar(); };
