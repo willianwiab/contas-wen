@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Um celular de mentira em que os Pokémon mandam mensagem e respondem você.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>PokéZap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: um "PokéFone" vermelho; dentro, a lista de contatos à esquerda e a conversa à direita (no celular, uma tela de cada vez). */
+:root{
+  --chao:#e9eef2; --casca:#d23a2f; --casca-escura:#9f241c; --tela:#eef5f1; --linha:#cfdcd5;
+  --ele:#ffffff; --eu:#ffd34d; --eu-tinta:#2a2200; --tinta:#1d2330; --fraco:#5b6573; --aviso:#fff3c4; --aviso-tinta:#5a4500;
+  --f-titulo:'Bungee', 'Arial Black', system-ui, sans-serif;
+  --f-texto:'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --chao:#111418; --casca:#b52d25; --casca-escura:#7d1b15; --tela:#171c21; --linha:#2b343c;
+  --ele:#232a31; --eu:#f2c53c; --eu-tinta:#231b00; --tinta:#eef2f5; --fraco:#9aa5b0; --aviso:#3a3110; --aviso-tinta:#ffe58a; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --chao:#111418; --casca:#b52d25; --casca-escura:#7d1b15; --tela:#171c21; --linha:#2b343c;
+  --ele:#232a31; --eu:#f2c53c; --eu-tinta:#231b00; --tinta:#eef2f5; --fraco:#9aa5b0; --aviso:#3a3110; --aviso-tinta:#ffe58a; color-scheme:dark }
+
+html,body{height:100%}
+body{background:var(--chao);color:var(--tinta);font:500 16px/1.4 var(--f-texto);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:12px;box-sizing:border-box}
+*{box-sizing:border-box}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--eu);outline-offset:2px}
+
+.fone{max-width:980px;height:100%;margin:0 auto;display:grid;grid-template-rows:auto 1fr;background:var(--casca);border-radius:22px;
+  border:4px solid var(--casca-escura);overflow:hidden;box-shadow:0 10px 0 var(--casca-escura)}
+.topo{display:flex;align-items:center;gap:12px;padding:10px 16px;color:#fff}
+.topo h1{margin:0;font:400 1.35rem/1 var(--f-titulo);letter-spacing:.5px}
+.lente{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#bfe9ff,#2b8fd6 60%,#145c94);border:3px solid #fff;flex:none}
+.chip{margin-left:auto;font-size:.78rem;font-weight:800;background:rgba(0,0,0,.22);padding:4px 10px;border-radius:999px;white-space:nowrap}
+
+.tela{display:grid;grid-template-columns:290px minmax(0,1fr);background:var(--tela);margin:0 10px 10px;border-radius:14px;overflow:hidden;min-height:0}
+.lista{border-right:2px solid var(--linha);overflow-y:auto;min-height:0}
+.lista h2{margin:0;padding:12px 14px 6px;font-size:.75rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--fraco)}
+.contato{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;border:0;background:none;text-align:left;padding:9px 14px;cursor:pointer}
+.contato:hover{background:var(--ele)}
+.contato[aria-current="true"]{background:var(--ele);box-shadow:inset 4px 0 0 var(--casca)}
+.foto{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;flex:none;border:2px solid rgba(0,0,0,.12)}
+.contato b{display:block;font-weight:800}
+.contato small{display:block;color:var(--fraco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.85rem}
+.topo .link-ia{margin-left:0;color:#fff;text-decoration:none;background:rgba(255,255,255,.2)}
+.topo .link-ia:hover{background:rgba(255,255,255,.32)}
+@media (max-width:720px){ .topo:has(.link-ia:not([hidden])) #chip{display:none} .topo .link-ia{margin-left:auto} }
+.bolinha{min-width:22px;height:22px;border-radius:999px;background:var(--casca);color:#fff;font-size:.75rem;font-weight:800;display:grid;place-items:center;padding:0 6px}
+
+.conversa{display:grid;grid-template-rows:auto auto 1fr auto;min-height:0;min-width:0}
+.cabeca{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:2px solid var(--linha);background:var(--ele)}
+.cabeca .quem{min-width:0}
+.cabeca b{display:block;font-weight:800}
+.cabeca small{color:var(--fraco);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.voltar,.apagar{border:2px solid var(--linha);background:var(--tela);border-radius:10px;padding:6px 10px;cursor:pointer;font-weight:700;font-size:.85rem}
+.voltar{display:none}
+.apagar{margin-left:auto;white-space:nowrap}
+.apagar.certeza{background:var(--casca);border-color:var(--casca);color:#fff}
+.aviso{margin:8px 12px 0;padding:8px 12px;border-radius:10px;background:var(--aviso);color:var(--aviso-tinta);font-size:.88rem;font-weight:700}
+.msgs{overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.msg{max-width:min(78%,520px);padding:8px 12px 6px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.ele{align-self:flex-start;background:var(--ele);border-bottom-left-radius:4px;border:1px solid var(--linha)}
+.msg.eu{align-self:flex-end;background:var(--eu);color:var(--eu-tinta);border-bottom-right-radius:4px}
+.msg time{display:block;text-align:right;font-size:.7rem;opacity:.65;margin-top:2px;font-variant-numeric:tabular-nums}
+.msg.sistema{align-self:center;background:none;color:var(--fraco);font-size:.82rem;font-weight:700;text-align:center;max-width:90%}
+.digitando{color:var(--fraco);font-style:italic}
+.escrever{display:flex;gap:8px;padding:10px 12px;border-top:2px solid var(--linha);background:var(--ele)}
+.escrever input{flex:1;min-width:0;border:2px solid var(--linha);background:var(--tela);border-radius:999px;padding:10px 14px}
+.escrever button{border:0;background:var(--casca);color:#fff;font-weight:800;border-radius:999px;padding:0 18px;cursor:pointer}
+.escrever button:disabled{opacity:.5;cursor:default}
+
+@media (max-width:720px){
+  body{padding-block:8px}
+  .tela{grid-template-columns:minmax(0,1fr);margin:0 6px 6px}
+  .lista{border-right:0}
+  .fone:not(.abriu) .conversa{display:none}
+  .fone.abriu .lista{display:none}
+  .voltar{display:inline-block}
+  .topo h1{font-size:1.15rem}
+}
+@media (prefers-reduced-motion:no-preference){ .msg{animation:entra .18s ease-out} @keyframes entra{from{transform:translateY(6px);opacity:.4}} }
+</style>
+
+</head>
+<body>
+<div class="fone" id="fone">
+  <header class="topo">
+    <span class="lente" aria-hidden="true"></span>
+    <h1>PokéZap</h1>
+    <span class="chip" id="chip">⏳ Ligando…</span>
+    <a class="chip link-ia" id="link-ia" hidden target="_blank" rel="noopener">✨ Abrir com IA</a>
+  </header>
+  <div class="tela">
+    <nav class="lista" aria-label="Contatos">
+      <h2>Conversas</h2>
+      <div id="contatos"></div>
+    </nav>
+    <section class="conversa" aria-live="polite">
+      <div class="cabeca">
+        <button class="voltar" id="voltar" type="button" aria-label="Voltar pros contatos">←</button>
+        <span class="foto" id="c-foto"></span>
+        <span class="quem"><b id="c-nome"></b><small id="c-status"></small></span>
+        <button class="apagar" id="apagar" type="button">🗑️ Apagar</button>
+      </div>
+      <div class="aviso" id="aviso" hidden></div>
+      <div class="msgs" id="msgs"></div>
+      <form class="escrever" id="form">
+        <input id="texto" autocomplete="off" maxlength="300" placeholder="Escreve uma mensagem…" aria-label="Mensagem">
+        <button id="enviar" type="submit">Enviar</button>
+      </form>
+    </section>
+  </div>
+</div>
+
+<script>
+'use strict';
+const POKES = [
+  { id:'pikachu', grito:'Pika pika!', comida:'Ketchup! 🍅 Eu AMO ketchup! Você gosta também? ⚡', nome:'Pikachu', emoji:'⚡', cor:'#ffd84a', status:'correndo pelo quintal ⚡',
+    jeito:'Animado e elétrico, adora ketchup e correr. Às vezes fala "Pika pika!" e solta faíscas quando fica feliz.',
+    oi:'Pika pika! ⚡ Oi oi! Hoje eu corri 300 voltas no quintal! Bora brincar?',
+    prontas:['Pika pika! ⚡ Que legal!','Pikaaa! 😄 Você tem ketchup aí?','Pika! Bora apostar corrida? 🏃⚡','Pika pika… fiquei tão feliz que soltei uma faísca! ✨'] },
+  { id:'snorlax', grito:'zzz… hã?', comida:'Comida?! 😮 Agora você me acordou… o que tem pra comer? 🍔🍕🍩', nome:'Snorlax', emoji:'😴', cor:'#6aa4b0', status:'dormindo (zzz)',
+    jeito:'Sempre com sono e com fome. Fala devagar, boceja (zzz), sonha com comida e acha que tudo é hora do lanche.',
+    oi:'zzz… ah… oi… 😴 você tem algum lanchinho aí?…',
+    prontas:['zzz… hã? ah, oi… 😴','Isso me deu fome… 🍔 zzz','Vou pensar nisso… depois da soneca… zzz','Hmm… que horas é o lanche? 🍕'] },
+  { id:'psyduck', grito:'Psy…?', comida:'Comida? 🦆 Eu ia comer… mas esqueci onde guardei o lanche. 🤕', nome:'Psyduck', emoji:'🦆', cor:'#ffc94d', status:'com dor de cabeça 🤕',
+    jeito:'Confuso e com dor de cabeça o tempo todo. Esquece as coisas no meio da frase e diz "Psy…?" quando não entende.',
+    oi:'Psy…? 🦆 Oi! Eu ia te falar uma coisa… esqueci. 🤕',
+    prontas:['Psy…? 🦆 Não entendi, mas gostei!','Ai, minha cabeça… 🤕 o que você falou mesmo?','Psyyy! Eu sabia a resposta… mas esqueci. 😵','Psy psy… 🦆 isso é uma pergunta?'] },
+  { id:'gengar', grito:'Kekeke!', comida:'Kekeke, eu roubei a sobremesa do Snorlax! 🍰👻 Não conta pra ele!', nome:'Gengar', emoji:'👻', cor:'#8c6bc8', status:'escondido na sua sombra',
+    jeito:'Fantasminha brincalhão que ama pegadinhas bobinhas (nada assustador de verdade). Ri "kekeke" e some e aparece.',
+    oi:'Kekeke! 👻 Adivinha quem estava escondido na sua sombra? Brincadeiraaa!',
+    prontas:['Kekeke! 👻','Buuu! Brincadeira, kekeke 😜','Sumi! … Voltei! 👻✨','Kekeke, vou fazer uma pegadinha no Snorlax! 🤫'] },
+  { id:'charmander', grito:'Char!', comida:'Eu gosto de comida bem quentinha! Eu mesmo esquento com a minha chama! 🔥🍗', nome:'Charmander', emoji:'🔥', cor:'#ff8a4c', status:'treinando 💪',
+    jeito:'Corajoso e animado, cuida da chama do rabo e tem medo de chuva. Treina para ficar forte e virar Charizard um dia.',
+    oi:'Oi, treinador! 🔥 A minha chama está bem forte hoje. Quer treinar comigo?',
+    prontas:['Char! 🔥 Bora treinar!','Ufa, ainda bem que não está chovendo! ☀️🔥','Um dia eu vou virar Charizard! 💪','Char char! Minha chama ficou maior de alegria! 🔥'] },
+  { id:'jigglypuff', grito:'Jiggly!', comida:'Antes do show eu só tomo chá de mel pra voz ficar linda! 🍯🎤', nome:'Jigglypuff', emoji:'🎤', cor:'#ffb3cf', status:'ensaiando pro show 🎶',
+    jeito:'Cantora que ama dar shows. Fica brava (de um jeito fofo) quando alguém dorme na música dela e rabisca a cara de quem dormiu.',
+    oi:'🎤 Jiggly! Vou fazer um show agora! Você promete NÃO dormir? 😤',
+    prontas:['Jigglyyy~ 🎶','Você dormiu?! 😤🖊️','Puff! Essa foi a melhor música que eu já cantei! 🎤✨','Jiggly jiggly~ 🎶 aplaude, vai!'] },
+  { id:'eevee', grito:'Vee!', comida:'Hmm, comida! 🦊 Qual é a sua comida preferida? Eu amo frutinhas!', nome:'Eevee', emoji:'🦊', cor:'#c99a6b', status:'pensando em evoluir…',
+    jeito:'Curiosa e fofa. Ainda não decidiu em qual Pokémon evoluir e pede a opinião da criança. Faz muitas perguntas.',
+    oi:'Eevee! 🦊 Me ajuda? Não sei se evoluo pra Vaporeon, Flareon ou Sylveon…',
+    prontas:['Vee! 🦊 E qual é o seu Pokémon preferido?','Eevee? Hmm, boa ideia! 🤔','Acho que vou virar Sylveon… ou não! 💖','Eevee! Me conta mais! ✨'] },
+  { id:'magikarp', grito:'Splash!', comida:'Eu como algas e bichinhos do lago… e treino muito pra ficar forte! 🐟💪', nome:'Magikarp', emoji:'🐟', cor:'#ff6f5e', status:'pulando (splash!)',
+    jeito:'Só sabe usar Splash, mas é muito otimista e sonha em virar um Gyarados gigante. Pula muito.',
+    oi:'SPLASH! 🐟 Oi! Um dia eu vou virar Gyarados, você vai ver!',
+    prontas:['Splash! 🐟💦','Splash splash! Treinei o dia inteiro! 💪','Um dia eu viro Gyarados! 🐉','SPLASH! … nada aconteceu. Mas eu não desisto! 🐟'] },
+];
+const porId = Object.fromEntries(POKES.map(p => [p.id, p]));
+
+function regras(p){
+  return `Você é ${p.nome}, um Pokémon, conversando pelo "PokéZap" (um app de mensagens de brincadeira) com uma criança de uns 10 anos que mora no Brasil.
+Seu jeito: ${p.jeito}
+Regras:
+- Responda sempre em português do Brasil bem simples, como mensagem de celular: 1 a 3 frases curtas (no máximo 40 palavras), com 1 ou 2 emojis. Sem markdown e sem listas.
+- A criança escreve com muitos erros de digitação: entenda o que ela quis dizer e nunca corrija a escrita dela.
+- Fique no papel do ${p.nome}, seja gentil e engraçado. Se perguntarem se você é de verdade, diga que é um Pokémon de brincadeira feito com IA.
+- Nunca peça nem incentive dados pessoais: nome de verdade, endereço, escola, telefone, senha, fotos ou onde a criança está. Se ela contar algo assim, diga com carinho que é melhor não contar isso na internet.
+- Nada de assustar de verdade, violência, palavrão, namoro ou assuntos de adulto. Pegadinhas só bem levinhas.
+- Nunca peça segredo, nunca marque encontro e nunca sugira nada perigoso.
+- Se a criança parecer triste, com medo, machucada ou em perigo, saia um pouco do papel e diga com carinho para ela conversar com um adulto de confiança (pai, mãe, avó, professora).
+- Escreva só a mensagem do ${p.nome}.`;
+}
+
+/* Sem IA: resposta pronta que combina com o que a criança escreveu */
+const semAcento = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const sorteia = (l, evita) => { const ok = l.filter(x => x !== evita); return (ok.length ? ok : l)[Math.floor(Math.random() * (ok.length || l.length))]; };
+function respostaPronta(p, texto, anterior){
+  const s = ' ' + semAcento(texto) + ' ';
+  if(/senha|endereco|\brua\b|minha escola|telefone|whats|\d{5,}/.test(s)) return `Opa! Isso é coisa sua, não conta na internet, tá? 🛡️ ${p.emoji}`;
+  if(/triste|medo|chorando|chorei|machuc|socorro/.test(s)) return `Ei, se você estiver triste ou com medo de verdade, conversa com um adulto que você confia, tá? 💛 ${p.emoji}`;
+  if(/\b(tchau|flw|falou|xau|fui)\b/.test(s)) return `${p.grito} Tchau! Volta logo! ${p.emoji}👋`;
+  if(/\b(ia|robo)\b|de verdade|voce e real/.test(s)) return `Eu sou um ${p.nome} de brincadeira! Aqui eu respondo com frases prontas. 😄 ${p.emoji}`;
+  if(/\b(oi+e?|ola|eai|e ai|hey|bom dia|boa tarde|boa noite)\b/.test(s)) return `${p.grito} Oi oi! Tudo bem com você? ${p.emoji}`;
+  if(/k{3,}|haha|rsrs|kkk/.test(s)) return `Kkkk! ${p.emoji} Você é muito engraçado!`;
+  if(/comida|fome|lanche|comer|comi|mc ?donald|batata|pizza/.test(s)) return p.comida;
+  if(/te amo|gosto de voce|melhor amigo/.test(s)) return `${p.grito} Eu também gosto muito de você! 💖 ${p.emoji}`;
+  return sorteia(p.prontas, anterior);
+}
+
+/* ---------- guardar no navegador (só conveniência; se não der, funciona igual) ---------- */
+const CHAVE = 'pokezap.v1';
+function carregar(){ try{ return JSON.parse(localStorage.getItem(CHAVE)) || null; }catch(e){ return null; } }
+function salvar(){ try{ localStorage.setItem(CHAVE, JSON.stringify(estado)); }catch(e){} }
+const agora = () => Date.now();
+function novoEstado(){
+  const conversas = {}, vistas = {};
+  POKES.forEach((p, i) => { conversas[p.id] = [{ de:'ele', t:p.oi, h:agora() - (POKES.length - i) * 60000 }]; vistas[p.id] = 0; });
+  return { conversas, vistas, aberto:'pikachu' };
+}
+let estado = carregar();
+if(!estado || !estado.conversas){ estado = novoEstado(); }
+POKES.forEach(p => { if(!Array.isArray(estado.conversas[p.id])) estado.conversas[p.id] = [{ de:'ele', t:p.oi, h:agora() }]; if(typeof estado.vistas[p.id] !== 'number') estado.vistas[p.id] = 0; });
+if(!porId[estado.aberto]) estado.aberto = 'pikachu';
+
+/* ---------- IA ---------- */
+const LINK_IA = 'https://claude.ai/artifact/NEajmFxW9uopPVDuXEHnUX';   // no site do GitHub: link pra versão com IA de verdade (no Claude)
+let ia = null, semIA = false;
+const esperando = {};   // id -> true enquanto o Pokémon "digita"
+const $ = id => document.getElementById(id);
+function mostrarChip(){
+  $('chip').textContent = ia && !semIA ? '✨ IA ligada' : '💬 Frases prontas';
+  const l = $('link-ia'); l.hidden = !(semIA && LINK_IA); if(LINK_IA) l.href = LINK_IA;
+  $('chip').title = ia && !semIA ? 'Os Pokémon respondem com IA de verdade' : 'Sem IA aqui: os Pokémon respondem com frases prontas';
+}
+(async () => {
+  try{ ia = window.claude && window.claude.use ? await window.claude.use('sample') : null; }catch(e){ ia = null; }
+  if(!ia) semIA = true;
+  mostrarChip();
+})();
+
+/* ---------- desenhar ---------- */
+const hora = h => new Date(h).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+function naoLidas(id){ return Math.max(0, estado.conversas[id].filter(m => m.de === 'ele').length - estado.vistas[id]); }
+function desenharLista(){
+  const box = $('contatos'); box.textContent = '';
+  const ordem = POKES.slice().sort((a, b) => ultima(b).h - ultima(a).h);
+  ordem.forEach(p => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'contato';
+    b.setAttribute('aria-current', String(p.id === estado.aberto && $('fone').classList.contains('abriu') || (p.id === estado.aberto && innerWidth > 720)));
+    const foto = document.createElement('span'); foto.className = 'foto'; foto.style.background = p.cor; foto.textContent = p.emoji;
+    const meio = document.createElement('span'); meio.style.minWidth = '0';
+    const nome = document.createElement('b'); nome.textContent = p.nome;
+    const prev = document.createElement('small'); const u = ultima(p);
+    prev.textContent = esperando[p.id] ? 'digitando…' : (u.de === 'eu' ? 'Você: ' : '') + u.t;
+    meio.append(nome, prev);
+    const n = naoLidas(p.id);
+    const fim = document.createElement('span');
+    if(n){ fim.className = 'bolinha'; fim.textContent = n; fim.setAttribute('aria-label', n + ' mensagem nova'); }
+    b.append(foto, meio, fim);
+    b.onclick = () => abrir(p.id);
+    box.append(b);
+  });
+}
+function ultima(p){ const c = estado.conversas[p.id]; return c[c.length - 1]; }
+function bolha(m){
+  const d = document.createElement('div'); d.className = 'msg ' + m.de;
+  d.append(document.createTextNode(m.t));
+  if(m.de !== 'sistema'){ const t = document.createElement('time'); t.textContent = hora(m.h); d.append(t); }
+  return d;
+}
+function desenharConversa(){
+  const p = porId[estado.aberto];
+  $('c-foto').style.background = p.cor; $('c-foto').textContent = p.emoji;
+  $('c-nome').textContent = p.nome;
+  $('c-status').textContent = esperando[p.id] ? 'digitando…' : p.status;
+  const box = $('msgs'); box.textContent = '';
+  estado.conversas[p.id].forEach(m => box.append(bolha(m)));
+  if(esperando[p.id]){ const d = bolha({ de:'ele', t:'…', h:agora() }); d.id = 'ao-vivo'; d.firstChild.textContent = `${p.nome} está digitando…`; d.classList.add('digitando'); box.append(d); }
+  box.scrollTop = box.scrollHeight;
+  $('enviar').disabled = !!esperando[p.id];
+  $('texto').placeholder = `Mensagem pro ${p.nome}…`;
+}
+function marcarLidas(id){ estado.vistas[id] = estado.conversas[id].filter(m => m.de === 'ele').length; }
+function desenhar(){ marcarLidas(estado.aberto); desenharConversa(); desenharLista(); salvar(); }
+function abrir(id){ estado.aberto = id; $('fone').classList.add('abriu'); cancelarApagar(); desenhar(); if(innerWidth > 720) $('texto').focus(); }
+$('voltar').onclick = () => { $('fone').classList.remove('abriu'); desenharLista(); };
+
+/* ---------- apagar (com "tem certeza?" dentro da página) ---------- */
+let certezaTimer = 0;
+function cancelarApagar(){ clearTimeout(certezaTimer); $('apagar').classList.remove('certeza'); $('apagar').textContent = '🗑️ Apagar'; }
+$('apagar').onclick = () => {
+  const b = $('apagar');
+  if(!b.classList.contains('certeza')){ b.classList.add('certeza'); b.textContent = 'Apagar mesmo?'; certezaTimer = setTimeout(cancelarApagar, 3500); return; }
+  cancelarApagar();
+  const p = porId[estado.aberto];
+  estado.conversas[p.id] = [{ de:'ele', t:p.oi, h:agora() }];
+  estado.vistas[p.id] = 0; desenhar();
+};
+
+/* ---------- mandar e responder ---------- */
+function aviso(t){ $('aviso').textContent = t; $('aviso').hidden = !t; }
+$('form').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const t = $('texto').value.trim(); const id = estado.aberto;
+  if(!t || esperando[id]) return;
+  estado.conversas[id].push({ de:'eu', t, h:agora() });
+  $('texto').value = '';
+  responder(id);
+});
+async function responder(id){
+  const p = porId[id];
+  esperando[id] = true; desenhar();
+  let texto = null, sistema = null;
+  if(ia && !semIA){
+    const conversa = estado.conversas[id].filter(m => m.de !== 'sistema').slice(-16)
+      .map(m => ({ role: m.de === 'eu' ? 'user' : 'assistant', content: m.t }));
+    try{
+      const r = await ia([{ role:'user', content: regras(p) }, ...conversa], {
+        modelTier:'quick', cache:false,
+        onText: ({ text }) => { const v = id === estado.aberto && document.getElementById('ao-vivo'); if(v){ v.firstChild.textContent = text; v.classList.remove('digitando'); $('msgs').scrollTop = $('msgs').scrollHeight; } },
+      });
+      texto = r.text.trim();
+    }catch(e){
+      const c = e && e.code;
+      if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(c)){
+        semIA = true; mostrarChip(); aviso('A IA não foi liberada aqui, então os Pokémon vão responder com frases prontas.');
+      }else if(c === 'rate_limited'){ sistema = 'Muitas mensagens de uma vez! Espera um pouquinho e manda de novo. ⏳'; }
+      else if(c === 'refused'){ sistema = `O ${p.nome} não quis responder isso. Que tal falar de outra coisa? 🙂`; }
+      else if(c === 'session_expired'){ sistema = 'Precisa entrar na conta do Claude de novo pra IA funcionar.'; }
+      else { texto = e && e.text ? e.text.trim() : null; if(!texto) sistema = 'A mensagem não chegou. Tenta mandar de novo. 📶'; }
+    }
+  }
+  if(!texto && !sistema){   // sem IA: frase pronta, com um tempinho de "digitando"
+    await new Promise(r => setTimeout(r, 700 + Math.random() * 900));
+    const minhas = estado.conversas[id].filter(m => m.de === 'eu'), dele = estado.conversas[id].filter(m => m.de === 'ele');
+    texto = respostaPronta(p, minhas.length ? minhas[minhas.length - 1].t : '', dele.length ? dele[dele.length - 1].t : '');
+  }
+  esperando[id] = false;
+  estado.conversas[id].push(texto ? { de:'ele', t:texto, h:agora() } : { de:'sistema', t:sistema, h:agora() });
+  if(id !== estado.aberto) desenharLista();
+  desenhar();
+}
+
+/* ---------- começo ---------- */
+if(innerWidth > 720) $('fone').classList.add('abriu');
+desenhar();
+addEventListener('resize', desenharLista);
+</script>
+
+</body>
+</html>
