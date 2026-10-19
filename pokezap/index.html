@@ -51,9 +51,22 @@ button,input{font:inherit;color:inherit}
 .topo .link-ia{margin-left:0;color:#fff;text-decoration:none;background:rgba(255,255,255,.2)}
 .topo .link-ia:hover{background:rgba(255,255,255,.32)}
 @media (max-width:720px){ .topo:has(.link-ia:not([hidden])) #chip{display:none} .topo .link-ia{margin-left:auto} }
+.topo button.link-ia{border:0;cursor:pointer;font:inherit;font-size:.78rem;font-weight:800}
+.painel{max-width:min(440px,calc(100% - 32px));border:4px solid var(--casca);border-radius:18px;background:var(--ele);color:var(--tinta);padding:18px 20px}
+.painel::backdrop{background:rgba(0,0,0,.45)}
+.painel h2{margin:0 0 8px;font:400 1.05rem/1.2 var(--f-titulo)}
+.painel p,.painel li{font-size:.95rem}
+.painel ul{padding-left:20px;margin:8px 0;display:grid;gap:4px}
+.ia-status{font-weight:800}
+.painel progress{width:100%;height:14px;accent-color:var(--casca)}
+.painel-botoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.painel-botoes > *{border-radius:999px;padding:9px 14px;font-weight:800;cursor:pointer;text-decoration:none;font-size:.9rem}
+.painel-botoes .principal{border:0;background:var(--casca);color:#fff}
+.painel-botoes .principal:disabled{opacity:.55;cursor:default}
+.painel-botoes .secundario{border:2px solid var(--linha);background:var(--tela);color:var(--tinta)}
 .bolinha{min-width:22px;height:22px;border-radius:999px;background:var(--casca);color:#fff;font-size:.75rem;font-weight:800;display:grid;place-items:center;padding:0 6px}
 
-.conversa{display:grid;grid-template-rows:auto auto 1fr auto;min-height:0;min-width:0}
+.conversa{display:flex;flex-direction:column;min-height:0;min-width:0}
 .cabeca{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:2px solid var(--linha);background:var(--ele)}
 .cabeca .quem{min-width:0}
 .cabeca b{display:block;font-weight:800}
@@ -63,7 +76,7 @@ button,input{font:inherit;color:inherit}
 .apagar{margin-left:auto;white-space:nowrap}
 .apagar.certeza{background:var(--casca);border-color:var(--casca);color:#fff}
 .aviso{margin:8px 12px 0;padding:8px 12px;border-radius:10px;background:var(--aviso);color:var(--aviso-tinta);font-size:.88rem;font-weight:700}
-.msgs{overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;min-height:0}
 .msg{max-width:min(78%,520px);padding:8px 12px 6px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere}
 .msg.ele{align-self:flex-start;background:var(--ele);border-bottom-left-radius:4px;border:1px solid var(--linha)}
 .msg.eu{align-self:flex-end;background:var(--eu);color:var(--eu-tinta);border-bottom-right-radius:4px}
@@ -94,7 +107,7 @@ button,input{font:inherit;color:inherit}
     <span class="lente" aria-hidden="true"></span>
     <h1>PokéZap</h1>
     <span class="chip" id="chip">⏳ Ligando…</span>
-    <a class="chip link-ia" id="link-ia" hidden target="_blank" rel="noopener">✨ Abrir com IA</a>
+    <button class="chip link-ia" id="ligar-ia" type="button" hidden>🧠 Ligar IA</button>
   </header>
   <div class="tela">
     <nav class="lista" aria-label="Contatos">
@@ -117,6 +130,23 @@ button,input{font:inherit;color:inherit}
     </section>
   </div>
 </div>
+
+<dialog class="painel" id="painel-ia" aria-labelledby="painel-titulo">
+  <h2 id="painel-titulo">🧠 IA no seu computador</h2>
+  <p>Os Pokémon podem conversar com <b>IA de verdade</b> rodando dentro do seu computador, sem precisar do Claude.</p>
+  <ul>
+    <li>Na primeira vez, o site baixa um "cérebro" de uns <b>1 GB</b>. Ele fica guardado pras próximas vezes.</li>
+    <li>Funciona no <b>Chrome</b> ou no <b>Edge</b> de computador. No celular quase nunca dá.</li>
+    <li>Essa IA é pequenininha: às vezes ela fala umas coisas meio malucas. 😅</li>
+  </ul>
+  <p class="ia-status" id="ia-status" hidden></p>
+  <progress id="ia-barra" max="1" value="0" hidden></progress>
+  <div class="painel-botoes">
+    <button type="button" class="principal" id="ia-baixar">⬇️ Baixar e ligar</button>
+    <a class="secundario" id="ia-claude" target="_blank" rel="noopener">✨ Abrir no Claude</a>
+    <button type="button" class="secundario" id="ia-fechar">Agora não</button>
+  </div>
+</dialog>
 
 <script>
 'use strict';
@@ -173,10 +203,15 @@ Regras:
 /* Sem IA: resposta pronta que combina com o que a criança escreveu */
 const semAcento = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const sorteia = (l, evita) => { const ok = l.filter(x => x !== evita); return (ok.length ? ok : l)[Math.floor(Math.random() * (ok.length || l.length))]; };
-function respostaPronta(p, texto, anterior){
+function respostaSegura(p, texto){
   const s = ' ' + semAcento(texto) + ' ';
   if(/senha|endereco|\brua\b|minha escola|telefone|whats|\d{5,}/.test(s)) return `Opa! Isso é coisa sua, não conta na internet, tá? 🛡️ ${p.emoji}`;
   if(/triste|medo|chorando|chorei|machuc|socorro/.test(s)) return `Ei, se você estiver triste ou com medo de verdade, conversa com um adulto que você confia, tá? 💛 ${p.emoji}`;
+  return null;
+}
+function respostaPronta(p, texto, anterior){
+  const s = ' ' + semAcento(texto) + ' ';
+  const seg = respostaSegura(p, texto); if(seg) return seg;
   if(/\b(tchau|flw|falou|xau|fui)\b/.test(s)) return `${p.grito} Tchau! Volta logo! ${p.emoji}👋`;
   if(/\b(ia|robo)\b|de verdade|voce e real/.test(s)) return `Eu sou um ${p.nome} de brincadeira! Aqui eu respondo com frases prontas. 😄 ${p.emoji}`;
   if(/\b(oi+e?|ola|eai|e ai|hey|bom dia|boa tarde|boa noite)\b/.test(s)) return `${p.grito} Oi oi! Tudo bem com você? ${p.emoji}`;
@@ -204,18 +239,76 @@ if(!porId[estado.aberto]) estado.aberto = 'pikachu';
 /* ---------- IA ---------- */
 const LINK_IA = 'https://claude.ai/artifact/NEajmFxW9uopPVDuXEHnUX';   // no site do GitHub: link pra versão com IA de verdade (no Claude)
 let ia = null, semIA = false;
+let local = null, ligandoLocal = false, fila = Promise.resolve();   // IA que roda no computador (WebLLM)
 const esperando = {};   // id -> true enquanto o Pokémon "digita"
 const $ = id => document.getElementById(id);
 function mostrarChip(){
-  $('chip').textContent = ia && !semIA ? '✨ IA ligada' : '💬 Frases prontas';
-  const l = $('link-ia'); l.hidden = !(semIA && LINK_IA); if(LINK_IA) l.href = LINK_IA;
-  $('chip').title = ia && !semIA ? 'Os Pokémon respondem com IA de verdade' : 'Sem IA aqui: os Pokémon respondem com frases prontas';
+  const claudeOn = ia && !semIA;
+  $('chip').textContent = claudeOn ? '✨ IA ligada' : local ? '🧠 IA ligada' : ligandoLocal ? '⏳ Ligando a IA…' : '💬 Frases prontas';
+  $('chip').title = claudeOn || local ? 'Os Pokémon respondem com IA de verdade' : 'Os Pokémon respondem com frases prontas';
+  $('ligar-ia').hidden = !!(claudeOn || local || ligandoLocal);
 }
 (async () => {
   try{ ia = window.claude && window.claude.use ? await window.claude.use('sample') : null; }catch(e){ ia = null; }
   if(!ia) semIA = true;
   mostrarChip();
+  if(semIA && lerPref() && navigator.gpu) ligarLocal(true);   // já baixou antes: liga sozinho
 })();
+
+/* ---------- 🧠 IA no computador: um modelo pequeno (Qwen2.5 1.5B) rodando no navegador com WebGPU ---------- */
+const PREF = 'pokezap.ia-local';
+function lerPref(){ try{ return localStorage.getItem(PREF) === '1'; }catch(e){ return false; } }
+function gravarPref(v){ try{ v ? localStorage.setItem(PREF, '1') : localStorage.removeItem(PREF); }catch(e){} }
+const painel = $('painel-ia');
+$('ia-claude').href = LINK_IA;
+function statusIA(t){ $('ia-status').textContent = t; $('ia-status').hidden = !t; }
+$('ligar-ia').onclick = () => { statusIA(''); $('ia-baixar').disabled = false; try{ painel.showModal(); }catch(e){ painel.setAttribute('open', ''); } };
+$('ia-fechar').onclick = () => painel.close();
+$('ia-baixar').onclick = () => ligarLocal(false);
+async function ligarLocal(sozinho){
+  if(local || ligandoLocal) return;
+  const falhou = t => { ligandoLocal = false; mostrarChip(); $('ia-barra').hidden = true; $('ia-baixar').disabled = false; statusIA(t); if(sozinho) aviso(t); gravarPref(false); };
+  if(!navigator.gpu){ falhou('😕 Este navegador não consegue rodar a IA. Use o Chrome ou o Edge no computador, ou abra no Claude.'); return; }
+  ligandoLocal = true; mostrarChip(); $('ia-baixar').disabled = true;
+  try{
+    const placa = await navigator.gpu.requestAdapter();
+    if(!placa){ falhou('😕 Não achei uma placa de vídeo que a IA consiga usar. Abra no Claude pra conversar com IA.'); return; }
+    const modelo = `Qwen2.5-1.5B-Instruct-${placa.features.has('shader-f16') ? 'q4f16_1' : 'q4f32_1'}-MLC`;
+    statusIA('⏳ Preparando…'); if(sozinho) aviso('🧠 Ligando a IA…');
+    const webllm = await import('./web-llm-0.2.84.js');
+    local = await webllm.CreateMLCEngine(modelo, { initProgressCallback: r => {
+      const pct = Math.round((r.progress || 0) * 100);
+      $('ia-barra').hidden = false; $('ia-barra').value = r.progress || 0;
+      const t = pct < 100 ? `⬇️ Baixando o cérebro da IA… ${pct}%` : '🧠 Acordando a IA…';
+      statusIA(t); if(sozinho) aviso(t);
+    } });
+    ligandoLocal = false; gravarPref(true); mostrarChip();
+    $('ia-barra').hidden = true; statusIA(''); aviso(''); try{ painel.close(); }catch(e){}
+    if(!sozinho) aviso('🧠 IA ligada! Agora os Pokémon respondem com IA no seu computador.');
+  }catch(e){
+    local = null;
+    falhou('😕 Não deu pra ligar a IA (' + (e && e.message ? String(e.message).slice(0, 120) : 'erro') + '). Tente de novo, ou abra no Claude.');
+  }
+}
+function gerarLocal(id, p){
+  const conversa = estado.conversas[id].filter(m => m.de !== 'sistema').slice(-12)
+    .map(m => ({ role: m.de === 'eu' ? 'user' : 'assistant', content: m.t }));
+  const tarefa = fila.then(async () => {
+    const partes = await local.chat.completions.create({
+      messages:[{ role:'system', content: regras(p) + '\n- Nunca escreva em outra língua, só português do Brasil.' }, ...conversa],
+      stream:true, max_tokens:110, temperature:0.8,
+    });
+    let texto = '';
+    for await (const c of partes){
+      texto += (c.choices[0] && c.choices[0].delta && c.choices[0].delta.content) || '';
+      const v = id === estado.aberto && document.getElementById('ao-vivo');
+      if(v && texto.trim()){ v.firstChild.textContent = texto; v.classList.remove('digitando'); $('msgs').scrollTop = $('msgs').scrollHeight; }
+    }
+    return texto.trim().slice(0, 400);
+  });
+  fila = tarefa.catch(() => {});
+  return tarefa;
+}
 
 /* ---------- desenhar ---------- */
 const hora = h => new Date(h).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
@@ -308,6 +401,11 @@ async function responder(id){
       else if(c === 'session_expired'){ sistema = 'Precisa entrar na conta do Claude de novo pra IA funcionar.'; }
       else { texto = e && e.text ? e.text.trim() : null; if(!texto) sistema = 'A mensagem não chegou. Tenta mandar de novo. 📶'; }
     }
+  }
+  else if(local){
+    const minhas = estado.conversas[id].filter(m => m.de === 'eu');
+    texto = respostaSegura(p, minhas.length ? minhas[minhas.length - 1].t : '');
+    if(!texto){ try{ texto = await gerarLocal(id, p); }catch(e){ sistema = 'A IA travou. Tenta mandar de novo. 🧠'; } }
   }
   if(!texto && !sistema){   // sem IA: frase pronta, com um tempinho de "digitando"
     await new Promise(r => setTimeout(r, 700 + Math.random() * 900));
