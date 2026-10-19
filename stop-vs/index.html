@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stop vs</title>
+<meta name="description" content="Stop em times, cada um no seu aparelho: fale uma coisa do tema sem repetir. 1v1 até 5v5.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛑</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+/* Layout: uma arena à noite; uma coluna central com a tela da vez (início, sala, jogo, fim). Um tema só, escuro, de propósito. */
+:root{
+  --noite:#16123a; --noite2:#221b55; --cartao:#2c2468; --linha:#4a3f9a; --texto:#f4f1ff; --fraco:#b9b2e6;
+  --verm:#ff4d5e; --azul:#3ab7ff; --ouro:#ffd23f; --ok:#36d68a;
+  --f-titulo:'Luckiest Guy', 'Arial Black', system-ui, sans-serif;
+  --f-texto:'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--noite)}
+body{margin:0;min-height:100%;color:var(--texto);font:600 16px/1.45 var(--f-texto);
+  background:radial-gradient(1200px 500px at 50% -10%, var(--noite2), var(--noite));
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:18px 40px}
+[hidden]{display:none!important}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ouro);outline-offset:2px}
+.casca{max-width:720px;margin:0 auto;display:grid;gap:16px}
+h1{margin:0;text-align:center;font:400 clamp(3rem,13vw,5.2rem)/.95 var(--f-titulo);letter-spacing:1px;
+  color:var(--ouro);text-shadow:0 5px 0 #b3361f, 0 9px 0 rgba(0,0,0,.35)}
+h1 .vs{color:var(--texto);font-size:.62em;vertical-align:.3em;text-shadow:0 4px 0 var(--linha)}
+.sub{text-align:center;color:var(--fraco);margin:-4px 0 0}
+h2{margin:0 0 10px;font:400 1.5rem/1.1 var(--f-titulo);letter-spacing:.5px}
+.cartao{background:var(--cartao);border:3px solid var(--linha);border-radius:18px;padding:16px}
+.linha{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+label.campo{display:grid;gap:4px;font-weight:800;font-size:.9rem;color:var(--fraco)}
+input[type=text],select{width:100%;background:var(--noite);border:2px solid var(--linha);border-radius:12px;padding:10px 12px;color:var(--texto)}
+.bt{border:0;border-radius:14px;padding:11px 18px;font-weight:900;cursor:pointer;background:var(--linha);color:var(--texto)}
+.bt.grande{font:400 1.35rem/1 var(--f-titulo);letter-spacing:.5px;padding:14px 22px;background:var(--ouro);color:#2a1a00;box-shadow:0 5px 0 #b38a12}
+.bt.grande:active{transform:translateY(3px);box-shadow:0 2px 0 #b38a12}
+.bt:disabled{opacity:.45;cursor:default;transform:none}
+.bt.verm{background:var(--verm);color:#fff}.bt.azul{background:var(--azul);color:#04203a}
+.dica{color:var(--fraco);font-size:.88rem;margin:6px 0 0}
+.erro{background:rgba(255,77,94,.15);border:2px solid var(--verm);border-radius:12px;padding:10px 12px;font-weight:800}
+.grade2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.grade2{grid-template-columns:minmax(0,1fr)}}
+.codigo{font:400 clamp(2.4rem,11vw,3.4rem)/1 var(--f-titulo);letter-spacing:6px;color:var(--ouro);text-align:center}
+.time{border-radius:16px;padding:12px;border:3px solid;min-width:0}
+.time.A{border-color:var(--verm);background:rgba(255,77,94,.08)}
+.time.B{border-color:var(--azul);background:rgba(58,183,255,.08)}
+.time h3{margin:0 0 8px;font:400 1.15rem/1 var(--f-titulo);letter-spacing:.5px}
+.time.A h3{color:var(--verm)}.time.B h3{color:var(--azul)}
+.gente{display:flex;flex-wrap:wrap;gap:6px}
+.pessoa{padding:4px 10px;border-radius:999px;background:var(--noite);border:2px solid var(--linha);font-weight:800;font-size:.9rem;overflow-wrap:anywhere}
+.pessoa.eu{border-color:var(--ouro)}
+.pessoa.fora{text-decoration:line-through;opacity:.45}
+.pessoa.vez{background:var(--ouro);color:#2a1a00;border-color:var(--ouro)}
+.temas{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.temas button{border:2px solid var(--linha);background:var(--noite);border-radius:999px;padding:4px 10px;cursor:pointer;font-weight:800;font-size:.85rem}
+.temas button.on{background:var(--ouro);color:#2a1a00;border-color:var(--ouro)}
+.tema-grande{text-align:center;font:400 clamp(1.8rem,7vw,2.6rem)/1.05 var(--f-titulo);letter-spacing:.5px;overflow-wrap:anywhere}
+.tema-grande small{display:block;font:800 .8rem/1.4 var(--f-texto);letter-spacing:2px;text-transform:uppercase;color:var(--fraco)}
+.relogio{font:400 3.2rem/1 var(--f-titulo);text-align:center;font-variant-numeric:tabular-nums}
+.relogio.pouco{color:var(--verm)}
+.vez{text-align:center;font-weight:900;font-size:1.15rem}
+.vez b.A{color:var(--verm)}.vez b.B{color:var(--azul)}
+.responder{display:flex;gap:8px}
+.responder input{flex:1;min-width:0;font-size:1.15rem}
+.ditas{display:flex;flex-wrap:wrap;gap:6px}
+.dita{padding:4px 10px;border-radius:10px;font-weight:800;background:var(--noite);border-left:5px solid}
+.dita.A{border-color:var(--verm)}.dita.B{border-color:var(--azul)}
+.evento{text-align:center;font-weight:900;font-size:1.05rem;padding:10px;border-radius:12px;background:var(--noite)}
+.votar{display:grid;gap:10px;text-align:center}
+.votar .resp{font:400 2rem/1.1 var(--f-titulo);color:var(--ouro);overflow-wrap:anywhere}
+.log{margin:0;padding-left:18px;color:var(--fraco);font-size:.9rem;display:grid;gap:2px}
+.campeao{text-align:center;font:400 clamp(2rem,9vw,3.2rem)/1.05 var(--f-titulo)}
+.campeao.A{color:var(--verm)}.campeao.B{color:var(--azul)}
+.seguro{font-size:.85rem;color:var(--fraco);text-align:center}
+@media (prefers-reduced-motion:no-preference){ .pulsa{animation:pulsa 1s ease-in-out infinite} @keyframes pulsa{50%{transform:scale(1.06)}} }
+</style>
+</head>
+<body>
+<main class="casca">
+  <h1>STOP <span class="vs">vs</span></h1>
+  <p class="sub">Fale uma coisa do tema. Repetiu, errou ou o tempo acabou? Tá fora!</p>
+  <div class="erro" id="erro" role="alert" hidden></div>
+
+  <!-- INÍCIO -->
+  <section id="t-inicio" class="casca">
+    <div class="cartao">
+      <label class="campo" for="apelido">Seu apelido
+        <input type="text" id="apelido" maxlength="16" placeholder="Ex: Pikachu123" autocomplete="off">
+      </label>
+      <p class="dica">🛡️ Use só apelido, nunca o seu nome de verdade.</p>
+    </div>
+    <div class="grade2">
+      <div class="cartao">
+        <h2>Criar sala</h2>
+        <p class="dica">Você ganha um código pra passar pros amigos.</p>
+        <button class="bt grande" id="criar" type="button">Criar sala</button>
+      </div>
+      <div class="cartao">
+        <h2>Entrar numa sala</h2>
+        <label class="campo" for="cod-entrar">Código da sala
+          <input type="text" id="cod-entrar" maxlength="5" placeholder="ABCDE" autocomplete="off" style="text-transform:uppercase;letter-spacing:4px">
+        </label>
+        <div style="margin-top:10px"><button class="bt grande" id="entrar" type="button">Entrar</button></div>
+      </div>
+    </div>
+    <p class="seguro">Passe o código só pra amigos que você conhece. 🤝</p>
+  </section>
+
+  <!-- SALA -->
+  <section id="t-sala" class="casca" hidden>
+    <div class="cartao">
+      <p class="dica" style="text-align:center;margin:0">Código da sala</p>
+      <div class="codigo" id="s-codigo"></div>
+      <div class="linha" style="justify-content:center;margin-top:10px">
+        <button class="bt" id="copiar" type="button">📋 Copiar link</button>
+      </div>
+    </div>
+    <div class="grade2">
+      <div class="time A"><h3>🔴 Time Vermelho <span id="s-contA"></span></h3><div class="gente" id="s-timeA"></div>
+        <button class="bt verm" id="ir-A" type="button" style="margin-top:10px">Entrar no Vermelho</button></div>
+      <div class="time B"><h3>🔵 Time Azul <span id="s-contB"></span></h3><div class="gente" id="s-timeB"></div>
+        <button class="bt azul" id="ir-B" type="button" style="margin-top:10px">Entrar no Azul</button></div>
+    </div>
+    <div class="cartao" id="s-semtime-box"><h3 style="margin:0 0 8px">Sem time ainda</h3><div class="gente" id="s-semtime"></div></div>
+
+    <div class="cartao" id="s-config">
+      <h2>Regras</h2>
+      <div class="grade2">
+        <label class="campo" for="modo">Modo
+          <select id="modo"><option value="1">1 vs 1</option><option value="2">Dupla vs Dupla</option><option value="3">Trio vs Trio</option><option value="4">Quarteto vs Quarteto</option><option value="5">Quinteto vs Quinteto</option></select>
+        </label>
+        <label class="campo" for="tempo">Tempo pra responder
+          <select id="tempo"><option value="10">10 segundos</option><option value="15">15 segundos</option><option value="20">20 segundos</option><option value="30">30 segundos</option></select>
+        </label>
+      </div>
+      <label class="campo" for="tema" style="margin-top:12px">Tema
+        <input type="text" id="tema" maxlength="30" placeholder="Escreva um tema ou escolha embaixo" autocomplete="off">
+      </label>
+      <div class="temas" id="temas"></div>
+      <label class="campo" for="juiz" style="margin-top:12px">Quem decide se é do tema
+        <select id="juiz"><option value="votos">👥 O outro time vota</option><option value="ia">🧠 Juiz IA (roda neste computador)</option></select>
+      </label>
+      <p class="dica" id="juiz-dica">O juiz robô sempre pega quem repetiu: plural, acento e errinho de digitação não enganam ele.</p>
+      <progress id="ia-barra" max="1" value="0" hidden style="width:100%"></progress>
+      <div style="margin-top:14px;display:grid;gap:6px;justify-items:start">
+        <button class="bt grande" id="comecar" type="button">Começar!</button>
+        <span class="dica" id="falta"></span>
+      </div>
+    </div>
+    <div class="cartao" id="s-regras-ver" hidden>
+      <h2>Regras</h2>
+      <p id="s-regras-txt" style="margin:0"></p>
+      <p class="dica">Quem criou a sala escolhe as regras e começa o jogo.</p>
+    </div>
+  </section>
+
+  <!-- JOGO -->
+  <section id="t-jogo" class="casca" hidden>
+    <div class="cartao"><div class="tema-grande"><small>Tema</small><span id="j-tema"></span></div></div>
+    <div class="grade2">
+      <div class="time A"><h3>🔴 Vermelho</h3><div class="gente" id="j-timeA"></div></div>
+      <div class="time B"><h3>🔵 Azul</h3><div class="gente" id="j-timeB"></div></div>
+    </div>
+    <div class="evento" id="j-evento" hidden></div>
+    <div class="cartao" style="display:grid;gap:12px">
+      <div class="vez" id="j-vez"></div>
+      <div class="relogio" id="j-relogio"></div>
+      <form class="responder" id="j-form" hidden>
+        <input type="text" id="resposta" maxlength="30" autocomplete="off" placeholder="Sua resposta…" aria-label="Sua resposta">
+        <button class="bt grande" type="submit">Stop!</button>
+      </form>
+      <div class="votar" id="j-votar" hidden>
+        <div><span id="v-quem"></span> falou:</div>
+        <div class="resp" id="v-resp"></div>
+        <div>É do tema <b id="v-tema"></b>?</div>
+        <div class="linha" style="justify-content:center" id="v-botoes">
+          <button class="bt grande" id="v-sim" type="button" style="background:var(--ok);box-shadow:0 5px 0 #1d8a55">👍 Vale</button>
+          <button class="bt grande" id="v-nao" type="button" style="background:var(--verm);color:#fff;box-shadow:0 5px 0 #a3202e">👎 Não vale</button>
+        </div>
+        <div class="dica" id="v-status"></div>
+      </div>
+    </div>
+    <div class="cartao"><h3 style="margin:0 0 8px">Já falaram (<span id="j-qtd">0</span>)</h3><div class="ditas" id="j-ditas"></div></div>
+  </section>
+
+  <!-- FIM -->
+  <section id="t-fim" class="casca" hidden>
+    <div class="cartao" style="display:grid;gap:10px">
+      <div class="campeao" id="f-campeao"></div>
+      <p style="text-align:center;margin:0" id="f-frase"></p>
+      <div class="linha" style="justify-content:center"><button class="bt grande" id="de-novo" type="button">Jogar de novo</button></div>
+      <p class="dica" id="f-espera" style="text-align:center">Esperando quem criou a sala começar de novo…</p>
+    </div>
+    <div class="cartao"><h3 style="margin:0 0 8px">Palavras da partida</h3><div class="ditas" id="f-ditas"></div></div>
+    <div class="cartao"><h3 style="margin:0 0 8px">O que aconteceu</h3><ol class="log" id="f-log"></ol></div>
+  </section>
+</main>
+
+<script src="peerjs-1.5.5.min.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   Stop vs — quem cria a sala é o "anfitrião": ele guarda o jogo e decide
+   tudo. Os outros aparelhos se ligam nele direto (WebRTC, pelo PeerJS)
+   e só mandam: entrar, escolher time, resposta e voto.
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const NOMES_TIME = { A:'🔴 Vermelho', B:'🔵 Azul' };
+const TEMAS = ['Livre', 'Animais', 'Comidas', 'Frutas', 'Pokémon', 'Skins de Fortnite', 'Países', 'Cores', 'Profissões', 'Jogos', 'Mapas de Roblox', 'Coisas da escola'];
+const ehLivre = t => semAcento(t).trim() === 'livre';
+
+/* ---------- texto ---------- */
+function semAcento(t){ return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+const FEIAS = ['porra','caralho','merda','puta','puto','foda','fodase','buceta','cu','viado','fdp','pqp','bosta','arrombado','cacete','piroca'];
+function limpo(t, max){
+  let s = String(t || '').replace(/[\u0000-\u001f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, max);
+  for(const f of FEIAS) s = s.replace(new RegExp('(^|[^\\p{L}])(' + f + ')(?=$|[^\\p{L}])', 'giu'), (m, a, b) => a + '*'.repeat(b.length));
+  return s;
+}
+/* O juiz robô: "Gatos", "o gato", "gáto" e "gatto" são a mesma coisa que "gato". */
+function formas(t){
+  let s = semAcento(t).replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  s = s.replace(/^(o|a|os|as|um|uma|uns|umas) /, '');
+  const f = new Set([s, s.replace(/ /g, '')]);
+  for(const x of [...f]){
+    if(x.length > 3 && x.endsWith('s')) f.add(x.slice(0, -1));
+    if(x.length > 4 && x.endsWith('es')) f.add(x.slice(0, -2));
+    if(x.length > 4 && x.endsWith('oes')) f.add(x.slice(0, -3) + 'ao');
+    if(x.length > 4 && x.endsWith('aes')) f.add(x.slice(0, -3) + 'ao');
+    if(x.length > 4 && x.endsWith('ns')) f.add(x.slice(0, -2) + 'm');
+    if(x.length > 4 && x.endsWith('is')) f.add(x.slice(0, -2) + 'l');
+  }
+  return [...f].filter(Boolean);
+}
+function distancia(a, b){
+  if(Math.abs(a.length - b.length) > 1) return 2;
+  const d = Array.from({ length:a.length + 1 }, (_, i) => [i]);
+  for(let j = 1; j <= b.length; j++) d[0][j] = j;
+  for(let i = 1; i <= a.length; i++) for(let j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+function mesmaCoisa(a, b){
+  const fa = formas(a), fb = formas(b);
+  for(const x of fa) for(const y of fb){
+    if(x === y) return true;
+    if(x.length >= 5 && y.length >= 5 && distancia(x, y) <= 1) return true;   // errinho de digitação
+  }
+  return false;
+}
+
+/* ---------- estado ---------- */
+let estado = null, meuId = null, souHost = false, peer = null, connHost = null, codigo = '';
+const conexoes = new Map();   // só no anfitrião: id -> conexão
+let prazoLocal = 0, prazoVotoLocal = 0, votei = null;
+function salaNova(){
+  return { fase:'sala', modo:1, tema:'Animais', tempo:15, juiz:'votos', jogadores:[], ditas:[], vezTime:'A', idx:{ A:0, B:0 },
+    daVez:null, fimDaVez:0, julgando:null, evento:'', log:[], vencedor:null };
+}
+
+/* ---------- conexão ---------- */
+function opcoesPeer(){
+  const s = new URLSearchParams(location.search).get('servidor');   // só pra testar com um servidor PeerJS próprio
+  if(!s) return { debug:0 };
+  const [host, port] = s.split(':');
+  return { debug:0, host, port:+port || 9000, path:'/', secure:false };
+}
+const LETRAS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+const novoCodigo = () => Array.from({ length:5 }, () => LETRAS[Math.floor(Math.random() * LETRAS.length)]).join('');
+const idSala = c => 'stopvs-' + c.toLowerCase();
+function mostrarErro(t){ $('erro').textContent = t; $('erro').hidden = !t; }
+function apelido(){
+  const a = limpo($('apelido').value, 16);
+  if(!a){ mostrarErro('Escreva um apelido primeiro! 🙂'); $('apelido').focus(); return null; }
+  try{ localStorage.setItem('stopvs.apelido', a); }catch(e){}
+  return a;
+}
+function travarInicio(t){ $('criar').disabled = $('entrar').disabled = t; }
+
+function criarSala(tentativa = 0){
+  const nome = apelido(); if(!nome) return;
+  if(!window.Peer){ mostrarErro('Não carregou a parte de jogar online. Atualize a página.'); return; }
+  mostrarErro(''); travarInicio(true);
+  codigo = novoCodigo();
+  peer = new Peer(idSala(codigo), opcoesPeer());
+  peer.on('open', () => {
+    souHost = true; meuId = 'host';
+    estado = salaNova();
+    estado.jogadores.push({ id:'host', nome, time:null, vivo:true });
+    history.replaceState(null, '', '?sala=' + codigo + (new URLSearchParams(location.search).get('servidor') ? '&servidor=' + new URLSearchParams(location.search).get('servidor') : ''));
+    setInterval(tick, 250);
+    mudou();
+  });
+  peer.on('connection', c => {
+    c.on('open', () => conexoes.set(c.peer, c));
+    c.on('data', d => receberNoHost(c.peer, d));
+    c.on('close', () => saiu(c.peer));
+    c.on('error', () => saiu(c.peer));
+  });
+  peer.on('error', e => {
+    if(e.type === 'unavailable-id' && tentativa < 3){ peer.destroy(); criarSala(tentativa + 1); return; }
+    if(!estado){ travarInicio(false); mostrarErro('Não deu pra criar a sala (' + (e.type || 'erro') + '). Veja se tem internet e tente de novo.'); }
+  });
+  peer.on('disconnected', () => { try{ peer.reconnect(); }catch(e){} });
+}
+function entrarSala(){
+  const nome = apelido(); if(!nome) return;
+  const c = semAcento($('cod-entrar').value).toUpperCase().replace(/[^A-Z]/g, '');
+  if(c.length !== 5){ mostrarErro('O código tem 5 letras. Confere com quem criou a sala!'); return; }
+  if(!window.Peer){ mostrarErro('Não carregou a parte de jogar online. Atualize a página.'); return; }
+  mostrarErro(''); travarInicio(true); codigo = c;
+  peer = new Peer(undefined, opcoesPeer());
+  peer.on('open', id => {
+    meuId = id;
+    connHost = peer.connect(idSala(c), { reliable:true });
+    connHost.on('open', () => connHost.send({ t:'entrar', nome }));
+    connHost.on('data', receberDoHost);
+    connHost.on('close', () => { if(estado){ mostrarErro('A sala fechou. Quem criou a sala saiu do jogo. 😕'); } });
+  });
+  peer.on('error', e => {
+    travarInicio(false);
+    if(e.type === 'peer-unavailable') mostrarErro('Não achei essa sala. Confere o código! Quem criou a sala tem que estar com o site aberto.');
+    else mostrarErro('Não deu pra entrar (' + (e.type || 'erro') + '). Veja se tem internet e tente de novo.');
+  });
+}
+function mandar(m){ if(souHost) receberNoHost('host', m); else if(connHost && connHost.open) connHost.send(m); }
+function receberDoHost(d){
+  if(!d || typeof d !== 'object') return;
+  if(d.t === 'erro'){ mostrarErro(d.msg); travarInicio(false); try{ peer.destroy(); }catch(e){} estado = null; desenhar(); return; }
+  if(d.t === 'estado'){
+    const antes = estado;
+    estado = d.e;
+    prazoLocal = Date.now() + (d.e.restante || 0);
+    prazoVotoLocal = Date.now() + (d.e.restanteVoto || 0);
+    if(!antes || !estado.julgando || (antes.julgando && antes.julgando.n !== estado.julgando.n)) votei = null;
+    if(!antes){ history.replaceState(null, '', '?sala=' + codigo + (new URLSearchParams(location.search).get('servidor') ? '&servidor=' + new URLSearchParams(location.search).get('servidor') : '')); }
+    mostrarErro(''); desenhar();
+  }
+}
+
+/* ---------- anfitrião: o juiz de verdade ---------- */
+const jogador = id => estado.jogadores.find(j => j.id === id);
+const doTime = t => estado.jogadores.filter(j => j.time === t);
+const vivos = t => doTime(t).filter(j => j.vivo);
+function mudou(){
+  const e = Object.assign({}, estado, {
+    restante: estado.fimDaVez ? Math.max(0, estado.fimDaVez - Date.now()) : 0,
+    restanteVoto: estado.julgando && estado.julgando.fim ? Math.max(0, estado.julgando.fim - Date.now()) : 0,
+  });
+  for(const c of conexoes.values()) if(c.open) try{ c.send({ t:'estado', e }); }catch(x){}
+  prazoLocal = estado.fimDaVez; prazoVotoLocal = estado.julgando && estado.julgando.fim || 0;
+  desenhar();
+}
+function receberNoHost(id, d){
+  if(!d || typeof d !== 'object' || !estado) return;
+  if(d.t === 'entrar'){
+    const c = conexoes.get(id);
+    const nega = msg => { if(c) try{ c.send({ t:'erro', msg }); setTimeout(() => c.close(), 500); }catch(x){} };
+    if(estado.fase !== 'sala') return nega('Esse jogo já começou. Espere acabar e entre de novo!');
+    if(estado.jogadores.length >= 10) return nega('A sala está cheia (máximo 10 pessoas).');
+    let nome = limpo(d.nome, 16) || 'Jogador';
+    while(estado.jogadores.some(j => j.nome === nome)) nome = nome.slice(0, 14) + Math.floor(Math.random() * 10);
+    estado.jogadores.push({ id, nome, time:null, vivo:true });
+    estado.log.push(`👋 ${nome} entrou na sala`); return mudou();
+  }
+  const j = jogador(id); if(!j) return;
+  if(d.t === 'time' && estado.fase === 'sala' && (d.time === 'A' || d.time === 'B')){
+    if(j.time !== d.time && doTime(d.time).length >= estado.modo) return;
+    j.time = d.time; return mudou();
+  }
+  if(d.t === 'resposta' && estado.fase === 'jogo' && !estado.julgando && estado.daVez === id) return julgar(j, limpo(d.texto, 30));
+  if(d.t === 'voto' && estado.julgando && estado.julgando.votos && podeVotar(j)){
+    estado.julgando.votos[id] = !!d.ok;
+    const faltam = eleitores().filter(x => !(x.id in estado.julgando.votos));
+    if(!faltam.length) decidir(); else mudou();
+  }
+}
+const eleitores = () => estado.julgando ? estado.jogadores.filter(x => x.vivo && x.time && x.time !== estado.julgando.time) : [];
+const podeVotar = j => eleitores().some(x => x.id === j.id);
+function saiu(id){
+  conexoes.delete(id);
+  if(!estado) return;
+  const j = jogador(id); if(!j) return;
+  if(estado.fase === 'sala'){ estado.jogadores = estado.jogadores.filter(x => x.id !== id); estado.log.push(`🚪 ${j.nome} saiu`); return mudou(); }
+  if(estado.fase === 'jogo' && j.vivo){
+    if(estado.julgando && estado.julgando.por === id) estado.julgando = null;
+    return eliminar(j, 'saiu do jogo 🚪');
+  }
+  if(estado.julgando && estado.julgando.votos){ const f = eleitores().filter(x => !(x.id in estado.julgando.votos)); if(!f.length) return decidir(); }
+  mudou();
+}
+function configurar(campo, valor){
+  if(!souHost || estado.fase !== 'sala') return;
+  estado[campo] = valor;
+  if(campo === 'modo'){   // quem passou do limite do time volta pra "sem time"
+    for(const t of ['A','B']) doTime(t).slice(valor).forEach(j => { j.time = null; });
+  }
+  mudou();
+}
+function podeComecar(){
+  const a = doTime('A').length, b = doTime('B').length, m = estado.modo;
+  if(!limpo(estado.tema, 30)) return 'Escolha um tema.';
+  if(a !== m || b !== m) return `Cada time precisa de ${m} ${m === 1 ? 'pessoa' : 'pessoas'} (Vermelho: ${a}, Azul: ${b}).`;
+  if(estado.juiz === 'ia' && !iaLocal) return 'Ligue o juiz IA primeiro (ou escolha votação).';
+  return '';
+}
+function comecar(){
+  if(!souHost || estado.fase !== 'sala' || podeComecar()) return;
+  estado.jogadores.forEach(j => { j.vivo = true; });
+  Object.assign(estado, { fase:'jogo', ditas:[], idx:{ A:0, B:0 }, julgando:null, vencedor:null, evento:'', log:[`🎬 Começou! Tema: ${estado.tema}`] });
+  estado.vezTime = Math.random() < .5 ? 'A' : 'B';
+  passarVez(estado.vezTime);
+  mudou();
+}
+function passarVez(time){
+  const v = vivos(time);
+  if(!v.length){ return terminar(time === 'A' ? 'B' : 'A'); }
+  const j = v[estado.idx[time] % v.length]; estado.idx[time]++;
+  estado.vezTime = time; estado.daVez = j.id; estado.fimDaVez = Date.now() + estado.tempo * 1000;
+}
+function proxima(){ passarVez(estado.vezTime === 'A' ? 'B' : 'A'); }
+function terminar(vencedor){
+  Object.assign(estado, { fase:'fim', vencedor, daVez:null, fimDaVez:0, julgando:null });
+  estado.log.push(`🏆 Time ${NOMES_TIME[vencedor]} ganhou!`);
+}
+function eliminar(j, motivo){
+  j.vivo = false; estado.julgando = null;
+  estado.evento = `❌ ${j.nome} tá fora: ${motivo}`; estado.log.push(estado.evento);
+  if(!vivos(j.time).length){ terminar(j.time === 'A' ? 'B' : 'A'); return mudou(); }
+  proxima(); mudou();
+}
+function aceitar(j, texto){
+  estado.julgando = null;
+  estado.ditas.push({ texto, nome:j.nome, time:j.time });
+  estado.evento = `✅ ${j.nome}: "${texto}"`; estado.log.push(estado.evento);
+  proxima(); mudou();
+}
+let nJulgamento = 0;
+function julgar(j, texto){
+  if(!texto) return;
+  const rep = estado.ditas.find(d => mesmaCoisa(d.texto, texto));
+  if(rep) return eliminar(j, `repetiu "${texto}" (${rep.nome} já tinha falado "${rep.texto}")`);
+  if(ehLivre(estado.tema)) return aceitar(j, texto);
+  estado.fimDaVez = 0;
+  if(estado.juiz === 'ia' && iaLocal){
+    estado.julgando = { n:++nJulgamento, texto, por:j.id, nome:j.nome, time:j.time, ia:true };
+    mudou();
+    const n = estado.julgando.n;
+    perguntarIA(estado.tema, texto).then(vale => {
+      if(!estado.julgando || estado.julgando.n !== n) return;
+      vale ? aceitar(j, texto) : eliminar(j, `"${texto}" não é do tema (o juiz IA disse) 🧠`);
+    }).catch(() => {
+      if(!estado.julgando || estado.julgando.n !== n) return;
+      abrirVotacao(j, texto);
+    });
+    return;
+  }
+  abrirVotacao(j, texto);
+}
+function abrirVotacao(j, texto){
+  estado.julgando = { n:++nJulgamento, texto, por:j.id, nome:j.nome, time:j.time, votos:{}, fim:Date.now() + 8000 };
+  if(!eleitores().length) return aceitar(j, texto);
+  mudou();
+}
+function decidir(){
+  const g = estado.julgando; if(!g) return;
+  const vs = Object.values(g.votos), nao = vs.filter(v => !v).length, sim = vs.length - nao;
+  const j = jogador(g.por);
+  if(!j) { estado.julgando = null; return mudou(); }
+  if(nao > sim) eliminar(j, `"${g.texto}" não é do tema (votação: ${nao} 👎 × ${sim} 👍)`);
+  else aceitar(j, g.texto);
+}
+function tick(){
+  if(!estado || estado.fase !== 'jogo') return;
+  const agora = Date.now();
+  if(estado.julgando){ if(estado.julgando.fim && agora > estado.julgando.fim) decidir(); return; }
+  if(estado.fimDaVez && agora > estado.fimDaVez){ const j = jogador(estado.daVez); if(j) eliminar(j, 'o tempo acabou ⏰'); }
+}
+function deNovo(){
+  if(!souHost || estado.fase !== 'fim') return;
+  Object.assign(estado, { fase:'sala', ditas:[], julgando:null, vencedor:null, daVez:null, fimDaVez:0, evento:'', log:[] });
+  estado.jogadores.forEach(j => { j.vivo = true; });
+  mudou();
+}
+
+/* ---------- 🧠 juiz IA (só no aparelho de quem criou a sala) ---------- */
+let iaLocal = null, iaLigando = false;
+async function ligarIA(){
+  if(iaLocal || iaLigando) return;
+  const falhou = t => { iaLigando = false; $('ia-barra').hidden = true; $('juiz-dica').textContent = t; $('juiz').value = 'votos'; configurar('juiz', 'votos'); };
+  if(!navigator.gpu) return falhou('😕 Este navegador não consegue rodar a IA. Use Chrome ou Edge no computador. Por enquanto, o outro time vota.');
+  iaLigando = true; $('juiz-dica').textContent = '⏳ Preparando o juiz IA…';
+  try{
+    const placa = await navigator.gpu.requestAdapter();
+    if(!placa) return falhou('😕 Não achei uma placa de vídeo que a IA consiga usar. Por enquanto, o outro time vota.');
+    const modelo = `Qwen2.5-1.5B-Instruct-${placa.features.has('shader-f16') ? 'q4f16_1' : 'q4f32_1'}-MLC`;
+    const webllm = await import('../pokezap/web-llm-0.2.84.js');
+    iaLocal = await webllm.CreateMLCEngine(modelo, { initProgressCallback: r => {
+      const p = Math.round((r.progress || 0) * 100);
+      $('ia-barra').hidden = false; $('ia-barra').value = r.progress || 0;
+      $('juiz-dica').textContent = p < 100 ? `⬇️ Baixando o cérebro do juiz (uns 1 GB, só na primeira vez)… ${p}%` : '🧠 Acordando o juiz…';
+    } });
+    iaLigando = false; $('ia-barra').hidden = true; $('juiz-dica').textContent = '🧠 Juiz IA ligado! Ele decide se a palavra é do tema. Se ele travar, o outro time vota.';
+    mudou();
+  }catch(e){ iaLocal = null; falhou('😕 Não deu pra ligar o juiz IA. Por enquanto, o outro time vota.'); }
+}
+async function perguntarIA(tema, texto){
+  const r = await Promise.race([
+    iaLocal.chat.completions.create({ temperature:0, max_tokens:4, messages:[
+      { role:'system', content:'Você é o juiz de um jogo de palavras para crianças. Responda só SIM ou NAO.' },
+      { role:'user', content:`Tema: "${tema}". Resposta do jogador: "${texto}". A resposta é um exemplo do tema? Erros de digitação contam como certo. Responda só SIM ou NAO.` },
+    ] }),
+    new Promise((_, n) => setTimeout(() => n(new Error('demorou')), 15000)),
+  ]);
+  const t = semAcento(r.choices[0].message.content || '');
+  if(/\bsim\b|\byes\b/.test(t)) return true;
+  if(/\bnao\b|\bno\b/.test(t)) return false;
+  throw new Error('não entendi o juiz');
+}
+
+/* ---------- desenhar ---------- */
+function telas(qual){ for(const t of ['inicio','sala','jogo','fim']) $('t-' + t).hidden = t !== qual; }
+function chip(j, extra){
+  const s = document.createElement('span');
+  s.className = 'pessoa' + (j.id === meuId ? ' eu' : '') + (extra || '');
+  s.textContent = j.nome + (j.id === 'host' ? ' 👑' : '') + (j.id === meuId ? ' (você)' : '');
+  return s;
+}
+function encher(box, lista, extra){ box.textContent = ''; lista.forEach(j => box.append(chip(j, extra ? extra(j) : ''))); }
+function ditasEm(box){
+  box.textContent = '';
+  estado.ditas.forEach(d => { const s = document.createElement('span'); s.className = 'dita ' + d.time; s.textContent = d.texto; s.title = d.nome; box.append(s); });
+}
+function desenhar(){
+  if(!estado){ telas('inicio'); return; }
+  const eu = estado.jogadores.find(j => j.id === meuId);
+  if(estado.fase === 'sala'){
+    telas('sala');
+    $('s-codigo').textContent = codigo;
+    encher($('s-timeA'), doTime('A')); encher($('s-timeB'), doTime('B'));
+    $('s-contA').textContent = `(${doTime('A').length}/${estado.modo})`; $('s-contB').textContent = `(${doTime('B').length}/${estado.modo})`;
+    const sem = estado.jogadores.filter(j => !j.time); encher($('s-semtime'), sem); $('s-semtime-box').hidden = !sem.length;
+    $('ir-A').disabled = !eu || eu.time === 'A' || doTime('A').length >= estado.modo;
+    $('ir-B').disabled = !eu || eu.time === 'B' || doTime('B').length >= estado.modo;
+    $('s-config').hidden = !souHost; $('s-regras-ver').hidden = souHost;
+    if(souHost){
+      $('modo').value = estado.modo; $('tempo').value = estado.tempo; $('juiz').value = estado.juiz;
+      if(document.activeElement !== $('tema')) $('tema').value = estado.tema;
+      [...$('temas').children].forEach(b => b.classList.toggle('on', semAcento(b.textContent) === semAcento(estado.tema)));
+      const falta = podeComecar(); $('comecar').disabled = !!falta; $('falta').textContent = falta;
+    }else{
+      const modos = ['','1 vs 1','Dupla vs Dupla','Trio vs Trio','Quarteto vs Quarteto','Quinteto vs Quinteto'];
+      $('s-regras-txt').textContent = `${modos[estado.modo]} · Tema: ${estado.tema} · ${estado.tempo} segundos pra responder · ${estado.juiz === 'ia' ? '🧠 Juiz IA' : '👥 O outro time vota'}`;
+    }
+    return;
+  }
+  if(estado.fase === 'jogo'){
+    telas('jogo');
+    $('j-tema').textContent = estado.tema;
+    const marca = j => (j.vivo ? '' : ' fora') + (j.id === estado.daVez && !estado.julgando ? ' vez' : '');
+    encher($('j-timeA'), doTime('A'), marca); encher($('j-timeB'), doTime('B'), marca);
+    $('j-evento').textContent = estado.evento; $('j-evento').hidden = !estado.evento;
+    ditasEm($('j-ditas')); $('j-qtd').textContent = estado.ditas.length;
+    const g = estado.julgando, daVez = jogador(estado.daVez);
+    $('j-votar').hidden = !g; $('j-relogio').hidden = !!g && !g.votos;
+    if(g){
+      $('j-form').hidden = true;
+      $('j-vez').innerHTML = '';
+      $('v-quem').textContent = g.nome; $('v-resp').textContent = `"${g.texto}"`; $('v-tema').textContent = estado.tema;
+      const posso = eu && eu.vivo && eu.time && eu.time !== g.time && g.votos;
+      $('v-botoes').hidden = !posso || votei !== null;
+      $('v-status').textContent = g.ia ? '🧠 O juiz IA está pensando…' : !posso ? 'O outro time está votando…' : votei !== null ? `Você votou ${votei ? '👍' : '👎'}. Esperando os outros…` : 'Vote rápido!';
+      $('j-vez').textContent = g.ia ? '🧠 Juiz IA' : '👥 Votação';
+    }else if(daVez){
+      const minhaVez = daVez.id === meuId;
+      $('j-vez').innerHTML = minhaVez ? '<span class="pulsa" style="display:inline-block">⚡ SUA VEZ! ⚡</span>' : `Vez de <b class="${daVez.time}"></b>`;
+      if(!minhaVez) $('j-vez').querySelector('b').textContent = daVez.nome;
+      const estava = !$('j-form').hidden;
+      $('j-form').hidden = !minhaVez;
+      if(minhaVez && !estava){ $('resposta').value = ''; $('resposta').focus(); }
+    }
+    return;
+  }
+  if(estado.fase === 'fim'){
+    telas('fim');
+    const v = estado.vencedor;
+    $('f-campeao').className = 'campeao ' + v; $('f-campeao').textContent = `🏆 Time ${NOMES_TIME[v]} venceu!`;
+    $('f-frase').textContent = eu && eu.time ? (eu.time === v ? 'Vitória! 🎉👑' : 'Não foi dessa vez… revanche? 💪') : '';
+    ditasEm($('f-ditas'));
+    const log = $('f-log'); log.textContent = ''; estado.log.forEach(l => { const li = document.createElement('li'); li.textContent = l; log.append(li); });
+    $('de-novo').hidden = !souHost; $('f-espera').hidden = souHost;
+  }
+}
+/* relógio na tela (cada aparelho conta sozinho a partir do tempo que o anfitrião mandou) */
+setInterval(() => {
+  if(!estado || estado.fase !== 'jogo') return;
+  const g = estado.julgando;
+  const fim = g ? (g.votos ? prazoVotoLocal : 0) : prazoLocal;
+  const s = fim ? Math.max(0, Math.ceil((fim - Date.now()) / 1000)) : 0;
+  $('j-relogio').textContent = fim ? s : '';
+  $('j-relogio').classList.toggle('pouco', s <= 3);
+}, 200);
+
+/* ---------- botões ---------- */
+TEMAS.forEach(t => { const b = document.createElement('button'); b.type = 'button'; b.textContent = t; b.onclick = () => { $('tema').value = t; configurar('tema', t); }; $('temas').append(b); });
+$('criar').onclick = () => criarSala();
+$('entrar').onclick = entrarSala;
+$('cod-entrar').addEventListener('keydown', e => { if(e.key === 'Enter') entrarSala(); });
+$('ir-A').onclick = () => mandar({ t:'time', time:'A' });
+$('ir-B').onclick = () => mandar({ t:'time', time:'B' });
+$('modo').onchange = e => configurar('modo', +e.target.value);
+$('tempo').onchange = e => configurar('tempo', +e.target.value);
+$('tema').addEventListener('input', e => configurar('tema', limpo(e.target.value, 30)));
+$('juiz').onchange = e => { configurar('juiz', e.target.value); if(e.target.value === 'ia') ligarIA(); };
+$('comecar').onclick = comecar;
+$('de-novo').onclick = deNovo;
+$('j-form').addEventListener('submit', e => { e.preventDefault(); const t = $('resposta').value.trim(); if(!t) return; mandar({ t:'resposta', texto:t }); $('resposta').value = ''; });
+$('v-sim').onclick = () => { votei = true; mandar({ t:'voto', ok:true }); desenhar(); };
+$('v-nao').onclick = () => { votei = false; mandar({ t:'voto', ok:false }); desenhar(); };
+$('copiar').onclick = async () => {
+  const link = location.origin + location.pathname + '?sala=' + codigo;
+  try{ await navigator.clipboard.writeText(link); $('copiar').textContent = '✅ Link copiado!'; }
+  catch(e){ $('copiar').textContent = link; }
+  setTimeout(() => { $('copiar').textContent = '📋 Copiar link'; }, 2500);
+};
+try{ $('apelido').value = localStorage.getItem('stopvs.apelido') || ''; }catch(e){}
+const salaDoLink = new URLSearchParams(location.search).get('sala');
+if(salaDoLink){ $('cod-entrar').value = salaDoLink.toUpperCase().slice(0, 5); }
+addEventListener('beforeunload', () => { try{ peer && peer.destroy(); }catch(e){} });
+desenhar();
+</script>
+</body>
+</html>
