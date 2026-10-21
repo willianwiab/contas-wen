@@ -323,6 +323,38 @@ footer a{color:var(--roxo)}
   .det-topo .pilulas{justify-content:center}
   .grade{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
 }
+/* ---------- 🎮 jogos ---------- */
+.jcarta{background:var(--cartao);border:3px solid var(--cor-rar,#777);border-radius:16px;overflow:hidden;cursor:pointer;padding:0;color:var(--tinta);width:160px;max-width:40vw;box-shadow:0 4px 0 var(--sombra-cor);font:inherit;text-align:center;flex:none}
+.jcarta .foto{aspect-ratio:1/1;background:linear-gradient(160deg,var(--cor-rar,#777),var(--cartao3) 90%);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.jcarta .foto img{width:100%;height:100%;object-fit:cover;display:block}
+.jcarta .sem{font-size:3rem}
+.jcarta .nome{font-weight:700;padding:6px 8px;font-size:.9rem;line-height:1.2}
+.jcarta .rod{padding:0 8px 8px;font-size:.85rem;color:var(--tinta-fraca)}
+.jcarta.certa{border-color:var(--ok);box-shadow:0 0 0 4px var(--ok)}
+.jcarta.errada{opacity:.55}
+.duelo{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.vs{font-family:'Baloo 2',cursive;font-size:2rem;color:var(--erro)}
+.pergunta{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-top:8px}
+.pergunta .ops{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.pergunta .ops .btn.certo{background:var(--ok);color:#fff}
+.pergunta .ops .btn.errado{background:var(--erro);color:#fff}
+.roleta{display:flex;justify-content:center;margin:10px 0}
+.roleta.gira .jcarta{animation:pula .09s linear infinite alternate}
+@keyframes pula{to{transform:scale(1.05) rotate(3deg)}}
+.letras .chip{min-width:34px;text-align:center}
+.votar{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.votar .btns{display:flex;gap:8px;flex-wrap:wrap}
+/* ---------- 🎒 coleção ---------- */
+.perfil{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.perfil .av{width:110px;height:110px;border-radius:50%;padding:6px;background:var(--moldura,#999);flex:none}
+.perfil .av img,.perfil .av span{width:100%;height:100%;border-radius:50%;object-fit:cover;background:var(--cartao3);display:flex;align-items:center;justify-content:center;font-size:3rem}
+.perfil .apelido{font-family:'Baloo 2',cursive;font-size:1.8rem;color:var(--roxo-escuro);line-height:1}
+.mural{grid-template-columns:repeat(3,1fr);max-width:520px}
+.tocar-mini{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;background:var(--roxo);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;box-shadow:0 2px 0 var(--roxo-escuro);z-index:2}
+#miniPlayer{position:fixed;right:12px;bottom:12px;width:min(340px,calc(100vw - 24px));background:var(--cartao);border:2px solid var(--roxo);border-radius:16px;overflow:hidden;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+#miniPlayer .topo{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;font-size:.9rem}
+#miniPlayer .topo button{border:none;background:none;font-size:1.1rem;cursor:pointer;color:var(--tinta)}
+#miniPlayer iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
 </style>
 </head>
 <body>
@@ -346,6 +378,8 @@ footer a{color:var(--roxo)}
   <button aria-pressed="false" data-aba="armas">🔫 Armas</button>
   <button aria-pressed="false" data-aba="npcs">🧑 NPCs</button>
   <button aria-pressed="false" data-aba="historia">🕰️ História</button>
+  <button aria-pressed="false" data-aba="jogos">🎮 Jogos</button>
+  <button aria-pressed="false" data-aba="colecao">🎒 Coleção</button>
   <button aria-pressed="false" data-aba="vbucks">💎 V-Bucks em reais</button>
 </nav>
 
@@ -394,6 +428,7 @@ footer a{color:var(--roxo)}
     <h2>🛒 Loja de itens de hoje</h2>
     <p class="fraco" id="lojaData">Carregando a loja…</p>
     <div class="resumo" id="lojaResumo"></div>
+    <p style="margin-top:8px"><button class="btn pequeno roxo" id="btnCompartilharLoja">📸 Compartilhar a loja como imagem</button> <span class="fraco" id="lojaShareMsg"></span></p>
     <div id="lojaAlertas"></div>
     <div class="chips" id="chipsLoja">
       <button class="chip" aria-pressed="true" data-f="">Todas</button>
@@ -405,6 +440,8 @@ footer a{color:var(--roxo)}
       <button class="chip" aria-pressed="false" data-f="parceria">🦸 Parcerias</button>
       <button class="chip" aria-pressed="false" data-f="caros">💰 Top 10 mais caros</button>
       <button class="chip" aria-pressed="false" data-f="baratos">🪙 Top 10 mais baratos</button>
+      <button class="chip" aria-pressed="false" data-f="tenho">🎒 Que eu já tenho</button>
+      <button class="chip" aria-pressed="false" data-f="favs">❤️ Das minhas favoritas</button>
     </div>
     <p class="contador" id="contadorLoja"></p>
     <div id="lojaLista" style="margin-top:6px"></div>
@@ -642,6 +679,106 @@ footer a{color:var(--roxo)}
   </div>
 </section>
 
+<!-- ============ 🎮 JOGOS ============ -->
+<section class="painel" id="painel-jogos">
+  <div class="caixa">
+    <h2>🎲 Item aleatório</h2>
+    <p class="fraco">Não sabe com o que jogar? O DearNite escolhe pra você, e ainda dá um desafio pra partida!</p>
+    <div class="linha-meta" style="margin-top:8px">
+      <select id="selSorteio" style="padding:9px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit">
+        <option value="outfit">🧍 Uma skin</option><option value="pickaxe">⛏️ Uma picareta</option><option value="emote">🕺 Um gesto</option>
+        <option value="glider">🪂 Uma asa-delta</option><option value="backpack">🎒 Uma mochila</option><option value="">🎁 Qualquer coisa</option>
+      </select>
+      <label class="fraco"><input type="checkbox" id="chkSorteioArmario" style="width:auto" /> só do meu armário</label>
+      <button class="btn pequeno roxo" id="btnSorteio">Sortear 🎲</button>
+    </div>
+    <div id="sorteio" style="margin-top:10px"></div>
+  </div>
+  <div class="caixa">
+    <h2>⚔️ Duelo</h2>
+    <p class="fraco">Toca na que você acha que ganha!</p>
+    <div class="chips" id="chipsDuelo">
+      <button class="chip" aria-pressed="true" data-d="rara">💎 Qual é mais rara?</button>
+      <button class="chip" aria-pressed="false" data-d="cara">💰 Qual é mais cara?</button>
+      <button class="chip" aria-pressed="false" data-d="primeiro">📅 Qual saiu primeiro?</button>
+      <button class="chip" aria-pressed="false" data-d="voltou">🔁 Qual voltou mais vezes?</button>
+    </div>
+    <h3 id="tituloDuelo"></h3>
+    <div class="duelo" id="duelo"></div>
+    <p id="resultadoDuelo"></p>
+    <p class="fraco" id="placarDuelo"></p>
+  </div>
+  <div class="caixa">
+    <h2>📚 De que capítulo é essa skin?</h2>
+    <div id="quizCap"></div>
+  </div>
+  <div class="caixa">
+    <h2>🪙 Adivinha o preço</h2>
+    <p class="fraco">Quanto essa custa (ou custava) em V-Bucks na loja?</p>
+    <div id="quizPreco"></div>
+  </div>
+  <div class="caixa">
+    <h2>🎰 Roleta da loja de hoje</h2>
+    <p class="fraco">Gira a roleta e ela escolhe um item da loja de hoje pra você.</p>
+    <button class="btn pequeno roxo" id="btnRoleta" style="margin-top:8px">Girar 🎰</button>
+    <div class="roleta" id="roleta"></div>
+    <p id="roletaRes" style="text-align:center"></p>
+  </div>
+  <div class="caixa">
+    <h2>🔤 Skins de A a Z</h2>
+    <div class="chips letras" id="letrasAZ"></div>
+    <p class="contador" id="contadorAZ"></p>
+    <div class="grade" id="gradeAZ"></div>
+  </div>
+  <div class="caixa">
+    <h2>🗳️ Curti ou não curti?</h2>
+    <p class="fraco">Vota nas skins! As que você curtir vão pra lista lá embaixo.</p>
+    <div id="votacao" style="margin-top:8px"></div>
+    <h3>👍 As que eu curti</h3>
+    <p class="fraco" id="txtCurti"></p>
+    <div class="grade" id="gradeCurti" style="margin-top:8px"></div>
+  </div>
+</section>
+
+<!-- ============ 🎒 COLEÇÃO ============ -->
+<section class="painel" id="painel-colecao">
+  <div class="caixa">
+    <h2>👤 Meu perfil</h2>
+    <div class="perfil" id="perfilCartao"></div>
+    <div class="linha-meta" style="margin-top:12px">
+      <input id="apelido" maxlength="20" placeholder="Seu apelido" style="width:180px" />
+      <select id="selAvatar" style="padding:9px 12px;border-radius:12px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit"></select>
+    </div>
+    <p class="fraco" style="margin-top:6px">A moldura tem a cor da coisa mais rara do seu armário. Tudo fica só neste aparelho (não coloca seu nome de verdade, só apelido!).</p>
+  </div>
+  <div class="caixa">
+    <h2>🐐 Skin do dia</h2>
+    <div id="skinDia"></div>
+  </div>
+  <div class="caixa">
+    <h2>📊 Minha raridade</h2>
+    <p class="fraco">Quantas coisas do seu armário têm cada estrela de raridade de ver.</p>
+    <div id="graficoRaridade" style="margin-top:8px"></div>
+  </div>
+  <div class="caixa">
+    <h2>🏆 Mural das 9 mais raras</h2>
+    <p class="fraco">As 9 coisas mais raras do seu armário.</p>
+    <div class="grade mural" id="mural" style="margin-top:8px"></div>
+  </div>
+  <div class="caixa">
+    <h2>🎨 Skins da mesma cor</h2>
+    <p class="fraco">Escolhe uma cor e o DearNite olha as fotos das skins pra achar as dessa cor.</p>
+    <div class="chips" id="chipsCor"></div>
+    <p class="contador" id="contadorCor"></p>
+    <div class="grade" id="gradeCor"></div>
+  </div>
+  <div class="caixa">
+    <h2>🔊 Gestos pra ouvir</h2>
+    <p class="fraco">Toca no <b>▶</b> roxo da carta pra ouvir o gesto ali mesmo, sem abrir nada. Funciona em qualquer carta do site que tenha o ▶.</p>
+    <div class="grade" id="gradeSons" style="margin-top:8px"></div>
+  </div>
+</section>
+
 <!-- ============ V-BUCKS ============ -->
 <section class="painel" id="painel-vbucks">
   <div class="caixa">
@@ -662,7 +799,7 @@ footer a{color:var(--roxo)}
 <footer>
   Dados dos cosméticos: <a href="https://fortnite-api.com" target="_blank" rel="noopener">fortnite-api.com</a>. DearNite não é da Epic Games.<br/>
   Feito pelo Jojo com o Claude. Irmão do <a href="../butterpoke/">ButterPoke</a> 🦋<br/>
-  Versão <b id="versao">26</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
+  Versão <b id="versao">27</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
   <div class="fraco" id="atualizarMsg" style="margin-top:6px"></div>
 </footer>
 </div>
@@ -1192,6 +1329,7 @@ function cartaHTML(it, extra){
   if(favs.has(it.id)) selos.push('<span class="selo fav">❤</span>');
   return '<button class="carta" data-id="' + esc(it.id) + '" style="--cor-rar:' + R.cor + '">' +
     '<div class="selos">' + selos.join('') + '</div>' +
+    (it.video ? '<span class="tocar-mini" data-video="' + esc(it.video) + '" data-nome="' + esc(it.nome) + '" title="Tocar aqui">▶</span>' : '') +
     '<div class="foto">' + (it.img ? '<img loading="lazy" src="' + esc(it.img) + '" alt="" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'sem\',textContent:\'' + T.emoji + '\'}))" />' : '<span class="sem">' + T.emoji + '</span>') + '</div>' +
     '<div class="info"><div class="nome">' + esc(it.nome || it.id) + '</div><div class="tipo">' + esc(T.nome) + ' · ' + esc(R.nome) + '<br/><span title="Raridade de ver um player com ela">👀 ' + raridadeDeVer(it).estrelas + '</span>' + (extra || '') + '</div></div></button>';
 }
@@ -1377,7 +1515,8 @@ function detalheHTML(it){
   html += '<div class="acoes" style="margin-bottom:10px">' +
     '<button class="btn pequeno ' + (armario.has(it.id) ? 'verde' : 'leve') + '" data-acao="tenho">' + (armario.has(it.id) ? '🎒 Tenho! (tirar do armário)' : '🎒 Eu tenho essa') + '</button>' +
     '<button class="btn pequeno ' + (favs.has(it.id) ? 'vermelho' : 'leve') + '" data-acao="fav">' + (favs.has(it.id) ? '❤️ Favorita (tirar)' : '🤍 Quero essa') + '</button>' +
-    (LOJA.has(it.id) && !avisos.has(it.id) ? '' : '<button class="btn pequeno ' + (avisos.has(it.id) ? 'roxo' : 'leve') + '" data-acao="avisar">' + (avisos.has(it.id) ? '🔔 Vou avisar (tirar)' : '🔔 Me avisa quando voltar') + '</button>') + '</div>' +
+    (LOJA.has(it.id) && !avisos.has(it.id) ? '' : '<button class="btn pequeno ' + (avisos.has(it.id) ? 'roxo' : 'leve') + '" data-acao="avisar">' + (avisos.has(it.id) ? '🔔 Vou avisar (tirar)' : '🔔 Me avisa quando voltar') + '</button>') +
+    (it.grande || it.img ? '<button class="btn pequeno leve" data-acao="papel">📸 Papel de parede</button>' : '') + '</div>' +
     (armario.has(it.id) && origem[it.id] ? '<p class="fraco" style="margin:-4px 0 10px">' + textoOrigem(it.id) + '</p>' : '');
 
   // 🎬 gesto / música / item tocando: vídeo oficial, quando a API tem. Só carrega quando a pessoa toca.
@@ -1442,6 +1581,7 @@ $('#detalhe').addEventListener('click', ev => {
   if(v){ v.outerHTML = '<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(v.dataset.video) + '?autoplay=1&rel=0" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'; return; }
   const b = ev.target.closest('[data-acao]');
   if(b){
+    if(b.dataset.acao === 'papel'){ papelDeParede(POR_ID.get(id), b); return; }
     if(b.dataset.acao === 'tenho'){
       alternar(armario, id, 'dearnite-armario');
       if(armario.has(id)){ if(!origem[id]) origem[id] = 'separado'; anotarGasto(id); } else { delete origem[id]; delete gastos[id]; gravarGastos(); }
@@ -1534,6 +1674,8 @@ function renderLoja(loja){
   else if(f === 'sai') lista = lista.filter(o => o.saiHoje);
   else if(f === 'raro') lista = lista.filter(o => o.raro);
   else if(f === 'parceria') lista = lista.filter(o => o.parc.length);
+  else if(f === 'tenho') lista = lista.filter(o => o.itens.some(x => armario.has(x.id)));
+  else if(f === 'favs') lista = lista.filter(o => o.itens.some(x => favs.has(x.id)));
   else if(f === 'caros') lista = lista.sort((a, b) => b.preco - a.preco).slice(0, 10);
   else if(f === 'baratos') lista = lista.filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 10);
   else lista.sort((a, b) => (b.e.sortPriority || 0) - (a.e.sortPriority || 0));
@@ -1984,6 +2126,369 @@ function renderHistoria(){
   if(!$('#dataTempo').value){ const d = new Date(); d.setFullYear(d.getFullYear() - 1); $('#dataTempo').value = diaISO(d); viajar(diaISO(d)); }
 }
 
+/* =====================================================================
+   🎮 JOGOS — joguinhos com o catálogo: sorteio com desafio, duelos, quiz
+   do capítulo, adivinha o preço, roleta da loja, A a Z e votação.
+   As cartas dos jogos são .jcarta (e não .carta): tocar nelas não abre o
+   detalhe, senão entregava a resposta.
+   ===================================================================== */
+const sortear = a => a[Math.floor(Math.random() * a.length)];
+function embaralhar(a){ a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const comFoto = f => ITENS.filter(it => it.img && (!f || f(it)));
+function jcartaHTML(it, attrs, rodape){
+  const R = raridadeDe(it), T = tipoDe(it.tipo);
+  return '<button class="jcarta" ' + (attrs || '') + ' style="--cor-rar:' + R.cor + '"><div class="foto">' +
+    (it.img ? '<img loading="lazy" src="' + esc(it.img) + '" alt="" />' : '<span class="sem">' + T.emoji + '</span>') +
+    '</div><div class="nome">' + esc(it.nome || it.id) + '</div>' + (rodape ? '<div class="rod">' + rodape + '</div>' : '') + '</button>';
+}
+
+/* 🎲 sorteio */
+const DESAFIOS = ['Só pode usar a primeira arma que achar no chão.', 'Pousa no lugar mais longe do ônibus.', 'Só pode construir 3 paredes na partida inteira.',
+  'Só pode pegar armas cinzas e verdes.', 'Tem que fazer um gesto depois de cada eliminação.', 'Pousa no primeiro lugar que o ônibus passar por cima.',
+  'Só pode se curar com peixe.', 'Tem que abrir 5 baús antes de lutar.', 'Não pode usar escopeta.', 'Elimina alguém só com a picareta.',
+  'Chega no top 10 sem eliminar ninguém (modo ninja 🥷).', 'Só pode andar de carro, nada de correr longe.'];
+function sortearItem(){
+  const tipo = $('#selSorteio').value, soMeu = $('#chkSorteioArmario').checked;
+  const pool = comFoto(it => (!tipo || it.tipo === tipo) && (!soMeu || armario.has(it.id)));
+  if(!pool.length){ $('#sorteio').innerHTML = '<p class="fraco">' + (soMeu ? 'Você ainda não marcou nada assim no armário. Abre uma skin e toca em "🎒 Eu tenho essa".' : 'O catálogo ainda está carregando.') + '</p>'; return; }
+  const it = sortear(pool);
+  $('#sorteio').innerHTML = '<div class="grade" style="max-width:170px">' + cartaHTML(it) + '</div>' +
+    '<p style="margin-top:10px">🎯 <b>Desafio pra partida:</b> ' + esc(sortear(DESAFIOS)) + ' E joga de <b>' + esc(it.nome) + '</b>!</p>';
+}
+$('#btnSorteio').addEventListener('click', sortearItem);
+
+/* ⚔️ duelos */
+const DUELOS = {
+  rara:{ titulo:'Qual é mais rara de ver no jogo?', ok:it => true, valor:it => raridadeDeVer(it).n, mostra:it => raridadeDeVer(it).estrelas },
+  cara:{ titulo:'Qual é mais cara?', ok:it => precoDe(it).vb > 0, valor:it => precoDe(it).vb, mostra:it => num(precoDe(it).vb) + ' V-Bucks' },
+  primeiro:{ titulo:'Qual saiu primeiro no jogo?', ok:it => !isNaN(new Date(it.add)), valor:it => -new Date(it.add).getTime(), mostra:it => dataBR(it.add) },
+  voltou:{ titulo:'Qual apareceu mais vezes na loja?', ok:it => true, valor:it => it.hist.length, mostra:it => it.hist.length + ' vez' + (it.hist.length === 1 ? '' : 'es') },
+};
+let modoDuelo = 'rara', duelo = null;
+const placar = { certos:0, total:0, seguidos:0, recorde:(() => { try{ return parseInt(localStorage.getItem('dearnite-recorde-duelo'), 10) || 0; }catch(e){ return 0; } })() };
+function novoDuelo(){
+  const D = DUELOS[modoDuelo]; const pool = comFoto(it => it.cat === 'br' && D.ok(it));
+  $('#tituloDuelo').textContent = D.titulo; $('#resultadoDuelo').innerHTML = '';
+  if(pool.length < 2){ $('#duelo').innerHTML = '<p class="fraco">Ainda não tem itens suficientes pra esse jogo.</p>'; duelo = null; return; }
+  let a, b, n = 0;
+  do { a = sortear(pool); b = sortear(pool); n++; } while((a === b || D.valor(a) === D.valor(b)) && n < 300);
+  duelo = { a, b, feito:false };
+  $('#duelo').innerHTML = jcartaHTML(a, 'data-lado="a"') + '<div class="vs">VS</div>' + jcartaHTML(b, 'data-lado="b"');
+  renderPlacar();
+}
+function renderPlacar(){ $('#placarDuelo').textContent = placar.total ? '✅ ' + placar.certos + ' de ' + placar.total + ' · 🔥 ' + placar.seguidos + ' seguidas · 🏆 recorde: ' + placar.recorde : '🏆 Recorde: ' + placar.recorde + ' seguidas'; }
+$('#duelo').addEventListener('click', ev => {
+  const c = ev.target.closest('.jcarta[data-lado]'); if(!c || !duelo || duelo.feito) return;
+  const D = DUELOS[modoDuelo], { a, b } = duelo; duelo.feito = true;
+  const eu = c.dataset.lado === 'a' ? a : b, outro = eu === a ? b : a;
+  const certo = D.valor(eu) >= D.valor(outro);
+  placar.total++; if(certo){ placar.certos++; placar.seguidos++; } else placar.seguidos = 0;
+  if(placar.seguidos > placar.recorde){ placar.recorde = placar.seguidos; try{ localStorage.setItem('dearnite-recorde-duelo', String(placar.recorde)); }catch(e){} }
+  const ganhou = D.valor(a) >= D.valor(b) ? 'a' : 'b';
+  $$('#duelo .jcarta').forEach(x => { x.classList.add(x.dataset.lado === ganhou ? 'certa' : 'errada'); x.insertAdjacentHTML('beforeend', '<div class="rod">' + esc(D.mostra(x.dataset.lado === 'a' ? a : b)) + '</div>'); });
+  $('#resultadoDuelo').innerHTML = (certo ? '✅ <b>Acertou!</b>' : '❌ <b>Errou!</b>') + ' <button class="btn pequeno roxo" id="btnProxDuelo">Próxima ▶</button>';
+  renderPlacar();
+});
+$('#resultadoDuelo').addEventListener('click', ev => { if(ev.target.id === 'btnProxDuelo') novoDuelo(); });
+$('#chipsDuelo').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; modoDuelo = c.dataset.d; $$('#chipsDuelo .chip').forEach(x => x.setAttribute('aria-pressed', x === c)); novoDuelo(); });
+
+/* pergunta com opções (quiz do capítulo e do preço) */
+function montarPergunta(el, it, opcoes, certo, rotulo, explica, proxima){
+  el.innerHTML = '<div class="pergunta">' + jcartaHTML(it) + '<div><div class="ops">' +
+    opcoes.map(o => '<button class="btn leve pequeno" data-op="' + esc(o) + '">' + esc(rotulo(o)) + '</button>').join('') + '</div><p class="res"></p></div></div>';
+  el.dataset.feito = '';
+  el.onclick = ev => {
+    if(ev.target.closest('.prox')){ proxima(); return; }
+    const b = ev.target.closest('[data-op]'); if(!b || el.dataset.feito) return;
+    el.dataset.feito = '1';
+    const acertou = b.dataset.op === String(certo);
+    el.querySelectorAll('[data-op]').forEach(x => { if(x.dataset.op === String(certo)) x.classList.add('certo'); else if(x === b) x.classList.add('errado'); });
+    el.querySelector('.res').innerHTML = (acertou ? '✅ <b>Acertou!</b> ' : '❌ <b>Não!</b> ') + explica + ' <button class="btn pequeno roxo prox">Próxima ▶</button>';
+  };
+}
+function novoQuizCap(){
+  const el = $('#quizCap'); const pool = comFoto(it => it.tipo === 'outfit' && parseInt(it.cap, 10) > 0);
+  if(!pool.length){ el.innerHTML = '<p class="fraco">O catálogo ainda está carregando.</p>'; return; }
+  const it = sortear(pool), cap = parseInt(it.cap, 10);
+  const caps = Array.from(new Set(ITENS.map(x => parseInt(x.cap, 10)).filter(x => x > 0)));
+  for(let c = 1; caps.length < 4 && c <= 8; c++) if(!caps.includes(c)) caps.push(c);
+  const ops = [cap].concat(embaralhar(caps.filter(c => c !== cap)).slice(0, 3)).sort((a, b) => a - b);
+  montarPergunta(el, it, ops, cap, c => 'Capítulo ' + c, esc(it.nome) + ' é do <b>Capítulo ' + cap + (it.temp ? ', Temporada ' + esc(it.temp) : '') + '</b>.', novoQuizCap);
+}
+const PRECOS = [200, 300, 400, 500, 800, 1000, 1200, 1500, 1800, 2000, 2200, 2500];
+function novoQuizPreco(){
+  const el = $('#quizPreco'); const pool = comFoto(it => it.cat === 'br' && it.hist.length && precoDe(it).vb > 0);
+  if(!pool.length){ el.innerHTML = '<p class="fraco">O catálogo ainda está carregando.</p>'; return; }
+  const it = sortear(pool), p = precoDe(it), vb = p.vb;
+  const perto = PRECOS.filter(x => x !== vb).sort((a, b) => Math.abs(a - vb) - Math.abs(b - vb)).slice(0, 5);
+  const ops = [vb].concat(embaralhar(perto).slice(0, 3)).sort((a, b) => a - b);
+  montarPergunta(el, it, ops, vb, v => num(v) + ' V-Bucks', esc(it.nome) + (p.de === 'loja' ? ' está na loja hoje por ' : ' custava ') + '<b>' + num(vb) + ' V-Bucks</b>' + (p.de === 'estimado' ? ' (preço normal da Epic pra esse tipo)' : '') + ' = ' + reais(reaisDe(vb).melhor) + '.', novoQuizPreco);
+}
+
+/* 🎰 roleta da loja */
+let girando = false;
+$('#btnRoleta').addEventListener('click', () => {
+  const os = ofertas().filter(o => o.img);
+  if(!os.length){ $('#roletaRes').textContent = 'A loja de hoje ainda não carregou.'; return; }
+  if(girando) return; girando = true;
+  const el = $('#roleta'); el.classList.add('gira'); $('#roletaRes').textContent = '🎰 Girando…';
+  const fim = sortear(os); let passo = 0, espera = 40;
+  const mostra = o => { el.innerHTML = '<div class="jcarta"><div class="foto"><img src="' + esc(o.img) + '" alt="" /></div><div class="nome">' + esc(o.nome) + '</div></div>'; };
+  (function roda(){
+    passo++;
+    if(passo < 20){ mostra(sortear(os)); espera *= 1.1; setTimeout(roda, espera); return; }
+    girando = false; el.classList.remove('gira');
+    if(fim.it) el.innerHTML = '<div class="grade" style="width:170px">' + cartaHTML(fim.it) + '</div>'; else mostra(fim);
+    $('#roletaRes').innerHTML = '🎉 A roleta escolheu <b>' + esc(fim.nome) + '</b> por <b>' + num(fim.preco) + ' V-Bucks</b> (' + reais(reaisDe(fim.preco).melhor) + '). Só compra se você quiser mesmo, tá? 😉';
+  })();
+});
+
+/* 🔤 A a Z */
+let letraAZ = 'A';
+function renderAZ(){
+  $('#letrasAZ').innerHTML = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').concat(['#']).map(l => '<button class="chip" aria-pressed="' + (l === letraAZ) + '" data-l="' + l + '">' + l + '</button>').join('');
+  const l = letraAZ.toLowerCase(), col = new Intl.Collator('pt-BR');
+  const lista = ITENS.filter(it => { if(it.tipo !== 'outfit') return false; const c = normal(it.nome).charAt(0); return l === '#' ? !!c && !/[a-z]/.test(c) : c === l; }).sort((a, b) => col.compare(a.nome, b.nome));
+  $('#contadorAZ').textContent = lista.length ? lista.length + ' skin' + (lista.length > 1 ? 's' : '') + ' com ' + letraAZ + (lista.length > 120 ? ' (mostrando 120)' : '') : 'Nenhuma skin com ' + letraAZ + '.';
+  $('#gradeAZ').innerHTML = lista.slice(0, 120).map(it => cartaHTML(it)).join('');
+}
+$('#letrasAZ').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; letraAZ = c.dataset.l; renderAZ(); });
+
+/* 🗳️ votação */
+const votos = (() => { try{ return JSON.parse(localStorage.getItem('dearnite-votos') || '{}') || {}; }catch(e){ return {}; } })();
+let votoAtual = null;
+function novaVotacao(){
+  let pool = comFoto(it => it.tipo === 'outfit' && !(it.id in votos));
+  if(!pool.length) pool = comFoto(it => it.tipo === 'outfit');
+  if(!pool.length){ $('#votacao').innerHTML = '<p class="fraco">O catálogo ainda está carregando.</p>'; return; }
+  votoAtual = sortear(pool);
+  $('#votacao').innerHTML = '<div class="votar">' + jcartaHTML(votoAtual) + '<div class="btns"><button class="btn verde" data-voto="1">👍 Curti</button><button class="btn vermelho" data-voto="-1">👎 Não curti</button><button class="btn leve pequeno" data-voto="0">Pular</button></div></div>';
+}
+function renderCurti(){
+  const ids = Object.keys(votos), sim = ids.filter(id => votos[id] > 0 && POR_ID.has(id)), nao = ids.filter(id => votos[id] < 0).length;
+  $('#txtCurti').textContent = ids.length ? 'Você votou em ' + ids.length + ': curtiu ' + sim.length + ' e não curtiu ' + nao + '.' : 'Vota em umas skins aí em cima!';
+  $('#gradeCurti').innerHTML = sim.slice().reverse().map(id => cartaHTML(POR_ID.get(id))).join('');
+}
+$('#votacao').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-voto]'); if(!b || !votoAtual) return;
+  const v = parseInt(b.dataset.voto, 10);
+  if(v){ delete votos[votoAtual.id]; votos[votoAtual.id] = v; try{ localStorage.setItem('dearnite-votos', JSON.stringify(votos)); }catch(e){} renderCurti(); }
+  novaVotacao();
+});
+
+let jogosProntos = false;
+function renderJogos(){
+  if(!ITENS.length) return;
+  if(!jogosProntos){ jogosProntos = true; sortearItem(); novoDuelo(); novoQuizCap(); novoQuizPreco(); novaVotacao(); }
+  renderAZ(); renderCurti(); renderPlacar();
+}
+
+/* =====================================================================
+   🎒 COLEÇÃO — perfil, skin do dia, gráfico e mural do armário, skins da
+   mesma cor, gestos pra ouvir, papel de parede e a loja como imagem.
+   ===================================================================== */
+const MOLDURAS = { 5:'linear-gradient(135deg,#ffe259,#ffa751,#ff5fa2)', 4:'linear-gradient(135deg,#a855f7,#5b3fd6)', 3:'linear-gradient(135deg,#2f9df2,#1fb6ff)', 2:'linear-gradient(135deg,#5fb236,#2bb673)', 1:'#9aa0a6' };
+let perfil = (() => { try{ return JSON.parse(localStorage.getItem('dearnite-perfil') || '{}') || {}; }catch(e){ return {}; } })();
+function gravarPerfil(){ try{ localStorage.setItem('dearnite-perfil', JSON.stringify(perfil)); }catch(e){} }
+const meus = () => Array.from(armario).map(id => POR_ID.get(id)).filter(Boolean);
+function maisRaras(lista){ return lista.slice().sort((a, b) => raridadeDeVer(b).n - raridadeDeVer(a).n || a.hist.length - b.hist.length || (a.add || '').localeCompare(b.add || '')); }
+function renderPerfil(){
+  const lista = meus(), col = new Intl.Collator('pt-BR');
+  const skins = lista.filter(it => it.tipo === 'outfit' && it.img).sort((a, b) => col.compare(a.nome, b.nome));
+  const opcoes = skins.length ? skins : Array.from(favs).map(id => POR_ID.get(id)).filter(it => it && it.img);
+  $('#selAvatar').innerHTML = opcoes.length ? '<option value="">🧍 Escolhe o avatar</option>' + opcoes.map(it => '<option value="' + esc(it.id) + '"' + (perfil.avatar === it.id ? ' selected' : '') + '>' + esc(it.nome) + '</option>').join('') : '<option value="">Marca skins como "tenho" pra escolher o avatar</option>';
+  if(document.activeElement !== $('#apelido')) $('#apelido').value = perfil.apelido || '';
+  const av = POR_ID.get(perfil.avatar) || opcoes[0];
+  const top = maisRaras(lista)[0], n = top ? raridadeDeVer(top).n : 1;
+  const t = totalDe(armario), rarissimas = lista.filter(it => raridadeDeVer(it).n === 5).length;
+  $('#perfilCartao').innerHTML = '<div class="av" style="--moldura:' + MOLDURAS[n] + '">' + (av ? '<img src="' + esc(av.img) + '" alt="" />' : '<span>🙂</span>') + '</div>' +
+    '<div><div class="apelido">' + esc(perfil.apelido || 'Sem apelido') + '</div>' +
+    '<p>🎒 ' + num(t.n) + ' cosméticos · <i class="vb-icone"></i>' + num(t.vb) + ' V-Bucks · 💎 ' + rarissimas + ' raríssima' + (rarissimas === 1 ? '' : 's') + '</p>' +
+    '<p class="fraco">Moldura ' + (n === 5 ? 'dourada (tem coisa raríssima!)' : n === 4 ? 'roxa (tem coisa muito rara)' : n === 3 ? 'azul' : n === 2 ? 'verde' : 'cinza') + (top ? ' · a mais rara: ' + esc(top.nome) : '') + '</p></div>';
+}
+$('#apelido').addEventListener('input', () => { perfil.apelido = $('#apelido').value.trim().slice(0, 20); gravarPerfil(); renderPerfil(); });
+$('#selAvatar').addEventListener('change', () => { perfil.avatar = $('#selAvatar').value; gravarPerfil(); renderPerfil(); });
+
+function skinDoDia(){
+  const pool = comFoto(it => it.tipo === 'outfit').sort((a, b) => a.id < b.id ? -1 : 1);
+  if(!pool.length) return null;
+  const hoje = new Date().toISOString().slice(0, 10); let x = 7;
+  for(const ch of hoje) x = (x * 31 + ch.charCodeAt(0)) >>> 0;
+  return pool[x % pool.length];
+}
+function renderSkinDia(){
+  const it = skinDoDia(); if(!it){ $('#skinDia').innerHTML = ''; return; }
+  $('#skinDia').innerHTML = '<div class="votar"><div class="grade" style="width:170px">' + cartaHTML(it) + '</div><p>Hoje é dia da <b>' + esc(it.nome) + '</b>! 🐐<br/>' +
+    (armario.has(it.id) ? 'Você tem ela: joga uma partida de ' + esc(it.nome) + ' hoje!' : 'Você ainda não tem. Amanhã tem outra!') + '</p></div>';
+}
+function renderGrafico(){
+  const lista = meus(); const c = { 1:0, 2:0, 3:0, 4:0, 5:0 };
+  lista.forEach(it => { c[raridadeDeVer(it).n]++; });
+  const max = Math.max(1, ...Object.values(c));
+  const nomes = { 5:'★★★★★', 4:'★★★★☆', 3:'★★★☆☆', 2:'★★☆☆☆', 1:'★☆☆☆☆' };
+  $('#graficoRaridade').innerHTML = !lista.length ? '<p class="fraco">Seu armário está vazio. Abre uma skin e toca em "🎒 Eu tenho essa".</p>' :
+    [5, 4, 3, 2, 1].map(n => '<div class="calor"><span>' + nomes[n] + '</span><div class="b"><i style="width:' + Math.round(c[n] / max * 100) + '%"></i></div><b>' + c[n] + '</b></div>').join('') +
+    '<p class="fraco" style="margin-top:6px">' + (c[5] + c[4] ? '💎 ' + Math.round((c[5] + c[4]) / lista.length * 100) + '% do seu armário é muito raro ou raríssimo!' : 'Ainda não tem nada muito raro. Continua jogando!') + '</p>';
+}
+function renderMural(){
+  const top = maisRaras(meus()).slice(0, 9);
+  $('#mural').innerHTML = top.length ? top.map(it => cartaHTML(it)).join('') : '<p class="fraco">Marca as coisas que você tem pra montar o mural.</p>';
+}
+
+/* 🎨 mesma cor: o site desenha a foto pequenininha num canvas e vê qual cor
+   aparece mais (ignorando o fundo transparente). Guarda a resposta. */
+const CORES = { vermelho:['🔴', 'Vermelho'], laranja:['🟠', 'Laranja'], amarelo:['🟡', 'Amarelo'], verde:['🟢', 'Verde'], azul:['🔵', 'Azul'], roxo:['🟣', 'Roxo'], rosa:['🩷', 'Rosa'], marrom:['🟤', 'Marrom'], preto:['⚫', 'Preto'], branco:['⚪', 'Branco'] };
+const corGuardada = (() => { try{ return JSON.parse(localStorage.getItem('dearnite-cores') || '{}') || {}; }catch(e){ return {}; } })();
+let corGravarTimer = null;
+function gravarCores(){ clearTimeout(corGravarTimer); corGravarTimer = setTimeout(() => { try{ localStorage.setItem('dearnite-cores', JSON.stringify(corGuardada)); }catch(e){} }, 1000); }
+function carregarImg(src, ms){
+  return new Promise(ok => {
+    const im = new Image(); let feito = false; const fim = v => { if(!feito){ feito = true; ok(v); } };
+    im.crossOrigin = 'anonymous'; im.onload = () => fim(im); im.onerror = () => fim(null); setTimeout(() => fim(null), ms || 8000); im.src = src;
+  });
+}
+function corDoPixel(r, g, b){
+  const mx = Math.max(r, g, b) / 255, mn = Math.min(r, g, b) / 255, l = (mx + mn) / 2, d = mx - mn;
+  if(l < 0.16) return 'preto';
+  if(d < 0.12) return l > 0.75 ? 'branco' : l < 0.4 ? 'preto' : null;
+  let hh; if(mx === r / 255) hh = ((g - b) / 255 / d) % 6; else if(mx === g / 255) hh = (b - r) / 255 / d + 2; else hh = (r - g) / 255 / d + 4;
+  hh = (hh * 60 + 360) % 360;
+  if(hh < 15 || hh >= 345) return 'vermelho';
+  if(hh < 42) return l < 0.38 ? 'marrom' : 'laranja';
+  if(hh < 70) return l < 0.3 ? 'marrom' : 'amarelo';
+  if(hh < 165) return 'verde';
+  if(hh < 255) return 'azul';
+  if(hh < 290) return 'roxo';
+  return 'rosa';
+}
+async function corDe(it){
+  if(it.id in corGuardada) return corGuardada[it.id];
+  const im = await carregarImg(it.img, 8000); let cor = '';
+  if(im){
+    try{
+      const c = document.createElement('canvas'); c.width = c.height = 28; const x = c.getContext('2d', { willReadFrequently:true });
+      x.drawImage(im, 0, 0, 28, 28); const d = x.getImageData(0, 0, 28, 28).data; const conta = {};
+      for(let i = 0; i < d.length; i += 4){ if(d[i + 3] < 200) continue; const k = corDoPixel(d[i], d[i + 1], d[i + 2]); if(k) conta[k] = (conta[k] || 0) + 1; }
+      cor = Object.keys(conta).sort((a, b) => conta[b] - conta[a])[0] || '';
+    }catch(e){ cor = null; }
+  } else cor = null;
+  if(cor !== null){ corGuardada[it.id] = cor; gravarCores(); }
+  return cor;
+}
+let buscaCor = 0;
+async function procurarCor(cor){
+  const minha = ++buscaCor;
+  $$('#chipsCor .chip').forEach(x => x.setAttribute('aria-pressed', x.dataset.cor === cor));
+  const pool = comFoto(it => it.tipo === 'outfit').sort((a, b) => (b.add || '').localeCompare(a.add || ''));
+  const achou = []; let olhou = 0, falhou = 0, acabou = false;
+  $('#gradeCor').innerHTML = '';
+  const mostra = () => {
+    if(minha !== buscaCor) return;
+    $('#contadorCor').textContent = (!acabou ? '🔎 Olhando as fotos… ' + olhou + ' de ' + pool.length + ' · ' : '') + achou.length + ' skin' + (achou.length === 1 ? '' : 's') + ' ' + CORES[cor][1].toLowerCase() + (achou.length >= 60 ? ' (mostrando as 60 mais novas)' : '') +
+      (falhou > 20 && !achou.length ? ' · Não consegui ler as fotos neste aparelho 😕' : '');
+  };
+  mostra();
+  let i = 0;
+  async function trabalhador(){
+    while(i < pool.length && achou.length < 60 && minha === buscaCor){
+      const it = pool[i++]; const c = await corDe(it); olhou++;
+      if(c === null) falhou++;
+      if(c === cor && minha === buscaCor && achou.length < 60){ achou.push(it); $('#gradeCor').insertAdjacentHTML('beforeend', cartaHTML(it)); }
+      if(olhou % 10 === 0) mostra();
+      if(falhou > 20 && !achou.length && olhou === falhou) break;
+    }
+  }
+  await Promise.all([1, 2, 3, 4, 5, 6].map(trabalhador));
+  acabou = true; mostra();
+}
+$('#chipsCor').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(c) procurarCor(c.dataset.cor); });
+
+/* 🔊 gesto tocando direto da carta (o ▶ roxo) */
+function tocarMini(video, nome){
+  let p = $('#miniPlayer');
+  if(!p){ p = document.createElement('div'); p.id = 'miniPlayer'; document.body.appendChild(p); }
+  p.innerHTML = '<div class="topo"><b>🔊 ' + esc(nome) + '</b><button aria-label="Fechar">✕</button></div>' +
+    '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(video) + '?autoplay=1&rel=0" title="' + esc(nome) + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+  p.querySelector('button').onclick = () => p.remove();
+}
+document.addEventListener('click', ev => {
+  const t = ev.target.closest('.tocar-mini'); if(!t) return;
+  ev.preventDefault(); ev.stopPropagation();
+  if($('#detalhe').open) $('#detalhe').close();
+  tocarMini(t.dataset.video, t.dataset.nome);
+}, true);
+function renderSons(){
+  const meusGestos = ITENS.filter(it => it.video && (armario.has(it.id) || favs.has(it.id)));
+  const outros = embaralhar(ITENS.filter(it => it.video && !armario.has(it.id) && !favs.has(it.id))).slice(0, Math.max(0, 12 - meusGestos.length));
+  const lista = meusGestos.concat(outros);
+  $('#gradeSons').innerHTML = lista.length ? lista.map(it => cartaHTML(it)).join('') : '<p class="fraco">O catálogo ainda está carregando.</p>';
+}
+
+function renderColecao(){
+  if(!ITENS.length) return;
+  renderPerfil(); renderSkinDia(); renderGrafico(); renderMural(); renderSons();
+  if(!$('#chipsCor').children.length) $('#chipsCor').innerHTML = Object.keys(CORES).map(k => '<button class="chip" aria-pressed="false" data-cor="' + k + '">' + CORES[k][0] + ' ' + CORES[k][1] + '</button>').join('');
+}
+
+/* 📸 papel de parede: desenha a skin grandona num fundo da cor da raridade */
+function arredondado(x, X, Y, W, H, r){ x.beginPath(); if(x.roundRect) x.roundRect(X, Y, W, H, r); else x.rect(X, Y, W, H); }
+function baixarCanvas(c, nome){
+  return new Promise((ok, erro) => {
+    try{ c.toBlob(b => { if(!b) return erro(new Error('sem imagem')); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = nome; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); ok(b); }, 'image/png'); }
+    catch(e){ erro(e); }
+  });
+}
+async function papelDeParede(it, botao){
+  if(!it) return;
+  const antes = botao.textContent; botao.textContent = '⏳ Fazendo…'; botao.disabled = true;
+  const R = raridadeDe(it);
+  const c = document.createElement('canvas'); c.width = 1080; c.height = 1920; const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 0, 1920); g.addColorStop(0, R.cor); g.addColorStop(1, '#120c2b'); x.fillStyle = g; x.fillRect(0, 0, 1080, 1920);
+  x.globalAlpha = 0.08; x.fillStyle = '#fff'; for(let i = 0; i < 40; i++){ x.beginPath(); x.arc((i * 263) % 1080, (i * 491) % 1920, 20 + (i * 37) % 90, 0, 7); x.fill(); } x.globalAlpha = 1;
+  const im = await carregarImg(it.grande || it.img, 10000) || (it.grande && it.img !== it.grande ? await carregarImg(it.img, 8000) : null);
+  if(im){ const s = Math.min(1000 / im.width, 1300 / im.height); const w = im.width * s, hh = im.height * s; x.drawImage(im, (1080 - w) / 2, 250 + (1300 - hh) / 2, w, hh); }
+  x.textAlign = 'center'; x.fillStyle = '#fff'; x.shadowColor = 'rgba(0,0,0,.5)'; x.shadowBlur = 20;
+  x.font = '800 96px "Baloo 2", sans-serif'; x.fillText(it.nome, 540, 1680, 1000);
+  x.font = '600 44px Rubik, sans-serif'; x.fillText(tipoDe(it.tipo).nome + ' · ' + R.nome, 540, 1750, 1000);
+  x.font = '600 34px Rubik, sans-serif'; x.globalAlpha = 0.7; x.fillText('DearNite', 540, 1850); x.globalAlpha = 1;
+  try{ await baixarCanvas(c, 'papel-de-parede-' + normal(it.nome).replace(/ /g, '-') + '.png'); botao.textContent = '✅ Salvo!'; }
+  catch(e){ window.open(it.grande || it.img, '_blank'); botao.textContent = '📸 Abri a foto: segura o dedo nela pra salvar'; }
+  botao.disabled = false; setTimeout(() => { if(botao.isConnected) botao.textContent = antes; }, 4000);
+}
+
+/* 📸 loja de hoje como imagem, pra mandar pros amigos */
+$('#btnCompartilharLoja').addEventListener('click', async () => {
+  const os = ofertas(); const msg = $('#lojaShareMsg');
+  if(!os.length){ msg.textContent = 'A loja ainda não carregou.'; return; }
+  msg.textContent = '⏳ Montando a imagem…';
+  const COL = 4, W = 260, H = 340, G = 14, P = 28, TOPO = 170;
+  const lin = Math.ceil(os.length / COL);
+  const c = document.createElement('canvas'); c.width = P * 2 + COL * W + (COL - 1) * G; c.height = TOPO + lin * (H + G) + 70;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, c.width, c.height); g.addColorStop(0, '#5b3fd6'); g.addColorStop(1, '#1fb6ff'); x.fillStyle = g; x.fillRect(0, 0, c.width, c.height);
+  x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '800 64px "Baloo 2", sans-serif';
+  const quando = LOJA_INFO && LOJA_INFO.date ? new Date(LOJA_INFO.date) : new Date();
+  x.fillText('Loja do Fortnite', c.width / 2, 85); x.font = '600 34px Rubik, sans-serif'; x.fillText(quando.toLocaleDateString('pt-BR') + ' · ' + os.length + ' ofertas', c.width / 2, 135);
+  const imgs = await Promise.all(os.map(o => o.img ? carregarImg(o.img, 8000) : null));
+  os.forEach((o, i) => {
+    const X = P + (i % COL) * (W + G), Y = TOPO + Math.floor(i / COL) * (H + G);
+    const cor = o.it ? raridadeDe(o.it).cor : '#8a8a9a';
+    x.fillStyle = '#fff'; arredondado(x, X, Y, W, H, 22); x.fill();
+    x.save(); arredondado(x, X, Y, W, W, 22); x.clip(); const gg = x.createLinearGradient(0, Y, 0, Y + W); gg.addColorStop(0, cor); gg.addColorStop(1, '#f2eeff'); x.fillStyle = gg; x.fillRect(X, Y, W, W);
+    if(imgs[i]) x.drawImage(imgs[i], X, Y, W, W); x.restore();
+    x.fillStyle = '#1d1740'; x.font = '700 22px Rubik, sans-serif'; x.textAlign = 'center';
+    x.fillText(o.nome.length > 22 ? o.nome.slice(0, 21) + '…' : o.nome, X + W / 2, Y + W + 32, W - 16);
+    x.fillStyle = '#b88f0a'; x.font = '800 24px Rubik, sans-serif'; x.fillText(num(o.preco) + ' V-Bucks' + (o.desconto ? '  -' + o.desconto + '%' : ''), X + W / 2, Y + W + 66, W - 16);
+  });
+  x.fillStyle = '#fff'; x.font = '600 28px Rubik, sans-serif'; x.textAlign = 'center'; x.fillText('feito no DearNite', c.width / 2, c.height - 28);
+  try{
+    const blob = await new Promise((ok, erro) => { try{ c.toBlob(b => b ? ok(b) : erro(new Error('sem imagem')), 'image/png'); }catch(e){ erro(e); } });
+    const arq = new File([blob], 'loja-fortnite-' + quando.toISOString().slice(0, 10) + '.png', { type:'image/png' });
+    if(navigator.canShare && navigator.canShare({ files:[arq] })){ await navigator.share({ files:[arq], title:'Loja do Fortnite de hoje' }); msg.textContent = '✅ Pronto!'; }
+    else { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = arq.name; document.body.appendChild(a); a.click(); a.remove(); msg.textContent = '✅ Imagem salva!'; }
+  }catch(e){ msg.textContent = e && e.name === 'AbortError' ? '' : '😕 Não deu pra fazer a imagem (' + e.message + ').'; }
+});
+
 /* ---------- V-Bucks em reais ---------- */
 function renderCalc(){
   const vb = parseInt($('#calcVb').value, 10) || 0; const r = reaisDe(vb);
@@ -2318,6 +2823,8 @@ $('#abas').addEventListener('click', ev => {
   if(b.dataset.aba === 'armas') carregarArmas();
   if(b.dataset.aba === 'npcs') renderNpcs();
   if(b.dataset.aba === 'historia') renderHistoria();
+  if(b.dataset.aba === 'jogos') renderJogos();
+  if(b.dataset.aba === 'colecao') renderColecao();
   window.scrollTo({ top:0, behavior:'smooth' });
 });
 
@@ -2450,7 +2957,7 @@ $('#campo').addEventListener('input', () => {
    worker, apaga os caches da casca e recarrega pedindo tudo de novo. O
    armário e as favoritas (localStorage) não são tocados; o catálogo
    guardado também fica, porque ele tem a própria validade. */
-const VERSAO = 26;
+const VERSAO = 27;
 $('#btnAtualizar').addEventListener('click', async () => {
   $('#atualizarMsg').textContent = 'Atualizando…';
   try{
