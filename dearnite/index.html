@@ -239,6 +239,14 @@ details summary{cursor:pointer;color:var(--roxo);font-weight:600}
 .noticia img{width:120px;aspect-ratio:16/9;object-fit:cover;border-radius:10px;flex:none;background:var(--cartao3)}
 .noticia b{display:block;margin-bottom:2px}
 .linha-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.calor{display:grid;grid-template-columns:90px 1fr 60px;gap:8px;align-items:center;margin:4px 0;font-size:.92rem}
+.calor .b{height:16px;border-radius:999px;background:var(--vazio);overflow:hidden}
+.calor .b i{display:block;height:100%;background:linear-gradient(90deg,var(--vb),var(--erro))}
+.ano-tempo{margin-top:12px}.ano-tempo h3{margin:0 0 6px}
+.cal{display:grid;grid-template-columns:44px repeat(12,1fr);gap:3px;font-size:.7rem;margin-top:6px}
+.cal span{text-align:center;color:var(--tinta-fraca)}
+.cal i{display:block;height:18px;border-radius:4px;background:var(--vazio)}
+.cal i.t1{background:#b9e6c9}.cal i.t2{background:#5cc98a}.cal i.t3{background:#1f9a55}
 .linha-meta input{width:110px;padding:8px;border-radius:10px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit}
 .barra-meta{height:14px;background:var(--vazio);border-radius:999px;overflow:hidden;margin-top:10px}
 .barra-meta i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--vb),var(--ok));transition:width .4s}
@@ -337,6 +345,7 @@ footer a{color:var(--roxo)}
   <button aria-pressed="false" data-aba="mapa">🗺️ Mapa</button>
   <button aria-pressed="false" data-aba="armas">🔫 Armas</button>
   <button aria-pressed="false" data-aba="npcs">🧑 NPCs</button>
+  <button aria-pressed="false" data-aba="historia">🕰️ História</button>
   <button aria-pressed="false" data-aba="vbucks">💎 V-Bucks em reais</button>
 </nav>
 
@@ -587,6 +596,52 @@ footer a{color:var(--roxo)}
   </div>
 </section>
 
+<!-- ============ HISTÓRIA ============ -->
+<section class="painel" id="painel-historia">
+  <div class="caixa">
+    <h2>🕰️ Máquina do tempo</h2>
+    <p class="fraco">Escolhe um dia (tipo o dia que você nasceu!) e vê o que estava na loja naquele dia.</p>
+    <div class="linha-meta" style="margin-top:8px">
+      <input type="date" id="dataTempo" style="width:auto" />
+      <button class="btn pequeno roxo" id="btnTempo">Viajar 🚀</button>
+      <span class="fraco">ou:</span>
+      <span id="atalhosTempo"></span>
+    </div>
+    <p class="contador" id="contadorTempo"></p>
+    <div class="grade" id="gradeTempo"></div>
+  </div>
+  <div class="caixa">
+    <h2>🎂 Aniversário de skin</h2>
+    <p class="fraco" id="txtNiver">Skins que saíram neste mesmo dia, em anos passados.</p>
+    <div class="grade" id="gradeNiver" style="margin-top:8px"></div>
+  </div>
+  <div class="caixa">
+    <h2>📈 Ranking da loja</h2>
+    <div class="chips" id="chipsRank">
+      <button class="chip" aria-pressed="true" data-r="mais">🔁 As 10 que mais voltaram</button>
+      <button class="chip" aria-pressed="false" data-r="menos">🙈 As 10 que menos voltaram</button>
+      <button class="chip" aria-pressed="false" data-r="sumidas">🕸️ As 10 sumidas há mais tempo</button>
+    </div>
+    <div class="grade" id="gradeRank" style="margin-top:10px"></div>
+  </div>
+  <div class="caixa">
+    <h2>🔥 Que dia da semana tem mais skin rara?</h2>
+    <p class="fraco">Contando todas as vezes que uma skin de 4 ou 5 estrelas apareceu na loja.</p>
+    <div id="calorSemana" style="margin-top:8px"></div>
+  </div>
+  <div class="caixa">
+    <h2>🗓️ Skins de cada temporada</h2>
+    <div class="linha-meta" style="margin-top:6px"><select id="selTemporada"></select></div>
+    <p class="contador" id="contadorTemporada"></p>
+    <div class="grade" id="gradeTemporada"></div>
+  </div>
+  <div class="caixa">
+    <h2>📜 Linha do tempo do meu armário</h2>
+    <p class="fraco">As skins que você tem, na ordem em que saíram no jogo.</p>
+    <div id="linhaTempo" style="margin-top:8px"></div>
+  </div>
+</section>
+
 <!-- ============ V-BUCKS ============ -->
 <section class="painel" id="painel-vbucks">
   <div class="caixa">
@@ -607,7 +662,7 @@ footer a{color:var(--roxo)}
 <footer>
   Dados dos cosméticos: <a href="https://fortnite-api.com" target="_blank" rel="noopener">fortnite-api.com</a>. DearNite não é da Epic Games.<br/>
   Feito pelo Jojo com o Claude. Irmão do <a href="../butterpoke/">ButterPoke</a> 🦋<br/>
-  Versão <b id="versao">25</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
+  Versão <b id="versao">26</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
   <div class="fraco" id="atualizarMsg" style="margin-top:6px"></div>
 </footer>
 </div>
@@ -759,52 +814,65 @@ const AVISO_DINHEIRO = '⚠️ <b>Esse valor em reais é só curiosidade:</b> é
   'E nunca dê sua senha pra quem prometer V-Bucks de graça. V-Bucks de graça não existe.';
 
 /* ---------- raridade de ver um player com ela ----------
-   Ninguém tem o número de quantos jogadores têm cada skin. Então cada item
-   ganha uma NOTA (quanto maior, menos gente tem): poucas vezes na loja e
-   muito tempo sumida sobem a nota; nunca vendida e de capítulo antigo sobe
-   mais ainda. Depois a régua é COMPARADA com o catálogo inteiro: as 10%
-   notas mais altas são 5 estrelas, as 20% seguintes 4, as 30% do meio 3,
-   as 25% seguintes 2 e as 15% mais baixas 1. Assim as estrelas se espalham,
-   em vez de todo mundo cair no meio. */
-let CORTES = null;   // notas de corte [c2, c3, c4, c5], calculadas quando o catálogo carrega
+   Ninguém tem o número de quantos jogadores têm cada item. São dois jeitos
+   de chutar, dependendo se o item já foi vendido na loja ou não:
+   • JÁ FOI VENDIDO: ganha uma NOTA (poucas vezes na loja e muito tempo
+     sumido sobem a nota), e as estrelas comparam com os outros vendidos:
+     os 10% de nota mais alta são 5 estrelas, os 20% seguintes 4, os 30% do
+     meio 3, os 25% seguintes 2 e os 15% mais baixos 1.
+   • NUNCA FOI VENDIDO: depende de onde veio. Item de Passe de Batalha
+     recente muita gente tem (quem comprou o passe), então não é raro;
+     raro de verdade é o de PlayStation Plus, promoção, evento, Salve o
+     Mundo e o Passe dos primeiros tempos do Capítulo 1. */
+let CORTES = null;   // notas de corte [c2, c3, c4, c5] entre os itens já vendidos
+let NOTAS = [];      // notas dos itens já vendidos, em ordem
 function notaDeVer(it){
   const vezes = it.hist.length;
-  if(vezes){
-    const anos = (diasDesde(it.hist[it.hist.length - 1]) || 0) / 365;
-    return 5 - Math.log2(1 + vezes) + 0.8 * anos;
-  }
-  const idade = diasDesde(it.add);
-  if(idade != null && idade < 120) return 1.5;          // acabou de sair, ainda dá pra conseguir
-  const cap = parseFloat(it.cap) || 0;
-  const fonte = it.fonte.join(' ').toLowerCase();
-  let n = 6 + Math.min(idade == null ? 2 : idade / 365, 6) * 0.5;
-  if(cap && cap <= 1) n += 4; else if(cap && cap <= 3) n += 2;
-  if(/playstation|xbox|nintendo|celular|promo/.test(fonte)) n += 3;
-  return n;
+  if(!vezes) return null;
+  const anos = (diasDesde(it.hist[it.hist.length - 1]) || 0) / 365;
+  return 5 - Math.log2(1 + vezes) + 0.8 * anos;
 }
-let NOTAS = [];      // todas as notas em ordem, pra saber a posição de cada item
 function calcularCortes(){
-  const notas = ITENS.map(notaDeVer).sort((a, b) => a - b);
+  const notas = ITENS.map(notaDeVer).filter(n => n != null).sort((a, b) => a - b);
   NOTAS = notas;
+  ITENS.forEach(it => { delete it._rv; });
   if(!notas.length){ CORTES = null; return; }
   const q = f => notas[Math.min(notas.length - 1, Math.floor(f * notas.length))];
   CORTES = [q(0.15), q(0.40), q(0.70), q(0.90)];
-  ITENS.forEach(it => { delete it._rv; });
 }
-/* Chute de quantos jogadores têm: a posição do item entre todas as notas
-   (0 = o mais comum, 1 = o mais raro) vira uma fração de jogadores, de uns
-   10% pro mais comum até 1 em 30 mil pro mais raro. É chute, e o site diz. */
+/* Estrelas de quem nunca foi vendido, pela origem. */
+function nuncaVendido(it){
+  const idade = diasDesde(it.add), cap = parseFloat(it.cap) || 0, temp = parseFloat(it.temp) || 0;
+  const f = it.fonte.join(' ').toLowerCase();
+  if(idade != null && idade < 120) return [2, 'Saiu faz pouco tempo e ainda dá pra conseguir (passe, missão ou evento que está rolando).'];
+  if(/playstation|xbox|nintendo|celular|promo/.test(f)) return [cap && cap <= 2 ? 5 : 4, 'Foi de graça só pra quem tinha ' + (/playstation/.test(f) ? 'PlayStation Plus' : /xbox/.test(f) ? 'Xbox' : /nintendo/.test(f) ? 'Nintendo' : /celular/.test(f) ? 'um celular específico' : 'uma promoção') + ' na época, e nunca mais apareceu. Quase ninguém tem.'];
+  if(/salve o mundo/.test(f)) return [cap && cap <= 1 ? 5 : 4, 'Veio do Salve o Mundo (o modo pago do começo do Fortnite). Pouca gente tem.'];
+  if(/evento/.test(f)) return [4, 'Veio de um evento ou torneio que já acabou. Pouca gente tem.'];
+  if(/passe/.test(f)){
+    if(cap === 1 && temp && temp <= 3) return [5, 'É do Passe de Batalha da Temporada ' + it.temp + ' do Capítulo 1, quando pouca gente jogava. Raríssima!'];
+    if(cap === 1) return [4, 'É do Passe de Batalha do Capítulo 1. Só quem jogava naquela época tem.'];
+    if(cap === 2) return [3, 'É do Passe de Batalha do Capítulo 2. Muita gente que comprou o passe tem, mas faz tempo.'];
+    return [2, 'É do Passe de Batalha' + (cap ? ' do Capítulo ' + it.cap : '') + '. Todo mundo que comprou o passe tem, então dá pra ver bastante.'];
+  }
+  if(/clube/.test(f)) return [2, 'Veio do Clube Fortnite: todo mundo que assinava naquele mês tem.'];
+  if(/prime/.test(f)) return [3, 'Foi de graça no Prime Gaming. Uma parte dos jogadores pegou.'];
+  if(/pacote inicial/.test(f)) return [3, 'Veio num pacote inicial vendido por dinheiro, não pela loja de itens.'];
+  if(/missao|missão|recompensa/.test(f)) return [cap && cap <= 1 ? 3 : 2, 'Foi de graça numa missão ou recompensa: muita gente que jogava na época tem.'];
+  if(/loja de itens/.test(f)) return [3, 'Foi vendida na loja, mas o site não tem as datas de quando.'];
+  if(!it.cap && !it.intro) return [3, 'Não dá pra saber de onde veio. Pode até ser um item que ainda nem saiu.'];
+  return [3, 'Nunca foi vendida: veio de passe, missão ou evento. Quem jogou na época tem.'];
+}
+/* Chute de quantos jogadores têm, a partir das estrelas (e da posição
+   entre os vendidos, pra variar dentro da mesma estrela). É chute, e o
+   site diz. */
+const FRACAO_ESTRELA = { 1:0.1, 2:0.03, 3:0.008, 4:0.0015, 5:0.0003 };
 function quantosTem(it){
-  if(!NOTAS.length) return null;
-  const nota = notaDeVer(it);
-  let lo = 0, hi = NOTAS.length;
-  while(lo < hi){ const m = (lo + hi) >> 1; if(NOTAS[m] < nota) lo = m + 1; else hi = m; }
-  const p = lo / NOTAS.length;                       // posição: 0 comum … 1 raro
-  const f = LOJA.has(it.id) ? 0.1 : Math.pow(10, -(1 + 3.5 * p));   // fração de jogadores
+  const rv = raridadeDeVer(it); let f = FRACAO_ESTRELA[rv.n];
+  if(LOJA.has(it.id)) f = 0.1;
+  else { const nota = notaDeVer(it);
+    if(nota != null && NOTAS.length){ let lo = 0, hi = NOTAS.length; while(lo < hi){ const m = (lo + hi) >> 1; if(NOTAS[m] < nota) lo = m + 1; else hi = m; } f = Math.pow(10, -(1 + 3 * lo / NOTAS.length)); } }
   const em100 = f * 100;
-  let texto;
-  if(em100 >= 1) texto = 'uns <b>' + Math.round(em100) + ' de cada 100 jogadores</b> devem ter';
-  else texto = 'mais ou menos <b>1 em cada ' + num(Math.round(1 / f / 10) * 10) + ' jogadores</b> tem';
+  const texto = em100 >= 1 ? 'uns <b>' + Math.round(em100) + ' de cada 100 jogadores</b> devem ter' : 'mais ou menos <b>1 em cada ' + num(Math.round(1 / f / 10) * 10) + ' jogadores</b> tem';
   const partida = em100 >= 1 ? 'Numa partida de 100, dá pra esperar ' + (em100 >= 2 ? 'uns ' + Math.round(em100) : '1') + ' com ela.' :
     'Precisaria de umas ' + num(Math.max(1, Math.round(1 / f / 100))) + ' partidas de 100 pra cruzar com uma.';
   return { f, texto, partida };
@@ -816,22 +884,15 @@ function raridadeDeVer(it){
 function calcularRaridadeDeVer(it){
   const vezes = it.hist.length;
   const ultima = vezes ? diasDesde(it.hist[it.hist.length - 1]) : null;
-  const idade = diasDesde(it.add);
-  const cap = parseFloat(it.cap) || 0;
-  const fonte = it.fonte.join(' ').toLowerCase();
   let n, por;
-  const nota = notaDeVer(it);
-  if(!CORTES) n = 3; else n = nota >= CORTES[3] ? 5 : nota >= CORTES[2] ? 4 : nota >= CORTES[1] ? 3 : nota >= CORTES[0] ? 2 : 1;
   if(LOJA.has(it.id)){ n = 1; por = 'Está na loja agora: qualquer um pode comprar hoje.'; }
-  else if(!vezes){
-    if(idade != null && idade < 120) por = 'Saiu faz pouco tempo e ainda dá pra conseguir (passe, missão ou evento que está rolando).';
-    else if(/playstation|xbox|nintendo|celular|promo/.test(fonte)) por = 'Foi de graça só pra quem tinha ' + (/playstation/.test(fonte) ? 'PlayStation Plus' : 'uma coisa específica') + ' na época, e nunca mais apareceu. Quase ninguém tem.';
-    else if(cap && cap <= 1) por = 'É do Capítulo 1 e nunca foi vendida. Só quem jogava no começo do Fortnite tem — ver uma dessas na partida é evento.';
-    else if(cap && cap <= 3) por = 'Veio de passe ou evento do Capítulo ' + it.cap + ' e nunca foi vendida. Quem não jogou naquela época não tem.';
-    else por = 'Nunca foi vendida: veio de passe, missão ou evento. Quem jogou na época tem, quem não jogou não consegue mais.';
+  else if(!vezes){ [n, por] = nuncaVendido(it); }
+  else {
+    const nota = notaDeVer(it);
+    n = !CORTES ? 3 : nota >= CORTES[3] ? 5 : nota >= CORTES[2] ? 4 : nota >= CORTES[1] ? 3 : nota >= CORTES[0] ? 2 : 1;
+    por = 'Apareceu ' + vezes + ' vez' + (vezes > 1 ? 'es' : '') + ' na loja, a última ' + tempoBonito(ultima) + '. ' +
+      (n >= 4 ? 'Comparando com tudo que já foi vendido, está entre as mais raras de ver.' : n === 3 ? 'Fica no meio da tabela: dá pra ver de vez em quando.' : 'Bastante gente tem.');
   }
-  else por = 'Apareceu ' + vezes + ' vez' + (vezes > 1 ? 'es' : '') + ' na loja, a última ' + tempoBonito(ultima) + '. ' +
-    (n >= 4 ? 'Comparando com todas as skins do jogo, essa está entre as mais raras de ver.' : n === 3 ? 'Fica no meio da tabela: dá pra ver de vez em quando.' : 'Bastante gente tem.');
   const NOMES = { 1:'Todo mundo tem', 2:'Comum de ver', 3:'Rara de ver', 4:'Muito rara', 5:'Raríssima — quase ninguém tem' };
   return { n, nome:NOMES[n], por, estrelas:'★'.repeat(n) + '☆'.repeat(5 - n) };
 }
@@ -1354,6 +1415,7 @@ function detalheHTML(it){
     html += '<p class="destaque">' + hist.length + ' vez' + (hist.length > 1 ? 'es' : '') + '</p>' +
       '<p>Última vez: <b>' + dataBR(ultima) + '</b> (' + tempoBonito(d) + ')' + (LOJA.has(it.id) ? ' — <b>está na loja agora!</b>' : (d > 365 ? ' — sumida faz tempo, pode ser que nunca mais volte… ou que volte amanhã.' : '')) + '</p>' +
       '<details><summary>Ver todas as datas</summary>' + Object.keys(porAno).sort().reverse().map(a => '<p style="margin-top:6px"><b>' + a + '</b> (' + porAno[a].length + ')</p><div class="datas">' + porAno[a].map(x => '<span>' + dataBR(x) + '</span>').join('') + '</div>').join('') + '</details>';
+    html += calendarioLoja(hist);
   } else html += '<p class="destaque">0 vezes</p><p>Nunca foi vendida na loja de itens.</p>';
   html += '</div>';
 
@@ -1361,7 +1423,7 @@ function detalheHTML(it){
   const qt = quantosTem(it);
   html += '<div class="bloco"><h3>👀 Raridade de ver um player com ela</h3><p class="destaque" style="color:' + R.cor + '">' + rv.estrelas + ' ' + esc(rv.nome) + '</p><p>' + esc(rv.por) + '</p>' +
     (qt ? '<p style="margin-top:8px">🤔 <b>Chute de quantos têm:</b> ' + qt.texto + '. ' + esc(qt.partida) + '</p>' : '') +
-    '<p class="fraco" style="margin-top:6px">Tudo isso é chute bem feito: ninguém tem o número exato de quantos jogadores têm cada skin, nem a Epic mostra. A nota usa quantas vezes ela foi pra loja, há quanto tempo sumiu e de onde ela veio, e as estrelas comparam essa nota com todos os cosméticos do jogo (5 estrelas = as 10% mais raras).</p></div>';
+    '<p class="fraco" style="margin-top:6px">Tudo isso é chute bem feito: ninguém tem o número exato de quantos jogadores têm cada skin, nem a Epic mostra. Se já foi vendida, a conta usa quantas vezes foi pra loja e há quanto tempo sumiu, comparando com tudo que já foi vendido. Se nunca foi vendida, depende de onde veio: Passe de Batalha recente muita gente tem; PlayStation Plus, promoção e evento quase ninguém tem.</p></div>';
   html += blocoPacotao(it);
   html += blocoVale(it);
   html += blocoPreco(it);
@@ -1823,6 +1885,105 @@ $('#gradeNpc').addEventListener('click', ev => {
   $('#campo').value = c.dataset.npc; $('#abas button[data-aba="catalogo"]').click(); render();
 });
 
+/* =====================================================================
+   🕰️ HISTÓRIA — tudo sai do histórico da loja (as datas em que cada item
+   apareceu) e da data em que ele entrou no jogo.
+   ===================================================================== */
+const MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const diaISO = d => { const x = new Date(d); return isNaN(x) ? '' : x.toISOString().slice(0, 10); };
+/* Calendário: um quadradinho por mês, mais escuro quanto mais dias na
+   loja. E quantos dias ficou e a maior sequência de dias seguidos. */
+function calendarioLoja(hist){
+  const dias = Array.from(new Set(hist.map(diaISO).filter(Boolean))).sort();
+  if(!dias.length) return '';
+  let maior = 1, atual = 1;
+  for(let i = 1; i < dias.length; i++){ const dif = (new Date(dias[i]) - new Date(dias[i - 1])) / 86400000; atual = dif === 1 ? atual + 1 : 1; if(atual > maior) maior = atual; }
+  const porMes = {}; dias.forEach(d => { const k = d.slice(0, 7); porMes[k] = (porMes[k] || 0) + 1; });
+  const anos = Array.from(new Set(dias.map(d => d.slice(0, 4)))).sort();
+  let cal = '<div class="cal"><span></span>' + MESES.map(m => '<span>' + m + '</span>').join('');
+  anos.forEach(a => { cal += '<span>' + a + '</span>'; for(let m = 1; m <= 12; m++){ const n = porMes[a + '-' + String(m).padStart(2, '0')] || 0; cal += '<i class="' + (n >= 6 ? 't3' : n >= 3 ? 't2' : n ? 't1' : '') + '" title="' + MESES[m - 1] + ' ' + a + ': ' + n + ' dia(s)"></i>'; } });
+  cal += '</div>';
+  return '<p style="margin-top:8px">📅 Ficou <b>' + dias.length + ' dia' + (dias.length > 1 ? 's' : '') + '</b> na loja no total' + (maior > 1 ? ', e o máximo seguido foi <b>' + maior + ' dias</b>' : '') + '.</p>' + cal;
+}
+
+/* ---------- máquina do tempo ---------- */
+function viajar(dia){
+  if(!ITENS.length || !dia) return;
+  const achados = ITENS.filter(it => it.hist.some(d => diaISO(d) === dia));
+  const d = new Date(dia + 'T12:00:00');
+  $('#contadorTempo').textContent = achados.length ? 'Em ' + d.toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' }) + ' a loja tinha ' + achados.length + ' itens:' :
+    'Não achei nada na loja nesse dia. (O histórico começa em 2017; tenta outro dia.)';
+  achados.sort((a, b) => (a.tipo === 'outfit' ? 0 : 1) - (b.tipo === 'outfit' ? 0 : 1) || precoDe(b).vb - precoDe(a).vb);
+  $('#gradeTempo').innerHTML = achados.slice(0, 120).map(it => cartaHTML(it)).join('');
+}
+$('#btnTempo').addEventListener('click', () => viajar($('#dataTempo').value));
+$('#dataTempo').addEventListener('change', () => viajar($('#dataTempo').value));
+$('#atalhosTempo').addEventListener('click', ev => { const b = ev.target.closest('[data-dia]'); if(!b) return; $('#dataTempo').value = b.dataset.dia; viajar(b.dataset.dia); });
+function atalhosTempo(){
+  const hoje = new Date(); const bt = [];
+  [1, 2, 3, 5].forEach(n => { const d = new Date(hoje); d.setFullYear(d.getFullYear() - n); bt.push('<button class="btn pequeno leve" data-dia="' + diaISO(d) + '">Hoje há ' + n + ' ano' + (n > 1 ? 's' : '') + '</button> '); });
+  $('#atalhosTempo').innerHTML = bt.join('');
+}
+
+/* ---------- aniversário ---------- */
+function renderNiver(){
+  const hoje = new Date(), md = String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0');
+  const lista = ITENS.filter(it => it.tipo === 'outfit' && it.add && diaISO(it.add).slice(5) === md && diaISO(it.add).slice(0, 4) < String(hoje.getFullYear()));
+  $('#txtNiver').textContent = lista.length ? lista.length + ' skin' + (lista.length > 1 ? 's fazem' : ' faz') + ' aniversário hoje! 🎉' : 'Nenhuma skin faz aniversário hoje. Volta amanhã!';
+  $('#gradeNiver').innerHTML = lista.slice(0, 60).map(it => cartaHTML(it, '<br/>🎂 <b>' + (hoje.getFullYear() - parseInt(diaISO(it.add).slice(0, 4), 10)) + ' anos</b>')).join('');
+}
+
+/* ---------- ranking ---------- */
+let modoRank = 'mais';
+function renderRank(){
+  const vendidas = ITENS.filter(it => it.tipo === 'outfit' && it.hist.length);
+  let lista;
+  if(modoRank === 'mais') lista = vendidas.sort((a, b) => b.hist.length - a.hist.length).slice(0, 10);
+  else if(modoRank === 'menos') lista = vendidas.sort((a, b) => a.hist.length - b.hist.length || String(a.hist[a.hist.length - 1]).localeCompare(String(b.hist[b.hist.length - 1]))).slice(0, 10);
+  else lista = vendidas.filter(it => !LOJA.has(it.id)).sort((a, b) => String(a.hist[a.hist.length - 1]).localeCompare(String(b.hist[b.hist.length - 1]))).slice(0, 10);
+  $('#gradeRank').innerHTML = lista.map((it, i) => cartaHTML(it, '<br/><b>#' + (i + 1) + '</b> · ' + (modoRank === 'sumidas' ? 'sumida ' + tempoBonito(diasDesde(it.hist[it.hist.length - 1])) : it.hist.length + ' vez' + (it.hist.length > 1 ? 'es' : '')))).join('');
+}
+$('#chipsRank').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; modoRank = c.dataset.r; $$('#chipsRank .chip').forEach(x => x.setAttribute('aria-pressed', x === c)); renderRank(); });
+
+/* ---------- mapa de calor da semana ---------- */
+function renderCalor(){
+  const DIAS = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'], conta = [0,0,0,0,0,0,0];
+  ITENS.forEach(it => { if(it.tipo !== 'outfit' || !it.hist.length || raridadeDeVer(it).n < 4) return; it.hist.forEach(d => { const x = new Date(d); if(!isNaN(x)) conta[x.getUTCDay()]++; }); });
+  const max = Math.max(1, ...conta), melhor = conta.indexOf(Math.max(...conta));
+  $('#calorSemana').innerHTML = conta.map((n, i) => '<div class="calor"><span>' + (i === melhor ? '🏆 ' : '') + DIAS[i] + '</span><div class="b"><i style="width:' + Math.round(n / max * 100) + '%"></i></div><span>' + num(n) + '</span></div>').join('') +
+    '<p class="fraco" style="margin-top:6px">O dia com mais aparições de skin rara é <b>' + DIAS[melhor] + '</b>. (A loja troca às 21h de Brasília, então "' + DIAS[melhor] + '" começa na noite anterior.)</p>';
+}
+
+/* ---------- skins de cada temporada ---------- */
+function montarTemporadas(){
+  const set = new Set(); ITENS.forEach(it => { if(it.tipo === 'outfit' && it.cap && it.temp) set.add(it.cap + '|' + it.temp); });
+  const lista = Array.from(set).sort((a, b) => { const [c1, t1] = a.split('|').map(parseFloat), [c2, t2] = b.split('|').map(parseFloat); return (c2 - c1) || (t2 - t1); });
+  const sel = $('#selTemporada'), v = sel.value;
+  sel.innerHTML = lista.map(k => { const [c, t] = k.split('|'); return '<option value="' + esc(k) + '">Capítulo ' + esc(c) + ', Temporada ' + esc(t) + '</option>'; }).join('');
+  if(v && lista.includes(v)) sel.value = v;
+  renderTemporada();
+}
+function renderTemporada(){
+  const k = $('#selTemporada').value; if(!k) return; const [c, t] = k.split('|');
+  const lista = ITENS.filter(it => it.tipo === 'outfit' && String(it.cap) === c && String(it.temp) === t).sort((a, b) => raridadeDeVer(b).n - raridadeDeVer(a).n);
+  $('#contadorTemporada').textContent = lista.length + ' skins saíram no Capítulo ' + c + ', Temporada ' + t;
+  $('#gradeTemporada').innerHTML = lista.slice(0, 120).map(it => cartaHTML(it)).join('');
+}
+$('#selTemporada').addEventListener('change', renderTemporada);
+
+/* ---------- linha do tempo do armário ---------- */
+function renderLinhaTempo(){
+  const lista = Array.from(armario).map(id => POR_ID.get(id)).filter(it => it && it.add).sort((a, b) => String(a.add).localeCompare(String(b.add)));
+  if(!lista.length){ $('#linhaTempo').innerHTML = '<p class="fraco">Marca as skins que você tem (🎒 Eu tenho essa) que elas aparecem aqui, na ordem em que saíram.</p>'; return; }
+  const porAno = {}; lista.forEach(it => { const a = diaISO(it.add).slice(0, 4); (porAno[a] = porAno[a] || []).push(it); });
+  $('#linhaTempo').innerHTML = Object.keys(porAno).sort().map(a => '<div class="ano-tempo"><h3>📅 ' + a + ' <span class="fraco">(' + porAno[a].length + ')</span></h3><div class="lista-armario">' + porAno[a].map(it => cartaHTML(it)).join('') + '</div></div>').join('');
+}
+function renderHistoria(){
+  if(!ITENS.length) return;
+  atalhosTempo(); renderNiver(); renderRank(); renderCalor(); montarTemporadas(); renderLinhaTempo();
+  if(!$('#dataTempo').value){ const d = new Date(); d.setFullYear(d.getFullYear() - 1); $('#dataTempo').value = diaISO(d); viajar(diaISO(d)); }
+}
+
 /* ---------- V-Bucks em reais ---------- */
 function renderCalc(){
   const vb = parseInt($('#calcVb').value, 10) || 0; const r = reaisDe(vb);
@@ -2156,6 +2317,7 @@ $('#abas').addEventListener('click', ev => {
   if(b.dataset.aba === 'mapa') carregarMapa();
   if(b.dataset.aba === 'armas') carregarArmas();
   if(b.dataset.aba === 'npcs') renderNpcs();
+  if(b.dataset.aba === 'historia') renderHistoria();
   window.scrollTo({ top:0, behavior:'smooth' });
 });
 
@@ -2288,7 +2450,7 @@ $('#campo').addEventListener('input', () => {
    worker, apaga os caches da casca e recarrega pedindo tudo de novo. O
    armário e as favoritas (localStorage) não são tocados; o catálogo
    guardado também fica, porque ele tem a própria validade. */
-const VERSAO = 25;
+const VERSAO = 26;
 $('#btnAtualizar').addEventListener('click', async () => {
   $('#atualizarMsg').textContent = 'Atualizando…';
   try{
