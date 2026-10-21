@@ -225,6 +225,28 @@ details summary{cursor:pointer;color:var(--roxo);font-weight:600}
 .loja-entrada .n{font-weight:700}
 .loja-entrada .p{margin-left:auto;text-align:right;font-weight:700;white-space:nowrap}
 .loja-entrada .p small{display:block;font-weight:400;color:var(--tinta-fraca)}
+.loja-entrada .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.tag{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--cartao3);color:var(--tinta)}
+.tag.promo{background:var(--ok);color:#fff}.tag.novo{background:var(--azul);color:#fff}.tag.voltou{background:var(--roxo);color:#fff}
+.tag.sai{background:var(--erro);color:#fff}.tag.raro{background:var(--vb);color:#2a1d00}.tag.parc{background:#2d5fb8;color:#fff}
+.banner-avisos{background:linear-gradient(135deg,var(--vb),#ffb347);color:#2a1d00;border-radius:16px;padding:12px 16px;margin-bottom:12px;font-weight:600;box-shadow:0 5px 0 var(--vb-sombra);cursor:pointer;animation:chama 1.6s ease-in-out 2}
+.banner-avisos b{font-family:'Baloo 2',cursive;font-size:1.15rem}
+@keyframes chama{50%{transform:scale(1.02)}}
+.alerta{border-radius:14px;padding:10px 12px;margin-top:8px;font-size:.92rem;background:var(--cartao3)}
+.alerta button{margin-left:6px}
+.relogio{font-family:'Baloo 2',cursive}
+.noticia{display:flex;gap:12px;align-items:flex-start;background:var(--cartao2);border:1px solid var(--borda);border-radius:14px;padding:10px;margin-bottom:8px;color:var(--tinta)}
+.noticia img{width:120px;aspect-ratio:16/9;object-fit:cover;border-radius:10px;flex:none;background:var(--cartao3)}
+.noticia b{display:block;margin-bottom:2px}
+.linha-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.linha-meta input{width:110px;padding:8px;border-radius:10px;border:2px solid var(--borda);background:var(--campo);color:var(--tinta);font:inherit}
+.barra-meta{height:14px;background:var(--vazio);border-radius:999px;overflow:hidden;margin-top:10px}
+.barra-meta i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--vb),var(--ok));transition:width .4s}
+.gasto{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--borda);font-size:.92rem}
+.gasto img{width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--cartao3)}
+.gasto .v{margin-left:auto;font-weight:700;white-space:nowrap}
+.gasto button{border:none;background:none;cursor:pointer;color:var(--tinta-fraca);font-size:1rem}
+@media (max-width:520px){.noticia{flex-direction:column}.noticia img{width:100%}}
 
 /* ---------- conta (foto) ---------- */
 .solta{
@@ -303,6 +325,7 @@ footer a{color:var(--roxo)}
   <p class="slogan">Todas as skins do Fortnite: quando saíram, quantas vezes foram pra loja e quanto custam.</p>
 </header>
 
+<div class="banner-avisos oculto" id="bannerAvisos"></div>
 <div class="status" id="status"><span class="girando">🦙</span><span id="statusTexto">Preparando…</span><div class="barra"><i id="statusBarra"></i></div></div>
 
 <nav class="abas" id="abas">
@@ -361,7 +384,25 @@ footer a{color:var(--roxo)}
   <div class="caixa">
     <h2>🛒 Loja de itens de hoje</h2>
     <p class="fraco" id="lojaData">Carregando a loja…</p>
-    <div id="lojaLista" style="margin-top:12px"></div>
+    <div class="resumo" id="lojaResumo"></div>
+    <div id="lojaAlertas"></div>
+    <div class="chips" id="chipsLoja">
+      <button class="chip" aria-pressed="true" data-f="">Todas</button>
+      <button class="chip" aria-pressed="false" data-f="promo">🏷️ Promoções</button>
+      <button class="chip" aria-pressed="false" data-f="novo">🆕 Novos</button>
+      <button class="chip" aria-pressed="false" data-f="voltou">🕰️ Voltaram depois de muito tempo</button>
+      <button class="chip" aria-pressed="false" data-f="sai">⏰ Saem hoje à noite</button>
+      <button class="chip" aria-pressed="false" data-f="raro">💎 Raros</button>
+      <button class="chip" aria-pressed="false" data-f="parceria">🦸 Parcerias</button>
+      <button class="chip" aria-pressed="false" data-f="caros">💰 Top 10 mais caros</button>
+      <button class="chip" aria-pressed="false" data-f="baratos">🪙 Top 10 mais baratos</button>
+    </div>
+    <p class="contador" id="contadorLoja"></p>
+    <div id="lojaLista" style="margin-top:6px"></div>
+  </div>
+  <div class="caixa">
+    <h2>📰 Notícias do Fortnite</h2>
+    <div id="noticias" class="fraco">Carregando as notícias…</div>
   </div>
 </section>
 
@@ -421,6 +462,28 @@ footer a{color:var(--roxo)}
     <textarea class="codigo oculto" id="codigoArea" rows="3" placeholder="Cola o código aqui"></textarea>
     <div class="acoes oculto" id="codigoAcoes"><button class="btn pequeno roxo" id="btnCodigoOk">Juntar com o meu armário</button></div>
     <div class="lista-armario" id="listaArmario"></div>
+  </div>
+  <div class="caixa">
+    <h2>💰 Meu dinheiro de Fortnite</h2>
+    <h3>❤️ Lista de desejos</h3>
+    <div class="resumo" id="resumoDesejos"></div>
+    <h3>🎯 Meta de V-Bucks</h3>
+    <div class="linha-meta">
+      <label class="fraco">Tenho <input type="number" id="metaTenho" min="0" step="50" /> V-Bucks</label>
+      <label class="fraco">Quero juntar <input type="number" id="metaQuero" min="0" step="50" /> V-Bucks</label>
+      <button class="btn pequeno leve" id="metaUsarDesejos">Usar o total da lista de desejos</button>
+    </div>
+    <div class="barra-meta"><i id="metaBarra"></i></div>
+    <p class="fraco" id="metaTexto"></p>
+    <h3>🧾 Quanto já gastei</h3>
+    <p class="fraco">O site anota sozinho quando você marca "🎒 Eu tenho essa" num item que está na loja ou já foi vendido, ou "📦 Comprei o pacotão". Se foi de graça, tira da lista no ✕.</p>
+    <div class="resumo" id="resumoGastos"></div>
+    <div id="listaGastos"></div>
+  </div>
+  <div class="caixa">
+    <h2>🔔 Me avisa quando voltar</h2>
+    <p class="fraco">Skins que você pediu pra avisar. Quando uma delas aparece na loja, um aviso grandão aparece lá em cima do site.</p>
+    <div class="lista-armario" id="listaAvisos"></div>
   </div>
   <div class="caixa">
     <h2>❤️ Favoritas</h2>
@@ -544,7 +607,7 @@ footer a{color:var(--roxo)}
 <footer>
   Dados dos cosméticos: <a href="https://fortnite-api.com" target="_blank" rel="noopener">fortnite-api.com</a>. DearNite não é da Epic Games.<br/>
   Feito pelo Jojo com o Claude. Irmão do <a href="../butterpoke/">ButterPoke</a> 🦋<br/>
-  Versão <b id="versao">24</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
+  Versão <b id="versao">25</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
   <div class="fraco" id="atualizarMsg" style="margin-top:6px"></div>
 </footer>
 </div>
@@ -952,7 +1015,7 @@ async function carregarLoja(){
   const hojeISO = new Date().toISOString(); const hoje = hojeISO.slice(0, 10);
   LOJA.forEach((_, id) => { const it = POR_ID.get(id); if(!it) return; const u = it.hist.length ? String(it.hist[it.hist.length - 1]).slice(0, 10) : ''; if(u !== hoje) it.hist = it.hist.concat([hojeISO]); });
   calcularCortes();   // "está na loja agora" muda a raridade de ver
-  renderLoja(dados.loja);
+  renderLoja(dados.loja); renderArmario(); carregarNoticias();
   render();
 }
 
@@ -1252,7 +1315,8 @@ function detalheHTML(it){
 
   html += '<div class="acoes" style="margin-bottom:10px">' +
     '<button class="btn pequeno ' + (armario.has(it.id) ? 'verde' : 'leve') + '" data-acao="tenho">' + (armario.has(it.id) ? '🎒 Tenho! (tirar do armário)' : '🎒 Eu tenho essa') + '</button>' +
-    '<button class="btn pequeno ' + (favs.has(it.id) ? 'vermelho' : 'leve') + '" data-acao="fav">' + (favs.has(it.id) ? '❤️ Favorita (tirar)' : '🤍 Quero essa') + '</button></div>' +
+    '<button class="btn pequeno ' + (favs.has(it.id) ? 'vermelho' : 'leve') + '" data-acao="fav">' + (favs.has(it.id) ? '❤️ Favorita (tirar)' : '🤍 Quero essa') + '</button>' +
+    (LOJA.has(it.id) && !avisos.has(it.id) ? '' : '<button class="btn pequeno ' + (avisos.has(it.id) ? 'roxo' : 'leve') + '" data-acao="avisar">' + (avisos.has(it.id) ? '🔔 Vou avisar (tirar)' : '🔔 Me avisa quando voltar') + '</button>') + '</div>' +
     (armario.has(it.id) && origem[it.id] ? '<p class="fraco" style="margin:-4px 0 10px">' + textoOrigem(it.id) + '</p>' : '');
 
   // 🎬 gesto / música / item tocando: vídeo oficial, quando a API tem. Só carrega quando a pessoa toca.
@@ -1318,14 +1382,16 @@ $('#detalhe').addEventListener('click', ev => {
   if(b){
     if(b.dataset.acao === 'tenho'){
       alternar(armario, id, 'dearnite-armario');
-      if(armario.has(id)){ if(!origem[id]) origem[id] = 'separado'; } else delete origem[id];
+      if(armario.has(id)){ if(!origem[id]) origem[id] = 'separado'; anotarGasto(id); } else { delete origem[id]; delete gastos[id]; gravarGastos(); }
       gravarOrigem();
     }
     if(b.dataset.acao === 'pacote'){
       const pac = PACOTOES[parseInt(b.dataset.pac, 10)];
-      if(pac){ pac.ids.forEach(x => { if(!armario.has(x)){ armario.add(x); origem[x] = 'pacote:' + pac.nome; } }); gravarSet('dearnite-armario', armario); gravarOrigem(); pac.ids.forEach(atualizarCarta); }
+      if(pac){ gastos['pac:' + pac.nome] = { vb:pac.preco, nome:'📦 ' + pac.nome, quando:new Date().toISOString() }; gravarGastos();
+        pac.ids.forEach(x => { if(!armario.has(x)){ armario.add(x); origem[x] = 'pacote:' + pac.nome; } }); gravarSet('dearnite-armario', armario); gravarOrigem(); pac.ids.forEach(atualizarCarta); }
     }
     if(b.dataset.acao === 'fav') alternar(favs, id, 'dearnite-favs');
+    if(b.dataset.acao === 'avisar'){ if(avisos.has(id)) avisos.delete(id); else avisos.add(id); gravarAvisos(); if(LOJA_INFO) renderAlertas(ofertas()); }
     abrirDetalhe(id); atualizarCarta(id); renderArmario(); return;
   }
   // clique fora da caixa fecha
@@ -1341,24 +1407,121 @@ document.addEventListener('click', ev => {
 });
 
 /* ---------- loja de hoje ---------- */
-function renderLoja(loja){
-  const quando = loja.date ? new Date(loja.date) : null;
-  $('#lojaData').textContent = 'Loja de ' + (quando && !isNaN(quando) ? quando.toLocaleDateString('pt-BR') : 'hoje') + ' · ' + (loja.entries || []).length + ' ofertas. Toca numa pra ver os detalhes.';
-  const entradas = (loja.entries || []).slice().sort((a, b) => (b.sortPriority || 0) - (a.sortPriority || 0));
-  $('#lojaLista').innerHTML = entradas.map(e => {
+/* =====================================================================
+   🛒 LOJA DE HOJE — cada oferta ganha etiquetas (promoção, novo, voltou
+   depois de muito tempo, sai hoje, raro, parceria), filtros, os tops de
+   preço, o relógio da troca e quanto custaria comprar a loja inteira.
+   A loja troca às 00:00 UTC (21h em Brasília).
+   ===================================================================== */
+let filtroLoja = '';
+const SERIES_PARCERIA = { marvel:'Marvel', dc:'DC', starwars:'Star Wars', icon:'Série Ícones', gaminglegends:'Lendas dos Games' };
+function proximaTroca(){ const d = new Date(); d.setUTCHours(24, 0, 0, 0); return d; }
+function falta(ms){
+  if(ms <= 0) return 'agora';
+  const m = Math.floor(ms / 60000), hh = Math.floor(m / 60), dd = Math.floor(hh / 24);
+  if(dd >= 1) return dd + ' dia' + (dd > 1 ? 's' : '') + (hh % 24 ? ' e ' + (hh % 24) + 'h' : '');
+  if(hh >= 1) return hh + 'h ' + (m % 60) + 'min';
+  return m + ' min';
+}
+function ofertas(){
+  if(!LOJA_INFO) return [];
+  const troca = proximaTroca();
+  return (LOJA_INFO.entries || []).map(e => {
     const itens = []; ['brItems','cars','instruments','tracks','legoKits'].forEach(g => (e[g] || []).forEach(x => itens.push(x)));
-    if(!itens.length) return '';
-    const principal = itens[0];
+    if(!itens.length) return null;
+    const principal = itens[0], it = POR_ID.get(principal.id);
     const nome = (e.bundle && e.bundle.name) || principal.name || principal.title || e.devName || '';
     const img = (e.bundle && e.bundle.image) || (e.newDisplayAsset && e.newDisplayAsset.renderImages && e.newDisplayAsset.renderImages[0] && e.newDisplayAsset.renderImages[0].image) ||
       (principal.images && (principal.images.smallIcon || principal.images.icon || principal.images.small)) || principal.albumArt || '';
-    const r = reaisDe(e.finalPrice || 0);
-    const it = POR_ID.get(principal.id);
-    return '<div class="loja-entrada" data-id="' + esc(principal.id) + '">' + (img ? '<img loading="lazy" src="' + esc(img) + '" alt="" />' : '<div style="width:64px;height:64px"></div>') +
-      '<div><div class="n">' + esc(nome) + (it ? ' ' + seloVale(it) : '') + '</div><div class="fraco">' + (itens.length > 1 ? itens.length + ' itens: ' + esc(itens.slice(0, 4).map(x => x.name || x.title).join(', ')) + (itens.length > 4 ? '…' : '') : esc(tipoDe(it ? it.tipo : (principal.type && principal.type.value)).nome)) + '</div></div>' +
-      '<div class="p"><i class="vb-icone"></i>' + num(e.finalPrice || 0) + (e.regularPrice && e.regularPrice !== e.finalPrice ? ' <s class="fraco">' + num(e.regularPrice) + '</s>' : '') + '<small>' + reais(r.melhor) + '</small></div></div>';
-  }).join('');
+    const preco = e.finalPrice || 0, cheio = e.regularPrice || preco;
+    const desconto = cheio > preco ? Math.round((1 - preco / cheio) * 100) : 0;
+    const sai = e.outDate ? new Date(e.outDate) : null;
+    // volta: dias entre hoje e a aparição anterior (a de hoje já entrou no histórico)
+    let gap = null, novo = false;
+    if(it){ const h2 = it.hist.slice().sort(); novo = h2.length <= 1; if(h2.length >= 2) gap = Math.round((new Date(h2[h2.length - 1]) - new Date(h2[h2.length - 2])) / 86400000); }
+    const its = itens.map(x => POR_ID.get(x.id)).filter(Boolean);
+    const raro = its.some(x => raridadeDeVer(x).n >= 4);
+    const parc = Array.from(new Set(its.map(x => SERIES_PARCERIA[x.rar] || (x.serie && SERIES_PARCERIA[normal2(x.serie)]) || '').filter(Boolean)));
+    return { e, itens, principal, it, nome, img, preco, normal:cheio, desconto, sai, saiHoje:!!(sai && sai <= new Date(troca.getTime() + 60000)), gap, novo, raro, parc };
+  }).filter(Boolean);
 }
+const normal2 = s => normal(s).replace(/ /g, '');
+function tagsDe(o){
+  const t = [];
+  if(o.desconto) t.push('<span class="tag promo">🏷️ -' + o.desconto + '%</span>');
+  if(o.novo) t.push('<span class="tag novo">🆕 primeira vez</span>');
+  if(o.gap != null && o.gap >= 180) t.push('<span class="tag voltou">🕰️ voltou depois de ' + (o.gap >= 365 ? Math.floor(o.gap / 365) + ' ano' + (o.gap >= 730 ? 's' : '') : Math.round(o.gap / 30) + ' meses') + '</span>');
+  if(o.raro) t.push('<span class="tag raro">💎 rara</span>');
+  o.parc.forEach(p => t.push('<span class="tag parc">🦸 ' + esc(p) + '</span>'));
+  if(o.sai) t.push('<span class="tag' + (o.saiHoje ? ' sai' : '') + '" data-sai="' + o.sai.getTime() + '">⏳ sai em ' + falta(o.sai - Date.now()) + '</span>');
+  return t.join('');
+}
+function renderLoja(loja){
+  const quando = loja.date ? new Date(loja.date) : null;
+  const os = ofertas();
+  $('#lojaData').textContent = 'Loja de ' + (quando && !isNaN(quando) ? quando.toLocaleDateString('pt-BR') : 'hoje') + ' · ' + os.length + ' ofertas. Toca numa pra ver os detalhes.';
+  const total = os.reduce((s, o) => s + o.preco, 0), promos = os.filter(o => o.desconto).length;
+  $('#lojaResumo').innerHTML = '<div><b class="relogio" id="relogioLoja">' + falta(proximaTroca() - Date.now()) + '</b><small>pra loja trocar (21h de Brasília)</small></div>' +
+    '<div><b><i class="vb-icone"></i>' + num(total) + '</b><small>pra comprar a loja inteira (' + reais(reaisDe(total).melhor) + ')</small></div>' +
+    '<div><b>' + promos + '</b><small>em promoção</small></div><div><b>' + os.filter(o => o.saiHoje).length + '</b><small>saem hoje à noite</small></div>';
+  let lista = os.slice();
+  const f = filtroLoja;
+  if(f === 'promo') lista = lista.filter(o => o.desconto).sort((a, b) => b.desconto - a.desconto);
+  else if(f === 'novo') lista = lista.filter(o => o.novo);
+  else if(f === 'voltou') lista = lista.filter(o => o.gap != null && o.gap >= 180).sort((a, b) => b.gap - a.gap);
+  else if(f === 'sai') lista = lista.filter(o => o.saiHoje);
+  else if(f === 'raro') lista = lista.filter(o => o.raro);
+  else if(f === 'parceria') lista = lista.filter(o => o.parc.length);
+  else if(f === 'caros') lista = lista.sort((a, b) => b.preco - a.preco).slice(0, 10);
+  else if(f === 'baratos') lista = lista.filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 10);
+  else lista.sort((a, b) => (b.e.sortPriority || 0) - (a.e.sortPriority || 0));
+  $('#contadorLoja').textContent = lista.length ? lista.length + ' oferta' + (lista.length > 1 ? 's' : '') : 'Nada nesse filtro hoje.';
+  $('#lojaLista').innerHTML = lista.map((o, i) => {
+    const r = reaisDe(o.preco);
+    return '<div class="loja-entrada" data-id="' + esc(o.principal.id) + '">' + (o.img ? '<img loading="lazy" src="' + esc(o.img) + '" alt="" />' : '<div style="width:64px;height:64px"></div>') +
+      '<div><div class="n">' + (f === 'caros' || f === 'baratos' ? '#' + (i + 1) + ' ' : '') + esc(o.nome) + (o.it ? ' ' + seloVale(o.it) : '') + '</div><div class="fraco">' + (o.itens.length > 1 ? o.itens.length + ' itens: ' + esc(o.itens.slice(0, 4).map(x => x.name || x.title).join(', ')) + (o.itens.length > 4 ? '…' : '') : esc(tipoDe(o.it ? o.it.tipo : (o.principal.type && o.principal.type.value)).nome)) + '</div>' +
+      '<div class="tags">' + tagsDe(o) + '</div></div>' +
+      '<div class="p"><i class="vb-icone"></i>' + num(o.preco) + (o.normal > o.preco ? ' <s class="fraco">' + num(o.normal) + '</s>' : '') + '<small>' + reais(r.melhor) + '</small></div></div>';
+  }).join('');
+  renderAlertas(os);
+}
+$('#chipsLoja').addEventListener('click', ev => { const c = ev.target.closest('.chip'); if(!c) return; filtroLoja = c.dataset.f; $$('#chipsLoja .chip').forEach(x => x.setAttribute('aria-pressed', x === c)); if(LOJA_INFO) renderLoja(LOJA_INFO); });
+// relógios andando
+setInterval(() => {
+  const r = $('#relogioLoja'); if(r) r.textContent = falta(proximaTroca() - Date.now());
+  $$('[data-sai]').forEach(el => { el.textContent = '⏳ sai em ' + falta(Number(el.dataset.sai) - Date.now()); });
+}, 30000);
+
+/* ---------- 🔔 avisos e 💎 raros na loja ---------- */
+const avisos = (() => { try{ return new Set(JSON.parse(localStorage.getItem('dearnite-avisos') || '[]')); }catch(e){ return new Set(); } })();
+function gravarAvisos(){ try{ localStorage.setItem('dearnite-avisos', JSON.stringify(Array.from(avisos))); }catch(e){} }
+function renderAlertas(os){
+  const voltaram = Array.from(avisos).filter(id => LOJA.has(id)).map(id => POR_ID.get(id)).filter(Boolean);
+  const raros = []; os.forEach(o => o.itens.forEach(x => { const it = POR_ID.get(x.id); if(it && it.tipo === 'outfit' && raridadeDeVer(it).n >= 4 && !raros.includes(it)) raros.push(it); }));
+  const b = $('#bannerAvisos');
+  if(voltaram.length){
+    b.innerHTML = '🔔 <b>Voltou pra loja!</b> ' + voltaram.map(it => esc(it.nome)).join(', ') + ' — toca aqui pra ver.';
+    b.dataset.id = voltaram[0].id; b.classList.remove('oculto');
+  } else b.classList.add('oculto');
+  $('#lojaAlertas').innerHTML = (voltaram.length ? '<div class="alerta">🔔 <b>Das que você pediu pra avisar:</b> ' + voltaram.map(it => '<button class="btn pequeno leve" data-abrir="' + esc(it.id) + '">' + esc(it.nome) + '</button>').join('') + '</div>' : '') +
+    (raros.length ? '<div class="alerta">💎 <b>Skin rara na loja hoje:</b> ' + raros.slice(0, 8).map(it => '<button class="btn pequeno leve" data-abrir="' + esc(it.id) + '">' + esc(it.nome) + ' ' + raridadeDeVer(it).estrelas + '</button>').join('') + '</div>' : '');
+}
+$('#bannerAvisos').addEventListener('click', () => { const id = $('#bannerAvisos').dataset.id; if(id) abrirDetalhe(id); });
+$('#lojaAlertas').addEventListener('click', ev => { const b = ev.target.closest('[data-abrir]'); if(b) abrirDetalhe(b.dataset.abrir); });
+
+/* ---------- 📰 notícias ---------- */
+async function carregarNoticias(){
+  let dados = await bdLer('noticias');
+  if(!dados || Date.now() - dados.quando > 3600 * 1000){
+    try{ const j = await baixar(API + '/news/br?language=pt-BR'); dados = { quando:Date.now(), n:j.data }; await bdGravar('noticias', dados); }
+    catch(e){ console.warn(e); }
+  }
+  const motds = (dados && dados.n && (dados.n.motds || [])) || [];
+  $('#noticias').innerHTML = motds.length ? motds.slice(0, 8).map(m => '<div class="noticia">' + (m.image || m.tileImage ? '<img loading="lazy" src="' + esc(m.tileImage || m.image) + '" alt="" />' : '') +
+    '<div><b>' + esc(m.title || m.tabTitle || '') + '</b><span class="fraco">' + esc(m.body || '') + '</span></div></div>').join('') :
+    (dados && dados.n && dados.n.image ? '<img src="' + esc(dados.n.image) + '" alt="Notícias" style="width:100%;border-radius:12px" />' : 'Sem notícias agora.');
+}
+
 $('#lojaLista').addEventListener('click', ev => { const e = ev.target.closest('.loja-entrada'); if(e && POR_ID.has(e.dataset.id)) abrirDetalhe(e.dataset.id); });
 
 /* ---------- armário e favoritas (localStorage) ---------- */
@@ -1383,6 +1546,40 @@ function resumoHTML(t, vazio){
     '<div><b>' + reais(t.reais) + '</b><small>em dinheiro (pra comprar os V-Bucks)</small></div>' +
     '<div><b>' + num(t.exclusivos) + '</b><small>exclusivos (não dá mais pra ter)</small></div>';
 }
+/* ---------- 💰 desejos, meta e gastos ---------- */
+let gastos = (() => { try{ return JSON.parse(localStorage.getItem('dearnite-gastos') || '{}') || {}; }catch(e){ return {}; } })();
+function gravarGastos(){ try{ localStorage.setItem('dearnite-gastos', JSON.stringify(gastos)); }catch(e){} }
+function anotarGasto(id){
+  const it = POR_ID.get(id); if(!it) return; const p = precoDe(it);
+  if(p.de === 'nunca' || !p.vb) return;   // de graça ou sem preço: não anota
+  gastos[id] = { vb:p.vb, nome:it.nome, quando:new Date().toISOString(), estimado:p.de !== 'loja' };
+  gravarGastos();
+}
+function renderDinheiro(){
+  if(!$('#resumoDesejos')) return;
+  let vbDes = 0, naLoja = 0; favs.forEach(id => { const it = POR_ID.get(id); if(!it) return; const p = precoDe(it); vbDes += p.vb || 0; if(LOJA.has(id)) naLoja++; });
+  $('#resumoDesejos').innerHTML = '<div><b>' + favs.size + '</b><small>na lista de desejos</small></div><div><b><i class="vb-icone"></i>' + num(vbDes) + '</b><small>V-Bucks pra comprar todas</small></div>' +
+    '<div><b>' + reais(reaisDe(vbDes).melhor) + '</b><small>em dinheiro (só curiosidade)</small></div><div><b>' + naLoja + '</b><small>estão na loja hoje</small></div>';
+  const tenho = parseInt(localStorage.getItem('dearnite-meta-tenho') || '0', 10) || 0;
+  const quero = parseInt(localStorage.getItem('dearnite-meta-quero') || '0', 10) || vbDes;
+  if(document.activeElement !== $('#metaTenho')) $('#metaTenho').value = tenho || '';
+  if(document.activeElement !== $('#metaQuero')) $('#metaQuero').value = quero || '';
+  const pct = quero ? Math.min(100, Math.round(tenho / quero * 100)) : 0;
+  $('#metaBarra').style.width = pct + '%';
+  $('#metaTexto').innerHTML = !quero ? 'Escreve quantos V-Bucks você quer juntar.' : tenho >= quero ? '🎉 <b>Meta batida!</b> Você já tem os ' + num(quero) + ' V-Bucks.' :
+    '<b>' + pct + '%</b> da meta. Faltam <b>' + num(quero - tenho) + ' V-Bucks</b>.';
+  const lista = Object.entries(gastos).sort((a, b) => String(b[1].quando).localeCompare(String(a[1].quando)));
+  const totalG = lista.reduce((s, [, g]) => s + (g.vb || 0), 0);
+  $('#resumoGastos').innerHTML = '<div><b><i class="vb-icone"></i>' + num(totalG) + '</b><small>V-Bucks gastos</small></div><div><b>' + reais(reaisDe(totalG).melhor) + '</b><small>se fossem comprados com dinheiro</small></div><div><b>' + lista.length + '</b><small>compras anotadas</small></div>';
+  $('#listaGastos').innerHTML = lista.map(([k, g]) => { const it = POR_ID.get(k); return '<div class="gasto">' + (it && it.img ? '<img loading="lazy" src="' + esc(it.img) + '" alt="" />' : '<span style="font-size:1.6rem">📦</span>') +
+    '<div>' + esc(g.nome) + '<div class="fraco">' + dataBR(g.quando) + (g.estimado ? ' · preço estimado' : '') + '</div></div><div class="v"><i class="vb-icone"></i>' + num(g.vb) + '</div><button data-tirar-gasto="' + esc(k) + '" title="Foi de graça / tirar">✕</button></div>'; }).join('') || '<p class="fraco">Nada anotado ainda.</p>';
+  $('#listaAvisos').innerHTML = Array.from(avisos).map(id => POR_ID.get(id)).filter(Boolean).map(it => cartaHTML(it, LOJA.has(it.id) ? '<br/><b style="color:var(--ok)">🔔 na loja hoje!</b>' : '')).join('') || '<p class="fraco">Abre uma skin e toca em "🔔 Me avisa quando voltar".</p>';
+}
+$('#metaTenho').addEventListener('input', () => { try{ localStorage.setItem('dearnite-meta-tenho', String(parseInt($('#metaTenho').value, 10) || 0)); }catch(e){} renderDinheiro(); });
+$('#metaQuero').addEventListener('input', () => { try{ localStorage.setItem('dearnite-meta-quero', String(parseInt($('#metaQuero').value, 10) || 0)); }catch(e){} renderDinheiro(); });
+$('#metaUsarDesejos').addEventListener('click', () => { try{ localStorage.removeItem('dearnite-meta-quero'); }catch(e){} $('#metaQuero').value = ''; renderDinheiro(); });
+$('#listaGastos').addEventListener('click', ev => { const b = ev.target.closest('[data-tirar-gasto]'); if(!b) return; delete gastos[b.dataset.tirarGasto]; gravarGastos(); renderDinheiro(); });
+
 function renderArmario(){
   if(!ITENS.length) return;
   const t = totalDe(armario);
@@ -1393,6 +1590,7 @@ function renderArmario(){
   const lista = ids => Array.from(ids).map(id => POR_ID.get(id)).filter(Boolean).sort((a, b) => precoDe(b).vb - precoDe(a).vb || col.compare(a.nome, b.nome));
   $('#listaArmario').innerHTML = lista(armario).map(it => { const p = precoDe(it); return cartaHTML(it, '<br/><b>' + (p.de === 'nunca' ? 'exclusivo' : num(p.vb) + ' V-Bucks') + '</b>'); }).join('');
   $('#listaFav').innerHTML = lista(favs).map(it => cartaHTML(it)).join('');
+  renderDinheiro();
 }
 $('#btnLimpar').addEventListener('click', () => { if(confirm('Esvaziar o armário? As favoritas ficam.')){ armario.clear(); gravarSet('dearnite-armario', armario); origem = {}; gravarOrigem(); renderArmario(); render(); } });
 $('#btnCodigo').addEventListener('click', () => {
@@ -2090,7 +2288,7 @@ $('#campo').addEventListener('input', () => {
    worker, apaga os caches da casca e recarrega pedindo tudo de novo. O
    armário e as favoritas (localStorage) não são tocados; o catálogo
    guardado também fica, porque ele tem a própria validade. */
-const VERSAO = 24;
+const VERSAO = 25;
 $('#btnAtualizar').addEventListener('click', async () => {
   $('#atualizarMsg').textContent = 'Atualizando…';
   try{
