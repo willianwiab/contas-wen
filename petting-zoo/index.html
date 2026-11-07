@@ -51,6 +51,8 @@ button:focus-visible,.btn:focus-visible{outline:3px solid var(--lime);outline-of
 .now{margin-top:14px;font-size:.9rem;color:var(--muted);text-align:center;min-height:1.3em}
 audio{width:100%;margin-top:12px;display:none}
 audio.on{display:block}
+.video{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;margin-bottom:16px;box-shadow:0 0 calc(var(--pulse)*40px) rgba(255,43,214,.6)}
+.video iframe,.video #yt{position:absolute;inset:0;width:100%;height:100%;border:0}
 #viz{width:100%;height:180px;display:block;margin-top:14px;border-radius:12px;background:rgba(0,0,0,.35)}
 
 /* zoo */
@@ -90,18 +92,19 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px;lin
 
   <section class="panel" aria-labelledby="t-player">
     <h2 id="t-player">▶ Tocar</h2>
+    <div class="video"><div id="yt"></div></div>
     <div class="drop" id="drop">
-      <p>Tem a música no celular ou no PC? Escolhe o arquivo (ou arrasta pra cá) que o site inteiro dança com ela.</p>
+      <p>Dá play no vídeo e os bichos dançam junto! Ou escolhe o arquivo da música (ou arrasta pra cá) pro visualizador reagir ao som de verdade.</p>
       <div class="btns">
         <button id="pick">🎵 Escolher arquivo</button>
         <button id="demo" class="pink">🎛️ Batida demo</button>
-        <a class="btn ghost" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=deadmau5+petting+zoo">YouTube ↗</a>
+        <a class="btn ghost" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=KB0sLrP6WIU">YouTube ↗</a>
         <a class="btn ghost" target="_blank" rel="noopener" href="https://open.spotify.com/search/deadmau5%20petting%20zoo">Spotify ↗</a>
       </div>
       <input type="file" id="file" accept="audio/*" hidden>
     </div>
     <audio id="audio" controls></audio>
-    <div class="now" id="now">Nada tocando. A "batida demo" é um loop original a 128 BPM, só pra testar o visualizador.</div>
+    <div class="now" id="now">Nada tocando. Dá play no vídeo ali em cima! A "batida demo" é um loop original a 128 BPM, só pra testar o visualizador.</div>
     <canvas id="viz" aria-label="Visualizador de áudio"></canvas>
   </section>
 
@@ -218,7 +221,7 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px;lin
   }
   function startDemo(){
     ensureCtx(); ctx.resume();
-    audio.pause();
+    audio.pause(); pauseYt();
     demoOn = true; nextT = ctx.currentTime + .05; step = 0;
     demoTimer = setInterval(schedule, 25);
     $('#demo').textContent = '⏹ Parar demo';
@@ -231,7 +234,29 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px;lin
     $('#now').textContent = 'Demo parada.';
   }
   $('#demo').onclick = () => demoOn ? stopDemo() : startDemo();
-  audio.addEventListener('play', stopDemo);
+  audio.addEventListener('play', () => { stopDemo(); pauseYt(); });
+
+  /* ---------- vídeo do YouTube ---------- */
+  // O som do vídeo não pode ser lido pelo site, então quando ele toca a gente simula a batida (128 BPM).
+  let ytPlaying = false, ytPlayer;
+  window.onYouTubeIframeAPIReady = () => {
+    ytPlayer = new YT.Player('yt', {
+      videoId: 'KB0sLrP6WIU',
+      host: 'https://www.youtube-nocookie.com',
+      playerVars: { rel: 0, playsinline: 1 },
+      events: { onStateChange: e => {
+        ytPlaying = e.data === YT.PlayerState.PLAYING;
+        if (ytPlaying){ stopDemo(); audio.pause(); $('#now').textContent = '📺 Tocando o vídeo: Petting Zoo'; }
+      } }
+    });
+  };
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  tag.onerror = () => {
+    $('#yt').outerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/KB0sLrP6WIU?rel=0&playsinline=1" title="deadmau5 - Petting Zoo" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+  };
+  document.head.appendChild(tag);
+  const pauseYt = () => { try{ if (ytPlaying) ytPlayer.pauseVideo(); }catch(e){} };
 
   /* ---------- zoológico ---------- */
   const BICHOS = [
@@ -289,6 +314,10 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px;lin
       analyser.getByteFrequencyData(data);
       for (let i = 1; i < 8; i++) bass += data[i];
       bass = Math.max(0, (bass / 7 / 255 - .45) / .55);
+    } else if (ytPlaying){
+      const ph = (t / 1000 * 128 / 60) % 1;
+      bass = Math.exp(-ph * 6);
+      playing = true;
     }
     bassSm += (bass - bassSm) * .35;
     document.documentElement.style.setProperty('--pulse', bassSm.toFixed(3));
@@ -317,7 +346,8 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px;lin
     const N = 48, bw = VW / N;
     for (let i = 0; i < N; i++){
       let v;
-      if (analyser && playing) v = data[Math.floor(i * (data.length * .7) / N)] / 255;
+      if (ytPlaying && !demoOn && audio.paused) v = Math.max(.05, bassSm * (.9 - i/N*.6) * (.6 + .4*Math.sin(t/180 + i*.7)) + .1*Math.random());
+      else if (analyser && playing) v = data[Math.floor(i * (data.length * .7) / N)] / 255;
       else v = .08 + .05 * Math.sin(t / 600 + i * .4);
       const h = v * VH * .95;
       const grad = vctx.createLinearGradient(0, VH, 0, VH - h);
