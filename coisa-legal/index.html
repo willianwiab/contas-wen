@@ -9,78 +9,250 @@
 <meta name="theme-color" content="#000000">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
 <style>
-:root{--bg:#000;--fg:#fff;--sim:#22c55e;--nao:#ef4444;--card:#fff}
+:root{--bg:#000;--fg:#fff;--sim:#22c55e;--nao:#ef4444}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--fg);
-  font-family:"Baloo 2",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px;text-align:center}
-.box{max-width:560px}
-.emoji{font-size:clamp(4rem,18vw,7rem);line-height:1;animation:bob 1.6s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(-10px) rotate(6deg)}}
-h1{font-size:clamp(2rem,8vw,3.4rem);line-height:1.05;margin:12px 0 28px;font-weight:800}
-.btns{display:flex;gap:16px;justify-content:center;align-items:center;min-height:70px}
+body{background:var(--bg);color:var(--fg);font-family:"Baloo 2",system-ui,sans-serif;text-align:center;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.tela{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;z-index:1}
+.box{max-width:600px;width:100%}
+.emoji{font-size:clamp(4rem,18vw,7rem);line-height:1;display:inline-block;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-12px) rotate(8deg)}}
+h1{font-size:clamp(2rem,8.5vw,3.6rem);line-height:1.05;margin:12px 0 30px;font-weight:800;min-height:2.2em}
+h1 .cursor{display:inline-block;width:.08em;height:.9em;background:#fff;margin-left:4px;vertical-align:-.08em;animation:pisca .8s steps(1) infinite}
+@keyframes pisca{50%{opacity:0}}
+.btns{display:flex;gap:18px;justify-content:center;align-items:center;min-height:90px;opacity:0;transition:opacity .5s}
+.btns.on{opacity:1}
 button{font:inherit;font-weight:800;font-size:1.5rem;border:0;border-radius:18px;padding:12px 34px;cursor:pointer;color:#fff;
-  box-shadow:0 6px 0 #0003;min-height:56px;touch-action:manipulation}
-button:active{transform:translateY(3px);box-shadow:0 3px 0 #0003}
-#sim{background:var(--sim);transition:transform .2s}
-#nao{background:var(--nao);transition:left .25s ease,top .25s ease}
-#nao.solto{position:fixed;z-index:5}
-#rick{position:fixed;inset:0;background:#000;z-index:10;overflow:hidden;visibility:hidden;opacity:0}
+  box-shadow:0 6px 0 #0006;min-height:56px;touch-action:manipulation}
+button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+#sim{background:var(--sim);transition:transform .25s cubic-bezier(.3,1.6,.5,1),box-shadow .25s;position:relative;z-index:3}
+#sim.brilha{animation:arco 2s linear infinite;box-shadow:0 0 30px #22c55e,0 6px 0 #0006}
+@keyframes arco{0%{background:#22c55e}25%{background:#06b6d4}50%{background:#a855f7}75%{background:#f59e0b}100%{background:#22c55e}}
+.nao{background:var(--nao);transition:left .22s ease,top .22s ease,transform .22s ease;white-space:nowrap}
+.nao.solto{position:fixed;z-index:4;margin:0}
+.nao.virou{background:var(--sim)}
+#msg{margin-top:24px;font-weight:800;min-height:1.6em;font-size:1.25rem;transition:transform .15s}
+#msg.pop{transform:scale(1.25)}
+#placar{position:fixed;top:12px;left:0;right:0;z-index:2;font-size:.95rem;color:#aaa;font-weight:600;opacity:0;transition:opacity .4s}
+#placar.on{opacity:1}
+.puf{position:fixed;z-index:5;font-size:2rem;pointer-events:none;animation:puf .6s ease-out forwards}
+@keyframes puf{to{transform:scale(2.2);opacity:0}}
+body.treme .tela{animation:treme .35s}
+@keyframes treme{20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-6px,-3px)}80%{transform:translate(5px,5px)}}
+
+/* suspense */
+#suspense{display:none;z-index:6;background:#000}
+#suspense.on{display:flex}
+#suspense p{font-size:clamp(1.2rem,5vw,1.8rem);font-weight:800;margin:0 0 18px}
+.barra{width:min(420px,86vw);height:26px;border:3px solid #fff;border-radius:14px;overflow:hidden;margin:0 auto}
+.barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,#22c55e,#06b6d4,#a855f7,#f59e0b);transition:width .1s linear}
+#pct{margin-top:10px;font-size:1.2rem;font-weight:800;color:#aaa}
+#conta{font-size:clamp(7rem,40vw,14rem);font-weight:800;line-height:1;display:none}
+#conta.on{display:block;animation:zoom .9s ease-out}
+@keyframes zoom{from{transform:scale(2.5);opacity:0}30%{opacity:1}to{transform:scale(1)}}
+
+/* vídeo */
+#rick{position:fixed;inset:0;z-index:8;overflow:hidden;visibility:hidden;opacity:0;transition:opacity .4s;
+  background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e,#06b6d4,#a855f7,#ec4899,#ef4444);background-size:400% 400%;animation:fundo 4s linear infinite}
+@keyframes fundo{0%{background-position:0% 50%}100%{background-position:400% 50%}}
 #rick.on{visibility:visible;opacity:1}
-/* o vídeo fica maior que a tela pra esconder a barra do YouTube, e não dá pra clicar nele */
-#rick iframe{position:absolute;left:0;top:-70px;width:100%;height:calc(100% + 140px);border:0;pointer-events:none}
-#som{position:absolute;right:16px;bottom:16px;z-index:2;display:none;font-size:1.1rem;padding:10px 16px;background:#fff;color:#000}
+/* o vídeo fica do tamanho certinho (16:9) no meio, e o resto da tela é colorido */
+#rick iframe{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,177.78vh);aspect-ratio:16/9;height:auto;border:0;pointer-events:none;
+  box-shadow:0 0 0 6px #fff,0 0 40px #0008;border-radius:6px}
+body.video #fx{z-index:9}
+#rickrolled{position:absolute;left:0;right:0;top:18px;z-index:2;font-size:clamp(1.6rem,7vw,3rem);font-weight:800;padding:0 12px;
+  text-shadow:0 3px 0 #000,0 0 18px #000;animation:arco-t 1.5s linear infinite;pointer-events:none}
+@keyframes arco-t{0%{color:#22c55e}33%{color:#06b6d4}66%{color:#f59e0b}100%{color:#22c55e}}
+#som{position:absolute;right:16px;bottom:16px;z-index:3;display:none;font-size:1.1rem;padding:10px 16px;background:#fff;color:#000}
 #som.on{display:block}
-#msg{margin-top:22px;font-weight:600;min-height:1.6em;font-size:1.1rem}
+#denovo{position:absolute;left:16px;bottom:16px;z-index:3;font-size:1rem;padding:10px 16px;background:#ffffff22;color:#fff;backdrop-filter:blur(4px)}
+@media (prefers-reduced-motion: reduce){.emoji,#sim.brilha,#rickrolled,#rick{animation:none}body.treme .tela{animation:none}}
 </style>
 </head>
 <body>
-<div class="box">
-  <div class="emoji">🤩</div>
-  <h1>Você quer ver uma coisa legal?</h1>
-  <div class="btns">
-    <button id="sim">Sim</button>
-    <button id="nao">Não</button>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div id="placar">Tentativas de clicar no Não: <b id="n">0</b></div>
+
+<div class="tela" id="inicio">
+  <div class="box">
+    <div class="emoji" id="emoji">🤩</div>
+    <h1 id="titulo"><span id="txt"></span><span class="cursor"></span></h1>
+    <div class="btns" id="btns">
+      <button id="sim">Sim</button>
+      <button id="nao" class="nao">Não</button>
+    </div>
+    <p id="msg"></p>
   </div>
-  <p id="msg"></p>
 </div>
-<div id="rick"><div id="yt"></div><button id="som">🔊 Ligar o som</button></div>
+
+<div class="tela" id="suspense">
+  <div id="carrega">
+    <p id="frase">Preparando a coisa mais legal do mundo...</p>
+    <div class="barra"><i id="barra"></i></div>
+    <div id="pct">0%</div>
+  </div>
+  <div id="conta">3</div>
+</div>
+
+<div id="rick">
+  <div id="yt"></div>
+  <div id="rickrolled">VOCÊ FOI RICKROLLADO! 🕺</div>
+  <button id="som">🔊 Ligar o som</button>
+  <button id="denovo">↺ De novo</button>
+</div>
 
 <script>
 (() => {
-  const nao = document.getElementById('nao'), sim = document.getElementById('sim'), msg = document.getElementById('msg');
-  const frases = ['Ué, cadê o Não? 😜','Tenta de novo!','Muito lento! 🐢','Desiste, aperta o Sim 😎','Quase! 😂','O Não tá de férias 🏖️','Hehehe 🏃‍♂️'];
-  let fugas = 0;
+  const $ = id => document.getElementById(id);
+  const sim = $('sim'), nao = $('nao'), msg = $('msg'), emoji = $('emoji');
+  const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function foge(e){
-    if (e) e.preventDefault();
-    const r = nao.getBoundingClientRect();
-    if (!nao.classList.contains('solto')){
-      nao.style.left = r.left + 'px'; nao.style.top = r.top + 'px';
-      nao.classList.add('solto');
-      void nao.offsetWidth;
+  /* ---------- sons (feitos no navegador) ---------- */
+  let ac;
+  function tom(f1, f2, dur, tipo = 'square', vol = .12){
+    try{
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      ac.resume();
+      const t = ac.currentTime, o = ac.createOscillator(), g = ac.createGain();
+      o.type = tipo; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+      o.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur + .02);
+    }catch(e){}
+  }
+  const boing = () => tom(220 + Math.random()*200, 900 + Math.random()*300, .18, 'triangle', .18);
+  const bip = f => tom(f, f, .12, 'square', .1);
+
+  /* ---------- texto digitando ---------- */
+  const PERGUNTA = 'Você quer ver uma coisa legal?';
+  let i = 0;
+  (function digita(){
+    $('txt').textContent = PERGUNTA.slice(0, i);
+    if (i++ < PERGUNTA.length) setTimeout(digita, reduz ? 0 : 55);
+    else $('btns').classList.add('on');
+  })();
+
+  /* ---------- estrelinhas e confete ---------- */
+  const cv = $('fx'), cx = cv.getContext('2d');
+  let W, H, parts = [];
+  function tam(){ const d = Math.min(devicePixelRatio || 1, 2); W = cv.width = innerWidth * d; H = cv.height = innerHeight * d; }
+  addEventListener('resize', tam); tam();
+  const estrelas = Array.from({length: 70}, () => ({x: Math.random(), y: Math.random(), s: Math.random() * 2 + .5, f: Math.random() * 6}));
+  const CORES = ['#22c55e','#06b6d4','#a855f7','#f59e0b','#ef4444','#ffffff','#ec4899'];
+  function confete(x, y, n, forca){
+    const d = W / innerWidth;
+    for (let k = 0; k < n; k++){
+      const a = Math.random() * Math.PI * 2, v = Math.random() * forca + 3;
+      parts.push({x: x*d, y: y*d, vx: Math.cos(a)*v*d, vy: (Math.sin(a)*v - 6)*d, r: (Math.random()*6+4)*d,
+        c: CORES[k % CORES.length], rot: Math.random()*6, vr: Math.random()*.4-.2, vida: 1});
     }
-    const m = 12, w = innerWidth - r.width - m, h = innerHeight - r.height - m;
-    let x, y, tries = 0;
-    do {
-      x = m + Math.random() * (w - m); y = m + Math.random() * (h - m);
-      tries++;
-    } while (tries < 20 && Math.hypot(x - r.left, y - r.top) < 150);
-    nao.style.left = x + 'px'; nao.style.top = y + 'px';
-    fugas++;
-    msg.textContent = frases[fugas % frases.length];
-    sim.style.transform = `scale(${Math.min(1 + fugas * 0.08, 1.8)})`;
+  }
+  function quadro(t){
+    requestAnimationFrame(quadro);
+    cx.clearRect(0, 0, W, H);
+    if (!reduz) for (const e of estrelas){
+      cx.globalAlpha = .25 + .35 * Math.sin(t/500 + e.f);
+      cx.fillStyle = '#fff'; cx.fillRect(e.x*W, e.y*H, e.s, e.s);
+    }
+    const d = W / innerWidth;
+    parts = parts.filter(p => p.vida > 0 && p.y < H + 40);
+    for (const p of parts){
+      p.vy += .35*d; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vida -= .006;
+      cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot); cx.globalAlpha = Math.max(p.vida, 0);
+      cx.fillStyle = p.c; cx.fillRect(-p.r/2, -p.r/4, p.r, p.r/2); cx.restore();
+    }
+    cx.globalAlpha = 1;
+  }
+  requestAnimationFrame(quadro);
+
+  /* ---------- o Não que foge ---------- */
+  const FRASES = ['Ué, cadê o Não? 😜','Muito lento! 🐢','Tenta de novo! 😂','Quase! 🤏','O Não tá de férias 🏖️','Desiste, aperta o Sim 😎',
+    'Hehehe 🏃‍♂️','Nem a pau! 🙅','Você é teimoso, hein? 🙄','Ele multiplicou! 😱','Para de tentar! 🛑','Aperta o Sim logo! 🟢'];
+  const TEXTOS_NAO = ['Não','Nãoo','Nem pensar','Nunca!','Tem certeza?','Pega eu!','Nã','N'];
+  const EMOJIS = ['🤩','😏','😜','🤭','😂','🙃','😎','🤪'];
+  let fugas = 0;
+  const clones = [];
+
+  function puf(x, y){
+    const p = document.createElement('div');
+    p.className = 'puf'; p.textContent = '💨';
+    p.style.left = x - 16 + 'px'; p.style.top = y - 16 + 'px';
+    document.body.appendChild(p); setTimeout(() => p.remove(), 600);
   }
 
-  nao.addEventListener('pointerenter', foge);
-  nao.addEventListener('pointerdown', foge);
-  nao.addEventListener('touchstart', foge, {passive:false});
-  nao.addEventListener('focus', foge);
-  nao.addEventListener('click', foge);
+  function lugarLonge(b, deX, deY){
+    const r = b.getBoundingClientRect(), m = 12;
+    const w = innerWidth - r.width - m, h = innerHeight - r.height - m;
+    let x, y, t = 0;
+    do { x = m + Math.random()*(w - m); y = 40 + Math.random()*(h - 40); t++; }
+    while (t < 30 && Math.hypot(x + r.width/2 - deX, y + r.height/2 - deY) < 180);
+    return [x, y];
+  }
 
-  /* o vídeo carrega escondido assim que a página abre, pra tocar na hora do Sim */
+  function foge(b, e){
+    if (b.classList.contains('virou')) return;
+    if (e){ e.preventDefault(); e.stopPropagation(); }
+    const r = b.getBoundingClientRect();
+    if (!b.classList.contains('solto')){
+      b.style.left = r.left + 'px'; b.style.top = r.top + 'px';
+      b.classList.add('solto'); void b.offsetWidth;
+    }
+    const toque = e && e.touches && e.touches[0];
+    const px = toque ? toque.clientX : (e && e.clientX) || r.left + r.width/2;
+    const py = toque ? toque.clientY : (e && e.clientY) || r.top + r.height/2;
+    puf(r.left + r.width/2, r.top + r.height/2);
+    const [x, y] = lugarLonge(b, px, py);
+    b.style.left = x + 'px'; b.style.top = y + 'px';
+    boing();
+
+    fugas++;
+    $('n').textContent = fugas; $('placar').classList.add('on');
+    msg.textContent = FRASES[(fugas - 1) % FRASES.length];
+    msg.classList.add('pop'); setTimeout(() => msg.classList.remove('pop'), 150);
+    emoji.textContent = EMOJIS[fugas % EMOJIS.length];
+
+    // o Não vai encolhendo e mudando de nome
+    if (b === nao){
+      nao.style.transform = `scale(${Math.max(1 - fugas * .05, .55)})`;
+      nao.textContent = TEXTOS_NAO[Math.min(Math.floor(fugas / 2), TEXTOS_NAO.length - 1)];
+    }
+    // o Sim vai crescendo e brilhando
+    sim.style.transform = `scale(${Math.min(1 + fugas * .07, 1.9)})`;
+    if (fugas >= 5) sim.classList.add('brilha');
+    if (fugas % 4 === 0){ document.body.classList.remove('treme'); void document.body.offsetWidth; document.body.classList.add('treme'); }
+
+    if (fugas === 10) for (let k = 0; k < 3; k++) clona(r);   // o Não se multiplica
+    if (fugas === 20) setTimeout(viraTudoSim, 300);            // todos os Nãos viram Sim
+  }
+
+  function clona(r){
+    const c = document.createElement('button');
+    c.className = 'nao solto'; c.textContent = 'Não';
+    c.style.left = r.left + 'px'; c.style.top = r.top + 'px';
+    c.style.transform = 'scale(.7)';
+    document.body.appendChild(c);
+    liga(c); clones.push(c);
+    requestAnimationFrame(() => { const [x, y] = lugarLonge(c, r.left, r.top); c.style.left = x + 'px'; c.style.top = y + 'px'; });
+  }
+
+  function viraTudoSim(){
+    [nao, ...clones].forEach(b => { b.textContent = 'Sim'; b.classList.add('virou'); b.style.transform = 'scale(1)'; });
+    msg.textContent = 'Agora todos são Sim! 😈';
+    tom(300, 1200, .4, 'sawtooth', .1);
+  }
+
+  function liga(b){
+    b.addEventListener('pointerenter', e => foge(b, e));
+    b.addEventListener('pointerdown', e => foge(b, e));
+    b.addEventListener('touchstart', e => foge(b, e), {passive: false});
+    b.addEventListener('focus', () => foge(b));
+    b.addEventListener('click', e => b.classList.contains('virou') ? vai(e) : foge(b, e));
+  }
+  liga(nao);
+
+  /* ---------- o vídeo (carrega escondido desde o começo) ---------- */
   const VIDEO = 'dQw4w9WgXcQ';
-  const rick = document.getElementById('rick'), som = document.getElementById('som');
   let player = null, pronto = false;
   window.onYouTubeIframeAPIReady = () => {
     player = new YT.Player('yt', {
@@ -96,19 +268,69 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 #0003}
   api.src = 'https://www.youtube.com/iframe_api';
   document.head.appendChild(api);
 
-  sim.addEventListener('click', () => {
-    rick.classList.add('on');
-    if (pronto) {
-      player.unMute(); player.setVolume(100); player.playVideo();
-      // se o navegador não deixar tocar com som, toca mudo e mostra o botão de som
+  /* ---------- clicou em Sim ---------- */
+  let foi = false;
+  function vai(e){
+    if (foi) return; foi = true;
+    const r = ((e && e.currentTarget) || sim).getBoundingClientRect();
+    confete(r.left + r.width/2, r.top + r.height/2, 160, 16);
+    tom(400, 1600, .35, 'triangle', .2);
+    // já dá o play agora (no clique) com volume zero, pro navegador deixar tocar com som depois
+    if (pronto){ try{ player.setVolume(0); player.unMute(); player.playVideo(); }catch(err){} }
+    setTimeout(suspense, 700);
+  }
+  sim.addEventListener('click', vai);
+
+  function suspense(){
+    $('inicio').style.display = 'none';
+    [nao, ...clones].forEach(b => b.style.display = 'none');
+    $('placar').classList.remove('on');
+    $('suspense').classList.add('on');
+    const FR = ['Preparando a coisa mais legal do mundo...','Carregando legalzice... 😎','Chamando os especialistas em coisa legal...','Quase lá... 🤫'];
+    let p = 0;
+    const tick = setInterval(() => {
+      p = Math.min(100, p + Math.random() * 7 + 2);
+      $('barra').style.width = p + '%';
+      $('pct').textContent = Math.floor(p) + '%';
+      $('frase').textContent = FR[Math.min(Math.floor(p / 26), FR.length - 1)];
+      if (p >= 100){ clearInterval(tick); setTimeout(contagem, 300); }
+    }, 90);
+  }
+
+  function contagem(){
+    $('carrega').style.display = 'none';
+    const c = $('conta');
+    let n = 3;
+    (function passo(){
+      if (n === 0){ c.classList.remove('on'); mostraVideo(); return; }
+      c.textContent = n; c.classList.remove('on'); void c.offsetWidth; c.classList.add('on');
+      bip(n === 1 ? 880 : 660);
+      n--; setTimeout(passo, 900);
+    })();
+  }
+
+  function mostraVideo(){
+    $('suspense').classList.remove('on');
+    $('rick').classList.add('on');
+    document.body.classList.add('video');
+    setInterval(() => confete(Math.random()*innerWidth, -10, 25, 6), 1500);
+    confete(innerWidth/2, innerHeight/3, 220, 18);
+    if (pronto){
+      try{ player.seekTo(0, true); player.unMute(); player.setVolume(100); player.playVideo(); }catch(err){}
       setTimeout(() => {
-        if (player.getPlayerState() !== YT.PlayerState.PLAYING) { player.mute(); player.playVideo(); som.classList.add('on'); }
+        try{
+          if (player.getPlayerState() !== YT.PlayerState.PLAYING){ player.mute(); player.playVideo(); $('som').classList.add('on'); }
+          else if (player.isMuted()) $('som').classList.add('on');
+        }catch(err){}
       }, 1200);
     } else {
-      document.getElementById('yt').outerHTML = '<iframe src="https://www.youtube.com/embed/' + VIDEO + '?autoplay=1&controls=0&rel=0&playsinline=1&loop=1&playlist=' + VIDEO + '" title="Coisa legal" style="pointer-events:auto" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media"></iframe>';
+      $('yt').outerHTML = '<iframe src="https://www.youtube.com/embed/' + VIDEO + '?autoplay=1&controls=0&rel=0&playsinline=1&loop=1&playlist=' + VIDEO + '" title="Coisa legal" style="pointer-events:auto" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media"></iframe>';
     }
-  });
-  som.addEventListener('click', () => { player.unMute(); player.setVolume(100); player.playVideo(); som.classList.remove('on'); });
+    setTimeout(() => $('rickrolled').style.display = 'none', 6000);
+  }
+
+  $('som').addEventListener('click', () => { try{ player.unMute(); player.setVolume(100); player.playVideo(); }catch(e){} $('som').classList.remove('on'); });
+  $('denovo').addEventListener('click', () => location.reload());
 })();
 </script>
 </body>
