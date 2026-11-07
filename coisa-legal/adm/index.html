@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Jojo ADM</title>
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+:root{--bg:#000;--card:#111;--line:#262626;--fg:#fff;--muted:#9a9a9a;--sim:#22c55e;--nao:#ef4444;--ouro:#f59e0b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Baloo 2",system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:clamp(2rem,9vw,3rem);margin:0;line-height:1;font-weight:800}
+h1 span{color:var(--ouro)}
+.sub{color:var(--muted);margin:6px 0 22px;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:clamp(2rem,10vw,3rem);line-height:1;font-weight:800}
+.stat span{color:var(--muted);font-size:.9rem;font-weight:600}
+.stat.caiu b{color:var(--sim)}
+.stat.nao b{color:var(--nao)}
+.barra{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:22px 0 10px;flex-wrap:wrap}
+.barra h2{margin:0;font-size:1.3rem}
+button{font:inherit;font-weight:800;border:0;border-radius:12px;padding:8px 14px;cursor:pointer;color:#fff;background:#262626;min-height:44px}
+button.perigo{background:transparent;color:var(--nao);border:1px solid #4a1d1d}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+li{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+li .em{font-size:1.8rem}
+li .info{flex:1;min-width:0}
+li .nome{font-weight:800;font-size:1.2rem;overflow-wrap:anywhere}
+li .det{color:var(--muted);font-size:.88rem;font-weight:600}
+.tag{font-weight:800;font-size:.85rem;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.tag.s{background:#14532d;color:#86efac}
+.tag.n{background:#3f1d1d;color:#fca5a5}
+.vazio,.aviso{color:var(--muted);text-align:center;padding:30px 10px;font-weight:600}
+.aviso{border:1px dashed var(--line);border-radius:16px}
+#status{color:var(--muted);font-size:.85rem;text-align:center;margin-top:16px}
+</style>
+</head>
+<body>
+<main>
+  <h1>👑 Jojo <span>ADM</span></h1>
+  <p class="sub">Quem caiu na Coisa Legal</p>
+
+  <div id="sem" class="aviso" hidden>
+    🔒 Essa página só abre pelo <b>link secreto do Jojo ADM</b>.<br>Abre ele de novo uma vez neste aparelho.
+  </div>
+
+  <div id="painel" hidden>
+    <div class="stats">
+      <div class="stat caiu"><b id="nCaiu">0</b><span>caíram 🕺</span></div>
+      <div class="stat nao"><b id="nNao">0</b><span>não clicaram</span></div>
+      <div class="stat"><b id="nTotal">0</b><span>entraram</span></div>
+    </div>
+
+    <div class="barra">
+      <h2>Lista</h2>
+      <div>
+        <button id="atualizar">↻ Atualizar</button>
+        <button id="limpar" class="perigo">Apagar tudo</button>
+      </div>
+    </div>
+    <ul id="lista"></ul>
+    <p id="status"></p>
+  </div>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const SALA = 'https://conversa-com-a-familia-default-rtdb.firebaseio.com/salas/coisa-legal-jojo/caidos';
+  const PUB = {x: 'CcPzNFB0dfikOQxKsr9tzhzmjFBIYHrd_m2_heYzSXw', y: 'H1DueqtZTIUl6QCNv6hbQcBqc5KCeKYDztYwKFSxzOE'};
+
+  // a chave secreta vem do link (#k=...) e fica guardada só neste aparelho
+  let d = '';
+  const m = /[#&]k=([A-Za-z0-9_-]{40,})/.exec(location.hash);
+  try{
+    if (m){ d = m[1]; localStorage.setItem('jojo-adm-chave', d); }
+    else d = localStorage.getItem('jojo-adm-chave') || '';
+  }catch(e){ if (m) d = m[1]; }
+  if (!d){ $('sem').hidden = false; return; }
+  $('painel').hidden = false;
+
+  const deB64 = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
+  let chave;
+  async function minhaChave(){
+    return chave = chave || await crypto.subtle.importKey('jwk', {kty: 'EC', crv: 'P-256', x: PUB.x, y: PUB.y, d},
+      {name: 'ECDH', namedCurve: 'P-256'}, false, ['deriveKey']);
+  }
+  async function abrir(reg){
+    const s = crypto.subtle;
+    const dele = await s.importKey('raw', deB64(reg.e), {name: 'ECDH', namedCurve: 'P-256'}, false, []);
+    const aes = await s.deriveKey({name: 'ECDH', public: dele}, await minhaChave(), {name: 'AES-GCM', length: 256}, false, ['decrypt']);
+    const txt = await s.decrypt({name: 'AES-GCM', iv: deB64(reg.iv)}, aes, deB64(reg.c));
+    return JSON.parse(new TextDecoder().decode(txt));
+  }
+
+  const hora = t => t ? new Date(t).toLocaleString('pt-BR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'}) : '';
+
+  async function carregar(){
+    $('status').textContent = 'Carregando...';
+    try{
+      const r = await fetch(SALA + '.json', {cache: 'no-store'});
+      if (!r.ok) throw new Error(r.status);
+      const tudo = await r.json() || {};
+      const fichas = [];
+      for (const reg of Object.values(tudo)){
+        try{ const f = await abrir(reg); f.t = reg.t; fichas.push(f); }catch(e){}
+      }
+      fichas.sort((a, b) => (b.quando || b.entrou || b.t) - (a.quando || a.entrou || a.t));
+      const caiu = fichas.filter(f => f.caiu).length;
+      $('nCaiu').textContent = caiu;
+      $('nNao').textContent = fichas.length - caiu;
+      $('nTotal').textContent = fichas.length;
+      const ul = $('lista'); ul.innerHTML = '';
+      if (!fichas.length) ul.innerHTML = '<li class="vazio" style="display:block">Ninguém entrou ainda. Manda o link pros amigos! 😏</li>';
+      for (const f of fichas){
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="em"></span><div class="info"><div class="nome"></div><div class="det"></div></div><span class="tag"></span>`;
+        li.querySelector('.em').textContent = f.caiu ? '🕺' : '🤔';
+        li.querySelector('.nome').textContent = f.nome || '(sem nome)';
+        li.querySelector('.det').textContent = f.caiu
+          ? `Caiu ${hora(f.quando)} · tentou o Não ${f.tentativas} ${f.tentativas === 1 ? 'vez' : 'vezes'}`
+          : `Entrou ${hora(f.entrou)}`;
+        const tag = li.querySelector('.tag');
+        tag.textContent = f.caiu ? 'CAIU!' : 'ainda não';
+        tag.classList.add(f.caiu ? 's' : 'n');
+        ul.appendChild(li);
+      }
+      $('status').textContent = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit', second: '2-digit'}) + ' · atualiza sozinho a cada 10 segundos';
+    }catch(e){
+      $('status').textContent = '⚠️ Não consegui buscar a lista. Confere a internet e aperta Atualizar.';
+    }
+  }
+
+  $('atualizar').onclick = carregar;
+  $('limpar').onclick = async () => {
+    if (!confirm('Apagar a lista inteira de quem caiu?')) return;
+    try{ await fetch(SALA + '.json', {method: 'DELETE'}); }catch(e){}
+    carregar();
+  };
+  carregar();
+  setInterval(carregar, 10000);
+})();
+</script>
+</body>
+</html>
