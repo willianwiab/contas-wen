@@ -42,6 +42,21 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 body.treme .tela{animation:treme .35s}
 @keyframes treme{20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-6px,-3px)}80%{transform:translate(5px,5px)}}
 
+/* nome e papo */
+#inicio,#telaPapo{display:none}
+#telaNome form{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+#telaNome input{font:inherit;font-weight:800;font-size:1.4rem;padding:10px 16px;border-radius:16px;border:3px solid #fff;background:#111;color:#fff;
+  width:min(320px,86vw);text-align:center;outline:none;user-select:text;-webkit-user-select:text}
+#telaNome input:focus{border-color:#22c55e;box-shadow:0 0 20px #22c55e88}
+#telaNome button{background:var(--sim)}
+#telaNome h1{min-height:0}
+#telaPapo{cursor:pointer}
+#papoEmoji{font-size:clamp(5rem,24vw,9rem);line-height:1;display:inline-block}
+#papoEmoji.entra{animation:entra .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes entra{from{transform:scale(0) rotate(-30deg)}}
+#papoTxt{font-size:clamp(1.6rem,7vw,2.8rem);font-weight:800;line-height:1.15;margin:18px 0 0;min-height:3.5em}
+#pular{position:fixed;bottom:18px;left:0;right:0;color:#777;font-size:.95rem;font-weight:600}
+
 /* suspense */
 #suspense{display:none;z-index:6;background:#000}
 #suspense.on{display:flex}
@@ -74,6 +89,25 @@ body.video #fx{z-index:9}
 <body>
 <canvas id="fx" aria-hidden="true"></canvas>
 <div id="placar">Tentativas de clicar no Não: <b id="n">0</b></div>
+
+<div class="tela" id="telaNome">
+  <div class="box">
+    <div class="emoji">👋</div>
+    <h1>Oi! Qual é o seu nome?</h1>
+    <form id="formNome" autocomplete="off">
+      <input id="nome" maxlength="30" placeholder="Seu nome" aria-label="Seu nome" required>
+      <button>Entrar ➜</button>
+    </form>
+  </div>
+</div>
+
+<div class="tela" id="telaPapo">
+  <div class="box">
+    <div id="papoEmoji">👋</div>
+    <p id="papoTxt"></p>
+  </div>
+  <div id="pular">toque na tela pra continuar</div>
+</div>
 
 <div class="tela" id="inicio">
   <div class="box">
@@ -127,11 +161,82 @@ body.video #fx{z-index:9}
   /* ---------- texto digitando ---------- */
   const PERGUNTA = 'Você quer ver uma coisa legal?';
   let i = 0;
-  (function digita(){
+  function comecaPergunta(){
+    $('telaPapo').style.display = 'none';
+    $('inicio').style.display = 'flex';
+    digita();
+  }
+  function digita(){
     $('txt').textContent = PERGUNTA.slice(0, i);
     if (i++ < PERGUNTA.length) setTimeout(digita, reduz ? 0 : 55);
     else $('btns').classList.add('on');
-  })();
+  }
+
+  /* ---------- guardar quem caiu (trancado: só o Jojo ADM consegue abrir) ---------- */
+  const SALA = 'https://conversa-com-a-familia-default-rtdb.firebaseio.com/salas/coisa-legal-jojo/caidos';
+  const CHAVE_ADM = {kty:'EC', crv:'P-256', x:'CcPzNFB0dfikOQxKsr9tzhzmjFBIYHrd_m2_heYzSXw', y:'H1DueqtZTIUl6QCNv6hbQcBqc5KCeKYDztYwKFSxzOE'};
+  const ler = (k, d) => { try{ return localStorage.getItem(k) || d; }catch(e){ return d; } };
+  const gravar = (k, v) => { try{ localStorage.setItem(k, v); }catch(e){} };
+  let meuId = ler('coisa-legal-id', '');
+  if (!meuId){ meuId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8); gravar('coisa-legal-id', meuId); }
+  const ficha = {nome: '', entrou: 0, caiu: false, quando: 0, tentativas: 0};
+  const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+  async function salvar(){
+    try{
+      const s = crypto.subtle;
+      const eu = await s.generateKey({name: 'ECDH', namedCurve: 'P-256'}, true, ['deriveKey']);
+      const adm = await s.importKey('jwk', CHAVE_ADM, {name: 'ECDH', namedCurve: 'P-256'}, false, []);
+      const aes = await s.deriveKey({name: 'ECDH', public: adm}, eu.privateKey, {name: 'AES-GCM', length: 256}, false, ['encrypt']);
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const c = await s.encrypt({name: 'AES-GCM', iv}, aes, new TextEncoder().encode(JSON.stringify(ficha)));
+      const pub = await s.exportKey('raw', eu.publicKey);
+      await fetch(SALA + '/' + meuId + '.json', {method: 'PUT', keepalive: true, headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({e: b64(pub), iv: b64(iv), c: b64(c), t: {'.sv': 'timestamp'}})});
+    }catch(e){}
+  }
+
+  /* ---------- nome e papo furado ---------- */
+  $('nome').value = ler('coisa-legal-nome', '');
+  $('formNome').addEventListener('submit', e => {
+    e.preventDefault();
+    const n = $('nome').value.trim().replace(/\s+/g, ' ').slice(0, 30);
+    if (!n) return;
+    gravar('coisa-legal-nome', n);
+    ficha.nome = n; ficha.entrou = Date.now();
+    salvar();
+    tom(500, 1000, .15, 'triangle', .15);
+    $('telaNome').style.display = 'none';
+    papo(n);
+  });
+
+  function papo(n){
+    const P = [
+      ['👋', `Olá, ${n}!`],
+      ['😍', `Que nome lindo, hein, ${n}!`],
+      ['🌎', 'Bem-vindo ao site mais incrível da internet'],
+      ['✨', 'Aqui só entra gente muito especial'],
+      ['🚀', 'Cientistas da NASA estudaram 47 anos pra fazer esse site'],
+      ['🍪', 'Ele custou 3 bilhões de reais e 2 pacotes de bolacha'],
+      ['🦖', 'Até os dinossauros queriam ver esse site (mas morreram antes)'],
+      ['✅', `${n}, seu nome foi aprovado pelo Conselho Mundial das Coisas Legais`],
+      ['🤫', 'Só uma perguntinha antes...'],
+      ['😮‍💨', 'Respira fundo...']
+    ];
+    const tela = $('telaPapo'), em = $('papoEmoji'), tx = $('papoTxt');
+    tela.style.display = 'flex';
+    let k = 0, timer;
+    function proximo(){
+      clearTimeout(timer);
+      if (k >= P.length){ tela.onclick = null; comecaPergunta(); return; }
+      em.textContent = P[k][0]; tx.textContent = P[k][1];
+      em.classList.remove('entra'); void em.offsetWidth; em.classList.add('entra');
+      bip(520 + k * 40);
+      k++;
+      timer = setTimeout(proximo, 2300);
+    }
+    tela.onclick = proximo;
+    proximo();
+  }
 
   /* ---------- estrelinhas e confete ---------- */
   const cv = $('fx'), cx = cv.getContext('2d');
@@ -272,6 +377,7 @@ body.video #fx{z-index:9}
   let foi = false;
   function vai(e){
     if (foi) return; foi = true;
+    ficha.caiu = true; ficha.quando = Date.now(); ficha.tentativas = fugas; salvar();
     const r = ((e && e.currentTarget) || sim).getBoundingClientRect();
     confete(r.left + r.width/2, r.top + r.height/2, 160, 16);
     tom(400, 1600, .35, 'triangle', .2);
