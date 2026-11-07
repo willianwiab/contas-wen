@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Coisa Legal</title>
+<meta name="description" content="Você quer ver uma coisa legal?">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+:root{--bg:#000;--fg:#fff;--sim:#22c55e;--nao:#ef4444;--card:#fff}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--fg);
+  font-family:"Baloo 2",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px;text-align:center}
+.box{max-width:560px}
+.emoji{font-size:clamp(4rem,18vw,7rem);line-height:1;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-10px) rotate(6deg)}}
+h1{font-size:clamp(2rem,8vw,3.4rem);line-height:1.05;margin:12px 0 28px;font-weight:800}
+.btns{display:flex;gap:16px;justify-content:center;align-items:center;min-height:70px}
+button{font:inherit;font-weight:800;font-size:1.5rem;border:0;border-radius:18px;padding:12px 34px;cursor:pointer;color:#fff;
+  box-shadow:0 6px 0 #0003;min-height:56px;touch-action:manipulation}
+button:active{transform:translateY(3px);box-shadow:0 3px 0 #0003}
+#sim{background:var(--sim);transition:transform .2s}
+#nao{background:var(--nao);transition:left .25s ease,top .25s ease}
+#nao.solto{position:fixed;z-index:5}
+#rick{position:fixed;inset:0;background:#000;z-index:10;overflow:hidden;visibility:hidden;opacity:0}
+#rick.on{visibility:visible;opacity:1}
+/* o vídeo fica maior que a tela pra esconder a barra do YouTube, e não dá pra clicar nele */
+#rick iframe{position:absolute;left:0;top:-70px;width:100%;height:calc(100% + 140px);border:0;pointer-events:none}
+#som{position:absolute;right:16px;bottom:16px;z-index:2;display:none;font-size:1.1rem;padding:10px 16px;background:#fff;color:#000}
+#som.on{display:block}
+#msg{margin-top:22px;font-weight:600;min-height:1.6em;font-size:1.1rem}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="emoji">🤩</div>
+  <h1>Você quer ver uma coisa legal?</h1>
+  <div class="btns">
+    <button id="sim">Sim</button>
+    <button id="nao">Não</button>
+  </div>
+  <p id="msg"></p>
+</div>
+<div id="rick"><div id="yt"></div><button id="som">🔊 Ligar o som</button></div>
+
+<script>
+(() => {
+  const nao = document.getElementById('nao'), sim = document.getElementById('sim'), msg = document.getElementById('msg');
+  const frases = ['Ué, cadê o Não? 😜','Tenta de novo!','Muito lento! 🐢','Desiste, aperta o Sim 😎','Quase! 😂','O Não tá de férias 🏖️','Hehehe 🏃‍♂️'];
+  let fugas = 0;
+
+  function foge(e){
+    if (e) e.preventDefault();
+    const r = nao.getBoundingClientRect();
+    if (!nao.classList.contains('solto')){
+      nao.style.left = r.left + 'px'; nao.style.top = r.top + 'px';
+      nao.classList.add('solto');
+      void nao.offsetWidth;
+    }
+    const m = 12, w = innerWidth - r.width - m, h = innerHeight - r.height - m;
+    let x, y, tries = 0;
+    do {
+      x = m + Math.random() * (w - m); y = m + Math.random() * (h - m);
+      tries++;
+    } while (tries < 20 && Math.hypot(x - r.left, y - r.top) < 150);
+    nao.style.left = x + 'px'; nao.style.top = y + 'px';
+    fugas++;
+    msg.textContent = frases[fugas % frases.length];
+    sim.style.transform = `scale(${Math.min(1 + fugas * 0.08, 1.8)})`;
+  }
+
+  nao.addEventListener('pointerenter', foge);
+  nao.addEventListener('pointerdown', foge);
+  nao.addEventListener('touchstart', foge, {passive:false});
+  nao.addEventListener('focus', foge);
+  nao.addEventListener('click', foge);
+
+  /* o vídeo carrega escondido assim que a página abre, pra tocar na hora do Sim */
+  const VIDEO = 'dQw4w9WgXcQ';
+  const rick = document.getElementById('rick'), som = document.getElementById('som');
+  let player = null, pronto = false;
+  window.onYouTubeIframeAPIReady = () => {
+    player = new YT.Player('yt', {
+      videoId: VIDEO,
+      playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0, rel: 0, playsinline: 1, iv_load_policy: 3, modestbranding: 1 },
+      events: {
+        onReady: () => { pronto = true; },
+        onStateChange: e => { if (e.data === YT.PlayerState.ENDED) player.playVideo(); }
+      }
+    });
+  };
+  const api = document.createElement('script');
+  api.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(api);
+
+  sim.addEventListener('click', () => {
+    rick.classList.add('on');
+    if (pronto) {
+      player.unMute(); player.setVolume(100); player.playVideo();
+      // se o navegador não deixar tocar com som, toca mudo e mostra o botão de som
+      setTimeout(() => {
+        if (player.getPlayerState() !== YT.PlayerState.PLAYING) { player.mute(); player.playVideo(); som.classList.add('on'); }
+      }, 1200);
+    } else {
+      document.getElementById('yt').outerHTML = '<iframe src="https://www.youtube.com/embed/' + VIDEO + '?autoplay=1&controls=0&rel=0&playsinline=1&loop=1&playlist=' + VIDEO + '" title="Coisa legal" style="pointer-events:auto" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media"></iframe>';
+    }
+  });
+  som.addEventListener('click', () => { player.unMute(); player.setVolume(100); player.playVideo(); som.classList.remove('on'); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Petting Zoo</title>
+<meta name="description" content="Site de fã da música Petting Zoo do deadmau5: toque a música, veja o visualizador e faça carinho nos bichos do zoológico.">
+<meta name="theme-color" content="#0b0614">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Space+Grotesk:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#0b0614; --bg2:#150b26; --fg:#f4ecff; --muted:#a995c9; --line:#2d1c4a;
+  --pink:#ff2bd6; --cyan:#22f0ff; --lime:#b6ff3b; --card:#140a24;
+  --display:"Rubik Mono One","Arial Black",Impact,sans-serif;
+  --body:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --pulse:0;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){ --bg:#0b0614; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);overflow-x:hidden}
+a{color:var(--cyan)}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+main{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:24px 16px 64px}
+
+header.hero{text-align:center;padding:40px 0 16px}
+.tag{display:inline-block;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:6px 12px;border-radius:99px;background:rgba(20,10,36,.6)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2.4rem,11vw,6.2rem);line-height:.95;margin:18px 0 8px;
+  background:linear-gradient(90deg,var(--pink),var(--cyan),var(--lime),var(--pink));background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:slide 8s linear infinite;
+  transform:scale(calc(1 + var(--pulse) * .06));transition:transform .06s linear;
+  filter:drop-shadow(0 0 calc(var(--pulse)*28px) rgba(255,43,214,.7))}
+@keyframes slide{to{background-position:300% 0}}
+.artist{font-family:var(--display);font-size:clamp(1rem,4vw,1.5rem);letter-spacing:.08em;color:var(--fg);margin:0}
+.meta{color:var(--muted);margin:10px 0 0;font-size:.95rem}
+
+.panel{background:rgba(20,10,36,.78);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:22px;backdrop-filter:blur(6px)}
+.panel h2{font-family:var(--display);font-weight:400;font-size:1.05rem;letter-spacing:.04em;margin:0 0 14px;color:var(--lime)}
+
+/* player */
+.drop{border:2px dashed var(--line);border-radius:14px;padding:18px;text-align:center;transition:border-color .2s,background .2s}
+.drop.over{border-color:var(--cyan);background:rgba(34,240,255,.06)}
+.drop p{margin:0 0 12px;color:var(--muted)}
+.btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+button,.btn{font:inherit;font-weight:700;border:0;border-radius:12px;padding:12px 18px;cursor:pointer;text-decoration:none;color:#0b0614;background:var(--cyan);display:inline-flex;align-items:center;gap:8px;min-height:44px}
+button.pink,.btn.pink{background:var(--pink);color:#fff}
+button.ghost,.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+button:active{transform:translateY(1px)}
+button:focus-visible,.btn:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.now{margin-top:14px;font-size:.9rem;color:var(--muted);text-align:center;min-height:1.3em}
+audio{width:100%;margin-top:12px;display:none}
+audio.on{display:block}
+.video{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000;margin-bottom:16px;box-shadow:0 0 calc(var(--pulse)*40px) rgba(255,43,214,.6)}
+.video iframe,.video #yt{position:absolute;inset:0;width:100%;height:100%;border:0}
+#viz{width:100%;height:180px;display:block;margin-top:14px;border-radius:12px;background:rgba(0,0,0,.35)}
+
+/* zoo */
+.zoo{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:560px){.zoo{grid-template-columns:repeat(3,1fr)}}
+.bicho{position:relative;aspect-ratio:1;border-radius:16px;border:1px solid var(--line);background:linear-gradient(180deg,#1d1035,#120a20);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;padding:0;color:var(--fg);font-weight:600}
+.bicho .e{font-size:clamp(2.2rem,9vw,3.4rem);line-height:1;display:block;transform-origin:50% 90%}
+.bicho .n{font-size:.78rem;color:var(--muted);margin-top:6px}
+.bicho .c{position:absolute;top:6px;right:8px;font-size:.72rem;color:var(--pink)}
+.bicho.pet .e{animation:pet .45s ease}
+@keyframes pet{30%{transform:scale(1.25) rotate(-10deg)}60%{transform:scale(.95) rotate(8deg)}}
+.heart{position:fixed;pointer-events:none;z-index:9;font-size:1.4rem;animation:up 1s ease-out forwards}
+@keyframes up{to{transform:translateY(-80px) scale(1.4);opacity:0}}
+.total{text-align:center;margin-top:14px;color:var(--muted)}
+.total b{color:var(--lime);font-size:1.2rem}
+
+/* info */
+dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 18px;margin:0}
+dt{color:var(--muted)}
+dd{margin:0;font-weight:600}
+.facts{margin:16px 0 0;padding-left:20px;line-height:1.6}
+.facts li{margin-bottom:6px}
+footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px;line-height:1.6}
+@media (prefers-reduced-motion: reduce){h1{animation:none}.bicho.pet .e{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<main>
+  <header class="hero">
+    <span class="tag">Site de fã · não oficial</span>
+    <h1>Petting<br>Zoo</h1>
+    <p class="artist">deadmau5</p>
+    <p class="meta">2014 · progressive house · 7:31 · faixa bônus de <em>while(1&lt;2)</em></p>
+  </header>
+
+  <section class="panel" aria-labelledby="t-player">
+    <h2 id="t-player">▶ Tocar</h2>
+    <div class="video"><div id="yt"></div></div>
+    <div class="drop" id="drop">
+      <p>Dá play no vídeo e os bichos dançam junto! Ou escolhe o arquivo da música (ou arrasta pra cá) pro visualizador reagir ao som de verdade.</p>
+      <div class="btns">
+        <button id="pick">🎵 Escolher arquivo</button>
+        <button id="demo" class="pink">🎛️ Batida demo</button>
+        <a class="btn ghost" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=KB0sLrP6WIU">YouTube ↗</a>
+        <a class="btn ghost" target="_blank" rel="noopener" href="https://open.spotify.com/search/deadmau5%20petting%20zoo">Spotify ↗</a>
+      </div>
+      <input type="file" id="file" accept="audio/*" hidden>
+    </div>
+    <audio id="audio" controls></audio>
+    <div class="now" id="now">Nada tocando. Dá play no vídeo ali em cima! A "batida demo" é um loop original a 128 BPM, só pra testar o visualizador.</div>
+    <canvas id="viz" aria-label="Visualizador de áudio"></canvas>
+  </section>
+
+  <section class="panel" aria-labelledby="t-zoo">
+    <h2 id="t-zoo">🐾 O zoológico</h2>
+    <p style="margin:0 0 14px;color:var(--muted)">Faz carinho nos bichos! Com a música tocando, eles pulam na batida.</p>
+    <div class="zoo" id="zoo"></div>
+    <p class="total">Carinhos no total: <b id="total">0</b></p>
+  </section>
+
+  <section class="panel" aria-labelledby="t-info">
+    <h2 id="t-info">ℹ Sobre a música</h2>
+    <dl>
+      <dt>Artista</dt><dd>deadmau5 (Joel Zimmerman, Canadá)</dd>
+      <dt>Ano</dt><dd>2014</dd>
+      <dt>Álbum</dt><dd>while(1&lt;2), edição da Best Buy (faixa 16)</dd>
+      <dt>Duração</dt><dd>7:31</dd>
+      <dt>Gênero</dt><dd>Progressive house / electro</dd>
+    </dl>
+    <ul class="facts">
+      <li>Por muito tempo ficou como faixa "não lançada" e só apareceu como bônus numa edição do álbum. Muitos fãs ainda chamam ela de unreleased.</li>
+      <li>🐐 Está no <strong>Goat Simulator</strong>: tem uma festa no telhado de um prédio com o deadmau5 tocando Petting Zoo, e a cabra pode ir lá dançar.</li>
+      <li>O álbum <em>while(1&lt;2)</em> tem 25 faixas em 2 discos. O nome é código de programação: um loop que nunca acaba, porque 1 é sempre menor que 2.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Site de fã, não oficial e sem ligação com o deadmau5. A música não fica guardada aqui:
+    ela só toca do seu próprio arquivo, no seu aparelho.<br>
+    Ver também: <a href="../goatsim/">🐐 GoatSim</a>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const store = {
+    get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
+    set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  };
+
+  /* ---------- áudio ---------- */
+  let ctx, analyser, data, mediaSrc, demoTimer = null, demoOn = false;
+  const audio = $('#audio');
+
+  function ensureCtx(){
+    if (ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 512;
+    analyser.smoothingTimeConstant = .8;
+    analyser.connect(ctx.destination);
+    data = new Uint8Array(analyser.frequencyBinCount);
+  }
+
+  function playFile(f){
+    if (!f || !f.type.startsWith('audio')) { $('#now').textContent = 'Esse arquivo não é de áudio.'; return; }
+    stopDemo();
+    ensureCtx(); ctx.resume();
+    if (!mediaSrc){ mediaSrc = ctx.createMediaElementSource(audio); mediaSrc.connect(analyser); }
+    if (audio.src) URL.revokeObjectURL(audio.src);
+    audio.src = URL.createObjectURL(f);
+    audio.classList.add('on');
+    audio.play().catch(()=>{});
+    $('#now').textContent = '🎧 Tocando: ' + f.name;
+  }
+
+  $('#pick').onclick = () => $('#file').click();
+  $('#file').onchange = e => playFile(e.target.files[0]);
+  const drop = $('#drop');
+  ['dragenter','dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave','drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => playFile(e.dataTransfer.files[0]));
+
+  /* batida demo original: kick, chimbal, baixo e arpejo a 128 BPM */
+  const BPM = 128, STEP = 60 / BPM / 4;
+  const ARP = [57, 60, 64, 67, 69, 67, 64, 60]; // Lá menor
+  const BASS = [45, 45, 41, 43];
+  const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+  let nextT = 0, step = 0;
+
+  function kick(t){
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(40, t + .12);
+    g.gain.setValueAtTime(.9, t); g.gain.exponentialRampToValueAtTime(.001, t + .3);
+    o.connect(g).connect(analyser); o.start(t); o.stop(t + .32);
+  }
+  let noiseBuf;
+  function hat(t, open){
+    if (!noiseBuf){ noiseBuf = ctx.createBuffer(1, ctx.sampleRate * .3, ctx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i=0;i<d.length;i++) d[i] = Math.random()*2-1; }
+    const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noiseBuf; f.type = 'highpass'; f.frequency.value = 7000;
+    const len = open ? .18 : .04;
+    g.gain.setValueAtTime(open ? .18 : .12, t); g.gain.exponentialRampToValueAtTime(.001, t + len);
+    s.connect(f).connect(g).connect(analyser); s.start(t); s.stop(t + len + .02);
+  }
+  function synth(t, midi, len, type, vol, cutoff){
+    const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    o.type = type; o.frequency.value = hz(midi);
+    f.type = 'lowpass'; f.frequency.setValueAtTime(cutoff, t); f.frequency.exponentialRampToValueAtTime(300, t + len);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .005); g.gain.exponentialRampToValueAtTime(.001, t + len);
+    o.connect(f).connect(g).connect(analyser); o.start(t); o.stop(t + len + .02);
+  }
+  function schedule(){
+    while (nextT < ctx.currentTime + .12){
+      const s = step % 16, bar = Math.floor(step / 16) % 4;
+      if (s % 4 === 0) kick(nextT);
+      if (s % 4 === 2) hat(nextT, true); else if (s % 2 === 1) hat(nextT, false);
+      if (s % 4 === 2) synth(nextT, BASS[bar], STEP * 1.8, 'sawtooth', .22, 900);
+      const sweep = 1200 + 2400 * (0.5 + 0.5 * Math.sin(step / 24));
+      synth(nextT, ARP[step % 8] + (bar === 3 ? 2 : 0), STEP * .9, 'square', .05, sweep);
+      nextT += STEP; step++;
+    }
+  }
+  function startDemo(){
+    ensureCtx(); ctx.resume();
+    audio.pause(); pauseYt();
+    demoOn = true; nextT = ctx.currentTime + .05; step = 0;
+    demoTimer = setInterval(schedule, 25);
+    $('#demo').textContent = '⏹ Parar demo';
+    $('#now').textContent = '🎛️ Batida demo original (128 BPM). Pra ouvir a música de verdade, escolha o arquivo ou abra no YouTube/Spotify.';
+  }
+  function stopDemo(){
+    if (!demoOn) return;
+    clearInterval(demoTimer); demoOn = false;
+    $('#demo').textContent = '🎛️ Batida demo';
+    $('#now').textContent = 'Demo parada.';
+  }
+  $('#demo').onclick = () => demoOn ? stopDemo() : startDemo();
+  audio.addEventListener('play', () => { stopDemo(); pauseYt(); });
+
+  /* ---------- vídeo do YouTube ---------- */
+  // O som do vídeo não pode ser lido pelo site, então quando ele toca a gente simula a batida (128 BPM).
+  let ytPlaying = false, ytPlayer;
+  window.onYouTubeIframeAPIReady = () => {
+    ytPlayer = new YT.Player('yt', {
+      videoId: 'KB0sLrP6WIU',
+      host: 'https://www.youtube-nocookie.com',
+      playerVars: { rel: 0, playsinline: 1 },
+      events: { onStateChange: e => {
+        ytPlaying = e.data === YT.PlayerState.PLAYING;
+        if (ytPlaying){ stopDemo(); audio.pause(); $('#now').textContent = '📺 Tocando o vídeo: Petting Zoo'; }
+      } }
+    });
+  };
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  tag.onerror = () => {
+    $('#yt').outerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/KB0sLrP6WIU?rel=0&playsinline=1" title="deadmau5 - Petting Zoo" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+  };
+  document.head.appendChild(tag);
+  const pauseYt = () => { try{ if (ytPlaying) ytPlayer.pauseVideo(); }catch(e){} };
+
+  /* ---------- zoológico ---------- */
+  const BICHOS = [
+    ['🐐','Cabra',62],['🐑','Ovelha',64],['🐷','Porquinho',67],['🐰','Coelho',69],
+    ['🐔','Galinha',72],['🦙','Lhama',74],['🐄','Vaquinha',76],['🐴','Pônei',79],
+    ['🦆','Pato',81],['🐢','Tartaruga',57],['🐹','Hamster',84],['🐭','Ratinho',86]
+  ];
+  const pets = store.get('pz-pets', {});
+  const zoo = $('#zoo');
+  const els = BICHOS.map(([e, n, note], i) => {
+    const b = document.createElement('button');
+    b.className = 'bicho';
+    b.setAttribute('aria-label', 'Fazer carinho: ' + n);
+    b.innerHTML = `<span class="c">${pets[n] ? '♥ ' + pets[n] : ''}</span><span class="e">${e}</span><span class="n">${n}</span>`;
+    b.onclick = ev => {
+      pets[n] = (pets[n] || 0) + 1; store.set('pz-pets', pets);
+      b.querySelector('.c').textContent = '♥ ' + pets[n];
+      b.classList.remove('pet'); void b.offsetWidth; b.classList.add('pet');
+      updTotal();
+      ensureCtx(); ctx.resume();
+      synth(ctx.currentTime, note, .35, 'triangle', .25, 4000);
+      const r = b.getBoundingClientRect();
+      const h = document.createElement('span');
+      h.className = 'heart';
+      h.textContent = ['💖','💜','💙','💚'][Math.floor(Math.random()*4)];
+      h.style.left = (ev.clientX || r.left + r.width/2) - 10 + 'px';
+      h.style.top = (ev.clientY || r.top) - 20 + 'px';
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 1000);
+    };
+    zoo.appendChild(b);
+    return b.querySelector('.e');
+  });
+  function updTotal(){ $('#total').textContent = Object.values(pets).reduce((a, b) => a + b, 0); }
+  updTotal();
+
+  /* ---------- visual ---------- */
+  const bg = $('#bg'), bctx = bg.getContext('2d');
+  const viz = $('#viz'), vctx = viz.getContext('2d');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function size(){
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    bg.width = innerWidth * dpr; bg.height = innerHeight * dpr;
+    viz.width = viz.clientWidth * dpr; viz.height = viz.clientHeight * dpr;
+  }
+  addEventListener('resize', size); size();
+
+  const stars = Array.from({length: 90}, () => ({x: Math.random(), y: Math.random(), z: Math.random()*.8+.2}));
+  let bassSm = 0, t0 = 0;
+
+  function frame(t){
+    requestAnimationFrame(frame);
+    let bass = 0, playing = demoOn || (!audio.paused && audio.src);
+    if (analyser && playing){
+      analyser.getByteFrequencyData(data);
+      for (let i = 1; i < 8; i++) bass += data[i];
+      bass = Math.max(0, (bass / 7 / 255 - .45) / .55);
+    } else if (ytPlaying){
+      const ph = (t / 1000 * 128 / 60) % 1;
+      bass = Math.exp(-ph * 6);
+      playing = true;
+    }
+    bassSm += (bass - bassSm) * .35;
+    document.documentElement.style.setProperty('--pulse', bassSm.toFixed(3));
+
+    // fundo
+    const W = bg.width, H = bg.height;
+    bctx.fillStyle = '#0b0614'; bctx.fillRect(0, 0, W, H);
+    const g = bctx.createRadialGradient(W/2, H*.25, 0, W/2, H*.25, Math.max(W, H) * (.5 + bassSm * .25));
+    g.addColorStop(0, `rgba(255,43,214,${.18 + bassSm * .35})`);
+    g.addColorStop(.5, `rgba(34,240,255,${.06 + bassSm * .12})`);
+    g.addColorStop(1, 'rgba(11,6,20,0)');
+    bctx.fillStyle = g; bctx.fillRect(0, 0, W, H);
+    const speed = reduce ? 0 : (.0006 + bassSm * .01);
+    bctx.fillStyle = '#fff';
+    for (const s of stars){
+      s.y += speed * s.z; if (s.y > 1) { s.y = 0; s.x = Math.random(); }
+      bctx.globalAlpha = .25 + s.z * .6;
+      const r = s.z * 1.6 * (1 + bassSm);
+      bctx.fillRect(s.x * W, s.y * H, r, r);
+    }
+    bctx.globalAlpha = 1;
+
+    // barras
+    const VW = viz.width, VH = viz.height;
+    vctx.clearRect(0, 0, VW, VH);
+    const N = 48, bw = VW / N;
+    for (let i = 0; i < N; i++){
+      let v;
+      if (ytPlaying && !demoOn && audio.paused) v = Math.max(.05, bassSm * (.9 - i/N*.6) * (.6 + .4*Math.sin(t/180 + i*.7)) + .1*Math.random());
+      else if (analyser && playing) v = data[Math.floor(i * (data.length * .7) / N)] / 255;
+      else v = .08 + .05 * Math.sin(t / 600 + i * .4);
+      const h = v * VH * .95;
+      const grad = vctx.createLinearGradient(0, VH, 0, VH - h);
+      grad.addColorStop(0, '#22f0ff'); grad.addColorStop(1, '#ff2bd6');
+      vctx.fillStyle = grad;
+      vctx.fillRect(i * bw + bw * .15, VH - h, bw * .7, h);
+    }
+
+    // bichos pulando
+    if (!reduce) els.forEach((e, i) => {
+      const k = playing ? bassSm : 0;
+      e.style.transform = `translateY(${-k * 16 * (i % 2 ? 1 : .7)}px) scale(${1 + k * .12})`;
+    });
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
