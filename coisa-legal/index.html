@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Coisa Legal</title>
+<meta name="description" content="Você quer ver uma coisa legal?">
+<meta name="theme-color" content="#ffe14d">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+:root{--bg:#ffe14d;--fg:#1d1442;--sim:#22c55e;--nao:#ef4444;--card:#fff}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--bg) radial-gradient(circle at 20% 20%,#fff6 0 12%,transparent 13%) 0 0/80px 80px;color:var(--fg);
+  font-family:"Baloo 2",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px;text-align:center}
+.box{max-width:560px}
+.emoji{font-size:clamp(4rem,18vw,7rem);line-height:1;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-10px) rotate(6deg)}}
+h1{font-size:clamp(2rem,8vw,3.4rem);line-height:1.05;margin:12px 0 28px;font-weight:800}
+.btns{display:flex;gap:16px;justify-content:center;align-items:center;min-height:70px}
+button{font:inherit;font-weight:800;font-size:1.5rem;border:0;border-radius:18px;padding:12px 34px;cursor:pointer;color:#fff;
+  box-shadow:0 6px 0 #0003;min-height:56px;touch-action:manipulation}
+button:active{transform:translateY(3px);box-shadow:0 3px 0 #0003}
+#sim{background:var(--sim);transition:transform .2s}
+#nao{background:var(--nao);transition:left .25s ease,top .25s ease}
+#nao.solto{position:fixed;z-index:5}
+#msg{margin-top:22px;font-weight:600;min-height:1.6em;font-size:1.1rem}
+#rick{position:fixed;inset:0;background:#000;z-index:10;display:none}
+#rick.on{display:block}
+#rick iframe{width:100%;height:100%;border:0}
+#rick a{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);color:#fff;font-weight:700;background:#0008;padding:8px 14px;border-radius:12px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="emoji">🤩</div>
+  <h1>Você quer ver uma coisa legal?</h1>
+  <div class="btns">
+    <button id="sim">Sim</button>
+    <button id="nao">Não</button>
+  </div>
+  <p id="msg"></p>
+</div>
+<div id="rick"></div>
+
+<script>
+(() => {
+  const nao = document.getElementById('nao'), sim = document.getElementById('sim'), msg = document.getElementById('msg');
+  const frases = ['Ué, cadê o Não? 😜','Tenta de novo!','Muito lento! 🐢','Desiste, aperta o Sim 😎','Quase! 😂','O Não tá de férias 🏖️','Hehehe 🏃‍♂️'];
+  let fugas = 0;
+
+  function foge(e){
+    if (e) e.preventDefault();
+    const r = nao.getBoundingClientRect();
+    if (!nao.classList.contains('solto')){
+      nao.style.left = r.left + 'px'; nao.style.top = r.top + 'px';
+      nao.classList.add('solto');
+      void nao.offsetWidth;
+    }
+    const m = 12, w = innerWidth - r.width - m, h = innerHeight - r.height - m;
+    let x, y, tries = 0;
+    do {
+      x = m + Math.random() * (w - m); y = m + Math.random() * (h - m);
+      tries++;
+    } while (tries < 20 && Math.hypot(x - r.left, y - r.top) < 150);
+    nao.style.left = x + 'px'; nao.style.top = y + 'px';
+    fugas++;
+    msg.textContent = frases[fugas % frases.length];
+    sim.style.transform = `scale(${Math.min(1 + fugas * 0.08, 1.8)})`;
+  }
+
+  nao.addEventListener('pointerenter', foge);
+  nao.addEventListener('pointerdown', foge);
+  nao.addEventListener('touchstart', foge, {passive:false});
+  nao.addEventListener('focus', foge);
+  nao.addEventListener('click', foge);
+
+  sim.addEventListener('click', () => {
+    const rick = document.getElementById('rick');
+    rick.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0&playsinline=1" title="Coisa legal" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>' +
+      '<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener">Não tocou? Clica aqui 😏</a>';
+    rick.classList.add('on');
+  });
+})();
+</script>
+</body>
+</html>
