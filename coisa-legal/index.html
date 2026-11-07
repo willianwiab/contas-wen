@@ -25,10 +25,6 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 #0003}
 #nao{background:var(--nao);transition:left .25s ease,top .25s ease}
 #nao.solto{position:fixed;z-index:5}
 #msg{margin-top:22px;font-weight:600;min-height:1.6em;font-size:1.1rem}
-#rick{position:fixed;inset:0;background:#000;z-index:10;display:none}
-#rick.on{display:block}
-#rick iframe{width:100%;height:100%;border:0}
-#rick a{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);color:#fff;font-weight:700;background:#0008;padding:8px 14px;border-radius:12px;text-decoration:none}
 </style>
 </head>
 <body>
@@ -41,7 +37,6 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 #0003}
   </div>
   <p id="msg"></p>
 </div>
-<div id="rick"></div>
 
 <script>
 (() => {
@@ -76,10 +71,7 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 #0003}
   nao.addEventListener('click', foge);
 
   sim.addEventListener('click', () => {
-    const rick = document.getElementById('rick');
-    rick.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0&playsinline=1" title="Coisa legal" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>' +
-      '<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener">Não tocou? Clica aqui 😏</a>';
-    rick.classList.add('on');
+    location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
   });
 })();
 </script>
