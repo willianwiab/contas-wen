@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Petting Zoo</title>
 <meta name="description" content="Site de fã da música Petting Zoo do deadmau5: toque a música, veja o visualizador e faça carinho nos bichos do zoológico.">
@@ -253,7 +254,7 @@ footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px;lin
   const tag = document.createElement('script');
   tag.src = 'https://www.youtube.com/iframe_api';
   tag.onerror = () => {
-    $('#yt').outerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/KB0sLrP6WIU?rel=0&playsinline=1" title="deadmau5 - Petting Zoo" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+    $('#yt').outerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/KB0sLrP6WIU?rel=0&playsinline=1" title="deadmau5 - Petting Zoo" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
   };
   document.head.appendChild(tag);
   const pauseYt = () => { try{ if (ytPlaying) ytPlayer.pauseVideo(); }catch(e){} };

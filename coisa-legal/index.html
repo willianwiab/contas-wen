@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Coisa Legal</title>
 <meta name="description" content="Você quer ver uma coisa legal?">
@@ -24,6 +25,9 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 #0003}
 #sim{background:var(--sim);transition:transform .2s}
 #nao{background:var(--nao);transition:left .25s ease,top .25s ease}
 #nao.solto{position:fixed;z-index:5}
+#rick{position:fixed;inset:0;background:#000;z-index:10;display:none}
+#rick.on{display:block}
+#rick iframe{width:100%;height:100%;border:0;display:block}
 #msg{margin-top:22px;font-weight:600;min-height:1.6em;font-size:1.1rem}
 </style>
 </head>
@@ -37,6 +41,7 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 #0003}
   </div>
   <p id="msg"></p>
 </div>
+<div id="rick"></div>
 
 <script>
 (() => {
@@ -71,7 +76,9 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 #0003}
   nao.addEventListener('click', foge);
 
   sim.addEventListener('click', () => {
-    location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    const rick = document.getElementById('rick');
+    rick.innerHTML = '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0&playsinline=1" title="Coisa legal" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+    rick.classList.add('on');
   });
 })();
 </script>
