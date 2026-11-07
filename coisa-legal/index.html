@@ -43,7 +43,11 @@ body.treme .tela{animation:treme .35s}
 @keyframes treme{20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-6px,-3px)}80%{transform:translate(5px,5px)}}
 
 /* nome e papo */
-#inicio,#telaPapo{display:none}
+#inicio,#telaPapo,#telaNome{display:none}
+.idiomas{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto}
+.idiomas button{background:#161616;border:2px solid #333;box-shadow:0 6px 0 #0008;font-size:1.25rem;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.idiomas button b{font-size:2.6rem;line-height:1}
+.idiomas button:hover{border-color:#22c55e}
 #formNome{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
 #telaNome input{font:inherit;font-weight:800;font-size:1.4rem;padding:10px 16px;border-radius:16px;border:3px solid #fff;background:#111;color:#fff;
   width:min(320px,86vw);text-align:center;outline:none;user-select:text;-webkit-user-select:text}
@@ -88,15 +92,28 @@ body.video #fx{z-index:9}
 </head>
 <body>
 <canvas id="fx" aria-hidden="true"></canvas>
-<div id="placar">Tentativas de clicar no Não: <b id="n">0</b></div>
+<div id="placar"><span id="placarTxt"></span> <b id="n">0</b></div>
+
+<div class="tela" id="telaIdioma">
+  <div class="box">
+    <div class="emoji">🌎</div>
+    <h1>Idioma · Language</h1>
+    <div class="idiomas">
+      <button type="button" data-l="pt"><b>🇧🇷</b>Português</button>
+      <button type="button" data-l="es"><b>🇪🇸</b>Español</button>
+      <button type="button" data-l="en"><b>🇺🇸</b>English</button>
+      <button type="button" data-l="cl"><b>🇨🇱</b>Chileno</button>
+    </div>
+  </div>
+</div>
 
 <div class="tela" id="telaNome">
   <div class="box">
     <div class="emoji">👋</div>
-    <h1>Oi! Qual é o seu nome?</h1>
+    <h1 id="tNome"></h1>
     <div id="formNome">
-      <input id="nome" maxlength="30" placeholder="Seu nome" aria-label="Seu nome" autocomplete="off" enterkeyhint="go">
-      <button type="button" id="entrar">Entrar ➜</button>
+      <input id="nome" maxlength="30"  autocomplete="off" enterkeyhint="go">
+      <button type="button" id="entrar"></button>
     </div>
   </div>
 </div>
@@ -106,7 +123,7 @@ body.video #fx{z-index:9}
     <div id="papoEmoji">👋</div>
     <p id="papoTxt"></p>
   </div>
-  <div id="pular">toque na tela pra continuar</div>
+  <div id="pular"></div>
 </div>
 
 <div class="tela" id="inicio">
@@ -123,7 +140,7 @@ body.video #fx{z-index:9}
 
 <div class="tela" id="suspense">
   <div id="carrega">
-    <p id="frase">Preparando a coisa mais legal do mundo...</p>
+    <p id="frase"></p>
     <div class="barra"><i id="barra"></i></div>
     <div id="pct">0%</div>
   </div>
@@ -132,9 +149,9 @@ body.video #fx{z-index:9}
 
 <div id="rick">
   <div id="yt"></div>
-  <div id="rickrolled">VOCÊ FOI RICKROLLADO! 🕺</div>
-  <button id="som">🔊 Ligar o som</button>
-  <button id="denovo">↺ De novo</button>
+  <div id="rickrolled"></div>
+  <button id="som"></button>
+  <button id="denovo"></button>
 </div>
 
 <script>
@@ -142,6 +159,81 @@ body.video #fx{z-index:9}
   const $ = id => document.getElementById(id);
   const sim = $('sim'), nao = $('nao'), msg = $('msg'), emoji = $('emoji');
   const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- idiomas ---------- */
+  const IDIOMAS = {
+    pt: {
+      lang: 'pt-BR', nome: 'Oi! Qual é o seu nome?', ph: 'Seu nome', vazio: 'Escreve seu nome aqui 👆', entrar: 'Entrar ➜', pular: 'toque na tela pra continuar',
+      papo: n => [['👋', `Olá, ${n}!`], ['😍', `Que nome lindo, hein, ${n}!`], ['🌎', 'Bem-vindo ao site mais incrível da internet'],
+        ['✨', 'Aqui só entra gente muito especial'], ['🚀', 'Cientistas da NASA estudaram 47 anos pra fazer esse site'],
+        ['🍪', 'Ele custou 3 bilhões de reais e 2 pacotes de bolacha'], ['🦖', 'Até os dinossauros queriam ver esse site (mas morreram antes)'],
+        ['✅', `${n}, seu nome foi aprovado pelo Conselho Mundial das Coisas Legais`], ['🤫', 'Só uma perguntinha antes...'], ['😮‍💨', 'Respira fundo...']],
+      pergunta: 'Você quer ver uma coisa legal?', sim: 'Sim', nao: 'Não', placar: 'Tentativas de clicar no Não:',
+      frases: ['Ué, cadê o Não? 😜','Muito lento! 🐢','Tenta de novo! 😂','Quase! 🤏','O Não tá de férias 🏖️','Desiste, aperta o Sim 😎',
+        'Hehehe 🏃‍♂️','Nem a pau! 🙅','Você é teimoso, hein? 🙄','Ele multiplicou! 😱','Para de tentar! 🛑','Aperta o Sim logo! 🟢'],
+      textosNao: ['Não','Nãoo','Nem pensar','Nunca!','Tem certeza?','Pega eu!','Nã','N'],
+      todosSim: 'Agora todos são Sim! 😈',
+      carrega: ['Preparando a coisa mais legal do mundo...','Carregando legalzice... 😎','Chamando os especialistas em coisa legal...','Quase lá... 🤫'],
+      rick: 'VOCÊ FOI RICKROLLADO! 🕺', som: '🔊 Ligar o som', denovo: '↺ De novo'
+    },
+    es: {
+      lang: 'es', nome: '¡Hola! ¿Cómo te llamas?', ph: 'Tu nombre', vazio: 'Escribe tu nombre aquí 👆', entrar: 'Entrar ➜', pular: 'toca la pantalla para seguir',
+      papo: n => [['👋', `¡Hola, ${n}!`], ['😍', `¡Qué nombre tan bonito, ${n}!`], ['🌎', 'Bienvenido a la web más increíble de internet'],
+        ['✨', 'Aquí solo entra gente muy especial'], ['🚀', 'Científicos de la NASA estudiaron 47 años para hacer esta web'],
+        ['🍪', 'Costó 3 mil millones de euros y 2 paquetes de galletas'], ['🦖', 'Hasta los dinosaurios querían ver esta web (pero se murieron antes)'],
+        ['✅', `${n}, tu nombre fue aprobado por el Consejo Mundial de las Cosas Geniales`], ['🤫', 'Solo una preguntita antes...'], ['😮‍💨', 'Respira hondo...']],
+      pergunta: '¿Quieres ver algo genial?', sim: 'Sí', nao: 'No', placar: 'Intentos de pulsar el No:',
+      frases: ['¿Y el No? 😜','¡Muy lento! 🐢','¡Inténtalo otra vez! 😂','¡Casi! 🤏','El No se fue de vacaciones 🏖️','Ríndete, pulsa el Sí 😎',
+        'Jejeje 🏃‍♂️','¡Ni loco! 🙅','Qué cabezota eres 🙄','¡Se multiplicó! 😱','¡Deja de intentarlo! 🛑','¡Pulsa el Sí ya! 🟢'],
+      textosNao: ['No','Noo','Ni de broma','¡Nunca!','¿Seguro?','¡Atrápame!','N','N'],
+      todosSim: '¡Ahora todos son Sí! 😈',
+      carrega: ['Preparando la cosa más genial del mundo...','Cargando genialidad... 😎','Llamando a los expertos en cosas geniales...','Ya casi... 🤫'],
+      rick: '¡TE HAN RICKROLLEADO! 🕺', som: '🔊 Activar sonido', denovo: '↺ Otra vez'
+    },
+    en: {
+      lang: 'en', nome: 'Hi! What\'s your name?', ph: 'Your name', vazio: 'Type your name here 👆', entrar: 'Enter ➜', pular: 'tap the screen to continue',
+      papo: n => [['👋', `Hello, ${n}!`], ['😍', `What a beautiful name, ${n}!`], ['🌎', 'Welcome to the most amazing website on the internet'],
+        ['✨', 'Only very special people get in here'], ['🚀', 'NASA scientists studied for 47 years to build this website'],
+        ['🍪', 'It cost 3 billion dollars and 2 packs of cookies'], ['🦖', 'Even the dinosaurs wanted to see this website (but they died first)'],
+        ['✅', `${n}, your name was approved by the World Council of Cool Things`], ['🤫', 'Just one tiny question first...'], ['😮‍💨', 'Take a deep breath...']],
+      pergunta: 'Do you want to see something cool?', sim: 'Yes', nao: 'No', placar: 'Tries to click No:',
+      frases: ['Huh, where did No go? 😜','Too slow! 🐢','Try again! 😂','Almost! 🤏','No is on vacation 🏖️','Give up, click Yes 😎',
+        'Hehehe 🏃‍♂️','No way! 🙅','You\'re stubborn, huh? 🙄','It multiplied! 😱','Stop trying! 🛑','Just click Yes! 🟢'],
+      textosNao: ['No','Noo','No way','Never!','Are you sure?','Catch me!','N','N'],
+      todosSim: 'Now they\'re all Yes! 😈',
+      carrega: ['Preparing the coolest thing in the world...','Loading coolness... 😎','Calling the cool-stuff experts...','Almost there... 🤫'],
+      rick: 'YOU GOT RICKROLLED! 🕺', som: '🔊 Turn on sound', denovo: '↺ Again'
+    },
+    cl: {
+      lang: 'es-CL', nome: '¡Hola po! ¿Cómo te llamai?', ph: 'Tu nombre', vazio: 'Escribe tu nombre aquí po 👆', entrar: 'Entrar ➜', pular: 'toca la pantalla pa\' seguir',
+      papo: n => [['👋', `¡Hola po, ${n}!`], ['😍', `¡Qué nombre más bacán, ${n}!`], ['🌎', 'Bienvenido al sitio más filete de internet'],
+        ['✨', 'Aquí solo entra gente muy especial, ¿cachai?'], ['🚀', 'Los científicos de la NASA estudiaron 47 años pa\' hacer este sitio'],
+        ['🍪', 'Costó 3 mil millones de lucas y 2 paquetes de galletas'], ['🦖', 'Hasta los dinosaurios querían ver este sitio (pero se murieron antes po)'],
+        ['✅', `${n}, tu nombre fue aprobado por el Consejo Mundial de las Cosas Bacanes`], ['🤫', 'Solo una preguntita antes...'], ['😮‍💨', 'Respira hondo po...']],
+      pergunta: '¿Querí ver algo bacán?', sim: 'Sí', nao: 'No', placar: 'Intentos de apretar el No:',
+      frases: ['¿Y el No? ¿Dónde está? 😜','¡Muy lento po! 🐢','¡Intenta otra vez! 😂','¡Casi! 🤏','El No se fue de vacaciones a Viña 🏖️','Ya po, aprieta el Sí 😎',
+        'Jajaja 🏃‍♂️','¡Ni ahí! 🙅','Erí más porfiado, ¿cachai? 🙄','¡Se multiplicó! 😱','¡Para de intentar po! 🛑','¡Aprieta el Sí altiro! 🟢'],
+      textosNao: ['No','Noo','Ni ahí','¡Nunca po!','¿Seguro?','¡Atrápame!','N','N'],
+      todosSim: '¡Ahora todos son Sí po! 😈',
+      carrega: ['Preparando la cuestión más bacán del mundo...','Cargando bacanería... 😎','Llamando a los expertos en cosas filete...','Ya casi po... 🤫'],
+      rick: '¡TE RICKROLLEARON PO! 🕺', som: '🔊 Prender el sonido', denovo: '↺ Otra vez'
+    }
+  };
+  let L = IDIOMAS.pt;
+  function usaIdioma(cod){
+    L = IDIOMAS[cod] || IDIOMAS.pt;
+    document.documentElement.lang = L.lang;
+    $('tNome').textContent = L.nome;
+    $('nome').placeholder = L.ph; $('nome').setAttribute('aria-label', L.ph);
+    $('entrar').textContent = L.entrar;
+    $('pular').textContent = L.pular;
+    $('placarTxt').textContent = L.placar;
+    sim.textContent = L.sim; nao.textContent = L.nao;
+    $('frase').textContent = L.carrega[0];
+    $('rickrolled').textContent = L.rick;
+    $('som').textContent = L.som;
+    $('denovo').textContent = L.denovo;
+  }
 
   /* ---------- sons (feitos no navegador) ---------- */
   let ac;
@@ -159,7 +251,6 @@ body.video #fx{z-index:9}
   const bip = f => tom(f, f, .12, 'square', .1);
 
   /* ---------- texto digitando ---------- */
-  const PERGUNTA = 'Você quer ver uma coisa legal?';
   let i = 0;
   function comecaPergunta(){
     $('telaPapo').style.display = 'none';
@@ -167,8 +258,8 @@ body.video #fx{z-index:9}
     digita();
   }
   function digita(){
-    $('txt').textContent = PERGUNTA.slice(0, i);
-    if (i++ < PERGUNTA.length) setTimeout(digita, reduz ? 0 : 55);
+    $('txt').textContent = L.pergunta.slice(0, i);
+    if (i++ < L.pergunta.length) setTimeout(digita, reduz ? 0 : 55);
     else $('btns').classList.add('on');
   }
 
@@ -179,7 +270,7 @@ body.video #fx{z-index:9}
   const gravar = (k, v) => { try{ localStorage.setItem(k, v); }catch(e){} };
   let meuId = ler('coisa-legal-id', '');
   if (!meuId){ meuId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8); gravar('coisa-legal-id', meuId); }
-  const ficha = {nome: '', entrou: 0, caiu: false, quando: 0, tentativas: 0};
+  const ficha = {nome: '', idioma: 'pt', entrou: 0, caiu: false, quando: 0, tentativas: 0};
   const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
   async function salvar(){
     try{
@@ -197,9 +288,18 @@ body.video #fx{z-index:9}
 
   /* ---------- nome e papo furado ---------- */
   $('nome').value = ler('coisa-legal-nome', '');
+  document.querySelectorAll('.idiomas button').forEach(b => b.addEventListener('click', () => {
+    ficha.idioma = b.dataset.l;
+    usaIdioma(b.dataset.l);
+    gravar('coisa-legal-idioma', b.dataset.l);
+    bip(700);
+    $('telaIdioma').style.display = 'none';
+    $('telaNome').style.display = 'flex';
+    $('nome').focus();
+  }));
   function entrar(){
     const n = $('nome').value.trim().replace(/\s+/g, ' ').slice(0, 30);
-    if (!n){ $('nome').focus(); $('nome').placeholder = 'Escreve seu nome aqui 👆'; return; }
+    if (!n){ $('nome').focus(); $('nome').placeholder = L.vazio; return; }
     $('nome').blur();
     gravar('coisa-legal-nome', n);
     ficha.nome = n; ficha.entrou = Date.now();
@@ -212,18 +312,7 @@ body.video #fx{z-index:9}
   $('nome').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); entrar(); } });
 
   function papo(n){
-    const P = [
-      ['👋', `Olá, ${n}!`],
-      ['😍', `Que nome lindo, hein, ${n}!`],
-      ['🌎', 'Bem-vindo ao site mais incrível da internet'],
-      ['✨', 'Aqui só entra gente muito especial'],
-      ['🚀', 'Cientistas da NASA estudaram 47 anos pra fazer esse site'],
-      ['🍪', 'Ele custou 3 bilhões de reais e 2 pacotes de bolacha'],
-      ['🦖', 'Até os dinossauros queriam ver esse site (mas morreram antes)'],
-      ['✅', `${n}, seu nome foi aprovado pelo Conselho Mundial das Coisas Legais`],
-      ['🤫', 'Só uma perguntinha antes...'],
-      ['😮‍💨', 'Respira fundo...']
-    ];
+    const P = L.papo(n);
     const tela = $('telaPapo'), em = $('papoEmoji'), tx = $('papoTxt');
     tela.style.display = 'flex';
     let k = 0, timer;
@@ -274,9 +363,6 @@ body.video #fx{z-index:9}
   requestAnimationFrame(quadro);
 
   /* ---------- o Não que foge ---------- */
-  const FRASES = ['Ué, cadê o Não? 😜','Muito lento! 🐢','Tenta de novo! 😂','Quase! 🤏','O Não tá de férias 🏖️','Desiste, aperta o Sim 😎',
-    'Hehehe 🏃‍♂️','Nem a pau! 🙅','Você é teimoso, hein? 🙄','Ele multiplicou! 😱','Para de tentar! 🛑','Aperta o Sim logo! 🟢'];
-  const TEXTOS_NAO = ['Não','Nãoo','Nem pensar','Nunca!','Tem certeza?','Pega eu!','Nã','N'];
   const EMOJIS = ['🤩','😏','😜','🤭','😂','🙃','😎','🤪'];
   let fugas = 0;
   const clones = [];
@@ -315,14 +401,14 @@ body.video #fx{z-index:9}
 
     fugas++;
     $('n').textContent = fugas; $('placar').classList.add('on');
-    msg.textContent = FRASES[(fugas - 1) % FRASES.length];
+    msg.textContent = L.frases[(fugas - 1) % L.frases.length];
     msg.classList.add('pop'); setTimeout(() => msg.classList.remove('pop'), 150);
     emoji.textContent = EMOJIS[fugas % EMOJIS.length];
 
     // o Não vai encolhendo e mudando de nome
     if (b === nao){
       nao.style.transform = `scale(${Math.max(1 - fugas * .05, .55)})`;
-      nao.textContent = TEXTOS_NAO[Math.min(Math.floor(fugas / 2), TEXTOS_NAO.length - 1)];
+      nao.textContent = L.textosNao[Math.min(Math.floor(fugas / 2), L.textosNao.length - 1)];
     }
     // o Sim vai crescendo e brilhando
     sim.style.transform = `scale(${Math.min(1 + fugas * .07, 1.9)})`;
@@ -335,7 +421,7 @@ body.video #fx{z-index:9}
 
   function clona(r){
     const c = document.createElement('button');
-    c.className = 'nao solto'; c.textContent = 'Não';
+    c.className = 'nao solto'; c.textContent = L.nao;
     c.style.left = r.left + 'px'; c.style.top = r.top + 'px';
     c.style.transform = 'scale(.7)';
     document.body.appendChild(c);
@@ -344,8 +430,8 @@ body.video #fx{z-index:9}
   }
 
   function viraTudoSim(){
-    [nao, ...clones].forEach(b => { b.textContent = 'Sim'; b.classList.add('virou'); b.style.transform = 'scale(1)'; });
-    msg.textContent = 'Agora todos são Sim! 😈';
+    [nao, ...clones].forEach(b => { b.textContent = L.sim; b.classList.add('virou'); b.style.transform = 'scale(1)'; });
+    msg.textContent = L.todosSim;
     tom(300, 1200, .4, 'sawtooth', .1);
   }
 
@@ -394,7 +480,7 @@ body.video #fx{z-index:9}
     [nao, ...clones].forEach(b => b.style.display = 'none');
     $('placar').classList.remove('on');
     $('suspense').classList.add('on');
-    const FR = ['Preparando a coisa mais legal do mundo...','Carregando legalzice... 😎','Chamando os especialistas em coisa legal...','Quase lá... 🤫'];
+    const FR = L.carrega;
     let p = 0;
     const tick = setInterval(() => {
       p = Math.min(100, p + Math.random() * 7 + 2);
