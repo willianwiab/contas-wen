@@ -44,7 +44,7 @@ body.treme .tela{animation:treme .35s}
 
 /* nome e papo */
 #inicio,#telaPapo{display:none}
-#telaNome form{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+#formNome{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
 #telaNome input{font:inherit;font-weight:800;font-size:1.4rem;padding:10px 16px;border-radius:16px;border:3px solid #fff;background:#111;color:#fff;
   width:min(320px,86vw);text-align:center;outline:none;user-select:text;-webkit-user-select:text}
 #telaNome input:focus{border-color:#22c55e;box-shadow:0 0 20px #22c55e88}
@@ -94,10 +94,10 @@ body.video #fx{z-index:9}
   <div class="box">
     <div class="emoji">👋</div>
     <h1>Oi! Qual é o seu nome?</h1>
-    <form id="formNome" autocomplete="off">
-      <input id="nome" maxlength="30" placeholder="Seu nome" aria-label="Seu nome" required>
-      <button>Entrar ➜</button>
-    </form>
+    <div id="formNome">
+      <input id="nome" maxlength="30" placeholder="Seu nome" aria-label="Seu nome" autocomplete="off" enterkeyhint="go">
+      <button type="button" id="entrar">Entrar ➜</button>
+    </div>
   </div>
 </div>
 
@@ -197,17 +197,19 @@ body.video #fx{z-index:9}
 
   /* ---------- nome e papo furado ---------- */
   $('nome').value = ler('coisa-legal-nome', '');
-  $('formNome').addEventListener('submit', e => {
-    e.preventDefault();
+  function entrar(){
     const n = $('nome').value.trim().replace(/\s+/g, ' ').slice(0, 30);
-    if (!n) return;
+    if (!n){ $('nome').focus(); $('nome').placeholder = 'Escreve seu nome aqui 👆'; return; }
+    $('nome').blur();
     gravar('coisa-legal-nome', n);
     ficha.nome = n; ficha.entrou = Date.now();
     salvar();
     tom(500, 1000, .15, 'triangle', .15);
     $('telaNome').style.display = 'none';
     papo(n);
-  });
+  }
+  $('entrar').addEventListener('click', entrar);
+  $('nome').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); entrar(); } });
 
   function papo(n){
     const P = [
