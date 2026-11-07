@@ -799,7 +799,7 @@ footer a{color:var(--roxo)}
 <footer>
   Dados dos cosméticos: <a href="https://fortnite-api.com" target="_blank" rel="noopener">fortnite-api.com</a>. DearNite não é da Epic Games.<br/>
   Feito pelo Jojo com o Claude. Irmão do <a href="../butterpoke/">ButterPoke</a> 🦋<br/>
-  Versão <b id="versao">27</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
+  Versão <b id="versao">28</b> · <button class="btn pequeno leve" id="btnAtualizar" style="margin-top:8px">🔄 Atualizar o site</button>
   <div class="fraco" id="atualizarMsg" style="margin-top:6px"></div>
 </footer>
 </div>
@@ -977,8 +977,18 @@ function calcularCortes(){
   const q = f => notas[Math.min(notas.length - 1, Math.floor(f * notas.length))];
   CORTES = [q(0.15), q(0.40), q(0.70), q(0.90)];
 }
+/* Galaxy: a skin mais cara do Fortnite (vinha com celular/tablet Samsung em 2018). */
+const GALAXY_ID = /^CID_175_Athena_Commando_M_Celestial$/i;
+const ehGalaxy = it => GALAXY_ID.test(it.id || '');
+/* Skins de PlayStation: eram de graça, mas só pra quem assinava a PS Plus.
+   Preços da PS Plus Essential no Brasil (2026). */
+const PS_PLUS = [['1 mês', 49.90], ['3 meses', 129.90], ['1 ano', 359.90]];
+const psPlusHTML = () => '<p style="margin-top:6px">🎮 <b>Quanto custava pegar:</b> a skin era de graça, mas só pra quem assinava a <b>PlayStation Plus</b>. Hoje a PS Plus Essential custa ' +
+  PS_PLUS.map(([q, v], i) => (i === PS_PLUS.length - 1 ? 'ou ' : '') + '<b>' + reais(v) + '</b> (' + q + ')').join(', ') +
+  '. Ou seja: no mínimo <b>' + reais(PS_PLUS[0][1]) + '</b>, mais o PlayStation!</p>';
 /* Estrelas de quem nunca foi vendido, pela origem. */
 function nuncaVendido(it){
+  if(ehGalaxy(it)) return [5, 'Só ganhava quem comprou um celular Samsung Galaxy Note 9 ou um tablet Galaxy Tab S4 em 2018. Nunca mais voltou. Raríssima!'];
   const idade = diasDesde(it.add), cap = parseFloat(it.cap) || 0, temp = parseFloat(it.temp) || 0;
   const f = it.fonte.join(' ').toLowerCase();
   if(idade != null && idade < 120) return [2, 'Saiu faz pouco tempo e ainda dá pra conseguir (passe, missão ou evento que está rolando).'];
@@ -1484,12 +1494,17 @@ function blocoPreco(it){
        /passe/i.test(p.fonte) ? 'Veio do <b>Passe de Batalha</b>, e passe não volta. ' :
        p.fonte ? 'Veio de: <b>' + esc(p.fonte) + '</b>. ' : 'Veio de evento, promoção, passe ou foi dado de graça. ') +
       'Por isso é <b>exclusivo</b>: quem tem, tem, e quem não tem não consegue mais. Em V-Bucks vale 0 — mas em raridade vale muito!</p>';
+    if(ps) html += psPlusHTML();
   } else if(p.de === 'estimado'){
     const r = reaisDe(p.vb);
     html += '<p class="destaque vbucks"><i class="vb-icone"></i>' + num(p.vb) + ' V-Bucks <small class="fraco" style="font-size:.9rem;font-family:Rubik">(estimado)</small></p>';
     html += '<p>Não está na loja hoje, então esse é o preço que a Epic cobra por <b>' + esc(tipoDe(it.tipo).nome.toLowerCase()) + ' ' + esc(raridadeDe(it).nome.toLowerCase()) + '</b>. Quando ela voltar pra loja, o site mostra o preço de verdade.</p>';
   } else {
     html += '<p class="destaque">Preço desconhecido</p><p>Já foi vendido na loja, mas o site não sabe por quanto.</p>';
+  }
+  if(ehGalaxy(it)){
+    html += '<p style="margin-top:8px">🌌 <b>A skin mais cara do Fortnite!</b> Não dava pra comprar com V-Bucks: só ganhava quem comprou um <b>Samsung Galaxy Note 9</b> ou um <b>Galaxy Tab S4</b> em 2018. ' +
+      'No <b>Guinness World Records</b> ela aparece como a skin mais cara do Fortnite: <b>US$ 1.299</b> (uns <b>R$ 7 mil</b>). E ela nunca mais voltou, então fica mais rara a cada dia.</p>';
   }
   if(p.vb > 0){
     const r = reaisDe(p.vb);
@@ -2957,7 +2972,7 @@ $('#campo').addEventListener('input', () => {
    worker, apaga os caches da casca e recarrega pedindo tudo de novo. O
    armário e as favoritas (localStorage) não são tocados; o catálogo
    guardado também fica, porque ele tem a própria validade. */
-const VERSAO = 27;
+const VERSAO = 28;
 $('#btnAtualizar').addEventListener('click', async () => {
   $('#atualizarMsg').textContent = 'Atualizando…';
   try{
