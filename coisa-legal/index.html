@@ -6,6 +6,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Coisa Legal</title>
 <meta name="description" content="Você quer ver uma coisa legal?">
+<meta property="og:title" content="Você quer ver uma coisa legal? 🤩">
+<meta property="og:description" content="Clica aqui, é muito legal! 😍">
+<meta property="og:image" content="https://willianwiab.github.io/contas-wen/coisa-legal/capa.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://willianwiab.github.io/contas-wen/coisa-legal/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#000000">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
 <style>
@@ -43,7 +51,11 @@ body.treme .tela{animation:treme .35s}
 @keyframes treme{20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-6px,-3px)}80%{transform:translate(5px,5px)}}
 
 /* nome e papo */
-#inicio,#telaPapo{display:none}
+#inicio,#telaPapo,#telaNome{display:none}
+.idiomas{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto}
+.idiomas button{background:#161616;border:2px solid #333;box-shadow:0 6px 0 #0008;font-size:1.25rem;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.idiomas button b{font-size:2.6rem;line-height:1}
+.idiomas button:hover{border-color:#22c55e}
 #formNome{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
 #telaNome input{font:inherit;font-weight:800;font-size:1.4rem;padding:10px 16px;border-radius:16px;border:3px solid #fff;background:#111;color:#fff;
   width:min(320px,86vw);text-align:center;outline:none;user-select:text;-webkit-user-select:text}
@@ -80,23 +92,47 @@ body.video #fx{z-index:9}
 #rickrolled{position:absolute;left:0;right:0;top:18px;z-index:2;font-size:clamp(1.6rem,7vw,3rem);font-weight:800;padding:0 12px;
   text-shadow:0 3px 0 #000,0 0 18px #000;animation:arco-t 1.5s linear infinite;pointer-events:none}
 @keyframes arco-t{0%{color:#22c55e}33%{color:#06b6d4}66%{color:#f59e0b}100%{color:#22c55e}}
-#som{position:absolute;right:16px;bottom:16px;z-index:3;display:none;font-size:1.1rem;padding:10px 16px;background:#fff;color:#000}
+.acoes{position:absolute;left:0;right:0;bottom:16px;z-index:3;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:0 12px}
+.acoes button{font-size:1.05rem;padding:10px 16px}
+#som{display:none;background:#fff;color:#000}
 #som.on{display:block}
-#denovo{position:absolute;left:16px;bottom:16px;z-index:3;font-size:1rem;padding:10px 16px;background:#ffffff22;color:#fff;backdrop-filter:blur(4px)}
-@media (prefers-reduced-motion: reduce){.emoji,#sim.brilha,#rickrolled,#rick{animation:none}body.treme .tela{animation:none}}
+#denovo{background:#0006;color:#fff;backdrop-filter:blur(4px)}
+#compartilhar{background:#25d366;color:#fff;animation:chama 1.2s ease-in-out infinite}
+@keyframes chama{50%{transform:scale(1.08)}}
+/* painel de compartilhar (quando o celular não tem o compartilhar dele) */
+#painelShare{position:fixed;inset:0;z-index:20;background:#000a;display:none;align-items:flex-end;justify-content:center}
+#painelShare.on{display:flex}
+#painelShare .folha{background:#161616;border:1px solid #333;border-radius:22px 22px 0 0;padding:20px 16px 26px;width:min(480px,100%);display:flex;flex-direction:column;gap:10px}
+#painelShare h3{margin:0 0 4px;font-size:1.3rem}
+#painelShare a,#painelShare .folha button{display:block;text-decoration:none;font-weight:800;font-size:1.15rem;border-radius:14px;padding:12px;color:#fff;box-shadow:none}
+#shWhats{background:#25d366}#shTelegram{background:#229ed9}#shCopiar{background:#333}#shFechar{background:transparent!important;color:#aaa!important}
+@media (prefers-reduced-motion: reduce){.emoji,#sim.brilha,#rickrolled,#rick,#compartilhar{animation:none}body.treme .tela{animation:none}}
 </style>
 </head>
 <body>
 <canvas id="fx" aria-hidden="true"></canvas>
-<div id="placar">Tentativas de clicar no Não: <b id="n">0</b></div>
+<div id="placar"><span id="placarTxt"></span> <b id="n">0</b></div>
+
+<div class="tela" id="telaIdioma">
+  <div class="box">
+    <div class="emoji">🌎</div>
+    <h1>Idioma · Language</h1>
+    <div class="idiomas">
+      <button type="button" data-l="pt"><b>🇧🇷</b>Português</button>
+      <button type="button" data-l="es"><b>🇪🇸</b>Español</button>
+      <button type="button" data-l="en"><b>🇺🇸</b>English</button>
+      <button type="button" data-l="cl"><b>🇨🇱</b>Chileno</button>
+    </div>
+  </div>
+</div>
 
 <div class="tela" id="telaNome">
   <div class="box">
     <div class="emoji">👋</div>
-    <h1>Oi! Qual é o seu nome?</h1>
+    <h1 id="tNome"></h1>
     <div id="formNome">
-      <input id="nome" maxlength="30" placeholder="Seu nome" aria-label="Seu nome" autocomplete="off" enterkeyhint="go">
-      <button type="button" id="entrar">Entrar ➜</button>
+      <input id="nome" maxlength="30"  autocomplete="off" enterkeyhint="go">
+      <button type="button" id="entrar"></button>
     </div>
   </div>
 </div>
@@ -106,7 +142,7 @@ body.video #fx{z-index:9}
     <div id="papoEmoji">👋</div>
     <p id="papoTxt"></p>
   </div>
-  <div id="pular">toque na tela pra continuar</div>
+  <div id="pular"></div>
 </div>
 
 <div class="tela" id="inicio">
@@ -123,7 +159,7 @@ body.video #fx{z-index:9}
 
 <div class="tela" id="suspense">
   <div id="carrega">
-    <p id="frase">Preparando a coisa mais legal do mundo...</p>
+    <p id="frase"></p>
     <div class="barra"><i id="barra"></i></div>
     <div id="pct">0%</div>
   </div>
@@ -132,9 +168,22 @@ body.video #fx{z-index:9}
 
 <div id="rick">
   <div id="yt"></div>
-  <div id="rickrolled">VOCÊ FOI RICKROLLADO! 🕺</div>
-  <button id="som">🔊 Ligar o som</button>
-  <button id="denovo">↺ De novo</button>
+  <div id="rickrolled"></div>
+  <div class="acoes">
+    <button id="denovo"></button>
+    <button id="compartilhar"></button>
+    <button id="som"></button>
+  </div>
+</div>
+
+<div id="painelShare" role="dialog" aria-modal="true" aria-labelledby="shTitulo">
+  <div class="folha">
+    <h3 id="shTitulo"></h3>
+    <a id="shWhats" target="_blank" rel="noopener">WhatsApp</a>
+    <a id="shTelegram" target="_blank" rel="noopener">Telegram</a>
+    <button id="shCopiar"></button>
+    <button id="shFechar"></button>
+  </div>
 </div>
 
 <script>
@@ -142,6 +191,93 @@ body.video #fx{z-index:9}
   const $ = id => document.getElementById(id);
   const sim = $('sim'), nao = $('nao'), msg = $('msg'), emoji = $('emoji');
   const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- idiomas ---------- */
+  const IDIOMAS = {
+    pt: {
+      lang: 'pt-BR', nome: 'Oi! Qual é o seu nome?', ph: 'Seu nome', vazio: 'Escreve seu nome aqui 👆', entrar: 'Entrar ➜', pular: 'toque na tela pra continuar',
+      papo: n => [['👋', `Olá, ${n}!`], ['😍', `Que nome lindo, hein, ${n}!`], ['🌎', 'Bem-vindo ao site mais incrível da internet'],
+        ['✨', 'Aqui só entra gente muito especial'], ['🚀', 'Cientistas da NASA estudaram 47 anos pra fazer esse site'],
+        ['🍪', 'Ele custou 3 bilhões de reais e 2 pacotes de bolacha'], ['🦖', 'Até os dinossauros queriam ver esse site (mas morreram antes)'],
+        ['✅', `${n}, seu nome foi aprovado pelo Conselho Mundial das Coisas Legais`], ['🤫', 'Só uma perguntinha antes...'], ['😮‍💨', 'Respira fundo...']],
+      pergunta: 'Você quer ver uma coisa legal?', sim: 'Sim', nao: 'Não', placar: 'Tentativas de clicar no Não:',
+      frases: ['Ué, cadê o Não? 😜','Muito lento! 🐢','Tenta de novo! 😂','Quase! 🤏','O Não tá de férias 🏖️','Desiste, aperta o Sim 😎',
+        'Hehehe 🏃‍♂️','Nem a pau! 🙅','Você é teimoso, hein? 🙄','Ele multiplicou! 😱','Para de tentar! 🛑','Aperta o Sim logo! 🟢'],
+      textosNao: ['Não','Nãoo','Nem pensar','Nunca!','Tem certeza?','Pega eu!','Nã','N'],
+      todosSim: 'Agora todos são Sim! 😈',
+      carrega: ['Preparando a coisa mais legal do mundo...','Carregando legalzice... 😎','Chamando os especialistas em coisa legal...','Quase lá... 🤫'],
+      espera: ['Alimentando os hamsters do servidor 🐹','Contando até o infinito... 🔢','Esquentando os motores 🔥','Polindo os pixels ✨','Acordando o computador 😴','Só mais um pouquinho... 🤏'],
+      rick: 'VOCÊ FOI RICKROLLADO! 🕺', som: '🔊 Ligar o som', denovo: '↺ De novo',
+      share: '📤 Pega teus amigos!', shareTit: 'Mandar pros amigos', shareTxt: 'Olha que coisa legal! 😍🤩', copiar: '🔗 Copiar link', copiado: '✅ Link copiado!', fechar: 'Fechar'
+    },
+    es: {
+      lang: 'es', nome: '¡Hola! ¿Cómo te llamas?', ph: 'Tu nombre', vazio: 'Escribe tu nombre aquí 👆', entrar: 'Entrar ➜', pular: 'toca la pantalla para seguir',
+      papo: n => [['👋', `¡Hola, ${n}!`], ['😍', `¡Qué nombre tan bonito, ${n}!`], ['🌎', 'Bienvenido a la web más increíble de internet'],
+        ['✨', 'Aquí solo entra gente muy especial'], ['🚀', 'Científicos de la NASA estudiaron 47 años para hacer esta web'],
+        ['🍪', 'Costó 3 mil millones de euros y 2 paquetes de galletas'], ['🦖', 'Hasta los dinosaurios querían ver esta web (pero se murieron antes)'],
+        ['✅', `${n}, tu nombre fue aprobado por el Consejo Mundial de las Cosas Geniales`], ['🤫', 'Solo una preguntita antes...'], ['😮‍💨', 'Respira hondo...']],
+      pergunta: '¿Quieres ver algo genial?', sim: 'Sí', nao: 'No', placar: 'Intentos de pulsar el No:',
+      frases: ['¿Y el No? 😜','¡Muy lento! 🐢','¡Inténtalo otra vez! 😂','¡Casi! 🤏','El No se fue de vacaciones 🏖️','Ríndete, pulsa el Sí 😎',
+        'Jejeje 🏃‍♂️','¡Ni loco! 🙅','Qué cabezota eres 🙄','¡Se multiplicó! 😱','¡Deja de intentarlo! 🛑','¡Pulsa el Sí ya! 🟢'],
+      textosNao: ['No','Noo','Ni de broma','¡Nunca!','¿Seguro?','¡Atrápame!','N','N'],
+      todosSim: '¡Ahora todos son Sí! 😈',
+      carrega: ['Preparando la cosa más genial del mundo...','Cargando genialidad... 😎','Llamando a los expertos en cosas geniales...','Ya casi... 🤫'],
+      espera: ['Alimentando a los hámsters del servidor 🐹','Contando hasta el infinito... 🔢','Calentando motores 🔥','Puliendo los píxeles ✨','Despertando al ordenador 😴','Solo un poquito más... 🤏'],
+      rick: '¡TE HAN RICKROLLEADO! 🕺', som: '🔊 Activar sonido', denovo: '↺ Otra vez',
+      share: '📤 ¡Engaña a tus amigos!', shareTit: 'Enviar a tus amigos', shareTxt: '¡Mira qué cosa más genial! 😍🤩', copiar: '🔗 Copiar enlace', copiado: '✅ ¡Enlace copiado!', fechar: 'Cerrar'
+    },
+    en: {
+      lang: 'en', nome: 'Hi! What\'s your name?', ph: 'Your name', vazio: 'Type your name here 👆', entrar: 'Enter ➜', pular: 'tap the screen to continue',
+      papo: n => [['👋', `Hello, ${n}!`], ['😍', `What a beautiful name, ${n}!`], ['🌎', 'Welcome to the most amazing website on the internet'],
+        ['✨', 'Only very special people get in here'], ['🚀', 'NASA scientists studied for 47 years to build this website'],
+        ['🍪', 'It cost 3 billion dollars and 2 packs of cookies'], ['🦖', 'Even the dinosaurs wanted to see this website (but they died first)'],
+        ['✅', `${n}, your name was approved by the World Council of Cool Things`], ['🤫', 'Just one tiny question first...'], ['😮‍💨', 'Take a deep breath...']],
+      pergunta: 'Do you want to see something cool?', sim: 'Yes', nao: 'No', placar: 'Tries to click No:',
+      frases: ['Huh, where did No go? 😜','Too slow! 🐢','Try again! 😂','Almost! 🤏','No is on vacation 🏖️','Give up, click Yes 😎',
+        'Hehehe 🏃‍♂️','No way! 🙅','You\'re stubborn, huh? 🙄','It multiplied! 😱','Stop trying! 🛑','Just click Yes! 🟢'],
+      textosNao: ['No','Noo','No way','Never!','Are you sure?','Catch me!','N','N'],
+      todosSim: 'Now they\'re all Yes! 😈',
+      carrega: ['Preparing the coolest thing in the world...','Loading coolness... 😎','Calling the cool-stuff experts...','Almost there... 🤫'],
+      espera: ['Feeding the server hamsters 🐹','Counting to infinity... 🔢','Warming up the engines 🔥','Polishing the pixels ✨','Waking up the computer 😴','Just a little bit more... 🤏'],
+      rick: 'YOU GOT RICKROLLED! 🕺', som: '🔊 Turn on sound', denovo: '↺ Again',
+      share: '📤 Prank your friends!', shareTit: 'Send to your friends', shareTxt: 'Look at this cool thing! 😍🤩', copiar: '🔗 Copy link', copiado: '✅ Link copied!', fechar: 'Close'
+    },
+    cl: {
+      lang: 'es-CL', nome: '¡Hola po! ¿Cómo te llamai?', ph: 'Tu nombre', vazio: 'Escribe tu nombre aquí po 👆', entrar: 'Entrar ➜', pular: 'toca la pantalla pa\' seguir',
+      papo: n => [['👋', `¡Hola po, ${n}!`], ['😍', `¡Qué nombre más bacán, ${n}!`], ['🌎', 'Bienvenido al sitio más filete de internet'],
+        ['✨', 'Aquí solo entra gente muy especial, ¿cachai?'], ['🚀', 'Los científicos de la NASA estudiaron 47 años pa\' hacer este sitio'],
+        ['🍪', 'Costó 3 mil millones de lucas y 2 paquetes de galletas'], ['🦖', 'Hasta los dinosaurios querían ver este sitio (pero se murieron antes po)'],
+        ['✅', `${n}, tu nombre fue aprobado por el Consejo Mundial de las Cosas Bacanes`], ['🤫', 'Solo una preguntita antes...'], ['😮‍💨', 'Respira hondo po...']],
+      pergunta: '¿Querí ver algo bacán?', sim: 'Sí', nao: 'No', placar: 'Intentos de apretar el No:',
+      frases: ['¿Y el No? ¿Dónde está? 😜','¡Muy lento po! 🐢','¡Intenta otra vez! 😂','¡Casi! 🤏','El No se fue de vacaciones a Viña 🏖️','Ya po, aprieta el Sí 😎',
+        'Jajaja 🏃‍♂️','¡Ni ahí! 🙅','Erí más porfiado, ¿cachai? 🙄','¡Se multiplicó! 😱','¡Para de intentar po! 🛑','¡Aprieta el Sí altiro! 🟢'],
+      textosNao: ['No','Noo','Ni ahí','¡Nunca po!','¿Seguro?','¡Atrápame!','N','N'],
+      todosSim: '¡Ahora todos son Sí po! 😈',
+      carrega: ['Preparando la cuestión más bacán del mundo...','Cargando bacanería... 😎','Llamando a los expertos en cosas filete...','Ya casi po... 🤫'],
+      espera: ['Dándole comida a los hámsters del servidor 🐹','Contando hasta el infinito po... 🔢','Calentando los motores 🔥','Puliendo los píxeles ✨','Despertando al compu 😴','Un ratito más po... 🤏'],
+      rick: '¡TE RICKROLLEARON PO! 🕺', som: '🔊 Prender el sonido', denovo: '↺ Otra vez',
+      share: '📤 ¡Cacha a tus amigos!', shareTit: 'Mándaselo a tus amigos', shareTxt: '¡Mira esta cuestión bacán po! 😍🤩', copiar: '🔗 Copiar link', copiado: '✅ ¡Link copiado!', fechar: 'Cerrar'
+    }
+  };
+  let L = IDIOMAS.pt;
+  function usaIdioma(cod){
+    L = IDIOMAS[cod] || IDIOMAS.pt;
+    document.documentElement.lang = L.lang;
+    $('tNome').textContent = L.nome;
+    $('nome').placeholder = L.ph; $('nome').setAttribute('aria-label', L.ph);
+    $('entrar').textContent = L.entrar;
+    $('pular').textContent = L.pular;
+    $('placarTxt').textContent = L.placar;
+    sim.textContent = L.sim; nao.textContent = L.nao;
+    $('frase').textContent = L.carrega[0];
+    $('rickrolled').textContent = L.rick;
+    $('som').textContent = L.som;
+    $('denovo').textContent = L.denovo;
+    $('compartilhar').textContent = L.share;
+    $('shTitulo').textContent = L.shareTit;
+    $('shCopiar').textContent = L.copiar;
+    $('shFechar').textContent = L.fechar;
+  }
 
   /* ---------- sons (feitos no navegador) ---------- */
   let ac;
@@ -159,7 +295,6 @@ body.video #fx{z-index:9}
   const bip = f => tom(f, f, .12, 'square', .1);
 
   /* ---------- texto digitando ---------- */
-  const PERGUNTA = 'Você quer ver uma coisa legal?';
   let i = 0;
   function comecaPergunta(){
     $('telaPapo').style.display = 'none';
@@ -167,8 +302,8 @@ body.video #fx{z-index:9}
     digita();
   }
   function digita(){
-    $('txt').textContent = PERGUNTA.slice(0, i);
-    if (i++ < PERGUNTA.length) setTimeout(digita, reduz ? 0 : 55);
+    $('txt').textContent = L.pergunta.slice(0, i);
+    if (i++ < L.pergunta.length) setTimeout(digita, reduz ? 0 : 55);
     else $('btns').classList.add('on');
   }
 
@@ -179,7 +314,7 @@ body.video #fx{z-index:9}
   const gravar = (k, v) => { try{ localStorage.setItem(k, v); }catch(e){} };
   let meuId = ler('coisa-legal-id', '');
   if (!meuId){ meuId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8); gravar('coisa-legal-id', meuId); }
-  const ficha = {nome: '', entrou: 0, caiu: false, quando: 0, tentativas: 0};
+  const ficha = {nome: '', idioma: 'pt', entrou: 0, caiu: false, quando: 0, tentativas: 0};
   const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
   async function salvar(){
     try{
@@ -197,9 +332,18 @@ body.video #fx{z-index:9}
 
   /* ---------- nome e papo furado ---------- */
   $('nome').value = ler('coisa-legal-nome', '');
+  document.querySelectorAll('.idiomas button').forEach(b => b.addEventListener('click', () => {
+    ficha.idioma = b.dataset.l;
+    usaIdioma(b.dataset.l);
+    gravar('coisa-legal-idioma', b.dataset.l);
+    bip(700);
+    $('telaIdioma').style.display = 'none';
+    $('telaNome').style.display = 'flex';
+    $('nome').focus();
+  }));
   function entrar(){
     const n = $('nome').value.trim().replace(/\s+/g, ' ').slice(0, 30);
-    if (!n){ $('nome').focus(); $('nome').placeholder = 'Escreve seu nome aqui 👆'; return; }
+    if (!n){ $('nome').focus(); $('nome').placeholder = L.vazio; return; }
     $('nome').blur();
     gravar('coisa-legal-nome', n);
     ficha.nome = n; ficha.entrou = Date.now();
@@ -212,18 +356,7 @@ body.video #fx{z-index:9}
   $('nome').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); entrar(); } });
 
   function papo(n){
-    const P = [
-      ['👋', `Olá, ${n}!`],
-      ['😍', `Que nome lindo, hein, ${n}!`],
-      ['🌎', 'Bem-vindo ao site mais incrível da internet'],
-      ['✨', 'Aqui só entra gente muito especial'],
-      ['🚀', 'Cientistas da NASA estudaram 47 anos pra fazer esse site'],
-      ['🍪', 'Ele custou 3 bilhões de reais e 2 pacotes de bolacha'],
-      ['🦖', 'Até os dinossauros queriam ver esse site (mas morreram antes)'],
-      ['✅', `${n}, seu nome foi aprovado pelo Conselho Mundial das Coisas Legais`],
-      ['🤫', 'Só uma perguntinha antes...'],
-      ['😮‍💨', 'Respira fundo...']
-    ];
+    const P = L.papo(n);
     const tela = $('telaPapo'), em = $('papoEmoji'), tx = $('papoTxt');
     tela.style.display = 'flex';
     let k = 0, timer;
@@ -274,9 +407,6 @@ body.video #fx{z-index:9}
   requestAnimationFrame(quadro);
 
   /* ---------- o Não que foge ---------- */
-  const FRASES = ['Ué, cadê o Não? 😜','Muito lento! 🐢','Tenta de novo! 😂','Quase! 🤏','O Não tá de férias 🏖️','Desiste, aperta o Sim 😎',
-    'Hehehe 🏃‍♂️','Nem a pau! 🙅','Você é teimoso, hein? 🙄','Ele multiplicou! 😱','Para de tentar! 🛑','Aperta o Sim logo! 🟢'];
-  const TEXTOS_NAO = ['Não','Nãoo','Nem pensar','Nunca!','Tem certeza?','Pega eu!','Nã','N'];
   const EMOJIS = ['🤩','😏','😜','🤭','😂','🙃','😎','🤪'];
   let fugas = 0;
   const clones = [];
@@ -315,14 +445,14 @@ body.video #fx{z-index:9}
 
     fugas++;
     $('n').textContent = fugas; $('placar').classList.add('on');
-    msg.textContent = FRASES[(fugas - 1) % FRASES.length];
+    msg.textContent = L.frases[(fugas - 1) % L.frases.length];
     msg.classList.add('pop'); setTimeout(() => msg.classList.remove('pop'), 150);
     emoji.textContent = EMOJIS[fugas % EMOJIS.length];
 
     // o Não vai encolhendo e mudando de nome
     if (b === nao){
       nao.style.transform = `scale(${Math.max(1 - fugas * .05, .55)})`;
-      nao.textContent = TEXTOS_NAO[Math.min(Math.floor(fugas / 2), TEXTOS_NAO.length - 1)];
+      nao.textContent = L.textosNao[Math.min(Math.floor(fugas / 2), L.textosNao.length - 1)];
     }
     // o Sim vai crescendo e brilhando
     sim.style.transform = `scale(${Math.min(1 + fugas * .07, 1.9)})`;
@@ -335,7 +465,7 @@ body.video #fx{z-index:9}
 
   function clona(r){
     const c = document.createElement('button');
-    c.className = 'nao solto'; c.textContent = 'Não';
+    c.className = 'nao solto'; c.textContent = L.nao;
     c.style.left = r.left + 'px'; c.style.top = r.top + 'px';
     c.style.transform = 'scale(.7)';
     document.body.appendChild(c);
@@ -344,8 +474,8 @@ body.video #fx{z-index:9}
   }
 
   function viraTudoSim(){
-    [nao, ...clones].forEach(b => { b.textContent = 'Sim'; b.classList.add('virou'); b.style.transform = 'scale(1)'; });
-    msg.textContent = 'Agora todos são Sim! 😈';
+    [nao, ...clones].forEach(b => { b.textContent = L.sim; b.classList.add('virou'); b.style.transform = 'scale(1)'; });
+    msg.textContent = L.todosSim;
     tom(300, 1200, .4, 'sawtooth', .1);
   }
 
@@ -366,7 +496,7 @@ body.video #fx{z-index:9}
       videoId: VIDEO,
       playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0, rel: 0, playsinline: 1, iv_load_policy: 3, modestbranding: 1 },
       events: {
-        onReady: () => { pronto = true; },
+        onReady: () => { pronto = true; if (foi && !revelado) tocaEscondido(); },
         onStateChange: e => { if (e.data === YT.PlayerState.ENDED) player.playVideo(); }
       }
     });
@@ -376,7 +506,14 @@ body.video #fx{z-index:9}
   document.head.appendChild(api);
 
   /* ---------- clicou em Sim ---------- */
-  let foi = false;
+  let foi = false, revelado = false;
+  // o vídeo (e o anúncio, se tiver) toca escondido e com volume zero enquanto aparece o suspense
+  function tocaEscondido(){ try{ player.setVolume(0); player.unMute(); player.playVideo(); }catch(err){} }
+  // o anúncio acabou quando o vídeo de verdade (3min32) está rodando
+  function videoComecou(){
+    try{ return player.getPlayerState() === YT.PlayerState.PLAYING && player.getCurrentTime() > 0.4 && player.getDuration() > 200; }
+    catch(err){ return false; }
+  }
   function vai(e){
     if (foi) return; foi = true;
     ficha.caiu = true; ficha.quando = Date.now(); ficha.tentativas = fugas; salvar();
@@ -384,7 +521,7 @@ body.video #fx{z-index:9}
     confete(r.left + r.width/2, r.top + r.height/2, 160, 16);
     tom(400, 1600, .35, 'triangle', .2);
     // já dá o play agora (no clique) com volume zero, pro navegador deixar tocar com som depois
-    if (pronto){ try{ player.setVolume(0); player.unMute(); player.playVideo(); }catch(err){} }
+    if (pronto) tocaEscondido();
     setTimeout(suspense, 700);
   }
   sim.addEventListener('click', vai);
@@ -394,13 +531,18 @@ body.video #fx{z-index:9}
     [nao, ...clones].forEach(b => b.style.display = 'none');
     $('placar').classList.remove('on');
     $('suspense').classList.add('on');
-    const FR = ['Preparando a coisa mais legal do mundo...','Carregando legalzice... 😎','Chamando os especialistas em coisa legal...','Quase lá... 🤫'];
-    let p = 0;
+    const FR = L.carrega, inicio = Date.now();
+    let p = 0, esperando = 0;
     const tick = setInterval(() => {
-      p = Math.min(100, p + Math.random() * 7 + 2);
+      const passou = Date.now() - inicio;
+      // segura em 99% enquanto o anúncio passa (no máximo 40 segundos)
+      const pode = !pronto || videoComecou() || passou > 40000;
+      const teto = pode ? 100 : 99;
+      p = Math.min(teto, p + (p < 90 ? Math.random() * 7 + 2 : Math.random() * .25));
       $('barra').style.width = p + '%';
       $('pct').textContent = Math.floor(p) + '%';
-      $('frase').textContent = FR[Math.min(Math.floor(p / 26), FR.length - 1)];
+      if (p < 90) $('frase').textContent = FR[Math.min(Math.floor(p / 26), FR.length - 1)];
+      else if (!pode){ esperando++; $('frase').textContent = L.espera[Math.floor(esperando / 30) % L.espera.length]; }
       if (p >= 100){ clearInterval(tick); setTimeout(contagem, 300); }
     }, 90);
   }
@@ -424,13 +566,10 @@ body.video #fx{z-index:9}
     setInterval(() => confete(Math.random()*innerWidth, -10, 25, 6), 1500);
     confete(innerWidth/2, innerHeight/3, 220, 18);
     if (pronto){
+      revelado = true;
       try{ player.seekTo(0, true); player.unMute(); player.setVolume(100); player.playVideo(); }catch(err){}
-      setTimeout(() => {
-        try{
-          if (player.getPlayerState() !== YT.PlayerState.PLAYING){ player.mute(); player.playVideo(); $('som').classList.add('on'); }
-          else if (player.isMuted()) $('som').classList.add('on');
-        }catch(err){}
-      }, 1200);
+      // o botão de som só aparece se o som estiver desligado de verdade
+      setTimeout(() => { try{ if (player.isMuted() || player.getVolume() === 0) $('som').classList.add('on'); }catch(err){} }, 1500);
     } else {
       $('yt').outerHTML = '<iframe src="https://www.youtube.com/embed/' + VIDEO + '?autoplay=1&controls=0&rel=0&playsinline=1&loop=1&playlist=' + VIDEO + '" title="Coisa legal" style="pointer-events:auto" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media"></iframe>';
     }
@@ -439,6 +578,29 @@ body.video #fx{z-index:9}
 
   $('som').addEventListener('click', () => { try{ player.unMute(); player.setVolume(100); player.playVideo(); }catch(e){} $('som').classList.remove('on'); });
   $('denovo').addEventListener('click', () => location.reload());
+
+  /* ---------- compartilhar ---------- */
+  const LINK = 'https://willianwiab.github.io/contas-wen/coisa-legal/';
+  $('compartilhar').addEventListener('click', async () => {
+    const texto = L.shareTxt;
+    if (navigator.share){
+      try{ await navigator.share({title: L.pergunta, text: texto, url: LINK}); return; }
+      catch(e){ if (e && e.name === 'AbortError') return; }
+    }
+    $('shWhats').href = 'https://wa.me/?text=' + encodeURIComponent(texto + ' ' + LINK);
+    $('shTelegram').href = 'https://t.me/share/url?url=' + encodeURIComponent(LINK) + '&text=' + encodeURIComponent(texto);
+    $('shCopiar').textContent = L.copiar;
+    $('painelShare').classList.add('on');
+  });
+  $('shCopiar').addEventListener('click', async () => {
+    let ok = false;
+    try{ await navigator.clipboard.writeText(LINK); ok = true; }catch(e){
+      try{ const t = document.createElement('textarea'); t.value = LINK; document.body.appendChild(t); t.select(); ok = document.execCommand('copy'); t.remove(); }catch(e2){}
+    }
+    $('shCopiar').textContent = ok ? L.copiado : LINK;
+  });
+  $('shFechar').addEventListener('click', () => $('painelShare').classList.remove('on'));
+  $('painelShare').addEventListener('click', e => { if (e.target.id === 'painelShare') $('painelShare').classList.remove('on'); });
 })();
 </script>
 </body>
