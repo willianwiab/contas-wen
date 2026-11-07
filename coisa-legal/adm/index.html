@@ -22,6 +22,9 @@ h1 span{color:var(--ouro)}
 .stat span{color:var(--muted);font-size:.9rem;font-weight:600}
 .stat.caiu b{color:var(--sim)}
 .stat.nao b{color:var(--nao)}
+.mandar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+.mandar .btn{font-weight:800;border-radius:12px;padding:8px 14px;color:#fff;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+.verde{background:#22c55e!important}.zap{background:#25d366}
 .barra{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:22px 0 10px;flex-wrap:wrap}
 .barra h2{margin:0;font-size:1.3rem}
 button{font:inherit;font-weight:800;border:0;border-radius:12px;padding:8px 14px;cursor:pointer;color:#fff;background:#262626;min-height:44px}
@@ -44,6 +47,11 @@ li .det{color:var(--muted);font-size:.88rem;font-weight:600}
 <main>
   <h1>👑 Jojo <span>ADM</span></h1>
   <p class="sub">Quem caiu na Coisa Legal</p>
+  <div class="mandar" id="mandar" hidden>
+    <button id="admShare" class="verde">📤 Mandar pros amigos</button>
+    <a id="admWhats" class="btn zap" target="_blank" rel="noopener">WhatsApp</a>
+    <button id="admCopiar">🔗 Copiar link</button>
+  </div>
 
   <div id="sem" class="aviso" hidden>
     🔒 Essa página só abre pelo <b>link secreto do Jojo ADM</b>.<br>Abre ele de novo uma vez neste aparelho.
@@ -136,6 +144,19 @@ li .det{color:var(--muted);font-size:.88rem;font-weight:600}
       $('status').textContent = '⚠️ Não consegui buscar a lista. Confere a internet e aperta Atualizar.';
     }
   }
+
+  // compartilhar: manda SEMPRE o link da pegadinha, nunca o link secreto do ADM
+  const LINK = 'https://willianwiab.github.io/contas-wen/coisa-legal/';
+  const TEXTO = 'Olha que coisa legal! 😍🤩';
+  $('mandar').hidden = false;
+  $('admWhats').href = 'https://wa.me/?text=' + encodeURIComponent(TEXTO + ' ' + LINK);
+  if (!navigator.share) $('admShare').hidden = true;
+  $('admShare').onclick = () => navigator.share({title: 'Você quer ver uma coisa legal?', text: TEXTO, url: LINK}).catch(() => {});
+  $('admCopiar').onclick = async () => {
+    try{ await navigator.clipboard.writeText(LINK); $('admCopiar').textContent = '✅ Copiado!'; }
+    catch(e){ $('admCopiar').textContent = LINK; }
+    setTimeout(() => $('admCopiar').textContent = '🔗 Copiar link', 2500);
+  };
 
   $('atualizar').onclick = carregar;
   $('limpar').onclick = async () => {
