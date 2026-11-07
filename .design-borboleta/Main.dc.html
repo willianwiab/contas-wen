@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,700&family=Karla:wght@400;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #e8c27a; } a:hover { color: #f6ddab; }
+  </style>
+</helmet>
+<div style="width: 794px; height: 1123px; background: #0f1220; position: relative; overflow: hidden; font-family: Karla, 'Helvetica Neue', sans-serif;">
+
+  <div style="position: absolute; left: 50%; top: 46%; width: 900px; height: 900px; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(232,194,122,0.13) 0%, rgba(232,194,122,0.04) 42%, rgba(15,18,32,0) 68%);"></div>
+
+  <div style="position: absolute; inset: 34px; border: 1.5px solid rgba(232,194,122,0.38);"></div>
+
+  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 78px 74px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.34em; color: #e8c27a; text-transform: uppercase;">Atlas do Jardim</div>
+      <div style="width: 44px; height: 1.5px; background: rgba(232,194,122,0.55);"></div>
+    </div>
+
+    <svg viewBox="0 0 400 370" width="616" height="570" role="img" aria-label="Borboleta em vitral">
+      <defs>
+        <clipPath id="asas">
+          <path d="M200 152C206 96 244 44 300 30C352 17 388 52 384 104C380 156 330 190 272 196C234 200 206 182 200 152Z"/>
+          <path d="M200 164C218 180 252 194 286 214C322 235 332 280 302 310C270 342 220 326 206 280C199 256 197 204 200 164Z"/>
+        </clipPath>
+      </defs>
+      <g id="metade">
+        <g clip-path="url(#asas)">
+          <ellipse cx="200" cy="175" rx="215" ry="180" fill="#5b3a8c"/>
+          <ellipse cx="200" cy="175" rx="172" ry="144" fill="#1b3a6b"/>
+          <ellipse cx="200" cy="175" rx="132" ry="110" fill="#1e7a7a"/>
+          <ellipse cx="200" cy="175" rx="94" ry="78" fill="#d1523f"/>
+          <ellipse cx="200" cy="175" rx="56" ry="47" fill="#e0a02e"/>
+          <g stroke="#0b0d14" stroke-width="7" fill="none" stroke-linecap="round">
+            <path d="M200 155L300 42"/>
+            <path d="M200 155L346 58"/>
+            <path d="M200 155L374 94"/>
+            <path d="M200 155L368 134"/>
+            <path d="M200 155L330 172"/>
+            <path d="M200 155L280 190"/>
+            <path d="M200 172L272 214"/>
+            <path d="M200 172L308 244"/>
+            <path d="M200 172L314 288"/>
+            <path d="M200 172L280 320"/>
+            <path d="M200 172L232 320"/>
+          </g>
+        </g>
+        <g fill="none" stroke="#0b0d14" stroke-width="9" stroke-linejoin="round">
+          <path d="M200 152C206 96 244 44 300 30C352 17 388 52 384 104C380 156 330 190 272 196C234 200 206 182 200 152Z"/>
+          <path d="M200 164C218 180 252 194 286 214C322 235 332 280 302 310C270 342 220 326 206 280C199 256 197 204 200 164Z"/>
+        </g>
+        <g fill="#e8c27a">
+          <circle cx="330" cy="70" r="7"/>
+          <circle cx="357" cy="106" r="5"/>
+          <circle cx="296" cy="274" r="6"/>
+        </g>
+      </g>
+      <use href="#metade" transform="translate(400,0) scale(-1,1)"/>
+      <path d="M200 100C209 100 214 118 214 150C214 200 210 268 200 300C190 268 186 200 186 150C186 118 191 100 200 100Z" fill="#0b0d14"/>
+      <circle cx="200" cy="96" r="12" fill="#0b0d14"/>
+      <g stroke="#0b0d14" stroke-width="5" fill="none" stroke-linecap="round">
+        <path d="M204 88C217 66 239 52 263 46"/>
+        <path d="M196 88C183 66 161 52 137 46"/>
+      </g>
+      <circle cx="265" cy="45" r="6" fill="#e8c27a"/>
+      <circle cx="135" cy="45" r="6" fill="#e8c27a"/>
+    </svg>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 18px;">
+      <div style="font-family: 'Bodoni Moda', Didot, 'Times New Roman', serif; font-size: 92px; line-height: 0.9; letter-spacing: 0.06em; color: #f4ece0;">Borboleta</div>
+      <div style="font-size: 16px; letter-spacing: 0.02em; color: rgba(244,236,224,0.72); text-wrap: pretty;">Asas de vitral, voo de papel.</div>
+      <div style="width: 120px; height: 1.5px; background: rgba(232,194,122,0.4); margin-top: 6px;"></div>
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.28em; color: rgba(232,194,122,0.85); text-transform: uppercase;">A4 &middot; 210 &times; 297 mm</div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
