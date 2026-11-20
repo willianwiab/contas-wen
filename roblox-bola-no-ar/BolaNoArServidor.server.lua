@@ -28,6 +28,14 @@ local CONFIG = {
 	ANTIGRAVIDADE_MINIMA = 0.35,  -- a cada toque ela fica mais rápida, até aqui
 	SEGUNDOS_PRA_RECOMECAR = 3,
 	ALTURA_DAS_ARENAS = 300,      -- as arenas ficam flutuando no céu
+
+	-- Habilidades (segundos de recarga depois de usar)
+	TEMPO_ARRASTO = 3,            -- quanto tempo dá pra segurar a bola
+	RECARGA_ARRASTAR = 10,
+	TEMPO_LENTA = 5,              -- quanto tempo dura a câmera lenta
+	RECARGA_LENTA = 20,
+	RECARGA_SUPER_BATIDA = 12,
+	ALCANCE_SUPER_BATIDA = 40,    -- a super batida pega a bola de longe
 }
 
 ---------------------------------------------------------------------
@@ -49,6 +57,9 @@ local Bater = criarRemote("RemoteEvent", "Bater")            -- jogador clicou p
 local Sair = criarRemote("RemoteEvent", "Sair")              -- jogador voltou pro menu
 local Atualizar = criarRemote("RemoteEvent", "Atualizar")    -- servidor avisa o placar
 local PegarRanking = criarRemote("RemoteFunction", "PegarRanking")
+local Habilidade = criarRemote("RemoteEvent", "Habilidade")            -- jogador usou uma habilidade
+local Recarga = criarRemote("RemoteEvent", "Recarga")                  -- servidor avisa o tempo de recarga
+local ArrastarAlvo = criarRemote("UnreliableRemoteEvent", "ArrastarAlvo") -- pra onde o jogador está arrastando
 
 local jogandoOnline = Instance.new("IntValue")
 jogandoOnline.Name = "JogandoOnline"
@@ -224,6 +235,8 @@ local function criarArena(nome, centro, corDoChao, online)
 		ultimoToque = 0,
 		online = online,
 		rodada = 0,
+		arrasto = nil,   -- { player, alvo, ate } enquanto alguém arrasta a bola
+		lentaAte = 0,    -- até quando dura a câmera lenta
 	}
 	todasArenas[arena] = true
 	return arena
@@ -243,6 +256,7 @@ local function avisar(arena, dados)
 	dados.toques = dados.toques or arena.toques
 	dados.modo = arena.online and "online" or "solo"
 	dados.jogadores = #arena.jogadores
+	dados.bola = arena.bola
 	for _, p in ipairs(arena.jogadores) do
 		Atualizar:FireClient(p, dados)
 	end
@@ -260,13 +274,35 @@ local function ajustarAntigravidade(arena)
 	end
 	-- Quanto mais toques, mais rápido a bola cai
 	local fator = math.max(CONFIG.ANTIGRAVIDADE_MINIMA, CONFIG.ANTIGRAVIDADE_INICIAL - arena.toques * 0.006)
+	if os.clock() < arena.lentaAte then
+		fator = 0.92 -- câmera lenta: a bola quase flutua
+	end
 	local forca = bola:FindFirstChild("Antigravidade")
 	if forca then
 		forca.Force = Vector3.new(0, bola:GetMass() * workspace.Gravity * fator, 0)
 	end
 end
 
+local function pararArrasto(arena)
+	local arrasto = arena.arrasto
+	if not arrasto then
+		return
+	end
+	arena.arrasto = nil
+	if arena.bola then
+		local destaque = arena.bola:FindFirstChild("Arrastando")
+		if destaque then
+			destaque:Destroy()
+		end
+	end
+	if arrasto.player.Parent then
+		Recarga:FireClient(arrasto.player, "arrastarFim", 0)
+	end
+end
+
 local function criarBola(arena)
+	pararArrasto(arena)
+	arena.lentaAte = 0
 	if arena.bola then
 		arena.bola:Destroy()
 	end
@@ -336,6 +372,7 @@ local function bolaCaiu(arena)
 		return
 	end
 	arena.ativa = false
+	pararArrasto(arena)
 
 	if arena.bola then
 		arena.bola.Anchored = true
@@ -361,7 +398,7 @@ local function bolaCaiu(arena)
 	end)
 end
 
-local function baterNaBola(arena, player)
+local function baterNaBola(arena, player, forte)
 	local bola = arena.bola
 	if not arena.ativa or not bola then
 		return
@@ -391,7 +428,12 @@ local function baterNaBola(arena, player)
 	local proMeio = (arena.centro - bola.Position) * Vector3.new(1, 0, 1) / (CONFIG.TAMANHO_ARENA / 2)
 
 	local horizontal = (lado + bagunca + proMeio) * CONFIG.FORCA_PRO_LADO
-	bola.AssemblyLinearVelocity = Vector3.new(horizontal.X, CONFIG.FORCA_PRA_CIMA, horizontal.Z)
+	local praCima = CONFIG.FORCA_PRA_CIMA
+	if forte then
+		praCima *= 1.35
+		horizontal = proMeio * CONFIG.FORCA_PRO_LADO -- a super batida joga a bola pro meio
+	end
+	bola.AssemblyLinearVelocity = Vector3.new(horizontal.X, praCima, horizontal.Z)
 
 	arena.toques += 1
 	ajustarAntigravidade(arena)
@@ -411,7 +453,8 @@ local function baterNaBola(arena, player)
 		brilho.Color = cor
 	end
 
-	avisar(arena, { estado = "jogando", quemBateu = player.DisplayName })
+	local frase = forte and ("💥 SUPER BATIDA de " .. player.DisplayName .. "!") or (player.DisplayName .. " bateu!")
+	avisar(arena, { estado = "jogando", aviso = frase })
 end
 
 aoTocar = function(arena, bola, outra)
@@ -440,6 +483,27 @@ RunService.Heartbeat:Connect(function()
 			if arena.ativa and bola.Position.Y < topoDoChao - 3 then
 				bolaCaiu(arena)
 			end
+
+			-- Arrastando: a bola vai atrás do ponto que o jogador escolheu
+			local arrasto = arena.arrasto
+			if arrasto then
+				if not arena.ativa or os.clock() > arrasto.ate or not arrasto.player.Parent then
+					pararArrasto(arena)
+				else
+					local velocidade = (arrasto.alvo - bola.Position) * 8
+					if velocidade.Magnitude > 80 then
+						velocidade = velocidade.Unit * 80
+					end
+					bola.AssemblyLinearVelocity = velocidade
+				end
+			end
+
+			-- Acabou a câmera lenta
+			if arena.lentaAte > 0 and os.clock() > arena.lentaAte then
+				arena.lentaAte = 0
+				ajustarAntigravidade(arena)
+				avisar(arena, { estado = "jogando", aviso = "🐢 A câmera lenta acabou!" })
+			end
 		end
 	end
 end)
@@ -461,6 +525,9 @@ local function sairDaArena(player)
 		return
 	end
 	arenaDoJogador[player] = nil
+	if arena.arrasto and arena.arrasto.player == player then
+		pararArrasto(arena)
+	end
 
 	local i = table.find(arena.jogadores, player)
 	if i then
@@ -535,6 +602,106 @@ Bater.OnServerEvent:Connect(function(player)
 	end
 end)
 
+---------------------------------------------------------------------
+-- Habilidades
+---------------------------------------------------------------------
+local prontoEm = {} -- [player] = { [habilidade] = hora em que fica pronta }
+
+local function estaPronta(player, nome)
+	local tabela = prontoEm[player]
+	return not tabela or not tabela[nome] or os.clock() >= tabela[nome]
+end
+
+local function comecarRecarga(player, nome, segundos)
+	prontoEm[player] = prontoEm[player] or {}
+	prontoEm[player][nome] = os.clock() + segundos
+	Recarga:FireClient(player, nome, segundos)
+end
+
+local function recusar(player, nome, motivo)
+	Recarga:FireClient(player, nome, 0, motivo)
+end
+
+-- Deixa o ponto de arrasto sempre dentro da arena e acima do chão
+local function dentroDaArena(arena, ponto)
+	local meio = CONFIG.TAMANHO_ARENA / 2 - 3
+	local topo = arena.chao.Position.Y + 0.5
+	return Vector3.new(
+		math.clamp(ponto.X, arena.centro.X - meio, arena.centro.X + meio),
+		math.clamp(ponto.Y, topo + 4, topo + CONFIG.ALTURA_PAREDE - 3),
+		math.clamp(ponto.Z, arena.centro.Z - meio, arena.centro.Z + meio)
+	)
+end
+
+Habilidade.OnServerEvent:Connect(function(player, nome)
+	local arena = arenaDoJogador[player]
+	if not arena then
+		return
+	end
+
+	if nome == "pararArrastar" then
+		if arena.arrasto and arena.arrasto.player == player then
+			pararArrasto(arena)
+		end
+		return
+	end
+
+	if nome ~= "arrastar" and nome ~= "lenta" and nome ~= "superBatida" then
+		return
+	end
+	if not arena.ativa or not arena.bola then
+		recusar(player, nome, "Espera a bola começar!")
+		return
+	end
+	if not estaPronta(player, nome) then
+		return
+	end
+
+	local bola = arena.bola
+	local raiz = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+
+	if nome == "arrastar" then
+		if arena.arrasto then
+			recusar(player, nome, arena.arrasto.player.DisplayName .. " já está arrastando!")
+			return
+		end
+		arena.arrasto = { player = player, alvo = bola.Position, ate = os.clock() + CONFIG.TEMPO_ARRASTO }
+		local destaque = Instance.new("Highlight")
+		destaque.Name = "Arrastando"
+		destaque.FillColor = Color3.new(1, 1, 1)
+		destaque.OutlineColor = Color3.fromRGB(0, 200, 255)
+		destaque.Parent = bola
+		comecarRecarga(player, nome, CONFIG.TEMPO_ARRASTO + CONFIG.RECARGA_ARRASTAR)
+		if arena.online then
+			avisar(arena, { estado = "jogando", aviso = "🖐 " .. player.DisplayName .. " está arrastando a bola!" })
+		end
+	elseif nome == "lenta" then
+		arena.lentaAte = os.clock() + CONFIG.TEMPO_LENTA
+		ajustarAntigravidade(arena)
+		comecarRecarga(player, nome, CONFIG.RECARGA_LENTA)
+		avisar(arena, { estado = "jogando", aviso = "🐢 " .. player.DisplayName .. " ligou a CÂMERA LENTA!" })
+	elseif nome == "superBatida" then
+		if not raiz or (raiz.Position - bola.Position).Magnitude > CONFIG.ALCANCE_SUPER_BATIDA then
+			recusar(player, nome, "A bola está longe demais!")
+			return
+		end
+		arena.ultimoToque = 0 -- a super batida não espera o tempo entre toques
+		baterNaBola(arena, player, true)
+		comecarRecarga(player, nome, CONFIG.RECARGA_SUPER_BATIDA)
+	end
+end)
+
+ArrastarAlvo.OnServerEvent:Connect(function(player, alvo)
+	local arena = arenaDoJogador[player]
+	if not arena or not arena.arrasto or arena.arrasto.player ~= player then
+		return
+	end
+	if typeof(alvo) ~= "Vector3" or alvo.X ~= alvo.X or alvo.Y ~= alvo.Y or alvo.Z ~= alvo.Z then
+		return -- ignora valores estranhos
+	end
+	arena.arrasto.alvo = dentroDaArena(arena, alvo)
+end)
+
 local function jogadorChegou(player)
 	carregarRecorde(player)
 	player.CharacterAdded:Connect(function()
@@ -552,4 +719,7 @@ for _, player in ipairs(Players:GetPlayers()) do
 	task.spawn(jogadorChegou, player) -- quem entrou antes deste script começar
 end
 
-Players.PlayerRemoving:Connect(sairDaArena)
+Players.PlayerRemoving:Connect(function(player)
+	sairDaArena(player)
+	prontoEm[player] = nil
+end)

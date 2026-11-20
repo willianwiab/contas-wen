@@ -11,6 +11,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 local jogador = Players.LocalPlayer
 local pasta = ReplicatedStorage:WaitForChild("BolaNoAr")
@@ -20,6 +21,9 @@ local Sair = pasta:WaitForChild("Sair")
 local Atualizar = pasta:WaitForChild("Atualizar")
 local PegarRanking = pasta:WaitForChild("PegarRanking")
 local jogandoOnline = pasta:WaitForChild("JogandoOnline")
+local Habilidade = pasta:WaitForChild("Habilidade")
+local Recarga = pasta:WaitForChild("Recarga")
+local ArrastarAlvo = pasta:WaitForChild("ArrastarAlvo")
 
 local FONTE = Enum.Font.FredokaOne
 local AMARELO = Color3.fromRGB(255, 200, 0)
@@ -292,12 +296,12 @@ texto(paginaComoJogar, {
 	LayoutOrder = 1,
 })
 local explicacao = novo("TextLabel", {
-	Size = UDim2.new(1, 0, 0, 380),
+	Size = UDim2.new(1, 0, 0, 440),
 	BackgroundColor3 = AZUL_ESCURO,
 	BackgroundTransparency = 0.3,
 	Font = Enum.Font.GothamBold,
 	TextColor3 = Color3.new(1, 1, 1),
-	TextSize = 18,
+	TextSize = 15,
 	TextWrapped = true,
 	TextXAlignment = Enum.TextXAlignment.Left,
 	TextYAlignment = Enum.TextYAlignment.Top,
@@ -311,6 +315,12 @@ local explicacao = novo("TextLabel", {
 		"",
 		"⚫ A sombra no chão mostra onde a bola vai cair.",
 		"🌈 A cada 10 toques a bola muda de cor e fica mais rápida.",
+		"",
+		"✨ HABILIDADES (barra embaixo da tela):",
+		"🖐 Q  Arrastar: segure e mexa o mouse, a bola vai junto!",
+		"🚀 R  Super Pulo    💨 F  Dash",
+		"🐢 G  Câmera Lenta: a bola quase flutua",
+		"💥 T  Super Batida: bate na bola de longe",
 		"",
 		"🎮 Sozinho: uma arena só sua.",
 		"🌍 Online: todo mundo do servidor joga junto com a mesma bola. O recorde é do time todo!",
@@ -378,7 +388,7 @@ novo("UISizeConstraint", { MaxSize = Vector2.new(600, 120) }, mensagem)
 local quemBateuTexto = texto(placar, {
 	AnchorPoint = Vector2.new(0.5, 0),
 	Position = UDim2.new(0.5, 0, 0, 168),
-	Size = UDim2.new(0, 300, 0, 26),
+	Size = UDim2.new(0.9, 0, 0, 26),
 	Text = "",
 	TextColor3 = Color3.fromRGB(200, 255, 200),
 })
@@ -392,6 +402,9 @@ end)
 botaoMenu.AnchorPoint = Vector2.new(0, 0)
 botaoMenu.Position = UDim2.new(0, 16, 0, 50)
 botaoMenu.Size = UDim2.new(0, 130, 0, 50)
+
+local bolaAtual = nil  -- a bola da arena em que você está
+local mostrarAviso      -- escrita mais pra baixo
 
 local ultimoClique = 0
 local function tentarBater()
@@ -423,6 +436,269 @@ UserInputService.InputBegan:Connect(function(entrada, jaUsado)
 		or entrada.KeyCode == Enum.KeyCode.ButtonR2
 	then
 		tentarBater()
+	end
+end)
+
+---------------------------------------------------------------------
+-- HABILIDADES
+---------------------------------------------------------------------
+local HABILIDADES = {
+	{ id = "arrastar", icone = "🖐", nome = "Arrastar", tecla = Enum.KeyCode.Q, letra = "Q" },
+	{ id = "superPulo", icone = "🚀", nome = "Super Pulo", tecla = Enum.KeyCode.R, letra = "R", recarga = 6 },
+	{ id = "dash", icone = "💨", nome = "Dash", tecla = Enum.KeyCode.F, letra = "F", recarga = 4 },
+	{ id = "lenta", icone = "🐢", nome = "Câm. Lenta", tecla = Enum.KeyCode.G, letra = "G" },
+	{ id = "superBatida", icone = "💥", nome = "Super Batida", tecla = Enum.KeyCode.T, letra = "T" },
+}
+local TEMPO_ARRASTO = 3
+
+local prontaEm = {}    -- [id] = hora em que a habilidade fica pronta
+local duracaoDa = {}   -- [id] = quantos segundos de recarga
+local cobertura = {}   -- [id] = a sombra escura que mostra a recarga
+local contagem = {}    -- [id] = o número de segundos que falta
+local arrastando = false
+local fimDoArrasto = 0
+
+local barra = novo("Frame", {
+	AnchorPoint = Vector2.new(0.5, 1),
+	-- No celular fica mais pra cima, pra não ficar em cima do controle de andar
+	Position = UDim2.new(0.5, 0, 1, UserInputService.TouchEnabled and -210 or -16),
+	Size = UDim2.new(0, #HABILIDADES * 78, 0, 96),
+	BackgroundTransparency = 1,
+}, placar)
+novo("UIListLayout", {
+	FillDirection = Enum.FillDirection.Horizontal,
+	HorizontalAlignment = Enum.HorizontalAlignment.Center,
+	Padding = UDim.new(0, 8),
+	SortOrder = Enum.SortOrder.LayoutOrder,
+}, barra)
+-- Em tela pequena a barra encolhe pra caber
+novo("UIScale", { Scale = 1 }, barra)
+local function ajustarBarra()
+	local largura = workspace.CurrentCamera.ViewportSize.X
+	barra.UIScale.Scale = math.min(1, (largura - 40) / (#HABILIDADES * 78))
+end
+workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(ajustarBarra)
+ajustarBarra()
+
+local function raizEHumanoide()
+	local personagem = jogador.Character
+	local raiz = personagem and personagem:FindFirstChild("HumanoidRootPart")
+	local humanoide = personagem and personagem:FindFirstChildOfClass("Humanoid")
+	if raiz and humanoide and humanoide.Health > 0 then
+		return raiz, humanoide
+	end
+	return nil, nil
+end
+
+-- Empurra o personagem por um tempinho (usado no Super Pulo e no Dash)
+local function impulso(raiz, velocidade, segundos)
+	local anexo = raiz:FindFirstChild("RootAttachment")
+	if not anexo then
+		return
+	end
+	local forca = Instance.new("LinearVelocity")
+	forca.Attachment0 = anexo
+	forca.RelativeTo = Enum.ActuatorRelativeTo.World
+	forca.MaxForce = 1e6
+	forca.VectorVelocity = velocidade
+	forca.Parent = raiz
+	task.delay(segundos, function()
+		forca:Destroy()
+	end)
+end
+
+local function comecarRecargaLocal(id, segundos)
+	prontaEm[id] = os.clock() + segundos
+	duracaoDa[id] = segundos
+end
+
+local function pararDeArrastar()
+	if arrastando then
+		arrastando = false
+		Habilidade:FireServer("pararArrastar")
+	end
+end
+
+local function usarHabilidade(h)
+	if not placar.Visible then
+		return
+	end
+	if h.id == "arrastar" and arrastando then
+		pararDeArrastar()
+		return
+	end
+	if prontaEm[h.id] and os.clock() < prontaEm[h.id] then
+		return -- ainda recarregando
+	end
+
+	if h.id == "superPulo" then
+		local raiz, humanoide = raizEHumanoide()
+		if not raiz then
+			return
+		end
+		humanoide:ChangeState(Enum.HumanoidStateType.Jumping)
+		local v = raiz.AssemblyLinearVelocity
+		impulso(raiz, Vector3.new(v.X, 95, v.Z), 0.15)
+		comecarRecargaLocal(h.id, h.recarga)
+	elseif h.id == "dash" then
+		local raiz, humanoide = raizEHumanoide()
+		if not raiz then
+			return
+		end
+		-- Vai pra onde você está andando (ou pra frente, se estiver parado)
+		local direcao = humanoide.MoveDirection
+		if direcao.Magnitude < 0.1 then
+			direcao = raiz.CFrame.LookVector
+		end
+		direcao = Vector3.new(direcao.X, 0, direcao.Z).Unit
+		impulso(raiz, direcao * 90 + Vector3.new(0, 8, 0), 0.2)
+		comecarRecargaLocal(h.id, h.recarga)
+	else
+		-- Arrastar, Câmera Lenta e Super Batida mexem na bola:
+		-- quem decide é o servidor, e ele manda a recarga de volta
+		if h.id == "arrastar" then
+			arrastando = true
+			fimDoArrasto = os.clock() + TEMPO_ARRASTO
+		end
+		Habilidade:FireServer(h.id)
+	end
+end
+
+for ordem, h in ipairs(HABILIDADES) do
+	local espaco = novo("Frame", {
+		Size = UDim2.new(0, 70, 0, 96),
+		BackgroundTransparency = 1,
+		LayoutOrder = ordem,
+	}, barra)
+
+	local b = novo("TextButton", {
+		Size = UDim2.new(0, 70, 0, 70),
+		BackgroundColor3 = AZUL_ESCURO,
+		BackgroundTransparency = 0.15,
+		Text = h.icone,
+		TextScaled = true,
+		Font = FONTE,
+		TextColor3 = Color3.new(1, 1, 1),
+		ClipsDescendants = true,
+	}, espaco)
+	arredondar(b, 14)
+	contorno(b, Color3.fromRGB(0, 200, 255), 3)
+	novo("UIPadding", {
+		PaddingTop = UDim.new(0, 12),
+		PaddingBottom = UDim.new(0, 12),
+	}, b)
+
+	if not UserInputService.TouchEnabled then
+		local letra = texto(b, {
+			Text = h.letra,
+			AnchorPoint = Vector2.new(1, 0),
+			Position = UDim2.new(1, -2, 0, -10),
+			Size = UDim2.new(0, 20, 0, 20),
+			TextColor3 = AMARELO,
+			ZIndex = 3,
+		})
+		letra.TextXAlignment = Enum.TextXAlignment.Right
+	end
+
+	-- A parte escura que vai descendo enquanto recarrega
+	cobertura[h.id] = novo("Frame", {
+		AnchorPoint = Vector2.new(0, 1),
+		Position = UDim2.new(0, 0, 1, 12),
+		Size = UDim2.new(1, 0, 0, 0),
+		BackgroundColor3 = Color3.new(0, 0, 0),
+		BackgroundTransparency = 0.35,
+		BorderSizePixel = 0,
+		ZIndex = 2,
+	}, b)
+	contagem[h.id] = texto(b, {
+		Text = "",
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.new(1, 0, 0, 34),
+		ZIndex = 4,
+	})
+
+	texto(espaco, {
+		Text = h.nome,
+		Position = UDim2.new(0, 0, 0, 74),
+		Size = UDim2.new(1, 0, 0, 18),
+	})
+
+	b.Activated:Connect(function()
+		usarHabilidade(h)
+	end)
+end
+
+-- Teclado e controle
+UserInputService.InputBegan:Connect(function(entrada, jaUsado)
+	if jaUsado then
+		return
+	end
+	for _, h in ipairs(HABILIDADES) do
+		if entrada.KeyCode == h.tecla then
+			usarHabilidade(h)
+		end
+	end
+end)
+UserInputService.InputEnded:Connect(function(entrada)
+	if entrada.KeyCode == Enum.KeyCode.Q then
+		pararDeArrastar() -- soltou o Q: solta a bola
+	end
+end)
+
+Recarga.OnClientEvent:Connect(function(id, segundos, motivo)
+	if id == "arrastarFim" then
+		arrastando = false
+		return
+	end
+	if segundos > 0 then
+		comecarRecargaLocal(id, segundos)
+	else
+		if id == "arrastar" then
+			arrastando = false
+		end
+		if motivo then
+			mostrarAviso(motivo)
+		end
+	end
+end)
+
+-- Todo quadro: desenha a recarga e manda pra onde a bola deve ir
+local ultimoEnvio = 0
+RunService.RenderStepped:Connect(function()
+	local agora = os.clock()
+
+	for _, h in ipairs(HABILIDADES) do
+		local falta = prontaEm[h.id] and (prontaEm[h.id] - agora) or 0
+		if h.id == "arrastar" and arrastando then
+			cobertura[h.id].Size = UDim2.new(1, 0, 0, 0)
+			contagem[h.id].Text = "✊"
+		elseif falta > 0 then
+			cobertura[h.id].Size = UDim2.new(1, 0, falta / duracaoDa[h.id], 12)
+			contagem[h.id].Text = tostring(math.ceil(falta))
+		else
+			cobertura[h.id].Size = UDim2.new(1, 0, 0, 0)
+			contagem[h.id].Text = ""
+		end
+	end
+
+	if arrastando and agora > fimDoArrasto then
+		arrastando = false
+	end
+
+	if arrastando and bolaAtual and bolaAtual.Parent and agora - ultimoEnvio > 0.05 then
+		ultimoEnvio = agora
+		local camera = workspace.CurrentCamera
+		-- No computador a bola segue o mouse; no celular, o meio da tela
+		local ponto
+		if UserInputService.TouchEnabled and not UserInputService.MouseEnabled then
+			ponto = camera.ViewportSize / 2
+		else
+			ponto = UserInputService:GetMouseLocation()
+		end
+		local raio = camera:ViewportPointToRay(ponto.X, ponto.Y)
+		local distancia = math.clamp((bolaAtual.Position - camera.CFrame.Position).Magnitude, 10, 60)
+		ArrastarAlvo:FireServer(raio.Origin + raio.Direction * distancia)
 	end
 end)
 
@@ -460,11 +736,22 @@ comecarJogo = function(modo)
 end
 
 local escondeQuemBateu = 0
+mostrarAviso = function(frase)
+	quemBateuTexto.Text = frase
+	escondeQuemBateu += 1
+	local minhaVez = escondeQuemBateu
+	task.delay(1.8, function()
+		if minhaVez == escondeQuemBateu then
+			quemBateuTexto.Text = ""
+		end
+	end)
+end
 
 Atualizar.OnClientEvent:Connect(function(dados)
 	if not placar.Visible then
 		return
 	end
+	bolaAtual = dados.bola
 
 	if dados.modo == "online" then
 		textoModo.Text = "🌍 Online — " .. dados.jogadores .. (dados.jogadores == 1 and " jogador" or " jogadores")
@@ -482,15 +769,8 @@ Atualizar.OnClientEvent:Connect(function(dados)
 			textoToques.Text = tostring(dados.toques)
 			pular(textoToques)
 		end
-		if dados.quemBateu and dados.modo == "online" then
-			quemBateuTexto.Text = dados.quemBateu .. " bateu!"
-			escondeQuemBateu += 1
-			local minhaVez = escondeQuemBateu
-			task.delay(1.2, function()
-				if minhaVez == escondeQuemBateu then
-					quemBateuTexto.Text = ""
-				end
-			end)
+		if dados.aviso and (dados.modo == "online" or not string.find(dados.aviso, " bateu!$")) then
+			mostrarAviso(dados.aviso)
 		end
 	elseif dados.estado == "caiu" then
 		mensagem.Visible = true
