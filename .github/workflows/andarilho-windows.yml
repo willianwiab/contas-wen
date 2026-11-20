@@ -1,0 +1,40 @@
+# Monta o Pokémon Andarilho pra Windows num arquivo só (PokemonAndarilho.exe)
+# e publica em Releases, pra baixar e abrir sem precisar instalar o Node.js.
+name: Pokémon Andarilho para Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'pokemon-andarilho/**'
+      - '.github/workflows/andarilho-windows.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: pokemon-andarilho/computador
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm install --no-save --no-audit --no-fund electron-builder@26
+      - run: node copiar.js
+      - run: npx electron-builder --win portable --publish never
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: andarilho
+          name: Pokémon Andarilho (Windows)
+          body: |
+            🐾 Baixe o PokemonAndarilho.exe e dê dois cliques. Não precisa instalar nada.
+            Se o Windows mostrar "O Windows protegeu o computador", clique em "Mais informações" → "Executar assim mesmo".
+            Pra fechar: ícone 🐾 perto do relógio → Sair.
+          files: pokemon-andarilho/computador/dist/PokemonAndarilho.exe
+          make_latest: true

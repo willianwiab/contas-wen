@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://raw.githubusercontent.com; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+<title>Pokémon Andarilho</title>
+<link rel="stylesheet" href="extensao/painel.css" />
+<style>
+body{margin:0;padding:12px 14px 16px;background:#f7f9ff}
+.topo{display:flex;align-items:center;gap:8px;font:800 1.2rem system-ui,sans-serif;color:#3b5bdb}
+.topo img{width:36px;height:36px}
+.dica-pc{font:14px/1.35 system-ui,sans-serif;color:#5b6477;margin-top:12px;background:#fff4d6;border:2px dashed #f59f00;border-radius:10px;padding:8px}
+</style>
+</head>
+<body>
+<div class="topo"><img src="icone.png" alt="" /> Pokémon Andarilho</div>
+<div class="painel">
+  <div class="opcoes">
+    <label><input type="checkbox" id="ligado" /> Ligado</label>
+    <label><input type="checkbox" id="som" /> Som (grito)</label>
+    <label><input type="checkbox" id="seguir" /> Seguir o mouse</label>
+    <label>Tamanho <select id="tamanho"><option value="P">Pequeno</option><option value="M">Médio</option><option value="G">Grande</option></select></label>
+    <label style="grid-column:1/-1">Jeito <select id="estilo"><option value="3d">🧸 3D grande (bonito)</option><option value="animado">🎞️ Animado (mexe, mas é menor)</option></select></label>
+  </div>
+  <h3>🐾 Meus Pokémon andarilhos</h3>
+  <div class="meus" id="meus"></div>
+  <p class="dica" id="dica-meus"></p>
+  <h3>🔎 Escolher Pokémon (todos os 1025)</h3>
+  <input class="busca" id="busca" type="search" placeholder="Escreva o nome ou o número (ex: Gengar, 133)" autocomplete="off" />
+  <div class="resultados" id="resultados"></div>
+</div>
+
+
+<p class="dica-pc">💡 Pode fechar esta janela: o Pokémon continua andando! Pra abrir de novo ou sair, clique no ícone 🐾 perto do relógio.</p>
+<script src="extensao/nomes.js"></script>
+<script src="extensao/painel.js"></script>
+</body>
+</html>

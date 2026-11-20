@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Pokémon Andarilho</title>
+<link rel="stylesheet" href="painel.css" />
+<style>
+body{margin:0;width:340px;padding:12px 14px 14px;background:#f7f9ff}
+.topo{display:flex;align-items:center;gap:8px;font:800 1.15rem system-ui,sans-serif;color:#3b5bdb}
+.topo img{width:34px;height:34px}
+</style>
+</head>
+<body>
+<div class="topo"><img src="icones/icone-48.png" alt="" /> Pokémon Andarilho</div>
+<div class="painel">
+  <div class="opcoes">
+    <label><input type="checkbox" id="ligado" /> Ligado</label>
+    <label><input type="checkbox" id="som" /> Som (grito)</label>
+    <label><input type="checkbox" id="seguir" /> Seguir o mouse</label>
+    <label>Tamanho <select id="tamanho"><option value="P">Pequeno</option><option value="M">Médio</option><option value="G">Grande</option></select></label>
+    <label style="grid-column:1/-1">Jeito <select id="estilo"><option value="3d">🧸 3D grande (bonito)</option><option value="animado">🎞️ Animado (mexe, mas é menor)</option></select></label>
+  </div>
+  <h3>🐾 Meus Pokémon andarilhos</h3>
+  <div class="meus" id="meus"></div>
+  <p class="dica" id="dica-meus"></p>
+  <h3>🔎 Escolher Pokémon (todos os 1025)</h3>
+  <input class="busca" id="busca" type="search" placeholder="Escreva o nome ou o número (ex: Gengar, 133)" autocomplete="off" />
+  <div class="resultados" id="resultados"></div>
+</div>
+
+<script src="nomes.js"></script>
+<script src="painel.js"></script>
+</body>
+</html>
