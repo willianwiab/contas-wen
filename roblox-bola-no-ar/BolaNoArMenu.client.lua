@@ -14,7 +14,25 @@ local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 
 local jogador = Players.LocalPlayer
-local pasta = ReplicatedStorage:WaitForChild("BolaNoAr")
+
+-- Se o Script do servidor não estiver rodando, avisa na tela em vez de ficar travado
+local pasta = ReplicatedStorage:WaitForChild("BolaNoAr", 8)
+if not pasta then
+	local aviso = Instance.new("ScreenGui")
+	aviso.Name = "BolaNoArErro"
+	aviso.ResetOnSpawn = false
+	local t = Instance.new("TextLabel")
+	t.Size = UDim2.fromScale(1, 1)
+	t.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+	t.TextColor3 = Color3.new(1, 1, 1)
+	t.TextScaled = true
+	t.Font = Enum.Font.GothamBold
+	t.Text = "⚠ O jogo não achou o Script do servidor!\n\nCole o ARQUIVO 1 num Script (não LocalScript) dentro de ServerScriptService e aperte Play de novo."
+	t.Parent = aviso
+	aviso.Parent = jogador:WaitForChild("PlayerGui")
+	pasta = ReplicatedStorage:WaitForChild("BolaNoAr")
+	aviso:Destroy()
+end
 local Entrar = pasta:WaitForChild("Entrar")
 local Bater = pasta:WaitForChild("Bater")
 local Sair = pasta:WaitForChild("Sair")
@@ -24,6 +42,11 @@ local jogandoOnline = pasta:WaitForChild("JogandoOnline")
 local Habilidade = pasta:WaitForChild("Habilidade")
 local Recarga = pasta:WaitForChild("Recarga")
 local ArrastarAlvo = pasta:WaitForChild("ArrastarAlvo")
+
+-- Espera a câmera existir (às vezes ela demora um pouquinho no começo)
+while not workspace.CurrentCamera do
+	task.wait()
+end
 
 local FONTE = Enum.Font.FredokaOne
 local AMARELO = Color3.fromRGB(255, 200, 0)
@@ -733,6 +756,12 @@ comecarJogo = function(modo)
 	mensagem.Visible = true
 	mensagem.Text = "Preparando..."
 	Entrar:FireServer(modo)
+	task.delay(8, function()
+		if placar.Visible and mensagem.Visible and mensagem.Text == "Preparando..." then
+			mensagem.TextColor3 = Color3.fromRGB(255, 90, 90)
+			mensagem.Text = "Não carregou 😕 Veja o erro vermelho no Output"
+		end
+	end)
 end
 
 local escondeQuemBateu = 0

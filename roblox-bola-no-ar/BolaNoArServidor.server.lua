@@ -513,10 +513,24 @@ end)
 ---------------------------------------------------------------------
 local function levarPraArena(player, arena)
 	local personagem = player.Character
-	if personagem then
-		local onde = arena.centro + Vector3.new(math.random(-12, 12), 4, math.random(-12, 12))
-		personagem:PivotTo(CFrame.new(onde, arena.centro + Vector3.new(0, 4, 0)))
+	local raiz = personagem and personagem:FindFirstChild("HumanoidRootPart")
+	if not raiz then
+		return
 	end
+	local onde = arena.centro + Vector3.new(math.random(-12, 12), 4, math.random(-12, 12))
+
+	-- Segura o personagem parado enquanto a arena carrega no aparelho do jogador.
+	-- Sem isso, ele pode cair antes do chão aparecer (por causa do StreamingEnabled).
+	raiz.Anchored = true
+	pcall(function()
+		player:RequestStreamAroundAsync(onde, 5)
+	end)
+	personagem:PivotTo(CFrame.new(onde, arena.centro + Vector3.new(0, 4, 0)))
+	task.delay(0.5, function()
+		if raiz.Parent then
+			raiz.Anchored = false
+		end
+	end)
 end
 
 local function sairDaArena(player)
@@ -570,7 +584,7 @@ Entrar.OnServerEvent:Connect(function(player, modo)
 
 	table.insert(arena.jogadores, player)
 	arenaDoJogador[player] = arena
-	levarPraArena(player, arena)
+	task.spawn(levarPraArena, player, arena)
 
 	if arena.online then
 		jogandoOnline.Value = #arena.jogadores
