@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b2a4a">
+<meta name="description" content="Bolhas da Tabuada: a bolhinha fala a conta e você estoura a bolha com a resposta. Tabuada até o 15.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bolhas">
+<title>Bolhas da Tabuada</title>
+<style>
+  :root {
+    --fundo1:#0b2a4a; --fundo2:#06162b;
+    --ink:#f2fbff; --dim:#9cc3dd;
+    --agua:#5fd0ff; --agua2:#2a8fd6;
+    --ouro:#ffd45c; --verde:#62e6a0; --rosa:#ff6f9c; --vermelho:#ff5a5a;
+    --vidro:rgba(200,235,255,.14); --borda:rgba(200,235,255,.55);
+    --r:18px;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { height:100%; }
+  body {
+    margin:0; color:var(--ink); overflow:hidden;
+    font-family: "Trebuchet MS", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(800px 500px at 50% -10%, #1f5f99 0%, transparent 60%),
+      radial-gradient(600px 400px at 100% 110%, #0f3f6e 0%, transparent 60%),
+      linear-gradient(var(--fundo1), var(--fundo2));
+    user-select:none; -webkit-user-select:none;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  button { font:inherit; color:inherit; cursor:pointer; }
+  [hidden] { display:none !important; }
+
+  /* ---------- telas ---------- */
+  .tela {
+    position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+    padding: max(14px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
+    overflow-y:auto;
+  }
+  .caixa { width:min(520px, 100%); display:flex; flex-direction:column; align-items:center; gap:14px; margin:auto 0; }
+  h1 {
+    margin:0; font-size:clamp(2.1rem, 9vw, 3.2rem); line-height:1; text-align:center;
+    color:var(--ouro); text-shadow: 0 4px 0 #8a5a00, 0 8px 18px rgba(0,0,0,.4);
+    letter-spacing:.02em;
+  }
+  .sub { margin:0; color:var(--dim); text-align:center; font-size:1.05rem; }
+  .botao {
+    width:100%; border:0; border-radius:var(--r); padding:16px 18px;
+    font-size:1.25rem; font-weight:800; letter-spacing:.02em;
+    background:var(--verde); color:#06301b; box-shadow:0 6px 0 #2a9a5f;
+    transition: transform .08s;
+  }
+  .botao:active { transform: translateY(4px); box-shadow:0 2px 0 #2a9a5f; }
+  .botao.azul { background:var(--agua); color:#04263f; box-shadow:0 6px 0 var(--agua2); }
+  .botao.azul:active { box-shadow:0 2px 0 var(--agua2); }
+  .botao.cinza { background:#2b4a68; color:var(--ink); box-shadow:0 6px 0 #18304a; }
+  .botao.cinza:active { box-shadow:0 2px 0 #18304a; }
+  .painel {
+    width:100%; background:rgba(255,255,255,.06); border:2px solid rgba(255,255,255,.1);
+    border-radius:var(--r); padding:14px;
+  }
+  .painel h2 { margin:0 0 10px; font-size:1rem; color:var(--dim); font-weight:700; text-align:center; }
+  .chips { display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; }
+  .chip {
+    border:2px solid var(--borda); background:transparent; border-radius:14px;
+    padding:9px 0; font-size:1.1rem; font-weight:800;
+  }
+  .chip.on { background:var(--agua); color:#04263f; border-color:var(--agua); }
+  .linhaBotoes { display:flex; gap:8px; margin-top:10px; }
+  .linhaBotoes .chip { flex:1; font-size:.9rem; padding:8px 4px; }
+  .opcao { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 2px; font-size:1.02rem; }
+  .troca {
+    width:58px; height:32px; border-radius:99px; border:0; background:#2b4a68; position:relative; flex:none;
+  }
+  .troca::after {
+    content:""; position:absolute; top:4px; left:4px; width:24px; height:24px; border-radius:50%;
+    background:#fff; transition:left .15s;
+  }
+  .troca.on { background:var(--verde); }
+  .troca.on::after { left:30px; }
+  .recordes { display:flex; gap:10px; width:100%; }
+  .recordes div { flex:1; text-align:center; background:rgba(255,255,255,.06); border-radius:14px; padding:10px 6px; }
+  .recordes b { display:block; font-size:1.6rem; color:var(--ouro); }
+  .recordes span { font-size:.85rem; color:var(--dim); }
+
+  /* mascote: a bolhinha que fala */
+  .mascote {
+    width:var(--t, 110px); height:var(--t, 110px); border-radius:50%; position:relative; flex:none;
+    background: radial-gradient(circle at 32% 28%, #fff 0 9%, rgba(255,255,255,.35) 10% 18%, transparent 19%),
+                radial-gradient(circle at 50% 55%, #8fe3ff 0%, #3fb2f0 60%, #1d7ec4 100%);
+    box-shadow: inset -6px -10px 18px rgba(0,40,90,.45), 0 8px 24px rgba(0,0,0,.35);
+    animation: boiar 2.6s ease-in-out infinite;
+  }
+  .mascote .olho {
+    position:absolute; top:38%; width:13%; height:17%; background:#062033; border-radius:50%;
+    animation: piscar 4s infinite;
+  }
+  .mascote .olho::after { content:""; position:absolute; top:18%; left:22%; width:35%; height:35%; background:#fff; border-radius:50%; }
+  .mascote .olho.e { left:30%; } .mascote .olho.d { right:30%; }
+  .mascote .boca {
+    position:absolute; left:50%; top:63%; width:26%; height:9%; transform:translateX(-50%);
+    background:#062033; border-radius: 0 0 40px 40px; transition: height .08s;
+  }
+  .mascote.falando .boca { animation: falar .22s infinite alternate; }
+  .mascote .bochecha { position:absolute; top:58%; width:12%; height:7%; border-radius:50%; background:rgba(255,120,170,.55); }
+  .mascote .bochecha.e { left:17%; } .mascote .bochecha.d { right:17%; }
+  .mascote.feliz { animation: pulinho .45s ease; }
+  .mascote.triste .boca { border-radius: 40px 40px 0 0; top:66%; }
+  @keyframes boiar { 50% { transform: translateY(-6px); } }
+  @keyframes piscar { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+  @keyframes falar { from { height:6%; } to { height:16%; } }
+  @keyframes pulinho { 30% { transform: translateY(-18px) scale(1.06); } 60% { transform: translateY(0) scale(.96); } }
+
+  /* ---------- jogo ---------- */
+  #jogo { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+  .topo { width:min(560px, 100%); display:flex; align-items:center; gap:8px; }
+  .placa {
+    flex:1; text-align:center; background:rgba(255,255,255,.07); border-radius:14px; padding:6px 4px;
+  }
+  .placa b { display:block; font-size:1.5rem; line-height:1.1; }
+  .placa span { font-size:.75rem; color:var(--dim); }
+  .placa.bolhas b { color:var(--agua); }
+  .placa.combo b { color:var(--ouro); }
+  .btPequeno { border:0; background:rgba(255,255,255,.1); border-radius:12px; width:44px; height:44px; font-size:1.3rem; flex:none; }
+  .tempo { width:min(560px, 100%); height:12px; background:rgba(255,255,255,.1); border-radius:99px; overflow:hidden; margin-top:8px; }
+  .tempo i { display:block; height:100%; width:100%; background:linear-gradient(90deg, var(--verde), var(--ouro)); border-radius:99px; transition: width .2s linear; }
+  .tempo.acabando i { background: var(--vermelho); }
+
+  .conversa { width:min(560px, 100%); display:flex; align-items:center; gap:12px; margin:10px 0 8px; }
+  .balao {
+    flex:1; position:relative; background:#fff; color:#0b2a4a; border-radius:20px; padding:10px 14px;
+    font-size:clamp(1.6rem, 7.5vw, 2.4rem); font-weight:900; text-align:center; min-height:64px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .balao::before {
+    content:""; position:absolute; left:-12px; top:50%; transform:translateY(-50%);
+    border: 12px solid transparent; border-right-color:#fff; border-left:0;
+  }
+  .balao small { display:block; font-size:.9rem; font-weight:700; color:#3f6a8c; }
+  .balao.certo { background:var(--verde); } .balao.certo::before { border-right-color:var(--verde); }
+  .balao.errado { background:#ffd0d0; } .balao.errado::before { border-right-color:#ffd0d0; }
+
+  /* o copo */
+  .areaCopo { flex:1; width:min(560px, 100%); display:flex; justify-content:center; min-height:0; position:relative; }
+  .copo {
+    position:relative; height:100%; width:min(100%, 440px); min-height:260px;
+    border:4px solid var(--borda); border-top:0;
+    border-radius: 0 0 70px 70px;
+    background: linear-gradient(90deg, rgba(255,255,255,.18), transparent 18%, transparent 80%, rgba(255,255,255,.12)), var(--vidro);
+    overflow:hidden; touch-action:manipulation;
+  }
+  .liquido {
+    position:absolute; left:0; right:0; bottom:0; height:12%;
+    background: linear-gradient(rgba(120,220,255,.55), rgba(40,140,220,.65));
+    transition: height .6s cubic-bezier(.3,1.4,.5,1);
+  }
+  .liquido::before {
+    content:""; position:absolute; left:-10%; right:-10%; top:-10px; height:20px;
+    background: radial-gradient(14px 10px at 10px 10px, rgba(160,235,255,.9) 98%, transparent) 0 0 / 28px 20px repeat-x;
+    animation: onda 2.4s linear infinite;
+  }
+  @keyframes onda { to { transform: translateX(28px); } }
+  .fizz { position:absolute; bottom:0; width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.7); animation: subirFizz linear infinite; }
+  @keyframes subirFizz { from { transform: translateY(0); opacity:.9; } to { transform: translateY(-120px); opacity:0; } }
+
+  .bolha {
+    position:absolute; left:0; top:0; border-radius:50%; border:0; padding:0;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; color:#fff; text-shadow: 0 2px 4px rgba(0,30,70,.6);
+    background:
+      radial-gradient(circle at 30% 26%, rgba(255,255,255,.95) 0 8%, rgba(255,255,255,.3) 9% 16%, transparent 17%),
+      radial-gradient(circle at 50% 50%, rgba(120,210,255,.25) 0 55%, rgba(170,230,255,.7) 72%, rgba(255,255,255,.9) 100%);
+    box-shadow: inset -4px -6px 12px rgba(0,60,120,.35), 0 0 0 2px rgba(255,255,255,.35);
+    will-change: transform;
+  }
+  .bolha.estourando { animation: estourar .28s ease-out forwards; pointer-events:none; }
+  .bolha.errada { animation: tremer .35s ease, estourarMal .3s .35s ease-out forwards; pointer-events:none;
+    background: radial-gradient(circle at 50% 50%, rgba(255,120,120,.35) 0 55%, rgba(255,160,160,.8) 72%, #fff 100%); }
+  @keyframes estourar { to { scale: 1.7; opacity:0; } }
+  @keyframes estourarMal { to { scale: .2; opacity:0; } }
+  @keyframes tremer { 25% { translate: -6px 0; } 50% { translate: 6px 0; } 75% { translate: -4px 0; } }
+
+  .pingo { position:absolute; pointer-events:none; width:10px; height:10px; border-radius:50%; background:rgba(200,240,255,.95); }
+  .ganhou {
+    position:absolute; pointer-events:none; font-weight:900; font-size:1.6rem; color:var(--ouro);
+    text-shadow: 0 2px 0 #8a5a00; animation: ganhouSobe .9s ease-out forwards;
+  }
+  @keyframes ganhouSobe { to { transform: translateY(-60px); opacity:0; } }
+
+  .digitado {
+    position:absolute; top:10px; left:50%; transform:translateX(-50%);
+    background:rgba(0,0,0,.45); padding:4px 14px; border-radius:12px; font-size:1.3rem; font-weight:800;
+    pointer-events:none;
+  }
+  .contagem {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:6rem; font-weight:900; color:var(--ouro); text-shadow:0 6px 0 #8a5a00; pointer-events:none;
+  }
+
+  /* fim */
+  .grande { font-size:clamp(3rem, 16vw, 5rem); font-weight:900; color:var(--agua); line-height:1; text-align:center; }
+  .grande small { display:block; font-size:1rem; color:var(--dim); font-weight:700; }
+  .novoRecorde { color:var(--ouro); font-weight:900; font-size:1.3rem; text-align:center; animation: pulinho .8s ease infinite; }
+  .listaErros { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .listaErros span { background:rgba(255,255,255,.1); border-radius:10px; padding:6px 10px; font-weight:800; }
+  .estrelas { font-size:2.4rem; letter-spacing:.1em; }
+
+  #btInstalar { position:fixed; right:12px; bottom:12px; width:auto; padding:10px 14px; font-size:.95rem; z-index:5; }
+</style>
+</head>
+<body>
+
+<!-- ===================== INÍCIO ===================== -->
+<section class="tela" id="inicio">
+  <div class="caixa">
+    <div class="mascote" id="mascoteInicio" style="--t:120px">
+      <i class="olho e"></i><i class="olho d"></i><i class="bochecha e"></i><i class="bochecha d"></i><i class="boca"></i>
+    </div>
+    <h1>Bolhas da<br>Tabuada</h1>
+    <p class="sub">Eu falo a conta, você estoura a bolha certa!<br>Junte o máximo de bolhinhas no seu copo. 🫧</p>
+
+    <div class="recordes">
+      <div><b id="recBolhas">0</b><span>🫧 recorde de bolhas</span></div>
+      <div><b id="recCombo">0</b><span>🔥 maior sequência</span></div>
+    </div>
+
+    <div class="painel">
+      <h2>Quais tabuadas?</h2>
+      <div class="chips" id="chips"></div>
+      <div class="linhaBotoes">
+        <button class="chip" id="btTodas">Todas</button>
+        <button class="chip" id="btFaceis">Até 5</button>
+        <button class="chip" id="btDificeis">11 a 15</button>
+      </div>
+    </div>
+
+    <div class="painel">
+      <div class="opcao"><span>✖️ Multiplicar até ×15 (senão até ×10)</span><button class="troca" id="trocaAte15" aria-label="Multiplicar até 15"></button></div>
+      <div class="opcao"><span>🗣️ Bolhinha falando</span><button class="troca on" id="trocaVoz" aria-label="Voz"></button></div>
+      <div class="opcao"><span>🔊 Barulhinhos</span><button class="troca on" id="trocaSom" aria-label="Som"></button></div>
+    </div>
+
+    <button class="botao" id="btJogar">🫧 JOGAR (60 segundos)</button>
+    <button class="botao azul" id="btTreino">📚 TREINAR (sem tempo)</button>
+  </div>
+</section>
+
+<!-- ===================== JOGO ===================== -->
+<section class="tela" id="jogo" hidden>
+  <div class="topo">
+    <button class="btPequeno" id="btSair" aria-label="Sair">✖</button>
+    <div class="placa bolhas"><b id="placarBolhas">0</b><span>🫧 bolhas</span></div>
+    <div class="placa combo"><b id="placarCombo">0</b><span>🔥 sequência</span></div>
+    <div class="placa"><b id="placarAcertos">0</b><span>✅ acertos</span></div>
+    <button class="btPequeno" id="btRepetir" aria-label="Falar de novo">🗣️</button>
+  </div>
+  <div class="tempo" id="barraTempo"><i id="tempoCheio"></i></div>
+
+  <div class="conversa">
+    <div class="mascote" id="mascote" style="--t:76px">
+      <i class="olho e"></i><i class="olho d"></i><i class="bochecha e"></i><i class="bochecha d"></i><i class="boca"></i>
+    </div>
+    <div class="balao" id="balao">Preparando...</div>
+  </div>
+
+  <div class="areaCopo">
+    <div class="copo" id="copo">
+      <div class="liquido" id="liquido"></div>
+      <div class="digitado" id="digitado" hidden></div>
+      <div class="contagem" id="contagem" hidden></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FIM ===================== -->
+<section class="tela" id="fim" hidden>
+  <div class="caixa">
+    <div class="mascote" id="mascoteFim" style="--t:100px">
+      <i class="olho e"></i><i class="olho d"></i><i class="bochecha e"></i><i class="bochecha d"></i><i class="boca"></i>
+    </div>
+    <div class="estrelas" id="estrelas">⭐⭐⭐</div>
+    <div class="grande"><span id="fimBolhas">0</span><small>🫧 bolhinhas no copo</small></div>
+    <div class="novoRecorde" id="novoRecorde" hidden>🎉 NOVO RECORDE! 🎉</div>
+    <div class="recordes">
+      <div><b id="fimAcertos">0</b><span>✅ acertos</span></div>
+      <div><b id="fimErros">0</b><span>❌ erros</span></div>
+      <div><b id="fimCombo">0</b><span>🔥 maior sequência</span></div>
+    </div>
+    <div class="painel" id="painelErros" hidden>
+      <h2>Pra treinar mais:</h2>
+      <div class="listaErros" id="listaErros"></div>
+    </div>
+    <button class="botao" id="btDeNovo">🔁 JOGAR DE NOVO</button>
+    <button class="botao cinza" id="btMenu">🏠 MENU</button>
+  </div>
+</section>
+
+<button class="botao azul" id="btInstalar" hidden>📲 Instalar</button>
+
+<script>
+"use strict";
+const el = id => document.getElementById(id);
+const sorteio = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const embaralhar = lista => { for (let i = lista.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [lista[i], lista[j]] = [lista[j], lista[i]]; } return lista; };
+
+/* ============================================================
+   Configurações e recordes (ficam salvos no aparelho)
+   ============================================================ */
+const CHAVE = "bolhas-da-tabuada-v1";
+let salvo = { tabuadas: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], ate15: false, voz: true, som: true, recBolhas: 0, recCombo: 0 };
+try { Object.assign(salvo, JSON.parse(localStorage.getItem(CHAVE) || "{}")); } catch (e) {}
+function salvar() { try { localStorage.setItem(CHAVE, JSON.stringify(salvo)); } catch (e) {} }
+
+/* ============================================================
+   Tela inicial
+   ============================================================ */
+const chips = el("chips");
+for (let n = 1; n <= 15; n++) {
+  const b = document.createElement("button");
+  b.className = "chip"; b.textContent = n; b.dataset.n = n;
+  b.onclick = () => {
+    const i = salvo.tabuadas.indexOf(n);
+    if (i >= 0) { if (salvo.tabuadas.length > 1) salvo.tabuadas.splice(i, 1); }
+    else salvo.tabuadas.push(n);
+    desenharChips(); salvar();
+  };
+  chips.appendChild(b);
+}
+function desenharChips() {
+  for (const b of chips.children) b.classList.toggle("on", salvo.tabuadas.includes(+b.dataset.n));
+}
+el("btTodas").onclick = () => { salvo.tabuadas = Array.from({ length: 15 }, (_, i) => i + 1); desenharChips(); salvar(); };
+el("btFaceis").onclick = () => { salvo.tabuadas = [1,2,3,4,5]; desenharChips(); salvar(); };
+el("btDificeis").onclick = () => { salvo.tabuadas = [11,12,13,14,15]; desenharChips(); salvar(); };
+
+function ligarTroca(id, campo) {
+  const t = el(id);
+  const pintar = () => t.classList.toggle("on", !!salvo[campo]);
+  t.onclick = () => { salvo[campo] = !salvo[campo]; pintar(); salvar(); if (campo === "voz" && !salvo.voz) pararDeFalar(); };
+  pintar();
+}
+ligarTroca("trocaAte15", "ate15");
+ligarTroca("trocaVoz", "voz");
+ligarTroca("trocaSom", "som");
+
+function mostrarRecordes() {
+  el("recBolhas").textContent = salvo.recBolhas;
+  el("recCombo").textContent = salvo.recCombo;
+}
+desenharChips(); mostrarRecordes();
+
+/* ============================================================
+   Voz da bolhinha (o próprio navegador fala)
+   ============================================================ */
+let vozEscolhida = null;
+function escolherVoz() {
+  if (!("speechSynthesis" in window)) return;
+  const vozes = speechSynthesis.getVoices();
+  vozEscolhida = vozes.find(v => /pt[-_]BR/i.test(v.lang)) || vozes.find(v => /^pt/i.test(v.lang)) || null;
+}
+if ("speechSynthesis" in window) { escolherVoz(); speechSynthesis.onvoiceschanged = escolherVoz; }
+
+const mascote = el("mascote");
+function falar(frase, rapido) {
+  if (!salvo.voz || !("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const f = new SpeechSynthesisUtterance(frase);
+  f.lang = "pt-BR"; if (vozEscolhida) f.voice = vozEscolhida;
+  f.rate = rapido ? 1.25 : 1.05; f.pitch = 1.5; // voz fininha de bolhinha
+  f.onstart = () => mascote.classList.add("falando");
+  f.onend = f.onerror = () => mascote.classList.remove("falando");
+  speechSynthesis.speak(f);
+}
+function pararDeFalar() { if ("speechSynthesis" in window) speechSynthesis.cancel(); mascote.classList.remove("falando"); }
+
+/* ============================================================
+   Barulhinhos (feitos na hora, sem arquivo de som)
+   ============================================================ */
+let audio = null;
+function tocar(tipo) {
+  if (!salvo.som) return;
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    if (audio.state === "suspended") audio.resume();
+    const agora = audio.currentTime;
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.connect(g); g.connect(audio.destination);
+    if (tipo === "pop") {
+      o.type = "sine"; o.frequency.setValueAtTime(500, agora); o.frequency.exponentialRampToValueAtTime(1300, agora + .08);
+      g.gain.setValueAtTime(.35, agora); g.gain.exponentialRampToValueAtTime(.001, agora + .14);
+      o.start(agora); o.stop(agora + .15);
+    } else if (tipo === "erro") {
+      o.type = "square"; o.frequency.setValueAtTime(220, agora); o.frequency.exponentialRampToValueAtTime(110, agora + .25);
+      g.gain.setValueAtTime(.12, agora); g.gain.exponentialRampToValueAtTime(.001, agora + .28);
+      o.start(agora); o.stop(agora + .3);
+    } else if (tipo === "tic") {
+      o.type = "triangle"; o.frequency.setValueAtTime(880, agora);
+      g.gain.setValueAtTime(.15, agora); g.gain.exponentialRampToValueAtTime(.001, agora + .08);
+      o.start(agora); o.stop(agora + .09);
+    } else if (tipo === "fim") {
+      o.type = "triangle";
+      [523, 659, 784, 1046].forEach((f, i) => o.frequency.setValueAtTime(f, agora + i * .12));
+      g.gain.setValueAtTime(.2, agora); g.gain.exponentialRampToValueAtTime(.001, agora + .6);
+      o.start(agora); o.stop(agora + .62);
+    }
+  } catch (e) {}
+}
+
+/* ============================================================
+   O jogo
+   ============================================================ */
+const copo = el("copo"), liquido = el("liquido"), balao = el("balao");
+const TEMPO_TOTAL = 60;
+const QTD_BOLHAS = 5;
+
+let jogo = null;     // estado da partida
+let bolhas = [];     // bolhas subindo no copo
+let ultimoQuadro = 0;
+let digitando = "";
+
+const FRASES_CERTO = ["Isso!", "Muito bem!", "Boa!", "Arrasou!", "Acertou!", "Show!", "Que demais!", "Mandou bem!"];
+const FRASES_COMBO = ["Tá pegando fogo!", "Ninguém te para!", "Gênio da tabuada!", "Que sequência!"];
+
+function novaConta() {
+  const tab = salvo.tabuadas[Math.floor(Math.random() * salvo.tabuadas.length)];
+  const max = salvo.ate15 ? 15 : 10;
+  let outro, tentativas = 0;
+  do { outro = sorteio(1, max); tentativas++; }
+  while (jogo.ultima && jogo.ultima === tab + "x" + outro && tentativas < 10);
+  // às vezes a tabuada vem na frente, às vezes atrás
+  const [a, b] = Math.random() < .5 ? [tab, outro] : [outro, tab];
+  jogo.ultima = tab + "x" + outro;
+  return { a, b, resposta: a * b };
+}
+
+// Respostas erradas que parecem certas (pra precisar pensar de verdade)
+function respostasErradas(c, quantas) {
+  const r = c.resposta, ideias = new Set();
+  const somar = v => { if (v > 0 && v !== r) ideias.add(v); };
+  somar(r + c.a); somar(r - c.a); somar(r + c.b); somar(r - c.b);
+  somar(r + 1); somar(r - 1); somar(r + 10); somar(r - 10);
+  somar((c.a + 1) * (c.b + 1)); somar(c.a + c.b);
+  const lista = embaralhar([...ideias]).slice(0, quantas);
+  while (lista.length < quantas) { const v = sorteio(Math.max(1, r - 20), r + 20); if (v !== r && !lista.includes(v)) lista.push(v); }
+  return lista;
+}
+
+function tamanhoDaBolha() {
+  const l = copo.clientWidth;
+  return Math.max(58, Math.min(92, l / 4.6));
+}
+
+function velocidade() {
+  // pixels por segundo: fica mais rápido conforme você acerta
+  const base = copo.clientHeight / 7.5;
+  return base * (1 + Math.min(jogo.acertos, 40) * 0.025);
+}
+
+function criarBolha(valor, faixa, atraso) {
+  const t = tamanhoDaBolha();
+  const b = document.createElement("button");
+  b.className = "bolha";
+  b.style.width = b.style.height = t + "px";
+  b.style.fontSize = (valor >= 100 ? t * .32 : t * .4) + "px";
+  b.textContent = valor;
+  const bolha = { el: b, valor, faixa, t, y: copo.clientHeight - t - atraso, fase: Math.random() * 6.28, viva: true };
+  posicionarX(bolha);
+  b.addEventListener("pointerdown", ev => { ev.preventDefault(); tocouNaBolha(bolha); });
+  copo.appendChild(b);
+  return bolha;
+}
+
+function posicionarX(bolha) {
+  const largura = copo.clientWidth;
+  const util = largura * .9;
+  const passo = util / QTD_BOLHAS;
+  bolha.xBase = largura * .05 + passo * bolha.faixa + (passo - bolha.t) / 2;
+  if (bolha.xAtual === undefined) bolha.xAtual = bolha.xBase;
+}
+
+function encherCopoDeBolhas() {
+  for (const b of bolhas) b.el.remove();
+  bolhas = [];
+  const valores = embaralhar([jogo.conta.resposta, ...respostasErradas(jogo.conta, QTD_BOLHAS - 1)]);
+  const faixas = embaralhar([...Array(QTD_BOLHAS).keys()]);
+  const h = copo.clientHeight;
+  valores.forEach((v, i) => bolhas.push(criarBolha(v, faixas[i], i * h * .13)));
+}
+
+function perguntar() {
+  jogo.conta = novaConta();
+  jogo.travado = false;
+  digitando = ""; mostrarDigitado();
+  balao.className = "balao";
+  balao.innerHTML = `${jogo.conta.a} × ${jogo.conta.b} = ?`;
+  encherCopoDeBolhas();
+  falar(`${jogo.conta.a} vezes ${jogo.conta.b}`, jogo.acertos > 6);
+}
+
+function tocouNaBolha(bolha) {
+  if (!jogo || !jogo.rodando || jogo.travado || !bolha.viva) return;
+  if (bolha.valor === jogo.conta.resposta) acertou(bolha);
+  else errou(bolha);
+}
+
+function acertou(bolha) {
+  jogo.travado = true;
+  bolha.viva = false;
+  bolha.el.classList.add("estourando");
+  respingos(bolha);
+  tocar("pop");
+
+  jogo.acertos++; jogo.combo++;
+  jogo.maiorCombo = Math.max(jogo.maiorCombo, jogo.combo);
+  // quanto maior a sequência e a conta, mais bolhas você ganha
+  const ganho = 1 + Math.floor(jogo.combo / 3) + (jogo.conta.a > 10 || jogo.conta.b > 10 ? 1 : 0);
+  jogo.bolhas += ganho;
+  if (!jogo.treino && jogo.combo % 5 === 0) jogo.tempo = Math.min(TEMPO_TOTAL, jogo.tempo + 3); // prêmio: +3 segundos
+  mostrarGanho(bolha, "+" + ganho + " 🫧" + (!jogo.treino && jogo.combo % 5 === 0 ? "  +3s" : ""));
+  atualizarPlacar();
+
+  balao.className = "balao certo";
+  balao.innerHTML = `${jogo.conta.a} × ${jogo.conta.b} = ${jogo.conta.resposta}`;
+  mascote.classList.remove("feliz", "triste"); void mascote.offsetWidth; mascote.classList.add("feliz");
+  const frase = jogo.combo >= 5 && jogo.combo % 5 === 0
+    ? FRASES_COMBO[Math.floor(Math.random() * FRASES_COMBO.length)]
+    : FRASES_CERTO[Math.floor(Math.random() * FRASES_CERTO.length)];
+  falar(frase, true);
+  setTimeout(() => { if (jogo && jogo.rodando) perguntar(); }, 650);
+}
+
+function errou(bolha) {
+  bolha.viva = false;
+  bolha.el.classList.add("errada");
+  tocar("erro");
+  jogo.erros++; jogo.combo = 0;
+  const conta = `${jogo.conta.a} × ${jogo.conta.b} = ${jogo.conta.resposta}`;
+  if (!jogo.errosLista.includes(conta)) jogo.errosLista.push(conta);
+  if (!jogo.treino) jogo.tempo = Math.max(0, jogo.tempo - 3);
+  mostrarGanho(bolha, jogo.treino ? "❌" : "-3s");
+  atualizarPlacar();
+  balao.className = "balao errado";
+  balao.innerHTML = `${jogo.conta.a} × ${jogo.conta.b} = ?<small>Não é ${bolha.valor}! Tenta de novo</small>`;
+  mascote.classList.remove("feliz"); mascote.classList.add("triste");
+  setTimeout(() => mascote.classList.remove("triste"), 900);
+  falar(`Não é ${bolha.valor}. ${jogo.conta.a} vezes ${jogo.conta.b}`, true);
+  // a bolha errada volta lá de baixo com outro número
+  setTimeout(() => {
+    if (!jogo || !jogo.rodando) return;
+    const i = bolhas.indexOf(bolha);
+    if (i < 0) return;
+    bolha.el.remove();
+    const usados = bolhas.filter(b => b !== bolha).map(b => b.valor);
+    const novo = respostasErradas(jogo.conta, 6).find(v => !usados.includes(v)) || jogo.conta.resposta + 2;
+    bolhas[i] = criarBolha(novo, bolha.faixa, 0);
+  }, 650);
+}
+
+function respingos(bolha) {
+  const cx = bolha.xAtual + bolha.t / 2, cy = bolha.y + bolha.t / 2;
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement("i");
+    p.className = "pingo";
+    p.style.left = cx + "px"; p.style.top = cy + "px";
+    copo.appendChild(p);
+    const ang = i / 8 * Math.PI * 2, dist = 40 + Math.random() * 30;
+    p.animate([{ transform: "translate(0,0) scale(1)", opacity: 1 },
+               { transform: `translate(${Math.cos(ang) * dist}px, ${Math.sin(ang) * dist}px) scale(.3)`, opacity: 0 }],
+              { duration: 420, easing: "ease-out" }).onfinish = () => p.remove();
+  }
+}
+
+function mostrarGanho(bolha, texto) {
+  const g = document.createElement("div");
+  g.className = "ganhou"; g.textContent = texto;
+  g.style.left = (bolha.xAtual) + "px"; g.style.top = (bolha.y) + "px";
+  copo.appendChild(g);
+  setTimeout(() => g.remove(), 900);
+}
+
+function atualizarPlacar() {
+  el("placarBolhas").textContent = jogo.bolhas;
+  el("placarCombo").textContent = jogo.combo;
+  el("placarAcertos").textContent = jogo.acertos;
+  // o copo enche conforme você junta bolhas (cheio com 150)
+  liquido.style.height = (12 + Math.min(jogo.bolhas / 150, 1) * 70) + "%";
+}
+
+function mostrarDigitado() {
+  const d = el("digitado");
+  d.hidden = !digitando;
+  d.textContent = digitando;
+}
+
+/* bolhinhas decorativas do refrigerante */
+function fizz() {
+  if (!jogo || !jogo.rodando) return;
+  const f = document.createElement("i");
+  f.className = "fizz";
+  f.style.left = (10 + Math.random() * 80) + "%";
+  f.style.bottom = (Math.random() * parseFloat(liquido.style.height || "12")) + "%";
+  f.style.animationDuration = (1 + Math.random() * 1.5) + "s";
+  copo.appendChild(f);
+  setTimeout(() => f.remove(), 2600);
+}
+
+function quadro(agora) {
+  if (!jogo || !jogo.rodando) return;
+  const dt = Math.min(.05, (agora - ultimoQuadro) / 1000 || 0);
+  ultimoQuadro = agora;
+
+  const v = velocidade();
+  for (const b of bolhas) {
+    if (!b.viva) continue;
+    b.y -= v * dt;
+    b.fase += dt * 2.2;
+    b.xAtual = b.xBase + Math.sin(b.fase) * 7;
+    // passou do topo do copo: volta lá de baixo (a certa nunca some)
+    if (b.y < -b.t) b.y = copo.clientHeight + b.t * .2;
+    b.el.style.transform = `translate(${b.xAtual}px, ${b.y}px)`;
+  }
+
+  if (!jogo.treino) {
+    jogo.tempo -= dt;
+    const fracao = Math.max(0, jogo.tempo / TEMPO_TOTAL);
+    el("tempoCheio").style.width = (fracao * 100) + "%";
+    el("barraTempo").classList.toggle("acabando", jogo.tempo < 10);
+    const segundo = Math.ceil(jogo.tempo);
+    if (segundo <= 5 && segundo !== jogo.ultimoTic && segundo > 0) { jogo.ultimoTic = segundo; tocar("tic"); }
+    if (jogo.tempo <= 0) { terminar(); return; }
+  }
+  requestAnimationFrame(quadro);
+}
+
+function mostrarTela(id) {
+  for (const t of ["inicio", "jogo", "fim"]) el(t).hidden = t !== id;
+}
+
+function comecar(treino) {
+  mostrarTela("jogo");
+  for (const b of bolhas) b.el.remove();
+  bolhas = [];
+  jogo = { treino, rodando: false, travado: true, tempo: TEMPO_TOTAL, bolhas: 0, acertos: 0, erros: 0,
+           combo: 0, maiorCombo: 0, errosLista: [], conta: null, ultima: null, ultimoTic: null };
+  atualizarPlacar();
+  el("barraTempo").hidden = treino;
+  el("tempoCheio").style.width = "100%";
+  el("barraTempo").classList.remove("acabando");
+  balao.className = "balao";
+  balao.textContent = treino ? "Vamos treinar!" : "Prepara...";
+
+  // contagem 3, 2, 1
+  const cont = el("contagem");
+  cont.hidden = false;
+  let n = 3;
+  const passo = () => {
+    if (!jogo || el("jogo").hidden) return;
+    if (n === 0) {
+      cont.hidden = true;
+      jogo.rodando = true;
+      perguntar();
+      ultimoQuadro = performance.now();
+      requestAnimationFrame(quadro);
+      return;
+    }
+    cont.textContent = n; tocar("tic");
+    if (n === 3) falar(treino ? "Vamos treinar!" : "Prepara!", true);
+    n--; setTimeout(passo, 750);
+  };
+  passo();
+}
+
+function terminar() {
+  jogo.rodando = false;
+  pararDeFalar();
+  tocar("fim");
+  let recorde = false;
+  if (!jogo.treino && jogo.bolhas > salvo.recBolhas) { salvo.recBolhas = jogo.bolhas; recorde = true; }
+  if (jogo.maiorCombo > salvo.recCombo) salvo.recCombo = jogo.maiorCombo;
+  salvar(); mostrarRecordes();
+
+  el("fimBolhas").textContent = jogo.bolhas;
+  el("fimAcertos").textContent = jogo.acertos;
+  el("fimErros").textContent = jogo.erros;
+  el("fimCombo").textContent = jogo.maiorCombo;
+  el("novoRecorde").hidden = !recorde;
+  const total = jogo.acertos + jogo.erros;
+  const taxa = total ? jogo.acertos / total : 0;
+  el("estrelas").textContent = jogo.acertos >= 25 && taxa >= .9 ? "⭐⭐⭐" : jogo.acertos >= 12 && taxa >= .75 ? "⭐⭐☆" : jogo.acertos >= 4 ? "⭐☆☆" : "☆☆☆";
+  el("painelErros").hidden = jogo.errosLista.length === 0;
+  el("listaErros").innerHTML = jogo.errosLista.map(c => `<span>${c}</span>`).join("");
+  mostrarTela("fim");
+
+  const frase = recorde ? `Novo recorde! ${jogo.bolhas} bolhinhas!` : `Você juntou ${jogo.bolhas} bolhinhas!`;
+  setTimeout(() => {
+    const m = el("mascoteFim");
+    if (!salvo.voz || !("speechSynthesis" in window)) return;
+    const f = new SpeechSynthesisUtterance(frase);
+    f.lang = "pt-BR"; if (vozEscolhida) f.voice = vozEscolhida; f.pitch = 1.5;
+    f.onstart = () => m.classList.add("falando");
+    f.onend = f.onerror = () => m.classList.remove("falando");
+    speechSynthesis.speak(f);
+  }, 300);
+}
+
+function sair() {
+  if (jogo) jogo.rodando = false;
+  pararDeFalar();
+  for (const b of bolhas) b.el.remove();
+  bolhas = [];
+  if (jogo && jogo.treino && jogo.acertos + jogo.erros > 0) { terminar(); return; }
+  jogo = null;
+  mostrarTela("inicio");
+}
+
+el("btJogar").onclick = () => comecar(false);
+el("btTreino").onclick = () => comecar(true);
+el("btDeNovo").onclick = () => comecar(jogo ? jogo.treino : false);
+el("btMenu").onclick = () => { jogo = null; mostrarTela("inicio"); };
+el("btSair").onclick = sair;
+el("btRepetir").onclick = () => { if (jogo && jogo.conta) falar(`${jogo.conta.a} vezes ${jogo.conta.b}`); };
+
+// No computador dá pra digitar a resposta e apertar Enter
+document.addEventListener("keydown", ev => {
+  if (!jogo || !jogo.rodando) return;
+  if (ev.key === "Escape") { sair(); return; }
+  if (jogo.travado) return;
+  if (/^[0-9]$/.test(ev.key) && digitando.length < 3) { digitando += ev.key; mostrarDigitado(); }
+  else if (ev.key === "Backspace") { digitando = digitando.slice(0, -1); mostrarDigitado(); }
+  else if (ev.key === "Enter" && digitando) {
+    const n = +digitando;
+    digitando = ""; mostrarDigitado();
+    const alvo = bolhas.find(b => b.viva && b.valor === n);
+    if (alvo) tocouNaBolha(alvo);
+    else if (n !== jogo.conta.resposta) {
+      // digitou um número que nem está nas bolhas: conta como erro
+      jogo.erros++; jogo.combo = 0; tocar("erro");
+      if (!jogo.treino) jogo.tempo = Math.max(0, jogo.tempo - 3);
+      const conta = `${jogo.conta.a} × ${jogo.conta.b} = ${jogo.conta.resposta}`;
+      if (!jogo.errosLista.includes(conta)) jogo.errosLista.push(conta);
+      atualizarPlacar();
+      balao.className = "balao errado";
+      balao.innerHTML = `${jogo.conta.a} × ${jogo.conta.b} = ?<small>Não é ${n}! Tenta de novo</small>`;
+    }
+  }
+});
+
+// Se a tela mudar de tamanho, as bolhas se arrumam no copo
+window.addEventListener("resize", () => { for (const b of bolhas) posicionarX(b); });
+setInterval(fizz, 180);
+
+/* ============================================================
+   Aplicativo (instalar e jogar sem internet)
+   ============================================================ */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+let convite = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); convite = e; el("btInstalar").hidden = false; });
+el("btInstalar").onclick = async () => {
+  if (!convite) return;
+  el("btInstalar").hidden = true;
+  convite.prompt(); convite = null;
+};
+</script>
+</body>
+</html>
