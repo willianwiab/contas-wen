@@ -583,7 +583,7 @@ async function ligarIA(){
     const placa = await navigator.gpu.requestAdapter();
     if(!placa) return falhou('😕 Não achei uma placa de vídeo que a IA consiga usar. Por enquanto, o outro time vota.');
     const modelo = `Qwen2.5-1.5B-Instruct-${placa.features.has('shader-f16') ? 'q4f16_1' : 'q4f32_1'}-MLC`;
-    const webllm = await import('../pokezap/web-llm-0.2.84.js');
+    const webllm = await import('./web-llm-0.2.84.js');
     iaLocal = await webllm.CreateMLCEngine(modelo, { initProgressCallback: r => {
       const p = Math.round((r.progress || 0) * 100);
       $('ia-barra').hidden = false; $('ia-barra').value = r.progress || 0;
