@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f5f99"/><stop offset="1" stop-color="#06162b"/></linearGradient>
+    <linearGradient id="agua" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7ddcff"/><stop offset="1" stop-color="#2a8fd6"/></linearGradient>
+    <radialGradient id="b" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#ffffff"/><stop offset=".25" stop-color="#bfeeff"/><stop offset="1" stop-color="#3fb2f0"/></radialGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#f)"/>
+  <path d="M330 70 H540 L522 320 Q519 340 498 340 H372 Q351 340 348 320 Z" fill="rgba(200,235,255,.16)" stroke="#d8f2ff" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M342 210 H528 L522 320 Q519 334 498 334 H372 Q351 334 348 320 Z" fill="url(#agua)" opacity=".85"/>
+  <g font-family="Arial Black, Arial, sans-serif" font-weight="900" text-anchor="middle" fill="#fff" stroke="#0b2a4a" stroke-width="3" paint-order="stroke">
+    <circle cx="385" cy="150" r="30" fill="url(#b)"/><text x="385" y="162" font-size="30" stroke-width="3">56</text>
+    <circle cx="470" cy="115" r="30" fill="url(#b)"/><text x="470" y="127" font-size="30">48</text>
+    <circle cx="430" cy="250" r="30" fill="url(#b)"/><text x="430" y="262" font-size="30">63</text>
+    <circle cx="495" cy="215" r="24" fill="url(#b)"/><text x="495" y="225" font-size="24">54</text>
+  </g>
+  <circle cx="140" cy="200" r="70" fill="url(#b)"/>
+  <ellipse cx="118" cy="194" rx="9" ry="12" fill="#062033"/><ellipse cx="162" cy="194" rx="9" ry="12" fill="#062033"/>
+  <path d="M122 220 Q140 242 158 220 Z" fill="#062033"/>
+  <rect x="60" y="40" width="230" height="80" rx="24" fill="#fff"/>
+  <path d="M120 118 l10 30 l22 -30 z" fill="#fff"/>
+  <text x="175" y="97" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="42" text-anchor="middle" fill="#0b2a4a">7 × 8 = ?</text>
+</svg>

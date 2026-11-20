@@ -5,6 +5,75 @@
   },
   "jogos": [
     {
+      "slug": "bolhas-da-tabuada",
+      "nome": "Bolhas da Tabuada",
+      "descricao": "Uma bolhinha fala a conta e as respostas sobem num copo. Estoure a bolha certa e junte o máximo de bolhinhas! Tabuada do 1 ao 15.",
+      "comoFunciona": "A bolhinha fala a conta em voz alta, tipo \"7 vezes 8\". Cinco bolhas sobem no copo, cada uma com um número, e só uma tem a resposta certa. Acertou, ela estoura e as bolhinhas vão pro seu copo. Errou, perde 3 segundos.",
+      "objetivo": "Juntar o máximo de bolhinhas no copo em 60 segundos e bater o seu recorde.",
+      "mecanicas": [
+        "🗣️ A bolhinha fala a conta em voz alta",
+        "Tabuadas do 1 ao 15: você escolhe quais quer treinar",
+        "Opção de multiplicar até ×10 ou até ×15",
+        "Respostas erradas parecidas com a certa, pra precisar pensar",
+        "🔥 Sequência de acertos dá mais bolhinhas",
+        "A cada 5 acertos seguidos você ganha +3 segundos",
+        "As bolhas sobem cada vez mais rápido",
+        "O copo vai enchendo conforme você junta bolhinhas",
+        "Modo treino sem tempo",
+        "No final mostra as contas que você errou pra treinar",
+        "No computador dá pra digitar a resposta e apertar Enter",
+        "Dá pra instalar como aplicativo e jogar sem internet"
+      ],
+      "categoria": "Educativo",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": 1,
+      "recorde": "",
+      "pontuacao": "Cada acerto vale 1 bolhinha, mais 1 a cada 3 acertos seguidos. Conta com número maior que 10 vale 1 bolhinha a mais.",
+      "popularidade": 90,
+      "imagem": "assets/images/bolhas-da-tabuada.svg",
+      "trailer": "",
+      "url": "../bolhas-da-tabuada/index.html",
+      "galeria": [],
+      "historia": "Uma bolhinha de refrigerante que adora tabuada resolveu fazer perguntas pra todo mundo. Quem acerta ganha as bolhas dela!",
+      "comoJogar": "Escute (ou leia) a conta que a bolhinha fala e toque na bola com a resposta certa antes do tempo acabar. Errar tira 3 segundos.",
+      "controles": [
+        {
+          "tecla": "Clique / Toque",
+          "acao": "Estourar a bolha"
+        },
+        {
+          "tecla": "Números + Enter",
+          "acao": "Digitar a resposta no computador"
+        },
+        {
+          "tecla": "🗣️",
+          "acao": "A bolhinha fala a conta de novo"
+        },
+        {
+          "tecla": "Esc",
+          "acao": "Sair da partida"
+        }
+      ],
+      "curiosidades": [
+        "A voz é do próprio navegador, com um tom mais fininho pra parecer uma bolhinha.",
+        "Os barulhos de bolha estourando são feitos na hora pelo jogo, sem nenhum arquivo de som.",
+        "As respostas erradas não são sorteadas de qualquer jeito: são as que a gente mais confunde, tipo uma tabuada a mais ou a menos."
+      ],
+      "creditos": "Ideia do Jojo, feito com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Primeira versão: tabuada do 1 ao 15, bolhinha que fala, modo treino e recorde."
+        }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "dittospokedex",
       "nome": "Ditto's Pokédex",
       "descricao": "Os 1025 Pokémon: quais já chegaram no Pokémon GO, quais ainda não, e quais você já pegou.",

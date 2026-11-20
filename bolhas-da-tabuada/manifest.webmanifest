@@ -1,0 +1,22 @@
+{
+  "id": "/contas-wen/bolhas-da-tabuada/",
+  "name": "Bolhas da Tabuada",
+  "short_name": "Bolhas",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0b2a4a",
+  "theme_color": "#0b2a4a",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["games", "education", "kids"],
+  "description": "A bolhinha fala a conta e você estoura a bolha com a resposta certa. Tabuada até o 15.",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

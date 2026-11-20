@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f5f99"/><stop offset="1" stop-color="#06162b"/></linearGradient>
+    <linearGradient id="agua" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7ddcff"/><stop offset="1" stop-color="#2a8fd6"/></linearGradient>
+    <radialGradient id="b" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#ffffff"/><stop offset=".25" stop-color="#bfeeff"/><stop offset="1" stop-color="#3fb2f0"/></radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#f)"/>
+  <!-- copo -->
+  <path d="M130 150 H382 L360 430 Q356 456 330 456 H182 Q156 456 152 430 Z" fill="rgba(200,235,255,.16)" stroke="#d8f2ff" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M145 300 H367 L360 430 Q356 448 330 448 H182 Q156 448 152 430 Z" fill="url(#agua)" opacity=".85"/>
+  <!-- bolhas -->
+  <circle cx="205" cy="360" r="30" fill="url(#b)" opacity=".95"/>
+  <circle cx="300" cy="395" r="20" fill="url(#b)" opacity=".9"/>
+  <circle cx="290" cy="250" r="44" fill="url(#b)"/>
+  <text x="290" y="266" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="44" text-anchor="middle" fill="#fff" stroke="#0b2a4a" stroke-width="4" paint-order="stroke">×</text>
+  <!-- bolhinha que fala -->
+  <circle cx="200" cy="108" r="62" fill="url(#b)"/>
+  <ellipse cx="180" cy="102" rx="8" ry="11" fill="#062033"/><ellipse cx="220" cy="102" rx="8" ry="11" fill="#062033"/>
+  <path d="M184 126 Q200 146 216 126 Z" fill="#062033"/>
+  <ellipse cx="164" cy="122" rx="8" ry="5" fill="#ff78aa" opacity=".6"/><ellipse cx="236" cy="122" rx="8" ry="5" fill="#ff78aa" opacity=".6"/>
+  <path d="M276 70 h96 a22 22 0 0 1 22 22 v28 a22 22 0 0 1 -22 22 h-60 l-22 20 v-20 h-14 a22 22 0 0 1 -22 -22 v-28 a22 22 0 0 1 22 -22 z" fill="#fff"/>
+  <text x="324" y="122" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="40" text-anchor="middle" fill="#0b2a4a">?</text>
+</svg>
