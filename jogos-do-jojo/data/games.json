@@ -125,6 +125,63 @@
       "ranking": []
     },
     {
+      "slug": "quem-e-esse-pokemon",
+      "nome": "Quem é esse Pokémon?",
+      "descricao": "Adivinhe o Pokémon pela sombra! Níveis, recorde, dicas, troféus, loja, amigos e desafio.",
+      "comoFunciona": "Aparece a sombra de um Pokémon e você diz quem é, escolhendo entre 4 opções ou escrevendo o nome. Tem vários níveis, jeitos de jogar e tipos de pergunta (sombra, grito, cor, evolução, letras embaralhadas).",
+      "objetivo": "Acertar o máximo de Pokémon e ganhar todos os troféus.",
+      "mecanicas": [
+        "Níveis Fácil, Médio, Difícil (1025 Pokémon) ou por geração",
+        "10 perguntas, contra o tempo, 3 vidas, Chefão, Escada e mais",
+        "Sombra, grito, cor, evolução e letras embaralhadas",
+        "💡 Dicas e 🔥 sequência",
+        "✨ Shiny e modo shiny",
+        "🏆 1.125 troféus, 🪙 AcertoPoke e loja",
+        "👥 Amigos por código e ⚔️ desafio",
+        "🎬 Gravar vídeo da partida",
+        "Jojo adm com senha secreta"
+      ],
+      "categoria": "Pokémon",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Média",
+      "fases": null,
+      "recorde": "",
+      "pontuacao": "10 pontos por acerto (menos com dica) + bônus de sequência.",
+      "popularidade": 96,
+      "imagem": "assets/images/quem-e-esse-pokemon.svg",
+      "banner": "",
+      "trailer": "",
+      "url": "../quem-e-esse-pokemon/index.html",
+      "galeria": [],
+      "historia": "É o jogo da abertura do desenho: a sombra aparece e alguém grita quem é!",
+      "comoJogar": "Olhe a sombra e escolha o nome certo (ou escreva). No computador, as teclas 1 a 4 escolhem a resposta.",
+      "controles": [
+        {
+          "tecla": "Toque / clique",
+          "acao": "Escolher e jogar"
+        },
+        {
+          "tecla": "1 · 2 · 3 · 4",
+          "acao": "Escolher a resposta"
+        }
+      ],
+      "curiosidades": [
+        "Aceita um errinho de letra quando você escreve o nome."
+      ],
+      "creditos": "Criado por Jojo com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Lançamento!"
+        }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "butterpoke",
       "nome": "ButterPoke",
       "descricao": "Digite o número da carta de Pokémon e o ButterPoke mostra quanto ela vale. Com coleção, jogos de cartas e duelo.",
