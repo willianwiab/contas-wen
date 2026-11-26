@@ -1,0 +1,22 @@
+{
+  "id": "/contas-wen/quiz-de-genio/",
+  "name": "Quiz de Gênio",
+  "short_name": "Quiz Gênio",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#120a2e",
+  "theme_color": "#120a2e",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["games", "education", "kids"],
+  "description": "Perguntas impossíveis de ciência, espaço, matemática e mundo. Qual é a massa da Terra? E a do universo?",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
