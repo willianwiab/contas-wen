@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <radialGradient id="f" cx="50%" cy="20%" r="90%"><stop offset="0" stop-color="#4b2a9e"/><stop offset="1" stop-color="#0a0620"/></radialGradient>
+    <linearGradient id="c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9ad5"/><stop offset="1" stop-color="#d9479a"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#f)"/>
+  <g fill="#fff" opacity=".8"><circle cx="40" cy="40" r="3"/><circle cx="600" cy="60" r="4"/><circle cx="580" cy="320" r="3"/><circle cx="300" cy="30" r="2"/><circle cx="60" cy="300" r="4"/><circle cx="450" cy="200" r="2"/></g>
+  <g transform="translate(40 60) scale(.55)">
+    <path d="M256 110c-78 0-138 52-138 120 0 40 20 70 50 92v48h176v-48c30-22 50-52 50-92 0-68-60-120-138-120z" fill="url(#c)" stroke="#3a0d2a" stroke-width="10"/>
+    <path d="M200 190q25-30 50 0t50 0M190 250q30-28 60 0t60 0" fill="none" stroke="#3a0d2a" stroke-width="10" stroke-linecap="round"/>
+    <rect x="168" y="372" width="176" height="34" rx="14" fill="#ffd45c" stroke="#3a0d2a" stroke-width="10"/>
+  </g>
+  <g font-family="Arial Black, Arial, sans-serif" font-weight="900">
+    <text x="440" y="110" font-size="38" text-anchor="middle" fill="#ffd45c" stroke="#3a1a00" stroke-width="4" paint-order="stroke">Massa da Terra?</text>
+    <rect x="320" y="140" width="240" height="46" rx="14" fill="#62e6a0"/><text x="440" y="172" font-size="24" text-anchor="middle" fill="#06301b">5,97 × 10²⁴ kg</text>
+    <rect x="320" y="198" width="240" height="46" rx="14" fill="#2a1f5c" stroke="#fff" stroke-opacity=".3" stroke-width="2"/><text x="440" y="230" font-size="24" text-anchor="middle" fill="#fff">7,35 × 10²² kg</text>
+    <rect x="320" y="256" width="240" height="46" rx="14" fill="#2a1f5c" stroke="#fff" stroke-opacity=".3" stroke-width="2"/><text x="440" y="288" font-size="24" text-anchor="middle" fill="#fff">1,99 × 10³⁰ kg</text>
+  </g>
+</svg>

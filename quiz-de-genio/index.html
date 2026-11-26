@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#120a2e">
+<meta name="description" content="Quiz de Gênio: perguntas impossíveis de ciência, espaço, matemática e mundo. Qual é a massa da Terra? E a do universo?">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quiz de Gênio">
+<title>Quiz de Gênio</title>
+<style>
+  :root {
+    --fundo1:#1d1150; --fundo2:#0a0620;
+    --ink:#f6f2ff; --dim:#b7a9e6;
+    --rosa:#ff7ac6; --rosa2:#c23a86;
+    --ouro:#ffd45c; --verde:#62e6a0; --vermelho:#ff5a6e; --azul:#6fc8ff;
+    --r:18px;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { height:100%; }
+  body {
+    margin:0; color:var(--ink); overflow:hidden;
+    font-family:"Trebuchet MS", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(800px 500px at 50% -10%, #4b2a9e 0%, transparent 60%),
+      radial-gradient(600px 400px at 100% 110%, #3a1260 0%, transparent 60%),
+      linear-gradient(var(--fundo1), var(--fundo2));
+  }
+  #estrelas { position:fixed; inset:0; pointer-events:none; }
+  button { font:inherit; color:inherit; cursor:pointer; }
+  [hidden] { display:none !important; }
+  .tela {
+    position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+    padding:max(14px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
+    overflow-y:auto;
+  }
+  .caixa { width:min(560px, 100%); display:flex; flex-direction:column; align-items:center; gap:14px; margin:auto 0; }
+  h1 {
+    margin:0; font-size:clamp(2.3rem, 10vw, 3.6rem); line-height:1; text-align:center; color:var(--ouro);
+    text-shadow:0 4px 0 #8a5a00, 0 8px 18px rgba(0,0,0,.5);
+  }
+  .cerebro { font-size:4.5rem; line-height:1; animation:pula 2s ease-in-out infinite; }
+  @keyframes pula { 50% { transform:translateY(-8px) rotate(-4deg); } }
+  .sub { margin:0; color:var(--dim); text-align:center; font-size:1.05rem; }
+  .botao {
+    width:100%; border:0; border-radius:var(--r); padding:15px 18px; font-size:1.2rem; font-weight:800;
+    background:var(--verde); color:#06301b; box-shadow:0 6px 0 #2a9a5f; transition:transform .08s; text-align:left;
+    display:flex; align-items:center; gap:12px;
+  }
+  .botao:active { transform:translateY(4px); box-shadow:0 2px 0 #2a9a5f; }
+  .botao small { display:block; font-weight:600; font-size:.85rem; opacity:.8; }
+  .botao .em { font-size:1.8rem; }
+  .botao.rosa { background:var(--rosa); color:#3a0d2a; box-shadow:0 6px 0 var(--rosa2); }
+  .botao.rosa:active { box-shadow:0 2px 0 var(--rosa2); }
+  .botao.vermelho { background:var(--vermelho); color:#3a0010; box-shadow:0 6px 0 #a3203a; }
+  .botao.vermelho:active { box-shadow:0 2px 0 #a3203a; }
+  .botao.cinza { background:#352a66; color:var(--ink); box-shadow:0 6px 0 #1f1745; justify-content:center; text-align:center; }
+  .botao.cinza:active { box-shadow:0 2px 0 #1f1745; }
+  .recordes { font-size:.95rem; color:var(--dim); text-align:center; line-height:1.5; }
+  .recordes b { color:var(--ouro); }
+
+  /* ---------- jogo ---------- */
+  #jogo .caixa { margin:0; gap:12px; flex:1; }
+  .topo { width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; }
+  .vidas { font-size:1.3rem; letter-spacing:2px; }
+  .pontos { color:var(--ouro); font-size:1.2rem; }
+  .sair { background:rgba(255,255,255,.1); border:0; border-radius:12px; padding:6px 12px; font-size:.9rem; }
+  .barra { width:100%; height:12px; border-radius:99px; background:rgba(255,255,255,.12); overflow:hidden; }
+  .barra > div { height:100%; width:100%; background:linear-gradient(90deg, var(--verde), var(--ouro)); border-radius:99px; transition:width .1s linear; }
+  .barra.pouco > div { background:var(--vermelho); }
+  .info { width:100%; display:flex; justify-content:space-between; color:var(--dim); font-size:.9rem; font-weight:700; }
+  .nivel { padding:2px 10px; border-radius:99px; background:rgba(255,255,255,.1); }
+  .nivel.n3 { background:var(--vermelho); color:#3a0010; }
+  .nivel.n2 { background:var(--rosa); color:#3a0d2a; }
+  .pergunta {
+    width:100%; background:rgba(255,255,255,.07); border:2px solid rgba(255,255,255,.14); border-radius:var(--r);
+    padding:20px 16px; text-align:center; font-size:clamp(1.25rem, 5vw, 1.6rem); font-weight:800; line-height:1.3;
+    min-height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  }
+  .pergunta .tema { font-size:2.2rem; }
+  .respostas { width:100%; display:grid; grid-template-columns:1fr; gap:10px; }
+  @media (min-width:560px) { .respostas { grid-template-columns:1fr 1fr; } }
+  .resp {
+    border:2px solid rgba(255,255,255,.2); background:#2a1f5c; border-radius:16px; padding:14px 12px;
+    font-size:1.1rem; font-weight:700; min-height:58px; box-shadow:0 5px 0 #150f35; transition:transform .08s, opacity .2s;
+  }
+  .resp:active { transform:translateY(3px); box-shadow:0 2px 0 #150f35; }
+  .resp.certa { background:var(--verde); color:#06301b; border-color:var(--verde); }
+  .resp.errada { background:var(--vermelho); color:#3a0010; border-color:var(--vermelho); animation:treme .35s; }
+  .resp.some { opacity:.15; pointer-events:none; }
+  .resp:disabled { cursor:default; }
+  @keyframes treme { 25% { transform:translateX(-6px); } 75% { transform:translateX(6px); } }
+  .ajudas { width:100%; display:flex; gap:8px; }
+  .ajuda { flex:1; border:2px solid var(--azul); background:transparent; border-radius:14px; padding:8px 4px; font-weight:800; font-size:.95rem; color:var(--azul); }
+  .ajuda:disabled { opacity:.3; cursor:default; }
+  .sabia {
+    width:100%; border-radius:var(--r); padding:14px 16px; background:rgba(111,200,255,.12); border:2px solid rgba(111,200,255,.4);
+    font-size:1rem; line-height:1.45; animation:entra .3s;
+  }
+  .sabia b.t { display:block; font-size:1.1rem; margin-bottom:4px; }
+  @keyframes entra { from { opacity:0; transform:translateY(10px); } }
+
+  /* ---------- fim ---------- */
+  .titulo { font-size:1.6rem; font-weight:900; color:var(--ouro); text-align:center; }
+  .grande { font-size:3.4rem; font-weight:900; line-height:1; }
+  .lista { width:100%; display:flex; flex-direction:column; gap:8px; max-height:40vh; overflow-y:auto; }
+  .lista div { background:rgba(255,255,255,.06); border-radius:12px; padding:10px 12px; font-size:.92rem; line-height:1.35; }
+  .lista b { color:var(--verde); }
+  .rodape { font-size:.8rem; color:var(--dim); text-align:center; opacity:.8; }
+  .pulso { animation:pulso .5s; }
+  @keyframes pulso { 50% { transform:scale(1.15); } }
+</style>
+</head>
+<body>
+<canvas id="estrelas"></canvas>
+
+<!-- INÍCIO -->
+<section class="tela" id="inicio">
+  <div class="caixa">
+    <div class="cerebro">🧠</div>
+    <h1>Quiz de Gênio</h1>
+    <p class="sub">Perguntas impossíveis de verdade.<br>Qual é a massa da Terra? E a do <b>universo</b>? 🌌</p>
+    <button class="botao" data-modo="genio"><span class="em">🎓</span><span>Modo Gênio<small>15 perguntas, 3 vidas, cada vez mais difícil</small></span></button>
+    <button class="botao rosa" data-modo="einstein"><span class="em">👨‍🔬</span><span>Modo Einstein<small>Só as muito difíceis, 2 vidas, 15 segundos</small></span></button>
+    <button class="botao vermelho" data-modo="impossivel"><span class="em">💀</span><span>Modo Impossível<small>Só as impossíveis, 1 vida, 10 segundos, sem ajuda</small></span></button>
+    <button class="botao cinza" data-modo="treino">📚 Treino (sem tempo e sem perder vida)</button>
+    <div class="recordes" id="recordes"></div>
+    <p class="rodape">Quiz de Gênio · ideia do Jojo, feito com o Claude 🧠</p>
+  </div>
+</section>
+
+<!-- JOGO -->
+<section class="tela" id="jogo" hidden>
+  <div class="caixa">
+    <div class="topo">
+      <button class="sair" id="sair">✖ Sair</button>
+      <span class="vidas" id="vidas"></span>
+      <span class="pontos" id="pontos">0</span>
+    </div>
+    <div class="barra" id="barra"><div></div></div>
+    <div class="info"><span id="contador"></span><span class="nivel" id="nivel"></span></div>
+    <div class="pergunta" id="pergunta"></div>
+    <div class="respostas" id="respostas"></div>
+    <div class="ajudas" id="ajudas">
+      <button class="ajuda" id="meio">✂️ 50/50</button>
+      <button class="ajuda" id="pular">⏭️ Pular</button>
+      <button class="ajuda" id="tempo">⏳ +10 s</button>
+    </div>
+    <div class="sabia" id="sabia" hidden></div>
+    <button class="botao cinza" id="proxima" hidden>Próxima ➜</button>
+  </div>
+</section>
+
+<!-- FIM -->
+<section class="tela" id="fim" hidden>
+  <div class="caixa">
+    <div class="cerebro" id="fimEmoji">🧠</div>
+    <div class="titulo" id="fimTitulo"></div>
+    <div class="grande" id="fimPontos"></div>
+    <p class="sub" id="fimTexto"></p>
+    <div class="lista" id="fimLista"></div>
+    <button class="botao" id="denovo" style="justify-content:center">🔁 Jogar de novo</button>
+    <button class="botao cinza" id="menu">🏠 Menu</button>
+  </div>
+</section>
+
+<script>
+/* ============================================================
+   QUIZ DE GÊNIO
+   Cada pergunta tem:
+     n = nível (1 difícil, 2 muito difícil, 3 impossível)
+     t = emoji do tema
+     p = pergunta
+     c = resposta certa
+     e = três respostas erradas
+     s = "você sabia?" que aparece depois
+   Pra colocar pergunta nova é só copiar uma linha e trocar.
+   ============================================================ */
+const PERGUNTAS = [
+  // ---------- nível 1: difícil ----------
+  {n:1,t:'🦴',p:'Quantos ossos tem o corpo de um adulto?',c:'206',e:['106','306','150'],s:'Um bebê nasce com uns 300 ossos. Vários vão se juntando enquanto a gente cresce, e sobram 206.'},
+  {n:1,t:'🪐',p:'Qual é o maior planeta do Sistema Solar?',c:'Júpiter',e:['Saturno','Netuno','Urano'],s:'Cabem mais de 1.300 Terras dentro de Júpiter!'},
+  {n:1,t:'🦷',p:'Quantos dentes tem um adulto (contando os do siso)?',c:'32',e:['28','36','24'],s:'Criança tem 20 dentes de leite. O adulto tem 32 se nascerem os 4 do siso.'},
+  {n:1,t:'🐙',p:'Quantos corações tem um polvo?',c:'3',e:['1','2','8'],s:'Dois corações mandam sangue pras guelras e um manda pro resto do corpo. E o sangue dele é azul!'},
+  {n:1,t:'🇦🇺',p:'Qual é a capital da Austrália?',c:'Camberra',e:['Sydney','Melbourne','Perth'],s:'Muita gente acha que é Sydney! Camberra foi construída de propósito pra ser a capital, porque Sydney e Melbourne brigavam pelo título.'},
+  {n:1,t:'🌬️',p:'Qual gás existe em MAIOR quantidade no ar que a gente respira?',c:'Nitrogênio',e:['Oxigênio','Gás carbônico','Hélio'],s:'O ar tem uns 78% de nitrogênio e só uns 21% de oxigênio.'},
+  {n:1,t:'🌕',p:'Em que ano o ser humano pisou na Lua pela primeira vez?',c:'1969',e:['1959','1979','1989'],s:'Foi o Neil Armstrong, na missão Apollo 11, em 20 de julho de 1969.'},
+  {n:1,t:'♟️',p:'Quantas casas tem um tabuleiro de xadrez?',c:'64',e:['36','49','100'],s:'São 8 fileiras de 8 casas: 8 × 8 = 64.'},
+  {n:1,t:'🧪',p:'Qual é o símbolo químico do ouro?',c:'Au',e:['Ou','Go','Ag'],s:'Vem de "aurum", ouro em latim. Ag é a prata (argentum).'},
+  {n:1,t:'🏔️',p:'Qual é a montanha mais alta do mundo?',c:'Everest',e:['K2','Aconcágua','Kilimanjaro'],s:'O Everest tem 8.849 metros. Lá em cima o ar tem só um terço do oxigênio daqui de baixo.'},
+  {n:1,t:'🐆',p:'Qual é o animal terrestre mais rápido?',c:'Guepardo',e:['Leão','Cavalo','Avestruz'],s:'O guepardo chega a uns 100 km/h, mas só aguenta correr assim por uns 20 ou 30 segundos.'},
+  {n:1,t:'🐋',p:'Qual é o maior animal que já existiu na Terra?',c:'Baleia-azul',e:['Tiranossauro','Megalodon','Elefante-africano'],s:'A baleia-azul pode passar de 30 metros e 150 toneladas. É maior que qualquer dinossauro!'},
+  {n:1,t:'🌡️',p:'Qual metal é líquido na temperatura ambiente?',c:'Mercúrio',e:['Ferro','Alumínio','Chumbo'],s:'Por isso ele era usado nos termômetros antigos.'},
+  {n:1,t:'🧬',p:'Quantos cromossomos tem uma pessoa?',c:'46',e:['23','48','64'],s:'São 23 pares: metade veio da mãe e metade do pai.'},
+
+  // ---------- nível 2: muito difícil ----------
+  {n:2,t:'💡',p:'Qual é a velocidade da luz?',c:'Uns 300 mil km por segundo',e:['Uns 30 mil km por segundo','Uns 3 mil km por segundo','Uns 3 milhões de km por segundo'],s:'São 299.792 km por segundo. Dá pra dar mais de 7 voltas na Terra em 1 segundo!'},
+  {n:2,t:'☀️',p:'Quanto tempo a luz do Sol leva pra chegar na Terra?',c:'Uns 8 minutos',e:['Na hora, 0 segundos','Uns 8 segundos','Umas 8 horas'],s:'São uns 8 minutos e 20 segundos. Então o Sol que você vê é o Sol de 8 minutos atrás!'},
+  {n:2,t:'📏',p:'Qual é a distância da Terra até o Sol?',c:'Uns 150 milhões de km',e:['Uns 15 milhões de km','Uns 1,5 bilhão de km','Uns 384 mil km'],s:'384 mil km é a distância até a Lua. Até o Sol é quase 400 vezes mais longe.'},
+  {n:2,t:'🔊',p:'Qual é a velocidade do som no ar?',c:'Uns 343 metros por segundo',e:['Uns 34 metros por segundo','Uns 3.430 metros por segundo','A mesma da luz'],s:'Por isso o trovão chega depois do raio: a cada 3 segundos de diferença, o raio caiu a 1 km.'},
+  {n:2,t:'🏜️',p:'Qual é o MAIOR deserto do mundo?',c:'Antártida',e:['Saara','Atacama','Gobi'],s:'Deserto é lugar onde quase não chove, mesmo sendo gelado! O Saara é o maior deserto QUENTE.'},
+  {n:2,t:'🪐',p:'Em qual planeta um dia dura MAIS que um ano?',c:'Vênus',e:['Mercúrio','Marte','Netuno'],s:'Vênus leva 243 dias da Terra pra girar uma vez, e só 225 pra dar a volta no Sol.'},
+  {n:2,t:'🌀',p:'Qual planeta gira "deitado", de lado?',c:'Urano',e:['Saturno','Júpiter','Marte'],s:'Urano é inclinado quase 98 graus. Os cientistas acham que algo gigante bateu nele há muito tempo.'},
+  {n:2,t:'👂',p:'Qual é o menor osso do corpo humano?',c:'Estribo, no ouvido',e:['Falange do dedinho do pé','Rótula, no joelho','Cóccix'],s:'O estribo tem uns 3 milímetros. E o maior osso é o fêmur, na coxa.'},
+  {n:2,t:'🇨🇦',p:'Qual é a capital do Canadá?',c:'Ottawa',e:['Toronto','Montreal','Vancouver'],s:'Toronto é a maior cidade, mas a capital é Ottawa.'},
+  {n:2,t:'🌊',p:'Qual é a profundidade do ponto mais fundo do oceano?',c:'Quase 11 km',e:['Uns 2 km','Uns 5 km','Uns 50 km'],s:'É a Fossa das Marianas. Se o Everest fosse colocado lá dentro, ainda sobrariam uns 2 km de água em cima!'},
+  {n:2,t:'🔢',p:'Quanto é 2 elevado a 10?',c:'1.024',e:['20','100','1.000'],s:'2×2×2×2×2×2×2×2×2×2 = 1.024. Por isso 1 kilobyte às vezes vale 1.024 bytes.'},
+  {n:2,t:'➕',p:'Quanto dá somar todos os números de 1 até 100?',c:'5.050',e:['1.000','5.000','10.100'],s:'O matemático Gauss descobriu o truque criança: 1+100, 2+99, 3+98… são 50 pares de 101 = 5.050.'},
+  {n:2,t:'🔍',p:'Qual desses é um número primo?',c:'97',e:['51','57','91'],s:'Pegadinha! 51 = 3×17, 57 = 3×19 e 91 = 7×13. Só o 97 não divide por ninguém.'},
+  {n:2,t:'⏱️',p:'Quantos segundos tem um dia?',c:'86.400',e:['3.600','24.000','144.000'],s:'24 horas × 60 minutos × 60 segundos = 86.400.'},
+  {n:2,t:'❤️',p:'Quantas vezes o coração bate em um dia, mais ou menos?',c:'Umas 100 mil',e:['Umas 1 mil','Umas 10 mil','Uns 10 milhões'],s:'E em uma vida inteira passa de 2 bilhões de batidas!'},
+  {n:2,t:'🌍',p:'Qual é a largura (diâmetro) da Terra?',c:'Uns 12.700 km',e:['Uns 1.270 km','Uns 127 mil km','Uns 40 mil km'],s:'40 mil km é a volta inteira na Terra (o contorno), não a largura.'},
+  {n:2,t:'🏞️',p:'Qual é o rio com MAIS água do mundo?',c:'Amazonas',e:['Nilo','Mississippi','Yangtzé'],s:'Sozinho, o Amazonas joga no mar uns 20% de toda a água doce que os rios do mundo levam pro oceano.'},
+  {n:2,t:'🩸',p:'Quantos litros de sangue tem um adulto?',c:'Uns 5 litros',e:['Uns 2 litros','Uns 12 litros','Uns 20 litros'],s:'Cada gotinha de sangue dá uma volta completa no corpo em mais ou menos 1 minuto.'},
+  {n:2,t:'🥚',p:'Qual é a fórmula do sal de cozinha?',c:'NaCl',e:['H₂O','CO₂','NaOH'],s:'Na é o sódio e Cl é o cloro. Separados são perigosos, juntos viram o sal da batata frita!'},
+
+  // ---------- nível 3: IMPOSSÍVEL ----------
+  {n:3,t:'🌍',p:'Qual é a massa da Terra?',c:'5,97 × 10²⁴ kg',e:['5,97 × 10¹⁸ kg','7,35 × 10²² kg','1,99 × 10³⁰ kg'],s:'São quase 6 trilhões de trilhões de toneladas! 7,35 × 10²² kg é a massa da Lua e 1,99 × 10³⁰ kg é a do Sol.'},
+  {n:3,t:'🌌',p:'Qual é a massa de toda a matéria normal do universo que dá pra ver?',c:'Uns 10⁵³ kg',e:['Uns 10²⁴ kg','Uns 10³⁰ kg','Uns 10⁸⁰ kg'],s:'É 1 com 53 zeros! E tem um detalhe: a matéria escura pesa uns 5 vezes mais e ninguém sabe o que ela é. Já 10⁸⁰ é a quantidade de átomos do universo, não a massa.'},
+  {n:3,t:'🌕',p:'Qual é a massa da Lua?',c:'7,35 × 10²² kg',e:['5,97 × 10²⁴ kg','7,35 × 10¹⁵ kg','1,99 × 10³⁰ kg'],s:'A Lua pesa umas 81 vezes menos que a Terra.'},
+  {n:3,t:'☀️',p:'Qual é a massa do Sol?',c:'1,99 × 10³⁰ kg',e:['5,97 × 10²⁴ kg','1,99 × 10²⁰ kg','1,99 × 10⁴⁰ kg'],s:'O Sol sozinho tem 99,8% de toda a massa do Sistema Solar.'},
+  {n:3,t:'⏳',p:'Qual é a idade do universo?',c:'Uns 13,8 bilhões de anos',e:['Uns 4,5 bilhões de anos','Uns 138 milhões de anos','Uns 1 trilhão de anos'],s:'4,5 bilhões de anos é a idade da Terra. O universo é umas 3 vezes mais velho.'},
+  {n:3,t:'🪨',p:'Qual é a idade da Terra?',c:'Uns 4,54 bilhões de anos',e:['Uns 6 mil anos','Uns 65 milhões de anos','Uns 13,8 bilhões de anos'],s:'Os dinossauros sumiram há uns 66 milhões de anos, mas a Terra é MUITO mais velha.'},
+  {n:3,t:'🔥',p:'Qual é a temperatura no centro do Sol?',c:'Uns 15 milhões de °C',e:['Uns 5.500 °C','Uns 150 mil °C','Uns 15 bilhões de °C'],s:'5.500 °C é só a superfície do Sol. No centro, os átomos se juntam e fazem a energia que esquenta a Terra.'},
+  {n:3,t:'🥶',p:'Qual é a temperatura do zero absoluto, o frio mais frio que existe?',c:'−273,15 °C',e:['−100 °C','−459,67 °C','−1.000 °C'],s:'Mais frio que isso é impossível! E −459,67 é o zero absoluto em Fahrenheit, não em Celsius. Pegadinha!'},
+  {n:3,t:'⚗️',p:'Quanto vale o número de Avogadro?',c:'6,022 × 10²³',e:['3,14 × 10²³','6,022 × 10³²','9,81 × 10²³'],s:'É quantos átomos tem em 12 gramas de carbono. É um número com 24 algarismos: 602.200.000.000.000.000.000.000!'},
+  {n:3,t:'⭐',p:'Qual é a estrela mais perto da Terra depois do Sol?',c:'Proxima Centauri',e:['Sirius','Estrela Polar','Betelgeuse'],s:'Ela fica a 4,24 anos-luz. A luz dela leva mais de 4 anos pra chegar aqui!'},
+  {n:3,t:'🥧',p:'Quais são os primeiros números do pi (π)?',c:'3,14159',e:['3,14519','3,15149','3,41592'],s:'O pi nunca acaba e nunca repete. Já calcularam mais de 100 trilhões de casas!'},
+  {n:3,t:'🔟',p:'Quantos zeros tem um googol?',c:'100',e:['10','1.000','Infinitos'],s:'Um googol é 1 com 100 zeros. O nome do Google veio dele (escrito errado de propósito!).'},
+  {n:3,t:'⚛️',p:'Quantas vezes um próton é mais pesado que um elétron?',c:'Umas 1.836 vezes',e:['Umas 2 vezes','Umas 100 vezes','Umas 1 milhão de vezes'],s:'Quase todo o peso de um átomo fica no núcleo, onde estão os prótons e nêutrons.'},
+  {n:3,t:'🌍',p:'Qual é a velocidade da Terra andando em volta do Sol?',c:'Uns 30 km por segundo',e:['Uns 30 km por hora','Uns 300 km por segundo','Ela fica parada'],s:'São uns 107 mil km/h! A gente está viajando super rápido agora mesmo e nem sente.'},
+  {n:3,t:'🧬',p:'O que quer dizer a sigla DNA?',c:'Ácido desoxirribonucleico',e:['Ácido dinâmico nuclear','Ácido ribonucleico','Ácido desoxinucleotídico atômico'],s:'Em português às vezes escrevem ADN. O DNA é a "receita" de como fazer o seu corpo.'},
+  {n:3,t:'🔢',p:'Qual é o maior número primo de 3 algarismos?',c:'997',e:['999','991','993'],s:'999 divide por 3, 993 também. 991 é primo, mas 997 é maior!'},
+  {n:3,t:'🕐',p:'Qual país tem MAIS fusos horários?',c:'França',e:['Rússia','Estados Unidos','China'],s:'Pegadinha! A França tem ilhas espalhadas pelo mundo todo, e por isso tem 12 fusos. A China, que é enorme, usa um só!'},
+  {n:3,t:'🇲🇳',p:'Qual é a capital da Mongólia?',c:'Ulan Bator',e:['Astana','Bishkek','Cabul'],s:'É a capital mais fria do mundo: no inverno chega a −40 °C.'},
+  {n:3,t:'🫖',p:'Em que temperatura a água ferve no topo do Everest?',c:'Uns 70 °C',e:['100 °C, igual aqui','Uns 120 °C','Uns 30 °C'],s:'Lá em cima o ar aperta menos a água, então ela ferve antes. Por isso é difícil cozinhar macarrão lá!'},
+  {n:3,t:'🍎',p:'Qual é a aceleração da gravidade na Terra?',c:'9,8 m/s²',e:['1,6 m/s²','3,7 m/s²','24,8 m/s²'],s:'1,6 é na Lua, 3,7 é em Marte e 24,8 é em Júpiter. Lá você pesaria mais que o dobro!'},
+  {n:3,t:'📅',p:'Quantos minutos tem uma semana?',c:'10.080',e:['1.008','6.720','100.800'],s:'7 dias × 24 horas × 60 minutos = 10.080.'},
+];
+
+const MODOS = {
+  genio:      { nome:'Modo Gênio',     vidas:3, tempo:20, total:15, ajudas:true,  niveis:[1,1,1,1,1,2,2,2,2,2,3,3,3,3,3] },
+  einstein:   { nome:'Modo Einstein',  vidas:2, tempo:15, total:15, ajudas:true,  niveis:[2,2,2,2,2,2,2,3,3,3,3,3,3,3,3] },
+  impossivel: { nome:'Modo Impossível',vidas:1, tempo:10, total:20, ajudas:false, niveis:Array(20).fill(3) },
+  treino:     { nome:'Treino',         vidas:Infinity, tempo:0, total:PERGUNTAS.length, ajudas:true, niveis:null },
+};
+const NOME_NIVEL = {1:'Difícil', 2:'Muito difícil', 3:'💀 IMPOSSÍVEL'};
+const PONTOS_NIVEL = {1:100, 2:200, 3:400};
+
+const $ = id => document.getElementById(id);
+const embaralha = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const fmt = n => n.toLocaleString('pt-BR');
+
+/* ---------- recorde ---------- */
+function lerRecordes() { try { return JSON.parse(localStorage.getItem('quiz-genio-recordes')) || {}; } catch (e) { return {}; } }
+function salvarRecorde(modo, pts) {
+  const r = lerRecordes(); const novo = pts > (r[modo] || 0);
+  if (novo) { r[modo] = pts; try { localStorage.setItem('quiz-genio-recordes', JSON.stringify(r)); } catch (e) {} }
+  return novo;
+}
+function mostrarRecordes() {
+  const r = lerRecordes();
+  const l = ['genio','einstein','impossivel'].filter(m => r[m]).map(m => `${MODOS[m].nome}: <b>${fmt(r[m])}</b>`);
+  $('recordes').innerHTML = l.length ? '🏆 Recordes<br>' + l.join('<br>') : 'Ninguém virou gênio ainda neste aparelho. Será você? 🤔';
+}
+
+/* ---------- sons (feitos na hora, sem arquivo) ---------- */
+let audio;
+function som(tipo) {
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const notas = { certo:[523,659,784,1047], errado:[220,165], tique:[880], fim:[392,523,659,784,1047,1319] }[tipo];
+    notas.forEach((f, i) => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = tipo === 'errado' ? 'sawtooth' : 'triangle'; o.frequency.value = f;
+      const t = audio.currentTime + i * (tipo === 'errado' ? .18 : .09);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(tipo === 'tique' ? .05 : .18, t + .02);
+      g.gain.exponentialRampToValueAtTime(.0001, t + (tipo === 'errado' ? .3 : .2));
+      o.connect(g).connect(audio.destination); o.start(t); o.stop(t + .35);
+    });
+  } catch (e) {}
+}
+
+/* ---------- partida ---------- */
+let J = null, relogio = null;
+
+function telas(qual) { ['inicio','jogo','fim'].forEach(t => $(t).hidden = t !== qual); }
+
+function escolherPerguntas(modo) {
+  const m = MODOS[modo];
+  if (!m.niveis) return embaralha(PERGUNTAS);
+  const sacos = {1:embaralha(PERGUNTAS.filter(q => q.n === 1)), 2:embaralha(PERGUNTAS.filter(q => q.n === 2)), 3:embaralha(PERGUNTAS.filter(q => q.n === 3))};
+  return m.niveis.map(n => sacos[n].pop()).filter(Boolean);
+}
+
+function comecar(modo) {
+  const m = MODOS[modo];
+  J = { modo, m, lista:escolherPerguntas(modo), i:0, vidas:m.vidas, pontos:0, acertos:0, seguidos:0, erradas:[],
+        ajudas:{ meio:m.ajudas, pular:m.ajudas, tempo:m.ajudas && m.tempo > 0 } };
+  $('ajudas').hidden = !m.ajudas;
+  telas('jogo'); mostrarPergunta();
+}
+
+function mostrarPergunta() {
+  const q = J.lista[J.i];
+  J.respondeu = false;
+  $('contador').textContent = `Pergunta ${J.i + 1} de ${J.lista.length}`;
+  $('nivel').textContent = NOME_NIVEL[q.n]; $('nivel').className = 'nivel n' + q.n;
+  $('pergunta').innerHTML = `<span class="tema">${q.t}</span><span></span>`;
+  $('pergunta').lastChild.textContent = q.p;
+  $('respostas').innerHTML = '';
+  embaralha([q.c, ...q.e]).forEach(txt => {
+    const b = document.createElement('button'); b.className = 'resp'; b.textContent = txt;
+    b.onclick = () => responder(b, txt === q.c); $('respostas').appendChild(b);
+  });
+  $('sabia').hidden = true; $('proxima').hidden = true;
+  ['meio','pular','tempo'].forEach(a => $(a).disabled = !J.ajudas[a]);
+  $('tempo').hidden = !J.m.tempo;
+  atualizarTopo();
+  clearInterval(relogio);
+  $('barra').hidden = !J.m.tempo;
+  if (J.m.tempo) {
+    J.fimTempo = performance.now() + J.m.tempo * 1000; J.ultimoTique = 99;
+    relogio = setInterval(contarTempo, 100); contarTempo();
+  }
+}
+
+function contarTempo() {
+  const resta = (J.fimTempo - performance.now()) / 1000;
+  $('barra').firstElementChild.style.width = Math.max(0, resta / J.m.tempo * 100) + '%';
+  $('barra').classList.toggle('pouco', resta < 4);
+  if (resta < 4 && Math.ceil(resta) < J.ultimoTique) { J.ultimoTique = Math.ceil(resta); som('tique'); }
+  if (resta <= 0) { clearInterval(relogio); responder(null, false, true); }
+}
+
+function atualizarTopo() {
+  $('vidas').textContent = J.vidas === Infinity ? '📚' : '❤️'.repeat(J.vidas) + '🖤'.repeat(Math.max(0, J.m.vidas - J.vidas));
+  $('pontos').textContent = fmt(J.pontos);
+}
+
+function responder(botao, certo, acabouTempo) {
+  if (J.respondeu) return; J.respondeu = true;
+  clearInterval(relogio);
+  const q = J.lista[J.i];
+  document.querySelectorAll('.resp').forEach(b => { b.disabled = true; if (b.textContent === q.c) b.classList.add('certa'); });
+  ['meio','pular','tempo'].forEach(a => $(a).disabled = true);
+  let titulo;
+  if (certo) {
+    J.acertos++; J.seguidos++;
+    let ganho = PONTOS_NIVEL[q.n];
+    if (J.m.tempo) ganho += Math.round(Math.max(0, (J.fimTempo - performance.now()) / 1000) * 10);
+    if (J.seguidos >= 3) ganho = Math.round(ganho * 1.5);
+    if (J.modo !== 'treino') J.pontos += ganho;
+    titulo = (J.seguidos >= 3 ? `🔥 ${J.seguidos} seguidas! ` : '✅ ') + (J.modo !== 'treino' ? `+${fmt(ganho)}` : 'Acertou!');
+    som('certo'); $('pontos').classList.remove('pulso'); void $('pontos').offsetWidth; $('pontos').classList.add('pulso');
+  } else {
+    J.seguidos = 0; J.erradas.push(q);
+    if (botao) botao.classList.add('errada');
+    if (J.vidas !== Infinity) J.vidas--;
+    titulo = acabouTempo ? '⏰ Acabou o tempo!' : '❌ Errou!';
+    titulo += ` A certa era: ${q.c}`;
+    som('errado');
+  }
+  atualizarTopo();
+  $('sabia').innerHTML = '<b class="t"></b>🤓 <b>Você sabia?</b> <span></span>';
+  $('sabia').querySelector('.t').textContent = titulo;
+  $('sabia').querySelector('span').textContent = q.s;
+  $('sabia').hidden = false;
+  const acabou = J.vidas <= 0 || J.i + 1 >= J.lista.length;
+  $('proxima').textContent = acabou ? 'Ver resultado 🏁' : 'Próxima ➜';
+  $('proxima').hidden = false; $('proxima').focus({ preventScroll:true });
+  $('proxima').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function proxima() {
+  if (J.vidas <= 0 || J.i + 1 >= J.lista.length) return terminar();
+  J.i++; mostrarPergunta(); $('jogo').scrollTop = 0;
+}
+
+/* ---------- ajudas ---------- */
+$('meio').onclick = () => {
+  if (!J.ajudas.meio || J.respondeu) return; J.ajudas.meio = false; $('meio').disabled = true;
+  const q = J.lista[J.i];
+  embaralha([...document.querySelectorAll('.resp')].filter(b => b.textContent !== q.c)).slice(0, 2).forEach(b => b.classList.add('some'));
+};
+$('pular').onclick = () => {
+  if (!J.ajudas.pular || J.respondeu) return; J.ajudas.pular = false;
+  const q = J.lista[J.i];
+  const troca = embaralha(PERGUNTAS.filter(p => p.n === q.n && !J.lista.includes(p)))[0];
+  if (troca) { J.lista[J.i] = troca; } else { J.lista.splice(J.i, 1); if (J.i >= J.lista.length) return terminar(); }
+  mostrarPergunta();
+};
+$('tempo').onclick = () => {
+  if (!J.ajudas.tempo || J.respondeu) return; J.ajudas.tempo = false; $('tempo').disabled = true;
+  J.fimTempo += 10000; J.ultimoTique = 99;
+};
+
+/* ---------- fim ---------- */
+const TITULOS = [
+  [0,   '🥔', 'Batata Pensante', 'Calma, todo gênio começou errando. Tenta de novo!'],
+  [.3,  '🐒', 'Macaco Curioso', 'Já dá pra ver uma faísca de gênio aí!'],
+  [.5,  '🧑‍🎓', 'Estudante Esperto', 'Mandou bem! Metade das impossíveis é muito.'],
+  [.7,  '🧑‍🔬', 'Cientista Maluco', 'Isso aqui já é nível de laboratório!'],
+  [.85, '🧠', 'GÊNIO', 'Você sabe coisas que muitos adultos não sabem!'],
+  [1,   '👑', 'MAIS GÊNIO QUE O EINSTEIN', 'Acertou TUDO. Isso era pra ser impossível!'],
+];
+function terminar() {
+  clearInterval(relogio);
+  const total = J.i + 1, taxa = J.acertos / total;
+  let t = TITULOS[0]; for (const x of TITULOS) if (taxa >= x[0]) t = x;
+  const novo = J.modo !== 'treino' && salvarRecorde(J.modo, J.pontos);
+  $('fimEmoji').textContent = t[1];
+  $('fimTitulo').textContent = t[2];
+  $('fimPontos').textContent = J.modo === 'treino' ? `${J.acertos}/${total}` : fmt(J.pontos);
+  $('fimTexto').innerHTML = `${J.m.nome} · acertou <b>${J.acertos}</b> de <b>${total}</b><br>${t[3]}` + (novo && J.pontos > 0 ? '<br>🏆 <b>NOVO RECORDE!</b>' : '');
+  $('fimLista').innerHTML = '';
+  if (J.erradas.length) {
+    const h = document.createElement('div'); h.innerHTML = '📚 <b style="color:var(--ouro)">Pra virar gênio, aprenda estas:</b>'; $('fimLista').appendChild(h);
+    J.erradas.forEach(q => { const d = document.createElement('div'); d.innerHTML = `${q.t} <span></span><br>➜ <b></b>`; d.querySelector('span').textContent = q.p; d.querySelector('b').textContent = q.c; $('fimLista').appendChild(d); });
+  }
+  if (taxa >= .85) som('fim');
+  telas('fim');
+}
+
+/* ---------- botões ---------- */
+document.querySelectorAll('[data-modo]').forEach(b => b.onclick = () => comecar(b.dataset.modo));
+$('proxima').onclick = proxima;
+$('sair').onclick = () => { if (confirm('Sair da partida?')) { clearInterval(relogio); mostrarRecordes(); telas('inicio'); } };
+$('denovo').onclick = () => comecar(J.modo);
+$('menu').onclick = () => { mostrarRecordes(); telas('inicio'); };
+document.addEventListener('keydown', ev => {
+  if ($('jogo').hidden) return;
+  if (ev.key === 'Escape') return $('sair').click();
+  const n = parseInt(ev.key, 10);
+  if (!J.respondeu && n >= 1 && n <= 4) { const b = document.querySelectorAll('.resp')[n - 1]; if (b && !b.classList.contains('some')) b.click(); }
+  else if (J.respondeu && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); proxima(); }
+});
+
+/* ---------- estrelinhas no fundo ---------- */
+(function () {
+  const c = $('estrelas'), x = c.getContext('2d'); let est = [];
+  function tam() { c.width = innerWidth; c.height = innerHeight; est = Array.from({ length:90 }, () => ({ x:Math.random() * c.width, y:Math.random() * c.height, r:Math.random() * 1.6 + .3, f:Math.random() * 6 })); }
+  function desenha(t) {
+    x.clearRect(0, 0, c.width, c.height);
+    for (const s of est) { x.globalAlpha = .35 + .35 * Math.sin(t / 700 + s.f); x.fillStyle = '#fff'; x.beginPath(); x.arc(s.x, s.y, s.r, 0, 7); x.fill(); }
+    requestAnimationFrame(desenha);
+  }
+  addEventListener('resize', tam); tam(); requestAnimationFrame(desenha);
+})();
+
+mostrarRecordes();
+if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+</script>
+</body>
+</html>
