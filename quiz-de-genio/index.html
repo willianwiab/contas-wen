@@ -28,13 +28,14 @@
   .sub b { color:var(--ink); }
   .botao { width:100%; border:0; border-radius:var(--r); padding:18px; font-size:1.4rem; font-weight:900; background:var(--verde); color:#06301b; box-shadow:0 6px 0 #2a9a5f; transition:transform .08s; }
   .botao:active { transform:translateY(4px); box-shadow:0 2px 0 #2a9a5f; }
-  .numero { position:fixed; top:max(12px, env(safe-area-inset-top)); left:16px; font-size:2rem; font-weight:900; color:var(--ouro); z-index:2; }
+  .numero { border:0; background:none; padding:0; font-family:inherit; cursor:pointer; position:fixed; top:max(12px, env(safe-area-inset-top)); left:16px; font-size:2rem; font-weight:900; color:var(--ouro); z-index:2; }
   .recorde { position:fixed; top:max(18px, env(safe-area-inset-top)); right:16px; font-size:.95rem; font-weight:700; color:var(--dim); z-index:2; }
   .pergunta { width:100%; text-align:center; font-size:clamp(1.35rem, 5.5vw, 1.8rem); font-weight:800; line-height:1.3; display:flex; flex-direction:column; align-items:center; gap:8px; }
   .pergunta .tema { font-size:2.6rem; }
   .respostas { width:100%; display:grid; grid-template-columns:1fr; gap:10px; }
   @media (min-width:560px) { .respostas { grid-template-columns:1fr 1fr; } }
   .resp { border:2px solid #333; background:#111; border-radius:16px; padding:16px 12px; font-size:1.15rem; font-weight:700; min-height:60px; transition:transform .08s; }
+  .numero.acertou { color:var(--verde); transform:scale(1.6); transition:transform .2s; }
   .resp:active { transform:scale(.97); }
   .resp:disabled { cursor:default; }
   .resp.certa { background:var(--verde); color:#06301b; border-color:var(--verde); }
@@ -60,7 +61,7 @@
 </section>
 
 <section class="tela" id="jogo" hidden>
-  <span class="numero" id="numero">1</span>
+  <button class="numero" id="numero">1</button>
   <span class="recorde" id="recorde"></span>
   <div class="caixa">
     <div class="pergunta" id="pergunta"></div>
@@ -82,6 +83,7 @@
    QUIZ DE GÊNIO
    As perguntas vêm sempre na mesma ordem, da mais fácil pra mais
    impossível. O número no canto diz em qual pergunta você está.
+   Nas PEGADINHAS, a resposta certa é apertar esse número!
    Errou uma: "Você é um jegue!" e volta tudo pra pergunta 1.
 
    Cada pergunta tem:
@@ -161,6 +163,15 @@ const PERGUNTAS = [
 // Ordem fixa: primeiro as muito difíceis, depois as impossíveis.
 const ORDEM = [2, 3].flatMap(n => PERGUNTAS.filter(q => q.n === n));
 
+/* ---------- PEGADINHAS ----------
+   Perguntas em que nenhuma resposta está certa.
+   O jeito de acertar é apertar o NÚMERO lá no canto.
+   pos = em qual número a pergunta aparece. */
+const PEGADINHAS = [
+  {pos:13,t:'🫏',p:'Qual é a pessoa mais jegue do mundo?',c:null,e:['Você','O Claude 🤖','O jegue 🫏','Ninguém'],x:'numero'},
+];
+PEGADINHAS.sort((a, b) => a.pos - b.pos).forEach(q => ORDEM.splice(q.pos - 1, 0, q));
+
 const $ = id => document.getElementById(id);
 const embaralha = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
@@ -200,12 +211,12 @@ function comecar() { atual = 0; mostrarRecorde(); telas('jogo'); mostrarPergunta
 function mostrarPergunta() {
   const q = ORDEM[atual];
   travado = false;
-  $('numero').textContent = atual + 1;
+  $('numero').textContent = atual + 1; $('numero').classList.remove('acertou');
   $('pergunta').innerHTML = '<span class="tema"></span><span></span>';
   $('pergunta').firstChild.textContent = q.t;
   $('pergunta').lastChild.textContent = q.p;
   $('respostas').innerHTML = '';
-  embaralha([q.c, ...q.e]).forEach(txt => {
+  embaralha(q.c === null ? q.e : [q.c, ...q.e]).forEach(txt => {
     const b = document.createElement('button'); b.className = 'resp'; b.textContent = txt;
     b.onclick = () => responder(b, txt === q.c); $('respostas').appendChild(b);
   });
@@ -216,7 +227,7 @@ function responder(botao, certo) {
   if (travado) return; travado = true;
   document.querySelectorAll('.resp').forEach(b => b.disabled = true);
   if (certo) {
-    botao.classList.add('certa'); som('certo');
+    if (botao) botao.classList.add('certa'); som('certo');
     salvarRecorde(atual + 1);
     setTimeout(() => {
       atual++;
@@ -248,6 +259,12 @@ function ganhou() {
   telas('perdeu');
 }
 
+$('numero').onclick = () => {
+  // só vale nas pegadinhas; nas outras perguntas o número não faz nada
+  if (travado || ORDEM[atual].x !== 'numero') return;
+  $('numero').classList.add('acertou');
+  responder(null, true);
+};
 $('comecar').onclick = comecar;
 $('denovo').onclick = comecar;
 document.addEventListener('keydown', ev => {
