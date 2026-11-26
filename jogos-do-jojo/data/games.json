@@ -7,19 +7,17 @@
     {
       "slug": "quiz-de-genio",
       "nome": "Quiz de Gênio",
-      "descricao": "Perguntas impossíveis de verdade! Qual é a massa da Terra? E a do universo? Ciência, espaço, matemática e pegadinhas.",
-      "comoFunciona": "Aparece uma pergunta e quatro respostas. Só uma é a certa. Acertou, ganha pontos (mais ainda se for rápido). Errou ou o tempo acabou, perde uma vida. Depois de cada pergunta aparece um \"Você sabia?\" explicando a resposta.",
-      "objetivo": "Chegar até o fim sem perder todas as vidas, fazer o máximo de pontos e ganhar o título de GÊNIO.",
+      "descricao": "Só perguntas muito difíceis e impossíveis! Qual é a massa da Terra? E a do universo? Errou uma, você é um jegue e volta tudo pro começo.",
+      "comoFunciona": "Aparece uma pergunta e quatro respostas. Só uma é a certa. O número no canto mostra em qual pergunta você está. Acertou, vai pra próxima. Errou uma só, aparece \"Você é um jegue!\" e volta tudo pra pergunta 1.",
+      "objetivo": "Acertar as 58 perguntas seguidas, sem errar nenhuma, e virar um GÊNIO.",
       "mecanicas": [
-        "🎓 Modo Gênio: começa difícil e termina impossível",
-        "👨‍🔬 Modo Einstein: só as muito difíceis",
-        "💀 Modo Impossível: 1 vida, 10 segundos e sem ajuda",
-        "📚 Modo treino sem tempo",
-        "✂️ Ajuda 50/50, ⏭️ pular e ⏳ +10 segundos",
-        "🔥 3 acertos seguidos dão mais pontos",
+        "💀 Só perguntas muito difíceis e impossíveis",
+        "🔢 Número no canto mostra em qual pergunta você está",
+        "🫏 Errou uma: \"Você é um jegue!\" e volta tudo do começo",
+        "As perguntas vêm sempre na mesma ordem, então dá pra ir decorando",
         "Pegadinhas pra quem não presta atenção",
-        "🤓 \"Você sabia?\" depois de cada pergunta",
-        "No final mostra as que você errou pra aprender",
+        "🏆 Recorde da pergunta mais longe que você chegou",
+        "Fundo preto",
         "Dá pra instalar como aplicativo e jogar sem internet"
       ],
       "categoria": "Educativo",
@@ -27,16 +25,16 @@
       "ano": 2026,
       "status": "Finalizado",
       "dificuldade": "Impossível",
-      "fases": 3,
+      "fases": 58,
       "recorde": "",
-      "pontuacao": "Pergunta difícil vale 100, muito difícil vale 200 e impossível vale 400. Cada segundo que sobra vale mais 10. Com 3 acertos seguidos os pontos valem 1,5 vez mais.",
+      "pontuacao": "Não tem pontos: o que vale é até qual pergunta você chega. A mais longe fica salva como recorde.",
       "popularidade": 90,
       "imagem": "assets/images/quiz-de-genio.svg",
       "trailer": "",
       "url": "../quiz-de-genio/index.html",
       "galeria": [],
       "historia": "Um cérebro gigante que veio do espaço juntou as perguntas mais difíceis do universo. Só um gênio de verdade consegue responder todas!",
-      "comoJogar": "Leia a pergunta e toque na resposta que você acha certa antes do tempo acabar. Use as ajudas quando estiver difícil demais.",
+      "comoJogar": "Toque em Começar, leia a pergunta e toque na resposta certa. Cuidado: se errar uma, volta tudo pra pergunta 1!",
       "controles": [
         {
           "tecla": "Clique / Toque",
@@ -48,25 +46,26 @@
         },
         {
           "tecla": "Enter",
-          "acao": "Próxima pergunta"
-        },
-        {
-          "tecla": "Esc",
-          "acao": "Sair da partida"
+          "acao": "Começar"
         }
       ],
       "curiosidades": [
         "A pergunta da massa do universo foi o Jojo que pediu.",
-        "A massa da Terra é quase 6 trilhões de trilhões de toneladas.",
+        "Quem perde vira jegue: ideia do Jojo.",
         "Os sons são feitos na hora pelo jogo, sem nenhum arquivo de som."
       ],
       "creditos": "Ideia do Jojo, feito com o Claude.",
       "atualizacoes": "",
       "changelog": [
         {
+          "versao": "2.0",
+          "data": "2026",
+          "mudancas": "Sem modos: só começar a jogar. Fundo preto, número da pergunta no canto, só perguntas muito difíceis (58) e errou volta tudo com \"Você é um jegue!\"."
+        },
+        {
           "versao": "1.0",
           "data": "2026",
-          "mudancas": "Primeira versão: 54 perguntas em 3 níveis, 4 modos, ajudas e recorde."
+          "mudancas": "Primeira versão com 4 modos."
         }
       ],
       "ranking": []
