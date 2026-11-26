@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<meta name="description" content="Quiz de Gênio: perguntas impossíveis. Errou uma, volta tudo do começo!">
+<meta name="description" content="Quiz de Gênio: um quiz só de pegadinhas. Errou uma, volta tudo do começo!">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icone.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icone-180.png">
@@ -36,6 +36,9 @@
   @media (min-width:560px) { .respostas { grid-template-columns:1fr 1fr; } }
   .resp { border:2px solid #333; background:#111; border-radius:16px; padding:16px 12px; font-size:1.15rem; font-weight:700; min-height:60px; transition:transform .08s; }
   .numero.acertou { color:var(--verde); transform:scale(1.6); transition:transform .2s; }
+  .escondido { position:fixed; z-index:3; border:0; background:none; padding:4px; font-size:15px; opacity:.55; transform:translate(-50%, -50%); }
+  .achou { color:var(--verde) !important; opacity:1 !important; display:inline-block; transform:scale(1.4); transition:transform .2s; }
+  .escondido.achou { transform:translate(-50%, -50%) scale(3); }
   .resp:active { transform:scale(.97); }
   .resp:disabled { cursor:default; }
   .resp.certa { background:var(--verde); color:#06301b; border-color:var(--verde); }
@@ -53,7 +56,7 @@
   <div class="caixa">
     <div class="grandao">🧠</div>
     <h1>Quiz de Gênio</h1>
-    <p class="sub">Perguntas <b>impossíveis</b>.<br>Errou uma, volta tudo do começo! 😈</p>
+    <p class="sub">Só tem <b>pegadinha</b>. Pense diferente!<br>Errou uma, volta tudo do começo! 😈</p>
     <button class="botao" id="comecar">▶ Começar</button>
     <p class="sub" id="recordeInicio"></p>
     <p class="rodape">Ideia do Jojo, feito com o Claude 🧠</p>
@@ -62,7 +65,6 @@
 
 <section class="tela" id="jogo" hidden>
   <button class="numero" id="numero">1</button>
-  <span class="recorde" id="recorde"></span>
   <div class="caixa">
     <div class="pergunta" id="pergunta"></div>
     <div class="respostas" id="respostas"></div>
@@ -81,98 +83,55 @@
 <script>
 /* ============================================================
    QUIZ DE GÊNIO
-   As perguntas vêm sempre na mesma ordem, da mais fácil pra mais
-   impossível. O número no canto diz em qual pergunta você está.
-   Nas PEGADINHAS, a resposta certa é apertar esse número!
-   Errou uma: "Você é um jegue!" e volta tudo pra pergunta 1.
+   Todas as perguntas são pegadinhas, inventadas pelo Jojo e pelo Claude.
+   Elas vêm sempre na mesma ordem. O número no canto diz em qual
+   pergunta você está. Errou uma: "Você é um jegue!" e volta tudo
+   pra pergunta 1.
 
    Cada pergunta tem:
-     n = nível (2 muito difícil, 3 impossível)
-     t = emoji do tema
-     p = pergunta
-     c = resposta certa
-     e = três respostas erradas
-     s = explicação (curiosidade)
+     t = emoji     p = pergunta
+     c = resposta certa (quando a certa é um dos botões)
+     e = respostas erradas
+   Quando não tem c, nenhum botão está certo, e o jeito de passar é o x:
+     x:'numero'    -> apertar o número lá no canto
+     x:'emoji'     -> apertar o emoji da pergunta
+     x:'palavra'   -> apertar a palavra w no texto da pergunta
+     x:'esperar'   -> não apertar NADA por s segundos
+     x:'escondido' -> achar o jeguinho 🫏 escondido na tela e apertar nele
    Pra colocar pergunta nova é só copiar uma linha e trocar.
    ============================================================ */
 const PERGUNTAS = [
-  // ---------- nível 2: muito difícil ----------
-  {n:2,t:'💡',p:'Qual é a velocidade da luz?',c:'Uns 300 mil km por segundo',e:['Uns 30 mil km por segundo','Uns 3 mil km por segundo','Uns 3 milhões de km por segundo'],s:'São 299.792 km por segundo. Dá pra dar mais de 7 voltas na Terra em 1 segundo!'},
-  {n:2,t:'☀️',p:'Quanto tempo a luz do Sol leva pra chegar na Terra?',c:'Uns 8 minutos',e:['Na hora, 0 segundos','Uns 8 segundos','Umas 8 horas'],s:'São uns 8 minutos e 20 segundos. Então o Sol que você vê é o Sol de 8 minutos atrás!'},
-  {n:2,t:'📏',p:'Qual é a distância da Terra até o Sol?',c:'Uns 150 milhões de km',e:['Uns 15 milhões de km','Uns 1,5 bilhão de km','Uns 384 mil km'],s:'384 mil km é a distância até a Lua. Até o Sol é quase 400 vezes mais longe.'},
-  {n:2,t:'🔊',p:'Qual é a velocidade do som no ar?',c:'Uns 343 metros por segundo',e:['Uns 34 metros por segundo','Uns 3.430 metros por segundo','A mesma da luz'],s:'Por isso o trovão chega depois do raio: a cada 3 segundos de diferença, o raio caiu a 1 km.'},
-  {n:2,t:'🏜️',p:'Qual é o MAIOR deserto do mundo?',c:'Antártida',e:['Saara','Atacama','Gobi'],s:'Deserto é lugar onde quase não chove, mesmo sendo gelado! O Saara é o maior deserto QUENTE.'},
-  {n:2,t:'🪐',p:'Em qual planeta um dia dura MAIS que um ano?',c:'Vênus',e:['Mercúrio','Marte','Netuno'],s:'Vênus leva 243 dias da Terra pra girar uma vez, e só 225 pra dar a volta no Sol.'},
-  {n:2,t:'🌀',p:'Qual planeta gira "deitado", de lado?',c:'Urano',e:['Saturno','Júpiter','Marte'],s:'Urano é inclinado quase 98 graus. Os cientistas acham que algo gigante bateu nele há muito tempo.'},
-  {n:2,t:'👂',p:'Qual é o menor osso do corpo humano?',c:'Estribo, no ouvido',e:['Falange do dedinho do pé','Rótula, no joelho','Cóccix'],s:'O estribo tem uns 3 milímetros. E o maior osso é o fêmur, na coxa.'},
-  {n:2,t:'🇨🇦',p:'Qual é a capital do Canadá?',c:'Ottawa',e:['Toronto','Montreal','Vancouver'],s:'Toronto é a maior cidade, mas a capital é Ottawa.'},
-  {n:2,t:'🌊',p:'Qual é a profundidade do ponto mais fundo do oceano?',c:'Quase 11 km',e:['Uns 2 km','Uns 5 km','Uns 50 km'],s:'É a Fossa das Marianas. Se o Everest fosse colocado lá dentro, ainda sobrariam uns 2 km de água em cima!'},
-  {n:2,t:'🔢',p:'Quanto é 2 elevado a 10?',c:'1.024',e:['20','100','1.000'],s:'2×2×2×2×2×2×2×2×2×2 = 1.024. Por isso 1 kilobyte às vezes vale 1.024 bytes.'},
-  {n:2,t:'➕',p:'Quanto dá somar todos os números de 1 até 100?',c:'5.050',e:['1.000','5.000','10.100'],s:'O matemático Gauss descobriu o truque criança: 1+100, 2+99, 3+98… são 50 pares de 101 = 5.050.'},
-  {n:2,t:'🔍',p:'Qual desses é um número primo?',c:'97',e:['51','57','91'],s:'Pegadinha! 51 = 3×17, 57 = 3×19 e 91 = 7×13. Só o 97 não divide por ninguém.'},
-  {n:2,t:'⏱️',p:'Quantos segundos tem um dia?',c:'86.400',e:['3.600','24.000','144.000'],s:'24 horas × 60 minutos × 60 segundos = 86.400.'},
-  {n:2,t:'❤️',p:'Quantas vezes o coração bate em um dia, mais ou menos?',c:'Umas 100 mil',e:['Umas 1 mil','Umas 10 mil','Uns 10 milhões'],s:'E em uma vida inteira passa de 2 bilhões de batidas!'},
-  {n:2,t:'🌍',p:'Qual é a largura (diâmetro) da Terra?',c:'Uns 12.700 km',e:['Uns 1.270 km','Uns 127 mil km','Uns 40 mil km'],s:'40 mil km é a volta inteira na Terra (o contorno), não a largura.'},
-  {n:2,t:'🏞️',p:'Qual é o rio com MAIS água do mundo?',c:'Amazonas',e:['Nilo','Mississippi','Yangtzé'],s:'Sozinho, o Amazonas joga no mar uns 20% de toda a água doce que os rios do mundo levam pro oceano.'},
-  {n:2,t:'🩸',p:'Quantos litros de sangue tem um adulto?',c:'Uns 5 litros',e:['Uns 2 litros','Uns 12 litros','Uns 20 litros'],s:'Cada gotinha de sangue dá uma volta completa no corpo em mais ou menos 1 minuto.'},
-  {n:2,t:'🥚',p:'Qual é a fórmula do sal de cozinha?',c:'NaCl',e:['H₂O','CO₂','NaOH'],s:'Na é o sódio e Cl é o cloro. Separados são perigosos, juntos viram o sal da batata frita!'},
-
-  // ---------- nível 3: IMPOSSÍVEL ----------
-  {n:3,t:'🌍',p:'Qual é a massa da Terra?',c:'5,97 × 10²⁴ kg',e:['5,97 × 10¹⁸ kg','7,35 × 10²² kg','1,99 × 10³⁰ kg'],s:'São quase 6 trilhões de trilhões de toneladas! 7,35 × 10²² kg é a massa da Lua e 1,99 × 10³⁰ kg é a do Sol.'},
-  {n:3,t:'🌌',p:'Qual é a massa de toda a matéria normal do universo que dá pra ver?',c:'Uns 10⁵³ kg',e:['Uns 10²⁴ kg','Uns 10³⁰ kg','Uns 10⁸⁰ kg'],s:'É 1 com 53 zeros! E tem um detalhe: a matéria escura pesa uns 5 vezes mais e ninguém sabe o que ela é. Já 10⁸⁰ é a quantidade de átomos do universo, não a massa.'},
-  {n:3,t:'🌕',p:'Qual é a massa da Lua?',c:'7,35 × 10²² kg',e:['5,97 × 10²⁴ kg','7,35 × 10¹⁵ kg','1,99 × 10³⁰ kg'],s:'A Lua pesa umas 81 vezes menos que a Terra.'},
-  {n:3,t:'☀️',p:'Qual é a massa do Sol?',c:'1,99 × 10³⁰ kg',e:['5,97 × 10²⁴ kg','1,99 × 10²⁰ kg','1,99 × 10⁴⁰ kg'],s:'O Sol sozinho tem 99,8% de toda a massa do Sistema Solar.'},
-  {n:3,t:'⏳',p:'Qual é a idade do universo?',c:'Uns 13,8 bilhões de anos',e:['Uns 4,5 bilhões de anos','Uns 138 milhões de anos','Uns 1 trilhão de anos'],s:'4,5 bilhões de anos é a idade da Terra. O universo é umas 3 vezes mais velho.'},
-  {n:3,t:'🪨',p:'Qual é a idade da Terra?',c:'Uns 4,54 bilhões de anos',e:['Uns 6 mil anos','Uns 65 milhões de anos','Uns 13,8 bilhões de anos'],s:'Os dinossauros sumiram há uns 66 milhões de anos, mas a Terra é MUITO mais velha.'},
-  {n:3,t:'🔥',p:'Qual é a temperatura no centro do Sol?',c:'Uns 15 milhões de °C',e:['Uns 5.500 °C','Uns 150 mil °C','Uns 15 bilhões de °C'],s:'5.500 °C é só a superfície do Sol. No centro, os átomos se juntam e fazem a energia que esquenta a Terra.'},
-  {n:3,t:'🥶',p:'Qual é a temperatura do zero absoluto, o frio mais frio que existe?',c:'−273,15 °C',e:['−100 °C','−459,67 °C','−1.000 °C'],s:'Mais frio que isso é impossível! E −459,67 é o zero absoluto em Fahrenheit, não em Celsius. Pegadinha!'},
-  {n:3,t:'⚗️',p:'Quanto vale o número de Avogadro?',c:'6,022 × 10²³',e:['3,14 × 10²³','6,022 × 10³²','9,81 × 10²³'],s:'É quantos átomos tem em 12 gramas de carbono. É um número com 24 algarismos: 602.200.000.000.000.000.000.000!'},
-  {n:3,t:'⭐',p:'Qual é a estrela mais perto da Terra depois do Sol?',c:'Proxima Centauri',e:['Sirius','Estrela Polar','Betelgeuse'],s:'Ela fica a 4,24 anos-luz. A luz dela leva mais de 4 anos pra chegar aqui!'},
-  {n:3,t:'🥧',p:'Quais são os primeiros números do pi (π)?',c:'3,14159',e:['3,14519','3,15149','3,41592'],s:'O pi nunca acaba e nunca repete. Já calcularam mais de 100 trilhões de casas!'},
-  {n:3,t:'🔟',p:'Quantos zeros tem um googol?',c:'100',e:['10','1.000','Infinitos'],s:'Um googol é 1 com 100 zeros. O nome do Google veio dele (escrito errado de propósito!).'},
-  {n:3,t:'⚛️',p:'Quantas vezes um próton é mais pesado que um elétron?',c:'Umas 1.836 vezes',e:['Umas 2 vezes','Umas 100 vezes','Umas 1 milhão de vezes'],s:'Quase todo o peso de um átomo fica no núcleo, onde estão os prótons e nêutrons.'},
-  {n:3,t:'🌍',p:'Qual é a velocidade da Terra andando em volta do Sol?',c:'Uns 30 km por segundo',e:['Uns 30 km por hora','Uns 300 km por segundo','Ela fica parada'],s:'São uns 107 mil km/h! A gente está viajando super rápido agora mesmo e nem sente.'},
-  {n:3,t:'🧬',p:'O que quer dizer a sigla DNA?',c:'Ácido desoxirribonucleico',e:['Ácido dinâmico nuclear','Ácido ribonucleico','Ácido desoxinucleotídico atômico'],s:'Em português às vezes escrevem ADN. O DNA é a "receita" de como fazer o seu corpo.'},
-  {n:3,t:'🔢',p:'Qual é o maior número primo de 3 algarismos?',c:'997',e:['999','991','993'],s:'999 divide por 3, 993 também. 991 é primo, mas 997 é maior!'},
-  {n:3,t:'🕐',p:'Qual país tem MAIS fusos horários?',c:'França',e:['Rússia','Estados Unidos','China'],s:'Pegadinha! A França tem ilhas espalhadas pelo mundo todo, e por isso tem 12 fusos. A China, que é enorme, usa um só!'},
-  {n:3,t:'🇲🇳',p:'Qual é a capital da Mongólia?',c:'Ulan Bator',e:['Astana','Bishkek','Cabul'],s:'É a capital mais fria do mundo: no inverno chega a −40 °C.'},
-  {n:3,t:'🫖',p:'Em que temperatura a água ferve no topo do Everest?',c:'Uns 70 °C',e:['100 °C, igual aqui','Uns 120 °C','Uns 30 °C'],s:'Lá em cima o ar aperta menos a água, então ela ferve antes. Por isso é difícil cozinhar macarrão lá!'},
-  {n:3,t:'🍎',p:'Qual é a aceleração da gravidade na Terra?',c:'9,8 m/s²',e:['1,6 m/s²','3,7 m/s²','24,8 m/s²'],s:'1,6 é na Lua, 3,7 é em Marte e 24,8 é em Júpiter. Lá você pesaria mais que o dobro!'},
-  {n:3,t:'📅',p:'Quantos minutos tem uma semana?',c:'10.080',e:['1.008','6.720','100.800'],s:'7 dias × 24 horas × 60 minutos = 10.080.'},
-  // ---------- ainda mais impossíveis ----------
-  {n:3,t:'⚛️',p:'Qual é a massa de um elétron?',c:'9,11 × 10⁻³¹ kg',e:['1,67 × 10⁻²⁷ kg','9,11 × 10⁻¹³ kg','6,67 × 10⁻¹¹ kg'],s:'É um 0, vírgula, 30 zeros e depois 911. 1,67 × 10⁻²⁷ kg é a massa do próton.'},
-  {n:3,t:'🍎',p:'Quanto vale a constante da gravidade (G) de Newton?',c:'6,67 × 10⁻¹¹',e:['9,8','3,00 × 10⁸','6,022 × 10²³'],s:'É ela que diz quanto as coisas se puxam. 9,8 é a gravidade aqui na Terra, 3 × 10⁸ é a velocidade da luz em metros por segundo.'},
-  {n:2,t:'🧪',p:'Quantos elementos tem a tabela periódica?',c:'118',e:['92','108','150'],s:'92 são os que existem na natureza mais ou menos. Os outros foram criados em laboratório!'},
-  {n:3,t:'🔩',p:'Qual é o número atômico do ferro?',c:'26',e:['8','56','82'],s:'26 prótons! 56 é a massa do ferro e 82 é o número do chumbo.'},
-  {n:2,t:'🌕',p:'Qual é a distância da Terra até a Lua?',c:'Uns 384 mil km',e:['Uns 38 mil km','Uns 3,8 milhões de km','Uns 150 milhões de km'],s:'Cabem todos os planetas do Sistema Solar, um do lado do outro, no espaço entre a Terra e a Lua!'},
-  {n:3,t:'🌌',p:'Qual é o tamanho da nossa galáxia, a Via Láctea?',c:'Uns 100 mil anos-luz',e:['Uns 1 mil anos-luz','Uns 4,24 anos-luz','Uns 13,8 bilhões de anos-luz'],s:'A luz, a coisa mais rápida que existe, leva uns 100 mil anos pra atravessar a galáxia.'},
-  {n:3,t:'🌀',p:'A que distância fica a galáxia de Andrômeda?',c:'Uns 2,5 milhões de anos-luz',e:['Uns 4,24 anos-luz','Uns 25 mil anos-luz','Uns 13,8 bilhões de anos-luz'],s:'É a coisa mais distante que dá pra ver a olho nu! E daqui a uns 4,5 bilhões de anos ela vai bater na Via Láctea.'},
-  {n:3,t:'√',p:'Quanto é a raiz quadrada de 2?',c:'1,41421…',e:['1,73205…','1,61803…','2,71828…'],s:'1,73 é a raiz de 3, 1,618 é o número de ouro e 2,718 é o número de Euler. Pegadinha!'},
-  {n:3,t:'📈',p:'Quais são os primeiros números do número de Euler (e)?',c:'2,71828',e:['3,14159','1,61803','2,81728'],s:'Ele aparece em juros, em crescimento de bactérias e em um monte de lugares da matemática.'},
-  {n:2,t:'✋',p:'Quantos ossos tem UMA mão?',c:'27',e:['14','19','54'],s:'54 é das duas mãos juntas! Mais ou menos um quarto dos ossos do corpo fica nas mãos.'},
-  {n:3,t:'💡',p:'Quantos km tem 1 ano-luz?',c:'Uns 9,46 trilhões de km',e:['Uns 300 mil km','Uns 9,46 bilhões de km','Uns 365 mil km'],s:'Ano-luz não é tempo, é distância: é o quanto a luz anda em um ano.'},
-  {n:2,t:'🔥',p:'Qual é o planeta MAIS QUENTE do Sistema Solar?',c:'Vênus',e:['Mercúrio','Marte','Júpiter'],s:'Pegadinha! Mercúrio é mais perto do Sol, mas Vênus tem um ar grosso que prende o calor. Lá faz uns 465 °C.'},
-  {n:3,t:'🧠',p:'Quantos neurônios tem o cérebro humano?',c:'Uns 86 bilhões',e:['Uns 86 milhões','Uns 860 mil','Uns 8,6 trilhões'],s:'Mais ou menos o mesmo tanto de estrelas que tem a Via Láctea... e um pouco menos, na verdade!'},
-  {n:3,t:'🪨',p:'Qual é o elemento que existe em MAIOR quantidade na crosta da Terra?',c:'Oxigênio',e:['Ferro','Silício','Alumínio'],s:'Quase metade da crosta é oxigênio, preso dentro das pedras. O silício vem em segundo.'},
-  {n:3,t:'🚀',p:'Qual é a velocidade que um foguete precisa pra escapar da Terra?',c:'Uns 11,2 km por segundo',e:['Uns 1,1 km por segundo','Uns 343 metros por segundo','Uns 112 km por segundo'],s:'É a "velocidade de escape": mais de 40 mil km/h! Mais devagar que isso, a gravidade puxa de volta.'},
-  {n:2,t:'🧑‍🔬',p:'Na fórmula E = mc² do Einstein, o que é o "c"?',c:'A velocidade da luz',e:['O calor','A carga elétrica','A gravidade'],s:'E é a energia e m é a massa. Como c² é um número gigante, um pouquinho de massa vira uma energia enorme.'},
-  {n:3,t:'🔷',p:'Quantos lados tem um heptadecágono?',c:'17',e:['7','12','70'],s:'"Hepta" é 7 e "deca" é 10: 7 + 10 = 17. O Gauss descobriu como desenhar ele só com régua e compasso quando tinha 19 anos!'},
-  {n:3,t:'✖️',p:'Quanto é 37 × 37?',c:'1.369',e:['1.269','1.396','1.469'],s:'Truque: 37 × 37 = 40 × 34 + 3 × 3 = 1.360 + 9 = 1.369.'},
+  /*  1 */ {t:'👆',p:'Aperte no botão que está escrito botão.',x:'palavra',w:'botão',e:['Botão','BOTÃO','B0TÃO','Bo-tão']},
+  /*  2 */ {t:'🧮',p:'Quanto é 2 + 2 × 2?',c:'6',e:['8','4','12']},
+  /*  3 */ {t:'🌍',p:'Qual é a massa da Terra?',c:'5,97 × 10²⁴ kg',e:['Lasanha 🍝','Pizza de calabresa','Miojo']},
+  /*  4 */ {t:'🐢',p:'Qual é a resposta mais paciente?',x:'esperar',s:6,e:['Esta','Não, esta aqui','Eu!','Aperta logo!']},
+  /*  5 */ {t:'🐝',p:'Aperte no inseto.',x:'emoji',e:['Formiga','Joaninha','Besouro','Borboleta']},
+  /*  6 */ {t:'📅',p:'Quantos meses têm 28 dias?',c:'Todos',e:['1','2','Nenhum']},
+  /*  7 */ {t:'🔍',p:'Cadê o jegue?',x:'escondido',e:['Fugiu','No pasto','Dentro de você','Em lugar nenhum']},
+  /*  8 */ {t:'🌌',p:'Qual é a massa do universo?',c:'Uns 10⁵³ kg',e:['Macarrão','1 kg','Um pouquinho']},
+  /*  9 */ {t:'⚖️',p:'O que pesa mais: 1 kg de pena ou 1 kg de ferro?',c:'Os dois pesam igual',e:['O ferro','A pena','Depende do vento']},
+  /* 10 */ {t:'🐴',p:'Qual é a cor do cavalo branco do rei?',c:'Branco',e:['Preto','Marrom','Rosa']},
+  /* 11 */ {t:'🌍',p:'Aperte na Terra.',x:'emoji',e:['Marte','Terra','Lua','Sol']},
+  /* 12 */ {t:'🏃',p:'Numa corrida, você passa quem está em segundo lugar. Em que lugar você fica?',c:'Segundo',e:['Primeiro','Terceiro','Último']},
+  /* 13 */ {t:'🫏',p:'Qual é a pessoa mais jegue do mundo?',x:'numero',e:['Você','O Claude 🤖','O jegue 🫏','Ninguém']},
+  /* 14 */ {t:'🏁',p:'Aperte no fim desta pergunta.',x:'palavra',w:'pergunta.',e:['Fim','THE END','Acabou','Tchau']},
+  /* 15 */ {t:'🎈',p:'Quanto é 1 + 1?',c:'2',e:['11','Janela 🪟','Depende']},
+  /* 16 */ {t:'🙈',p:'Não aperte em nada.',x:'esperar',s:5,e:['Ok','Tá bom','Não vou apertar','Prometo']},
+  /* 17 */ {t:'🚢',p:'Quantos bichos de cada tipo o Moisés levou na arca?',c:'Nenhum, quem fez a arca foi Noé',e:['1','2','7']},
+  /* 18 */ {t:'🔢',p:'Qual é o maior número que tem nesta tela?',x:'numero',e:['9','12','15','17']},
+  /* 19 */ {t:'🔎',p:'O jegue fugiu de novo. Ache ele!',x:'escondido',e:['Tô procurando','Achei!','Ele foi embora','Não tem jegue']},
+  /* 20 */ {t:'🍇',p:'Quantas bananas tem num cacho de uva?',c:'Nenhuma',e:['12','30','Um monte']},
+  /* 21 */ {t:'🧠',p:'Aperte no cérebro.',x:'emoji',e:['Cérebro','Cabeça','Neurônio','Pensamento']},
+  /* 22 */ {t:'⚡',p:'Qual é a resposta mais rápida?',x:'esperar',s:8,e:['Eu!','Eu sou mais!','Rapidão','Aperta já!']},
+  /* 23 */ {t:'🤔',p:'Quantas perguntas você já passou?',c:'22',e:['21','23','20']},
+  /* 24 */ {t:'❓',p:'Qual é a primeira palavra desta pergunta?',x:'palavra',w:'Qual',e:['Qual','Primeira','Palavra','É']},
+  /* 25 */ {t:'🏆',p:'Última! Qual é a resposta certa?',x:'palavra',w:'certa?',e:['Esta','Esta não','A outra','Nenhuma']},
 ];
 
-// Ordem fixa: primeiro as muito difíceis, depois as impossíveis.
-const ORDEM = [2, 3].flatMap(n => PERGUNTAS.filter(q => q.n === n));
-
-/* ---------- PEGADINHAS ----------
-   Perguntas em que nenhuma resposta está certa.
-   O jeito de acertar é apertar o NÚMERO lá no canto.
-   pos = em qual número a pergunta aparece. */
-const PEGADINHAS = [
-  {pos:13,t:'🫏',p:'Qual é a pessoa mais jegue do mundo?',c:null,e:['Você','O Claude 🤖','O jegue 🫏','Ninguém'],x:'numero'},
-];
-PEGADINHAS.sort((a, b) => a.pos - b.pos).forEach(q => ORDEM.splice(q.pos - 1, 0, q));
+const ORDEM = PERGUNTAS;
 
 const $ = id => document.getElementById(id);
+const limpa = w => w.toLowerCase().replace(/[.,!?]/g, '');  // "Pergunta." vale igual a "pergunta"
 const embaralha = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
 /* ---------- recorde: a pergunta mais longe que você chegou ---------- */
@@ -181,7 +140,6 @@ function salvarRecorde(n) { if (n > lerRecorde()) { try { localStorage.setItem('
 function mostrarRecorde() {
   const r = lerRecorde();
   $('recordeInicio').innerHTML = r ? `🏆 Mais longe que você chegou: pergunta <b>${r}</b> de ${ORDEM.length}` : '';
-  $('recorde').textContent = r ? `🏆 ${r}` : '';
 }
 
 /* ---------- sons (feitos na hora, sem arquivo) ---------- */
@@ -204,7 +162,7 @@ function som(tipo) {
 /* ---------- jogo ---------- */
 let atual = 0, travado = false;
 
-function telas(qual) { ['inicio','jogo','perdeu'].forEach(t => $(t).hidden = t !== qual); }
+function telas(qual) { if (qual !== 'jogo') limparTruques(); ['inicio','jogo','perdeu'].forEach(t => $(t).hidden = t !== qual); }
 
 function comecar() { atual = 0; mostrarRecorde(); telas('jogo'); mostrarPergunta(); }
 
@@ -212,19 +170,36 @@ function mostrarPergunta() {
   const q = ORDEM[atual];
   travado = false;
   $('numero').textContent = atual + 1; $('numero').classList.remove('acertou');
+  limparTruques();
   $('pergunta').innerHTML = '<span class="tema"></span><span></span>';
   $('pergunta').firstChild.textContent = q.t;
-  $('pergunta').lastChild.textContent = q.p;
+  // as palavras da pergunta podem ser apertadas (só vale na pegadinha de palavra)
+  q.p.split(' ').forEach((w, i) => {
+    const sp = document.createElement('span'); sp.className = 'palavra'; sp.textContent = (i ? ' ' : '') + w;
+    sp.onclick = () => { if (q.x === 'palavra' && limpa(w) === limpa(q.w) && !travado) { sp.classList.add('achou'); responder(null, true); } };
+    $('pergunta').lastChild.appendChild(sp);
+  });
+  if (q.x === 'esperar') esperaTimer = setTimeout(() => responder(null, true), q.s * 1000);
+  if (q.x === 'escondido') {
+    const j = document.createElement('button'); j.className = 'escondido'; j.textContent = '🫏';
+    j.style.left = (8 + Math.random() * 80) + '%'; j.style.top = (Math.random() < .5 ? 12 + Math.random() * 6 : 88 + Math.random() * 5) + '%';
+    j.onclick = () => { if (!travado) { j.classList.add('achou'); responder(null, true); } };
+    document.body.appendChild(j);
+  }
   $('respostas').innerHTML = '';
-  embaralha(q.c === null ? q.e : [q.c, ...q.e]).forEach(txt => {
+  embaralha(q.c == null ? q.e : [q.c, ...q.e]).forEach(txt => {
     const b = document.createElement('button'); b.className = 'resp'; b.textContent = txt;
     b.onclick = () => responder(b, txt === q.c); $('respostas').appendChild(b);
   });
   $('jogo').scrollTop = 0;
 }
 
+let esperaTimer = null;
+function limparTruques() { clearTimeout(esperaTimer); document.querySelectorAll('.escondido').forEach(e => e.remove()); }
+
 function responder(botao, certo) {
   if (travado) return; travado = true;
+  clearTimeout(esperaTimer);
   document.querySelectorAll('.resp').forEach(b => b.disabled = true);
   if (certo) {
     if (botao) botao.classList.add('certa'); som('certo');
@@ -236,7 +211,7 @@ function responder(botao, certo) {
     }, 600);
   } else {
     botao.classList.add('errada'); som('errado');
-    setTimeout(perdeu, 700);
+    setTimeout(() => { limparTruques(); perdeu(); }, 700);
   }
 }
 
@@ -254,7 +229,7 @@ function ganhou() {
   $('jegueTxt').textContent = 'VOCÊ É UM GÊNIO!';
   $('jegueTxt').classList.add('genio');
   document.querySelector('#perdeu .grandao').textContent = '👑';
-  $('perdeuTxt').innerHTML = `Acertou as <b>${ORDEM.length}</b> perguntas sem errar nenhuma.<br>Isso era pra ser impossível! 🤯`;
+  $('perdeuTxt').innerHTML = `Passou pelas <b>${ORDEM.length}</b> pegadinhas sem errar nenhuma.<br>Isso era pra ser impossível! 🤯`;
   $('denovo').textContent = '🔁 Jogar de novo';
   telas('perdeu');
 }
@@ -265,6 +240,10 @@ $('numero').onclick = () => {
   $('numero').classList.add('acertou');
   responder(null, true);
 };
+$('pergunta').addEventListener('click', ev => {
+  // o emoji da pergunta (só vale na pegadinha do emoji)
+  if (ev.target.classList.contains('tema') && ORDEM[atual].x === 'emoji' && !travado) { ev.target.classList.add('achou'); responder(null, true); }
+});
 $('comecar').onclick = comecar;
 $('denovo').onclick = comecar;
 document.addEventListener('keydown', ev => {

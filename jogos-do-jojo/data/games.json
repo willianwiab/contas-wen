@@ -7,16 +7,15 @@
     {
       "slug": "quiz-de-genio",
       "nome": "Quiz de Gênio",
-      "descricao": "Só perguntas muito difíceis e impossíveis! Qual é a massa da Terra? E a do universo? Errou uma, você é um jegue e volta tudo pro começo.",
-      "comoFunciona": "Aparece uma pergunta e quatro respostas. Só uma é a certa. O número no canto mostra em qual pergunta você está. Acertou, vai pra próxima. Errou uma só, aparece \"Você é um jegue!\" e volta tudo pra pergunta 1.",
-      "objetivo": "Acertar as 59 perguntas seguidas, sem errar nenhuma, e virar um GÊNIO.",
+      "descricao": "Um quiz só de pegadinhas! Às vezes a resposta não está nos botões. Errou uma, você é um jegue e volta tudo pro começo.",
+      "comoFunciona": "São 25 pegadinhas, sempre na mesma ordem. Às vezes a resposta certa é um botão, mas às vezes é outra coisa na tela. O número no canto mostra em qual pergunta você está. Errou uma só, aparece \"Você é um jegue!\" e volta tudo pra pergunta 1.",
+      "objetivo": "Passar pelas 25 pegadinhas sem errar nenhuma e virar um GÊNIO.",
       "mecanicas": [
-        "💀 Só perguntas muito difíceis e impossíveis",
+        "🤫 Todas as perguntas são pegadinhas",
+        "Às vezes a resposta certa não está nos botões: tem que pensar diferente",
         "🔢 Número no canto mostra em qual pergunta você está",
         "🫏 Errou uma: \"Você é um jegue!\" e volta tudo do começo",
-        "🤫 Pegadinhas escondidas: às vezes a resposta certa não está nos botões",
         "As perguntas vêm sempre na mesma ordem, então dá pra ir decorando",
-        "Pegadinhas pra quem não presta atenção",
         "🏆 Recorde da pergunta mais longe que você chegou",
         "Fundo preto",
         "Dá pra instalar como aplicativo e jogar sem internet"
@@ -26,7 +25,7 @@
       "ano": 2026,
       "status": "Finalizado",
       "dificuldade": "Impossível",
-      "fases": 59,
+      "fases": 25,
       "recorde": "",
       "pontuacao": "Não tem pontos: o que vale é até qual pergunta você chega. A mais longe fica salva como recorde.",
       "popularidade": 90,
@@ -34,8 +33,8 @@
       "trailer": "",
       "url": "../quiz-de-genio/index.html",
       "galeria": [],
-      "historia": "Um cérebro gigante que veio do espaço juntou as perguntas mais difíceis do universo. Só um gênio de verdade consegue responder todas!",
-      "comoJogar": "Toque em Começar, leia a pergunta e toque na resposta certa. Cuidado: se errar uma, volta tudo pra pergunta 1!",
+      "historia": "Um jegue muito esperto escondeu 25 pegadinhas num quiz. Só um gênio de verdade consegue passar por todas sem cair em nenhuma!",
+      "comoJogar": "Toque em Começar e leia cada pergunta com MUITA atenção. Nem sempre a resposta é um botão!",
       "controles": [
         {
           "tecla": "Clique / Toque",
@@ -51,14 +50,18 @@
         }
       ],
       "curiosidades": [
-        "A pergunta da massa do universo foi o Jojo que pediu.",
+        "Todas as pegadinhas foram inventadas pelo Jojo e pelo Claude.",
         "A pegadinha \"Qual é a pessoa mais jegue do mundo?\" foi ideia do Jojo.",
-        "Quem perde vira jegue: ideia do Jojo.",
         "Os sons são feitos na hora pelo jogo, sem nenhum arquivo de som."
       ],
       "creditos": "Ideia do Jojo, feito com o Claude.",
       "atualizacoes": "",
       "changelog": [
+        {
+          "versao": "3.0",
+          "data": "2026",
+          "mudancas": "Agora o quiz é só de pegadinhas: 25 pegadinhas novas, todas inventadas por nós."
+        },
         {
           "versao": "2.1",
           "data": "2026",
