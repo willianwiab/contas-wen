@@ -9,11 +9,12 @@
       "nome": "Quiz de Gênio",
       "descricao": "Só perguntas muito difíceis e impossíveis! Qual é a massa da Terra? E a do universo? Errou uma, você é um jegue e volta tudo pro começo.",
       "comoFunciona": "Aparece uma pergunta e quatro respostas. Só uma é a certa. O número no canto mostra em qual pergunta você está. Acertou, vai pra próxima. Errou uma só, aparece \"Você é um jegue!\" e volta tudo pra pergunta 1.",
-      "objetivo": "Acertar as 58 perguntas seguidas, sem errar nenhuma, e virar um GÊNIO.",
+      "objetivo": "Acertar as 59 perguntas seguidas, sem errar nenhuma, e virar um GÊNIO.",
       "mecanicas": [
         "💀 Só perguntas muito difíceis e impossíveis",
         "🔢 Número no canto mostra em qual pergunta você está",
         "🫏 Errou uma: \"Você é um jegue!\" e volta tudo do começo",
+        "🤫 Pegadinhas escondidas: às vezes a resposta certa não está nos botões",
         "As perguntas vêm sempre na mesma ordem, então dá pra ir decorando",
         "Pegadinhas pra quem não presta atenção",
         "🏆 Recorde da pergunta mais longe que você chegou",
@@ -25,7 +26,7 @@
       "ano": 2026,
       "status": "Finalizado",
       "dificuldade": "Impossível",
-      "fases": 58,
+      "fases": 59,
       "recorde": "",
       "pontuacao": "Não tem pontos: o que vale é até qual pergunta você chega. A mais longe fica salva como recorde.",
       "popularidade": 90,
@@ -51,12 +52,18 @@
       ],
       "curiosidades": [
         "A pergunta da massa do universo foi o Jojo que pediu.",
+        "A pegadinha \"Qual é a pessoa mais jegue do mundo?\" foi ideia do Jojo.",
         "Quem perde vira jegue: ideia do Jojo.",
         "Os sons são feitos na hora pelo jogo, sem nenhum arquivo de som."
       ],
       "creditos": "Ideia do Jojo, feito com o Claude.",
       "atualizacoes": "",
       "changelog": [
+        {
+          "versao": "2.1",
+          "data": "2026",
+          "mudancas": "Primeira pegadinha: na pergunta 13 a resposta certa não está nos botões. 🤫"
+        },
         {
           "versao": "2.0",
           "data": "2026",
