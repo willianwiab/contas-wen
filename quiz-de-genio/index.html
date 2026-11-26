@@ -3,201 +3,97 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#120a2e">
-<meta name="description" content="Quiz de Gênio: perguntas impossíveis de ciência, espaço, matemática e mundo. Qual é a massa da Terra? E a do universo?">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="Quiz de Gênio: perguntas impossíveis. Errou uma, volta tudo do começo!">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icone.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icone-180.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Quiz de Gênio">
 <title>Quiz de Gênio</title>
 <style>
-  :root {
-    --fundo1:#1d1150; --fundo2:#0a0620;
-    --ink:#f6f2ff; --dim:#b7a9e6;
-    --rosa:#ff7ac6; --rosa2:#c23a86;
-    --ouro:#ffd45c; --verde:#62e6a0; --vermelho:#ff5a6e; --azul:#6fc8ff;
-    --r:18px;
-  }
+  :root { --ink:#fff; --dim:#9a9a9a; --ouro:#ffd45c; --verde:#62e6a0; --vermelho:#ff4d5e; --r:18px; }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { height:100%; }
-  body {
-    margin:0; color:var(--ink); overflow:hidden;
-    font-family:"Trebuchet MS", system-ui, -apple-system, "Segoe UI", sans-serif;
-    background:
-      radial-gradient(800px 500px at 50% -10%, #4b2a9e 0%, transparent 60%),
-      radial-gradient(600px 400px at 100% 110%, #3a1260 0%, transparent 60%),
-      linear-gradient(var(--fundo1), var(--fundo2));
-  }
-  #estrelas { position:fixed; inset:0; pointer-events:none; }
+  body { margin:0; background:#000; color:var(--ink); overflow:hidden; font-family:"Trebuchet MS", system-ui, -apple-system, "Segoe UI", sans-serif; }
   button { font:inherit; color:inherit; cursor:pointer; }
   [hidden] { display:none !important; }
-  .tela {
-    position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
-    padding:max(14px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
-    overflow-y:auto;
-  }
-  .caixa { width:min(560px, 100%); display:flex; flex-direction:column; align-items:center; gap:14px; margin:auto 0; }
-  h1 {
-    margin:0; font-size:clamp(2.3rem, 10vw, 3.6rem); line-height:1; text-align:center; color:var(--ouro);
-    text-shadow:0 4px 0 #8a5a00, 0 8px 18px rgba(0,0,0,.5);
-  }
-  .cerebro { font-size:4.5rem; line-height:1; animation:pula 2s ease-in-out infinite; }
-  @keyframes pula { 50% { transform:translateY(-8px) rotate(-4deg); } }
-  .sub { margin:0; color:var(--dim); text-align:center; font-size:1.05rem; }
-  .botao {
-    width:100%; border:0; border-radius:var(--r); padding:15px 18px; font-size:1.2rem; font-weight:800;
-    background:var(--verde); color:#06301b; box-shadow:0 6px 0 #2a9a5f; transition:transform .08s; text-align:left;
-    display:flex; align-items:center; gap:12px;
-  }
+  .tela { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; padding:max(14px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom)); overflow-y:auto; }
+  .caixa { width:min(560px, 100%); display:flex; flex-direction:column; align-items:center; gap:16px; margin:auto 0; }
+  h1 { margin:0; font-size:clamp(2.4rem, 11vw, 3.8rem); line-height:1; text-align:center; color:var(--ouro); }
+  .grandao { font-size:5rem; line-height:1; }
+  .sub { margin:0; color:var(--dim); text-align:center; font-size:1.05rem; line-height:1.4; }
+  .sub b { color:var(--ink); }
+  .botao { width:100%; border:0; border-radius:var(--r); padding:18px; font-size:1.4rem; font-weight:900; background:var(--verde); color:#06301b; box-shadow:0 6px 0 #2a9a5f; transition:transform .08s; }
   .botao:active { transform:translateY(4px); box-shadow:0 2px 0 #2a9a5f; }
-  .botao small { display:block; font-weight:600; font-size:.85rem; opacity:.8; }
-  .botao .em { font-size:1.8rem; }
-  .botao.rosa { background:var(--rosa); color:#3a0d2a; box-shadow:0 6px 0 var(--rosa2); }
-  .botao.rosa:active { box-shadow:0 2px 0 var(--rosa2); }
-  .botao.vermelho { background:var(--vermelho); color:#3a0010; box-shadow:0 6px 0 #a3203a; }
-  .botao.vermelho:active { box-shadow:0 2px 0 #a3203a; }
-  .botao.cinza { background:#352a66; color:var(--ink); box-shadow:0 6px 0 #1f1745; justify-content:center; text-align:center; }
-  .botao.cinza:active { box-shadow:0 2px 0 #1f1745; }
-  .recordes { font-size:.95rem; color:var(--dim); text-align:center; line-height:1.5; }
-  .recordes b { color:var(--ouro); }
-
-  /* ---------- jogo ---------- */
-  #jogo .caixa { margin:0; gap:12px; flex:1; }
-  .topo { width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; }
-  .vidas { font-size:1.3rem; letter-spacing:2px; }
-  .pontos { color:var(--ouro); font-size:1.2rem; }
-  .sair { background:rgba(255,255,255,.1); border:0; border-radius:12px; padding:6px 12px; font-size:.9rem; }
-  .barra { width:100%; height:12px; border-radius:99px; background:rgba(255,255,255,.12); overflow:hidden; }
-  .barra > div { height:100%; width:100%; background:linear-gradient(90deg, var(--verde), var(--ouro)); border-radius:99px; transition:width .1s linear; }
-  .barra.pouco > div { background:var(--vermelho); }
-  .info { width:100%; display:flex; justify-content:space-between; color:var(--dim); font-size:.9rem; font-weight:700; }
-  .nivel { padding:2px 10px; border-radius:99px; background:rgba(255,255,255,.1); }
-  .nivel.n3 { background:var(--vermelho); color:#3a0010; }
-  .nivel.n2 { background:var(--rosa); color:#3a0d2a; }
-  .pergunta {
-    width:100%; background:rgba(255,255,255,.07); border:2px solid rgba(255,255,255,.14); border-radius:var(--r);
-    padding:20px 16px; text-align:center; font-size:clamp(1.25rem, 5vw, 1.6rem); font-weight:800; line-height:1.3;
-    min-height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
-  }
-  .pergunta .tema { font-size:2.2rem; }
+  .numero { position:fixed; top:max(12px, env(safe-area-inset-top)); left:16px; font-size:2rem; font-weight:900; color:var(--ouro); z-index:2; }
+  .recorde { position:fixed; top:max(18px, env(safe-area-inset-top)); right:16px; font-size:.95rem; font-weight:700; color:var(--dim); z-index:2; }
+  .pergunta { width:100%; text-align:center; font-size:clamp(1.35rem, 5.5vw, 1.8rem); font-weight:800; line-height:1.3; display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .pergunta .tema { font-size:2.6rem; }
   .respostas { width:100%; display:grid; grid-template-columns:1fr; gap:10px; }
   @media (min-width:560px) { .respostas { grid-template-columns:1fr 1fr; } }
-  .resp {
-    border:2px solid rgba(255,255,255,.2); background:#2a1f5c; border-radius:16px; padding:14px 12px;
-    font-size:1.1rem; font-weight:700; min-height:58px; box-shadow:0 5px 0 #150f35; transition:transform .08s, opacity .2s;
-  }
-  .resp:active { transform:translateY(3px); box-shadow:0 2px 0 #150f35; }
-  .resp.certa { background:var(--verde); color:#06301b; border-color:var(--verde); }
-  .resp.errada { background:var(--vermelho); color:#3a0010; border-color:var(--vermelho); animation:treme .35s; }
-  .resp.some { opacity:.15; pointer-events:none; }
+  .resp { border:2px solid #333; background:#111; border-radius:16px; padding:16px 12px; font-size:1.15rem; font-weight:700; min-height:60px; transition:transform .08s; }
+  .resp:active { transform:scale(.97); }
   .resp:disabled { cursor:default; }
-  @keyframes treme { 25% { transform:translateX(-6px); } 75% { transform:translateX(6px); } }
-  .ajudas { width:100%; display:flex; gap:8px; }
-  .ajuda { flex:1; border:2px solid var(--azul); background:transparent; border-radius:14px; padding:8px 4px; font-weight:800; font-size:.95rem; color:var(--azul); }
-  .ajuda:disabled { opacity:.3; cursor:default; }
-  .sabia {
-    width:100%; border-radius:var(--r); padding:14px 16px; background:rgba(111,200,255,.12); border:2px solid rgba(111,200,255,.4);
-    font-size:1rem; line-height:1.45; animation:entra .3s;
-  }
-  .sabia b.t { display:block; font-size:1.1rem; margin-bottom:4px; }
-  @keyframes entra { from { opacity:0; transform:translateY(10px); } }
-
-  /* ---------- fim ---------- */
-  .titulo { font-size:1.6rem; font-weight:900; color:var(--ouro); text-align:center; }
-  .grande { font-size:3.4rem; font-weight:900; line-height:1; }
-  .lista { width:100%; display:flex; flex-direction:column; gap:8px; max-height:40vh; overflow-y:auto; }
-  .lista div { background:rgba(255,255,255,.06); border-radius:12px; padding:10px 12px; font-size:.92rem; line-height:1.35; }
-  .lista b { color:var(--verde); }
-  .rodape { font-size:.8rem; color:var(--dim); text-align:center; opacity:.8; }
-  .pulso { animation:pulso .5s; }
-  @keyframes pulso { 50% { transform:scale(1.15); } }
+  .resp.certa { background:var(--verde); color:#06301b; border-color:var(--verde); }
+  .resp.errada { background:var(--vermelho); color:#fff; border-color:var(--vermelho); animation:treme .35s; }
+  @keyframes treme { 25% { transform:translateX(-8px); } 75% { transform:translateX(8px); } }
+  .jegue { font-size:clamp(2.4rem, 12vw, 4rem); font-weight:900; color:var(--vermelho); text-align:center; line-height:1.05; animation:entra .4s; }
+  .genio { color:var(--ouro); }
+  @keyframes entra { from { transform:scale(.3) rotate(-10deg); opacity:0; } }
+  .rodape { font-size:.8rem; color:#555; text-align:center; }
 </style>
 </head>
 <body>
-<canvas id="estrelas"></canvas>
 
-<!-- INÍCIO -->
 <section class="tela" id="inicio">
   <div class="caixa">
-    <div class="cerebro">🧠</div>
+    <div class="grandao">🧠</div>
     <h1>Quiz de Gênio</h1>
-    <p class="sub">Perguntas impossíveis de verdade.<br>Qual é a massa da Terra? E a do <b>universo</b>? 🌌</p>
-    <button class="botao" data-modo="genio"><span class="em">🎓</span><span>Modo Gênio<small>15 perguntas, 3 vidas, cada vez mais difícil</small></span></button>
-    <button class="botao rosa" data-modo="einstein"><span class="em">👨‍🔬</span><span>Modo Einstein<small>Só as muito difíceis, 2 vidas, 15 segundos</small></span></button>
-    <button class="botao vermelho" data-modo="impossivel"><span class="em">💀</span><span>Modo Impossível<small>Só as impossíveis, 1 vida, 10 segundos, sem ajuda</small></span></button>
-    <button class="botao cinza" data-modo="treino">📚 Treino (sem tempo e sem perder vida)</button>
-    <div class="recordes" id="recordes"></div>
-    <p class="rodape">Quiz de Gênio · ideia do Jojo, feito com o Claude 🧠</p>
+    <p class="sub">Perguntas <b>impossíveis</b>.<br>Errou uma, volta tudo do começo! 😈</p>
+    <button class="botao" id="comecar">▶ Começar</button>
+    <p class="sub" id="recordeInicio"></p>
+    <p class="rodape">Ideia do Jojo, feito com o Claude 🧠</p>
   </div>
 </section>
 
-<!-- JOGO -->
 <section class="tela" id="jogo" hidden>
+  <span class="numero" id="numero">1</span>
+  <span class="recorde" id="recorde"></span>
   <div class="caixa">
-    <div class="topo">
-      <button class="sair" id="sair">✖ Sair</button>
-      <span class="vidas" id="vidas"></span>
-      <span class="pontos" id="pontos">0</span>
-    </div>
-    <div class="barra" id="barra"><div></div></div>
-    <div class="info"><span id="contador"></span><span class="nivel" id="nivel"></span></div>
     <div class="pergunta" id="pergunta"></div>
     <div class="respostas" id="respostas"></div>
-    <div class="ajudas" id="ajudas">
-      <button class="ajuda" id="meio">✂️ 50/50</button>
-      <button class="ajuda" id="pular">⏭️ Pular</button>
-      <button class="ajuda" id="tempo">⏳ +10 s</button>
-    </div>
-    <div class="sabia" id="sabia" hidden></div>
-    <button class="botao cinza" id="proxima" hidden>Próxima ➜</button>
   </div>
 </section>
 
-<!-- FIM -->
-<section class="tela" id="fim" hidden>
+<section class="tela" id="perdeu" hidden>
   <div class="caixa">
-    <div class="cerebro" id="fimEmoji">🧠</div>
-    <div class="titulo" id="fimTitulo"></div>
-    <div class="grande" id="fimPontos"></div>
-    <p class="sub" id="fimTexto"></p>
-    <div class="lista" id="fimLista"></div>
-    <button class="botao" id="denovo" style="justify-content:center">🔁 Jogar de novo</button>
-    <button class="botao cinza" id="menu">🏠 Menu</button>
+    <div class="grandao">🫏</div>
+    <div class="jegue" id="jegueTxt">Você é um jegue!</div>
+    <p class="sub" id="perdeuTxt"></p>
+    <button class="botao" id="denovo">🔁 Começar tudo de novo</button>
   </div>
 </section>
 
 <script>
 /* ============================================================
    QUIZ DE GÊNIO
+   As perguntas vêm sempre na mesma ordem, da mais fácil pra mais
+   impossível. O número no canto diz em qual pergunta você está.
+   Errou uma: "Você é um jegue!" e volta tudo pra pergunta 1.
+
    Cada pergunta tem:
-     n = nível (1 difícil, 2 muito difícil, 3 impossível)
+     n = nível (2 muito difícil, 3 impossível)
      t = emoji do tema
      p = pergunta
      c = resposta certa
      e = três respostas erradas
-     s = "você sabia?" que aparece depois
+     s = explicação (curiosidade)
    Pra colocar pergunta nova é só copiar uma linha e trocar.
    ============================================================ */
 const PERGUNTAS = [
-  // ---------- nível 1: difícil ----------
-  {n:1,t:'🦴',p:'Quantos ossos tem o corpo de um adulto?',c:'206',e:['106','306','150'],s:'Um bebê nasce com uns 300 ossos. Vários vão se juntando enquanto a gente cresce, e sobram 206.'},
-  {n:1,t:'🪐',p:'Qual é o maior planeta do Sistema Solar?',c:'Júpiter',e:['Saturno','Netuno','Urano'],s:'Cabem mais de 1.300 Terras dentro de Júpiter!'},
-  {n:1,t:'🦷',p:'Quantos dentes tem um adulto (contando os do siso)?',c:'32',e:['28','36','24'],s:'Criança tem 20 dentes de leite. O adulto tem 32 se nascerem os 4 do siso.'},
-  {n:1,t:'🐙',p:'Quantos corações tem um polvo?',c:'3',e:['1','2','8'],s:'Dois corações mandam sangue pras guelras e um manda pro resto do corpo. E o sangue dele é azul!'},
-  {n:1,t:'🇦🇺',p:'Qual é a capital da Austrália?',c:'Camberra',e:['Sydney','Melbourne','Perth'],s:'Muita gente acha que é Sydney! Camberra foi construída de propósito pra ser a capital, porque Sydney e Melbourne brigavam pelo título.'},
-  {n:1,t:'🌬️',p:'Qual gás existe em MAIOR quantidade no ar que a gente respira?',c:'Nitrogênio',e:['Oxigênio','Gás carbônico','Hélio'],s:'O ar tem uns 78% de nitrogênio e só uns 21% de oxigênio.'},
-  {n:1,t:'🌕',p:'Em que ano o ser humano pisou na Lua pela primeira vez?',c:'1969',e:['1959','1979','1989'],s:'Foi o Neil Armstrong, na missão Apollo 11, em 20 de julho de 1969.'},
-  {n:1,t:'♟️',p:'Quantas casas tem um tabuleiro de xadrez?',c:'64',e:['36','49','100'],s:'São 8 fileiras de 8 casas: 8 × 8 = 64.'},
-  {n:1,t:'🧪',p:'Qual é o símbolo químico do ouro?',c:'Au',e:['Ou','Go','Ag'],s:'Vem de "aurum", ouro em latim. Ag é a prata (argentum).'},
-  {n:1,t:'🏔️',p:'Qual é a montanha mais alta do mundo?',c:'Everest',e:['K2','Aconcágua','Kilimanjaro'],s:'O Everest tem 8.849 metros. Lá em cima o ar tem só um terço do oxigênio daqui de baixo.'},
-  {n:1,t:'🐆',p:'Qual é o animal terrestre mais rápido?',c:'Guepardo',e:['Leão','Cavalo','Avestruz'],s:'O guepardo chega a uns 100 km/h, mas só aguenta correr assim por uns 20 ou 30 segundos.'},
-  {n:1,t:'🐋',p:'Qual é o maior animal que já existiu na Terra?',c:'Baleia-azul',e:['Tiranossauro','Megalodon','Elefante-africano'],s:'A baleia-azul pode passar de 30 metros e 150 toneladas. É maior que qualquer dinossauro!'},
-  {n:1,t:'🌡️',p:'Qual metal é líquido na temperatura ambiente?',c:'Mercúrio',e:['Ferro','Alumínio','Chumbo'],s:'Por isso ele era usado nos termômetros antigos.'},
-  {n:1,t:'🧬',p:'Quantos cromossomos tem uma pessoa?',c:'46',e:['23','48','64'],s:'São 23 pares: metade veio da mãe e metade do pai.'},
-
   // ---------- nível 2: muito difícil ----------
   {n:2,t:'💡',p:'Qual é a velocidade da luz?',c:'Uns 300 mil km por segundo',e:['Uns 30 mil km por segundo','Uns 3 mil km por segundo','Uns 3 milhões de km por segundo'],s:'São 299.792 km por segundo. Dá pra dar mais de 7 voltas na Terra em 1 segundo!'},
   {n:2,t:'☀️',p:'Quanto tempo a luz do Sol leva pra chegar na Terra?',c:'Uns 8 minutos',e:['Na hora, 0 segundos','Uns 8 segundos','Umas 8 horas'],s:'São uns 8 minutos e 20 segundos. Então o Sol que você vê é o Sol de 8 minutos atrás!'},
@@ -241,32 +137,40 @@ const PERGUNTAS = [
   {n:3,t:'🫖',p:'Em que temperatura a água ferve no topo do Everest?',c:'Uns 70 °C',e:['100 °C, igual aqui','Uns 120 °C','Uns 30 °C'],s:'Lá em cima o ar aperta menos a água, então ela ferve antes. Por isso é difícil cozinhar macarrão lá!'},
   {n:3,t:'🍎',p:'Qual é a aceleração da gravidade na Terra?',c:'9,8 m/s²',e:['1,6 m/s²','3,7 m/s²','24,8 m/s²'],s:'1,6 é na Lua, 3,7 é em Marte e 24,8 é em Júpiter. Lá você pesaria mais que o dobro!'},
   {n:3,t:'📅',p:'Quantos minutos tem uma semana?',c:'10.080',e:['1.008','6.720','100.800'],s:'7 dias × 24 horas × 60 minutos = 10.080.'},
+  // ---------- ainda mais impossíveis ----------
+  {n:3,t:'⚛️',p:'Qual é a massa de um elétron?',c:'9,11 × 10⁻³¹ kg',e:['1,67 × 10⁻²⁷ kg','9,11 × 10⁻¹³ kg','6,67 × 10⁻¹¹ kg'],s:'É um 0, vírgula, 30 zeros e depois 911. 1,67 × 10⁻²⁷ kg é a massa do próton.'},
+  {n:3,t:'🍎',p:'Quanto vale a constante da gravidade (G) de Newton?',c:'6,67 × 10⁻¹¹',e:['9,8','3,00 × 10⁸','6,022 × 10²³'],s:'É ela que diz quanto as coisas se puxam. 9,8 é a gravidade aqui na Terra, 3 × 10⁸ é a velocidade da luz em metros por segundo.'},
+  {n:2,t:'🧪',p:'Quantos elementos tem a tabela periódica?',c:'118',e:['92','108','150'],s:'92 são os que existem na natureza mais ou menos. Os outros foram criados em laboratório!'},
+  {n:3,t:'🔩',p:'Qual é o número atômico do ferro?',c:'26',e:['8','56','82'],s:'26 prótons! 56 é a massa do ferro e 82 é o número do chumbo.'},
+  {n:2,t:'🌕',p:'Qual é a distância da Terra até a Lua?',c:'Uns 384 mil km',e:['Uns 38 mil km','Uns 3,8 milhões de km','Uns 150 milhões de km'],s:'Cabem todos os planetas do Sistema Solar, um do lado do outro, no espaço entre a Terra e a Lua!'},
+  {n:3,t:'🌌',p:'Qual é o tamanho da nossa galáxia, a Via Láctea?',c:'Uns 100 mil anos-luz',e:['Uns 1 mil anos-luz','Uns 4,24 anos-luz','Uns 13,8 bilhões de anos-luz'],s:'A luz, a coisa mais rápida que existe, leva uns 100 mil anos pra atravessar a galáxia.'},
+  {n:3,t:'🌀',p:'A que distância fica a galáxia de Andrômeda?',c:'Uns 2,5 milhões de anos-luz',e:['Uns 4,24 anos-luz','Uns 25 mil anos-luz','Uns 13,8 bilhões de anos-luz'],s:'É a coisa mais distante que dá pra ver a olho nu! E daqui a uns 4,5 bilhões de anos ela vai bater na Via Láctea.'},
+  {n:3,t:'√',p:'Quanto é a raiz quadrada de 2?',c:'1,41421…',e:['1,73205…','1,61803…','2,71828…'],s:'1,73 é a raiz de 3, 1,618 é o número de ouro e 2,718 é o número de Euler. Pegadinha!'},
+  {n:3,t:'📈',p:'Quais são os primeiros números do número de Euler (e)?',c:'2,71828',e:['3,14159','1,61803','2,81728'],s:'Ele aparece em juros, em crescimento de bactérias e em um monte de lugares da matemática.'},
+  {n:2,t:'✋',p:'Quantos ossos tem UMA mão?',c:'27',e:['14','19','54'],s:'54 é das duas mãos juntas! Mais ou menos um quarto dos ossos do corpo fica nas mãos.'},
+  {n:3,t:'💡',p:'Quantos km tem 1 ano-luz?',c:'Uns 9,46 trilhões de km',e:['Uns 300 mil km','Uns 9,46 bilhões de km','Uns 365 mil km'],s:'Ano-luz não é tempo, é distância: é o quanto a luz anda em um ano.'},
+  {n:2,t:'🔥',p:'Qual é o planeta MAIS QUENTE do Sistema Solar?',c:'Vênus',e:['Mercúrio','Marte','Júpiter'],s:'Pegadinha! Mercúrio é mais perto do Sol, mas Vênus tem um ar grosso que prende o calor. Lá faz uns 465 °C.'},
+  {n:3,t:'🧠',p:'Quantos neurônios tem o cérebro humano?',c:'Uns 86 bilhões',e:['Uns 86 milhões','Uns 860 mil','Uns 8,6 trilhões'],s:'Mais ou menos o mesmo tanto de estrelas que tem a Via Láctea... e um pouco menos, na verdade!'},
+  {n:3,t:'🪨',p:'Qual é o elemento que existe em MAIOR quantidade na crosta da Terra?',c:'Oxigênio',e:['Ferro','Silício','Alumínio'],s:'Quase metade da crosta é oxigênio, preso dentro das pedras. O silício vem em segundo.'},
+  {n:3,t:'🚀',p:'Qual é a velocidade que um foguete precisa pra escapar da Terra?',c:'Uns 11,2 km por segundo',e:['Uns 1,1 km por segundo','Uns 343 metros por segundo','Uns 112 km por segundo'],s:'É a "velocidade de escape": mais de 40 mil km/h! Mais devagar que isso, a gravidade puxa de volta.'},
+  {n:2,t:'🧑‍🔬',p:'Na fórmula E = mc² do Einstein, o que é o "c"?',c:'A velocidade da luz',e:['O calor','A carga elétrica','A gravidade'],s:'E é a energia e m é a massa. Como c² é um número gigante, um pouquinho de massa vira uma energia enorme.'},
+  {n:3,t:'🔷',p:'Quantos lados tem um heptadecágono?',c:'17',e:['7','12','70'],s:'"Hepta" é 7 e "deca" é 10: 7 + 10 = 17. O Gauss descobriu como desenhar ele só com régua e compasso quando tinha 19 anos!'},
+  {n:3,t:'✖️',p:'Quanto é 37 × 37?',c:'1.369',e:['1.269','1.396','1.469'],s:'Truque: 37 × 37 = 40 × 34 + 3 × 3 = 1.360 + 9 = 1.369.'},
 ];
 
-const MODOS = {
-  genio:      { nome:'Modo Gênio',     vidas:3, tempo:20, total:15, ajudas:true,  niveis:[1,1,1,1,1,2,2,2,2,2,3,3,3,3,3] },
-  einstein:   { nome:'Modo Einstein',  vidas:2, tempo:15, total:15, ajudas:true,  niveis:[2,2,2,2,2,2,2,3,3,3,3,3,3,3,3] },
-  impossivel: { nome:'Modo Impossível',vidas:1, tempo:10, total:20, ajudas:false, niveis:Array(20).fill(3) },
-  treino:     { nome:'Treino',         vidas:Infinity, tempo:0, total:PERGUNTAS.length, ajudas:true, niveis:null },
-};
-const NOME_NIVEL = {1:'Difícil', 2:'Muito difícil', 3:'💀 IMPOSSÍVEL'};
-const PONTOS_NIVEL = {1:100, 2:200, 3:400};
+// Ordem fixa: primeiro as muito difíceis, depois as impossíveis.
+const ORDEM = [2, 3].flatMap(n => PERGUNTAS.filter(q => q.n === n));
 
 const $ = id => document.getElementById(id);
 const embaralha = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const fmt = n => n.toLocaleString('pt-BR');
 
-/* ---------- recorde ---------- */
-function lerRecordes() { try { return JSON.parse(localStorage.getItem('quiz-genio-recordes')) || {}; } catch (e) { return {}; } }
-function salvarRecorde(modo, pts) {
-  const r = lerRecordes(); const novo = pts > (r[modo] || 0);
-  if (novo) { r[modo] = pts; try { localStorage.setItem('quiz-genio-recordes', JSON.stringify(r)); } catch (e) {} }
-  return novo;
-}
-function mostrarRecordes() {
-  const r = lerRecordes();
-  const l = ['genio','einstein','impossivel'].filter(m => r[m]).map(m => `${MODOS[m].nome}: <b>${fmt(r[m])}</b>`);
-  $('recordes').innerHTML = l.length ? '🏆 Recordes<br>' + l.join('<br>') : 'Ninguém virou gênio ainda neste aparelho. Será você? 🤔';
+/* ---------- recorde: a pergunta mais longe que você chegou ---------- */
+function lerRecorde() { try { return +localStorage.getItem('quiz-genio-recorde') || 0; } catch (e) { return 0; } }
+function salvarRecorde(n) { if (n > lerRecorde()) { try { localStorage.setItem('quiz-genio-recorde', n); } catch (e) {} return true; } return false; }
+function mostrarRecorde() {
+  const r = lerRecorde();
+  $('recordeInicio').innerHTML = r ? `🏆 Mais longe que você chegou: pergunta <b>${r}</b> de ${ORDEM.length}` : '';
+  $('recorde').textContent = r ? `🏆 ${r}` : '';
 }
 
 /* ---------- sons (feitos na hora, sem arquivo) ---------- */
@@ -274,186 +178,86 @@ let audio;
 function som(tipo) {
   try {
     audio = audio || new (window.AudioContext || window.webkitAudioContext)();
-    const notas = { certo:[523,659,784,1047], errado:[220,165], tique:[880], fim:[392,523,659,784,1047,1319] }[tipo];
+    const notas = { certo:[659,988], errado:[300,200,120], ganhou:[392,523,659,784,1047,1319] }[tipo];
     notas.forEach((f, i) => {
       const o = audio.createOscillator(), g = audio.createGain();
       o.type = tipo === 'errado' ? 'sawtooth' : 'triangle'; o.frequency.value = f;
-      const t = audio.currentTime + i * (tipo === 'errado' ? .18 : .09);
-      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(tipo === 'tique' ? .05 : .18, t + .02);
-      g.gain.exponentialRampToValueAtTime(.0001, t + (tipo === 'errado' ? .3 : .2));
-      o.connect(g).connect(audio.destination); o.start(t); o.stop(t + .35);
+      const t = audio.currentTime + i * (tipo === 'errado' ? .2 : .08);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.18, t + .02);
+      g.gain.exponentialRampToValueAtTime(.0001, t + (tipo === 'errado' ? .35 : .18));
+      o.connect(g).connect(audio.destination); o.start(t); o.stop(t + .4);
     });
   } catch (e) {}
 }
 
-/* ---------- partida ---------- */
-let J = null, relogio = null;
+/* ---------- jogo ---------- */
+let atual = 0, travado = false;
 
-function telas(qual) { ['inicio','jogo','fim'].forEach(t => $(t).hidden = t !== qual); }
+function telas(qual) { ['inicio','jogo','perdeu'].forEach(t => $(t).hidden = t !== qual); }
 
-function escolherPerguntas(modo) {
-  const m = MODOS[modo];
-  if (!m.niveis) return embaralha(PERGUNTAS);
-  const sacos = {1:embaralha(PERGUNTAS.filter(q => q.n === 1)), 2:embaralha(PERGUNTAS.filter(q => q.n === 2)), 3:embaralha(PERGUNTAS.filter(q => q.n === 3))};
-  return m.niveis.map(n => sacos[n].pop()).filter(Boolean);
-}
-
-function comecar(modo) {
-  const m = MODOS[modo];
-  J = { modo, m, lista:escolherPerguntas(modo), i:0, vidas:m.vidas, pontos:0, acertos:0, seguidos:0, erradas:[],
-        ajudas:{ meio:m.ajudas, pular:m.ajudas, tempo:m.ajudas && m.tempo > 0 } };
-  $('ajudas').hidden = !m.ajudas;
-  telas('jogo'); mostrarPergunta();
-}
+function comecar() { atual = 0; mostrarRecorde(); telas('jogo'); mostrarPergunta(); }
 
 function mostrarPergunta() {
-  const q = J.lista[J.i];
-  J.respondeu = false;
-  $('contador').textContent = `Pergunta ${J.i + 1} de ${J.lista.length}`;
-  $('nivel').textContent = NOME_NIVEL[q.n]; $('nivel').className = 'nivel n' + q.n;
-  $('pergunta').innerHTML = `<span class="tema">${q.t}</span><span></span>`;
+  const q = ORDEM[atual];
+  travado = false;
+  $('numero').textContent = atual + 1;
+  $('pergunta').innerHTML = '<span class="tema"></span><span></span>';
+  $('pergunta').firstChild.textContent = q.t;
   $('pergunta').lastChild.textContent = q.p;
   $('respostas').innerHTML = '';
   embaralha([q.c, ...q.e]).forEach(txt => {
     const b = document.createElement('button'); b.className = 'resp'; b.textContent = txt;
     b.onclick = () => responder(b, txt === q.c); $('respostas').appendChild(b);
   });
-  $('sabia').hidden = true; $('proxima').hidden = true;
-  ['meio','pular','tempo'].forEach(a => $(a).disabled = !J.ajudas[a]);
-  $('tempo').hidden = !J.m.tempo;
-  atualizarTopo();
-  clearInterval(relogio);
-  $('barra').hidden = !J.m.tempo;
-  if (J.m.tempo) {
-    J.fimTempo = performance.now() + J.m.tempo * 1000; J.ultimoTique = 99;
-    relogio = setInterval(contarTempo, 100); contarTempo();
-  }
+  $('jogo').scrollTop = 0;
 }
 
-function contarTempo() {
-  const resta = (J.fimTempo - performance.now()) / 1000;
-  $('barra').firstElementChild.style.width = Math.max(0, resta / J.m.tempo * 100) + '%';
-  $('barra').classList.toggle('pouco', resta < 4);
-  if (resta < 4 && Math.ceil(resta) < J.ultimoTique) { J.ultimoTique = Math.ceil(resta); som('tique'); }
-  if (resta <= 0) { clearInterval(relogio); responder(null, false, true); }
-}
-
-function atualizarTopo() {
-  $('vidas').textContent = J.vidas === Infinity ? '📚' : '❤️'.repeat(J.vidas) + '🖤'.repeat(Math.max(0, J.m.vidas - J.vidas));
-  $('pontos').textContent = fmt(J.pontos);
-}
-
-function responder(botao, certo, acabouTempo) {
-  if (J.respondeu) return; J.respondeu = true;
-  clearInterval(relogio);
-  const q = J.lista[J.i];
-  document.querySelectorAll('.resp').forEach(b => { b.disabled = true; if (b.textContent === q.c) b.classList.add('certa'); });
-  ['meio','pular','tempo'].forEach(a => $(a).disabled = true);
-  let titulo;
+function responder(botao, certo) {
+  if (travado) return; travado = true;
+  document.querySelectorAll('.resp').forEach(b => b.disabled = true);
   if (certo) {
-    J.acertos++; J.seguidos++;
-    let ganho = PONTOS_NIVEL[q.n];
-    if (J.m.tempo) ganho += Math.round(Math.max(0, (J.fimTempo - performance.now()) / 1000) * 10);
-    if (J.seguidos >= 3) ganho = Math.round(ganho * 1.5);
-    if (J.modo !== 'treino') J.pontos += ganho;
-    titulo = (J.seguidos >= 3 ? `🔥 ${J.seguidos} seguidas! ` : '✅ ') + (J.modo !== 'treino' ? `+${fmt(ganho)}` : 'Acertou!');
-    som('certo'); $('pontos').classList.remove('pulso'); void $('pontos').offsetWidth; $('pontos').classList.add('pulso');
+    botao.classList.add('certa'); som('certo');
+    salvarRecorde(atual + 1);
+    setTimeout(() => {
+      atual++;
+      if (atual >= ORDEM.length) return ganhou();
+      mostrarPergunta();
+    }, 600);
   } else {
-    J.seguidos = 0; J.erradas.push(q);
-    if (botao) botao.classList.add('errada');
-    if (J.vidas !== Infinity) J.vidas--;
-    titulo = acabouTempo ? '⏰ Acabou o tempo!' : '❌ Errou!';
-    titulo += ` A certa era: ${q.c}`;
-    som('errado');
+    botao.classList.add('errada'); som('errado');
+    setTimeout(perdeu, 700);
   }
-  atualizarTopo();
-  $('sabia').innerHTML = '<b class="t"></b>🤓 <b>Você sabia?</b> <span></span>';
-  $('sabia').querySelector('.t').textContent = titulo;
-  $('sabia').querySelector('span').textContent = q.s;
-  $('sabia').hidden = false;
-  const acabou = J.vidas <= 0 || J.i + 1 >= J.lista.length;
-  $('proxima').textContent = acabou ? 'Ver resultado 🏁' : 'Próxima ➜';
-  $('proxima').hidden = false; $('proxima').focus({ preventScroll:true });
-  $('proxima').scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
 
-function proxima() {
-  if (J.vidas <= 0 || J.i + 1 >= J.lista.length) return terminar();
-  J.i++; mostrarPergunta(); $('jogo').scrollTop = 0;
+function perdeu() {
+  $('jegueTxt').textContent = 'Você é um jegue!';
+  $('jegueTxt').classList.remove('genio');
+  document.querySelector('#perdeu .grandao').textContent = '🫏';
+  $('perdeuTxt').innerHTML = `Você errou a pergunta <b>${atual + 1}</b>.<br>Agora volta tudo pra pergunta 1! 😈`;
+  $('denovo').textContent = '🔁 Começar tudo de novo';
+  telas('perdeu');
 }
 
-/* ---------- ajudas ---------- */
-$('meio').onclick = () => {
-  if (!J.ajudas.meio || J.respondeu) return; J.ajudas.meio = false; $('meio').disabled = true;
-  const q = J.lista[J.i];
-  embaralha([...document.querySelectorAll('.resp')].filter(b => b.textContent !== q.c)).slice(0, 2).forEach(b => b.classList.add('some'));
-};
-$('pular').onclick = () => {
-  if (!J.ajudas.pular || J.respondeu) return; J.ajudas.pular = false;
-  const q = J.lista[J.i];
-  const troca = embaralha(PERGUNTAS.filter(p => p.n === q.n && !J.lista.includes(p)))[0];
-  if (troca) { J.lista[J.i] = troca; } else { J.lista.splice(J.i, 1); if (J.i >= J.lista.length) return terminar(); }
-  mostrarPergunta();
-};
-$('tempo').onclick = () => {
-  if (!J.ajudas.tempo || J.respondeu) return; J.ajudas.tempo = false; $('tempo').disabled = true;
-  J.fimTempo += 10000; J.ultimoTique = 99;
-};
-
-/* ---------- fim ---------- */
-const TITULOS = [
-  [0,   '🥔', 'Batata Pensante', 'Calma, todo gênio começou errando. Tenta de novo!'],
-  [.3,  '🐒', 'Macaco Curioso', 'Já dá pra ver uma faísca de gênio aí!'],
-  [.5,  '🧑‍🎓', 'Estudante Esperto', 'Mandou bem! Metade das impossíveis é muito.'],
-  [.7,  '🧑‍🔬', 'Cientista Maluco', 'Isso aqui já é nível de laboratório!'],
-  [.85, '🧠', 'GÊNIO', 'Você sabe coisas que muitos adultos não sabem!'],
-  [1,   '👑', 'MAIS GÊNIO QUE O EINSTEIN', 'Acertou TUDO. Isso era pra ser impossível!'],
-];
-function terminar() {
-  clearInterval(relogio);
-  const total = J.i + 1, taxa = J.acertos / total;
-  let t = TITULOS[0]; for (const x of TITULOS) if (taxa >= x[0]) t = x;
-  const novo = J.modo !== 'treino' && salvarRecorde(J.modo, J.pontos);
-  $('fimEmoji').textContent = t[1];
-  $('fimTitulo').textContent = t[2];
-  $('fimPontos').textContent = J.modo === 'treino' ? `${J.acertos}/${total}` : fmt(J.pontos);
-  $('fimTexto').innerHTML = `${J.m.nome} · acertou <b>${J.acertos}</b> de <b>${total}</b><br>${t[3]}` + (novo && J.pontos > 0 ? '<br>🏆 <b>NOVO RECORDE!</b>' : '');
-  $('fimLista').innerHTML = '';
-  if (J.erradas.length) {
-    const h = document.createElement('div'); h.innerHTML = '📚 <b style="color:var(--ouro)">Pra virar gênio, aprenda estas:</b>'; $('fimLista').appendChild(h);
-    J.erradas.forEach(q => { const d = document.createElement('div'); d.innerHTML = `${q.t} <span></span><br>➜ <b></b>`; d.querySelector('span').textContent = q.p; d.querySelector('b').textContent = q.c; $('fimLista').appendChild(d); });
-  }
-  if (taxa >= .85) som('fim');
-  telas('fim');
+function ganhou() {
+  som('ganhou');
+  $('jegueTxt').textContent = 'VOCÊ É UM GÊNIO!';
+  $('jegueTxt').classList.add('genio');
+  document.querySelector('#perdeu .grandao').textContent = '👑';
+  $('perdeuTxt').innerHTML = `Acertou as <b>${ORDEM.length}</b> perguntas sem errar nenhuma.<br>Isso era pra ser impossível! 🤯`;
+  $('denovo').textContent = '🔁 Jogar de novo';
+  telas('perdeu');
 }
 
-/* ---------- botões ---------- */
-document.querySelectorAll('[data-modo]').forEach(b => b.onclick = () => comecar(b.dataset.modo));
-$('proxima').onclick = proxima;
-$('sair').onclick = () => { if (confirm('Sair da partida?')) { clearInterval(relogio); mostrarRecordes(); telas('inicio'); } };
-$('denovo').onclick = () => comecar(J.modo);
-$('menu').onclick = () => { mostrarRecordes(); telas('inicio'); };
+$('comecar').onclick = comecar;
+$('denovo').onclick = comecar;
 document.addEventListener('keydown', ev => {
-  if ($('jogo').hidden) return;
-  if (ev.key === 'Escape') return $('sair').click();
-  const n = parseInt(ev.key, 10);
-  if (!J.respondeu && n >= 1 && n <= 4) { const b = document.querySelectorAll('.resp')[n - 1]; if (b && !b.classList.contains('some')) b.click(); }
-  else if (J.respondeu && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); proxima(); }
+  if (!$('jogo').hidden) {
+    const n = parseInt(ev.key, 10);
+    if (n >= 1 && n <= 4) { const b = document.querySelectorAll('.resp')[n - 1]; if (b) b.click(); }
+  } else if (ev.key === 'Enter') { (!$('inicio').hidden ? $('comecar') : $('denovo')).click(); }
 });
 
-/* ---------- estrelinhas no fundo ---------- */
-(function () {
-  const c = $('estrelas'), x = c.getContext('2d'); let est = [];
-  function tam() { c.width = innerWidth; c.height = innerHeight; est = Array.from({ length:90 }, () => ({ x:Math.random() * c.width, y:Math.random() * c.height, r:Math.random() * 1.6 + .3, f:Math.random() * 6 })); }
-  function desenha(t) {
-    x.clearRect(0, 0, c.width, c.height);
-    for (const s of est) { x.globalAlpha = .35 + .35 * Math.sin(t / 700 + s.f); x.fillStyle = '#fff'; x.beginPath(); x.arc(s.x, s.y, s.r, 0, 7); x.fill(); }
-    requestAnimationFrame(desenha);
-  }
-  addEventListener('resize', tam); tam(); requestAnimationFrame(desenha);
-})();
-
-mostrarRecordes();
+mostrarRecorde();
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 </script>
 </body>
