@@ -8,13 +8,13 @@
       "slug": "cifra-de-trusk",
       "nome": "Cifra de Trusk",
       "descricao": "O código secreto inventado pelo Jojo! Cada letra vira a tecla do lado no teclado. Crie e decifre mensagens secretas pros amigos.",
-      "comoFunciona": "Pra criar o código, cada letra vira a tecla que fica à direita dela no teclado (Q vira W, A vira S). Pra decifrar, é só andar uma tecla pra trás. P, L, M e 0 não têm tecla na frente, então ficam iguais.",
+      "comoFunciona": "Pra criar o código, cada letra vira a tecla que fica à direita dela no teclado (Q vira W, A vira S). P, L, M e 0 não têm tecla na frente, então ficam iguais. Pra decifrar, todas andam uma tecla pra trás: M vira N, L vira K e P vira O.",
       "objetivo": "Mandar mensagens secretas que só quem conhece a Cifra de Trusk consegue ler.",
       "mecanicas": [
         "🔒 Criar código e 🔓 decifrar",
         "Teclado na tela que mostra pra onde cada letra anda",
         "P, L, M e 0 ficam iguais, porque não têm tecla na frente",
-        "Quando o M pode ser N ou M, aparece (n/m) pra você escolher",
+        "Pra decifrar, todas andam uma pra trás: M vira N, L vira K, P vira O",
         "📋 Botão de copiar pra mandar no WhatsApp",
         "Funciona com números também: 78 vira 89",
         "Dá pra instalar como aplicativo e usar sem internet"
@@ -56,6 +56,11 @@
       "creditos": "Cifra inventada pelo Jojo, site feito com o Claude.",
       "atualizacoes": "",
       "changelog": [
+        {
+          "versao": "1.1",
+          "data": "2026",
+          "mudancas": "Regra nova do Jojo: na hora de decifrar, M vira N, L vira K e P vira O."
+        },
         {
           "versao": "1.0",
           "data": "2026",

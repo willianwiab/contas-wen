@@ -113,7 +113,7 @@
       <li>Pra <b>criar o código</b>, troca cada letra pela tecla que fica <b>à direita</b> dela no teclado.</li>
       <li>Pra <b>decifrar</b>, faz o contrário: troca pela tecla que fica <b>à esquerda</b>. É "andar pra trás"!</li>
       <li>As últimas teclas da fileira (<b>P</b>, <b>L</b>, <b>M</b> e <b>0</b>) não têm tecla na frente, então <b>ficam iguais</b>.</li>
-      <li>Por isso, quando decifra, o <b>M</b> aparece com duas opções: <b>(n/m)</b>. Aí você escolhe a que faz sentido na frase!</li>
+      <li>Na hora de decifrar, todas andam uma pra trás, até essas: <b>M</b> vira <b>N</b>, <b>L</b> vira <b>K</b> e <b>P</b> vira <b>O</b>.</li>
     </ol>
     <div class="exemplo">
       qual e o meu nome → <b>wisl r p mri mpmr</b><br>
@@ -130,8 +130,8 @@
    Criar: cada letra ou número vira a tecla da frente (à direita)
    na sua fileira do teclado. P, L, M e 0 são as últimas da fileira,
    não têm tecla na frente, então ficam iguais.
-   Decifrar: cada uma volta uma tecla (à esquerda). Como P, L, M e 0
-   podem ser elas mesmas ou a de trás, aparecem as duas opções: (o/p).
+   Decifrar: cada uma volta uma tecla (à esquerda), sempre: M vira N,
+   L vira K, P vira O e 0 vira 9.
    Acentos saem antes (é → e), maiúsculas continuam maiúsculas,
    e o resto (espaço, ? ! emoji) fica igual.
    ============================================================ */
@@ -150,18 +150,11 @@ function frente(ch) {
   const a = acha(ch); if (!a) return ch;
   return caixa(a.i < a.f.length - 1 ? a.f[a.i + 1] : a.f[a.i], a.maiuscula);
 }
-// decifrar: anda uma tecla pra trás. A última da fileira pode ser ela mesma
-// ou a de trás. P quase sempre é O, e L quase sempre é L (K é rara);
-// já M pode ser N ou M, e 0 pode ser 9 ou 0, então mostra as duas: (n/m).
-const ESCOLHA = { p: 'o', l: 'l' };
+// decifrar: anda uma tecla pra trás, sempre (regra do Jojo: M vira N, L vira K, P vira O, 0 vira 9)
 function tras(ch) {
   const a = acha(ch); if (!a) return ch;
   if (a.i === 0) return ch;                                   // nada vira Q, A, Z ou 1
-  const antes = caixa(a.f[a.i - 1], a.maiuscula);
-  if (a.i < a.f.length - 1) return antes;
-  const m = ch.toLowerCase();
-  if (ESCOLHA[m]) return caixa(ESCOLHA[m], a.maiuscula);
-  return `(${antes}/${caixa(a.f[a.i], a.maiuscula)})`;
+  return caixa(a.f[a.i - 1], a.maiuscula);
 }
 // tira os acentos (é → e, ç → c)
 const semAcento = txt => txt.normalize('NFD').replace(/[̀-ͯ]/g, '');
@@ -210,7 +203,6 @@ function mostrar(c) {
   const b = document.createElement('b'); b.textContent = c.toUpperCase();
   const i = document.createElement('i'); i.textContent = d.toUpperCase();
   $('legenda').append(b, ' vira ', i, d === c ? ' (não tem tecla na frente!)' : '');
-  for (const x of d.replace(/[()]/g, '').split('/')) teclas[x.toLowerCase()]?.classList.add('para');
   clearTimeout(apaga); apaga = setTimeout(() => Object.values(teclas).forEach(t => t.classList.remove('de', 'para')), 1500);
 }
 // quando digita, a última letra acende no teclado
