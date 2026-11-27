@@ -8,8 +8,8 @@
       "slug": "quiz-de-genio",
       "nome": "Quiz de Gênio",
       "descricao": "Um quiz só de pegadinhas! Às vezes a resposta não está nos botões. Errou uma, você é um jegue e volta tudo pro começo.",
-      "comoFunciona": "São 25 pegadinhas, sempre na mesma ordem. Às vezes a resposta certa é um botão, mas às vezes é outra coisa na tela. O número no canto mostra em qual pergunta você está. Errou uma só, aparece \"Você é um jegue!\" e volta tudo pra pergunta 1.",
-      "objetivo": "Passar pelas 25 pegadinhas sem errar nenhuma e virar um GÊNIO.",
+      "comoFunciona": "São 125 pegadinhas, sempre na mesma ordem. Às vezes a resposta certa é um botão, mas às vezes é outra coisa na tela. O número no canto mostra em qual pergunta você está. Errou uma só, aparece \"Você é um jegue!\" e volta tudo pra pergunta 1.",
+      "objetivo": "Passar pelas 125 pegadinhas sem errar nenhuma e virar um GÊNIO.",
       "mecanicas": [
         "🤫 Todas as perguntas são pegadinhas",
         "Às vezes a resposta certa não está nos botões: tem que pensar diferente",
@@ -25,7 +25,7 @@
       "ano": 2026,
       "status": "Finalizado",
       "dificuldade": "Impossível",
-      "fases": 25,
+      "fases": 125,
       "recorde": "",
       "pontuacao": "Não tem pontos: o que vale é até qual pergunta você chega. A mais longe fica salva como recorde.",
       "popularidade": 90,
@@ -57,6 +57,11 @@
       "creditos": "Ideia do Jojo, feito com o Claude.",
       "atualizacoes": "",
       "changelog": [
+        {
+          "versao": "3.1",
+          "data": "2026",
+          "mudancas": "Mais 100 pegadinhas novas! Agora são 125, com bomba pra desarmar, jegue no espaço e muito mais."
+        },
         {
           "versao": "3.0",
           "data": "2026",
