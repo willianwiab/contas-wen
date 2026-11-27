@@ -5,7 +5,7 @@ Um quiz só de pegadinhas, todas inventadas pelo Jojo e pelo Claude.
 - Sem modos: é só tocar em **Começar** e jogar. Fundo preto.
 - O número no canto mostra em qual pergunta você está.
 - Errou uma só: aparece **"Você é um jegue!"** 🫏 e volta tudo pra pergunta 1.
-- São 125 pegadinhas, sempre na mesma ordem.
+- São 126 pegadinhas, sempre na mesma ordem.
 - Às vezes a resposta certa é um botão, mas às vezes o jeito de passar é outro:
   apertar o número do canto, apertar o emoji, apertar uma palavra da pergunta,
   esperar sem apertar nada ou achar o jeguinho escondido na tela.

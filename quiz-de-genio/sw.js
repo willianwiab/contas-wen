@@ -9,7 +9,7 @@
 
    Ao mudar o jogo, suba a VERSAO: isso apaga o cache velho.
    ============================================================ */
-const VERSAO = 'quiz-de-genio-v5';
+const VERSAO = 'quiz-de-genio-v6';
 const CACHE = VERSAO;
 const ARQUIVOS = [
   './', './index.html', './manifest.webmanifest',
