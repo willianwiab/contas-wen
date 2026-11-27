@@ -1,0 +1,20 @@
+{
+  "id": "/contas-wen/cifra-de-trusk/",
+  "name": "Cifra de Trusk",
+  "short_name": "Trusk",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#06140d",
+  "theme_color": "#06140d",
+  "lang": "pt-BR",
+  "categories": ["games", "education", "kids"],
+  "description": "O código secreto do Jojo: cada letra vira a tecla do lado no teclado.",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

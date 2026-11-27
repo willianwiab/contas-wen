@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="110" fill="#06140d"/>
+  <rect x="40" y="40" width="432" height="432" rx="80" fill="none" stroke="#1f4a33" stroke-width="12"/>
+  <g font-family="Courier New, monospace" font-weight="700" text-anchor="middle">
+    <rect x="86" y="150" width="140" height="140" rx="24" fill="#3a2c08" stroke="#ffcf5a" stroke-width="10"/>
+    <text x="156" y="252" font-size="110" fill="#ffcf5a">A</text>
+    <rect x="286" y="150" width="140" height="140" rx="24" fill="#4dff9a"/>
+    <text x="356" y="252" font-size="110" fill="#04220f">S</text>
+    <path d="M232 220 h44 m-16 -16 l16 16 l-16 16" stroke="#4dff9a" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="256" y="400" font-size="60" fill="#4dff9a">TRUSK</text>
+  </g>
+</svg>
