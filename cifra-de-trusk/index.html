@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06140d">
+<meta name="description" content="Cifra de Trusk: o código secreto do Jojo. Cada letra vira a tecla do lado no teclado. Crie e decifre mensagens secretas.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cifra de Trusk">
+<title>Cifra de Trusk</title>
+<style>
+  /* Mesa de espião: fundo verde-escuro, letras de máquina de escrever
+     e um teclado que mostra pra onde cada letra anda. */
+  :root {
+    --fundo: #06140d; --painel: #0d2318; --borda: #1f4a33;
+    --texto: #e3f7ea; --apagado: #8db39c; --neon: #4dff9a; --neon2: #1fbf68; --ambar: #ffcf5a;
+    --f-titulo: "Courier New", ui-monospace, Menlo, monospace;
+    --f-texto: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
+  body {
+    background: radial-gradient(900px 500px at 50% -10%, #12402a 0%, transparent 60%), var(--fundo);
+    color: var(--texto); font-family: var(--f-texto); min-height: 100vh;
+  }
+  .pagina {
+    max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px;
+    padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 40px max(16px, env(safe-area-inset-left));
+  }
+  header { text-align: center; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+  .selo { font-family: var(--f-titulo); font-size: .8rem; letter-spacing: .3em; color: var(--ambar); border: 1px solid var(--ambar); padding: 3px 10px; border-radius: 3px; transform: rotate(-2deg); }
+  h1 { margin: 4px 0 0; font-family: var(--f-titulo); font-weight: 700; font-size: clamp(2.2rem, 10vw, 3.4rem); color: var(--neon); text-shadow: 0 0 18px rgba(77,255,154,.45); letter-spacing: .04em; }
+  .sub { margin: 0; color: var(--apagado); max-width: 46ch; line-height: 1.5; }
+
+  .painel { background: var(--painel); border: 2px solid var(--borda); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .modo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .modo button {
+    font: inherit; font-weight: 800; font-size: 1.05rem; padding: 12px; border-radius: 12px; cursor: pointer;
+    border: 2px solid var(--borda); background: transparent; color: var(--apagado);
+  }
+  .modo button.on { background: var(--neon); color: #04220f; border-color: var(--neon); }
+  button:focus-visible, textarea:focus-visible { outline: 2px dashed var(--ambar); outline-offset: 2px; }
+  label { font-weight: 800; color: var(--apagado); font-size: .9rem; letter-spacing: .04em; }
+  textarea {
+    width: 100%; min-height: 96px; resize: vertical; font-family: var(--f-titulo); font-size: 1.25rem; line-height: 1.4;
+    color: var(--texto); background: #071a10; border: 2px solid var(--borda); border-radius: 12px; padding: 12px;
+  }
+  #saida { color: var(--neon); text-shadow: 0 0 10px rgba(77,255,154,.3); }
+  .acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { font: inherit; font-weight: 800; padding: 10px 16px; border-radius: 99px; cursor: pointer; border: 2px solid var(--neon2); background: transparent; color: var(--neon); }
+  .btn.cheio { background: var(--neon); color: #04220f; border-color: var(--neon); }
+  .dica { margin: 0; color: var(--apagado); font-size: .9rem; min-height: 1.3em; }
+
+  /* teclado */
+  .teclado { display: flex; flex-direction: column; gap: 6px; align-items: center; user-select: none; }
+  .fileira { display: flex; gap: 4px; }
+  .tecla {
+    width: clamp(24px, 8vw, 46px); height: clamp(30px, 9vw, 46px); display: grid; place-items: center;
+    font-family: var(--f-titulo); font-weight: 700; font-size: clamp(.8rem, 3.4vw, 1.1rem); text-transform: uppercase;
+    background: #0a1f14; border: 1px solid var(--borda); border-bottom-width: 3px; border-radius: 7px; color: var(--apagado);
+    transition: background .1s, color .1s;
+  }
+  .tecla.de { background: #3a2c08; color: var(--ambar); border-color: var(--ambar); }
+  .tecla.para { background: var(--neon); color: #04220f; border-color: var(--neon); }
+  .legenda { margin: 0; text-align: center; color: var(--apagado); font-size: .9rem; }
+  .legenda b { color: var(--ambar); } .legenda i { color: var(--neon); font-style: normal; font-weight: 800; }
+
+  .como h2 { margin: 0; font-family: var(--f-titulo); color: var(--ambar); font-size: 1.2rem; }
+  .como ol { margin: 0; padding-left: 1.3em; line-height: 1.6; color: var(--texto); }
+  .exemplo { font-family: var(--f-titulo); background: #071a10; border: 1px dashed var(--borda); border-radius: 10px; padding: 10px 12px; color: var(--apagado); line-height: 1.7; }
+  .exemplo b { color: var(--neon); }
+  .rodape { text-align: center; color: var(--apagado); font-size: .85rem; margin: 0; }
+  .rodape a { color: var(--neon); }
+</style>
+</head>
+<body>
+<main class="pagina">
+  <header>
+    <span class="selo">ULTRASSECRETO</span>
+    <h1>Cifra de Trusk</h1>
+    <p class="sub">O código secreto do Jojo: cada letra vira a <b>tecla do lado</b> no teclado. Só quem sabe o segredo consegue ler!</p>
+  </header>
+
+  <section class="painel" aria-label="Codificar e decifrar">
+    <div class="modo" role="group" aria-label="O que fazer">
+      <button type="button" id="mCod" class="on">🔒 Criar código</button>
+      <button type="button" id="mDec">🔓 Decifrar</button>
+    </div>
+    <label for="entrada" id="rotEntrada">Escreve a mensagem normal</label>
+    <textarea id="entrada" spellcheck="false" placeholder="Ex.: qual é o meu nome"></textarea>
+    <label for="saida" id="rotSaida">Mensagem em Cifra de Trusk</label>
+    <textarea id="saida" readonly spellcheck="false"></textarea>
+    <div class="acoes">
+      <button class="btn cheio" type="button" id="copiar">📋 Copiar</button>
+      <button class="btn" type="button" id="trocar">🔁 Usar o resultado</button>
+      <button class="btn" type="button" id="limpar">🧹 Limpar</button>
+    </div>
+    <p class="dica" id="dica" aria-live="polite"></p>
+  </section>
+
+  <section class="painel" aria-label="Teclado da cifra">
+    <div class="teclado" id="teclado"></div>
+    <p class="legenda" id="legenda">Aperta uma tecla pra ver pra onde ela anda.</p>
+  </section>
+
+  <section class="painel como">
+    <h2>Como funciona a Cifra de Trusk</h2>
+    <ol>
+      <li>Pra <b>criar o código</b>, troca cada letra pela tecla que fica <b>à direita</b> dela no teclado.</li>
+      <li>Pra <b>decifrar</b>, faz o contrário: troca pela tecla que fica <b>à esquerda</b>. É "andar pra trás"!</li>
+      <li>As últimas teclas da fileira (<b>P</b>, <b>L</b>, <b>M</b> e <b>0</b>) não têm tecla na frente, então <b>ficam iguais</b>.</li>
+      <li>Por isso, quando decifra, o <b>M</b> aparece com duas opções: <b>(n/m)</b>. Aí você escolhe a que faz sentido na frase!</li>
+    </ol>
+    <div class="exemplo">
+      qual e o meu nome → <b>wisl r p mri mpmr</b><br>
+      78 → <b>89</b> … e 89 decifrado é <b>78</b>
+    </div>
+  </section>
+
+  <p class="rodape">Cifra inventada pelo Jojo, site feito com o Claude 🔐 · <a href="../jogos-do-jojo/index.html">Jogos do Jojo</a></p>
+</main>
+
+<script>
+/* ============================================================
+   CIFRA DE TRUSK (regras do Jojo)
+   Criar: cada letra ou número vira a tecla da frente (à direita)
+   na sua fileira do teclado. P, L, M e 0 são as últimas da fileira,
+   não têm tecla na frente, então ficam iguais.
+   Decifrar: cada uma volta uma tecla (à esquerda). Como P, L, M e 0
+   podem ser elas mesmas ou a de trás, aparecem as duas opções: (o/p).
+   Acentos saem antes (é → e), maiúsculas continuam maiúsculas,
+   e o resto (espaço, ? ! emoji) fica igual.
+   ============================================================ */
+const FILEIRAS = ['1234567890', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+const $ = id => document.getElementById(id);
+let modo = 'cod';
+
+function acha(ch) {
+  const m = ch.toLowerCase();
+  for (const f of FILEIRAS) { const i = f.indexOf(m); if (i >= 0) return { f, i, maiuscula: ch !== m }; }
+  return null;
+}
+const caixa = (c, mai) => mai ? c.toUpperCase() : c;
+// criar: anda uma tecla pra frente; a última da fileira (P, L, M, 0) fica igual
+function frente(ch) {
+  const a = acha(ch); if (!a) return ch;
+  return caixa(a.i < a.f.length - 1 ? a.f[a.i + 1] : a.f[a.i], a.maiuscula);
+}
+// decifrar: anda uma tecla pra trás. A última da fileira pode ser ela mesma
+// ou a de trás. P quase sempre é O, e L quase sempre é L (K é rara);
+// já M pode ser N ou M, e 0 pode ser 9 ou 0, então mostra as duas: (n/m).
+const ESCOLHA = { p: 'o', l: 'l' };
+function tras(ch) {
+  const a = acha(ch); if (!a) return ch;
+  if (a.i === 0) return ch;                                   // nada vira Q, A, Z ou 1
+  const antes = caixa(a.f[a.i - 1], a.maiuscula);
+  if (a.i < a.f.length - 1) return antes;
+  const m = ch.toLowerCase();
+  if (ESCOLHA[m]) return caixa(ESCOLHA[m], a.maiuscula);
+  return `(${antes}/${caixa(a.f[a.i], a.maiuscula)})`;
+}
+// tira os acentos (é → e, ç → c)
+const semAcento = txt => txt.normalize('NFD').replace(/[̀-ͯ]/g, '');
+function cifra(txt, direcao) { return [...semAcento(txt)].map(direcao > 0 ? frente : tras).join(''); }
+
+function atualizar() {
+  $('saida').value = cifra($('entrada').value, modo === 'cod' ? 1 : -1);
+  $('dica').textContent = '';
+}
+function mudarModo(m) {
+  modo = m;
+  $('mCod').classList.toggle('on', m === 'cod'); $('mDec').classList.toggle('on', m === 'dec');
+  $('rotEntrada').textContent = m === 'cod' ? 'Escreve a mensagem normal' : 'Cola a mensagem em Cifra de Trusk';
+  $('rotSaida').textContent = m === 'cod' ? 'Mensagem em Cifra de Trusk' : 'Mensagem decifrada';
+  $('entrada').placeholder = m === 'cod' ? 'Ex.: qual é o meu nome' : 'Ex.: wisl r p mri mpmr';
+  atualizar();
+}
+$('mCod').onclick = () => mudarModo('cod');
+$('mDec').onclick = () => mudarModo('dec');
+$('entrada').addEventListener('input', atualizar);
+$('copiar').onclick = async () => {
+  const t = $('saida').value; if (!t) return;
+  try { await navigator.clipboard.writeText(t); $('dica').textContent = 'Copiado! Agora é só colar no WhatsApp 📱'; }
+  catch (e) { $('saida').select(); $('dica').textContent = 'Seleciona o texto e copia 📋'; }
+};
+$('trocar').onclick = () => { $('entrada').value = $('saida').value; mudarModo(modo === 'cod' ? 'dec' : 'cod'); };
+$('limpar').onclick = () => { $('entrada').value = ''; atualizar(); $('entrada').focus(); };
+
+/* ---------- o teclado que mostra pra onde a letra anda ---------- */
+const teclas = {};
+FILEIRAS.forEach(f => {
+  const linha = document.createElement('div'); linha.className = 'fileira';
+  [...f].forEach(c => {
+    const t = document.createElement('div'); t.className = 'tecla'; t.textContent = c; teclas[c] = t;
+    t.onclick = () => mostrar(c);
+    linha.appendChild(t);
+  });
+  $('teclado').appendChild(linha);
+});
+let apaga = null;
+function mostrar(c) {
+  const d = modo === 'cod' ? frente(c) : tras(c);
+  Object.values(teclas).forEach(t => t.classList.remove('de', 'para'));
+  teclas[c]?.classList.add('de'); teclas[d]?.classList.add('para');
+  $('legenda').innerHTML = '';
+  const b = document.createElement('b'); b.textContent = c.toUpperCase();
+  const i = document.createElement('i'); i.textContent = d.toUpperCase();
+  $('legenda').append(b, ' vira ', i, d === c ? ' (não tem tecla na frente!)' : '');
+  for (const x of d.replace(/[()]/g, '').split('/')) teclas[x.toLowerCase()]?.classList.add('para');
+  clearTimeout(apaga); apaga = setTimeout(() => Object.values(teclas).forEach(t => t.classList.remove('de', 'para')), 1500);
+}
+// quando digita, a última letra acende no teclado
+$('entrada').addEventListener('input', () => {
+  const v = semAcento($('entrada').value).slice(-1).toLowerCase();
+  if (teclas[v]) mostrar(v);
+});
+
+mudarModo('cod');
+if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+</script>
+</body>
+</html>

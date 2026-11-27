@@ -5,6 +5,66 @@
   },
   "jogos": [
     {
+      "slug": "cifra-de-trusk",
+      "nome": "Cifra de Trusk",
+      "descricao": "O código secreto inventado pelo Jojo! Cada letra vira a tecla do lado no teclado. Crie e decifre mensagens secretas pros amigos.",
+      "comoFunciona": "Pra criar o código, cada letra vira a tecla que fica à direita dela no teclado (Q vira W, A vira S). Pra decifrar, é só andar uma tecla pra trás. P, L, M e 0 não têm tecla na frente, então ficam iguais.",
+      "objetivo": "Mandar mensagens secretas que só quem conhece a Cifra de Trusk consegue ler.",
+      "mecanicas": [
+        "🔒 Criar código e 🔓 decifrar",
+        "Teclado na tela que mostra pra onde cada letra anda",
+        "P, L, M e 0 ficam iguais, porque não têm tecla na frente",
+        "Quando o M pode ser N ou M, aparece (n/m) pra você escolher",
+        "📋 Botão de copiar pra mandar no WhatsApp",
+        "Funciona com números também: 78 vira 89",
+        "Dá pra instalar como aplicativo e usar sem internet"
+      ],
+      "categoria": "Brinquedo",
+      "plataforma": "Navegador e aplicativo (PC e celular)",
+      "ano": 2026,
+      "status": "Finalizado",
+      "dificuldade": "Fácil",
+      "fases": 1,
+      "recorde": "",
+      "pontuacao": "Não tem pontos: o desafio é seus amigos descobrirem a mensagem.",
+      "popularidade": 85,
+      "imagem": "assets/images/cifra-de-trusk.svg",
+      "trailer": "",
+      "url": "../cifra-de-trusk/index.html",
+      "galeria": [],
+      "historia": "O Jojo inventou um código secreto digitando com os dedos uma tecla pra frente, e deu a ele o nome de Cifra de Trusk. Agora qualquer espião pode usar!",
+      "comoJogar": "Escolha Criar código, escreva a mensagem e copie o resultado. Pra ler uma mensagem secreta, escolha Decifrar e cole ela.",
+      "controles": [
+        {
+          "tecla": "Teclado / Toque",
+          "acao": "Escrever a mensagem"
+        },
+        {
+          "tecla": "📋",
+          "acao": "Copiar o resultado"
+        },
+        {
+          "tecla": "🔁",
+          "acao": "Usar o resultado como nova mensagem"
+        }
+      ],
+      "curiosidades": [
+        "O nome Cifra de Trusk foi o Jojo que inventou.",
+        "A primeira mensagem na Cifra de Trusk foi \"wisz r p mri mpmr\", que quer dizer \"qual é o meu nome\".",
+        "Cifras de deslocar letras são muito antigas: Júlio César, de Roma, já usava uma há mais de 2 mil anos."
+      ],
+      "creditos": "Cifra inventada pelo Jojo, site feito com o Claude.",
+      "atualizacoes": "",
+      "changelog": [
+        {
+          "versao": "1.0",
+          "data": "2026",
+          "mudancas": "Primeira versão: criar e decifrar, teclado na tela e botão de copiar."
+        }
+      ],
+      "ranking": []
+    },
+    {
       "slug": "quiz-de-genio",
       "nome": "Quiz de Gênio",
       "descricao": "Um quiz só de pegadinhas! Às vezes a resposta não está nos botões. Errou uma, você é um jegue e volta tudo pro começo.",
