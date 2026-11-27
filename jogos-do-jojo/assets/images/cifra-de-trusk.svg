@@ -3,13 +3,13 @@
   <rect width="640" height="360" fill="url(#f)"/>
   <g font-family="Courier New, monospace" font-weight="700" text-anchor="middle">
     <text x="320" y="78" font-size="52" fill="#4dff9a">Cifra de Trusk</text>
-    <text x="320" y="132" font-size="26" fill="#8db39c">qual e o meu nome</text>
+    <text x="320" y="132" font-size="26" fill="#8db39c">oi, tudo bem</text>
     <text x="320" y="168" font-size="26" fill="#4dff9a">↓</text>
-    <text x="320" y="204" font-size="30" fill="#4dff9a">wisl r p mri mpmr</text>
+    <text x="320" y="204" font-size="30" fill="#4dff9a">iu, rysi vwn</text>
     <g font-size="26">
       <rect x="150" y="246" width="56" height="56" rx="10" fill="#0a1f14" stroke="#1f4a33" stroke-width="3"/><text x="178" y="284" fill="#8db39c">Q</text>
-      <rect x="216" y="246" width="56" height="56" rx="10" fill="#3a2c08" stroke="#ffcf5a" stroke-width="3"/><text x="244" y="284" fill="#ffcf5a">W</text>
-      <rect x="282" y="246" width="56" height="56" rx="10" fill="#4dff9a"/><text x="310" y="284" fill="#04220f">E</text>
+      <rect x="216" y="246" width="56" height="56" rx="10" fill="#4dff9a"/><text x="244" y="284" fill="#04220f">W</text>
+      <rect x="282" y="246" width="56" height="56" rx="10" fill="#3a2c08" stroke="#ffcf5a" stroke-width="3"/><text x="310" y="284" fill="#ffcf5a">E</text>
       <rect x="348" y="246" width="56" height="56" rx="10" fill="#0a1f14" stroke="#1f4a33" stroke-width="3"/><text x="376" y="284" fill="#8db39c">R</text>
       <rect x="414" y="246" width="56" height="56" rx="10" fill="#0a1f14" stroke="#1f4a33" stroke-width="3"/><text x="442" y="284" fill="#8db39c">T</text>
     </g>

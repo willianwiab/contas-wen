@@ -82,7 +82,7 @@
   <header>
     <span class="selo">ULTRASSECRETO</span>
     <h1>Cifra de Trusk</h1>
-    <p class="sub">O código secreto do Jojo: cada letra vira a <b>tecla do lado</b> no teclado. Só quem sabe o segredo consegue ler!</p>
+    <p class="sub">O código secreto do Jojo: cada letra vira a <b>tecla de trás</b> no teclado. Só quem sabe o segredo consegue ler!</p>
   </header>
 
   <section class="painel" aria-label="Codificar e decifrar">
@@ -110,14 +110,13 @@
   <section class="painel como">
     <h2>Como funciona a Cifra de Trusk</h2>
     <ol>
-      <li>Pra <b>criar o código</b>, troca cada letra pela tecla que fica <b>à direita</b> dela no teclado.</li>
-      <li>Pra <b>decifrar</b>, faz o contrário: troca pela tecla que fica <b>à esquerda</b>. É "andar pra trás"!</li>
-      <li>As últimas teclas da fileira (<b>P</b>, <b>L</b>, <b>M</b> e <b>0</b>) não têm tecla na frente, então <b>ficam iguais</b>.</li>
-      <li>Na hora de decifrar, todas andam uma pra trás, até essas: <b>M</b> vira <b>N</b>, <b>L</b> vira <b>K</b> e <b>P</b> vira <b>O</b>.</li>
+      <li>Pra <b>criar o código</b>, anda <b>pra trás</b>: troca cada letra pela tecla que fica <b>à esquerda</b> dela. <b>M</b> vira <b>N</b>, <b>L</b> vira <b>K</b>, <b>P</b> vira <b>O</b>.</li>
+      <li>As primeiras teclas da fileira (<b>Q</b>, <b>A</b>, <b>Z</b> e <b>1</b>) não têm tecla atrás, então <b>ficam iguais</b>.</li>
+      <li>Pra <b>decifrar</b>, faz o contrário: anda <b>pra frente</b>, trocando pela tecla que fica <b>à direita</b>.</li>
     </ol>
     <div class="exemplo">
-      qual e o meu nome → <b>wisl r p mri mpmr</b><br>
-      78 → <b>89</b> … e 89 decifrado é <b>78</b>
+      oi, tudo bem → <b>iu, rysi vwn</b><br>
+      78 → <b>67</b> … e 67 decifrado é <b>78</b>
     </div>
   </section>
 
@@ -127,11 +126,12 @@
 <script>
 /* ============================================================
    CIFRA DE TRUSK (regras do Jojo)
-   Criar: cada letra ou número vira a tecla da frente (à direita)
-   na sua fileira do teclado. P, L, M e 0 são as últimas da fileira,
-   não têm tecla na frente, então ficam iguais.
-   Decifrar: cada uma volta uma tecla (à esquerda), sempre: M vira N,
-   L vira K, P vira O e 0 vira 9.
+   Criar: cada letra ou número vira a tecla de TRÁS (à esquerda)
+   na sua fileira do teclado: M vira N, L vira K, P vira O.
+   Q, A, Z e 1 são as primeiras da fileira, não têm tecla atrás,
+   então ficam iguais.
+   Decifrar: cada uma anda uma tecla pra FRENTE (à direita);
+   P, L, M e 0 não têm tecla na frente e ficam iguais.
    Acentos saem antes (é → e), maiúsculas continuam maiúsculas,
    e o resto (espaço, ? ! emoji) fica igual.
    ============================================================ */
@@ -158,7 +158,8 @@ function tras(ch) {
 }
 // tira os acentos (é → e, ç → c)
 const semAcento = txt => txt.normalize('NFD').replace(/[̀-ͯ]/g, '');
-function cifra(txt, direcao) { return [...semAcento(txt)].map(direcao > 0 ? frente : tras).join(''); }
+// Cifra de Trusk: criar = andar pra trás; decifrar = andar pra frente
+function cifra(txt, direcao) { return [...semAcento(txt)].map(direcao > 0 ? tras : frente).join(''); }
 
 function atualizar() {
   $('saida').value = cifra($('entrada').value, modo === 'cod' ? 1 : -1);
@@ -169,7 +170,7 @@ function mudarModo(m) {
   $('mCod').classList.toggle('on', m === 'cod'); $('mDec').classList.toggle('on', m === 'dec');
   $('rotEntrada').textContent = m === 'cod' ? 'Escreve a mensagem normal' : 'Cola a mensagem em Cifra de Trusk';
   $('rotSaida').textContent = m === 'cod' ? 'Mensagem em Cifra de Trusk' : 'Mensagem decifrada';
-  $('entrada').placeholder = m === 'cod' ? 'Ex.: qual é o meu nome' : 'Ex.: wisl r p mri mpmr';
+  $('entrada').placeholder = m === 'cod' ? 'Ex.: oi, tudo bem' : 'Ex.: iu, rysi vwn';
   atualizar();
 }
 $('mCod').onclick = () => mudarModo('cod');
@@ -196,13 +197,13 @@ FILEIRAS.forEach(f => {
 });
 let apaga = null;
 function mostrar(c) {
-  const d = modo === 'cod' ? frente(c) : tras(c);
+  const d = modo === 'cod' ? tras(c) : frente(c);
   Object.values(teclas).forEach(t => t.classList.remove('de', 'para'));
   teclas[c]?.classList.add('de'); teclas[d]?.classList.add('para');
   $('legenda').innerHTML = '';
   const b = document.createElement('b'); b.textContent = c.toUpperCase();
   const i = document.createElement('i'); i.textContent = d.toUpperCase();
-  $('legenda').append(b, ' vira ', i, d === c ? ' (não tem tecla na frente!)' : '');
+  $('legenda').append(b, ' vira ', i, d === c ? (modo === 'cod' ? ' (não tem tecla atrás!)' : ' (não tem tecla na frente!)') : '');
   clearTimeout(apaga); apaga = setTimeout(() => Object.values(teclas).forEach(t => t.classList.remove('de', 'para')), 1500);
 }
 // quando digita, a última letra acende no teclado
