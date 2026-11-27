@@ -447,7 +447,7 @@ const ESPECIAIS = [
 const ESTACOES = {2025:[20,20,22,21],2026:[20,21,22,21],2027:[20,21,23,21],2028:[20,20,22,21],2029:[20,21,22,21],2030:[20,21,22,21]};
 
 // ---------- ajustes da escola (dá pra mudar no ⚙️) ----------
-const ESCOLA_PADRAO = {volta:'02-02', julhoIni:'07-06', julhoFim:'07-31', ultimo:'12-18'};
+const ESCOLA_PADRAO = {volta:'02-02', julhoIni:'07-06', julhoFim:'07-31', ultimo:'11-27'};  // o último dia de aula do Jojo em 2026 foi 27/11
 function escola(){ try{ return Object.assign({}, ESCOLA_PADRAO, JSON.parse(localStorage.getItem('cal.escola')||'{}')); }catch(e){ return Object.assign({}, ESCOLA_PADRAO); } }
 
 // ---------- utilidades de data ----------
@@ -531,7 +531,7 @@ function eventosDoAno(a){
   const voltaProx = deChave((a+1)+'-'+e.volta);
   if (a >= 1900) add('Volta às aulas','🏫','ferias',volta,null,'Primeiro dia de aula do ano. Mochila nova, caderno novo, amigos de volta.',{origem:'A lei da educação (LDB, de 1996) manda ter 200 dias de aula por ano, por isso as aulas começam no começo de fevereiro.'});
   if (a >= 1900) add('Férias de julho','🏖️','ferias',jIni,jFim,'Férias no meio do ano. Data aproximada: confere com a sua escola (ajusta no ⚙️).',{origem:'Recesso no meio do ano letivo, que a maioria das escolas dá em julho desde o século XX.'});
-  if (a >= 1900) add('Último dia de aula','🎊','ferias',ultimo,null,'Acabou o ano letivo! Começam as férias grandes.',{origem:'Depois dos 200 dias letivos obrigatórios, acabou!'});
+  if (a >= 1900) add('Último dia de aula do Jojo','🎊','ferias',ultimo,null,'Último dia de aula do Jojo! Acabou o ano letivo e começam as férias grandes. 🥳',{origem:'Depois dos 200 dias letivos obrigatórios, acabou!'});
   if (a >= 1900) add('Férias de verão','🌴','ferias',mais(ultimo,1),mais(voltaProx,-1),'As férias mais longas do ano: Natal, Ano Novo, calor e nada de lição.',{origem:'As férias grandes caem no verão desde o Brasil Império, quando o calor do Rio esvaziava as escolas.'});
   if (a >= 1901) add('Férias de verão','🌴','ferias',data(a,1,1),mais(volta,-1),'Ainda de férias! A volta às aulas é dia '+volta.getDate()+' de '+MESES[volta.getMonth()]+'.',{origem:'As férias grandes caem no verão desde o Brasil Império, quando o calor do Rio esvaziava as escolas.'});
   luasNovas(a).forEach(dt => add('Lua nova','🌑','natureza',dt,null,'Noite sem lua no céu (data aproximada). A melhor noite pra ver estrelas!',{origem:'A Lua fica entre a Terra e o Sol, e a parte iluminada está virada pro outro lado. A gente não vê a Lua.'}));
