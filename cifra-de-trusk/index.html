@@ -98,6 +98,8 @@
       <button class="btn cheio" type="button" id="copiar">📋 Copiar</button>
       <button class="btn" type="button" id="trocar">🔁 Usar o resultado</button>
       <button class="btn" type="button" id="limpar">🧹 Limpar</button>
+      <button class="btn" type="button" id="falar" hidden>🔊 Falar</button>
+      <button class="btn" type="button" id="soletrar" hidden>🔤 Soletrar</button>
     </div>
     <p class="dica" id="dica" aria-live="polite"></p>
   </section>
@@ -110,6 +112,7 @@
   <section class="painel como">
     <h2>Como funciona a Cifra de Trusk</h2>
     <ol>
+      <li style="list-style:none;margin-left:-1.3em">🔊 Aperta <b>Falar</b> pra ouvir a mensagem, ou <b>Soletrar</b> pra ouvir letra por letra.</li>
       <li>Pra <b>criar o código</b>, anda <b>pra trás</b>: troca cada letra pela tecla que fica <b>à esquerda</b> dela. <b>M</b> vira <b>N</b>, <b>L</b> vira <b>K</b>, <b>P</b> vira <b>O</b>.</li>
       <li>As primeiras teclas da fileira (<b>Q</b>, <b>A</b>, <b>Z</b> e <b>1</b>) não têm tecla atrás, então <b>ficam iguais</b>.</li>
       <li>Pra <b>decifrar</b>, faz o contrário: anda <b>pra frente</b>, trocando pela tecla que fica <b>à direita</b>.</li>
@@ -211,6 +214,40 @@ $('entrada').addEventListener('input', () => {
   const v = semAcento($('entrada').value).slice(-1).toLowerCase();
   if (teclas[v]) mostrar(v);
 });
+
+/* ---------- alto-falante ----------
+   Usa a voz do próprio navegador. "Falar" lê a mensagem como se fosse
+   português (o Trusk fica engraçado!); "Soletrar" fala letra por letra,
+   igual espião passando código pelo rádio. */
+const NOMES_SINAIS = { ' ': 'espaço', ',': 'vírgula', '.': 'ponto', '?': 'interrogação', '!': 'exclamação', 'ç': 'cê cedilha' };
+let vozBR = null;
+function acharVoz() {
+  const vozes = speechSynthesis.getVoices();
+  vozBR = vozes.find(v => /pt[-_]BR/i.test(v.lang)) || vozes.find(v => /^pt/i.test(v.lang)) || null;
+}
+function fala(texto, ritmo = 1) {
+  const u = new SpeechSynthesisUtterance(texto);
+  u.lang = 'pt-BR'; u.rate = ritmo; u.pitch = .9; if (vozBR) u.voice = vozBR;
+  speechSynthesis.speak(u);
+}
+if ('speechSynthesis' in window) {
+  acharVoz(); speechSynthesis.onvoiceschanged = acharVoz;
+  $('falar').hidden = false; $('soletrar').hidden = false;
+  $('falar').onclick = () => {
+    speechSynthesis.cancel();
+    const t = $('saida').value.trim();
+    if (!t) { $('dica').textContent = 'Escreve uma mensagem primeiro! ✏️'; return; }
+    fala(t);
+  };
+  $('soletrar').onclick = () => {
+    speechSynthesis.cancel();
+    const t = $('saida').value.trim();
+    if (!t) { $('dica').textContent = 'Escreve uma mensagem primeiro! ✏️'; return; }
+    // uma letra de cada vez, com uma pausinha no espaço
+    const partes = [...t.toLowerCase()].map(c => NOMES_SINAIS[c] || c).filter(c => c.trim());
+    fala(partes.join(', '), .8);
+  };
+}
 
 mudarModo('cod');
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

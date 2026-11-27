@@ -9,6 +9,7 @@ O código secreto inventado pelo Jojo: cada letra vira a **tecla de trás** no t
 - Usa as fileiras do teclado: `1234567890`, `qwertyuiop`, `asdfghjkl`, `zxcvbnm`.
 - Acentos saem antes (é vira e, ç vira c), maiúsculas continuam maiúsculas, espaço e emoji ficam iguais.
 - Teclado na tela que mostra pra onde cada letra anda. Botão de copiar pra mandar no WhatsApp.
+- 🔊 Alto-falante: "Falar" lê a mensagem em voz alta e "Soletrar" fala letra por letra.
 - Funciona sem internet e instala como aplicativo.
 
 Exemplo: `oi, tudo bem` → `iu, rysi vwn`, e `78` → `67`
