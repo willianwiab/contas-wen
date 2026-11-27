@@ -15,6 +15,7 @@
         "Teclado na tela que mostra pra onde cada letra anda",
         "Q, A, Z e 1 ficam iguais, porque não têm tecla atrás",
         "Funciona com números também: 78 vira 67 🤚🤚",
+        "🔊 Alto-falante: fala a mensagem ou soletra letra por letra",
         "📋 Botão de copiar pra mandar no WhatsApp",
         "Dá pra instalar como aplicativo e usar sem internet"
       ],
@@ -45,6 +46,10 @@
         {
           "tecla": "🔁",
           "acao": "Usar o resultado como nova mensagem"
+        },
+        {
+          "tecla": "🔊 / 🔤",
+          "acao": "Falar a mensagem ou soletrar"
         }
       ],
       "curiosidades": [
@@ -55,6 +60,11 @@
       "creditos": "Cifra inventada pelo Jojo, site feito com o Claude.",
       "atualizacoes": "",
       "changelog": [
+        {
+          "versao": "1.3",
+          "data": "2026",
+          "mudancas": "Alto-falante: o site fala a mensagem em Trusk ou soletra letra por letra."
+        },
         {
           "versao": "1.2",
           "data": "2026",
